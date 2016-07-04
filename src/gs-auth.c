@@ -32,7 +32,10 @@
 
 #include "config.h"
 
+#include <libsecret/secret.h>
+
 #include "gs-auth.h"
+#include "gs-plugin.h"
 
 struct _GsAuth
 {
@@ -43,10 +46,11 @@ struct _GsAuth
 	gchar			*provider_name;
 	gchar			*provider_logo;
 	gchar			*provider_uri;
+	gchar			*provider_schema;
 	gchar			*username;
 	gchar			*password;
 	gchar			*pin;
-	GHashTable		*metadata;
+	GHashTable		*metadata;	/* utf8: utf8 */
 };
 
 enum {
@@ -164,6 +168,36 @@ gs_auth_set_provider_uri (GsAuth *auth, const gchar *provider_uri)
 	g_return_if_fail (GS_IS_AUTH (auth));
 	g_free (auth->provider_uri);
 	auth->provider_uri = g_strdup (provider_uri);
+}
+
+/**
+ * gs_auth_get_provider_schema:
+ * @auth: a #GsAuth
+ *
+ * Gets the authentication schema ID.
+ *
+ * Returns: the URI, or %NULL
+ */
+const gchar *
+gs_auth_get_provider_schema (GsAuth *auth)
+{
+	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
+	return auth->provider_schema;
+}
+
+/**
+ * gs_auth_set_provider_schema:
+ * @auth: a #GsAuth
+ * @provider_schema: a URI, e.g. "com.distro.provider"
+ *
+ * Sets the schema ID to be used for saving the state to disk.
+ */
+void
+gs_auth_set_provider_schema (GsAuth *auth, const gchar *provider_schema)
+{
+	g_return_if_fail (GS_IS_AUTH (auth));
+	g_free (auth->provider_schema);
+	auth->provider_schema = g_strdup (provider_schema);
 }
 
 /**
@@ -352,6 +386,173 @@ gs_auth_add_metadata (GsAuth *auth, const gchar *key, const gchar *value)
 	g_hash_table_insert (auth->metadata, g_strdup (key), g_strdup (value));
 }
 
+static gboolean
+_g_error_is_set (GError **error)
+{
+	if (error == NULL)
+		return FALSE;
+	return *error != NULL;
+}
+
+/**
+ * gs_auth_load:
+ * @auth: a #GsAuth
+ * @cancellable: a #GCancellable or %NULL
+ * @error: a #GError or %NULL
+ *
+ * Loads authentication tokens from disk in a secure way.
+ * By default only the username and password are loaded, but they are not
+ * overwritten if already set.
+ *
+ * If additional tokens are required to be loaded you must first tell the
+ * GsAuth instance what metadata to load. This can be done using:
+ * `gs_auth_add_metadata("additional-secret-key-name",NULL)`
+ *
+ * This function is expected to be called from gs_plugin_setup().
+ *
+ * Returns: %TRUE if the tokens were loaded correctly.
+ */
+gboolean
+gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
+{
+	GList *l;
+	g_autoptr(GList) keys = NULL;
+	SecretSchema schema = {
+		auth->provider_schema,
+		SECRET_SCHEMA_NONE,
+		{ { "key", SECRET_SCHEMA_ATTRIBUTE_STRING } }
+	};
+
+	/* no schema */
+	if (auth->provider_schema == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "No provider schema set for %s",
+			     auth->provider_id);
+		return FALSE;
+	}
+
+	/* username */
+	if (auth->username == NULL) {
+		auth->username = secret_password_lookup_sync (&schema,
+							      cancellable,
+							      error,
+							      "key", "username",
+							      NULL);
+		if (_g_error_is_set (error))
+			return FALSE;
+	}
+
+	/* password */
+	if (auth->password == NULL) {
+		auth->password = secret_password_lookup_sync (&schema,
+							      cancellable,
+							      error,
+							      "key", "password",
+							      NULL);
+		if (_g_error_is_set (error))
+			return FALSE;
+	}
+
+	/* metadata */
+	keys = g_hash_table_get_keys (auth->metadata);
+	for (l = keys; l != NULL; l = l->next) {
+		g_autofree gchar *tmp = NULL;
+		const gchar *key = l->data;
+		const gchar *value = g_hash_table_lookup (auth->metadata, key);
+		if (value != NULL)
+			continue;
+		tmp = secret_password_lookup_sync (&schema,
+						   cancellable,
+						   error,
+						   "key", key,
+						   NULL);
+		if (_g_error_is_set (error))
+			return FALSE;
+		if (tmp != NULL)
+			gs_auth_add_metadata (auth, key, tmp);
+	}
+
+	/* success */
+	return TRUE;
+}
+
+/**
+ * gs_auth_save:
+ * @auth: a #GsAuth
+ * @cancellable: a #GCancellable or %NULL
+ * @error: a #GError or %NULL
+ *
+ * Saves the username, password and all added metadata to disk in a secure way.
+ *
+ * This function is expected to be called from gs_plugin_setup().
+ *
+ * Returns: %TRUE if the tokens were all saved correctly.
+ */
+gboolean
+gs_auth_save (GsAuth *auth, GCancellable *cancellable, GError **error)
+{
+	GList *l;
+	g_autoptr(GList) keys = NULL;
+	SecretSchema schema = {
+		auth->provider_schema,
+		SECRET_SCHEMA_NONE,
+		{ { "key", SECRET_SCHEMA_ATTRIBUTE_STRING } }
+	};
+
+	/* no schema */
+	if (auth->provider_schema == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "No provider schema set for %s",
+			     auth->provider_id);
+		return FALSE;
+	}
+
+	/* username */
+	if (auth->username != NULL) {
+		if (!secret_password_store_sync (&schema,
+						 NULL, /* collection */
+						 auth->provider_schema,
+						 auth->username,
+						 cancellable, error,
+						 "key", "username", NULL))
+			return FALSE;
+	}
+
+	/* password */
+	if (auth->password != NULL) {
+		if (!secret_password_store_sync (&schema,
+						 NULL, /* collection */
+						 auth->provider_schema,
+						 auth->password,
+						 cancellable, error,
+						 "key", "password", NULL))
+			return FALSE;
+	}
+
+	/* metadata */
+	keys = g_hash_table_get_keys (auth->metadata);
+	for (l = keys; l != NULL; l = l->next) {
+		const gchar *key = l->data;
+		const gchar *value = g_hash_table_lookup (auth->metadata, key);
+		if (value == NULL)
+			continue;
+		if (!secret_password_store_sync (&schema,
+						 NULL, /* collection */
+						 auth->provider_schema,
+						 value,
+						 cancellable, error,
+						 "key", key, NULL))
+			return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
 static void
 gs_auth_get_property (GObject *object, guint prop_id,
 			GValue *value, GParamSpec *pspec)
@@ -411,6 +612,7 @@ gs_auth_finalize (GObject *object)
 	g_free (auth->provider_name);
 	g_free (auth->provider_logo);
 	g_free (auth->provider_uri);
+	g_free (auth->provider_schema);
 	g_free (auth->username);
 	g_free (auth->password);
 	g_free (auth->pin);

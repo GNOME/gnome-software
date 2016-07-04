@@ -9,6 +9,7 @@ AM_CPPFLAGS =						\
 	$(PACKAGEKIT_CFLAGS)				\
 	$(GNOME_DESKTOP_CFLAGS)				\
 	$(POLKIT_CFLAGS)				\
+	$(LIBSECRET_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DLIBDIR=\"$(libdir)\"				\
@@ -123,6 +124,7 @@ gnome_software_cmd_LDADD =				\
 	$(APPSTREAM_LIBS)				\
 	$(POLKIT_LIBS)					\
 	$(SOUP_LIBS)					\
+	$(LIBSECRET_LIBS)				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)
 
@@ -272,6 +274,7 @@ gnome_software_LDADD =					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
+	$(LIBSECRET_LIBS)				\
 	$(PACKAGEKIT_LIBS)				\
 	$(GNOME_DESKTOP_LIBS)				\
 	$(POLKIT_LIBS)					\
@@ -346,6 +349,7 @@ gs_self_test_LDADD =						\
 	$(APPSTREAM_LIBS)					\
 	$(POLKIT_LIBS)						\
 	$(SOUP_LIBS)						\
+	$(LIBSECRET_LIBS)					\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 

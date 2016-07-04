@@ -23,6 +23,7 @@
 #define __GS_AUTH_H
 
 #include <glib-object.h>
+#include <gio/gio.h>
 
 G_BEGIN_DECLS
 
@@ -75,6 +76,9 @@ void		 gs_auth_set_provider_logo	(GsAuth		*auth,
 const gchar	*gs_auth_get_provider_uri	(GsAuth		*auth);
 void		 gs_auth_set_provider_uri	(GsAuth		*auth,
 						 const gchar	*provider_uri);
+const gchar	*gs_auth_get_provider_schema	(GsAuth		*auth);
+void		 gs_auth_set_provider_schema	(GsAuth		*auth,
+						 const gchar	*provider_schema);
 const gchar	*gs_auth_get_username		(GsAuth		*auth);
 void		 gs_auth_set_username		(GsAuth		*auth,
 						 const gchar	*username);
@@ -96,6 +100,12 @@ const gchar	*gs_auth_get_metadata_item	(GsAuth		*auth,
 void		 gs_auth_add_metadata		(GsAuth		*auth,
 						 const gchar	*key,
 						 const gchar	*value);
+gboolean	 gs_auth_load			(GsAuth		*auth,
+						 GCancellable	*cancellable,
+						 GError		**error);
+gboolean	 gs_auth_save			(GsAuth		*auth,
+						 GCancellable	*cancellable,
+						 GError		**error);
 
 G_END_DECLS
 
