@@ -86,7 +86,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 static GsReview *
-gs_plugin_odrs_parse_review_object (JsonObject *item)
+gs_plugin_odrs_parse_review_object (GsPlugin *plugin, JsonObject *item)
 {
 	GsReview *rev = gs_review_new ();
 
@@ -143,7 +143,10 @@ gs_plugin_odrs_parse_review_object (JsonObject *item)
 }
 
 static GPtrArray *
-gs_plugin_odrs_parse_reviews (const gchar *data, gsize data_len, GError **error)
+gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
+			      const gchar *data,
+			      gsize data_len,
+			      GError **error)
 {
 	JsonArray *json_reviews;
 	JsonNode *json_root;
@@ -207,7 +210,8 @@ gs_plugin_odrs_parse_reviews (const gchar *data, gsize data_len, GError **error)
 		}
 
 		/* create review */
-		review = gs_plugin_odrs_parse_review_object (json_item);
+		review = gs_plugin_odrs_parse_review_object (plugin,
+							     json_item);
 		g_ptr_array_add (reviews, g_object_ref (review));
 	}
 	return g_steal_pointer (&reviews);
@@ -496,7 +500,9 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 			return NULL;
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id_no_prefix (app), cachefn);
-		return gs_plugin_odrs_parse_reviews (json_data, -1, error);
+		return gs_plugin_odrs_parse_reviews (plugin,
+						     json_data, -1,
+						     error);
 	}
 
 	/* not always available */
@@ -550,7 +556,8 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 				     "status code invalid");
 		return NULL;
 	}
-	reviews = gs_plugin_odrs_parse_reviews (msg->response_body->data,
+	reviews = gs_plugin_odrs_parse_reviews (plugin,
+						msg->response_body->data,
 						msg->response_body->length,
 						error);
 	if (reviews == NULL)
@@ -911,7 +918,8 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 		return FALSE;
 	}
 	g_debug ("odrs returned: %s", msg->response_body->data);
-	reviews = gs_plugin_odrs_parse_reviews (msg->response_body->data,
+	reviews = gs_plugin_odrs_parse_reviews (plugin,
+						msg->response_body->data,
 						msg->response_body->length,
 						error);
 	if (reviews == NULL)
