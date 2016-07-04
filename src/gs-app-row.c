@@ -122,6 +122,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GString *str = NULL;
 	gboolean missing_search_result;
 	gboolean show_nonfree = FALSE;
+	gboolean use_folders = FALSE;
 
 	if (priv->app == NULL)
 		return;
@@ -227,7 +228,10 @@ gs_app_row_refresh (GsAppRow *app_row)
 				     gs_app_get_version_ui (priv->app));
 	}
 
-	if (priv->show_update || priv->show_codec) {
+	use_folders = gs_utils_is_current_desktop ("GNOME") &&
+		g_settings_get_boolean (priv->settings, "show-folder-management");
+
+	if (!use_folders || priv->show_update || priv->show_codec) {
 		gtk_widget_hide (priv->folder_label);
 	} else {
 		g_autoptr(GsFolders) folders = NULL;
@@ -399,7 +403,8 @@ settings_changed_cb (GsAppRow *self,
 		     const gchar *key,
 		     gpointer data)
 {
-	if (g_strcmp0 (key, "show-nonfree-ui") == 0) {
+	if (g_strcmp0 (key, "show-nonfree-ui") == 0 ||
+	    g_strcmp0 (key, "show-folder-management") == 0) {
 		gs_app_row_refresh (self);
 	}
 }
