@@ -788,7 +788,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	/* ask PK to simulate upgrading the system */
 	results = pk_client_upgrade_system (plugin->priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
-					    gs_app_get_id (app),
+					    gs_app_get_version (app),
 					    PK_UPGRADE_KIND_ENUM_COMPLETE,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, &data,
