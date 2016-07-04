@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkScrolledWindow" id="scrolledwindow">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="min_content_height">160</property>
+    <property name="hscrollbar_policy">never</property>
+    <property name="vscrollbar_policy">automatic</property>
+    <property name="shadow_type">none</property>
+    <child>
+      <object class="GtkFrame" id="frame">
+        <property name="visible">True</property>
+        <property name="shadow_type">in</property>
+        <property name="halign">fill</property>
+        <property name="valign">start</property>
+        <child>
+          <object class="GtkListBox" id="listbox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="selection_mode">none</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <template class="GsRemovalDialog" parent="GtkMessageDialog">
+    <property name="text" translatable="yes">Incompatible Software</property>
+    <property name="modal">True</property>
+    <property name="destroy_with_parent">True</property>
+    <child type="action">
+      <object class="GtkButton" id="button_cancel">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">_Cancel</property>
+        <property name="use_underline">True</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="button_continue">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">_Continue</property>
+        <property name="use_underline">True</property>
+        <property name="can_default">True</property>
+        <property name="receives_default">True</property>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="accept" default="true">button_continue</action-widget>
+      <action-widget response="cancel">button_cancel</action-widget>
+    </action-widgets>
+  </template>
+</interface>

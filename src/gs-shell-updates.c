@@ -29,6 +29,7 @@
 #include "gs-common.h"
 #include "gs-app-private.h"
 #include "gs-app-row.h"
+#include "gs-removal-dialog.h"
 #include "gs-update-dialog.h"
 #include "gs-update-list.h"
 #include "gs-update-monitor.h"
@@ -580,6 +581,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 
 	/* don't refresh every each time */
 	if ((self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES) == 0) {
+		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 		gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
 							    refine_flags,
 							    self->cancellable,
@@ -1107,23 +1109,85 @@ upgrade_trigger_finished_cb (GObject *source,
 }
 
 static void
-gs_shell_updates_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
-                                     GsShellUpdates *self)
+trigger_upgrade (GsShellUpdates *self)
 {
-	GsApp *app;
+	GsApp *upgrade;
 
-	app = gs_upgrade_banner_get_app (upgrade_banner);
-	if (app == NULL) {
+	upgrade = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
+	if (upgrade == NULL) {
 		g_warning ("no upgrade available to install");
 		return;
 	}
 
 	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   app,
-					   GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
-					   self->cancellable,
-					   upgrade_trigger_finished_cb,
-					   self);
+	                                   upgrade,
+	                                   GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
+	                                   self->cancellable,
+	                                   upgrade_trigger_finished_cb,
+	                                   self);
+}
+
+static void
+gs_shell_updates_upgrade_confirm_cb (GtkDialog *dialog,
+                                     GtkResponseType response_type,
+                                     GsShellUpdates *self)
+{
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	switch (response_type) {
+	case GTK_RESPONSE_ACCEPT:
+		g_debug ("agreed to upgrade removing apps");
+		trigger_upgrade (self);
+		break;
+	case GTK_RESPONSE_CANCEL:
+		g_debug ("cancelled removal dialog");
+		break;
+	case GTK_RESPONSE_DELETE_EVENT:
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+}
+
+static void
+gs_shell_updates_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
+                                     GsShellUpdates *self)
+{
+	GPtrArray *removals;
+	GsApp *upgrade;
+	GtkWidget *dialog;
+	guint cnt = 0;
+	guint i;
+
+	upgrade = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
+	if (upgrade == NULL) {
+		g_warning ("no upgrade available to install");
+		return;
+	}
+
+	/* count the removals */
+	removals = gs_app_get_related (upgrade);
+	for (i = 0; i < removals->len; i++) {
+		GsApp *app = g_ptr_array_index (removals, i);
+		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
+			continue;
+		cnt++;
+	}
+
+	if (cnt == 0) {
+		/* no need for a removal confirmation dialog */
+		trigger_upgrade (self);
+		return;
+	}
+
+	dialog = gs_removal_dialog_new ();
+	g_signal_connect (dialog, "response",
+	                  G_CALLBACK (gs_shell_updates_upgrade_confirm_cb),
+	                  self);
+	gs_removal_dialog_show_upgrade_removals (GS_REMOVAL_DIALOG (dialog),
+	                                         upgrade);
+	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 }
 
 static void
