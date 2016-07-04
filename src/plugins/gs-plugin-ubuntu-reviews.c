@@ -699,31 +699,18 @@ parse_reviews (GsPlugin *plugin, JsonParser *parser, GsApp *app, GCancellable *c
 	return TRUE;
 }
 
-static gchar *
-get_language (GsPlugin *plugin)
-{
-	gchar *language, *c;
-
-	/* Convert locale into language */
-	language = g_strdup (gs_plugin_get_locale (plugin));
-	c = strchr (language, '_');
-	if (c)
-		*c = '\0';
-
-	return language;
-}
-
 static gboolean
 download_reviews (GsPlugin *plugin, GsApp *app,
 		  const gchar *package_name, gint page_number,
 		  GCancellable *cancellable, GError **error)
 {
-	g_autofree gchar *language = NULL, *path = NULL;
+	const gchar *language;
 	guint status_code;
+	g_autofree gchar *path = NULL;
 	g_autoptr(JsonParser) result = NULL;
 
 	/* Get the review stats using HTTP */
-	language = get_language (plugin);
+	language = gs_plugin_get_language (plugin);
 	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/page/%d/",
 				language, package_name, page_number + 1);
 	if (!send_review_request (plugin, SOUP_METHOD_GET, path,
@@ -862,9 +849,10 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsAuth *auth;
 	const gchar *consumer_key = NULL;
+	const gchar *language;
 	gint rating;
 	gint n_stars;
-	g_autofree gchar *language = NULL, *architecture = NULL;
+	g_autofree gchar *architecture = NULL;
 	g_autoptr(JsonBuilder) request = NULL;
 	guint status_code;
 	g_autoptr(JsonParser) result = NULL;
@@ -882,7 +870,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	else
 		n_stars = 1;
 
-	language = get_language (plugin);
+	language = gs_plugin_get_language (plugin);
 
 	// FIXME: Need to get Apt::Architecture configuration value from APT
 	architecture = g_strdup ("amd64");
