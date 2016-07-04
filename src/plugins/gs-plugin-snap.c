@@ -124,9 +124,9 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package)
 		g_autofree gchar *icon_response = NULL;
 		gsize icon_response_length;
 
-		if (gs_snapd_request ("GET", icon_url, NULL, NULL, TRUE, NULL,
-				      NULL, NULL, NULL,
-				      &icon_response, &icon_response_length,
+		if (gs_snapd_request ("GET", icon_url, NULL,
+				      NULL, NULL,
+				      NULL, &icon_response, &icon_response_length,
 				      NULL)) {
 			g_autoptr(GdkPixbufLoader) loader = NULL;
 
@@ -207,10 +207,10 @@ get_apps (GsPlugin *plugin,
 		g_string_append (path, fields);
 	}
 	g_ptr_array_free (query_fields, TRUE);
-	if (!gs_snapd_request ("GET", path->str, NULL, NULL, TRUE, NULL,
+	if (!gs_snapd_request ("GET", path->str, NULL,
 			       &status_code, &reason_phrase,
-			       &response_type, &response,
-			       NULL, error))
+			       &response_type, &response, NULL,
+			       error))
 		return FALSE;
 
 	if (status_code != SOUP_STATUS_OK) {
@@ -271,10 +271,10 @@ get_app (GsPlugin *plugin, GsApp *app, GError **error)
 	guint i;
 
 	path = g_strdup_printf ("/v2/snaps/%s", gs_app_get_id (app));
-	if (!gs_snapd_request ("GET", path, NULL, NULL, TRUE, NULL,
+	if (!gs_snapd_request ("GET", path, NULL,
 			       &status_code, &reason_phrase,
-			       &response_type, &response,
-			       NULL, error))
+			       &response_type, &response, NULL,
+			       error))
 		return FALSE;
 
 	if (status_code == SOUP_STATUS_NOT_FOUND) {
@@ -284,10 +284,10 @@ get_app (GsPlugin *plugin, GsApp *app, GError **error)
 		g_clear_pointer (&response, g_free);
 
 		path = g_strdup_printf ("/v2/find?q=%s", gs_app_get_id (app));
-		if (!gs_snapd_request ("GET", path, NULL, NULL, TRUE, NULL,
+		if (!gs_snapd_request ("GET", path, NULL,
 				       &status_code, &reason_phrase,
-				       &response_type, &response,
-				       NULL, error))
+				       &response_type, &response, NULL,
+				       error))
 			return FALSE;
 	}
 
@@ -401,14 +401,13 @@ send_package_action (GsPlugin *plugin,
         const gchar *resource_path;
 	const gchar *type;
 	const gchar *change_id;
-	g_autoptr(GVariant) macaroon = NULL;
 
 	content = g_strdup_printf ("{\"action\": \"%s\"}", action);
 	path = g_strdup_printf ("/v2/snaps/%s", id);
-	if (!gs_snapd_request ("POST", path, content, NULL, TRUE,
-			       &macaroon, &status_code,
-			       &reason_phrase, &response_type,
-			       &response, NULL, error))
+	if (!gs_snapd_request ("POST", path, content,
+			       &status_code, &reason_phrase,
+			       &response_type, &response, NULL,
+			       error))
 		return FALSE;
 
 	if (status_code != SOUP_STATUS_ACCEPTED) {
@@ -440,10 +439,10 @@ send_package_action (GsPlugin *plugin,
 			/* Wait for a little bit before polling */
 			g_usleep (100 * 1000);
 
-			if (!gs_snapd_request ("GET", resource_path, NULL, macaroon, TRUE, NULL,
+			if (!gs_snapd_request ("GET", resource_path, NULL,
 					       &status_code, &status_reason_phrase,
-					       &status_response_type, &status_response,
-					       NULL, error)) {
+					       &status_response_type, &status_response, NULL,
+					       error)) {
 				return FALSE;
 			}
 

@@ -94,9 +94,6 @@ gboolean
 gs_snapd_request (const gchar  *method,
 		  const gchar  *path,
 		  const gchar  *content,
-		  GVariant     *macaroon,
-		  gboolean      retry_after_login,
-		  GVariant    **out_macaroon,
 		  guint        *status_code,
 		  gchar       **reason_phrase,
 		  gchar       **response_type,
@@ -112,11 +109,7 @@ gs_snapd_request (const gchar  *method,
 	g_autoptr (SoupMessageHeaders) headers = NULL;
 	gsize chunk_length, n_required;
 	gchar *chunk_start = NULL;
-	const gchar *root;
-	const gchar *discharge;
-	GVariantIter *iter;
 	guint code;
-	gboolean ret;
 
 	// NOTE: Would love to use libsoup but it doesn't support unix sockets
 	// https://bugzilla.gnome.org/show_bug.cgi?id=727563
@@ -128,16 +121,6 @@ gs_snapd_request (const gchar  *method,
 	request = g_string_new ("");
 	g_string_append_printf (request, "%s %s HTTP/1.1\r\n", method, path);
 	g_string_append (request, "Host:\r\n");
-	if (macaroon != NULL) {
-		g_variant_get (macaroon, "(&sas)", &root, &iter);
-		g_string_append_printf (request, "Authorization: Macaroon root=\"%s\"", root);
-
-		while (g_variant_iter_next (iter, "&s", &discharge))
-			g_string_append_printf (request, ",discharge=\"%s\"", discharge);
-
-		g_variant_iter_free (iter);
-		g_string_append (request, "\r\n");
-	}
 	if (content)
 		g_string_append_printf (request, "Content-Length: %zi\r\n", strlen (content));
 	g_string_append (request, "\r\n");
@@ -186,39 +169,6 @@ gs_snapd_request (const gchar  *method,
 
 	if (status_code != NULL)
 		*status_code = code;
-
-	if ((code == 401 || code == 403) && retry_after_login) {
-		g_socket_close (socket, NULL);
-
-		if (macaroon == NULL) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_AUTH_REQUIRED,
-					     "failed to authenticate");
-			return FALSE;
-		}
-
-		ret = gs_snapd_request (method,
-					path,
-					content,
-					macaroon,
-					FALSE,
-					NULL,
-					status_code,
-					reason_phrase,
-					response_type,
-					response,
-					response_length,
-					error);
-
-		if (ret && out_macaroon != NULL) {
-			*out_macaroon = macaroon;
-		} else {
-			g_variant_unref (macaroon);
-		}
-
-		return ret;
-	}
 
 	/* work out how much data to follow */
 	if (g_strcmp0 (soup_message_headers_get_one (headers, "Transfer-Encoding"),
@@ -281,8 +231,6 @@ gs_snapd_request (const gchar  *method,
 				      error))
 			return FALSE;
 
-	if (out_macaroon != NULL)
-		*out_macaroon = g_variant_ref (macaroon);
 	if (response_type)
 		*response_type = g_strdup (soup_message_headers_get_one (headers, "Content-Type"));
 	if (response) {
