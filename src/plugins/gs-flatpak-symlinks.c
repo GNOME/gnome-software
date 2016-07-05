@@ -113,13 +113,20 @@ gs_flatpak_symlinks_check_exist (FlatpakRemote *xremote,
 			return FALSE;
 	}
 
-	/* create it if required */
+	/* create it if required, but only if the destination exists */
 	if (!g_file_test (symlink_source, G_FILE_TEST_EXISTS)) {
-		g_debug ("creating missing symbolic link from %s to %s",
-			 symlink_source, symlink_target);
-		if (!gs_utils_symlink (symlink_target, symlink_source, error))
-			return FALSE;
+		if (g_file_test (symlink_target, G_FILE_TEST_EXISTS)) {
+			g_debug ("creating missing symbolic link from %s to %s",
+				 symlink_source, symlink_target);
+			if (!gs_utils_symlink (symlink_target, symlink_source, error))
+				return FALSE;
+		} else {
+			g_debug ("not creating missing symbolic link from "
+				 "%s to %s as target does not yet exist",
+				 symlink_source, symlink_target);
+		}
 	}
+
 	return TRUE;
 }
 
