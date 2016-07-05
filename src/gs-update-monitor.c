@@ -610,6 +610,12 @@ gs_update_monitor_dispose (GObject *object)
 						      monitor);
 		monitor->network_monitor = NULL;
 	}
+	if (monitor->plugin_loader != NULL) {
+		g_signal_handlers_disconnect_by_func (monitor->plugin_loader,
+		                                      updates_changed_cb,
+		                                      monitor);
+		monitor->plugin_loader = NULL;
+	}
 	g_clear_object (&monitor->settings);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->dispose (object);
