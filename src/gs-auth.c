@@ -395,8 +395,9 @@ _g_error_is_set (GError **error)
 }
 
 /**
- * gs_auth_load:
+ * gs_auth_store_load:
  * @auth: a #GsAuth
+ * @flags: some #GsAuthStoreFlags, e.g. %GS_AUTH_STORE_FLAG_USERNAME
  * @cancellable: a #GCancellable or %NULL
  * @error: a #GError or %NULL
  *
@@ -413,10 +414,9 @@ _g_error_is_set (GError **error)
  * Returns: %TRUE if the tokens were loaded correctly.
  */
 gboolean
-gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
+gs_auth_store_load (GsAuth *auth, GsAuthStoreFlags flags,
+		    GCancellable *cancellable, GError **error)
 {
-	GList *l;
-	g_autoptr(GList) keys = NULL;
 	SecretSchema schema = {
 		auth->provider_schema,
 		SECRET_SCHEMA_NONE,
@@ -434,7 +434,7 @@ gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
 	}
 
 	/* username */
-	if (auth->username == NULL) {
+	if ((flags & GS_AUTH_STORE_FLAG_USERNAME) > 0 && auth->username == NULL) {
 		auth->username = secret_password_lookup_sync (&schema,
 							      cancellable,
 							      error,
@@ -445,7 +445,7 @@ gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
 	}
 
 	/* password */
-	if (auth->password == NULL) {
+	if ((flags & GS_AUTH_STORE_FLAG_PASSWORD) > 0 && auth->password == NULL) {
 		auth->password = secret_password_lookup_sync (&schema,
 							      cancellable,
 							      error,
@@ -456,22 +456,26 @@ gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
 	}
 
 	/* metadata */
-	keys = g_hash_table_get_keys (auth->metadata);
-	for (l = keys; l != NULL; l = l->next) {
-		g_autofree gchar *tmp = NULL;
-		const gchar *key = l->data;
-		const gchar *value = g_hash_table_lookup (auth->metadata, key);
-		if (value != NULL)
-			continue;
-		tmp = secret_password_lookup_sync (&schema,
-						   cancellable,
-						   error,
-						   "key", key,
-						   NULL);
-		if (_g_error_is_set (error))
-			return FALSE;
-		if (tmp != NULL)
-			gs_auth_add_metadata (auth, key, tmp);
+	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
+		GList *l;
+		g_autoptr(GList) keys = NULL;
+		keys = g_hash_table_get_keys (auth->metadata);
+		for (l = keys; l != NULL; l = l->next) {
+			g_autofree gchar *tmp = NULL;
+			const gchar *key = l->data;
+			const gchar *value = g_hash_table_lookup (auth->metadata, key);
+			if (value != NULL)
+				continue;
+			tmp = secret_password_lookup_sync (&schema,
+							   cancellable,
+							   error,
+							   "key", key,
+							   NULL);
+			if (_g_error_is_set (error))
+				return FALSE;
+			if (tmp != NULL)
+				gs_auth_add_metadata (auth, key, tmp);
+		}
 	}
 
 	/* success */
@@ -479,8 +483,9 @@ gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
 }
 
 /**
- * gs_auth_save:
+ * gs_auth_store_save:
  * @auth: a #GsAuth
+ * @flags: some #GsAuthStoreFlags, e.g. %GS_AUTH_STORE_FLAG_USERNAME
  * @cancellable: a #GCancellable or %NULL
  * @error: a #GError or %NULL
  *
@@ -491,10 +496,9 @@ gs_auth_load (GsAuth *auth, GCancellable *cancellable, GError **error)
  * Returns: %TRUE if the tokens were all saved correctly.
  */
 gboolean
-gs_auth_save (GsAuth *auth, GCancellable *cancellable, GError **error)
+gs_auth_store_save (GsAuth *auth, GsAuthStoreFlags flags,
+		    GCancellable *cancellable, GError **error)
 {
-	GList *l;
-	g_autoptr(GList) keys = NULL;
 	SecretSchema schema = {
 		auth->provider_schema,
 		SECRET_SCHEMA_NONE,
@@ -512,7 +516,7 @@ gs_auth_save (GsAuth *auth, GCancellable *cancellable, GError **error)
 	}
 
 	/* username */
-	if (auth->username != NULL) {
+	if ((flags & GS_AUTH_STORE_FLAG_USERNAME) > 0 && auth->username != NULL) {
 		if (!secret_password_store_sync (&schema,
 						 NULL, /* collection */
 						 auth->provider_schema,
@@ -523,7 +527,7 @@ gs_auth_save (GsAuth *auth, GCancellable *cancellable, GError **error)
 	}
 
 	/* password */
-	if (auth->password != NULL) {
+	if ((flags & GS_AUTH_STORE_FLAG_PASSWORD) > 0 && auth->password != NULL) {
 		if (!secret_password_store_sync (&schema,
 						 NULL, /* collection */
 						 auth->provider_schema,
@@ -534,19 +538,23 @@ gs_auth_save (GsAuth *auth, GCancellable *cancellable, GError **error)
 	}
 
 	/* metadata */
-	keys = g_hash_table_get_keys (auth->metadata);
-	for (l = keys; l != NULL; l = l->next) {
-		const gchar *key = l->data;
-		const gchar *value = g_hash_table_lookup (auth->metadata, key);
-		if (value == NULL)
-			continue;
-		if (!secret_password_store_sync (&schema,
-						 NULL, /* collection */
-						 auth->provider_schema,
-						 value,
-						 cancellable, error,
-						 "key", key, NULL))
-			return FALSE;
+	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
+		GList *l;
+		g_autoptr(GList) keys = NULL;
+		keys = g_hash_table_get_keys (auth->metadata);
+		for (l = keys; l != NULL; l = l->next) {
+			const gchar *key = l->data;
+			const gchar *value = g_hash_table_lookup (auth->metadata, key);
+			if (value == NULL)
+				continue;
+			if (!secret_password_store_sync (&schema,
+							 NULL, /* collection */
+							 auth->provider_schema,
+							 value,
+							 cancellable, error,
+							 "key", key, NULL))
+				return FALSE;
+		}
 	}
 
 	/* success */

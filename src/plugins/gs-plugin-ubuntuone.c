@@ -61,7 +61,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gs_auth_add_metadata (priv->auth, "consumer-secret", NULL);
 	gs_auth_add_metadata (priv->auth, "token-key", NULL);
 	gs_auth_add_metadata (priv->auth, "token-secret", NULL);
-	if (!gs_auth_load (priv->auth, cancellable, error))
+	if (!gs_auth_store_load (priv->auth,
+				 GS_AUTH_STORE_FLAG_USERNAME |
+				 GS_AUTH_STORE_FLAG_METADATA,
+				 cancellable, error))
 		return FALSE;
 
 	/* success */
@@ -217,7 +220,10 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	gs_auth_add_metadata (auth, "token-secret", tmp);
 
 	/* store */
-	if (!gs_auth_save (auth, cancellable, error))
+	if (!gs_auth_store_save (auth,
+				 GS_AUTH_STORE_FLAG_USERNAME |
+				 GS_AUTH_STORE_FLAG_METADATA,
+				 cancellable, error))
 		return FALSE;
 
 	gs_auth_add_flags (priv->auth, GS_AUTH_FLAG_VALID);

@@ -910,7 +910,11 @@ gs_auth_secret_func (void)
 	gs_auth_set_username (auth1, "hughsie");
 	gs_auth_set_password (auth1, "foobarbaz");
 	gs_auth_add_metadata (auth1, "day", "monday");
-	ret = gs_auth_save (auth1, NULL, &error);
+	ret = gs_auth_store_save (auth1,
+				  GS_AUTH_STORE_FLAG_USERNAME |
+				  GS_AUTH_STORE_FLAG_PASSWORD |
+				  GS_AUTH_STORE_FLAG_METADATA,
+				  NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -919,7 +923,11 @@ gs_auth_secret_func (void)
 	gs_auth_add_metadata (auth2, "day", NULL);
 	gs_auth_add_metadata (auth2, "notgoingtoexist", NULL);
 	gs_auth_set_provider_schema (auth2, "org.gnome.Software.Dummy");
-	ret = gs_auth_load (auth2, NULL, &error);
+	ret = gs_auth_store_load (auth2,
+				  GS_AUTH_STORE_FLAG_USERNAME |
+				  GS_AUTH_STORE_FLAG_PASSWORD |
+				  GS_AUTH_STORE_FLAG_METADATA,
+				  NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpstr (gs_auth_get_username (auth2), ==, "hughsie");

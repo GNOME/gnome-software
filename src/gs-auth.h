@@ -65,6 +65,24 @@ typedef enum {
 	GS_AUTH_ACTION_LAST
 } GsAuthAction;
 
+/**
+ * GsAuthStoreFlags:
+ * @GS_AUTH_STORE_FLAG_NONE:		No special flags set
+ * @GS_AUTH_STORE_FLAG_USERNAME:	Load or save the username
+ * @GS_AUTH_STORE_FLAG_PASSWORD:	Load or save the password
+ * @GS_AUTH_STORE_FLAG_METADATA:	Load or save any metadata
+ *
+ * The flags used when loading or saving the authentication to disk.
+ **/
+typedef enum {
+	GS_AUTH_STORE_FLAG_NONE	= 0,
+	GS_AUTH_STORE_FLAG_USERNAME	= 1 << 0,
+	GS_AUTH_STORE_FLAG_PASSWORD	= 1 << 1,
+	GS_AUTH_STORE_FLAG_METADATA	= 1 << 2,
+	/*< private >*/
+	GS_AUTH_STORE_FLAG_LAST
+} GsAuthStoreFlags;
+
 GsAuth		*gs_auth_new			(const gchar	*provider_id);
 const gchar	*gs_auth_get_provider_id	(GsAuth		*auth);
 const gchar	*gs_auth_get_provider_name	(GsAuth		*auth);
@@ -100,10 +118,12 @@ const gchar	*gs_auth_get_metadata_item	(GsAuth		*auth,
 void		 gs_auth_add_metadata		(GsAuth		*auth,
 						 const gchar	*key,
 						 const gchar	*value);
-gboolean	 gs_auth_load			(GsAuth		*auth,
+gboolean	 gs_auth_store_load		(GsAuth		*auth,
+						 GsAuthStoreFlags flags,
 						 GCancellable	*cancellable,
 						 GError		**error);
-gboolean	 gs_auth_save			(GsAuth		*auth,
+gboolean	 gs_auth_store_save		(GsAuth		*auth,
+						 GsAuthStoreFlags flags,
 						 GCancellable	*cancellable,
 						 GError		**error);
 
