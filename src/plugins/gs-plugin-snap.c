@@ -368,6 +368,9 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 			       cancellable, error))
 		return FALSE;
 
+	if (status_code == SOUP_STATUS_NOT_FOUND)
+		return TRUE;
+
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
