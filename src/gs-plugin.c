@@ -801,7 +801,7 @@ gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
 	const gchar *desktop_id;
 	g_autoptr(GAppInfo) appinfo = NULL;
 
-	desktop_id = gs_app_get_id (app);
+	desktop_id = gs_app_get_id_no_prefix (app);
 	if (desktop_id == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
