@@ -172,21 +172,13 @@ gs_category_get_icon (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
 
-	/* special case, we don't want translations in the plugins */
-	if (g_strcmp0 (category->id, "other") == 0) {
-		/* TRANSLATORS: this is where all applications that don't
-		 * fit in other groups are put */
-		return _("Other");
-	}
-	if (g_strcmp0 (category->id, "all") == 0) {
-		/* TRANSLATORS: this is a subcategory matching all the
-		 * different apps in the parent category, e.g. "Games" */
-		return _("All");
-	}
-	if (g_strcmp0 (category->id, "featured") == 0) {
-		/* TRANSLATORS: this is a subcategory of featured apps */
-		return _("Featured");
-	}
+	/* special case */
+	if (g_strcmp0 (category->id, "other") == 0)
+		return "emblem-system-symbolic";
+	if (g_strcmp0 (category->id, "all") == 0)
+		return "emblem-default-symbolic";
+	if (g_strcmp0 (category->id, "featured") == 0)
+		return "emblem-favorite-symbolic";
 
 	return category->icon;
 }
