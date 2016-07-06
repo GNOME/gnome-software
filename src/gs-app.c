@@ -281,6 +281,10 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "kudo", "high-contrast");
 	if ((app->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
 		gs_app_kv_lpad (str, "kudo", "hi-dpi-icon");
+	if ((app->kudos & GS_APP_KUDO_SANDBOXED) > 0)
+		gs_app_kv_lpad (str, "kudo", "sandboxed");
+	if ((app->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
+		gs_app_kv_lpad (str, "kudo", "sandboxed-secure");
 	gs_app_kv_printf (str, "kudo-percentage", "%i",
 			  gs_app_get_kudos_percentage (app));
 	if (app->name != NULL)
@@ -2466,6 +2470,10 @@ gs_app_get_kudos_percentage (GsApp *app)
 	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
 		percentage += 20;
 	if ((app->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
+		percentage += 20;
+	if ((app->kudos & GS_APP_KUDO_SANDBOXED) > 0)
+		percentage += 20;
+	if ((app->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
 		percentage += 20;
 
 	/* popular apps should be at *least* 50% */

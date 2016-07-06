@@ -258,6 +258,7 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 	metadata_fn = g_build_filename (flatpak_installed_ref_get_deploy_dir (xref),
 					"..",
 					"active",
+					"metadata",
 					NULL);
 	file = g_file_new_for_path (metadata_fn);
 	info = g_file_query_info (file,
@@ -268,6 +269,12 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 		mtime = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 		gs_app_set_install_date (app, mtime);
 	}
+
+#if 0
+g_error ("%s :%p", metadata_fn, info);
+
+// /var/lib/flatpak/app/org.gnome.Builder/current/active/metadata
+#endif
 
 	/* this is faster than resolving */
 	gs_app_set_origin (app, flatpak_installed_ref_get_origin (xref));
@@ -922,11 +929,15 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 			     gsize length,
 			     GError **error)
 {
+	gboolean secure = TRUE;
 	g_autofree gchar *name = NULL;
 	g_autofree gchar *runtime = NULL;
 	g_autofree gchar *source = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app_runtime = NULL;
+	g_auto(GStrv) shared = NULL;
+	g_auto(GStrv) sockets = NULL;
+	g_auto(GStrv) filesystems = NULL;
 
 	kf = g_key_file_new ();
 	if (!g_key_file_load_from_data (kf, data, length, G_KEY_FILE_NONE, error))
@@ -940,16 +951,43 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 		return FALSE;
 	g_debug ("runtime for %s is %s", name, runtime);
 
+	/* we always get this, but it's a low bar... */
+	gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
+	shared = g_key_file_get_string_list (kf, "Context", "shared", NULL, NULL);
+	if (shared != NULL) {
+		/* SHM isn't secure enough */
+		if (g_strv_contains ((const gchar * const *) shared, "ipc"))
+			secure = FALSE;
+	}
+	sockets = g_key_file_get_string_list (kf, "Context", "sockets", NULL, NULL);
+	if (sockets != NULL) {
+		/* X11 isn't secure enough */
+		if (g_strv_contains ((const gchar * const *) sockets, "x11"))
+			secure = FALSE;
+	}
+	filesystems = g_key_file_get_string_list (kf, "Context", "filesystems", NULL, NULL);
+	if (filesystems != NULL) {
+		/* secure apps should be using portals */
+		if (g_strv_contains ((const gchar * const *) filesystems, "home"))
+			secure = FALSE;
+	}
+
+	/* this is actually quite hard to achieve */
+	if (secure)
+		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED_SECURE);
+
 	/* create runtime */
-	app_runtime = gs_appstream_create_runtime (self->plugin, app, runtime);
-	if (app_runtime != NULL)
-		gs_app_set_runtime (app, app_runtime);
+	if (gs_app_get_runtime (app) == NULL) {
+		app_runtime = gs_appstream_create_runtime (self->plugin, app, runtime);
+		if (app_runtime != NULL)
+			gs_app_set_runtime (app, app_runtime);
+	}
 
 	return TRUE;
 }
 
 static gboolean
-gs_plugin_refine_item_runtime (GsFlatpak *self,
+gs_plugin_refine_item_metadata (GsFlatpak *self,
 			       GsApp *app,
 			       GCancellable *cancellable,
 			       GError **error)
@@ -964,10 +1002,6 @@ gs_plugin_refine_item_runtime (GsFlatpak *self,
 
 	/* not applicable */
 	if (gs_app_get_flatpak_kind (app) != FLATPAK_REF_KIND_APP)
-		return TRUE;
-
-	/* already exists */
-	if (gs_app_get_runtime (app) != NULL)
 		return TRUE;
 
 	/* this is quicker than doing network IO */
@@ -1027,20 +1061,13 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 		return TRUE;
 
 	/* need runtime */
-	if (!gs_plugin_refine_item_runtime (self, app, cancellable, error))
+	if (!gs_plugin_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
 	/* calculate the platform size too if the app is not installed */
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE &&
 	    gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_APP) {
 		GsApp *app_runtime;
-
-		/* find out what runtime the application depends on */
-		if (!gs_plugin_refine_item_runtime (self,
-						    app,
-						    cancellable,
-						    error))
-			return FALSE;
 
 		/* is the app_runtime already installed? */
 		app_runtime = gs_app_get_runtime (app);
@@ -1131,6 +1158,13 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
 		if (!gs_plugin_refine_item_size (self, app,
 						 cancellable, error))
+			return FALSE;
+	}
+
+	/* permissions */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
+		if (!gs_plugin_refine_item_metadata (self, app,
+						     cancellable, error))
 			return FALSE;
 	}
 
