@@ -297,6 +297,10 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	const gchar *function_name = "gs_plugin_refine";
 	gboolean ret = TRUE;
 
+	/* this implies the other */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
+		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
+
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
 
