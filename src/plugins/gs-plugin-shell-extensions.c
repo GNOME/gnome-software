@@ -515,7 +515,11 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 
 	/* we have no data :/ */
 	as_app_set_comment (app, NULL, "GNOME Shell Extension");
-	as_app_add_metadata (app, "GnomeSoftware::Plugin", gs_plugin_get_name (plugin));
+	as_app_add_metadata (app, "GnomeSoftware::Plugin",
+			     gs_plugin_get_name (plugin));
+	as_app_add_metadata (app, "GnomeSoftware::OriginHostnameUrl",
+			     SHELL_EXTENSIONS_API_URI);
+
 	return app;
 }
 

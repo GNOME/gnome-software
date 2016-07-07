@@ -664,6 +664,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		}
 	}
 
+	/* we saved the origin hostname in the metadata */
+	tmp = as_app_get_metadata_item (item, "GnomeSoftware::OriginHostnameUrl");
+	if (tmp != NULL && gs_app_get_origin_hostname (app) == NULL)
+		gs_app_set_origin_hostname (app, tmp);
+
 	/* is there any update information */
 	if (!gs_appstream_refine_app_updates (plugin, app, item, error))
 		return FALSE;
