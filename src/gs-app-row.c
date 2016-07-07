@@ -114,6 +114,38 @@ gs_app_row_get_description (GsAppRow *app_row)
 	return g_string_new (tmp);
 }
 
+static gchar *
+gs_app_row_format_version_update (GsApp *app)
+{
+	const gchar *tmp;
+	const gchar *version_current = NULL;
+	const gchar *version_update = NULL;
+
+	/* current version */
+	tmp = gs_app_get_version_ui (app);
+	if (tmp != NULL && tmp[0] != '\0')
+		version_current = tmp;
+
+	/* update version */
+	tmp = gs_app_get_update_version_ui (app);
+	if (tmp != NULL && tmp[0] != '\0')
+		version_update = tmp;
+
+	/* have both */
+	if (version_current != NULL && version_update != NULL) {
+		return g_strdup_printf ("%s ▶ %s",
+					version_current,
+					version_update);
+	}
+
+	/* just update */
+	if (version_update)
+		return g_strdup (version_update);
+
+	/* we have nothing, nada, zilch */
+	return NULL;
+}
+
 void
 gs_app_row_refresh (GsAppRow *app_row)
 {
@@ -210,10 +242,11 @@ gs_app_row_refresh (GsAppRow *app_row)
 	if (priv->show_update &&
 	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
 	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
-		gtk_widget_show (priv->version_label);
+		g_autofree gchar *verstr = NULL;
+		verstr = gs_app_row_format_version_update (priv->app);
+		gtk_label_set_label (GTK_LABEL (priv->version_label), verstr);
+		gtk_widget_set_visible (priv->version_label, verstr != NULL);
 		gtk_widget_hide (priv->star);
-		gtk_label_set_label (GTK_LABEL (priv->version_label),
-				     gs_app_get_update_version_ui (priv->app));
 	} else {
 		gtk_widget_hide (priv->version_label);
 		if (missing_search_result || gs_app_get_rating (priv->app) <= 0) {
