@@ -204,6 +204,10 @@ gs_app_func (void)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_REMOVING);
 	gs_app_set_state_recover (app); // simulate an error
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+
+	/* correctly parse URL */
+	gs_app_set_origin_hostname (app, "https://mirrors.fedoraproject.org/metalink");
+	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "fedoraproject.org");
 }
 
 static guint _status_changed_cnt = 0;

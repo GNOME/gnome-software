@@ -156,6 +156,7 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS:		Require the key colors
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON:		Require the icon to be loaded
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS:		Require the needed permissions
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME:	Require the origin hostname
  *
  * The refine flags.
  **/
@@ -184,6 +185,7 @@ typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS	= 1 << 20,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON		= 1 << 21,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS	= 1 << 22,
+	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME	= 1 << 23,
 	/*< private >*/
 	GS_PLUGIN_REFINE_FLAGS_LAST
 } GsPluginRefineFlags;

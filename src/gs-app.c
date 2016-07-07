@@ -83,6 +83,7 @@ struct _GsApp
 	gchar			**menu_path;
 	gchar			*origin;
 	gchar			*origin_ui;
+	gchar			*origin_hostname;
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
@@ -378,6 +379,8 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "origin", app->origin);
 	if (app->origin_ui != NULL && app->origin_ui[0] != '\0')
 		gs_app_kv_lpad (str, "origin-ui", app->origin_ui);
+	if (app->origin_hostname != NULL && app->origin_hostname[0] != '\0')
+		gs_app_kv_lpad (str, "origin-hostname", app->origin_hostname);
 	if (app->rating != -1)
 		gs_app_kv_printf (str, "rating", "%i", app->rating);
 	if (app->review_ratings != NULL) {
@@ -1657,6 +1660,62 @@ gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
 }
 
 /**
+ * gs_app_get_origin_hostname:
+ * @app: a #GsApp
+ *
+ * Gets the hostname of the origin used to install the application, e.g.
+ * "fedoraproject.org" or "sdk.gnome.org".
+ *
+ * Returns: a string, or %NULL for unset
+ **/
+const gchar *
+gs_app_get_origin_hostname (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->origin_hostname;
+}
+
+/**
+ * gs_app_set_origin_hostname:
+ * @app: a #GsApp
+ * @origin_hostname: a string, or %NULL
+ *
+ * The origin is the hostname of the source used to install the application
+ * e.g. "fedoraproject.org"
+ *
+ * You can also use a full URL as @origin_hostname and this will be parsed and
+ * the hostname extracted. This process will also remove any unnecessary DNS
+ * prefixes like "download" or "mirrors".
+ **/
+void
+gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
+{
+	g_autoptr(SoupURI) uri = NULL;
+	guint i;
+	const gchar *prefixes[] = { "download.", "mirrors.", NULL };
+
+	g_return_if_fail (GS_IS_APP (app));
+
+	if (origin_hostname == app->origin_hostname)
+		return;
+	g_free (app->origin_hostname);
+
+	/* use libsoup to convert a URL */
+	uri = soup_uri_new (origin_hostname);
+	if (uri != NULL)
+		origin_hostname = soup_uri_get_host (uri);
+
+	/* remove some common prefixes */
+	for (i = 0; prefixes[i] != NULL; i++) {
+		if (g_str_has_prefix (origin_hostname, prefixes[i]))
+			origin_hostname += strlen (prefixes[i]);
+	}
+
+	/* success */
+	app->origin_hostname = g_strdup (origin_hostname);
+}
+
+/**
  * gs_app_add_screenshot:
  * @app: a #GsApp
  * @screenshot: a #AsScreenshot
@@ -2787,6 +2846,7 @@ gs_app_finalize (GObject *object)
 	g_strfreev (app->menu_path);
 	g_free (app->origin);
 	g_free (app->origin_ui);
+	g_free (app->origin_hostname);
 	g_ptr_array_unref (app->sources);
 	g_ptr_array_unref (app->source_ids);
 	g_free (app->project_group);
