@@ -550,6 +550,22 @@
                                   </packing>
                                 </child>
                                 <child>
+                                  <object class="GtkImage" id="image_details_kudo_sandboxed">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="pixel_size">16</property>
+                                    <property name="icon_name">security-medium-symbolic</property>
+                                    <property name="icon_size">0</property>
+                                    <style>
+                                      <class name="kudo-pill"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkLabel" id="label_details_kudo_translated">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
@@ -595,6 +611,18 @@
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label_details_kudo_sandboxed">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Sandboxed</property>
+                                    <property name="xalign">0</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">4</property>
                                   </packing>
                                 </child>
                               </object>
