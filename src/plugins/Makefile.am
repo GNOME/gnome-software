@@ -41,6 +41,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_fedora-distro-upgrades.la		\
 	libgs_plugin_provenance.la			\
 	libgs_plugin_provenance-license.la		\
+	libgs_plugin_repos.la				\
 	libgs_plugin_fedora-tagger-usage.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la				\
@@ -218,6 +219,11 @@ libgs_plugin_steam_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_steam_la_LDFLAGS = -module -avoid-version
 libgs_plugin_steam_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
+
+libgs_plugin_repos_la_SOURCES = gs-plugin-repos.c
+libgs_plugin_repos_la_LIBADD = $(GS_PLUGIN_LIBS) $(RPM_LIBS)
+libgs_plugin_repos_la_LDFLAGS = -module -avoid-version
+libgs_plugin_repos_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_desktop_categories_la_SOURCES =		\
 	gs-plugin-desktop-categories.c			\
