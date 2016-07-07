@@ -144,23 +144,20 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));
-	switch (pk_package_get_info (package)) {
-	case PK_INFO_ENUM_INSTALLED:
+
+	/* set origin */
+	if (gs_app_get_origin (app) == NULL) {
 		data = pk_package_get_data (package);
 		if (g_str_has_prefix (data, "installed:"))
-			gs_app_set_origin (app, data + 10);
-		break;
-	case PK_INFO_ENUM_UNAVAILABLE:
-		data = pk_package_get_data (package);
-		if (data != NULL)
-			gs_app_set_origin (app, data);
+			data += 10;
+		gs_app_set_origin (app, data);
+	}
+
+	/* set unavailable state */
+	if (pk_package_get_info (package) == PK_INFO_ENUM_UNAVAILABLE) {
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
 		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-		break;
-	default:
-		/* should we expect anything else? */
-		break;
 	}
 	if (gs_app_get_version (app) == NULL)
 		gs_app_set_version (app,
