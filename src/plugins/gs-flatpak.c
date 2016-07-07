@@ -700,6 +700,28 @@ gs_plugin_refine_item_origin_ui (GsFlatpak *self, GsApp *app,
 }
 
 static gboolean
+gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
+				       GCancellable *cancellable,
+				       GError **error)
+{
+	g_autoptr(FlatpakRemote) xremote = NULL;
+
+	/* already set */
+	if (gs_app_get_origin_hostname (app) != NULL)
+		return TRUE;
+
+	/* get the remote  */
+	xremote = flatpak_installation_get_remote_by_name (self->installation,
+							   gs_app_get_origin (app),
+							   cancellable,
+							   error);
+	if (xremote == NULL)
+		return FALSE;
+	gs_app_set_origin_hostname (app, flatpak_remote_get_url (xremote));
+	return TRUE;
+}
+
+static gboolean
 gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
 			 GCancellable *cancellable,
 			 GError **error)
@@ -1172,6 +1194,14 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
 		if (!gs_plugin_refine_item_origin_ui (self, app,
 						      cancellable, error))
+			return FALSE;
+	}
+
+	/* origin-hostname */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) {
+		if (!gs_plugin_refine_item_origin_hostname (self, app,
+							    cancellable,
+							    error))
 			return FALSE;
 	}
 
