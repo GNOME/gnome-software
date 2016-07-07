@@ -189,6 +189,7 @@ gs_shell_search_load (GsShellSearch *self)
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 				       self->search_cancellable,
 				       gs_shell_search_get_search_cb,

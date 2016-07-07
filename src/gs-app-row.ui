@@ -36,8 +36,8 @@
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="margin-start">12</property>
-            <property name="spacing">6</property>
-            <property name="valign">start</property>
+            <property name="spacing">0</property>
+            <property name="valign">fill</property>
             <child>
               <object class="GtkLabel" id="name_label">
                 <property name="visible">True</property>
@@ -95,9 +95,55 @@
                 <property name="fill">False</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkBox" id="box_sandboxed">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">3</property>
+                <property name="halign">start</property>
+                <property name="valign">end</property>
+                <child>
+                  <object class="GtkImage" id="image_sandboxed">
+                    <property name="visible">True</property>
+                    <property name="pixel_size">16</property>
+                    <property name="valign">center</property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_sandboxed">
+                    <property name="label" translatable="yes" comments="security sandbox">Sandboxed</property>
+                    <property name="visible">True</property>
+                    <property name="xalign">0.0</property>
+                    <property name="yalign">0.5</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
+                    <style>
+                      <class name="app-row-origin-text"/>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="expand">False</property>
             <property name="fill">True</property>
           </packing>
         </child>
@@ -132,8 +178,9 @@
                 <property name="can_focus">False</property>
                 <property name="spacing">4</property>
                 <property name="margin_left">20</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel" id="label_tag_warning">
+                  <object class="GtkLabel" id="label_warning">
                     <property name="can_focus">False</property>
                     <property name="label">warning-text</property>
                     <property name="halign">start</property>
@@ -150,63 +197,20 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label_tag_foreign">
-                    <property name="wrap">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes" comments="This is shown in the search result row as a tag">3rd party</property>
+                  <object class="GtkLabel" id="label_origin">
+                    <property name="visible">True</property>
+                    <property name="xalign">0.0</property>
+                    <property name="yalign">0.5</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
                     <style>
-                      <class name="app-row-tag"/>
+                      <class name="app-row-origin-text"/>
+                      <class name="dim-label"/>
                     </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_tag_webapp">
-                    <property name="wrap">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes" comments="This is shown in the search result row as a tag">web app</property>
-                    <style>
-                      <class name="app-row-tag"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_tag_nonfree">
-                    <property name="wrap">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes" comments="This is shown in the search result row as a tag">nonfree</property>
-                    <style>
-                      <class name="app-row-tag"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_tag_extension">
-                    <property name="wrap">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes" comments="This is shown in the search result row as a tag">shell extension</property>
-                    <style>
-                      <class name="app-row-tag"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
+                    <property name="fill">False</property>
                   </packing>
                 </child>
               </object>
@@ -226,7 +230,6 @@
           <object class="GtkBox" id="button_box">
             <property name="visible">True</property>
             <property name="orientation">horizontal</property>
-            <property name="width_request">180</property>
             <property name="halign">end</property>
             <property name="valign">center</property>
             <child>

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -46,11 +46,10 @@ typedef struct
 	GtkWidget	*spinner;
 	GtkWidget	*label;
 	GtkWidget	*checkbox;
-	GtkWidget	*label_tag_foreign;
-	GtkWidget	*label_tag_warning;
-	GtkWidget	*label_tag_webapp;
-	GtkWidget	*label_tag_nonfree;
-	GtkWidget	*label_tag_extension;
+	GtkWidget	*label_warning;
+	GtkWidget	*label_origin;
+	GtkWidget	*box_sandboxed;
+	GtkWidget	*image_sandboxed;
 	gboolean	 colorful;
 	gboolean	 show_codec;
 	gboolean	 show_update;
@@ -152,8 +151,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	GtkStyleContext *context;
 	GString *str = NULL;
+	const gchar *tmp;
 	gboolean missing_search_result;
-	gboolean show_nonfree = FALSE;
 	gboolean use_folders = FALSE;
 
 	if (priv->app == NULL)
@@ -187,55 +186,45 @@ gs_app_row_refresh (GsAppRow *app_row)
 
 	/* add warning */
 	if (gs_app_get_kind (priv->app) == AS_APP_KIND_FIRMWARE) {
-		gtk_label_set_text (GTK_LABEL (priv->label_tag_warning),
+		gtk_label_set_text (GTK_LABEL (priv->label_warning),
 				    /* TRANSLATORS: during the update the device
 				     * will restart into a special update-only mode */
 				    _("Device cannot be used during update."));
-		gtk_widget_show (priv->label_tag_warning);
+		gtk_widget_show (priv->label_warning);
 	}
 
-	/* add tags */
-	if (priv->show_update || missing_search_result) {
-		gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-		show_nonfree = FALSE;
-		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
-		gtk_widget_set_visible (priv->label_tag_extension, FALSE);
-	} else {
-		switch (gs_app_get_kind (priv->app)) {
-		case AS_APP_KIND_UNKNOWN:
-			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-			show_nonfree = FALSE;
-			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
-			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
-			break;
-		case AS_APP_KIND_WEB_APP:
-			gtk_widget_set_visible (priv->label_tag_webapp, TRUE);
-			show_nonfree = FALSE;
-			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
-			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
-			break;
-		case AS_APP_KIND_SHELL_EXTENSION:
-			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-			show_nonfree = FALSE;
-			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
-			gtk_widget_set_visible (priv->label_tag_extension, TRUE);
-			break;
-		default:
-			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
-			show_nonfree = !gs_app_get_license_is_free (priv->app);
-			gtk_widget_set_visible (priv->label_tag_foreign,
-						!gs_app_has_quirk (priv->app,
-								   AS_APP_QUIRK_PROVENANCE));
-			break;
+	/* where did this app come from */
+	if (!priv->show_update) {
+		tmp = gs_app_get_origin_hostname (priv->app);
+		if (tmp != NULL) {
+			g_autofree gchar *origin_tmp = NULL;
+			/* TRANSLATORS: this refers to where the app came from */
+			origin_tmp = g_strdup_printf ("%s: %s", _("Source"), tmp);
+			gtk_label_set_label (GTK_LABEL (priv->label_origin), origin_tmp);
 		}
+		gtk_widget_set_visible (priv->label_origin, tmp != NULL);
+	} else {
+		gtk_widget_set_visible (priv->label_origin, FALSE);
 	}
 
-	/* Override the non-free label visibility from the settings if needed */
-	if (!g_settings_get_boolean (priv->settings, "show-nonfree-ui"))
-		show_nonfree = FALSE;
-
-	gtk_widget_set_visible (priv->label_tag_nonfree, show_nonfree);
+	/* sandboxed */
+	if (!priv->show_update) {
+		if (gs_app_get_kudos (priv->app) & GS_APP_KUDO_SANDBOXED_SECURE) {
+			gtk_widget_set_visible (priv->box_sandboxed, TRUE);
+			gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_sandboxed),
+						      "security-high-symbolic",
+						      GTK_ICON_SIZE_SMALL_TOOLBAR);
+		} else if (gs_app_get_kudos (priv->app) & GS_APP_KUDO_SANDBOXED) {
+			gtk_widget_set_visible (priv->box_sandboxed, TRUE);
+			gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_sandboxed),
+						      "security-medium-symbolic",
+						      GTK_ICON_SIZE_SMALL_TOOLBAR);
+		} else {
+			gtk_widget_set_visible (priv->box_sandboxed, FALSE);
+		}
+	} else {
+		gtk_widget_set_visible (priv->box_sandboxed, FALSE);
+	}
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
@@ -261,6 +250,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 				     gs_app_get_version_ui (priv->app));
 	}
 
+	/* folders */
 	use_folders = gs_utils_is_current_desktop ("GNOME") &&
 		g_settings_get_boolean (priv->settings, "show-folder-management");
 
@@ -270,14 +260,11 @@ gs_app_row_refresh (GsAppRow *app_row)
 		g_autoptr(GsFolders) folders = NULL;
 		const gchar *folder;
 		folders = gs_folders_get ();
-		folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app), gs_app_get_categories (priv->app));
-		if (folder)
+		folder = gs_folders_get_app_folder (folders,
+						    gs_app_get_id (priv->app),
+						    gs_app_get_categories (priv->app));
+		if (folder != NULL)
 			folder = gs_folders_get_folder_name (folders, folder);
-
-		/* we overwrite this for some apps */
-		if (folder == NULL)
-			folder = gs_app_get_metadata_item (priv->app, "X-XdgApp-Tags");
-
 		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
 		gtk_widget_set_visible (priv->folder_label, folder != NULL);
 	}
@@ -584,11 +571,10 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, checkbox);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_warning);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_foreign);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_webapp);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_nonfree);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_extension);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_sandboxed);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, image_sandboxed);
 }
 
 static void
