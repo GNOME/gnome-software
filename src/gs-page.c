@@ -33,7 +33,6 @@
 typedef struct
 {
 	GsPluginLoader		*plugin_loader;
-	GCancellable		*cancellable;
 	GsShell			*shell;
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
@@ -44,6 +43,7 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 typedef struct {
 	GsApp		*app;
 	GsPage		*page;
+	GCancellable	*cancellable;
 } GsPageHelper;
 
 static void
@@ -53,6 +53,8 @@ gs_page_helper_free (GsPageHelper *helper)
 		g_object_unref (helper->app);
 	if (helper->page != NULL)
 		g_object_unref (helper->page);
+	if (helper->cancellable != NULL)
+		g_object_unref (helper->cancellable);
 	g_slice_free (GsPageHelper, helper);
 }
 
@@ -80,7 +82,7 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
-					   priv->cancellable,
+					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
 }
@@ -107,7 +109,7 @@ gs_page_remove_authenticate_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 	                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
-					   priv->cancellable,
+					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
 }
@@ -290,7 +292,7 @@ gs_page_set_header_end_widget (GsPage *page, GtkWidget *widget)
 }
 
 void
-gs_page_install_app (GsPage *page, GsApp *app)
+gs_page_install_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
@@ -306,10 +308,11 @@ gs_page_install_app (GsPage *page, GsApp *app)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
+	helper->cancellable = g_object_ref (cancellable);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
-	                                   priv->cancellable,
+	                                   helper->cancellable,
 	                                   gs_page_app_installed_cb,
 	                                   helper);
 }
@@ -333,13 +336,13 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 					   GS_PLUGIN_LOADER_ACTION_UPDATE,
-					   priv->cancellable,
+					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
 }
 
 void
-gs_page_update_app (GsPage *page, GsApp *app)
+gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
@@ -351,12 +354,13 @@ gs_page_update_app (GsPage *page, GsApp *app)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
+	helper->cancellable = g_object_ref (cancellable);
 	if (gs_app_get_kind (app) != AS_APP_KIND_FIRMWARE ||
 	    gs_app_get_screenshots (app)->len == 0) {
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 						   helper->app,
 						   GS_PLUGIN_LOADER_ACTION_UPDATE,
-						   priv->cancellable,
+						   helper->cancellable,
 						   gs_page_app_installed_cb,
 						   helper);
 		return;
@@ -368,7 +372,7 @@ gs_page_update_app (GsPage *page, GsApp *app)
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 						   helper->app,
 						   GS_PLUGIN_LOADER_ACTION_UPDATE,
-						   priv->cancellable,
+						   helper->cancellable,
 						   gs_page_app_installed_cb,
 						   helper);
 		return;
@@ -414,13 +418,13 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 					   GS_PLUGIN_LOADER_ACTION_REMOVE,
-					   priv->cancellable,
+					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
 }
 
 void
-gs_page_remove_app (GsPage *page, GsApp *app)
+gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
@@ -431,12 +435,13 @@ gs_page_remove_app (GsPage *page, GsApp *app)
 	helper = g_slice_new0 (GsPageHelper);
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
+	helper->cancellable = g_object_ref (cancellable);
 	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_debug ("remove %s", gs_app_get_id (app));
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 		                                   app,
 		                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
-		                                   priv->cancellable,
+		                                   helper->cancellable,
 		                                   gs_page_app_removed_cb,
 		                                   helper);
 		return;
@@ -480,13 +485,13 @@ gs_page_app_launched_cb (GObject *source,
 }
 
 void
-gs_page_launch_app (GsPage *page, GsApp *app)
+gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_LOADER_ACTION_LAUNCH,
-	                                   priv->cancellable,
+	                                   cancellable,
 	                                   gs_page_app_launched_cb,
 	                                   NULL);
 }
@@ -505,13 +510,13 @@ gs_page_app_shortcut_added_cb (GObject *source,
 }
 
 void
-gs_page_shortcut_add (GsPage *page, GsApp *app)
+gs_page_shortcut_add (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_LOADER_ACTION_ADD_SHORTCUT,
-	                                   priv->cancellable,
+	                                   cancellable,
 	                                   gs_page_app_shortcut_added_cb,
 	                                   NULL);
 }
@@ -530,13 +535,13 @@ gs_page_app_shortcut_removed_cb (GObject *source,
 }
 
 void
-gs_page_shortcut_remove (GsPage *page, GsApp *app)
+gs_page_shortcut_remove (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_LOADER_ACTION_REMOVE_SHORTCUT,
-	                                   priv->cancellable,
+	                                   cancellable,
 	                                   gs_page_app_shortcut_removed_cb,
 	                                   NULL);
 }
@@ -582,7 +587,6 @@ gs_page_setup (GsPage *page,
 	g_return_if_fail (GS_IS_PAGE (page));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
-	priv->cancellable = g_object_ref (cancellable);
 	priv->shell = shell;
 }
 
@@ -593,7 +597,6 @@ gs_page_dispose (GObject *object)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 
 	g_clear_object (&priv->plugin_loader);
-	g_clear_object (&priv->cancellable);
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);
 

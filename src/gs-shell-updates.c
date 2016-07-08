@@ -665,8 +665,11 @@ gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
 				    GsApp *app,
 				    GsShellUpdates *self)
 {
-	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE)
-		gs_page_update_app (GS_PAGE (self), app);
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
+		return;
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_update_app (GS_PAGE (self), app, self->cancellable);
 }
 
 static void
@@ -954,8 +957,10 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 
 	/* do the offline update */
+	g_set_object (&self->cancellable, cancellable);
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_update_async (self->plugin_loader,
 				       apps,

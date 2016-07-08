@@ -122,7 +122,7 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 	GsApp *app;
 
 	app = gs_app_row_get_app (app_row);
-	gs_page_remove_app (GS_PAGE (self), app);
+	gs_page_remove_app (GS_PAGE (self), app, self->cancellable);
 }
 
 static gboolean

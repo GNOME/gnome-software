@@ -80,6 +80,7 @@ struct _GsShellDetails
 	GtkWidget		*button_details_website;
 	GtkWidget		*button_install;
 	GtkWidget		*button_remove;
+	GtkWidget		*button_cancel;
 	GtkWidget		*button_more_reviews;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
@@ -375,6 +376,18 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 				   as_app_state_to_string (state));
 			g_assert_not_reached ();
 		}
+	}
+
+	/* cancel button */
+	switch (state) {
+	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (self->button_cancel, TRUE);
+		gtk_widget_set_sensitive (self->button_cancel, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (self->button_cancel, FALSE);
+		break;
 	}
 
 	/* do a fill bar for the current progress */
@@ -1606,7 +1619,16 @@ gs_shell_details_get_app (GsShellDetails *self)
 static void
 gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
-	gs_page_remove_app (GS_PAGE (self), self->app);
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_remove_app (GS_PAGE (self), self->app, self->cancellable);
+}
+
+static void
+gs_shell_details_app_cancel_button_cb (GtkWidget *widget, GsShellDetails *self)
+{
+	g_cancellable_cancel (self->cancellable);
+	gtk_widget_set_sensitive (widget, FALSE);
 }
 
 static void
@@ -1614,6 +1636,7 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	GList *l;
 	g_autoptr(GList) addons = NULL;
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
@@ -1626,7 +1649,8 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 		}
 	}
 
-	gs_page_install_app (GS_PAGE (self), self->app);
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_install_app (GS_PAGE (self), self->app, self->cancellable);
 }
 
 static void
@@ -1646,9 +1670,9 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_addon_row_get_selected (row)) {
-			gs_page_install_app (GS_PAGE (self), addon);
+			gs_page_install_app (GS_PAGE (self), addon, self->cancellable);
 		} else {
-			gs_page_remove_app (GS_PAGE (self), addon);
+			gs_page_remove_app (GS_PAGE (self), addon, self->cancellable);
 			/* make sure the addon checkboxes are synced if the
 			 * user clicks cancel in the remove confirmation dialog */
 			gs_shell_details_refresh_addons (self);
@@ -1663,21 +1687,27 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 static void
 gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
-	gs_page_launch_app (GS_PAGE (self), self->app);
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_launch_app (GS_PAGE (self), self->app, self->cancellable);
 }
 
 static void
 gs_shell_details_app_add_shortcut_button_cb (GtkWidget *widget,
 					     GsShellDetails *self)
 {
-	gs_page_shortcut_add (GS_PAGE (self), self->app);
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_shortcut_add (GS_PAGE (self), self->app, self->cancellable);
 }
 
 static void
 gs_shell_details_app_remove_shortcut_button_cb (GtkWidget *widget,
 						GsShellDetails *self)
 {
-	gs_page_shortcut_remove (GS_PAGE (self), self->app);
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_shortcut_remove (GS_PAGE (self), self->app, self->cancellable);
 }
 
 static void
@@ -1787,6 +1817,9 @@ gs_shell_details_setup (GsShellDetails *self,
 	g_signal_connect (self->button_remove, "clicked",
 			  G_CALLBACK (gs_shell_details_app_remove_button_cb),
 			  self);
+	g_signal_connect (self->button_cancel, "clicked",
+			  G_CALLBACK (gs_shell_details_app_cancel_button_cb),
+			  self);
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_shell_details_more_reviews_button_cb),
 			  self);
@@ -1866,6 +1899,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_website);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_remove);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_cancel);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_more_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_repo);
