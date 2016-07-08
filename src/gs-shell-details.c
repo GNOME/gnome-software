@@ -773,6 +773,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	guint64 user_integration_bf;
 	g_autoptr(GError) error = NULL;
 	gboolean show_nonfree = FALSE;
+	gboolean is_3rd_party = FALSE;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -973,28 +974,30 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 				     /* TRANSLATORS: this is the warning box */
 				     _("This application can only be used when there is an active internet connection."));
 	} else {
+		/* Override the non-free label visibility from the settings
+		 * if needed */
+		show_nonfree = !gs_app_get_license_is_free (self->app) &&
+			g_settings_get_boolean (self->settings,
+						"show-nonfree-ui");
+		is_3rd_party = !gs_app_has_quirk (self->app,
+						  AS_APP_QUIRK_PROVENANCE);
+
 		gtk_widget_set_visible (self->label_details_tag_webapp, FALSE);
-		if (gs_app_get_license_is_free (self->app) &&
-		    !gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
-			/* free and 3rd party */
-			show_nonfree = FALSE;
+
+		if (!show_nonfree && is_3rd_party) {
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
 			gtk_widget_set_visible (self->label_details_info_text, TRUE);
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party."));
-		} else if (!gs_app_get_license_is_free (self->app) &&
-			   !gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
-			/* nonfree and 3rd party */
+		} else if (show_nonfree && is_3rd_party) {
 			show_nonfree = TRUE;
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
 			gtk_widget_set_visible (self->label_details_info_text, TRUE);
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party and may contain non-free components."));
-		} else if (!gs_app_get_license_is_free (self->app) &&
-			   gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
-			/* nonfree and distro */
+		} else if (show_nonfree && !is_3rd_party) {
 			show_nonfree = TRUE;
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
 			gtk_widget_set_visible (self->label_details_info_text, TRUE);
@@ -1010,10 +1013,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 	gtk_widget_set_visible (self->label_details_tag_extension,
 				gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION);
-
-	/* Override the non-free label visibility from the settings if needed */
-        if (!g_settings_get_boolean (self->settings, "show-nonfree-ui"))
-		show_nonfree = FALSE;
 
 	gtk_widget_set_visible (self->label_details_tag_nonfree, show_nonfree);
 
