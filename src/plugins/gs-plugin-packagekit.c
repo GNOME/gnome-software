@@ -360,8 +360,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
-		if (results == NULL) {
-			gs_plugin_packagekit_convert_gerror (error);
+		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -430,8 +429,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
-		if (results == NULL) {
-			gs_plugin_packagekit_convert_gerror (error);
+		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -456,8 +454,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 						      cancellable,
 						      gs_plugin_packagekit_progress_cb, &data,
 						      error);
-		if (results == NULL) {
-			gs_plugin_packagekit_convert_gerror (error);
+		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}

@@ -143,10 +143,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 						 cancellable,
 						 gs_plugin_packagekit_progress_cb, &data,
 						 error);
-		if (results == NULL) {
-			gs_plugin_packagekit_convert_gerror (error);
+		if (!gs_plugin_packagekit_results_valid (results, error))
 			return FALSE;
-		}
 	}
 
 	/* download all the packages themselves */
