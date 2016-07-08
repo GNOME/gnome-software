@@ -44,6 +44,7 @@ struct GsPluginPrivate {
 	gchar			*distro;
 	gchar			*user_hash;
 	gchar			*review_server;
+	GHashTable		*ratings;
 };
 
 /**
@@ -66,6 +67,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv->settings = g_settings_new ("org.gnome.software");
 	plugin->priv->review_server = g_settings_get_string (plugin->priv->settings,
 							     "review-server");
+	plugin->priv->ratings = g_hash_table_new_full (g_str_hash, g_str_equal,
+					       g_free, (GDestroyNotify) g_array_unref);
 
 	/* get the machine+user ID hash value */
 	plugin->priv->user_hash = gs_utils_get_user_hash (&error);
@@ -105,6 +108,140 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (plugin->priv->user_hash);
 	g_free (plugin->priv->distro);
 	g_object_unref (plugin->priv->settings);
+	g_hash_table_unref (plugin->priv->ratings);
+}
+
+static GArray *
+gs_plugin_odrs_load_ratings_for_app (JsonObject *json_app)
+{
+	GArray *ratings;
+	guint64 tmp;
+	guint i;
+	const gchar *names[] = { "star0", "star1", "star2", "star3",
+				 "star4", "star5", NULL };
+
+	ratings = g_array_sized_new (FALSE, TRUE, sizeof(guint32), 6);
+	for (i = 0; names[i] != NULL; i++) {
+		if (!json_object_has_member (json_app, names[i]))
+			continue;
+		tmp = json_object_get_int_member (json_app, names[i]);
+		g_array_append_val (ratings, tmp);
+	}
+
+	return ratings;
+}
+
+static gboolean
+gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
+{
+	GList *l;
+	JsonNode *json_root;
+	JsonObject *json_item;
+	g_autoptr(GList) apps = NULL;
+	g_autoptr(JsonParser) json_parser = NULL;
+
+	/* remove all existing */
+	g_hash_table_remove_all (plugin->priv->ratings);
+
+	/* parse the data and find the success */
+	json_parser = json_parser_new ();
+	if (!json_parser_load_from_file (json_parser, fn, error))
+		return NULL;
+	json_root = json_parser_get_root (json_parser);
+	if (json_root == NULL) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "no ratings root");
+		return FALSE;
+	}
+	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "no ratings array");
+		return FALSE;
+	}
+
+	/* parse each app */
+	json_item = json_node_get_object (json_root);
+	apps = json_object_get_members (json_item);
+	for (l = apps; l != NULL; l = l->next) {
+		const gchar *app_id = (const gchar *) l->data;
+		JsonObject *json_app = json_object_get_object_member (json_item, app_id);
+		g_autoptr(GArray) ratings = NULL;;
+		ratings = gs_plugin_odrs_load_ratings_for_app (json_app);
+		if (ratings->len == 6) {
+			g_hash_table_insert (plugin->priv->ratings,
+					     g_strdup (app_id),
+					     g_array_ref (ratings));
+		}
+	}
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
+				guint cache_age,
+				GCancellable *cancellable,
+				GError **error)
+{
+	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *fn = NULL;
+	g_autofree gchar *uri = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (plugin->name);
+
+	/* check cache age */
+	cachedir = gs_utils_get_cachedir ("ratings", error);
+	if (cachedir == NULL)
+		return NULL;
+	fn = g_strdup_printf ("%s/odrs.json", cachedir);
+	if (cache_age > 0) {
+		guint tmp;
+		g_autoptr(GFile) file = NULL;
+		file = g_file_new_for_path (fn);
+		tmp = gs_utils_get_file_age (file);
+		if (tmp < cache_age) {
+			g_debug ("%s is only %i seconds old, so ignoring refresh",
+				 fn, tmp);
+			if (!gs_plugin_odrs_load_ratings (plugin, fn, error))
+				g_error ("MOO: %s", (*error)->message);
+			return gs_plugin_odrs_load_ratings (plugin, fn, error);
+		}
+	}
+
+	/* download the complete file */
+	uri = g_strdup_printf ("%s/ratings", plugin->priv->review_server);
+	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, error))
+		return FALSE;
+	return gs_plugin_odrs_load_ratings (plugin, fn, error);
+}
+
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	/* just ensure there is any data, no matter how old */
+	if (!gs_plugin_odrs_refresh_ratings (plugin, G_MAXUINT, cancellable, error))
+		return FALSE;
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	/* get the reviews */
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
+		if (!gs_plugin_odrs_refresh_ratings (plugin,
+						     cache_age,
+						     cancellable,
+						     error))
+			return FALSE;
+	}
+	return TRUE;
 }
 
 /**
@@ -339,135 +476,6 @@ gs_plugin_odrs_json_post (SoupSession *session,
 }
 
 /**
- * gs_plugin_odrs_parse_ratings:
- */
-static GArray *
-gs_plugin_odrs_parse_ratings (const gchar *data, gsize data_len, GError **error)
-{
-	GArray *ratings;
-	JsonNode *json_root;
-	JsonObject *json_item;
-	guint i;
-	g_autoptr(JsonParser) json_parser = NULL;
-	const gchar *names[] = { "star0", "star1", "star2", "star3",
-				 "star4", "star5", NULL };
-
-	/* nothing */
-	if (data == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "server returned no data");
-		return NULL;
-	}
-
-	/* parse the data and find the success */
-	json_parser = json_parser_new ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error))
-		return NULL;
-	json_root = json_parser_get_root (json_parser);
-	if (json_root == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "no error root");
-		return NULL;
-	}
-	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "no error object");
-		return NULL;
-	}
-	json_item = json_node_get_object (json_root);
-	if (json_item == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "no error object");
-		return NULL;
-	}
-
-	/* get data array */
-	ratings = g_array_sized_new (FALSE, TRUE, sizeof(guint32), 6);
-	for (i = 0; names[i] != NULL; i++) {
-		guint64 tmp;
-		if (!json_object_has_member (json_item, names[i]))
-			continue;
-		tmp = json_object_get_int_member (json_item, names[i]);
-		g_array_append_val (ratings, tmp);
-	}
-	return ratings;
-}
-
-/**
- * gs_plugin_odrs_get_ratings:
- */
-static GArray *
-gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
-{
-	GArray *ratings;
-	guint status_code;
-	g_autofree gchar *cachedir = NULL;
-	g_autofree gchar *cachefn = NULL;
-	g_autofree gchar *data = NULL;
-	g_autofree gchar *uri = NULL;
-	g_autoptr(GFile) cachefn_file = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
-
-	/* look in the cache */
-	cachedir = gs_utils_get_cachedir ("ratings", error);
-	if (cachedir == NULL)
-		return NULL;
-	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id_no_prefix (app));
-	cachefn_file = g_file_new_for_path (cachefn);
-	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
-		g_autofree gchar *json_data = NULL;
-		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
-			return NULL;
-		g_debug ("got ratings data for %s from %s",
-			 gs_app_get_id_no_prefix (app), cachefn);
-		return gs_plugin_odrs_parse_ratings (json_data, -1, error);
-	}
-
-	/* create the GET data *with* the machine hash so we can later
-	 * review the application ourselves */
-	uri = g_strdup_printf ("%s/ratings/%s",
-			       plugin->priv->review_server,
-			       gs_app_get_id_no_prefix (app));
-	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	status_code = soup_session_send_message (plugin->soup_session, msg);
-	if (status_code != SOUP_STATUS_OK) {
-		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
-						   msg->response_body->length,
-						   error))
-			return NULL;
-		/* not sure what to do here */
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "status code invalid");
-		return NULL;
-	}
-	g_debug ("odrs returned: %s", msg->response_body->data);
-	ratings = gs_plugin_odrs_parse_ratings (msg->response_body->data,
-						msg->response_body->length,
-						error);
-	if (ratings == NULL)
-		return NULL;
-
-	/* save to the cache */
-	if (!g_file_set_contents (cachefn,
-				  msg->response_body->data,
-				  msg->response_body->length,
-				  error))
-		return NULL;
-
-	return ratings;
-}
-
-/**
  * gs_plugin_refine_ratings:
  */
 static gboolean
@@ -476,21 +484,22 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
+	GArray *review_ratings;
 	const guint to_percentage[] = { 0, 20, 40, 60, 80, 100 };
 	guint32 cnt = 0;
 	guint32 acc = 0;
 	guint i;
-	g_autoptr(GArray) array = NULL;
 
 	/* get ratings */
-	array = gs_plugin_odrs_get_ratings (plugin, app, error);
-	if (array == NULL)
-		return FALSE;
-	gs_app_set_review_ratings (app, array);
+	review_ratings = g_hash_table_lookup (plugin->priv->ratings,
+					      gs_app_get_id_no_prefix (app));
+	if (review_ratings == NULL)
+		return TRUE;
+	gs_app_set_review_ratings (app, review_ratings);
 
 	/* find the correct global rating */
 	for (i = 1; i <= 5; i++) {
-		guint32 tmp = g_array_index (array, guint32, i);
+		guint32 tmp = g_array_index (review_ratings, guint32, i);
 		acc += to_percentage[i] * tmp;
 		cnt += tmp;
 	}
