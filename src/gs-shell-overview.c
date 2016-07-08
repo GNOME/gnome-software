@@ -432,6 +432,7 @@ gs_shell_overview_load (GsShellOverview *self)
 	if (!priv->loading_popular) {
 		priv->loading_popular = TRUE;
 		gs_plugin_loader_get_popular_async (priv->plugin_loader,
+						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						    priv->cancellable,
 						    gs_shell_overview_get_popular_cb,
@@ -455,6 +456,7 @@ gs_shell_overview_load (GsShellOverview *self)
 		priv->loading_popular_rotating = TRUE;
 		gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
 		                                          featured_category,
+		                                          GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 		                                          GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 		                                          priv->cancellable,
 		                                          gs_shell_overview_get_popular_rotating_cb,
