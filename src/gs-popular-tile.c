@@ -113,11 +113,11 @@ gs_popular_tile_set_app (GsAppTile *app_tile, GsApp *app)
 		return;
 
 	if (gs_app_get_rating (tile->app) >= 0) {
-		gtk_widget_set_visible (tile->stars, TRUE);
+		gtk_widget_set_sensitive (tile->stars, TRUE);
 		gs_star_widget_set_rating (GS_STAR_WIDGET (tile->stars),
 					   gs_app_get_rating (tile->app));
 	} else {
-		gtk_widget_set_visible (tile->stars, FALSE);
+		gtk_widget_set_sensitive (tile->stars, FALSE);
 	}
 	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
 
