@@ -111,7 +111,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	const gchar *origin_ui;
 
 	/* only run when required */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) == 0)
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI) == 0)
 		return TRUE;
 
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)

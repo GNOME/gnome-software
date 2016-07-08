@@ -298,6 +298,8 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	gboolean ret = TRUE;
 
 	/* this implies the other */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
+		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
 		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
 
