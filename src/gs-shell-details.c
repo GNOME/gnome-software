@@ -33,7 +33,6 @@
 #include "gs-auth-dialog.h"
 #include "gs-history-dialog.h"
 #include "gs-screenshot-image.h"
-#include "gs-progress-button.h"
 #include "gs-star-widget.h"
 #include "gs-review-histogram.h"
 #include "gs-review-dialog.h"
@@ -69,6 +68,7 @@ struct _GsShellDetails
 	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
+	GtkWidget		*box_progress;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
 	GtkWidget		*box_details_screenshot;
@@ -86,6 +86,8 @@ struct _GsShellDetails
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
 	GtkWidget		*infobar_details_repo;
+	GtkWidget		*label_progress_percentage;
+	GtkWidget		*label_progress_status;
 	GtkWidget		*label_addons_uninstalled_app;
 	GtkWidget		*label_details_category_title;
 	GtkWidget		*label_details_category_value;
@@ -114,7 +116,7 @@ struct _GsShellDetails
 	GtkWidget		*list_box_reviews;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
-	GtkWidget		*spinner_install_remove;
+	GtkWidget		*spinner_remove;
 	GtkWidget		*stack_details;
 	GtkWidget		*grid_details_kudo;
 	GtkWidget		*image_details_kudo_docs;
@@ -127,6 +129,7 @@ struct _GsShellDetails
 	GtkWidget		*label_details_kudo_integration;
 	GtkWidget		*label_details_kudo_translated;
 	GtkWidget		*label_details_kudo_updated;
+	GtkWidget		*progressbar_top;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
@@ -254,7 +257,6 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_widget_set_sensitive (self->button_install, TRUE);
 		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
 		 * can be installed */
@@ -264,12 +266,7 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_widget_set_sensitive (self->button_install, FALSE);
-		gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
-		/* TRANSLATORS: button text in the header when an application
-		 * is in the process of being installed */
-		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Installing"));
+		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case AS_APP_STATE_UNKNOWN:
 	case AS_APP_STATE_INSTALLED:
@@ -279,7 +276,6 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		break;
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_widget_set_sensitive (self->button_install, TRUE);
 		sc = gtk_widget_get_style_context (self->button_install);
 		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
 			/* TRANSLATORS: button text in the header when firmware
@@ -378,71 +374,99 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		}
 	}
 
-	/* cancel button */
-	switch (state) {
-	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (self->button_cancel, TRUE);
-		gtk_widget_set_sensitive (self->button_cancel, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->button_cancel, FALSE);
-		break;
-	}
-
-	/* do a fill bar for the current progress */
-	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLING:
-		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (self->button_install), TRUE);
-		break;
-	default:
-		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (self->button_install), FALSE);
-		break;
-	}
-
-	/* spinner */
-	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY)) {
-		gtk_widget_set_visible (self->spinner_install_remove, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (self->spinner_install_remove));
-	} else {
-		switch (state) {
-		case AS_APP_STATE_UNKNOWN:
-		case AS_APP_STATE_INSTALLED:
-		case AS_APP_STATE_AVAILABLE:
-		case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		case AS_APP_STATE_UPDATABLE:
-		case AS_APP_STATE_UPDATABLE_LIVE:
-		case AS_APP_STATE_UNAVAILABLE:
-		case AS_APP_STATE_AVAILABLE_LOCAL:
-		case AS_APP_STATE_INSTALLING:
-			gtk_widget_set_visible (self->spinner_install_remove, FALSE);
-			gtk_spinner_stop (GTK_SPINNER (self->spinner_install_remove));
-			break;
-		case AS_APP_STATE_REMOVING:
-			gtk_spinner_start (GTK_SPINNER (self->spinner_install_remove));
-			gtk_widget_set_visible (self->spinner_install_remove, TRUE);
-			break;
-		default:
-			g_warning ("App unexpectedly in state %s",
-				   as_app_state_to_string (state));
-			g_assert_not_reached ();
-		}
-	}
-
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 
 	gs_grab_focus_when_mapped (self->scrolledwindow_details);
 }
 
+static void
+gs_shell_details_refresh_progress (GsShellDetails *self)
+{
+	guint percentage;
+	AsAppState state;
+
+	/* cancel button */
+	state = gs_app_get_state (self->app);
+	switch (state) {
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (self->button_cancel, TRUE);
+		gtk_widget_set_sensitive (self->button_cancel,
+					  !g_cancellable_is_cancelled (self->cancellable));
+		break;
+	default:
+		gtk_widget_set_visible (self->button_cancel, FALSE);
+		break;
+	}
+
+	/* progress status label */
+	switch (state) {
+	case AS_APP_STATE_REMOVING:
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+				     _("Removing…"));
+		break;
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+				     _("Installing"));
+		break;
+	default:
+		gtk_widget_set_visible (self->label_progress_status, FALSE);
+		break;
+	}
+
+	/* percentage bar */
+	switch (state) {
+	case AS_APP_STATE_INSTALLING:
+		percentage = gs_app_get_progress (self->app);
+		if (percentage > 0) {
+			gtk_widget_set_visible (self->label_progress_percentage, FALSE);
+			gtk_widget_set_visible (self->progressbar_top, FALSE);
+		} else {
+			g_autofree gchar *str = g_strdup_printf ("%i%%", percentage);
+			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
+			gtk_widget_set_visible (self->label_progress_percentage, TRUE);
+			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top),
+						       (gdouble) percentage / 100.f);
+			gtk_widget_set_visible (self->progressbar_top, TRUE);
+		}
+		break;
+	default:
+		gtk_widget_set_visible (self->label_progress_percentage, FALSE);
+		gtk_widget_set_visible (self->progressbar_top, FALSE);
+		break;
+	}
+
+	/* spinner */
+	switch (state) {
+	case AS_APP_STATE_REMOVING:
+		gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
+		gtk_widget_set_visible (self->spinner_remove, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (self->spinner_remove, FALSE);
+		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
+		break;
+	}
+
+	/* progress box */
+	switch (state) {
+	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (self->box_progress, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (self->box_progress, FALSE);
+		break;
+	}
+}
+
 static gboolean
 gs_shell_details_refresh_progress_idle (gpointer user_data)
 {
 	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
-
-	gs_progress_button_set_progress (GS_PROGRESS_BUTTON (self->button_install),
-	                                 gs_app_get_progress (self->app));
-
+	gs_shell_details_refresh_progress (self);
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
 }
@@ -1097,6 +1121,9 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	gs_shell_details_update_shortcut_button (self);
+
+	/* update progress */
+	gs_shell_details_refresh_progress (self);
 
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
 	gtk_widget_set_visible (self->box_addons, addons != NULL);
@@ -1888,6 +1915,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, star);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot);
@@ -1906,6 +1934,8 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_addons_uninstalled_app);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_progress_percentage);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_progress_status);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_title);
@@ -1933,7 +1963,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_details);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_install_remove);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, stack_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, grid_details_kudo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_docs);
@@ -1946,6 +1976,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_integration);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_translated);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_updated);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, progressbar_top);
 }
 
 static void
