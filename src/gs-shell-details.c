@@ -74,6 +74,7 @@ struct _GsShellDetails
 	GtkWidget		*box_details_screenshot;
 	GtkWidget		*box_details_screenshot_main;
 	GtkWidget		*box_details_screenshot_thumbnails;
+	GtkWidget		*box_details_license_list;
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_add_shortcut;
 	GtkWidget		*button_details_remove_shortcut;
@@ -93,7 +94,9 @@ struct _GsShellDetails
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
-	GtkWidget		*label_details_license_value;
+	GtkWidget		*button_details_license_free;
+	GtkWidget		*button_details_license_nonfree;
+	GtkWidget		*button_details_license_unknown;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
 	GtkWidget		*label_details_size_installed_title;
@@ -109,6 +112,7 @@ struct _GsShellDetails
 	GtkWidget		*label_details_tag_webapp;
 	GtkWidget		*label_details_tag_extension;
 	GtkWidget		*label_details_info_text;
+	GtkWidget		*label_license_nonfree_details;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*box_reviews;
 	GtkWidget		*histogram;
@@ -130,6 +134,9 @@ struct _GsShellDetails
 	GtkWidget		*label_details_kudo_translated;
 	GtkWidget		*label_details_kudo_updated;
 	GtkWidget		*progressbar_top;
+	GtkWidget		*popover_license_free;
+	GtkWidget		*popover_license_nonfree;
+	GtkWidget		*popover_license_unknown;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
@@ -699,102 +706,6 @@ gs_shell_details_history_cb (GtkLabel *label,
 	return TRUE;
 }
 
-static gchar *
-gs_shell_details_get_license_markup (const gchar *license)
-{
-	GString *urld;
-	guint i;
-	g_auto(GStrv) tokens = NULL;
-
-	/* URLify any SPDX IDs */
-	urld = g_string_new ("");
-	tokens = as_utils_spdx_license_tokenize (license);
-	for (i = 0; tokens[i] != NULL; i++) {
-
-		/* translated join */
-		if (g_strcmp0 (tokens[i], "&") == 0) {
-			/* TRANSLATORS: This is how we join the licenses and can
-			 * be considered a "Conjunctive AND Operator" according
-			 * to the SPDX specification. For example:
-			 * "LGPL-2.1 and MIT and BSD-2-Clause" */
-			g_string_append (urld, _(" and "));
-			continue;
-		}
-		if (g_strcmp0 (tokens[i], "|") == 0) {
-			/* TRANSLATORS: This is how we join the licenses and can
-			 * be considered a "Disjunctive OR Operator" according
-			 * to the SPDX specification. For example:
-			 * "LGPL-2.1 or MIT" */
-			g_string_append (urld, _(" or "));
-			continue;
-		}
-
-		/* legacy literal text */
-		if (g_str_has_prefix (tokens[i], "#")) {
-			g_string_append (urld, tokens[i] + 1);
-			continue;
-		}
-
-		/* proprietary software */
-		if (g_strcmp0 (tokens[i], "@LicenseRef-proprietary") == 0) {
-			const gchar *url = "https://en.wikipedia.org/wiki/Proprietary_software";
-			g_string_append_printf (urld,
-						"<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: non-free app */
-						url, _("Proprietary"));
-			continue;
-		}
-
-		/* public domain */
-		if (g_strcmp0 (tokens[i], "@LicenseRef-public-domain") == 0) {
-			const gchar *url = "https://en.wikipedia.org/wiki/Public_domain";
-			g_string_append_printf (urld,
-						"<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: see the wikipedia page */
-						url, _("Public domain"));
-			continue;
-		}
-
-		/* free software, license unspecified */
-		if (g_str_has_prefix (tokens[i], "@LicenseRef-free")) {
-			const gchar *url = "https://www.gnu.org/philosophy/free-sw";
-			gchar *tmp;
-
-			/* we support putting a custom URL in the
-			 * token string, e.g. @LicenseRef-free=http://ubuntu.com */
-			tmp = g_strstr_len (tokens[i], -1, "=");
-			if (tmp != NULL)
-				url = tmp + 1;
-			g_string_append_printf (urld,
-						"<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: see GNU page */
-						url, _("Free Software"));
-			continue;
-		}
-
-		/* SPDX value */
-		if (g_str_has_prefix (tokens[i], "@")) {
-			g_string_append_printf (urld,
-						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
-						tokens[i] + 1, tokens[i] + 1);
-			continue;
-		}
-
-		/* new SPDX value the extractor didn't know about */
-		if (as_utils_is_spdx_license_id (tokens[i])) {
-			g_string_append_printf (urld,
-						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
-						tokens[i], tokens[i]);
-			continue;
-		}
-
-		/* unknown value */
-		g_string_append (urld, tokens[i]);
-	}
-
-	return g_string_free (urld, FALSE);
-}
-
 static void
 gs_shell_details_refresh_all (GsShellDetails *self)
 {
@@ -862,18 +773,20 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		gtk_widget_set_visible (self->label_details_developer_value, TRUE);
 	}
 
-	/* set the license */
+	/* set the license buttons */
 	tmp = gs_app_get_license (self->app);
 	if (tmp == NULL) {
-		/* TRANSLATORS: this is where the license is not known */
-		gtk_label_set_label (GTK_LABEL (self->label_details_license_value), C_("license", "Unknown"));
-		gtk_widget_set_tooltip_text (self->label_details_license_value, NULL);
+		gtk_widget_set_visible (self->button_details_license_free, FALSE);
+		gtk_widget_set_visible (self->button_details_license_nonfree, FALSE);
+		gtk_widget_set_visible (self->button_details_license_unknown, TRUE);
+	} else if (gs_app_get_license_is_free (self->app)) {
+		gtk_widget_set_visible (self->button_details_license_free, TRUE);
+		gtk_widget_set_visible (self->button_details_license_nonfree, FALSE);
+		gtk_widget_set_visible (self->button_details_license_unknown, FALSE);
 	} else {
-		g_autofree gchar *license_markup = NULL;
-		license_markup = gs_shell_details_get_license_markup (tmp);
-		gtk_label_set_markup (GTK_LABEL (self->label_details_license_value),
-				      license_markup);
-		gtk_widget_set_tooltip_text (self->label_details_license_value, NULL);
+		gtk_widget_set_visible (self->button_details_license_free, FALSE);
+		gtk_widget_set_visible (self->button_details_license_nonfree, TRUE);
+		gtk_widget_set_visible (self->button_details_license_unknown, FALSE);
 	}
 
 	/* set version */
@@ -1812,6 +1725,125 @@ gs_shell_details_more_reviews_button_cb (GtkWidget *widget, GsShellDetails *self
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
+static gboolean
+gs_shell_details_activate_link_cb (GtkLabel *label,
+				   const gchar *uri,
+				   GsShellDetails *self)
+{
+	gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, NULL);
+	return TRUE;
+}
+
+static GtkWidget *
+gs_shell_details_label_widget (GsShellDetails *self,
+			       const gchar *title,
+			       const gchar *url)
+{
+	GtkWidget *w;
+	g_autofree gchar *markup = NULL;
+
+	markup = g_strdup_printf ("<a href=\"%s\">%s</a>", url, title);
+	w = gtk_label_new (markup);
+	g_signal_connect (w, "activate-link",
+			  G_CALLBACK (gs_shell_details_activate_link_cb),
+			  self);
+	gtk_label_set_use_markup (GTK_LABEL (w), TRUE);
+	gtk_label_set_xalign (GTK_LABEL (w), 0.f);
+	gtk_widget_set_visible (w, TRUE);
+	return w;
+}
+
+static GtkWidget *
+gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *token)
+{
+	/* public domain */
+	if (g_strcmp0 (token, "@LicenseRef-public-domain") == 0) {
+		/* TRANSLATORS: see the wikipedia page */
+		return gs_shell_details_label_widget (self, _("Public domain"),
+			"https://en.wikipedia.org/wiki/Public_domain");
+	}
+
+	/* free software, license unspecified */
+	if (g_str_has_prefix (token, "@LicenseRef-free")) {
+		const gchar *url = "https://www.gnu.org/philosophy/free-sw";
+		gchar *tmp;
+
+		/* we support putting a custom URL in the
+		 * token string, e.g. @LicenseRef-free=http://ubuntu.com */
+		tmp = g_strstr_len (token, -1, "=");
+		if (tmp != NULL)
+			url = tmp + 1;
+
+		/* TRANSLATORS: see GNU page */
+		return gs_shell_details_label_widget (self, _("Free Software"), url);
+	}
+
+	/* SPDX value */
+	if (g_str_has_prefix (token, "@")) {
+		g_autofree gchar *uri = NULL;
+		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
+				       token + 1);
+		return gs_shell_details_label_widget (self, token + 1, uri);
+	}
+
+	/* new SPDX value the extractor didn't know about */
+	if (as_utils_is_spdx_license_id (token)) {
+		g_autofree gchar *uri = NULL;
+		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
+				       token);
+		return gs_shell_details_label_widget (self, token, uri);
+	}
+
+	/* nothing to show */
+	return NULL;
+}
+
+static void
+gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
+{
+	/* populate the licenses */
+	guint i;
+	g_auto(GStrv) tokens = NULL;
+
+	/* URLify any SPDX IDs */
+	gs_container_remove_all (GTK_CONTAINER (self->box_details_license_list));
+	tokens = as_utils_spdx_license_tokenize (gs_app_get_license (self->app));
+	for (i = 0; tokens[i] != NULL; i++) {
+		GtkWidget *w = NULL;
+
+		/* translated join */
+		if (g_strcmp0 (tokens[i], "&") == 0)
+			continue;
+		if (g_strcmp0 (tokens[i], "|") == 0)
+			continue;
+
+		/* add widget */
+		w = gs_shell_details_license_widget_for_token (self, tokens[i]);
+		if (w == NULL)
+			continue;
+		gtk_container_add (GTK_CONTAINER (self->box_details_license_list), w);
+	}
+	gtk_widget_show (self->popover_license_free);
+}
+
+static void
+gs_shell_details_license_nonfree_cb (GtkWidget *widget, GsShellDetails *self)
+{
+	g_autofree gchar *str = NULL;
+	const gchar *uri = "https://en.wikipedia.org/wiki/Proprietary_software";
+	str = g_strdup_printf ("<a href=\"%s\">%s</a>",
+			       uri,
+			       _("More information"));
+	gtk_label_set_label (GTK_LABEL (self->label_license_nonfree_details), str);
+	gtk_widget_show (self->popover_license_nonfree);
+}
+
+static void
+gs_shell_details_license_unknown_cb (GtkWidget *widget, GsShellDetails *self)
+{
+	gtk_widget_show (self->popover_license_unknown);
+}
+
 void
 gs_shell_details_setup (GsShellDetails *self,
 			GsShell	*shell,
@@ -1864,6 +1896,18 @@ gs_shell_details_setup (GsShellDetails *self,
 			  self);
 	g_signal_connect (self->button_details_website, "clicked",
 			  G_CALLBACK (gs_shell_details_website_cb),
+			  self);
+	g_signal_connect (self->button_details_license_free, "clicked",
+			  G_CALLBACK (gs_shell_details_license_free_cb),
+			  self);
+	g_signal_connect (self->button_details_license_nonfree, "clicked",
+			  G_CALLBACK (gs_shell_details_license_nonfree_cb),
+			  self);
+	g_signal_connect (self->button_details_license_unknown, "clicked",
+			  G_CALLBACK (gs_shell_details_license_unknown_cb),
+			  self);
+	g_signal_connect (self->label_license_nonfree_details, "activate-link",
+			  G_CALLBACK (gs_shell_details_activate_link_cb),
 			  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
@@ -1921,6 +1965,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_thumbnails);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_license_list);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_add_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_remove_shortcut);
@@ -1940,7 +1985,9 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_license_value);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_license_free);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_license_nonfree);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_license_unknown);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_download_title);
@@ -1977,6 +2024,10 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_translated);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_updated);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, progressbar_top);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_free);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_nonfree);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_unknown);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_license_nonfree_details);
 }
 
 static void

@@ -957,7 +957,7 @@
                                     <property name="can_focus">False</property>
                                     <property name="label" translatable="yes">License</property>
                                     <property name="xalign">0</property>
-                                    <property name="yalign">0</property>
+                                    <property name="yalign">0.5</property>
                                     <style>
                                       <class name="dim-label"/>
                                     </style>
@@ -968,16 +968,61 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkLabel" id="label_details_license_value">
+                                  <object class="GtkBox" id="box_details_license_value">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="label">GPL</property>
-                                    <property name="wrap">True</property>
-                                    <property name="selectable">True</property>
-                                    <property name="max_width_chars">10</property>
-                                    <property name="xalign">0</property>
-                                    <property name="yalign">0</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkButton" id="button_details_license_free">
+                                        <property name="label" translatable="yes" comments="This refers to the license of the application">Free</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                          <class name="details-license-free"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_details_license_nonfree">
+                                        <property name="label" translatable="yes" comments="This refers to the license of the application">Proprietary</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                          <class name="details-license-nonfree"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="button_details_license_unknown">
+                                        <property name="label" translatable="yes" comments="This refers to the license of the application">Unknown</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="halign">start</property>
+                                        <style>
+                                          <class name="details-license-unknown"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -1331,10 +1376,200 @@
       <widget name="label_details_version_value"/>
       <widget name="label_details_updated_value"/>
       <widget name="label_details_category_value"/>
-      <widget name="label_details_license_value"/>
       <widget name="label_details_size_installed_value"/>
       <widget name="label_details_size_download_value"/>
       <widget name="label_details_developer_value"/>
+      <widget name="button_details_license_free"/>
     </widgets>
+  </object>
+  <object class="GtkSizeGroup" id="sizegroup_button_details_license">
+    <widgets>
+      <widget name="button_details_license_free"/>
+      <widget name="button_details_license_nonfree"/>
+      <widget name="button_details_license_unknown"/>
+    </widgets>
+  </object>
+  <object class="GtkPopover" id="popover_license_free">
+    <property name="can_focus">False</property>
+    <property name="border_width">15</property>
+    <property name="relative_to">button_details_license_free</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Free Software</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="max_width_chars">34</property>
+            <property name="label" translatable="yes">This means that the software can be freely run, copied, distributed, studied and modified.</property>
+            <property name="wrap">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Users are bound by the following licenses:</property>
+            <property name="wrap">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box_details_license_list">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">6</property>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="popover_license_nonfree">
+    <property name="can_focus">False</property>
+    <property name="border_width">15</property>
+    <property name="relative_to">button_details_license_nonfree</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Proprietary Software</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="max_width_chars">34</property>
+            <property name="label" translatable="yes">This means that the software is owned by an individual or a company. There are often restrictions on its use and its source code cannot usually be accessed.</property>
+            <property name="wrap">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_license_nonfree_details">
+            <property name="visible">True</property>
+            <property name="use-markup">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">More information</property>
+            <property name="wrap">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="popover_license_unknown">
+    <property name="name">popover_license_unknown</property>
+    <property name="can_focus">False</property>
+    <property name="border_width">15</property>
+    <property name="relative_to">button_details_license_unknown</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">6</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label" translatable="yes">Unknown Software License</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="max_width_chars">34</property>
+            <property name="label" translatable="yes">The license terms of this software are unknown.</property>
+            <property name="wrap">True</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
   </object>
 </interface>
