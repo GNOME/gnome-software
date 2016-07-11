@@ -265,6 +265,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 			break;
 		case PK_INFO_ENUM_INSTALLING:
 		case PK_INFO_ENUM_UPDATING:
+		case PK_INFO_ENUM_DOWNGRADING:
 			break;
 		default:
 			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
