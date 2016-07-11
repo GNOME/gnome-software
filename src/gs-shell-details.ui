@@ -197,7 +197,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="spacing">9</property>
-                            <property name="margin_bottom">9</property>
+                            <property name="margin_bottom">32</property>
                             <child>
                               <object class="GtkButton" id="button_install">
                                 <property name="use_underline">True</property>
@@ -432,11 +432,11 @@
                         </child>
                         <child>
                           <object class="GtkBox" id="box_details_description">
-                            <property name="margin_top">32</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="margin_bottom">32</property>
                             <property name="orientation">vertical</property>
-                            <property name="spacing">16</property>
+                            <property name="spacing">18</property>
                             <child>
                               <placeholder/>
                             </child>
@@ -529,8 +529,8 @@
                           <object class="GtkBox" id="box_details_support">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="margin_bottom">44</property>
                             <property name="spacing">12</property>
-                            <property name="margin_top">28</property>
                             <child>
                               <object class="GtkButton" id="button_details_website">
                                 <property name="label" translatable="yes">_Website</property>
@@ -557,8 +557,7 @@
                           <object class="GtkLabel" id="application_details_details_title">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_top">28</property>
-                            <property name="margin_bottom">12</property>
+                            <property name="margin_bottom">18</property>
                             <property name="halign">start</property>
                             <property name="valign">start</property>
                             <property name="hexpand">True</property>
@@ -578,6 +577,7 @@
                           <object class="GtkBox" id="box_details_details">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="margin_bottom">44</property>
                             <property name="spacing">30</property>
                             <child>
                               <object class="GtkGrid" id="grid_details_kudo">
@@ -1130,12 +1130,11 @@
                         <child>
                           <object class="GtkBox" id="box_reviews">
                             <property name="orientation">vertical</property>
-                            <property name="margin_top">28</property>
                             <child>
                               <object class="GtkLabel" id="application_details_reviews_title">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="margin_bottom">20</property>
+                                <property name="margin_bottom">18</property>
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
                                 <property name="hexpand">True</property>
@@ -1150,7 +1149,7 @@
                               <object class="GsReviewHistogram" id="histogram">
                                 <property name="halign">start</property>
                                 <property name="valign">center</property>
-                                <property name="margin_bottom">20</property>
+                                <property name="margin_bottom">32</property>
                               </object>
                             </child>
                             <child>
@@ -1161,7 +1160,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
-                                <property name="margin_bottom">20</property>
+                                <property name="margin_bottom">18</property>
                               </object>
                             </child>
                             <child>
@@ -1183,7 +1182,7 @@
                                 <property name="receives_default">False</property>
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
-                                <property name="margin_top">20</property>
+                                <property name="margin_top">32</property>
                               </object>
                             </child>
                           </object>
