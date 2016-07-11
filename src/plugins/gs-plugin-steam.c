@@ -794,6 +794,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (gs_app_get_size_download (app) == 0)
 		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 
+	/* hardcoded */
+	if (gs_app_get_origin_hostname (app) == NULL)
+		gs_app_set_origin_hostname (app, "steampowered.com");
+
 	/* size */
 	tmp = gs_app_get_metadata_item (app, "X-Steam-Size");
 	if (tmp != NULL) {
