@@ -863,6 +863,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	/* set the origin */
 	tmp = gs_app_get_origin_ui (self->app);
 	if (tmp == NULL)
+		tmp = gs_app_get_origin_hostname (self->app);
+	if (tmp == NULL)
 		tmp = gs_app_get_origin (self->app);
 	if (tmp == NULL || tmp[0] == '\0') {
 		/* TRANSLATORS: this is where we don't know the origin of the
@@ -871,14 +873,17 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	} else {
 		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), tmp);
 	}
-	gtk_widget_set_visible (self->label_details_origin_value,
-				gs_app_get_state (self->app) == AS_APP_STATE_INSTALLED ||
-				gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE ||
-				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
-	gtk_widget_set_visible (self->label_details_origin_title,
-				gs_app_get_state (self->app) == AS_APP_STATE_INSTALLED ||
-				gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE ||
-				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+	switch (gs_app_get_state (self->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+		gtk_widget_set_visible (self->label_details_origin_value, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (self->label_details_origin_value, FALSE);
+		break;
+	}
 
 	/* set MyLanguage kudo */
 	kudos = gs_app_get_kudos (self->app);
