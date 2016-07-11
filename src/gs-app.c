@@ -2471,6 +2471,8 @@ void
 gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (kudo & GS_APP_KUDO_SANDBOXED_SECURE)
+		kudo |= GS_APP_KUDO_SANDBOXED;
 	app->kudos |= kudo;
 }
 
