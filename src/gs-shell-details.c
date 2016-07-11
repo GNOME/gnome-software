@@ -107,10 +107,6 @@ struct _GsShellDetails
 	GtkWidget		*label_details_version_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*label_pending;
-	GtkWidget		*label_details_tag_nonfree;
-	GtkWidget		*label_details_tag_3rdparty;
-	GtkWidget		*label_details_tag_webapp;
-	GtkWidget		*label_details_tag_extension;
 	GtkWidget		*label_details_info_text;
 	GtkWidget		*label_license_nonfree_details;
 	GtkWidget		*list_box_addons;
@@ -916,9 +912,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* set the tags buttons */
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
-		gtk_widget_set_visible (self->label_details_tag_webapp, TRUE);
 		show_nonfree = FALSE;
-		gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
 		gtk_widget_set_visible (self->label_details_info_text, TRUE);
 		gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 				     /* TRANSLATORS: this is the warning box */
@@ -932,24 +926,19 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		is_3rd_party = !gs_app_has_quirk (self->app,
 						  AS_APP_QUIRK_PROVENANCE);
 
-		gtk_widget_set_visible (self->label_details_tag_webapp, FALSE);
-
 		if (!show_nonfree && is_3rd_party) {
-			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
 			gtk_widget_set_visible (self->label_details_info_text, TRUE);
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party."));
 		} else if (show_nonfree && is_3rd_party) {
 			show_nonfree = TRUE;
-			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
 			gtk_widget_set_visible (self->label_details_info_text, TRUE);
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party and may contain non-free components."));
 		} else if (show_nonfree && !is_3rd_party) {
 			show_nonfree = TRUE;
-			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
 			gtk_widget_set_visible (self->label_details_info_text, TRUE);
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
@@ -957,14 +946,9 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		} else {
 			/* free and not 3rd party */
 			show_nonfree = FALSE;
-			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
 			gtk_widget_set_visible (self->label_details_info_text, FALSE);
 		}
 	}
-	gtk_widget_set_visible (self->label_details_tag_extension,
-				gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION);
-
-	gtk_widget_set_visible (self->label_details_tag_nonfree, show_nonfree);
 
 	/* hide the kudo details for non-desktop software */
 	switch (gs_app_get_kind (self->app)) {
@@ -1998,10 +1982,6 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_pending);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_nonfree);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_3rdparty);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_webapp);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_extension);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_info_text);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_reviews);
