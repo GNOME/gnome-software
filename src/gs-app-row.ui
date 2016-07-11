@@ -3,6 +3,9 @@
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsAppRow" parent="GtkListBoxRow">
     <property name="visible">True</property>
+    <style>
+      <class name="list-box-app-row"/>
+    </style>
     <child>
       <object class="GtkBox" id="box">
         <property name="visible">True</property>
@@ -197,20 +200,47 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label_origin">
+                  <object class="GtkBox" id="box_desc">
                     <property name="visible">True</property>
-                    <property name="xalign">0.0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="halign">start</property>
-                    <property name="ellipsize">end</property>
-                    <style>
-                      <class name="app-row-origin-text"/>
-                      <class name="dim-label"/>
-                    </style>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">horizontal</property>
+                    <child>
+                      <object class="GtkLabel" id="label_origin">
+                        <property name="visible">True</property>
+                        <property name="xalign">0.0</property>
+                        <property name="yalign">1.0</property>
+                        <property name="halign">start</property>
+                        <property name="ellipsize">end</property>
+                        <style>
+                          <class name="app-row-origin-text"/>
+                          <class name="dim-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label_installed">
+                        <property name="visible">True</property>
+                        <property name="xalign">1.0</property>
+                        <property name="yalign">0.5</property>
+                        <property name="halign">end</property>
+                        <property name="label" translatable="yes" comments="app state">Installed</property>
+                        <style>
+                          <class name="app-row-installed-label"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
                   </packing>
                 </child>
               </object>

@@ -9,6 +9,7 @@
         color: @theme_selected_fg_color;
   }
 
+
 .popular-installed-overlay-box {
 	font-size: 80%;
 	background-color: @theme_selected_bg_color;
@@ -23,6 +24,14 @@
 .index-title-alignment-software {
 	font-weight: bold;
 	font-size: 14px;
+}
+
+.app-row-installed-label {
+	background-color: @theme_selected_bg_color;
+	border-radius: 0;
+	color: @theme_selected_fg_color;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
+	padding: 4px 12px;
 }
 
 .needs-attention {
@@ -297,6 +306,11 @@ button.star, .button.star {
 .category-sidebar:not(.undershoot):not(.overshoot) { background-color: @theme_base_color; }
 
 .category-sidebar:backdrop:not(.undershoot):not(.overshoot) { background-color: @theme_unfocused_base_color; }
+
+/* padding removal */
+.list-box-app-row {
+	padding: 0px;
+}
 
 /* Superfluous borders removal */
 .category-sidebar {

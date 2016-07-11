@@ -48,6 +48,7 @@ typedef struct
 	GtkWidget	*checkbox;
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
+	GtkWidget	*label_installed;
 	GtkWidget	*box_sandboxed;
 	GtkWidget	*image_sandboxed;
 	gboolean	 colorful;
@@ -360,6 +361,22 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->box_sandboxed, FALSE);
 	}
 
+	/* installed tag */
+	if (!priv->show_buttons) {
+		switch (gs_app_get_state (priv->app)) {
+		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
+		case AS_APP_STATE_INSTALLED:
+			gtk_widget_set_visible (priv->label_installed, TRUE);
+			break;
+		default:
+			gtk_widget_set_visible (priv->label_installed, FALSE);
+			break;
+		}
+	} else {
+		gtk_widget_set_visible (priv->label_installed, FALSE);
+	}
+
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
 	if (priv->show_update &&
@@ -649,6 +666,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, checkbox);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_sandboxed);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, image_sandboxed);
 }
