@@ -51,6 +51,7 @@ typedef struct
 	GtkWidget	*box_sandboxed;
 	GtkWidget	*image_sandboxed;
 	gboolean	 colorful;
+	gboolean	 show_folders;
 	gboolean	 show_codec;
 	gboolean	 show_update;
 	gboolean	 selectable;
@@ -251,7 +252,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* folders */
-	use_folders = gs_utils_is_current_desktop ("GNOME") &&
+	use_folders = priv->show_folders &&
+		gs_utils_is_current_desktop ("GNOME") &&
 		g_settings_get_boolean (priv->settings, "show-folder-management");
 
 	if (!use_folders || priv->show_update || priv->show_codec) {
@@ -636,12 +638,20 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 }
 
 void
-gs_app_row_set_colorful (GsAppRow *app_row,
-			    gboolean     colorful)
+gs_app_row_set_colorful (GsAppRow *app_row, gboolean colorful)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->colorful = colorful;
+	gs_app_row_refresh (app_row);
+}
+
+void
+gs_app_row_set_show_folders (GsAppRow *app_row, gboolean show_folders)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_folders = show_folders;
 	gs_app_row_refresh (app_row);
 }
 
