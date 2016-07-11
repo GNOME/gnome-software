@@ -46,6 +46,8 @@ void		 gs_app_row_set_colorful		(GsAppRow	*app_row,
 							 gboolean	 colorful);
 void		 gs_app_row_set_show_folders		(GsAppRow	*app_row,
 							 gboolean	 show_folders);
+void		 gs_app_row_set_show_buttons		(GsAppRow	*app_row,
+							 gboolean	 show_buttons);
 void		 gs_app_row_set_show_codec		(GsAppRow	*app_row,
 							 gboolean	 show_codec);
 void		 gs_app_row_set_show_update		(GsAppRow	*app_row,

@@ -154,6 +154,7 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsApp *app)
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_colorful (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_folders (GS_APP_ROW (app_row), TRUE);
+	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), self);
 	g_signal_connect_object (app, "notify::state",

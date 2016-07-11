@@ -52,6 +52,7 @@ typedef struct
 	GtkWidget	*image_sandboxed;
 	gboolean	 colorful;
 	gboolean	 show_folders;
+	gboolean	 show_buttons;
 	gboolean	 show_codec;
 	gboolean	 show_update;
 	gboolean	 selectable;
@@ -146,6 +147,139 @@ gs_app_row_format_version_update (GsApp *app)
 	return NULL;
 }
 
+static void
+gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+	GtkStyleContext *context;
+
+	/* disabled */
+	if (!priv->show_buttons) {
+		gtk_widget_set_visible (priv->button, FALSE);
+		return;
+	}
+
+	/* label */
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_UNAVAILABLE:
+		gtk_widget_set_visible (priv->button, TRUE);
+		if (missing_search_result) {
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be easily installed */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
+		} else {
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be easily installed.
+			 * The ellipsis indicates that further steps are required */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install…"));
+		}
+		break;
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows to cancel a queued install of the application */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
+		/* TRANSLATORS: this is a label that describes an application
+		 * that has been queued for installation */
+		break;
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the application to be easily installed */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		break;
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		gtk_widget_set_visible (priv->button, TRUE);
+		if (priv->show_update) {
+			/* TRANSLATORS: this is a button in the updates panel
+			 * that allows the app to be easily updated live */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		} else {
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be easily removed */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
+		}
+		break;
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
+		if (!gs_app_has_quirk (priv->app, AS_APP_QUIRK_COMPULSORY))
+			gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the application to be easily removed */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
+		break;
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * shows the status of an application being installed */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
+		break;
+	case AS_APP_STATE_REMOVING:
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * shows the status of an application being erased */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Removing"));
+		break;
+	default:
+		break;
+	}
+
+	/* visible */
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_UNAVAILABLE:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_REMOVING:
+		gtk_widget_set_visible (priv->button, TRUE);
+		break;
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
+		gtk_widget_set_visible (priv->button,
+					!gs_app_has_quirk (priv->app,
+							   AS_APP_QUIRK_COMPULSORY));
+		break;
+	default:
+		gtk_widget_set_visible (priv->button, FALSE);
+		break;
+	}
+
+	/* colorful */
+	context = gtk_widget_get_style_context (priv->button);
+	if (!priv->colorful) {
+		gtk_style_context_remove_class (context, "destructive-action");
+	} else {
+		switch (gs_app_get_state (priv->app)) {
+		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_UPDATABLE_LIVE:
+			gtk_style_context_remove_class (context, "destructive-action");
+			break;
+		default:
+			gtk_style_context_add_class (context, "destructive-action");
+			break;
+		}
+	}
+
+	/* always insensitive when in selection mode */
+	if (priv->selectable) {
+		gtk_widget_set_sensitive (priv->button, FALSE);
+	} else {
+		switch (gs_app_get_state (priv->app)) {
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_REMOVING:
+			gtk_widget_set_sensitive (priv->button, FALSE);
+			break;
+		default:
+			gtk_widget_set_sensitive (priv->button, TRUE);
+			break;
+		}
+	}
+}
+
 void
 gs_app_row_refresh (GsAppRow *app_row)
 {
@@ -154,7 +288,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GString *str = NULL;
 	const gchar *tmp;
 	gboolean missing_search_result;
-	gboolean use_folders = FALSE;
 
 	if (priv->app == NULL)
 		return;
@@ -252,13 +385,9 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* folders */
-	use_folders = priv->show_folders &&
-		gs_utils_is_current_desktop ("GNOME") &&
-		g_settings_get_boolean (priv->settings, "show-folder-management");
-
-	if (!use_folders || priv->show_update || priv->show_codec) {
-		gtk_widget_hide (priv->folder_label);
-	} else {
+	if (priv->show_folders &&
+	    gs_utils_is_current_desktop ("GNOME") &&
+	    g_settings_get_boolean (priv->settings, "show-folder-management")) {
 		g_autoptr(GsFolders) folders = NULL;
 		const gchar *folder;
 		folders = gs_folders_get ();
@@ -269,8 +398,11 @@ gs_app_row_refresh (GsAppRow *app_row)
 			folder = gs_folders_get_folder_name (folders, folder);
 		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
 		gtk_widget_set_visible (priv->folder_label, folder != NULL);
+	} else {
+		gtk_widget_hide (priv->folder_label);
 	}
 
+	/* pixbuf */
 	if (gs_app_get_pixbuf (priv->app) != NULL)
 		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					  gs_app_get_pixbuf (priv->app));
@@ -293,91 +425,18 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* spinner */
-	gtk_widget_set_visible (priv->spinner, FALSE);
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_REMOVING:
 		gtk_spinner_start (GTK_SPINNER (priv->spinner));
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		break;
 	default:
+		gtk_widget_set_visible (priv->spinner, FALSE);
 		break;
 	}
 
 	/* button */
-	gtk_widget_set_visible (priv->button, FALSE);
-	gtk_widget_set_sensitive (priv->button, TRUE);
-	context = gtk_widget_get_style_context (priv->button);
-	gtk_style_context_remove_class (context, "destructive-action");
-	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_UNAVAILABLE:
-		gtk_widget_set_visible (priv->button, TRUE);
-		if (missing_search_result) {
-			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be easily installed */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
-		} else {
-			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be easily installed.
-			 * The ellipsis indicates that further steps are required */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install…"));
-		}
-		break;
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (priv->button, TRUE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * allows to cancel a queued install of the application */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
-		/* TRANSLATORS: this is a label that describes an application
-		 * that has been queued for installation */
-		break;
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (priv->button, TRUE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the application to be easily installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
-		break;
-	case AS_APP_STATE_UPDATABLE_LIVE:
-		gtk_widget_set_visible (priv->button, TRUE);
-		if (priv->show_update) {
-			/* TRANSLATORS: this is a button in the updates panel
-			 * that allows the app to be easily updated live */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
-		} else {
-			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be easily removed */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
-			if (priv->colorful)
-				gtk_style_context_add_class (context, "destructive-action");
-		}
-		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_INSTALLED:
-		if (!gs_app_has_quirk (priv->app, AS_APP_QUIRK_COMPULSORY))
-			gtk_widget_set_visible (priv->button, TRUE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the application to be easily removed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
-		if (priv->colorful)
-			gtk_style_context_add_class (context, "destructive-action");
-		break;
-	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (priv->button, TRUE);
-		gtk_widget_set_sensitive (priv->button, FALSE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * shows the status of an application being installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
-		break;
-	case AS_APP_STATE_REMOVING:
-		gtk_widget_set_visible (priv->button, TRUE);
-		gtk_widget_set_sensitive (priv->button, FALSE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * shows the status of an application being erased */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Removing"));
-		break;
-	default:
-		break;
-	}
+	gs_app_row_refresh_button (app_row, missing_search_result);
 
 	/* hide buttons in the update list, unless the app is live updatable */
 	switch (gs_app_get_state (priv->app)) {
@@ -390,12 +449,12 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	}
 
+	/* checkbox */
 	if (priv->selectable) {
 		if (gs_app_get_kind (priv->app) == AS_APP_KIND_DESKTOP ||
 		    gs_app_get_kind (priv->app) == AS_APP_KIND_RUNTIME ||
 		    gs_app_get_kind (priv->app) == AS_APP_KIND_WEB_APP)
 			gtk_widget_set_visible (priv->checkbox, TRUE);
-		gtk_widget_set_sensitive (priv->button, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->checkbox, FALSE);
 	}
@@ -652,6 +711,15 @@ gs_app_row_set_show_folders (GsAppRow *app_row, gboolean show_folders)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_folders = show_folders;
+	gs_app_row_refresh (app_row);
+}
+
+void
+gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_buttons = show_buttons;
 	gs_app_row_refresh (app_row);
 }
 

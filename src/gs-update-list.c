@@ -64,6 +64,7 @@ gs_update_list_add_app (GsUpdateList *update_list,
 
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_update (GS_APP_ROW (app_row), TRUE);
+	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (gs_update_list_button_clicked_cb),
 			  update_list);
