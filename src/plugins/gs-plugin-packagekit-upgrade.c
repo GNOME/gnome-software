@@ -52,7 +52,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv->task = pk_task_new ();
 	pk_task_set_only_download (plugin->priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (plugin->priv->task), TRUE);
-	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
+	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), 60 * 60 * 24);
 	pk_client_set_interactive (PK_CLIENT (plugin->priv->task), FALSE);
 }
 
