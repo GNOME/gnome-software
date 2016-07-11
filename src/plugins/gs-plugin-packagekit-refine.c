@@ -737,6 +737,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	guint cache_age_save;
 
 	data.app = app;
 	data.plugin = plugin;
@@ -744,6 +745,8 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	data.profile_id = NULL;
 
 	/* ask PK to simulate upgrading the system */
+	cache_age_save = pk_client_get_cache_age (priv->client);
+	pk_client_set_cache_age (priv->client, 60 * 60 * 24 * 7); /* once per week */
 	results = pk_client_upgrade_system (priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 					    gs_app_get_version (app),
@@ -751,6 +754,8 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, &data,
 					    error);
+	pk_client_set_cache_age (priv->client, cache_age_save);
+
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
 	list = gs_app_list_new ();
