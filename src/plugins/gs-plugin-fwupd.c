@@ -269,6 +269,10 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
 				    fwupd_result_get_update_license (res));
 	}
+	if (fwupd_result_get_update_uri (res) != NULL) {
+		gs_app_set_origin_hostname (app,
+					    fwupd_result_get_update_uri (res));
+	}
 	if (fwupd_result_get_device_description (res) != NULL) {
 		g_autofree gchar *tmp = NULL;
 		tmp = as_markup_convert (fwupd_result_get_device_description (res),
