@@ -652,7 +652,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	}
 
 	/* add ratings if possible */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS) {
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS ||
+	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) {
 		if (gs_app_get_review_ratings(app) != NULL)
 			return TRUE;
 		if (!gs_plugin_refine_ratings (plugin, app,
