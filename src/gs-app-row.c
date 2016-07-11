@@ -279,14 +279,33 @@ gs_app_row_refresh (GsAppRow *app_row)
 	else
 		gtk_style_context_remove_class (context, "dimmer-label");
 
+	/* pending label */
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+		gtk_widget_set_visible (priv->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
+		break;
+	default:
+		gtk_widget_set_visible (priv->label, FALSE);
+		break;
+	}
+
+	/* spinner */
+	gtk_widget_set_visible (priv->spinner, FALSE);
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_REMOVING:
+		gtk_spinner_start (GTK_SPINNER (priv->spinner));
+		gtk_widget_set_visible (priv->spinner, TRUE);
+		break;
+	default:
+		break;
+	}
+
+	/* button */
 	gtk_widget_set_visible (priv->button, FALSE);
 	gtk_widget_set_sensitive (priv->button, TRUE);
-	gtk_widget_set_visible (priv->spinner, FALSE);
-	gtk_widget_set_visible (priv->label, FALSE);
-
 	context = gtk_widget_get_style_context (priv->button);
 	gtk_style_context_remove_class (context, "destructive-action");
-
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button, TRUE);
@@ -302,14 +321,12 @@ gs_app_row_refresh (GsAppRow *app_row)
 		}
 		break;
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (priv->label, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows to cancel a queued install of the application */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
 		/* TRANSLATORS: this is a label that describes an application
 		 * that has been queued for installation */
-		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
@@ -350,8 +367,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
 		break;
 	case AS_APP_STATE_REMOVING:
-		gtk_spinner_start (GTK_SPINNER (priv->spinner));
-		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
 		/* TRANSLATORS: this is a button next to the search results that
