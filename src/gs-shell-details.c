@@ -107,7 +107,7 @@ struct _GsShellDetails
 	GtkWidget		*label_details_version_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*label_pending;
-	GtkWidget		*label_details_info_text;
+	GtkWidget		*label_details_webapp;
 	GtkWidget		*label_license_nonfree_details;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*box_reviews;
@@ -716,8 +716,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	guint64 updated;
 	guint64 user_integration_bf;
 	g_autoptr(GError) error = NULL;
-	gboolean show_nonfree = FALSE;
-	gboolean is_3rd_party = FALSE;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -915,44 +913,11 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);
 	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
 
-	/* set the tags buttons */
+	/* show the webapp warning */
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
-		show_nonfree = FALSE;
-		gtk_widget_set_visible (self->label_details_info_text, TRUE);
-		gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
-				     /* TRANSLATORS: this is the warning box */
-				     _("This application can only be used when there is an active internet connection."));
+		gtk_widget_set_visible (self->label_details_webapp, TRUE);
 	} else {
-		/* Override the non-free label visibility from the settings
-		 * if needed */
-		show_nonfree = !gs_app_get_license_is_free (self->app) &&
-			g_settings_get_boolean (self->settings,
-						"show-nonfree-ui");
-		is_3rd_party = !gs_app_has_quirk (self->app,
-						  AS_APP_QUIRK_PROVENANCE);
-
-		if (!show_nonfree && is_3rd_party) {
-			gtk_widget_set_visible (self->label_details_info_text, TRUE);
-			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
-					     /* TRANSLATORS: this is the warning box */
-					     _("This software comes from a 3rd party."));
-		} else if (show_nonfree && is_3rd_party) {
-			show_nonfree = TRUE;
-			gtk_widget_set_visible (self->label_details_info_text, TRUE);
-			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
-					     /* TRANSLATORS: this is the warning box */
-					     _("This software comes from a 3rd party and may contain non-free components."));
-		} else if (show_nonfree && !is_3rd_party) {
-			show_nonfree = TRUE;
-			gtk_widget_set_visible (self->label_details_info_text, TRUE);
-			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
-					     /* TRANSLATORS: this is the warning box */
-					     _("This software may contain non-free components."));
-		} else {
-			/* free and not 3rd party */
-			show_nonfree = FALSE;
-			gtk_widget_set_visible (self->label_details_info_text, FALSE);
-		}
+		gtk_widget_set_visible (self->label_details_webapp, FALSE);
 	}
 
 	/* hide the kudo details for non-desktop software */
@@ -1987,7 +1952,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_pending);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_info_text);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_webapp);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, histogram);
