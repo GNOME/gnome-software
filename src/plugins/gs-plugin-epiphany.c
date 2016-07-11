@@ -261,6 +261,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	gs_app_set_size_installed (app, 4096);
 
+	/* i guess this is technically true */
+	gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED_SECURE);
+
 	name = gs_app_get_name (app);
 	if (name == NULL) {
 		g_set_error (error,
