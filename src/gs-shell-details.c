@@ -109,6 +109,7 @@ struct _GsShellDetails
 	GtkWidget		*label_pending;
 	GtkWidget		*label_details_webapp;
 	GtkWidget		*label_license_nonfree_details;
+	GtkWidget		*label_licenses_intro;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*box_reviews;
 	GtkWidget		*histogram;
@@ -1755,7 +1756,7 @@ gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *to
 static void
 gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
 {
-	/* populate the licenses */
+	guint cnt = 0;
 	guint i;
 	g_auto(GStrv) tokens = NULL;
 
@@ -1776,7 +1777,19 @@ gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
 		if (w == NULL)
 			continue;
 		gtk_container_add (GTK_CONTAINER (self->box_details_license_list), w);
+
+		/* one more license */
+		cnt++;
 	}
+
+	/* use the correct plural */
+	gtk_label_set_label (GTK_LABEL (self->label_licenses_intro),
+			     /* TRANSLATORS: for the free software popover */
+			     ngettext ("Users are bound by the following license:",
+				       "Users are bound by the following licenses:",
+				       cnt));
+	gtk_widget_set_visible (self->label_licenses_intro, cnt > 0);
+
 	gtk_widget_show (self->popover_license_free);
 }
 
@@ -1978,6 +1991,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_nonfree);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_unknown);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_license_nonfree_details);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_licenses_intro);
 }
 
 static void
