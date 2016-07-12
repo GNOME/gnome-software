@@ -167,9 +167,9 @@ out:
 }
 
 static void
-gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
-					   GAsyncResult *res,
-					   gpointer user_data)
+gs_shell_overview_get_category_apps_cb (GObject *source_object,
+					GAsyncResult *res,
+					gpointer user_data)
 {
 	LoadData *load_data = (LoadData *) user_data;
 	GsShellOverview *self = load_data->self;
@@ -459,7 +459,7 @@ gs_shell_overview_load (GsShellOverview *self)
 		                                          GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 		                                          GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 		                                          priv->cancellable,
-		                                          gs_shell_overview_get_popular_rotating_cb,
+		                                          gs_shell_overview_get_category_apps_cb,
 		                                          load_data);
 		priv->refresh_count++;
 	}
