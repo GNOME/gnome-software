@@ -270,12 +270,6 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 		gs_app_set_install_date (app, mtime);
 	}
 
-#if 0
-g_error ("%s :%p", metadata_fn, info);
-
-// /var/lib/flatpak/app/org.gnome.Builder/current/active/metadata
-#endif
-
 	/* this is faster than resolving */
 	gs_app_set_origin (app, flatpak_installed_ref_get_origin (xref));
 
