@@ -266,7 +266,7 @@ get_upgrades (GsUpdateMonitor *monitor)
 	/* NOTE: this doesn't actually do any network access, it relies on the
 	 * AppStream data being up to date, either by the appstream-data
 	 * package being up-to-date, or the metadata being auto-downloaded */
-	g_debug ("Getting updates");
+	g_debug ("Getting upgrades");
 	gs_plugin_loader_get_distro_upgrades_async (monitor->plugin_loader,
 						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						    monitor->cancellable,
