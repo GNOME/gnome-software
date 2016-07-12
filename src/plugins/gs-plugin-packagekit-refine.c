@@ -806,7 +806,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	/* add each of these as related applications */
 	for (l = list; l != NULL; l = l->next) {
 		app2 = GS_APP (l->data);
-		if (gs_app_get_state (app2) != AS_APP_STATE_AVAILABLE)
+		if (gs_app_get_state (app2) != AS_APP_STATE_UNAVAILABLE)
 			continue;
 		gs_app_add_related (app, app2);
 	}
@@ -834,7 +834,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
-	 * to the related-apps list with a state of %AS_APP_STATE_AVAILABLE */
+	 * to the related-apps list with a state of %AS_APP_STATE_UNAVAILABLE */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
 		for (l = *list; l != NULL; l = l->next) {
 			app = GS_APP (l->data);
