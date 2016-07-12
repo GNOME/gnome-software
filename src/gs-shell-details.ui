@@ -60,10 +60,10 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">fill</property>
-                        <property name="margin_top">28</property>
-                        <property name="margin_bottom">28</property>
-                        <property name="margin_start">24</property>
-                        <property name="margin_end">24</property>
+                        <property name="margin_top">4</property>
+                        <property name="margin_bottom">4</property>
+                        <property name="border_width">24</property>
+                        <property name="spacing">18</property>
                         <property name="hexpand">False</property>
                         <child>
                           <object class="GtkBox" id="box_details_header">
@@ -77,7 +77,6 @@
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
                                 <property name="pixel_size">96</property>
-                                <property name="margin_bottom">18</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -197,7 +196,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="spacing">9</property>
-                            <property name="margin_bottom">32</property>
                             <child>
                               <object class="GtkButton" id="button_install">
                                 <property name="use_underline">True</property>
@@ -390,7 +388,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="spacing">9</property>
-                            <property name="margin_bottom">32</property>
                             <child>
                               <object class="GtkBox" id="box_details_screenshot_main">
                                 <property name="visible">True</property>
@@ -434,7 +431,7 @@
                           <object class="GtkBox" id="box_details_description">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_bottom">32</property>
+                            <property name="margin_bottom">12</property>
                             <property name="orientation">vertical</property>
                             <property name="spacing">18</property>
                             <child>
@@ -529,7 +526,7 @@
                           <object class="GtkBox" id="box_details_support">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_bottom">44</property>
+                            <property name="margin_bottom">24</property>
                             <property name="spacing">12</property>
                             <child>
                               <object class="GtkButton" id="button_details_website">
@@ -557,7 +554,6 @@
                           <object class="GtkLabel" id="application_details_details_title">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_bottom">18</property>
                             <property name="halign">start</property>
                             <property name="valign">start</property>
                             <property name="hexpand">True</property>
@@ -577,7 +573,7 @@
                           <object class="GtkBox" id="box_details_details">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_bottom">44</property>
+                            <property name="margin_bottom">2</property>
                             <property name="spacing">30</property>
                             <child>
                               <object class="GtkGrid" id="grid_details_kudo">
@@ -1068,13 +1064,12 @@
                           <object class="GtkBox" id="box_addons">
                             <property name="visible">True</property>
                             <property name="orientation">vertical</property>
-                            <property name="margin_top">28</property>
 
                             <child>
                               <object class="GtkBox" id="box_addons_title">
                                 <property name="visible">True</property>
                                 <property name="orientation">vertical</property>
-                                <property name="margin_bottom">12</property>
+                                <property name="margin_bottom">18</property>
                                 <child>
                                   <object class="GtkLabel" id="label_addons_title">
                                     <property name="visible">True</property>
@@ -1130,11 +1125,12 @@
                         <child>
                           <object class="GtkBox" id="box_reviews">
                             <property name="orientation">vertical</property>
+                            <property name="margin_top">9</property>
                             <child>
                               <object class="GtkLabel" id="application_details_reviews_title">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="margin_bottom">18</property>
+                                <property name="can_focus">False</property>
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
                                 <property name="hexpand">True</property>
@@ -1182,14 +1178,14 @@
                                 <property name="receives_default">False</property>
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
-                                <property name="margin_top">32</property>
+                                <property name="margin_top">12</property>
                               </object>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">12</property>
+                            <property name="position">13</property>
                           </packing>
                         </child>
                       </object>
