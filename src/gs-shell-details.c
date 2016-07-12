@@ -112,6 +112,7 @@ struct _GsShellDetails
 	GtkWidget		*label_licenses_intro;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*box_reviews;
+	GtkWidget		*box_details_screenshot_fallback;
 	GtkWidget		*histogram;
 	GtkWidget		*button_review;
 	GtkWidget		*list_box_reviews;
@@ -573,7 +574,8 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	/* set screenshots */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
 	screenshots = gs_app_get_screenshots (self->app);
-	gtk_widget_set_visible (self->box_details_screenshot, screenshots->len > 0);
+	gtk_widget_set_visible (self->box_details_screenshot_fallback,
+				screenshots->len == 0);
 	if (screenshots->len == 0) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
 		return;
@@ -1968,6 +1970,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_webapp);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_reviews);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_fallback);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, histogram);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_review);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_reviews);
