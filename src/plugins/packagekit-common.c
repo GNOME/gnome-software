@@ -266,6 +266,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		case PK_INFO_ENUM_UPDATING:
 		case PK_INFO_ENUM_DOWNGRADING:
 		case PK_INFO_ENUM_OBSOLETING:
+		case PK_INFO_ENUM_UNTRUSTED:
 			break;
 		case PK_INFO_ENUM_UNAVAILABLE:
 		case PK_INFO_ENUM_REMOVING:
