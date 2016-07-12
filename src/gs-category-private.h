@@ -30,6 +30,7 @@ G_BEGIN_DECLS
 void		 gs_category_sort_children	(GsCategory	*category);
 void		 gs_category_set_size		(GsCategory	*category,
 						 guint		 size);
+gchar		*gs_category_to_string		(GsCategory	*category);
 
 G_END_DECLS
 

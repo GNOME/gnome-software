@@ -52,6 +52,56 @@ struct _GsCategory
 G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
 
 /**
+ * gs_category_to_string:
+ * @category: a #GsCategory
+ *
+ * Returns a string representation of the category
+ *
+ * Returns: a string
+ **/
+gchar *
+gs_category_to_string (GsCategory *category)
+{
+	guint i;
+	GString *str = g_string_new (NULL);
+	g_string_append_printf (str, "GsCategory[%p]:\n", category);
+	g_string_append_printf (str, "  id: %s\n",
+				category->id);
+	if (category->name != NULL) {
+		g_string_append_printf (str, "  name: %s\n",
+					category->name);
+	}
+	if (category->icon != NULL) {
+		g_string_append_printf (str, "  icon: %s\n",
+					category->icon);
+	}
+	g_string_append_printf (str, "  size: %i\n",
+				category->size);
+	g_string_append_printf (str, "  key-colors: %i\n",
+				category->key_colors->len);
+	g_string_append_printf (str, "  desktop-groups: %i\n",
+				category->desktop_groups->len);
+	if (category->parent != NULL) {
+		g_string_append_printf (str, "  parent: %s\n",
+					gs_category_get_id (category->parent));
+	}
+	g_string_append_printf (str, "  important: %s\n",
+				category->important ? "yes" : "no");
+	if (category->children->len == 0) {
+		g_string_append_printf (str, "  children: %i\n",
+					category->children->len);
+	} else {
+		g_string_append (str, "  children:\n");
+		for (i = 0; i < category->children->len; i++) {
+			GsCategory *child = g_ptr_array_index (category->children, i);
+			g_string_append_printf (str, "  - %s\n",
+						gs_category_get_id (child));
+		}
+	}
+	return g_string_free (str, FALSE);
+}
+
+/**
  * gs_category_get_size:
  * @category: a #GsCategory
  *
