@@ -52,6 +52,7 @@ typedef struct
 	gboolean		 empty;
 	gchar			*category_of_day;
 	GtkWidget		*search_button;
+	GHashTable		*category_hash;		/* id : GsCategory */
 
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
@@ -168,6 +169,22 @@ out:
 }
 
 static void
+gs_shell_overview_category_more_cb (GtkButton *button, GsShellOverview *self)
+{
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsCategory *cat;
+	const gchar *id;
+
+	id = g_object_get_data (G_OBJECT (button), "GnomeSoftware::CategoryId");
+	if (id == NULL)
+		return;
+	cat = g_hash_table_lookup (priv->category_hash, id);
+	if (cat == NULL)
+		return;
+	gs_shell_show_category (priv->shell, cat);
+}
+
+static void
 gs_shell_overview_get_category_apps_cb (GObject *source_object,
 					GAsyncResult *res,
 					gpointer user_data)
@@ -178,9 +195,11 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
 	GsApp *app;
-	GtkWidget *tile;
-	GtkWidget *label;
 	GtkWidget *box;
+	GtkWidget *button;
+	GtkWidget *headerbox;
+	GtkWidget *label;
+	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -199,14 +218,31 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	gs_app_list_randomize (list);
 
 	/* add header */
+	headerbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 9);
+	gtk_widget_set_visible (headerbox, TRUE);
+
+	/* add label */
 	label = gtk_label_new (load_data->title);
 	gtk_widget_set_visible (label, TRUE);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.f);
 	gtk_widget_set_margin_top (label, 24);
 	gtk_widget_set_margin_bottom (label, 6);
+	gtk_widget_set_hexpand (label, TRUE);
 	gtk_style_context_add_class (gtk_widget_get_style_context (label),
 				     "index-title-alignment-software");
-	gtk_container_add (GTK_CONTAINER (priv->box_overview), label);
+	gtk_container_add (GTK_CONTAINER (headerbox), label);
+
+	/* add button */
+	button = gtk_button_new_with_label (_("More…"));
+	g_object_set_data_full (G_OBJECT (button), "GnomeSoftware::CategoryId",
+				g_strdup (gs_category_get_id (load_data->category)),
+				g_free);
+	gtk_widget_set_visible (button, TRUE);
+	gtk_widget_set_valign (button, GTK_ALIGN_CENTER);
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (gs_shell_overview_category_more_cb), self);
+	gtk_container_add (GTK_CONTAINER (headerbox), button);
+	gtk_container_add (GTK_CONTAINER (priv->box_overview), headerbox);
 
 	/* add hiding box */
 	box = gs_hiding_box_new ();
@@ -375,6 +411,11 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		gtk_flow_box_insert (flowbox, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		has_category = TRUE;
+
+		/* we save these for the 'More...' buttons */
+		g_hash_table_insert (priv->category_hash,
+				     g_strdup (gs_category_get_id (cat)),
+				     g_object_ref (cat));
 	}
 
 	/* show the expander if we have too many children */
@@ -605,6 +646,8 @@ gs_shell_overview_setup (GsShellOverview *self,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
+	priv->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+						     g_free, (GDestroyNotify) g_object_unref);
 
 	/* avoid a ref cycle */
 	priv->shell = shell;
@@ -653,6 +696,7 @@ gs_shell_overview_dispose (GObject *object)
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
 	g_clear_pointer (&priv->category_of_day, g_free);
+	g_clear_pointer (&priv->category_hash, g_hash_table_unref);
 
 	G_OBJECT_CLASS (gs_shell_overview_parent_class)->dispose (object);
 }
