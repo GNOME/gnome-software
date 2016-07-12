@@ -202,6 +202,29 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 	}
 }
 
+static void
+free_back_entry (BackEntry *entry)
+{
+	if (entry->focus != NULL)
+		g_object_remove_weak_pointer (G_OBJECT (entry->focus),
+		                              (gpointer *) &entry->focus);
+	g_clear_object (&entry->category);
+	g_clear_object (&entry->app);
+	g_free (entry->search);
+	g_free (entry);
+}
+
+static void
+gs_shell_clean_back_entry_stack (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	BackEntry *entry;
+
+	while ((entry = g_queue_pop_head (priv->back_entry_stack)) != NULL) {
+		free_back_entry (entry);
+	}
+}
+
 void
 gs_shell_change_mode (GsShell *shell,
 		      GsShellMode mode,
@@ -241,10 +264,6 @@ gs_shell_change_mode (GsShell *shell,
 	/* TRANSLATORS: this is the main window title */
 	gtk_window_set_title (priv->main_window, _("Software"));
 
-	/* show the back button if needed */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-	gtk_widget_set_visible (widget, !g_queue_is_empty (priv->back_entry_stack));
-
 	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
@@ -267,9 +286,11 @@ gs_shell_change_mode (GsShell *shell,
 	priv->mode = mode;
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
+		gs_shell_clean_back_entry_stack (shell);
 		new_page = GS_PAGE (priv->shell_overview);
 		break;
 	case GS_SHELL_MODE_INSTALLED:
+		gs_shell_clean_back_entry_stack (shell);
 		new_page = GS_PAGE (priv->shell_installed);
 		break;
 	case GS_SHELL_MODE_MODERATE:
@@ -283,6 +304,7 @@ gs_shell_change_mode (GsShell *shell,
 		new_page = GS_PAGE (priv->shell_search);
 		break;
 	case GS_SHELL_MODE_UPDATES:
+		gs_shell_clean_back_entry_stack (shell);
 		new_page = GS_PAGE (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
@@ -304,6 +326,10 @@ gs_shell_change_mode (GsShell *shell,
 	default:
 		g_assert_not_reached ();
 	}
+
+	/* show the back button if needed */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	gtk_widget_set_visible (widget, !g_queue_is_empty (priv->back_entry_stack));
 
 	gs_page_switch_to (new_page, scroll_up);
 
@@ -368,18 +394,6 @@ save_back_entry (GsShell *shell)
 	}
 
 	g_queue_push_head (priv->back_entry_stack, entry);
-}
-
-static void
-free_back_entry (BackEntry *entry)
-{
-	if (entry->focus != NULL)
-		g_object_remove_weak_pointer (G_OBJECT (entry->focus),
-		                              (gpointer *) &entry->focus);
-	g_clear_object (&entry->category);
-	g_clear_object (&entry->app);
-	g_free (entry->search);
-	g_free (entry);
 }
 
 static void
@@ -521,16 +535,11 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 {
 	GsShell *shell = user_data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	BackEntry *entry;
 
 	/* When the window is closed, reset the initial mode to overview */
 	priv->mode = GS_SHELL_MODE_OVERVIEW;
 
-	/* ... and clear any remaining entries in the back button stack */
-	while ((entry = g_queue_pop_head (priv->back_entry_stack)) != NULL) {
-		free_back_entry (entry);
-	}
-
+	gs_shell_clean_back_entry_stack (shell);
 	gtk_widget_hide (dialog);
 	return TRUE;
 }
