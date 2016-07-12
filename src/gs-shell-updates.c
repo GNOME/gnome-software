@@ -790,7 +790,6 @@ gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
 	default:
 		g_assert_not_reached ();
 	}
-	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 /**
