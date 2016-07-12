@@ -914,6 +914,28 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 	if (!gs_plugin_refine_item_origin (self, app, cancellable, error))
 		return FALSE;
 
+	/* special case: if this is per-user instance and the runtime is
+	 * available system-wide then mark it installed */
+	if (flatpak_installation_get_is_user (self->installation) &&
+	    gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME &&
+	    gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+		g_autoptr(FlatpakInstallation) installation = NULL;
+		installation = flatpak_installation_new_system (cancellable,
+								error);
+		if (installation == NULL)
+			return FALSE;
+		xrefs = flatpak_installation_list_installed_refs (installation,
+								  cancellable, error);
+		if (xrefs == NULL)
+			return FALSE;
+		for (i = 0; i < xrefs->len; i++) {
+			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+			if (!gs_flatpak_app_matches_xref (self, app, FLATPAK_REF(xref)))
+				continue;
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		}
+	}
+
 	/* anything not installed just check the remote is still present */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
 	    gs_app_get_origin (app) != NULL) {
