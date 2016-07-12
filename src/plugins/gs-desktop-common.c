@@ -279,6 +279,44 @@ static const GsDesktopMap map_utilities[] = {
 	{ NULL }
 };
 
+/* Reference */
+static const GsDesktopMap map_reference[] = {
+	{ "all",		NC_("Menu of Reference", "All"),
+					{ "Reference",
+					  NULL } },
+	{ "featured",		NC_("Menu of Reference", "Featured"),
+					{ "Reference::Featured",
+					  NULL} },
+	{ "art",		NC_("Menu of Art", "Art"),
+					{ "Reference::Art",
+					  NULL} },
+	{ "biography",		NC_("Menu of Reference", "Biography"),
+					{ "Reference::Biography",
+					  NULL} },
+	{ "comics",		NC_("Menu of Reference", "Fiction"),
+					{ "Reference::Comics",
+					  NULL} },
+	{ "fiction",		NC_("Menu of Reference", "Fiction"),
+					{ "Reference::Fiction",
+					  NULL} },
+	{ "health",		NC_("Menu of Reference", "Health"),
+					{ "Reference::Health",
+					  NULL} },
+	{ "history",		NC_("Menu of Reference", "History"),
+					{ "Reference::History",
+					  NULL} },
+	{ "lifestyle",		NC_("Menu of Reference", "Lifestyle"),
+					{ "Reference::Lifestyle",
+					  NULL} },
+	{ "politics",		NC_("Menu of Reference", "Politics"),
+					{ "Reference::Politics",
+					  NULL} },
+	{ "sports",		NC_("Menu of Reference", "Sports"),
+					{ "Reference::Sports",
+					  NULL} },
+	{ NULL }
+};
+
 /* main categories */
 static const GsDesktopData msdata[] = {
 	/* TRANSLATORS: this is the menu spec main category for Audio & Video */
@@ -308,6 +346,9 @@ static const GsDesktopData msdata[] = {
 	/* TRANSLATORS: this is the menu spec main category for Communication */
 	{ "communication",	map_communication,	N_("Communication & News"),
 				"user-available-symbolic", "#729fcf", TRUE },
+	/* TRANSLATORS: this is the menu spec main category for Reference */
+	{ "reference",		map_reference,		N_("Reference"),
+				"view-dual-symbolic", "#ac5500" },
 	/* TRANSLATORS: this is the menu spec main category for Utilities */
 	{ "utilities",		map_utilities,		N_("Utilities"),
 				"applications-utilities-symbolic", "#2944cc" },
