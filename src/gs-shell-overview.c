@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
+#include <math.h>
 
 #include "gs-shell.h"
 #include "gs-shell-overview.h"
@@ -31,6 +32,7 @@
 #include "gs-popular-tile.h"
 #include "gs-feature-tile.h"
 #include "gs-category-tile.h"
+#include "gs-hiding-box.h"
 #include "gs-common.h"
 
 #define N_TILES 9
@@ -54,12 +56,10 @@ typedef struct
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
-	GtkWidget		*box_popular_rotating;
 	GtkWidget		*category_heading;
 	GtkWidget		*flowbox_categories;
 	GtkWidget		*flowbox_categories2;
 	GtkWidget		*popular_heading;
-	GtkWidget		*popular_rotating_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
 	GtkWidget		*categories_expander_button;
@@ -79,6 +79,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 typedef struct {
         GsCategory	*category;
         GsShellOverview	*self;
+        const gchar	*title;
 } LoadData;
 
 static void
@@ -178,6 +179,8 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	guint i;
 	GsApp *app;
 	GtkWidget *tile;
+	GtkWidget *label;
+	GtkWidget *box;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -186,30 +189,39 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get recommended applications: %s", error->message);
-		gtk_widget_hide (priv->popular_rotating_heading);
-		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	} else if (gs_app_list_length (list) < N_TILES) {
 		g_warning ("hiding recommended applications: "
 			   "found only %d to show, need at least %d",
 			   gs_app_list_length (list), N_TILES);
-		gtk_widget_hide (priv->popular_rotating_heading);
-		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	}
 	gs_app_list_randomize (list);
 
-	gtk_widget_show (priv->popular_rotating_heading);
-	gtk_widget_show (priv->box_popular_rotating);
+	/* add header */
+	label = gtk_label_new (load_data->title);
+	gtk_widget_set_visible (label, TRUE);
+	gtk_label_set_xalign (GTK_LABEL (label), 0.f);
+	gtk_widget_set_margin_top (label, 24);
+	gtk_widget_set_margin_bottom (label, 6);
+	gtk_style_context_add_class (gtk_widget_get_style_context (label),
+				     "index-title-alignment-software");
+	gtk_container_add (GTK_CONTAINER (priv->box_overview), label);
 
-	gs_container_remove_all (GTK_CONTAINER (priv->box_popular_rotating));
+	/* add hiding box */
+	box = gs_hiding_box_new ();
+	gs_hiding_box_set_spacing (GS_HIDING_BOX (box), 14);
+	gtk_widget_set_visible (box, TRUE);
+	gtk_widget_set_valign (box, GTK_ALIGN_START);
+	gtk_container_add (GTK_CONTAINER (priv->box_overview), box);
 
+	/* add all the apps */
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (app_tile_clicked), self);
-		gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), tile);
+		gtk_container_add (GTK_CONTAINER (box), tile);
 	}
 
 	priv->empty = FALSE;
@@ -381,43 +393,74 @@ out:
 	}
 }
 
+static const gchar *
+gs_shell_overview_get_category_label (const gchar *id)
+{
+	if (g_strcmp0 (id, "audio-video") == 0) {
+		/* TRANSLATORS: this is a heading for audio applications which
+		 * have been featured ('recommended') by the distribution */
+		return _("Recommended Audio & Video Applications");
+	}
+	if (g_strcmp0 (id, "games") == 0) {
+		/* TRANSLATORS: this is a heading for games which have been
+		 * featured ('recommended') by the distribution */
+		return _("Recommended Games");
+	}
+	if (g_strcmp0 (id, "graphics") == 0) {
+		/* TRANSLATORS: this is a heading for graphics applications
+		 * which have been featured ('recommended') by the distribution */
+		return _("Recommended Graphics Applications");
+	}
+	if (g_strcmp0 (id, "productivity") == 0) {
+		/* TRANSLATORS: this is a heading for office applications which
+		 * have been featured ('recommended') by the distribution */
+		return _("Recommended Productivity Applications");
+	}
+	return NULL;
+}
+
+static GPtrArray *
+gs_shell_overview_get_random_categories (void)
+{
+	GPtrArray *cats;
+	guint i;
+	g_autoptr(GDateTime) date = NULL;
+	g_autoptr(GRand) rand = NULL;
+	const gchar *ids[] = { "audio-video",
+			       "games",
+			       "graphics",
+			       "productivity",
+			       NULL };
+
+	date = g_date_time_new_now_utc ();
+	rand = g_rand_new_with_seed (g_date_time_get_day_of_year (date));
+	cats = g_ptr_array_new_with_free_func (g_free);
+	for (i = 0; ids[i] != NULL; i++)
+		g_ptr_array_add (cats, g_strdup (ids[i]));
+	for (i = 0; i < powl (cats->len + 1, 2); i++) {
+		gpointer tmp;
+		guint rnd1 = g_rand_int_range (rand, 0, cats->len);
+		guint rnd2 = g_rand_int_range (rand, 0, cats->len);
+		if (rnd1 == rnd2)
+			continue;
+		tmp = cats->pdata[rnd1];
+		cats->pdata[rnd1] = cats->pdata[rnd2];
+		cats->pdata[rnd2] = tmp;
+	}
+	for (i = 0; i < cats->len; i++) {
+		const gchar *tmp = g_ptr_array_index (cats, i);
+		g_debug ("%i = %s", i + 1, tmp);
+	}
+	return cats;
+}
+
 static void
 gs_shell_overview_load (GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
-	const gchar *category_of_day;
-	g_autoptr(GDateTime) date = NULL;
+	guint i;
 
 	priv->empty = TRUE;
-
-	date = g_date_time_new_now_utc ();
-	switch (g_date_time_get_day_of_year (date) % 4) {
-	case 0:
-		category_of_day = "audio-video";
-		/* TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution */
-		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Audio & Video Applications"));
-		break;
-	case 1:
-		category_of_day = "games";
-		/* TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution */
-		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Games"));
-		break;
-	case 2:
-		category_of_day = "graphics";
-		/* TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution */
-		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Graphics Applications"));
-		break;
-	case 3:
-		category_of_day = "productivity";
-		/* TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution */
-		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Productivity Applications"));
-		break;
-	default:
-		g_assert_not_reached ();
-		break;
-	}
-	g_free (priv->category_of_day);
-	priv->category_of_day = g_strdup (category_of_day);
 
 	if (!priv->loading_featured) {
 		priv->loading_featured = TRUE;
@@ -441,27 +484,40 @@ gs_shell_overview_load (GsShellOverview *self)
 	}
 
 	if (!priv->loading_popular_rotating) {
-		LoadData *load_data;
-		g_autoptr(GsCategory) category = NULL;
-		g_autoptr(GsCategory) featured_category = NULL;
+		const guint MAX_CATS = 2;
+		g_autoptr(GPtrArray) cats_random = NULL;
+		cats_random = gs_shell_overview_get_random_categories ();
 
-		category = gs_category_new (category_of_day);
-		featured_category = gs_category_new ("featured");
-		gs_category_add_child (category, featured_category);
+		/* load all the categories */
+		for (i = 0; i < cats_random->len && i < MAX_CATS; i++) {
+			LoadData *load_data;
+			const gchar *cat_id = g_ptr_array_index (cats_random, 0);
+			g_autoptr(GsCategory) category = NULL;
+			g_autoptr(GsCategory) featured_category = NULL;
 
-		load_data = g_slice_new0 (LoadData);
-		load_data->category = g_object_ref (category);
-		load_data->self = g_object_ref (self);
+			cat_id = g_ptr_array_index (cats_random, i);
+			if (i == 0) {
+				g_free (priv->category_of_day);
+				priv->category_of_day = g_strdup (cat_id);
+			}
+			category = gs_category_new (cat_id);
+			featured_category = gs_category_new ("featured");
+			gs_category_add_child (category, featured_category);
 
+			load_data = g_slice_new0 (LoadData);
+			load_data->category = g_object_ref (category);
+			load_data->self = g_object_ref (self);
+			load_data->title = gs_shell_overview_get_category_label (cat_id);
+			gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
+								  featured_category,
+								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+								  priv->cancellable,
+								  gs_shell_overview_get_category_apps_cb,
+								  load_data);
+			priv->refresh_count++;
+		}
 		priv->loading_popular_rotating = TRUE;
-		gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
-		                                          featured_category,
-		                                          GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-		                                          GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-		                                          priv->cancellable,
-		                                          gs_shell_overview_get_category_apps_cb,
-		                                          load_data);
-		priv->refresh_count++;
 	}
 
 	if (!priv->loading_categories) {
@@ -562,9 +618,6 @@ gs_shell_overview_setup (GsShellOverview *self,
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_popular_tile_new (NULL);
 		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
-
-		tile = gs_popular_tile_new (NULL);
-		gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), tile);
 	}
 
 	/* handle category expander */
@@ -640,12 +693,10 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, bin_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular_rotating);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_rotating_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button);

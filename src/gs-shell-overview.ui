@@ -27,14 +27,12 @@
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
                     <property name="hexpand">False</property>
+                    <property name="border_width">12</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkAlignment" id="bin_featured">
                         <property name="visible">True</property>
                         <property name="halign">fill</property>
-                        <property name="margin_start">12</property>
-                        <property name="margin_end">12</property>
-                        <property name="margin-top">12</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -51,8 +49,6 @@
                         <property name="label" translatable="yes">Categories</property>
                         <property name="margin-top">24</property>
                         <property name="margin-bottom">6</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">24</property>
                         <accessibility>
                           <relation target="flowbox_categories" type="label-for"/>
                         </accessibility>
@@ -70,8 +66,6 @@
                       <object class="GtkFlowBox" id="flowbox_categories">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="margin_start">9</property>
-                        <property name="margin_end">9</property>
                         <property name="margin-bottom">9</property>
                         <property name="row_spacing">6</property>
                         <property name="column_spacing">6</property>
@@ -96,8 +90,6 @@
                           <object class="GtkFlowBox" id="flowbox_categories2">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_start">12</property>
-                            <property name="margin_end">12</property>
                             <property name="margin-bottom">24</property>
                             <property name="row_spacing">8</property>
                             <property name="column_spacing">8</property>
@@ -196,8 +188,6 @@
                         <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor's Picks</property>
                         <property name="margin-top">0</property>
                         <property name="margin-bottom">6</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">24</property>
                         <accessibility>
                           <relation target="box_popular" type="label-for"/>
                         </accessibility>
@@ -215,8 +205,6 @@
                       <object class="GsHidingBox" id="box_popular">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="margin_start">12</property>
-                        <property name="margin_end">12</property>
                         <property name="spacing">14</property>
                         <property name="valign">start</property>
                         <accessibility>
@@ -227,47 +215,6 @@
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="popular_rotating_heading">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="xalign">0</property>
-                        <property name="label" comments="Don&apos;t translate, this is just a placeholder">Recommended Games</property>
-                        <property name="margin-top">24</property>
-                        <property name="margin-bottom">6</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">24</property>
-                        <accessibility>
-                          <relation target="box_popular_rotating" type="label-for"/>
-                        </accessibility>
-                        <style>
-                          <class name="index-title-alignment-software"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GsHidingBox" id="box_popular_rotating">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_start">12</property>
-                        <property name="margin_end">12</property>
-                        <property name="spacing">14</property>
-                        <property name="valign">start</property>
-                        <accessibility>
-                          <relation target="popular_rotating_heading" type="labelled-by"/>
-                        </accessibility>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">8</property>
                       </packing>
                     </child>
                   </object>
