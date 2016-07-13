@@ -251,8 +251,10 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 
 	/* for all types */
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
-	gs_app_set_metadata (app, "GnomeSoftware::Creator",
-			     gs_plugin_get_name (self->plugin));
+	if (gs_app_get_metadata_item (app, "GnomeSoftware::Creator") == NULL) {
+		gs_app_set_metadata (app, "GnomeSoftware::Creator",
+				     gs_plugin_get_name (self->plugin));
+	}
 
 	/* get the last time the app was updated */
 	metadata_fn = g_build_filename (flatpak_installed_ref_get_deploy_dir (xref),

@@ -2147,8 +2147,8 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 	if (found != NULL) {
 		if (g_strcmp0 (found, value) == 0)
 			return;
-		g_warning ("tried overwriting key %s from %s to %s",
-			   key, found, value);
+		g_warning ("tried overwriting %s key %s from %s to %s",
+			   app->id, key, found, value);
 		return;
 	}
 	str = g_string_new (value);
