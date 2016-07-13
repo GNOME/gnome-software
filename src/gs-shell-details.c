@@ -351,13 +351,6 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 			/* TRANSLATORS: button text in the header when an application can be erased */
 			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Remove"));
 			break;
-		case AS_APP_STATE_REMOVING:
-			gtk_widget_set_visible (self->button_remove, TRUE);
-			gtk_widget_set_sensitive (self->button_remove, FALSE);
-			gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			/* TRANSLATORS: button text in the header when an application can be installed */
-			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Removing"));
-			break;
 		case AS_APP_STATE_QUEUED_FOR_INSTALL:
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
@@ -367,6 +360,7 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		case AS_APP_STATE_AVAILABLE_LOCAL:
 		case AS_APP_STATE_AVAILABLE:
 		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_REMOVING:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_UNKNOWN:
 			gtk_widget_set_visible (self->button_remove, FALSE);
