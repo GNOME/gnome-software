@@ -768,31 +768,17 @@ gs_app_get_flatpak_kind (GsApp *app)
 }
 
 static gboolean
-gs_plugin_refine_item_origin (GsFlatpak *self,
-			      GsApp *app,
-			      GCancellable *cancellable,
-			      GError **error)
+refine_origin_from_installation (GsFlatpak *self,
+				 FlatpakInstallation *installation,
+				 GsApp *app,
+				 GCancellable *cancellable,
+				 GError **error)
 {
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
-	/* already set */
-	if (gs_app_get_origin (app) != NULL)
-		return TRUE;
-
-	/* ensure metadata exists */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::refine-origin");
-	if (!gs_refine_item_metadata (self, app, cancellable, error))
-		return FALSE;
-
-	/* find list of remotes */
-	g_debug ("looking for a remote for %s/%s/%s",
-		 gs_app_get_flatpak_name (app),
-		 gs_app_get_flatpak_arch (app),
-		 gs_app_get_flatpak_branch (app));
-	xremotes = flatpak_installation_list_remotes (self->installation, cancellable,
+	xremotes = flatpak_installation_list_remotes (installation,
+						      cancellable,
 						      error);
 	if (xremotes == NULL)
 		return FALSE;
@@ -808,7 +794,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		/* sync */
 		remote_name = flatpak_remote_get_name (xremote);
 		g_debug ("looking at remote %s", remote_name);
-		xref = flatpak_installation_fetch_remote_ref_sync (self->installation,
+		xref = flatpak_installation_fetch_remote_ref_sync (installation,
 								   remote_name,
 								   gs_app_get_flatpak_kind (app),
 								   gs_app_get_flatpak_name (app),
@@ -829,6 +815,66 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		     gs_app_get_flatpak_name (app),
 		     gs_app_get_flatpak_arch (app),
 		     gs_app_get_flatpak_branch (app));
+
+	return FALSE;
+}
+
+static gboolean
+gs_plugin_refine_item_origin (GsFlatpak *self,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GError) local_error = NULL;
+	gboolean ignore_error = FALSE;
+
+	/* already set */
+	if (gs_app_get_origin (app) != NULL)
+		return TRUE;
+
+	/* ensure metadata exists */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
+					  "flatpak::refine-origin");
+	if (!gs_refine_item_metadata (self, app, cancellable, error))
+		return FALSE;
+
+	/* find list of remotes */
+	g_debug ("looking for a remote for %s/%s/%s",
+		 gs_app_get_flatpak_name (app),
+		 gs_app_get_flatpak_arch (app),
+		 gs_app_get_flatpak_branch (app));
+
+	/* first check the plugin's own flatpak installation */
+	if (refine_origin_from_installation (self, self->installation, app,
+					     cancellable, &local_error)) {
+		return TRUE;
+	}
+
+	ignore_error = g_error_matches (local_error, GS_PLUGIN_ERROR,
+					GS_PLUGIN_ERROR_NOT_SUPPORTED);
+
+	/* check the system installation if we're on a user one */
+	if (ignore_error &&
+	    flatpak_installation_get_is_user (self->installation) &&
+	    gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
+		g_autoptr(FlatpakInstallation) installation = NULL;
+
+		installation = flatpak_installation_new_system (cancellable,
+								error);
+		if (installation == NULL)
+			return FALSE;
+
+		if (refine_origin_from_installation (self, installation, app,
+						     cancellable, error)) {
+			return TRUE;
+		}
+	} else {
+		g_propagate_error (error, local_error);
+		/* safely handle the autoptr */
+		local_error = NULL;
+	}
+
 	return FALSE;
 }
 
