@@ -107,7 +107,6 @@ struct _GsShellDetails
 	GtkWidget		*label_details_version_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*label_pending;
-	GtkWidget		*label_details_webapp;
 	GtkWidget		*label_license_nonfree_details;
 	GtkWidget		*label_licenses_intro;
 	GtkWidget		*list_box_addons;
@@ -673,6 +672,19 @@ gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 
 		gtk_box_pack_start (GTK_BOX (self->box_details_description), para, FALSE, FALSE, 0);
 	}
+
+	/* show the webapp warning */
+	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
+		GtkWidget *label;
+		/* TRANSLATORS: this is the warning box */
+		label = gtk_label_new ("This application can only be used when there is an active internet connection.");
+		gtk_widget_set_visible (label, TRUE);
+		gtk_label_set_xalign (GTK_LABEL (label), 0.f);
+		gtk_style_context_add_class (gtk_widget_get_style_context (label),
+					     "application-details-webapp-warning");
+		gtk_box_pack_start (GTK_BOX (self->box_details_description),
+				    label, FALSE, FALSE, 0);
+	}
 }
 
 static void
@@ -915,13 +927,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	ret = (kudos & user_integration_bf) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);
 	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
-
-	/* show the webapp warning */
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
-		gtk_widget_set_visible (self->label_details_webapp, TRUE);
-	} else {
-		gtk_widget_set_visible (self->label_details_webapp, FALSE);
-	}
 
 	/* hide the kudo details for non-desktop software */
 	switch (gs_app_get_kind (self->app)) {
@@ -1967,7 +1972,6 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_pending);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_webapp);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_fallback);
