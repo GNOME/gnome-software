@@ -692,9 +692,20 @@ gs_plugin_refine_app (GsPlugin *plugin,
 static gchar *
 gs_plugin_odrs_sanitize_version (const gchar *version)
 {
-	gchar *tmp = g_strdup (version);
-	if (tmp == NULL)
+	gchar *str;
+	gchar *tmp;
+
+	/* nothing set */
+	if (version == NULL)
 		return g_strdup ("unknown");
+
+	/* remove epoch */
+	str = g_strrstr (version, ":");
+	if (str != NULL)
+		version = str + 1;
+
+	/* remove release */
+	tmp = g_strdup (version);
 	g_strdelimit (tmp, "-", '\0');
 	return tmp;
 }
