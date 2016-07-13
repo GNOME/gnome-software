@@ -144,6 +144,12 @@ reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
 	proxy_http = get_proxy_http (plugin);
 	proxy_ftp = get_proxy_ftp (plugin);
 
+	/* nothing to do */
+	if (proxy_http == NULL && proxy_ftp == NULL) {
+		g_debug ("not setting proxy as none set");
+		return;
+	}
+
 	g_debug ("Setting proxies (http: %s, ftp: %s)", proxy_http, proxy_ftp);
 
 	pk_control_set_proxy_async (priv->control,
