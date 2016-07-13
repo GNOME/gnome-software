@@ -570,11 +570,21 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 		return;
 	}
 
+	/* fallback warning */
+	screenshots = gs_app_get_screenshots (self->app);
+	switch (gs_app_get_kind (self->app)) {
+	case AS_APP_KIND_CODEC:
+	case AS_APP_KIND_ADDON:
+		gtk_widget_set_visible (self->box_details_screenshot_fallback, FALSE);
+		break;
+	default:
+		gtk_widget_set_visible (self->box_details_screenshot_fallback,
+					screenshots->len == 0);
+		break;
+	}
+
 	/* set screenshots */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
-	screenshots = gs_app_get_screenshots (self->app);
-	gtk_widget_set_visible (self->box_details_screenshot_fallback,
-				screenshots->len == 0);
 	if (screenshots->len == 0) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
 		return;
