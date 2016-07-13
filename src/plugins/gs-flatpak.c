@@ -402,7 +402,8 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
 		}
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_list_add (list, app);
 	}
 
