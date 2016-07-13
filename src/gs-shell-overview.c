@@ -206,12 +206,16 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	/* get popular apps */
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to get recommended applications: %s", error->message);
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			goto out;
+		g_warning ("failed to get category %s featured applications: %s",
+			   gs_category_get_id (load_data->category),
+			   error->message);
 		goto out;
 	} else if (gs_app_list_length (list) < N_TILES) {
-		g_warning ("hiding recommended applications: "
+		g_warning ("hiding category %s featured applications: "
 			   "found only %d to show, need at least %d",
+			   gs_category_get_id (load_data->category),
 			   gs_app_list_length (list), N_TILES);
 		goto out;
 	}
