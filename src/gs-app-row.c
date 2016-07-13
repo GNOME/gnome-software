@@ -54,6 +54,7 @@ typedef struct
 	gboolean	 colorful;
 	gboolean	 show_folders;
 	gboolean	 show_buttons;
+	gboolean	 show_sandbox;
 	gboolean	 show_codec;
 	gboolean	 show_update;
 	gboolean	 selectable;
@@ -343,7 +344,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* sandboxed */
-	if (!priv->show_update) {
+	if (priv->show_sandbox) {
 		if (gs_app_get_kudos (priv->app) & GS_APP_KUDO_SANDBOXED_SECURE) {
 			gtk_widget_set_visible (priv->box_sandboxed, TRUE);
 			gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_sandboxed),
@@ -738,6 +739,15 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_buttons = show_buttons;
+	gs_app_row_refresh (app_row);
+}
+
+void
+gs_app_row_set_show_sandbox (GsAppRow *app_row, gboolean show_sandbox)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_sandbox = show_sandbox;
 	gs_app_row_refresh (app_row);
 }
 

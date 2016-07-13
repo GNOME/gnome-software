@@ -134,6 +134,7 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		app_row = gs_app_row_new (app);
+		gs_app_row_set_show_sandbox (GS_APP_ROW (app_row), TRUE);
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_shell_search_app_row_clicked_cb),
 				  self);
