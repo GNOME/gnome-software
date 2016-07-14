@@ -24,22 +24,15 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gs-common.h"
 #include "gs-star-widget.h"
 
 typedef struct
 {
 	gboolean	 interactive;
 	gint		 rating;
-	GtkWidget	*button1;
-	GtkWidget	*button2;
-	GtkWidget	*button3;
-	GtkWidget	*button4;
-	GtkWidget	*button5;
-	GtkWidget	*image1;
-	GtkWidget	*image2;
-	GtkWidget	*image3;
-	GtkWidget	*image4;
-	GtkWidget	*image5;
+	guint		 icon_size;
+	GtkWidget	*box1;
 } GsStarWidgetPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
@@ -52,6 +45,8 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
+
+static void gs_star_widget_refresh (GsStarWidget *star);
 
 gint
 gs_star_widget_get_rating (GsStarWidget *star)
@@ -68,44 +63,66 @@ gs_star_widget_set_icon_size (GsStarWidget *star, guint pixel_size)
 	GsStarWidgetPrivate *priv;
 	g_return_if_fail (GS_IS_STAR_WIDGET (star));
 	priv = gs_star_widget_get_instance_private (star);
-	gtk_image_set_pixel_size (GTK_IMAGE (priv->image1), pixel_size);
-	gtk_image_set_pixel_size (GTK_IMAGE (priv->image2), pixel_size);
-	gtk_image_set_pixel_size (GTK_IMAGE (priv->image3), pixel_size);
-	gtk_image_set_pixel_size (GTK_IMAGE (priv->image4), pixel_size);
-	gtk_image_set_pixel_size (GTK_IMAGE (priv->image5), pixel_size);
+	priv->icon_size = pixel_size;
+	gs_star_widget_refresh (star);
 }
 
 static void
-gs_star_widget_style_class_enable (GtkWidget *widget, gboolean val)
+gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 {
-	GtkStyleContext *context;
-	context = gtk_widget_get_style_context (widget);
-	if (val) {
-		gtk_style_context_add_class (context, "star-enabled");
-		gtk_style_context_remove_class (context, "star-disabled");
-	} else {
-		gtk_style_context_add_class (context, "star-disabled");
-		gtk_style_context_remove_class (context, "star-enabled");
-	}
+	GsStarWidgetPrivate *priv;
+	gint rating;
+
+	priv = gs_star_widget_get_instance_private (star);
+	if (!priv->interactive)
+		return;
+
+	rating = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
+						     "GsStarWidget::value"));
+	priv->rating = rating;
+	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
+	gs_star_widget_refresh (star);
 }
 
 static void
 gs_star_widget_refresh (GsStarWidget *star)
 {
-	GsStarWidgetPrivate *priv;
-	priv = gs_star_widget_get_instance_private (star);
+	GsStarWidgetPrivate *priv = gs_star_widget_get_instance_private (star);
+	guint i;
 
-	gtk_widget_set_sensitive (priv->button1, priv->interactive);
-	gtk_widget_set_sensitive (priv->button2, priv->interactive);
-	gtk_widget_set_sensitive (priv->button3, priv->interactive);
-	gtk_widget_set_sensitive (priv->button4, priv->interactive);
-	gtk_widget_set_sensitive (priv->button5, priv->interactive);
+	/* remove all existing widgets */
+	gs_container_remove_all (GTK_CONTAINER (priv->box1));
 
-	gs_star_widget_style_class_enable (priv->image1, priv->rating > 0);
-	gs_star_widget_style_class_enable (priv->image2, priv->rating > 20);
-	gs_star_widget_style_class_enable (priv->image3, priv->rating > 40);
-	gs_star_widget_style_class_enable (priv->image4, priv->rating > 60);
-	gs_star_widget_style_class_enable (priv->image5, priv->rating > 80);
+	for (i = 0; i < 5; i++) {
+		GtkWidget *w;
+		GtkWidget *im;
+
+		/* create image */
+		im = gtk_image_new_from_icon_name ("starred-symbolic",
+						   GTK_ICON_SIZE_DIALOG);
+		gtk_image_set_pixel_size (GTK_IMAGE (im), priv->icon_size);
+
+		/* create button */
+		if (priv->interactive) {
+			w = gtk_button_new ();
+			g_signal_connect (w, "clicked",
+					  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
+			g_object_set_data (G_OBJECT (w),
+					   "GsStarWidget::value",
+					   GINT_TO_POINTER (rate_to_star[i]));
+			gtk_container_add (GTK_CONTAINER (w), im);
+			gtk_widget_set_visible (im, TRUE);
+		} else {
+			w = im;
+		}
+		gtk_widget_set_sensitive (w, priv->interactive);
+		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
+		gtk_style_context_add_class (gtk_widget_get_style_context (im),
+					     priv->rating >= rate_to_star[i] ?
+					     "star-enabled" : "star-disabled");
+		gtk_widget_set_visible (w, TRUE);
+		gtk_container_add (GTK_CONTAINER (priv->box1), w);
+	}
 }
 
 void
@@ -136,57 +153,10 @@ gs_star_widget_destroy (GtkWidget *widget)
 }
 
 static void
-gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
-{
-	GsStarWidgetPrivate *priv;
-	gint rating;
-
-	priv = gs_star_widget_get_instance_private (star);
-	if (!priv->interactive)
-		return;
-
-	rating = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
-						     "GsStarWidget::value"));
-	priv->rating = rating;
-	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
-	gs_star_widget_refresh (star);
-}
-
-static void
 gs_star_widget_init (GsStarWidget *star)
 {
-	GsStarWidgetPrivate *priv;
-
 	gtk_widget_set_has_window (GTK_WIDGET (star), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (star));
-	priv = gs_star_widget_get_instance_private (star);
-	g_signal_connect (priv->button1, "clicked",
-			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
-	g_signal_connect (priv->button2, "clicked",
-			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
-	g_signal_connect (priv->button3, "clicked",
-			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
-	g_signal_connect (priv->button4, "clicked",
-			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
-	g_signal_connect (priv->button5, "clicked",
-			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
-
-	/* assign the values */
-	g_object_set_data (G_OBJECT (priv->button1),
-			   "GsStarWidget::value",
-			   GINT_TO_POINTER (rate_to_star[0]));
-	g_object_set_data (G_OBJECT (priv->button2),
-			   "GsStarWidget::value",
-			   GINT_TO_POINTER (rate_to_star[1]));
-	g_object_set_data (G_OBJECT (priv->button3),
-			   "GsStarWidget::value",
-			   GINT_TO_POINTER (rate_to_star[2]));
-	g_object_set_data (G_OBJECT (priv->button4),
-			   "GsStarWidget::value",
-			   GINT_TO_POINTER (rate_to_star[3]));
-	g_object_set_data (G_OBJECT (priv->button5),
-			   "GsStarWidget::value",
-			   GINT_TO_POINTER (rate_to_star[4]));
 }
 
 static void
@@ -205,17 +175,7 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 			      G_TYPE_NONE, 1, G_TYPE_UINT);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-star-widget.ui");
-
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button1);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button2);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button3);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button4);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button5);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image1);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image2);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image3);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image4);
-	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image5);
+	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, box1);
 }
 
 GtkWidget *
