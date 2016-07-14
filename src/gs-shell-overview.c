@@ -238,11 +238,14 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 
 	/* add button */
 	button = gtk_button_new_with_label (_("More…"));
+	gtk_style_context_add_class (gtk_widget_get_style_context (button),
+				     "overview-more-button");
 	g_object_set_data_full (G_OBJECT (button), "GnomeSoftware::CategoryId",
 				g_strdup (gs_category_get_id (load_data->category)),
 				g_free);
 	gtk_widget_set_visible (button, TRUE);
-	gtk_widget_set_valign (button, GTK_ALIGN_CENTER);
+	gtk_widget_set_valign (button, GTK_ALIGN_END);
+	gtk_widget_set_margin_bottom (button, 9);
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (gs_shell_overview_category_more_cb), self);
 	gtk_container_add (GTK_CONTAINER (headerbox), button);
