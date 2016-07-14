@@ -55,6 +55,7 @@ typedef struct
 	gboolean	 show_folders;
 	gboolean	 show_buttons;
 	gboolean	 show_sandbox;
+	gboolean	 show_source;
 	gboolean	 show_codec;
 	gboolean	 show_update;
 	gboolean	 selectable;
@@ -330,7 +331,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* where did this app come from */
-	if (!priv->show_update) {
+	if (priv->show_source) {
 		tmp = gs_app_get_origin_hostname (priv->app);
 		if (tmp != NULL) {
 			g_autofree gchar *origin_tmp = NULL;
@@ -748,6 +749,15 @@ gs_app_row_set_show_sandbox (GsAppRow *app_row, gboolean show_sandbox)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_sandbox = show_sandbox;
+	gs_app_row_refresh (app_row);
+}
+
+void
+gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_source = show_source;
 	gs_app_row_refresh (app_row);
 }
 
