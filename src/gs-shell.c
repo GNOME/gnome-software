@@ -232,6 +232,7 @@ gs_shell_change_mode (GsShell *shell,
 		      gboolean scroll_up)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GsApp *app;
 	GsPage *new_page;
 	GtkWidget *widget;
 	GtkStyleContext *context;
@@ -308,11 +309,14 @@ gs_shell_change_mode (GsShell *shell,
 		new_page = GS_PAGE (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		/* FIXME: this is a hack */
-		if (memcmp (data, "/", 1) != 0)
+		app = GS_APP (data);
+		if (gs_app_get_kind (app) != AS_APP_KIND_GENERIC ||
+		    gs_app_get_source_default (app) == NULL) {
 			gs_shell_details_set_app (priv->shell_details, data);
-		else
-			gs_shell_details_set_filename (priv->shell_details, data);
+		} else {
+			const gchar *tmp = gs_app_get_source_default (app);
+			gs_shell_details_set_filename (priv->shell_details, tmp);
+		}
 		new_page = GS_PAGE (priv->shell_details);
 		break;
 	case GS_SHELL_MODE_CATEGORY:
@@ -823,9 +827,12 @@ gs_shell_show_search (GsShell *shell, const gchar *search)
 void
 gs_shell_show_filename (GsShell *shell, const gchar *filename)
 {
+	g_autoptr(GsApp) app = gs_app_new (NULL);
 	save_back_entry (shell);
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_add_source (app, filename);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
-			      (gpointer) filename, TRUE);
+			      (gpointer) app, TRUE);
 	gs_shell_activate (shell);
 }
 
