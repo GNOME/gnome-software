@@ -452,7 +452,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 				gs_app_list_add (related_list, app);
 			}
 		}
-		if (related_list != NULL) {
+		if (gs_app_list_length (related_list) > 0) {
 			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
 								    function_name_parent,
 								    related_list,
