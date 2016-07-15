@@ -871,6 +871,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsReview) review = NULL;
+	g_autoptr(GsReview) review2 = NULL;
 
 	/* check initial state */
 	auth = gs_plugin_loader_get_auth_by_id (plugin_loader, "dummy");
@@ -917,8 +918,8 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	g_assert (gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
 
 	/* do the action that requires a login */
-	review = gs_review_new ();
-	ret = gs_plugin_loader_review_action (plugin_loader, app, review,
+	review2 = gs_review_new ();
+	ret = gs_plugin_loader_review_action (plugin_loader, app, review2,
 					      GS_REVIEW_ACTION_REMOVE,
 					      NULL, &error);
 	g_assert_no_error (error);
