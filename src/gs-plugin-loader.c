@@ -435,6 +435,28 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 		}
 	}
 
+	/* also do runtime */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
+		g_autoptr(GsAppList) list2 = gs_app_list_new ();
+		for (i = 0; i < gs_app_list_length (list); i++) {
+			GsApp *runtime;
+			app = gs_app_list_index (list, i);
+			runtime = gs_app_get_runtime (app);
+			if (runtime != NULL)
+				gs_app_list_add (list2, runtime);
+		}
+		if (gs_app_list_length (list2) > 0) {
+			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
+								    function_name_parent,
+								    list2,
+								    flags,
+								    cancellable,
+								    error);
+			if (!ret)
+				return FALSE;
+		}
+	}
+
 	/* also do related packages one layer deep */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
 		g_autoptr(GsAppList) related_list = NULL;
