@@ -420,7 +420,9 @@ gs_app_to_string (GsApp *app)
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("key-color-%02i", i);
 		gs_app_kv_printf (str, key, "%.0f,%.0f,%.0f",
-				  color->red, color->green, color->blue);
+				  color->red * 255.f,
+				  color->green * 255.f,
+				  color->blue * 255.f);
 	}
 	if (app->keywords != NULL) {
 		for (i = 0; i < app->keywords->len; i++) {
