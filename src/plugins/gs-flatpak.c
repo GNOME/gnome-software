@@ -1537,6 +1537,26 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		if (!as_store_from_bytes (store, appstream, cancellable, error))
 			return FALSE;
 
+		/* allow peeking into this for debugging */
+		if (g_getenv ("GS_FLATPAK_DEBUG_APPSTREAM") != NULL) {
+			g_autoptr(GString) str = NULL;
+			str = as_store_to_xml (store,
+					       AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE |
+					       AS_NODE_TO_XML_FLAG_FORMAT_INDENT);
+			g_debug ("showing AppStream data: %s", str->str);
+		}
+
+		/* check for sanity */
+		if (as_store_get_size (store) == 0) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "no apps found in AppStream data");
+			return FALSE;
+		}
+		g_debug ("%i applications found in AppStream data",
+			 as_store_get_size (store));
+
 		/* find app */
 		id = g_strdup_printf ("%s.desktop", gs_app_get_flatpak_name (app));
 		item = as_store_get_app_by_id (store, id);
