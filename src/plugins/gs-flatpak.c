@@ -436,6 +436,8 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 	for (i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autoptr(GsApp) app = NULL;
+		g_autofree gchar *url = NULL;
+		g_autofree gchar *title = NULL;;
 
 		/* apps installed from bundles add their own remote that only
 		 * can be used for updating that app only -- so hide them */
@@ -453,12 +455,16 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
 				 flatpak_remote_get_name (xremote));
-		gs_app_set_summary (app,
-				    GS_APP_QUALITY_LOWEST,
-				    flatpak_remote_get_title (xremote));
-		gs_app_set_url (app,
-				AS_URL_KIND_HOMEPAGE,
-				flatpak_remote_get_url (xremote));
+
+		/* title */
+		title = flatpak_remote_get_title (xremote);
+		if (title != NULL)
+			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, title);
+
+		/* url */
+		url = flatpak_remote_get_url (xremote);
+		if (url != NULL)
+			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 		gs_app_list_add (list, app);
 
 		/* add related apps, i.e. what was installed from there */
@@ -688,7 +694,9 @@ gs_plugin_refine_item_origin_ui (GsFlatpak *self, GsApp *app,
 			continue;
 		if (g_strcmp0 (gs_app_get_origin (app),
 			       flatpak_remote_get_name (xremote)) == 0) {
-			gs_app_set_origin_ui (app, flatpak_remote_get_title (xremote));
+			g_autofree gchar *title = NULL;
+			title = flatpak_remote_get_title (xremote);
+			gs_app_set_origin_ui (app, title);
 			break;
 		}
 	}
@@ -702,6 +710,7 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 				       GError **error)
 {
 	g_autoptr(FlatpakRemote) xremote = NULL;
+	g_autofree gchar *url = NULL;
 
 	/* already set */
 	if (gs_app_get_origin_hostname (app) != NULL)
@@ -714,7 +723,15 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 							   error);
 	if (xremote == NULL)
 		return FALSE;
-	gs_app_set_origin_hostname (app, flatpak_remote_get_url (xremote));
+	url = flatpak_remote_get_url (xremote);
+	if (url == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no URL for remote %s",
+			     flatpak_remote_get_name (xremote));
+	}
+	gs_app_set_origin_hostname (app, url);
 	return TRUE;
 }
 
