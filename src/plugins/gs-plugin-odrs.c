@@ -682,6 +682,12 @@ gs_plugin_odrs_sanitize_version (const gchar *version)
 	/* remove release */
 	tmp = g_strdup (version);
 	g_strdelimit (tmp, "-", '\0');
+
+	/* remove '+dfsg' suffix */
+	str = g_strstr_len (tmp, -1, "+dfsg");
+	if (str != NULL)
+		*str = '\0';
+
 	return tmp;
 }
 
