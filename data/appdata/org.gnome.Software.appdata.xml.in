@@ -30,10 +30,47 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.21.4" date="2016-07-18">
+      <description>
+        <p>
+          This is an unstable release in the 3.21 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add a cancel button and progress information to the details page</li>
+          <li>Add a dialog to confirm upgrade removals</li>
+          <li>Add support for authenticating in plugins</li>
+          <li>Add support for snaps</li>
+          <li>Enable gtk-doc generation for documentation</li>
+          <li>Show a new-style category list on the overview page</li>
+          <li>Show origin information when applications are available from multiple sources</li>
+          <li>Show sandboxing information for selected applications</li>
+          <li>Show the star ratings in more places</li>
+          <li>Support installing .flatpakrepo files</li>
+          <li>Support launching applicatins using a appstream:// URL</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Allow plugins to be enabled and disabled at runtime</li>
+          <li>Always show the 'MyLanguage' kudo when in en_US locale</li>
+          <li>Correctly trigger systemd offline updates when only processing OS updates</li>
+          <li>Disable app folders feature when run outside GNOME</li>
+          <li>Do not show buttons on the search results</li>
+          <li>Do not use deprecated CSS properties</li>
+          <li>Do not use deprecated fwupd API</li>
+          <li>Ensure reviews are shown in the correct order</li>
+          <li>Fix a crash when double clicking files</li>
+          <li>Fix several UX issues when upgrading</li>
+          <li>Show the 'More Reviews' button in the details panel</li>
+          <li>Try really hard to have two rows of important categories</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.21.2" date="2016-05-23">
       <description>
         <p>
-          This is an unstable release in the 3.19 development series,
+          This is an unstable release in the 3.21 development series,
           with the following improvements:
         </p>
         <ul>
@@ -60,7 +97,7 @@
     <release version="3.21.1" date="2016-04-25">
       <description>
         <p>
-          This is an unstable release in the 3.19 development series,
+          This is an unstable release in the 3.21 development series,
           with the following improvements:
         </p>
         <ul>
