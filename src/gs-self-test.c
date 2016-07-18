@@ -879,7 +879,6 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_auth_get_flags (auth), ==, 0);
 
 	/* do an action that returns a URL */
-	review = gs_review_new ();
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
 					    GS_AUTH_ACTION_REGISTER,
 					    NULL, &error);
