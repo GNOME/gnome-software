@@ -568,7 +568,8 @@ send_package_action (GsPlugin *plugin,
 				total += task_total;
 			}
 
-			gs_app_set_progress (app, 100 * done / total);
+			if (total > 0)
+				gs_app_set_progress (app, 100 * done / total);
 
 			g_list_free (task_list);
 		}
