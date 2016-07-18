@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-17 21:35+0200\n"
+"POT-Creation-Date: 2016-07-18 22:09+0200\n"
 "PO-Revision-Date: 2015-12-03 23:34+0100\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -143,16 +143,17 @@ msgstr "Ressenyes amb karma inferior a aquest nombre no es mostraran."
 
 #: ../data/org.gnome.software.gschema.xml.h:19
 msgid "A list of official sources that should not be considered 3rd party"
-msgstr ""
+msgstr "Una llista de fonts oficials que no han de ser considerades de terceres parts"
 
 #: ../data/org.gnome.software.gschema.xml.h:20
 msgid "A list of official sources that should be considered free software"
-msgstr ""
+msgstr "Una llista de fonts oficials que han de ser considerades de programari lliure"
 
 #: ../data/org.gnome.software.gschema.xml.h:21
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
+"L'URL de la llicència a usar quan l'aplicació ha de ser considerada programari lliure"
 
 #: ../data/org.gnome.software.gschema.xml.h:22
 #, fuzzy
@@ -170,11 +171,11 @@ msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:25
 msgid "Offer upgrades for pre-releases"
-msgstr ""
+msgstr "Ofereix actualitzacions per versions preliminars"
 
 #: ../data/org.gnome.software.gschema.xml.h:26
 msgid "Show some UI elements informing the user that an app is non-free"
-msgstr ""
+msgstr "Mostra alguns elements d'interfície d'usuari indicant que l'aplicació no és lliure"
 
 #: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -403,43 +404,43 @@ msgstr "Font"
 #. security sandbox
 #: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
 msgid "Sandboxed"
-msgstr ""
+msgstr "Entorn de proves"
 
 #. TRANSLATORS: this is when the service name is not known
 #: ../src/gs-auth-dialog.c:70
 msgid "To continue you need to sign in."
-msgstr ""
+msgstr "Per a continuar heu d'iniciar la sessió."
 
 #. TRANSLATORS: the %s is a service name, e.g. "Ubuntu One"
 #: ../src/gs-auth-dialog.c:74
 #, c-format
 msgid "To continue you need to sign in to %s."
-msgstr ""
+msgstr "Per a continuar heu d'iniciar la sessió a %s."
 
 #. vim: set noexpandtab:
 #: ../src/gs-auth-dialog.ui.h:1
 msgid "Email address"
-msgstr ""
+msgstr "Adreça electrònica"
 
 #: ../src/gs-auth-dialog.ui.h:2
 msgid "I have an account already"
-msgstr ""
+msgstr "Ja tinc un compte"
 
 #: ../src/gs-auth-dialog.ui.h:3
 msgid "Password"
-msgstr ""
+msgstr "Contrasenya"
 
 #: ../src/gs-auth-dialog.ui.h:4
 msgid "I want to register for an account now"
-msgstr ""
+msgstr "Vull registrar un compte ara"
 
 #: ../src/gs-auth-dialog.ui.h:5
 msgid "I have forgotten my password"
-msgstr ""
+msgstr "He oblidat la contrasenya"
 
 #: ../src/gs-auth-dialog.ui.h:6
 msgid "Sign in automatically next time"
-msgstr ""
+msgstr "Inicieu la sessió automàticament la propera vegada"
 
 #: ../src/gs-auth-dialog.ui.h:7
 msgid "Enter your one-time pin for two-factor authentication."
@@ -447,11 +448,11 @@ msgstr ""
 
 #: ../src/gs-auth-dialog.ui.h:8
 msgid "PIN"
-msgstr ""
+msgstr "PIN"
 
 #: ../src/gs-auth-dialog.ui.h:9
 msgid "Continue"
-msgstr ""
+msgstr "Continua"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -624,24 +625,24 @@ msgstr "Se suprimirà %s i haureu d'instal·lar-la per utilitzar-la de nou."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1022
+#: ../src/gs-plugin-loader.c:1026
 msgid "OS Updates"
 msgstr "Actualitzacions del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1027
+#: ../src/gs-plugin-loader.c:1031
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclou millores de rendiment, d'estabilitat i de seguretat."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1700 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No s'ha trobat cap còdec disponible per al format %s."
 
-#: ../src/gs-plugin-loader.c:1703
+#: ../src/gs-plugin-loader.c:1707
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1328,12 +1329,12 @@ msgstr[1] ""
 "Desafortunadament, %s que cercàveu no s'han pogut trobar. Vegeu %s per a més "
 "informació."
 
-#: ../src/gs-shell-extras.c:541 ../src/gs-shell-extras.c:589
-#: ../src/gs-shell-extras.c:639
+#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
+#: ../src/gs-shell-extras.c:640
 msgid "Failed to find any search results"
 msgstr "No s'ha pogut trobar cap resultat de cerca"
 
-#: ../src/gs-shell-extras.c:813
+#: ../src/gs-shell-extras.c:814
 #, c-format
 msgid "%s file format"
 msgstr "Format de fitxer %s"
@@ -1754,7 +1755,7 @@ msgid "%s (Installed)"
 msgstr "%s (instal·lat)"
 
 #: ../src/gs-summary-tile.c:82
-#,  c-format
+#, c-format
 msgid "%s (Installing)"
 msgstr "%s (s'està instal·lant)"
 
@@ -2239,18 +2240,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:492
 msgid "Provocative references or depictions"
-msgstr ""
+msgstr "Referències o representacions provocatives"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:495
-#, fuzzy
 msgid "Sexual references or depictions"
-msgstr "Cerca aplicacions"
+msgstr "Referències o representacions sexuals"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:498
 msgid "Graphic sexual behavior"
-msgstr ""
+msgstr "Comportament sexual gràfic"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:501
@@ -2261,17 +2261,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:504
 msgid "Mild or infrequent use of profanity"
-msgstr ""
+msgstr "Ús lleu o poc freqüent de la blasfèmia"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:507
 msgid "Moderate use of profanity"
-msgstr ""
+msgstr "Ús moderat de la blasfèmia"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:510
 msgid "Strong or frequent use of profanity"
-msgstr ""
+msgstr "Ús extensiu o freqüent de la blasfèmia"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:513
@@ -2287,12 +2287,12 @@ msgstr ""
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:519
 msgid "Vulgar or bathroom humor"
-msgstr ""
+msgstr "Humor groller"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:522
 msgid "Mature or sexual humor"
-msgstr ""
+msgstr "Humor adult o sexual"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:525
