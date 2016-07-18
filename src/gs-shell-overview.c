@@ -539,7 +539,7 @@ gs_shell_overview_load (GsShellOverview *self)
 		/* load all the categories */
 		for (i = 0; i < cats_random->len && i < MAX_CATS; i++) {
 			LoadData *load_data;
-			const gchar *cat_id = g_ptr_array_index (cats_random, 0);
+			const gchar *cat_id;
 			g_autoptr(GsCategory) category = NULL;
 			g_autoptr(GsCategory) featured_category = NULL;
 

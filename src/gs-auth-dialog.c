@@ -129,8 +129,6 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 			return;
 		}
 
-		url = gs_utils_get_error_value (error);
-
 		/* have we been given a link */
 		url = gs_utils_get_error_value (error);
 		if (url != NULL) {
