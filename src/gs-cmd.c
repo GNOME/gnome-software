@@ -265,6 +265,7 @@ main (int argc, char **argv)
 
 	profile = as_profile_new ();
 	ptask = as_profile_start_literal (profile, "GsCmd");
+	g_assert (ptask != NULL);
 
 	/* load plugins */
 	plugin_loader = gs_plugin_loader_new ();

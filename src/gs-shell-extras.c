@@ -498,6 +498,7 @@ show_search_results (GsShellExtras *self)
 	} else if (n_children == 1) {
 		/* switch directly to details view */
 		g_debug ("extras: found one result, showing in details view");
+		g_assert (list != NULL);
 		app = gs_app_row_get_app (GS_APP_ROW (list->data));
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, TRUE);
 	} else {

@@ -122,6 +122,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit::add-sources-related");
+	g_assert (ptask != NULL);
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,

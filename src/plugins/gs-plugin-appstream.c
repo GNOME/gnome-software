@@ -528,6 +528,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	/* just look at each app in turn */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::add-category-apps");
+	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
 	desktop_groups = gs_category_get_desktop_groups (category);
 	if (desktop_groups->len == 0) {
@@ -615,6 +616,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	/* search categories for the search term */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::search");
+	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
@@ -643,6 +645,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	/* search categories for the search term */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::add_installed");
+	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
@@ -703,6 +706,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	/* find out how many packages are in each category */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::add-categories");
+	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		app = g_ptr_array_index (array, i);
@@ -733,6 +737,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	/* find out how many packages are in each category */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::add-popular");
+	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
@@ -763,6 +768,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	/* find out how many packages are in each category */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::add-featured");
+	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;

@@ -87,6 +87,7 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 	/* we use a permissions helper to elevate privs */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::ensure-origin");
+	g_assert (ptask != NULL);
 	destdir = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
 	if (destdir != NULL) {
 		g_autofree gchar *full_path = g_build_filename (destdir,
@@ -683,6 +684,7 @@ gs_plugin_refine_item_origin_ui (GsFlatpak *self, GsApp *app,
 	/* find list of remotes */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-origin-ui");
+	g_assert (ptask != NULL);
 	xremotes = flatpak_installation_list_remotes (self->installation,
 						      cancellable,
 						      error);
@@ -853,6 +855,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 	/* ensure metadata exists */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-origin");
+	g_assert (ptask != NULL);
 	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
@@ -951,6 +954,7 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 	/* get apps and runtimes */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-action");
+	g_assert (ptask != NULL);
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable, error);
 	if (xrefs == NULL)
@@ -1195,6 +1199,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	/* just get the size of the app */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-size");
+	g_assert (ptask != NULL);
 	if (!gs_plugin_refine_item_origin (self, app,
 					   cancellable, error))
 		return FALSE;
@@ -1237,6 +1242,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
 				  "flatpak::refine{%s}",
 				  gs_app_get_id (app));
+	g_assert (ptask != NULL);
 
 	/* flatpak apps can always be removed */
 	gs_app_remove_quirk (app, AS_APP_QUIRK_COMPULSORY);

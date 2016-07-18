@@ -55,6 +55,7 @@ gs_debug_handler_cb (const gchar *log_domain,
 
 	/* make threadsafe */
 	locker = g_mutex_locker_new (&debug->mutex);
+	g_assert (locker != NULL);
 
 	/* time header */
 	if (debug->use_time) {

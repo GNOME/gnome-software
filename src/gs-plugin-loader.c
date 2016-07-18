@@ -339,6 +339,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 						  function_name_parent,
 						  function_name);
 		}
+		g_assert (ptask != NULL);
 
 		/* run the batched plugin symbol then the per-app plugin */
 		if (plugin_func != NULL) {
@@ -584,6 +585,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 
 	/* profile */
 	ptask = as_profile_start (priv->profile, "GsPlugin::*(%s)", function_name);
+	g_assert (ptask != NULL);
 
 	/* run each plugin */
 	list = gs_app_list_new ();
@@ -610,6 +612,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 					   "GsPlugin::%s(%s)",
 					   gs_plugin_get_name (plugin),
 					   function_name);
+		g_assert (ptask2 != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, list, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -934,6 +937,7 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, app, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -1778,6 +1782,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, state->list,
 				   cancellable, &error_local);
@@ -1942,6 +1947,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, state->list,
 				   cancellable, &error_local);
@@ -2107,6 +2113,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, state->list,
 				   cancellable, &error_local);
@@ -2316,6 +2323,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->catlist,
 				   cancellable, &error_local);
@@ -2448,6 +2456,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->category, state->list,
 				   cancellable, &error_local);
@@ -2773,6 +2782,7 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  state->function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->app, state->review,
 				   cancellable, &error_local);
@@ -3166,6 +3176,7 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  state->function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->auth, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -3307,6 +3318,7 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		plugin_func (plugin);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -3549,6 +3561,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 
 	/* search in the plugin directory for plugins */
 	ptask = as_profile_start_literal (priv->profile, "GsPlugin::setup");
+	g_assert (ptask != NULL);
 	dir = g_dir_open (priv->location, 0, error);
 	if (dir == NULL)
 		return FALSE;
@@ -3759,6 +3772,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 					   "GsPlugin::%s(%s)",
 					   gs_plugin_get_name (plugin),
 					   function_name);
+		g_assert (ptask2 != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
 		ret = plugin_func (plugin, NULL, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -4042,6 +4056,7 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
 		ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -4191,6 +4206,7 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->list, state->file,
 				   cancellable, &error_local);
@@ -4369,6 +4385,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  gs_plugin_get_name (plugin),
 					  function_name);
+		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->list, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -4417,6 +4434,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 						  gs_plugin_get_name (plugin),
 						  function_name,
 						  gs_app_get_id (app));
+			g_assert (ptask != NULL);
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			ret = plugin_app_func (plugin, app,
 					       cancellable,

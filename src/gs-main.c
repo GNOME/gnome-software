@@ -48,6 +48,7 @@ main (int argc, char **argv)
 
 	profile = as_profile_new ();
 	ptask = as_profile_start_literal (profile, "GsMain");
+	g_assert (ptask != NULL);
 
 	/* redirect logs */
 	application = gs_application_new ();

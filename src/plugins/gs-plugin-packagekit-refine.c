@@ -643,6 +643,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit-refine[source->license]");
+	g_assert (ptask != NULL);
 	list_tmp = gs_app_list_new ();
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
