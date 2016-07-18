@@ -287,7 +287,7 @@ gs_snapd_request (const gchar  *method,
 
 	if (response_type)
 		*response_type = g_strdup (soup_message_headers_get_content_type (headers, NULL));
-	if (response) {
+	if (response != NULL && chunk_start != NULL) {
 		*response = g_malloc (chunk_length + 2);
 		memcpy (*response, chunk_start, chunk_length + 1);
 		(*response)[chunk_length + 1] = '\0';
