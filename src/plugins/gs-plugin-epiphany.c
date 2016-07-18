@@ -212,7 +212,6 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 		      GCancellable *cancellable, GError **error)
 {
 	const gchar *epi_desktop;
-	g_autofree gchar *basename = NULL;
 	g_autofree gchar *app_desktop = NULL;
 	g_autoptr(GFile) file_epi = NULL;
 	g_autoptr(GFile) file_app = NULL;
@@ -230,7 +229,6 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 		return FALSE;
 
 	/* remove the shared desktop file */
-	basename = g_file_get_basename (file_epi);
 	app_desktop = g_build_filename (g_get_user_data_dir (),
 	                                "applications",
 	                                gs_app_get_id_no_prefix (app),
