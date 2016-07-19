@@ -6,6 +6,7 @@
 %global libsoup_version 2.51.92
 %global gsettings_desktop_schemas_version 3.11.5
 %global gnome_desktop_version 3.17.92
+%global fwupd_version 0.6.3
 %global flatpak_version 0.5.2
 
 %define alphatag                        #ALPHATAG#
@@ -20,28 +21,12 @@ Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
 Source0:   http://download.gnome.org/sources/gnome-software/3.20/%{name}-%{version}.tar.xz
 
-Requires:  appstream-data
-Requires:  epiphany-runtime
-Requires:  glib2%{?_isa} >= %{glib2_version}
-# needed for app folder .directory entries
-Requires:  gnome-desktop3%{?_isa} >= %{gnome_desktop_version}
-Requires:  gnome-menus%{?_isa}
-Requires:  gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
-Requires:  gtk3%{?_isa} >= %{gtk3_version}
-Requires:  json-glib%{?_isa} >= %{json_glib_version}
-Requires:  iso-codes
-Requires:  libappstream-glib%{?_isa} >= %{appstream_glib_version}
-# for gdk-pixbuf svg loader
-Requires:  librsvg2%{?_isa}
-Requires:  libsoup%{?_isa} >= %{libsoup_version}
-Requires:  PackageKit%{?_isa} >= %{packagekit_version}
-
 BuildRequires: gettext
 BuildRequires: intltool
 BuildRequires: libxslt
 BuildRequires: docbook-style-xsl
 BuildRequires: desktop-file-utils
-BuildRequires: fwupd-devel
+BuildRequires: fwupd-devel >= %{fwupd_version}
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: gnome-desktop3-devel
 BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
@@ -54,6 +39,25 @@ BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
 BuildRequires: polkit-devel
 BuildRequires: libsecret-devel
 BuildRequires: flatpak-devel >= %{flatpak_version}
+
+Requires: appstream-data
+%if 0%{?fedora}
+Requires: epiphany-runtime
+%endif
+Requires: fwupd%{?_isa} >= %{fwupd_version}
+Requires: glib2%{?_isa} >= %{glib2_version}
+Requires: gnome-desktop3%{?_isa} >= %{gnome_desktop_version}
+# gnome-menus is needed for app folder .directory entries
+Requires: gnome-menus%{?_isa}
+Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
+Requires: gtk3%{?_isa} >= %{gtk3_version}
+Requires: json-glib%{?_isa} >= %{json_glib_version}
+Requires: iso-codes
+Requires: libappstream-glib%{?_isa} >= %{appstream_glib_version}
+# librsvg2 is needed for gdk-pixbuf svg loader
+Requires: librsvg2%{?_isa}
+Requires: libsoup%{?_isa} >= %{libsoup_version}
+Requires: PackageKit%{?_isa} >= %{packagekit_version}
 
 # this is not a library version
 %define gs_plugin_version               11
