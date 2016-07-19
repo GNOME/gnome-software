@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-07-14 15:52+0000\n"
-"PO-Revision-Date: 2016-07-18 10:20+0200\n"
+"POT-Creation-Date: 2016-07-18 14:47+0000\n"
+"PO-Revision-Date: 2016-07-19 10:24+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -231,7 +231,7 @@ msgstr "Seleccionar ninguno"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.ui.h:3 ../src/gs-application.c:378
-#: ../src/gs-shell.c:265 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gs-shell.c:266 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Software"
 
@@ -411,7 +411,7 @@ msgstr "Fuente"
 #. security sandbox
 #: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
 msgid "Sandboxed"
-msgstr ""
+msgstr "Aislado"
 
 #. TRANSLATORS: this is when the service name is not known
 #: ../src/gs-auth-dialog.c:70
@@ -633,24 +633,24 @@ msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo.
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1000
+#: ../src/gs-plugin-loader.c:1026
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1005
+#: ../src/gs-plugin-loader.c:1031
 msgid "Includes performance, stability and security improvements."
 msgstr "Incluye mejoras en el rendimiento, la estabilidad y la seguridad."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1678 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No hay códecs disponibles para el formato %s."
 
-#: ../src/gs-plugin-loader.c:1681
+#: ../src/gs-plugin-loader.c:1707
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -665,16 +665,16 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"Alguno de los programas instalados no es compatible con %s. Si continúa, los "
+"siguientes paquetes se eliminarán automáticamente durante la actualización:"
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
-#, fuzzy
 #| msgid "Welcome to Software"
 msgid "Incompatible Software"
-msgstr "Bienvenido/a a Software"
+msgstr "Software incompatible"
 
 #: ../src/gs-removal-dialog.ui.h:3
-#| msgid "Continue"
 msgid "_Continue"
 msgstr "_Continuar"
 
@@ -968,11 +968,10 @@ msgstr "Software libre"
 #: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Los usuarios están limitados por la siguiente licencia:"
+msgstr[1] "Los usuarios están limitados por las siguientes licencias:"
 
 #: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
-#| msgid "Show verbose debugging information"
 msgid "More information"
 msgstr "Más información"
 
@@ -997,10 +996,9 @@ msgid "Re_move shortcut"
 msgstr "Qu_itar atajo"
 
 #: ../src/gs-shell-details.ui.h:12
-#, fuzzy
 #| msgid "Screenshot not valid"
 msgid "No screenshot provided"
-msgstr "Captura de pantalla no válida"
+msgstr "No se ha proporcionado una captura de pantalla"
 
 #: ../src/gs-shell-details.ui.h:13
 msgid "Software Source Included"
@@ -1114,8 +1112,6 @@ msgstr "Propietaria"
 
 #. This refers to the license of the application
 #: ../src/gs-shell-details.ui.h:42
-#| msgctxt "app status"
-#| msgid "Unknown"
 msgid "Unknown"
 msgstr "Desconocida"
 
@@ -1151,9 +1147,10 @@ msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
 msgstr ""
+"Esto significa que el software se puede ejecutar, copiar, distribuir, "
+"estudiar y modificar libremente."
 
 #: ../src/gs-shell-details.ui.h:53
-#| msgid "Proprietary"
 msgid "Proprietary Software"
 msgstr "Software propietario"
 
@@ -1163,16 +1160,18 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
+"Esto significa que el software es propiedad de una persona individual o una "
+"empresa. A menudo hay restricciones en su uso y normalmente no se puede "
+"acceder a su código fuente."
 
 #: ../src/gs-shell-details.ui.h:56
-#, fuzzy
 #| msgid "No software installed"
 msgid "Unknown Software License"
-msgstr "No hay software instalado"
+msgstr "Licencia de software desconocida"
 
 #: ../src/gs-shell-details.ui.h:57
 msgid "The license terms of this software are unknown."
-msgstr ""
+msgstr "Se desconocen los términos de la licencia de este software."
 
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:145
@@ -1346,12 +1345,12 @@ msgstr[1] ""
 "Los codificadores %s que estaba buscando no se ha podido encontrar. Consulte "
 "%s para obtener más información."
 
-#: ../src/gs-shell-extras.c:541 ../src/gs-shell-extras.c:589
-#: ../src/gs-shell-extras.c:639
+#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
+#: ../src/gs-shell-extras.c:640
 msgid "Failed to find any search results"
 msgstr "Falló al buscar cualquier resultado de búsqueda"
 
-#: ../src/gs-shell-extras.c:813
+#: ../src/gs-shell-extras.c:814
 #, c-format
 msgid "%s file format"
 msgstr "formato de archivo %s"
@@ -1402,7 +1401,6 @@ msgstr "No hay opiniones que moderar"
 
 #. add button
 #: ../src/gs-shell-overview.c:240
-#| msgid "More  ▾"
 msgid "More…"
 msgstr "Más…"
 
@@ -2815,37 +2813,30 @@ msgid "Text Editors"
 msgstr "Editores de texto"
 
 #: ../src/plugins/gs-desktop-common.c:284
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "Todo"
 
 #: ../src/plugins/gs-desktop-common.c:287
-#| msgid "Featured"
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "Destacado"
 
 #: ../src/plugins/gs-desktop-common.c:290
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Art"
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Arte"
 
 #: ../src/plugins/gs-desktop-common.c:293
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Geography"
 msgctxt "Menu of Reference"
 msgid "Biography"
-msgstr "Geografía"
+msgstr "Biografía"
 
 #: ../src/plugins/gs-desktop-common.c:296
 #: ../src/plugins/gs-desktop-common.c:299
-#| msgctxt "Menu of Games"
-#| msgid "Action"
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Ficción"
@@ -2853,14 +2844,13 @@ msgstr "Ficción"
 #: ../src/plugins/gs-desktop-common.c:302
 msgctxt "Menu of Reference"
 msgid "Health"
-msgstr ""
+msgstr "Salud"
 
 #: ../src/plugins/gs-desktop-common.c:305
-#, fuzzy
 #| msgid "History"
 msgctxt "Menu of Reference"
 msgid "History"
-msgstr "Histórico"
+msgstr "Historia"
 
 #: ../src/plugins/gs-desktop-common.c:308
 msgctxt "Menu of Reference"
@@ -2868,16 +2858,13 @@ msgid "Lifestyle"
 msgstr "Estilo de vida"
 
 #: ../src/plugins/gs-desktop-common.c:311
-#, fuzzy
 #| msgctxt "Menu of Science"
 #| msgid "Robotics"
 msgctxt "Menu of Reference"
 msgid "Politics"
-msgstr "Robótica"
+msgstr "Política"
 
 #: ../src/plugins/gs-desktop-common.c:314
-#| msgctxt "Menu of Games"
-#| msgid "Sports"
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Deportes"
@@ -2924,11 +2911,10 @@ msgstr "Comunicación y noticias"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
 #: ../src/plugins/gs-desktop-common.c:350
-#, fuzzy
 #| msgctxt "Menu subcategory of Internet"
 #| msgid "Video Conference"
 msgid "Reference"
-msgstr "Videoconferencia"
+msgstr "Referencia"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
 #: ../src/plugins/gs-desktop-common.c:353
