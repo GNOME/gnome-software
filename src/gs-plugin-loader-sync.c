@@ -536,8 +536,8 @@ gs_plugin_loader_review_action_finish_sync (GsPluginLoader *plugin_loader,
 gboolean
 gs_plugin_loader_review_action (GsPluginLoader *plugin_loader,
 				GsApp *app,
-				GsReview *review,
-				GsReviewAction action,
+				AsReview *review,
+				GsPluginReviewAction action,
 				GCancellable *cancellable,
 				GError **error)
 {

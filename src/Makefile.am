@@ -35,7 +35,6 @@ gnomesoftware_include_HEADERS =				\
 	gs-os-release.h					\
 	gs-plugin.h					\
 	gs-plugin-vfuncs.h				\
-	gs-review.h					\
 	gs-utils.h
 
 @INTLTOOL_DESKTOP_RULE@
@@ -111,7 +110,6 @@ gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
 	gs-app-list.c					\
 	gs-auth.c					\
-	gs-review.c					\
 	gs-cmd.c					\
 	gs-common.c					\
 	gs-debug.c					\
@@ -200,8 +198,6 @@ gnome_software_SOURCES =				\
 	gs-progress-button.h				\
 	gs-removal-dialog.c				\
 	gs-removal-dialog.h				\
-	gs-review.c					\
-	gs-review.h					\
 	gs-review-bar.c					\
 	gs-review-bar.h					\
 	gs-review-dialog.c				\
@@ -347,7 +343,6 @@ gs_self_test_SOURCES =						\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
-	gs-review.c						\
 	gs-utils.c						\
 	gs-self-test.c
 

@@ -439,31 +439,31 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* add fake review */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
-		g_autoptr(GsReview) review1 = NULL;
-		g_autoptr(GsReview) review2 = NULL;
+		g_autoptr(AsReview) review1 = NULL;
+		g_autoptr(AsReview) review2 = NULL;
 		g_autoptr(GDateTime) dt = NULL;
 
 		dt = g_date_time_new_now_utc ();
 
 		/* set first review */
-		review1 = gs_review_new ();
-		gs_review_set_rating (review1, 50);
-		gs_review_set_reviewer (review1, "Angela Avery");
-		gs_review_set_summary (review1, "Steep learning curve, but worth it");
-		gs_review_set_text (review1, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
-		gs_review_set_version (review1, "3.16.4");
-		gs_review_set_date (review1, dt);
+		review1 = as_review_new ();
+		as_review_set_rating (review1, 50);
+		as_review_set_reviewer_name (review1, "Angela Avery");
+		as_review_set_summary (review1, "Steep learning curve, but worth it");
+		as_review_set_description (review1, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
+		as_review_set_version (review1, "3.16.4");
+		as_review_set_date (review1, dt);
 		gs_app_add_review (app, review1);
 
 		/* set self review */
-		review2 = gs_review_new ();
-		gs_review_set_rating (review2, 100);
-		gs_review_set_reviewer (review2, "Just Myself");
-		gs_review_set_summary (review2, "I like this application");
-		gs_review_set_text (review2, "I'm not very wordy myself.");
-		gs_review_set_version (review2, "3.16.3");
-		gs_review_set_date (review2, dt);
-		gs_review_set_flags (review2, GS_REVIEW_FLAG_SELF);
+		review2 = as_review_new ();
+		as_review_set_rating (review2, 100);
+		as_review_set_reviewer_name (review2, "Just Myself");
+		as_review_set_summary (review2, "I like this application");
+		as_review_set_description (review2, "I'm not very wordy myself.");
+		as_review_set_version (review2, "3.16.3");
+		as_review_set_date (review2, dt);
+		as_review_set_flags (review2, AS_REVIEW_FLAG_SELF);
 		gs_app_add_review (app, review2);
 	}
 
@@ -621,7 +621,7 @@ gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -632,43 +632,43 @@ gs_plugin_review_submit (GsPlugin *plugin,
 gboolean
 gs_plugin_review_report (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
 	g_debug ("Reporting dummy review");
-	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
 gboolean
 gs_plugin_review_upvote (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
 	g_debug ("Upvoting dummy review");
-	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
 gboolean
 gs_plugin_review_downvote (GsPlugin *plugin,
 			   GsApp *app,
-			   GsReview *review,
+			   AsReview *review,
 			   GCancellable *cancellable,
 			   GError **error)
 {
 	g_debug ("Downvoting dummy review");
-	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
 gboolean
 gs_plugin_review_remove (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {

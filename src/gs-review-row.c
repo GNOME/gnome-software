@@ -31,7 +31,7 @@ typedef struct
 {
 	GtkListBoxRow	 parent_instance;
 
-	GsReview	*review;
+	AsReview	*review;
 	guint64		 actions;
 	GtkWidget	*stars;
 	GtkWidget	*summary_label;
@@ -64,42 +64,42 @@ gs_review_row_refresh (GsReviewRow *row)
 	g_autofree gchar *text = NULL;
 
 	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
-				   gs_review_get_rating (priv->review));
-	reviewer = gs_review_get_reviewer (priv->review);
+				   as_review_get_rating (priv->review));
+	reviewer = as_review_get_reviewer_name (priv->review);
 	gtk_label_set_text (GTK_LABEL (priv->author_label), reviewer ? reviewer : "");
-	date = gs_review_get_date (priv->review);
+	date = as_review_get_date (priv->review);
 	if (date != NULL)
 		text = g_date_time_format (date, "%e %B %Y");
 	else
 		text = g_strdup ("");
 	gtk_label_set_text (GTK_LABEL (priv->date_label), text);
 	gtk_label_set_text (GTK_LABEL (priv->summary_label),
-			    gs_review_get_summary (priv->review));
+			    as_review_get_summary (priv->review));
 	gtk_label_set_text (GTK_LABEL (priv->text_label),
-			    gs_review_get_text (priv->review));
+			    as_review_get_description (priv->review));
 
 	/* if we voted, we can't do any actions */
-	if (gs_review_get_flags (priv->review) & GS_REVIEW_FLAG_VOTED)
+	if (as_review_get_flags (priv->review) & AS_REVIEW_FLAG_VOTED)
 		priv->actions = 0;
 
 	/* set actions up */
-	if ((priv->actions & (1 << GS_REVIEW_ACTION_UPVOTE |
-			      1 << GS_REVIEW_ACTION_DOWNVOTE |
-			      1 << GS_REVIEW_ACTION_DISMISS)) == 0) {
+	if ((priv->actions & (1 << GS_PLUGIN_REVIEW_ACTION_UPVOTE |
+			      1 << GS_PLUGIN_REVIEW_ACTION_DOWNVOTE |
+			      1 << GS_PLUGIN_REVIEW_ACTION_DISMISS)) == 0) {
 		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->box_voting, TRUE);
 		gtk_widget_set_visible (priv->button_yes,
-					priv->actions & 1 << GS_REVIEW_ACTION_UPVOTE);
+					priv->actions & 1 << GS_PLUGIN_REVIEW_ACTION_UPVOTE);
 		gtk_widget_set_visible (priv->button_no,
-					priv->actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
+					priv->actions & 1 << GS_PLUGIN_REVIEW_ACTION_DOWNVOTE);
 		gtk_widget_set_visible (priv->button_dismiss,
-					priv->actions & 1 << GS_REVIEW_ACTION_DISMISS);
+					priv->actions & 1 << GS_PLUGIN_REVIEW_ACTION_DISMISS);
 	}
 	gtk_widget_set_visible (priv->button_remove,
-				priv->actions & 1 << GS_REVIEW_ACTION_REMOVE);
+				priv->actions & 1 << GS_PLUGIN_REVIEW_ACTION_REMOVE);
 	gtk_widget_set_visible (priv->button_report,
-				priv->actions & 1 << GS_REVIEW_ACTION_REPORT);
+				priv->actions & 1 << GS_PLUGIN_REVIEW_ACTION_REPORT);
 }
 
 static gboolean
@@ -173,14 +173,14 @@ static void
 gs_review_row_button_clicked_upvote_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_UPVOTE);
+		       GS_PLUGIN_REVIEW_ACTION_UPVOTE);
 }
 
 static void
 gs_review_row_button_clicked_downvote_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_DOWNVOTE);
+		       GS_PLUGIN_REVIEW_ACTION_DOWNVOTE);
 }
 
 static void
@@ -188,7 +188,7 @@ gs_review_row_confirm_cb (GtkDialog *dialog, gint response_id, GsReviewRow *row)
 {
 	if (response_id == GTK_RESPONSE_YES) {
 		g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-			       GS_REVIEW_ACTION_REPORT);
+			       GS_PLUGIN_REVIEW_ACTION_REPORT);
 	}
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
@@ -242,17 +242,17 @@ static void
 gs_review_row_button_clicked_dismiss_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_DISMISS);
+		       GS_PLUGIN_REVIEW_ACTION_DISMISS);
 }
 
 static void
 gs_review_row_button_clicked_remove_cb (GtkButton *button, GsReviewRow *row)
 {
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
-		       GS_REVIEW_ACTION_REMOVE);
+		       GS_PLUGIN_REVIEW_ACTION_REMOVE);
 }
 
-GsReview *
+AsReview *
 gs_review_row_get_review (GsReviewRow *review_row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (review_row);
@@ -276,12 +276,12 @@ gs_review_row_set_actions (GsReviewRow *review_row, guint64 actions)
  * Return value: A new @GsReviewRow.
  **/
 GtkWidget *
-gs_review_row_new (GsReview *review)
+gs_review_row_new (AsReview *review)
 {
 	GsReviewRow *row;
 	GsReviewRowPrivate *priv;
 
-	g_return_val_if_fail (GS_IS_REVIEW (review), NULL);
+	g_return_val_if_fail (AS_IS_REVIEW (review), NULL);
 
 	row = g_object_new (GS_TYPE_REVIEW_ROW, NULL);
 	priv = gs_review_row_get_instance_private (row);

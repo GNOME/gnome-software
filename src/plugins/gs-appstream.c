@@ -161,6 +161,23 @@ gs_appstream_refine_add_screenshots (GsApp *app, AsApp *item)
 	}
 }
 
+static void
+gs_appstream_refine_add_reviews (GsApp *app, AsApp *item)
+{
+	AsReview *review;
+	GPtrArray *reviews;
+	guint i;
+
+	/* do we have any to add */
+	if (gs_app_get_reviews(app)->len > 0)
+		return;
+	reviews = as_app_get_reviews (item);
+	for (i = 0; i < reviews->len; i++) {
+		review = g_ptr_array_index (reviews, i);
+		gs_app_add_review (app, review);
+	}
+}
+
 static gboolean
 gs_appstream_is_recent_release (AsApp *app)
 {
@@ -594,6 +611,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set screenshots */
 	gs_appstream_refine_add_screenshots (app, item);
+
+	/* set reviews */
+	gs_appstream_refine_add_reviews (app, item);
 
 	/* are the screenshots perfect */
 	if (gs_appstream_are_screenshots_perfect (item))

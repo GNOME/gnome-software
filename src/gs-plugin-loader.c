@@ -100,7 +100,7 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GError		**error);
 typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginAuthFunc)		(GsPlugin	*plugin,
@@ -145,7 +145,7 @@ typedef struct {
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
-	GsReview			*review;
+	AsReview			*review;
 	GsAuth				*auth;
 } GsPluginLoaderAsyncState;
 
@@ -269,11 +269,11 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 static gint
 gs_plugin_loader_review_score_sort_cb (gconstpointer a, gconstpointer b)
 {
-	GsReview *ra = *((GsReview **) a);
-	GsReview *rb = *((GsReview **) b);
-	if (gs_review_get_score (ra) < gs_review_get_score (rb))
+	AsReview *ra = *((AsReview **) a);
+	AsReview *rb = *((AsReview **) b);
+	if (as_review_get_priority (ra) < as_review_get_priority (rb))
 		return 1;
-	if (gs_review_get_score (ra) > gs_review_get_score (rb))
+	if (as_review_get_priority (ra) > as_review_get_priority (rb))
 		return -1;
 	return 0;
 }
@@ -3071,8 +3071,8 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 void
 gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 				      GsApp *app,
-				      GsReview *review,
-				      GsReviewAction action,
+				      AsReview *review,
+				      GsPluginReviewAction action,
 				      GCancellable *cancellable,
 				      GAsyncReadyCallback callback,
 				      gpointer user_data)
@@ -3090,22 +3090,22 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	state->review = g_object_ref (review);
 
 	switch (action) {
-	case GS_REVIEW_ACTION_SUBMIT:
+	case GS_PLUGIN_REVIEW_ACTION_SUBMIT:
 		state->function_name = "gs_plugin_review_submit";
 		break;
-	case GS_REVIEW_ACTION_UPVOTE:
+	case GS_PLUGIN_REVIEW_ACTION_UPVOTE:
 		state->function_name = "gs_plugin_review_upvote";
 		break;
-	case GS_REVIEW_ACTION_DOWNVOTE:
+	case GS_PLUGIN_REVIEW_ACTION_DOWNVOTE:
 		state->function_name = "gs_plugin_review_downvote";
 		break;
-	case GS_REVIEW_ACTION_REPORT:
+	case GS_PLUGIN_REVIEW_ACTION_REPORT:
 		state->function_name = "gs_plugin_review_report";
 		break;
-	case GS_REVIEW_ACTION_REMOVE:
+	case GS_PLUGIN_REVIEW_ACTION_REMOVE:
 		state->function_name = "gs_plugin_review_remove";
 		break;
-	case GS_REVIEW_ACTION_DISMISS:
+	case GS_PLUGIN_REVIEW_ACTION_DISMISS:
 		state->function_name = "gs_plugin_review_dismiss";
 		break;
 	default:

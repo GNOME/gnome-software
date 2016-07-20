@@ -24,7 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#include "gs-review.h"
+#include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
@@ -36,11 +36,11 @@ struct _GsReviewRowClass
 {
 	GtkListBoxRowClass	 parent_class;
 	void			(*button_clicked)	(GsReviewRow	*review_row,
-							 GsReviewAction	 action);
+							 GsPluginReviewAction	 action);
 };
 
-GtkWidget	*gs_review_row_new		(GsReview	*review);
-GsReview	*gs_review_row_get_review	(GsReviewRow	*review_row);
+GtkWidget	*gs_review_row_new		(AsReview	*review);
+AsReview	*gs_review_row_get_review	(GsReviewRow	*review_row);
 void		 gs_review_row_set_actions	(GsReviewRow	*review_row,
 						 guint64	 actions);
 

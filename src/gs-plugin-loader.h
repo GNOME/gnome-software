@@ -60,6 +60,28 @@ typedef enum {
 	GS_PLUGIN_LOADER_ACTION_LAST
 } GsPluginLoaderAction;
 
+/**
+ * GsPluginReviewAction:
+ * @GS_PLUGIN_REVIEW_ACTION_SUBMIT:	Submit a new review
+ * @GS_PLUGIN_REVIEW_ACTION_UPVOTE:	Upvote an existing review
+ * @GS_PLUGIN_REVIEW_ACTION_DOWNVOTE:	Downvote an existing review
+ * @GS_PLUGIN_REVIEW_ACTION_REPORT:	Report an existing review
+ * @GS_PLUGIN_REVIEW_ACTION_REMOVE:	Remove a review written by the user
+ * @GS_PLUGIN_REVIEW_ACTION_DISMISS:	Dismiss (ignore) a review when moderating
+ *
+ * The review action.
+ **/
+typedef enum {
+	GS_PLUGIN_REVIEW_ACTION_SUBMIT,
+	GS_PLUGIN_REVIEW_ACTION_UPVOTE,
+	GS_PLUGIN_REVIEW_ACTION_DOWNVOTE,
+	GS_PLUGIN_REVIEW_ACTION_REPORT,
+	GS_PLUGIN_REVIEW_ACTION_REMOVE,
+	GS_PLUGIN_REVIEW_ACTION_DISMISS,
+	/*< private >*/
+	GS_PLUGIN_REVIEW_ACTION_LAST
+} GsPluginReviewAction;
+
 typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 gpointer	 user_data);
@@ -219,8 +241,8 @@ gboolean	 gs_plugin_loader_review_action_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsReview	*review,
-							 GsReviewAction	 action,
+							 AsReview	*review,
+							 GsPluginReviewAction	 action,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);

@@ -590,7 +590,7 @@ parse_date_time (const gchar *text)
 }
 
 static gboolean
-parse_review (GsReview *review, const gchar *our_username, JsonNode *node)
+parse_review (AsReview *review, const gchar *our_username, JsonNode *node)
 {
 	JsonObject *object;
 	gint64 star_rating;
@@ -602,17 +602,17 @@ parse_review (GsReview *review, const gchar *our_username, JsonNode *node)
 	object = json_node_get_object (node);
 
 	if (g_strcmp0 (our_username, json_object_get_string_member (object, "reviewer_username")) == 0)
-		gs_review_add_flags (review, GS_REVIEW_FLAG_SELF);
-	gs_review_set_reviewer (review, json_object_get_string_member (object, "reviewer_displayname"));
-	gs_review_set_summary (review, json_object_get_string_member (object, "summary"));
-	gs_review_set_text (review, json_object_get_string_member (object, "review_text"));
-	gs_review_set_version (review, json_object_get_string_member (object, "version"));
+		as_review_add_flags (review, AS_REVIEW_FLAG_SELF);
+	as_review_set_reviewer_name (review, json_object_get_string_member (object, "reviewer_displayname"));
+	as_review_set_summary (review, json_object_get_string_member (object, "summary"));
+	as_review_set_description (review, json_object_get_string_member (object, "review_text"));
+	as_review_set_version (review, json_object_get_string_member (object, "version"));
 	star_rating = json_object_get_int_member (object, "rating");
 	if (star_rating > 0)
-		gs_review_set_rating (review, star_rating * 20 - 10);
-	gs_review_set_date (review, parse_date_time (json_object_get_string_member (object, "date_created")));
+		as_review_set_rating (review, star_rating * 20 - 10);
+	as_review_set_date (review, parse_date_time (json_object_get_string_member (object, "date_created")));
 	id_string = g_strdup_printf ("%" G_GINT64_FORMAT, json_object_get_int_member (object, "id"));
-	gs_review_add_metadata (review, "ubuntu-id", id_string);
+	as_review_add_metadata (review, "ubuntu-id", id_string);
 
 	return TRUE;
 }
@@ -633,10 +633,10 @@ parse_reviews (GsPlugin *plugin, JsonParser *parser, GsApp *app, GCancellable *c
 		return FALSE;
 	array = json_node_get_array (json_parser_get_root (parser));
 	for (i = 0; i < json_array_get_length (array); i++) {
-		g_autoptr(GsReview) review = NULL;
+		g_autoptr(AsReview) review = NULL;
 
 		/* Read in from JSON... (skip bad entries) */
-		review = gs_review_new ();
+		review = as_review_new ();
 		if (parse_review (review, consumer_key, json_array_get_element (array, i)))
 			gs_app_add_review (app, review);
 	}
@@ -787,7 +787,7 @@ add_int_member (JsonBuilder *builder, const gchar *name, gint64 value)
 gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -803,7 +803,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	g_autoptr(JsonParser) result = NULL;
 
 	/* Ubuntu reviews require a summary and description - just make one up for now */
-	rating = gs_review_get_rating (review);
+	rating = as_review_get_rating (review);
 	if (rating > 80)
 		n_stars = 5;
 	else if (rating > 60)
@@ -824,12 +824,12 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	request = json_builder_new ();
 	json_builder_begin_object (request);
 	add_string_member (request, "package_name", gs_app_get_source_default (app));
-	add_string_member (request, "summary", gs_review_get_summary (review));
-	add_string_member (request, "review_text", gs_review_get_text (review));
+	add_string_member (request, "summary", as_review_get_summary (review));
+	add_string_member (request, "review_text", as_review_get_description (review));
 	add_string_member (request, "language", language);
 	add_string_member (request, "origin", priv->origin);
 	add_string_member (request, "distroseries", priv->distroseries);
-	add_string_member (request, "version", gs_review_get_version (review));
+	add_string_member (request, "version", as_review_get_version (review));
 	add_int_member (request, "rating", n_stars);
 	add_string_member (request, "arch_tag", architecture);
 	json_builder_end_object (request);
@@ -860,7 +860,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 gboolean
 gs_plugin_review_report (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -871,7 +871,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 	guint status_code;
 
 	/* Can only modify Ubuntu reviews */
-	review_id = gs_review_get_metadata_item (review, "ubuntu-id");
+	review_id = as_review_get_metadata_item (review, "ubuntu-id");
 	if (review_id == NULL)
 		return TRUE;
 
@@ -894,7 +894,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
@@ -931,49 +931,49 @@ set_review_usefulness (GsPlugin *plugin,
 gboolean
 gs_plugin_review_upvote (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
 	const gchar *review_id;
 
 	/* Can only modify Ubuntu reviews */
-	review_id = gs_review_get_metadata_item (review, "ubuntu-id");
+	review_id = as_review_get_metadata_item (review, "ubuntu-id");
 	if (review_id == NULL)
 		return TRUE;
 
 	if (!set_review_usefulness (plugin, review_id, TRUE, cancellable, error))
 		return FALSE;
 
-	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
 gboolean
 gs_plugin_review_downvote (GsPlugin *plugin,
 			   GsApp *app,
-			   GsReview *review,
+			   AsReview *review,
 			   GCancellable *cancellable,
 			   GError **error)
 {
 	const gchar *review_id;
 
 	/* Can only modify Ubuntu reviews */
-	review_id = gs_review_get_metadata_item (review, "ubuntu-id");
+	review_id = as_review_get_metadata_item (review, "ubuntu-id");
 	if (review_id == NULL)
 		return TRUE;
 
 	if (!set_review_usefulness (plugin, review_id, FALSE, cancellable, error))
 		return FALSE;
 
-	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
+	as_review_add_flags (review, AS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
 gboolean
 gs_plugin_review_remove (GsPlugin *plugin,
 			 GsApp *app,
-			 GsReview *review,
+			 AsReview *review,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -982,7 +982,7 @@ gs_plugin_review_remove (GsPlugin *plugin,
 	guint status_code;
 
 	/* Can only modify Ubuntu reviews */
-	review_id = gs_review_get_metadata_item (review, "ubuntu-id");
+	review_id = as_review_get_metadata_item (review, "ubuntu-id");
 	if (review_id == NULL)
 		return TRUE;
 

@@ -93,7 +93,7 @@ struct _GsApp
 	guint			 priority;
 	gint			 rating;
 	GArray			*review_ratings;
-	GPtrArray		*reviews; /* of GsReview */
+	GPtrArray		*reviews; /* of AsReview */
 	guint64			 size_installed;
 	guint64			 size_download;
 	AsAppKind		 kind;
@@ -1974,7 +1974,7 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
  *
  * Gets all the user-submitted reviews for the application.
  *
- * Returns: (element-type GsReview) (transfer none): the list of reviews
+ * Returns: (element-type AsReview) (transfer none): the list of reviews
  **/
 GPtrArray *
 gs_app_get_reviews (GsApp *app)
@@ -1986,27 +1986,27 @@ gs_app_get_reviews (GsApp *app)
 /**
  * gs_app_add_review:
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  *
  * Adds a user-submitted review to the application.
  **/
 void
-gs_app_add_review (GsApp *app, GsReview *review)
+gs_app_add_review (GsApp *app, AsReview *review)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (GS_IS_REVIEW (review));
+	g_return_if_fail (AS_IS_REVIEW (review));
 	g_ptr_array_add (app->reviews, g_object_ref (review));
 }
 
 /**
  * gs_app_remove_review:
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  *
  * Removes a user-submitted review to the application.
  **/
 void
-gs_app_remove_review (GsApp *app, GsReview *review)
+gs_app_remove_review (GsApp *app, AsReview *review)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_ptr_array_remove (app->reviews, review);

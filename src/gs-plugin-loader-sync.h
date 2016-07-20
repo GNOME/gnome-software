@@ -78,8 +78,8 @@ gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 gboolean	 gs_plugin_loader_review_action		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsReview	*review,
-							 GsReviewAction	 action,
+							 AsReview	*review,
+							 GsPluginReviewAction	 action,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_auth_action		(GsPluginLoader	*plugin_loader,

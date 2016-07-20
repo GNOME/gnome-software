@@ -644,7 +644,7 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
  * gs_plugin_review_submit:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -654,7 +654,7 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -662,7 +662,7 @@ gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
  * gs_plugin_review_upvote:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -672,7 +672,7 @@ gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_review_upvote		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -680,7 +680,7 @@ gboolean	 gs_plugin_review_upvote		(GsPlugin	*plugin,
  * gs_plugin_review_downvote:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -692,7 +692,7 @@ gboolean	 gs_plugin_review_upvote		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_review_downvote		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -700,7 +700,7 @@ gboolean	 gs_plugin_review_downvote		(GsPlugin	*plugin,
  * gs_plugin_review_report:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -712,7 +712,7 @@ gboolean	 gs_plugin_review_downvote		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_review_report		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -720,18 +720,18 @@ gboolean	 gs_plugin_review_report		(GsPlugin	*plugin,
  * gs_plugin_review_remove:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
  * Remove a review that the user wrote.
- * NOTE: Users should only be able to remove reviews with %GS_REVIEW_FLAG_SELF.
+ * NOTE: Users should only be able to remove reviews with %AS_REVIEW_FLAG_SELF.
  *
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -739,7 +739,7 @@ gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
  * gs_plugin_review_dismiss:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
- * @review: a #GsReview
+ * @review: a #AsReview
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -751,7 +751,7 @@ gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsReview	*review,
+							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

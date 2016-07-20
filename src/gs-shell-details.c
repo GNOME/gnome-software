@@ -1067,9 +1067,9 @@ static void gs_shell_details_refresh_reviews (GsShellDetails *self);
 
 typedef struct {
 	GsShellDetails		*self;
-	GsReview		*review;
+	AsReview		*review;
 	GsApp			*app;
-	GsReviewAction		 action;
+	GsPluginReviewAction		 action;
 } GsShellDetailsReviewHelper;
 
 static void
@@ -1148,7 +1148,7 @@ gs_shell_details_app_set_review_cb (GObject *source,
 
 static void
 gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
-					   GsReviewAction action,
+					   GsPluginReviewAction action,
 					   GsShellDetails *self)
 {
 	GsShellDetailsReviewHelper *helper = g_new0 (GsShellDetailsReviewHelper, 1);
@@ -1176,15 +1176,15 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 	guint64 possible_actions = 0;
 	guint i;
 	struct {
-		GsReviewAction action;
+		GsPluginReviewAction action;
 		const gchar *plugin_func;
 	} plugin_vfuncs[] = {
-		{ GS_REVIEW_ACTION_UPVOTE,	"gs_plugin_review_upvote" },
-		{ GS_REVIEW_ACTION_DOWNVOTE,	"gs_plugin_review_downvote" },
-		{ GS_REVIEW_ACTION_REPORT,	"gs_plugin_review_report" },
-		{ GS_REVIEW_ACTION_SUBMIT,	"gs_plugin_review_submit" },
-		{ GS_REVIEW_ACTION_REMOVE,	"gs_plugin_review_remove" },
-		{ GS_REVIEW_ACTION_LAST,	NULL }
+		{ GS_PLUGIN_REVIEW_ACTION_UPVOTE,	"gs_plugin_review_upvote" },
+		{ GS_PLUGIN_REVIEW_ACTION_DOWNVOTE,	"gs_plugin_review_downvote" },
+		{ GS_PLUGIN_REVIEW_ACTION_REPORT,	"gs_plugin_review_report" },
+		{ GS_PLUGIN_REVIEW_ACTION_SUBMIT,	"gs_plugin_review_submit" },
+		{ GS_PLUGIN_REVIEW_ACTION_REMOVE,	"gs_plugin_review_remove" },
+		{ GS_PLUGIN_REVIEW_ACTION_LAST,	NULL }
 	};
 
 	/* show or hide the entire reviews section */
@@ -1245,7 +1245,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		return;
 
 	/* find what the plugins support */
-	for (i = 0; plugin_vfuncs[i].action != GS_REVIEW_ACTION_LAST; i++) {
+	for (i = 0; plugin_vfuncs[i].action != GS_PLUGIN_REVIEW_ACTION_LAST; i++) {
 		if (gs_plugin_loader_get_plugin_supported (self->plugin_loader,
 							   plugin_vfuncs[i].plugin_func)) {
 			possible_actions |= 1u << plugin_vfuncs[i].action;
@@ -1260,17 +1260,17 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_reviews));
 	reviews = gs_app_get_reviews (self->app);
 	for (i = 0; i < reviews->len; i++) {
-		GsReview *review = g_ptr_array_index (reviews, i);
+		AsReview *review = g_ptr_array_index (reviews, i);
 		GtkWidget *row = gs_review_row_new (review);
 		guint64 actions;
 
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_shell_details_review_button_clicked_cb), self);
-		if (gs_review_get_flags (review) & GS_REVIEW_FLAG_SELF) {
-			actions = possible_actions & 1 << GS_REVIEW_ACTION_REMOVE;
+		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
+			actions = possible_actions & 1 << GS_PLUGIN_REVIEW_ACTION_REMOVE;
 			show_review_button = FALSE;
 		} else {
-			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
+			actions = possible_actions & ~(1u << GS_PLUGIN_REVIEW_ACTION_REMOVE);
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
@@ -1624,7 +1624,7 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 {
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
-	g_autoptr(GsReview) review = NULL;
+	g_autoptr(AsReview) review = NULL;
 	GsShellDetailsReviewHelper *helper;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
 
@@ -1634,21 +1634,21 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 		return;
 	}
 
-	review = gs_review_new ();
-	gs_review_set_summary (review, gs_review_dialog_get_summary (rdialog));
+	review = as_review_new ();
+	as_review_set_summary (review, gs_review_dialog_get_summary (rdialog));
 	text = gs_review_dialog_get_text (rdialog);
-	gs_review_set_text (review, text);
-	gs_review_set_rating (review, gs_review_dialog_get_rating (rdialog));
-	gs_review_set_version (review, gs_app_get_version (self->app));
+	as_review_set_description (review, text);
+	as_review_set_rating (review, gs_review_dialog_get_rating (rdialog));
+	as_review_set_version (review, gs_app_get_version (self->app));
 	now = g_date_time_new_now_local ();
-	gs_review_set_date (review, now);
+	as_review_set_date (review, now);
 
 	/* call into the plugins to set the new value */
 	helper = g_new0 (GsShellDetailsReviewHelper, 1);
 	helper->self = g_object_ref (self);
 	helper->app = g_object_ref (self->app);
 	helper->review = g_object_ref (review);
-	helper->action = GS_REVIEW_ACTION_SUBMIT;
+	helper->action = GS_PLUGIN_REVIEW_ACTION_SUBMIT;
 	gs_plugin_loader_review_action_async (self->plugin_loader,
 					      helper->app,
 					      helper->review,
