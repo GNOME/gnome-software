@@ -681,7 +681,7 @@ gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
 		GtkWidget *label;
 		/* TRANSLATORS: this is the warning box */
-		label = gtk_label_new ("This application can only be used when there is an active internet connection.");
+		label = gtk_label_new (_("This application can only be used when there is an active internet connection."));
 		gtk_widget_set_visible (label, TRUE);
 		gtk_label_set_xalign (GTK_LABEL (label), 0.f);
 		gtk_style_context_add_class (gtk_widget_get_style_context (label),
