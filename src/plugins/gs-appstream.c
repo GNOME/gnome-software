@@ -511,14 +511,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set name */
 	tmp = as_app_get_name (item, NULL);
-	if (tmp != NULL) {
-		if (g_str_has_prefix (tmp, "(Nightly) ")) {
-			tmp += 10;
-			if (gs_app_get_metadata_item (app, "X-XdgApp-Tags") == NULL)
-				gs_app_set_metadata (app, "X-XdgApp-Tags", "nightly");
-		}
+	if (tmp != NULL)
 		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
-	}
 
 	/* set summary */
 	tmp = as_app_get_comment (item, NULL);
