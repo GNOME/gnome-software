@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2016-07-21 14:26+0000\n"
-"PO-Revision-Date: 2016-07-21 23:00+0800\n"
+"PO-Revision-Date: 2016-07-21 23:11+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
@@ -452,7 +452,7 @@ msgstr "全部"
 #. TRANSLATORS: this is a subcategory of featured apps
 #: ../src/gs-category.c:191
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:293
@@ -638,6 +638,8 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"目前安裝的軟體有些和 %s 並不相容。若您希望繼續，則下列軟體在升級過程中會自動"
+"移除："
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
@@ -1018,7 +1020,7 @@ msgstr "細節"
 
 #: ../src/gs-shell-details.ui.h:24
 msgid "Localized in your Language"
-msgstr "有本地化為您的語言"
+msgstr "有本地化成您的語言"
 
 #: ../src/gs-shell-details.ui.h:25
 msgid "Documentation"
@@ -1127,7 +1129,7 @@ msgstr "不明的軟體授權"
 
 #: ../src/gs-shell-details.ui.h:57
 msgid "The license terms of this software are unknown."
-msgstr ""
+msgstr "此軟體的授權條款細則尚未可知。"
 
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:145
@@ -1346,10 +1348,8 @@ msgstr "更多…"
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:450
-#, fuzzy
-#| msgid "Recommended Audio Applications"
 msgid "Recommended Audio & Video Applications"
-msgstr "推薦的音訊應用程式"
+msgstr "推薦的音訊和視訊應用程式"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
@@ -1366,10 +1366,8 @@ msgstr "推薦的美工圖形應用程式"
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:465
-#, fuzzy
-#| msgid "Recommended Audio Applications"
 msgid "Recommended Productivity Applications"
-msgstr "推薦的音訊應用程式"
+msgstr "推薦的生產力應用程式"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -2419,10 +2417,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:33
-#, fuzzy
 msgctxt "Menu of AudioVideo"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:36
 msgctxt "Menu of AudioVideo"
@@ -2440,11 +2437,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:54
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Development"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:57
 msgctxt "Menu of Development"
@@ -2462,11 +2457,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:72
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Education"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:75
 msgctxt "Menu of Education"
@@ -2494,11 +2487,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:97
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Games"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:100
 msgctxt "Menu of Games"
@@ -2566,11 +2557,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:145
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Graphics"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:148
 msgctxt "Menu of Graphics"
@@ -2603,11 +2592,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:171
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Office"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:174
 msgctxt "Menu of Office"
@@ -2665,11 +2652,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:220
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Science"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:223
 msgctxt "Menu of Science"
@@ -2697,18 +2682,14 @@ msgid "Robotics"
 msgstr "機器人"
 
 #: ../src/plugins/gs-desktop-common.c:245
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:248
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Communication"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:251
 msgctxt "Menu of Communication"
@@ -2731,11 +2712,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:273
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Utility"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:276
 msgctxt "Menu of Utility"
@@ -2748,11 +2727,9 @@ msgid "All"
 msgstr "全部"
 
 #: ../src/plugins/gs-desktop-common.c:287
-#, fuzzy
-#| msgid "Featured"
 msgctxt "Menu of Reference"
 msgid "Featured"
-msgstr "特色"
+msgstr "特選"
 
 #: ../src/plugins/gs-desktop-common.c:290
 msgctxt "Menu of Art"
@@ -2760,17 +2737,15 @@ msgid "Art"
 msgstr "藝術"
 
 #: ../src/plugins/gs-desktop-common.c:293
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Biography"
-msgstr "地理"
+msgstr "傳記"
 
 #: ../src/plugins/gs-desktop-common.c:296
 #: ../src/plugins/gs-desktop-common.c:299
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Fiction"
-msgstr "動作"
+msgstr "小說"
 
 #: ../src/plugins/gs-desktop-common.c:302
 msgctxt "Menu of Reference"
@@ -2783,7 +2758,6 @@ msgid "History"
 msgstr "歷史"
 
 #: ../src/plugins/gs-desktop-common.c:308
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "生活風格"
@@ -2840,7 +2814,6 @@ msgstr "溝通和新聞"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
 #: ../src/plugins/gs-desktop-common.c:350
-#, fuzzy
 msgid "Reference"
 msgstr "參考"
 
