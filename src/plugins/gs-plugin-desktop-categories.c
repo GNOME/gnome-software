@@ -58,7 +58,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		category = gs_category_new (msdata[i].id);
 		gs_category_set_icon (category, msdata[i].icon);
 		gs_category_set_name (category, gettext (msdata[i].name));
-		gs_category_set_important (category, msdata[i].important);
+		gs_category_set_score (category, msdata[i].score);
 		if (gdk_rgba_parse (&key_color, msdata[i].key_colors))
 			gs_category_add_key_color (category, &key_color);
 		g_ptr_array_add (list, category);

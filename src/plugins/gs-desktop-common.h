@@ -38,7 +38,7 @@ typedef struct {
 	const gchar	*name;
 	const gchar	*icon;
 	const gchar	*key_colors;
-	gboolean	 important;
+	gint		 score;
 } GsDesktopData;
 
 const GsDesktopData	*gs_desktop_get_data		(void);

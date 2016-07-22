@@ -353,13 +353,11 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
-	guint important_cnt = 0;
-	guint important_aim;
 	GsCategory *cat;
 	GtkFlowBox *flowbox;
 	GtkWidget *tile;
-	gboolean has_category = FALSE;
-	gboolean use_expander = FALSE;
+	const guint MAX_CATS_PER_SECTION = 6;
+	guint added_cnt = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) list = NULL;
 
@@ -372,35 +370,6 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories));
 	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories2));
 
-	/* ensure there are no more than two rows of curated categories */
-	flowbox = GTK_FLOW_BOX (priv->flowbox_categories);
-	important_aim = 2 * gtk_flow_box_get_max_children_per_line (flowbox);
-	for (i = 0; i < list->len; i++) {
-		cat = GS_CATEGORY (g_ptr_array_index (list, i));
-		if (gs_category_get_size (cat) == 0)
-			continue;
-		if (gs_category_get_important (cat)) {
-			if (++important_cnt > important_aim) {
-				g_debug ("overriding %s as unimportant",
-					 gs_category_get_id (cat));
-				gs_category_set_important (cat, FALSE);
-			}
-		}
-	}
-
-	/* ensure we show a full first flowbox if we don't have enough */
-	for (i = 0; i < list->len && important_cnt < important_aim; i++) {
-		cat = GS_CATEGORY (g_ptr_array_index (list, i));
-		if (gs_category_get_size (cat) == 0)
-			continue;
-		if (!gs_category_get_important (cat)) {
-			important_cnt++;
-			g_debug ("overriding %s as important",
-				 gs_category_get_id (cat));
-			gs_category_set_important (cat, TRUE);
-		}
-	}
-
 	/* add categories to the correct flowboxes, the second being hidden */
 	for (i = 0; i < list->len; i++) {
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
@@ -409,15 +378,15 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), self);
-		if (gs_category_get_important (cat)) {
+		if (added_cnt < MAX_CATS_PER_SECTION) {
 			flowbox = GTK_FLOW_BOX (priv->flowbox_categories);
+			gs_category_tile_set_colorful (GS_CATEGORY_TILE (tile), TRUE);
 		} else {
 			flowbox = GTK_FLOW_BOX (priv->flowbox_categories2);
-			use_expander = TRUE;
 		}
 		gtk_flow_box_insert (flowbox, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
-		has_category = TRUE;
+		added_cnt++;
 
 		/* we save these for the 'More...' buttons */
 		g_hash_table_insert (priv->category_hash,
@@ -426,12 +395,12 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	}
 
 	/* show the expander if we have too many children */
-	gtk_widget_set_visible (priv->categories_expander, use_expander);
+	gtk_widget_set_visible (priv->categories_expander,
+				added_cnt > MAX_CATS_PER_SECTION);
 out:
-	if (has_category) {
+	if (added_cnt > 0)
 		priv->empty = FALSE;
-	}
-	gtk_widget_set_visible (priv->category_heading, has_category);
+	gtk_widget_set_visible (priv->category_heading, added_cnt > 0);
 
 	priv->loading_categories = FALSE;
 	priv->refresh_count--;

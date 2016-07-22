@@ -42,9 +42,9 @@ void		 gs_category_set_name		(GsCategory	*category,
 const gchar	*gs_category_get_icon		(GsCategory	*category);
 void		 gs_category_set_icon		(GsCategory	*category,
 						 const gchar	*icon);
-gboolean	 gs_category_get_important	(GsCategory	*category);
-void		 gs_category_set_important	(GsCategory	*category,
-						 gboolean	 important);
+gint		 gs_category_get_score		(GsCategory	*category);
+void		 gs_category_set_score		(GsCategory	*category,
+						 gint		 score);
 GPtrArray	*gs_category_get_key_colors	(GsCategory	*category);
 void		 gs_category_add_key_color	(GsCategory	*category,
 						 const GdkRGBA	*key_color);

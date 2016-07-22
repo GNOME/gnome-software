@@ -36,6 +36,9 @@ GtkWidget	*gs_category_tile_new			(GsCategory *cat);
 GsCategory      *gs_category_tile_get_category		(GsCategoryTile	*tile);
 void		 gs_category_tile_set_category		(GsCategoryTile	*tile,
 							 GsCategory     *cat);
+gboolean	 gs_category_tile_get_colorful		(GsCategoryTile	*tile);
+void		 gs_category_tile_set_colorful		(GsCategoryTile	*tile,
+							 gboolean	 colorful);
 
 G_END_DECLS
 

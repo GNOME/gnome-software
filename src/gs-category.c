@@ -41,7 +41,7 @@ struct _GsCategory
 	gchar		*id;
 	gchar		*name;
 	gchar		*icon;
-	gboolean	 important;
+	gint		 score;
 	GPtrArray	*key_colors;
 	GPtrArray	*desktop_groups;
 	GsCategory	*parent;
@@ -85,8 +85,7 @@ gs_category_to_string (GsCategory *category)
 		g_string_append_printf (str, "  parent: %s\n",
 					gs_category_get_id (category->parent));
 	}
-	g_string_append_printf (str, "  important: %s\n",
-				category->important ? "yes" : "no");
+	g_string_append_printf (str, "  score: %i\n", category->score);
 	if (category->children->len == 0) {
 		g_string_append_printf (str, "  children: %i\n",
 					category->children->len);
@@ -249,34 +248,35 @@ gs_category_set_icon (GsCategory *category, const gchar *icon)
 }
 
 /**
- * gs_category_get_important:
+ * gs_category_get_score:
  * @category: a #GsCategory
  *
- * Gets if the category is important.
+ * Gets if the category score.
  * Important categories may be shown before other categories, or tagged in a
  * different way, for example with color or in a different section.
  *
  * Returns: the string, or %NULL
  **/
-gboolean
-gs_category_get_important (GsCategory *category)
+gint
+gs_category_get_score (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
-	return category->important;
+	return category->score;
 }
 
 /**
- * gs_category_set_important:
+ * gs_category_set_score:
  * @category: a #GsCategory
- * @important: a category important, or %NULL
+ * @score: a category score, or %NULL
  *
- * Sets if the category is important.
+ * Sets the category score, where larger numbers get sorted before lower
+ * numbers.
  **/
 void
-gs_category_set_important (GsCategory *category, gboolean important)
+gs_category_set_score (GsCategory *category, gint score)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
-	category->important = important;
+	category->score = score;
 }
 
 /**
