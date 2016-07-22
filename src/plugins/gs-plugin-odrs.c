@@ -63,13 +63,14 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* get the distro name (e.g. 'Fedora') but allow a fallback */
 	os_release = gs_os_release_new (&error);
-	if (os_release == NULL) {
+	if (os_release != NULL) {
+		priv->distro = g_strdup (gs_os_release_get_name (os_release));
+		if (priv->distro == NULL) {
+			g_warning ("no distro name specified");
+			priv->distro = g_strdup ("Unknown");
+		}
+	} else {
 		g_warning ("failed to get distro name: %s", error->message);
-		priv->distro = g_strdup ("Unknown");
-	}
-	priv->distro = g_strdup (gs_os_release_get_name (os_release));
-	if (priv->distro == NULL) {
-		g_warning ("failed to get distro name");
 		priv->distro = g_strdup ("Unknown");
 	}
 
