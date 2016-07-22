@@ -60,7 +60,7 @@ GLIB_GSETTINGS
 dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0 gtkspell3-3.0)
+PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0)
 PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.15)
 PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0 >= 2.31.5)
 PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0 >= 1.1.1)
@@ -96,6 +96,28 @@ AC_ARG_ENABLE(tests,
                               [test using tests [default=yes]])],,
               enable_tests=yes)
 AM_CONDITIONAL(ENABLE_TESTS, test "$enable_tests" != no)
+
+# spell checking
+AC_ARG_ENABLE(gtkspell,
+              [AS_HELP_STRING([--enable-gtkspell],
+                              [enable gtkspell support [default=auto]])],,
+              enable_gtkspell=yes)
+AS_IF([test "x$enable_gtkspell" != "xno"], [
+  PKG_CHECK_MODULES(GTKSPELL,
+                    [gtkspell3-3.0],
+                    [have_gtkspell=yes],
+                    [have_gtkspell=no])
+], [
+    have_gtkspell=no
+])
+AS_IF([test "x$have_gtkspell" = "xyes"], [
+    AC_DEFINE(HAVE_GTKSPELL,1,[Build gtkspell support])
+], [
+    AS_IF([test "x$enable_gtkspell" = "xyes"], [
+          AC_MSG_ERROR([gtkspell support requested but 'gtkspell3' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_GTKSPELL, test "$have_gtkspell" != no)
 
 # PackageKit
 AC_ARG_ENABLE(packagekit,
@@ -343,6 +365,7 @@ echo "
         Limba support:             ${have_limba}
         Flatpak support:           ${have_flatpak}
         OSTree support:            ${have_ostree}
+        GtkSpell support:          ${have_gtkspell}
         RPM support:               ${have_rpm}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}

@@ -5,6 +5,7 @@ AM_CPPFLAGS =						\
 	$(APPSTREAM_CFLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\
+	$(GTKSPELL_CFLAGS)				\
 	$(SOUP_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
 	$(GNOME_DESKTOP_CFLAGS)				\
@@ -276,6 +277,7 @@ gnome_software_LDADD =					\
 	$(APPSTREAM_LIBS)				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
+	$(GTKSPELL_LIBS)				\
 	$(SOUP_LIBS)					\
 	$(LIBSECRET_LIBS)				\
 	$(PACKAGEKIT_LIBS)				\
