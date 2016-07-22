@@ -333,6 +333,13 @@ AS_IF([test "x$enable_ubuntu_reviews" = "xyes"], [
 AM_CONDITIONAL(HAVE_UBUNTU_REVIEWS, [test "x$enable_ubuntu_reviews" = "xyes"])
 AC_DEFINE(HAVE_UBUNTU_REVIEWS,1,[Build Ubuntu reviews])
 
+# Webapps
+AC_ARG_ENABLE(webapps,
+              [AS_HELP_STRING([--enable-webapps],
+                              [enable webapps [default=yes]])],,
+              enable_webapps=yes)
+AM_CONDITIONAL(HAVE_WEBAPPS, [test "x$enable_webapps" = "xyes"])
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=11
@@ -392,5 +399,6 @@ echo "
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
         ODRS support:              ${enable_odrs}
+        Webapps support:           ${enable_webapps}
         Ubuntu Reviews support:    ${enable_ubuntu_reviews}
 "

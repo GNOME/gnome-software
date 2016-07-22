@@ -43,7 +43,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_provenance-license.la		\
 	libgs_plugin_repos.la				\
 	libgs_plugin_fedora-tagger-usage.la		\
-	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la				\
 	libgs_plugin_snap.la				\
 	libgs_plugin_ubuntuone.la
@@ -60,6 +59,10 @@ plugin_LTLIBRARIES +=					\
 	libgs_plugin_packagekit-history.la		\
 	libgs_plugin_packagekit-upgrade.la		\
 	libgs_plugin_packagekit.la
+endif
+
+if HAVE_WEBAPPS
+plugin_LTLIBRARIES += libgs_plugin_epiphany.la
 endif
 
 if HAVE_UBUNTU_REVIEWS

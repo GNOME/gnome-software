@@ -518,6 +518,10 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
 
+	/* no epiphany, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "epiphany"))
+		return;
+
 	/* a webapp with a local icon */
 	app = gs_app_new ("arachne.desktop");
 	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
