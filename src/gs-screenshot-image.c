@@ -25,9 +25,11 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#ifdef HAVE_GNOME_DESKTOP
 #define GNOME_DESKTOP_USE_UNSTABLE_API
 #include <libgnome-desktop/gnome-bg.h>
 #include <libgnome-desktop/gnome-desktop-thumbnail.h>
+#endif
 
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
@@ -79,6 +81,7 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 static GdkPixbuf *
 gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 {
+#ifdef HAVE_GNOME_DESKTOP
 	g_autoptr(GnomeBG) bg = NULL;
 	g_autoptr(GnomeDesktopThumbnailFactory) factory = NULL;
 	g_autoptr(GSettings) settings = NULL;
@@ -90,6 +93,9 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 	return gnome_bg_create_thumbnail (bg, factory,
 					  gdk_screen_get_default (),
 					  ssimg->width, ssimg->height);
+#else
+	return NULL;
+#endif
 }
 
 static gboolean

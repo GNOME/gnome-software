@@ -36,7 +36,10 @@
 #include "gs-upgrade-banner.h"
 #include "gs-application.h"
 
+#ifdef HAVE_GNOME_DESKTOP
 #include <gdesktop-enums.h>
+#endif
+
 #include <langinfo.h>
 
 typedef enum {
@@ -164,10 +167,12 @@ time_next_midnight (void)
 static gchar *
 gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
 {
+#ifdef HAVE_GNOME_DESKTOP
 	GDesktopClockFormat clock_format;
+#endif
 	const gchar *format_string;
 	gchar *time_string;
-	gboolean use_24h_time;
+	gboolean use_24h_time = FALSE;
 	gint64 tmp;
 	gint days_ago;
 	g_autoptr(GDateTime) last_checked = NULL;
@@ -181,8 +186,10 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
 	midnight = time_next_midnight ();
 	days_ago = g_date_time_difference (midnight, last_checked) / G_TIME_SPAN_DAY;
 
+#ifdef HAVE_GNOME_DESKTOP
 	clock_format = g_settings_get_enum (self->desktop_settings, "clock-format");
 	use_24h_time = (clock_format == G_DESKTOP_CLOCK_FORMAT_24H || self->ampm_available == FALSE);
+#endif
 
 	if (days_ago < 1) { // today
 		if (use_24h_time) {

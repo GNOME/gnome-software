@@ -67,7 +67,6 @@ PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0 >= 1.1.1)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= 2.51.92)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
-PKG_CHECK_MODULES(GNOME_DESKTOP, gnome-desktop-3.0 >= 3.17.92)
 PKG_CHECK_MODULES(LIBSECRET, libsecret-1)
 AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 AC_ARG_ENABLE(man,
@@ -118,6 +117,28 @@ AS_IF([test "x$have_gtkspell" = "xyes"], [
     ])
 ])
 AM_CONDITIONAL(HAVE_GTKSPELL, test "$have_gtkspell" != no)
+
+# gnome-desktop support
+AC_ARG_ENABLE(gnome-desktop,
+              [AS_HELP_STRING([--enable-gnome-desktop],
+                              [enable gnome-desktop support [default=auto]])],,
+              enable_gnome_desktop=yes)
+AS_IF([test "x$enable_gnome_desktop" != "xno"], [
+  PKG_CHECK_MODULES(GNOME_DESKTOP,
+                    [gnome-desktop-3.0 >= 3.17.92],
+                    [have_gnome_desktop=yes],
+                    [have_gnome_desktop=no])
+], [
+    have_gnome_desktop=no
+])
+AS_IF([test "x$have_gnome_desktop" = "xyes"], [
+    AC_DEFINE(HAVE_GNOME_DESKTOP,1,[Build gnome_desktop support])
+], [
+    AS_IF([test "x$enable_gnome_desktop" = "xyes"], [
+          AC_MSG_ERROR([gnome-desktop support requested but 'gnome-desktop' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_GNOME_DESKTOP, test "$have_gnome_desktop" != no)
 
 # PackageKit
 AC_ARG_ENABLE(packagekit,
@@ -366,6 +387,7 @@ echo "
         Flatpak support:           ${have_flatpak}
         OSTree support:            ${have_ostree}
         GtkSpell support:          ${have_gtkspell}
+        GNOME desktop support:     ${have_gnome_desktop}
         RPM support:               ${have_rpm}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
