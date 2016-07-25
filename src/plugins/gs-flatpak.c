@@ -1683,6 +1683,7 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 		return FALSE;
 	}
 	app = gs_app_new (repo_id);
+	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
 	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
 
@@ -1714,6 +1715,9 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	} else {
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	}
+
+	/* success */
+	gs_app_list_add (list, app);
 	return TRUE;
 }
 
