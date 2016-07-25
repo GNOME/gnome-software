@@ -268,7 +268,7 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
 		gs_page_remove_app (GS_PAGE (self), app, self->search_cancellable);
 	else
-		g_critical ("extras: app in unexpected state %d", gs_app_get_state (app));
+		g_critical ("extras: app in unexpected state %u", gs_app_get_state (app));
 }
 
 static void
@@ -490,7 +490,7 @@ show_search_results (GsShellExtras *self)
 		g_autofree gchar *str = NULL;
 
 		/* no results */
-		g_debug ("extras: failed to find any results, %d", n_missing);
+		g_debug ("extras: failed to find any results, %u", n_missing);
 		str = build_no_results_label (self);
 		gtk_label_set_label (GTK_LABEL (self->label_no_results), str);
 		gs_shell_extras_set_state (self,
@@ -503,7 +503,7 @@ show_search_results (GsShellExtras *self)
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, TRUE);
 	} else {
 		/* show what we got */
-		g_debug ("extras: got %d search results, showing", n_children);
+		g_debug ("extras: got %u search results, showing", n_children);
 		gs_shell_extras_set_state (self,
 		                           GS_SHELL_EXTRAS_STATE_READY);
 	}
@@ -1077,7 +1077,7 @@ get_app_sort_key (GsApp *app)
 	/* finally, sort by short name */
 	g_string_append (key, gs_app_get_name (app));
 
-	return g_utf8_casefold (key->str, key->len);
+	return g_utf8_casefold (key->str, (gssize) key->len);
 }
 
 static gint

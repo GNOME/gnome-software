@@ -636,7 +636,7 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "0.2");
-	g_assert_cmpint (gs_app_get_size_download (app), ==, 32784);
+	g_assert_cmpint ((gint64) gs_app_get_size_download (app), ==, 32784);
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "This is the first paragraph in the example "
 			 "cab file.\n\nThis is the second paragraph.");
@@ -770,9 +770,10 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
-	g_assert_cmpint (gs_app_get_kudos (app), ==, GS_APP_KUDO_HAS_KEYWORDS |
-						     GS_APP_KUDO_SANDBOXED_SECURE |
-						     GS_APP_KUDO_SANDBOXED);
+	g_assert_cmpint ((gint64) gs_app_get_kudos (app), ==,
+			 GS_APP_KUDO_HAS_KEYWORDS |
+			 GS_APP_KUDO_SANDBOXED_SECURE |
+			 GS_APP_KUDO_SANDBOXED);
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "");
 
 	/* install, also installing runtime */

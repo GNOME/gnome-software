@@ -53,7 +53,7 @@ typedef struct
 	GSettings		*settings;
 
 	gchar			**compatible_projects;
-	gint			 scale;
+	guint			 scale;
 
 	guint			 updates_changed_id;
 	guint			 reload_id;
@@ -2899,7 +2899,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	s = g_string_new ("");
 	pending_apps = priv->pending_apps;
 	g_mutex_lock (&priv->pending_apps_mutex);
-	for (i = pending_apps->len - 1; i >= 0; i--) {
+	for (i = (gint) pending_apps->len - 1; i >= 0; i--) {
 		GsApp *app;
 		app = g_ptr_array_index (pending_apps, i);
 		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
@@ -2915,7 +2915,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 				 "install-queue",
 				 NULL);
 	g_debug ("saving install queue to %s", file);
-	ret = g_file_set_contents (file, s->str, s->len, &error);
+	ret = g_file_set_contents (file, s->str, (gssize) s->len, &error);
 	if (!ret)
 		g_warning ("failed to save install queue: %s", error->message);
 }
@@ -3456,7 +3456,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 }
 
 void
-gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
+gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, guint scale)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
@@ -3470,7 +3470,7 @@ gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
 	}
 }
 
-gint
+guint
 gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -3628,8 +3628,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (!gs_plugin_get_enabled (dep))
 					continue;
 				if (gs_plugin_get_order (plugin) <= gs_plugin_get_order (dep)) {
-					g_debug ("%s [%i] to be ordered after %s [%i] "
-						 "so promoting to [%i]",
+					g_debug ("%s [%u] to be ordered after %s [%u] "
+						 "so promoting to [%u]",
 						 gs_plugin_get_name (plugin),
 						 gs_plugin_get_order (plugin),
 						 gs_plugin_get_name (dep),
@@ -3657,8 +3657,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (!gs_plugin_get_enabled (dep))
 					continue;
 				if (gs_plugin_get_order (plugin) >= gs_plugin_get_order (dep)) {
-					g_debug ("%s [%i] to be ordered before %s [%i] "
-						 "so promoting to [%i]",
+					g_debug ("%s [%u] to be ordered before %s [%u] "
+						 "so promoting to [%u]",
 						 gs_plugin_get_name (plugin),
 						 gs_plugin_get_order (plugin),
 						 gs_plugin_get_name (dep),
@@ -3725,8 +3725,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (!gs_plugin_get_enabled (dep))
 					continue;
 				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
-					g_debug ("%s [%i] is better than %s [%i] "
-						 "so promoting to [%i]",
+					g_debug ("%s [%u] is better than %s [%u] "
+						 "so promoting to [%u]",
 						 gs_plugin_get_name (plugin),
 						 gs_plugin_get_priority (plugin),
 						 gs_plugin_get_name (dep),
@@ -3804,7 +3804,7 @@ gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 	/* print what the priorities are */
 	for (i = 0; i < priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (priv->plugins, i);
-		g_debug ("[%s]\t%i\t->\t%s",
+		g_debug ("[%s]\t%u\t->\t%s",
 			 gs_plugin_get_enabled (plugin) ? "enabled" : "disabld",
 			 gs_plugin_get_order (plugin),
 			 gs_plugin_get_name (plugin));
@@ -4118,6 +4118,7 @@ gs_plugin_loader_refresh_thread_cb (GTask *task,
 
 /**
  * gs_plugin_loader_refresh_async:
+ * @cache_age, the age in seconds, or %G_MAXUINT for "any"
  *
  * This method calls all plugins that implement the gs_plugin_refresh()
  * function.

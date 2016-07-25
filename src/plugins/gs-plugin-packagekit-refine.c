@@ -323,7 +323,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 		package = g_ptr_array_index (packages, 0);
 		gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
 	} else {
-		g_warning ("Failed to find one package for %s, %s, [%d]",
+		g_warning ("Failed to find one package for %s, %s, [%u]",
 			   gs_app_get_id (app), filename, packages->len);
 	}
 	return TRUE;

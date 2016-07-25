@@ -185,7 +185,7 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	if (kf_data == NULL)
 		return FALSE;
 	epi_desktop = g_strdup_printf ("%s/%s.desktop", epi_dir, wmclass);
-	if (!g_file_set_contents (epi_desktop, kf_data, kf_length, error))
+	if (!g_file_set_contents (epi_desktop, kf_data, (gssize) kf_length, error))
 		return FALSE;
 
 	/* symlink it to somewhere the shell will notice */

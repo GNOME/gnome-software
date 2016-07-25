@@ -71,7 +71,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		gint percentage = pk_progress_get_percentage (progress);
 		if (percentage >= 0 && percentage <= 100) {
 			if (data->app != NULL)
-				gs_app_set_progress (data->app, percentage);
+				gs_app_set_progress (data->app, (guint) percentage);
 		}
 	}
 }
@@ -230,7 +230,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "too many details [%i] for %s",
+			     "too many details [%u] for %s",
 			     array->len, filename);
 		return FALSE;
 	}

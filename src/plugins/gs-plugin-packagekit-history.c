@@ -140,7 +140,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 		package_names[i++] = gs_app_get_source_default (app);
 	}
 
-	g_debug ("getting history for %i packages", gs_app_list_length (list));
+	g_debug ("getting history for %u packages", gs_app_list_length (list));
 	result = g_dbus_connection_call_sync (priv->connection,
 					      "org.freedesktop.PackageKit",
 					      "/org/freedesktop/PackageKit",

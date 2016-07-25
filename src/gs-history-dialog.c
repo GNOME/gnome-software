@@ -44,8 +44,8 @@ G_DEFINE_TYPE (GsHistoryDialog, gs_history_dialog, GTK_TYPE_DIALOG)
 static gint
 history_sort_cb (gconstpointer a, gconstpointer b)
 {
-	gint64 timestamp_a = gs_app_get_install_date (*(GsApp **) a);
-	gint64 timestamp_b = gs_app_get_install_date (*(GsApp **) b);
+	guint64 timestamp_a = gs_app_get_install_date (*(GsApp **) a);
+	guint64 timestamp_b = gs_app_get_install_date (*(GsApp **) b);
 	if (timestamp_a < timestamp_b)
 		return 1;
 	if (timestamp_a > timestamp_b)
@@ -114,7 +114,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 
 		/* add the timestamp */
 		timestamp = gs_app_get_install_date (app);
-		datetime = g_date_time_new_from_unix_utc (timestamp);
+		datetime = g_date_time_new_from_unix_utc ((gint) timestamp);
 		if (timestamp == GS_APP_INSTALL_DATE_UNKNOWN) {
 			date_str = g_strdup ("");
 		} else {

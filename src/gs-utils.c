@@ -96,7 +96,9 @@ gs_utils_get_file_age (GFile *file)
 	now = (guint64) g_get_real_time () / G_USEC_PER_SEC;
 	if (mtime > now)
 		return G_MAXUINT;
-	return now - mtime;
+	if (now - mtime > G_MAXUINT)
+		return G_MAXUINT;
+	return (guint) (now - mtime);
 }
 
 /**

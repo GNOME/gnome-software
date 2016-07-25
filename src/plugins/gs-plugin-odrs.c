@@ -93,7 +93,7 @@ gs_plugin_odrs_load_ratings_for_app (JsonObject *json_app)
 	for (i = 0; names[i] != NULL; i++) {
 		if (!json_object_has_member (json_app, names[i]))
 			continue;
-		tmp = json_object_get_int_member (json_app, names[i]);
+		tmp = (guint64) json_object_get_int_member (json_app, names[i]);
 		g_array_append_val (ratings, tmp);
 	}
 
@@ -172,7 +172,7 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 		file = g_file_new_for_path (fn);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
-			g_debug ("%s is only %i seconds old, so ignoring refresh",
+			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 fn, tmp);
 			if (!gs_plugin_odrs_load_ratings (plugin, fn, error))
 				g_error ("MOO: %s", (*error)->message);
@@ -231,7 +231,7 @@ gs_plugin_odrs_parse_review_object (GsPlugin *plugin, JsonObject *item)
 
 	/* date */
 	if (json_object_has_member (item, "date_created")) {
-		guint64 timestamp;
+		gint64 timestamp;
 		g_autoptr(GDateTime) dt = NULL;
 		timestamp = json_object_get_int_member (item, "date_created");
 		dt = g_date_time_new_from_unix_utc (timestamp);
@@ -240,9 +240,9 @@ gs_plugin_odrs_parse_review_object (GsPlugin *plugin, JsonObject *item)
 
 	/* assemble review */
 	if (json_object_has_member (item, "rating"))
-		gs_review_set_rating (rev, json_object_get_int_member (item, "rating"));
+		gs_review_set_rating (rev, (gint) json_object_get_int_member (item, "rating"));
 	if (json_object_has_member (item, "score"))
-		gs_review_set_score (rev, json_object_get_int_member (item, "score"));
+		gs_review_set_score (rev, (gint) json_object_get_int_member (item, "score"));
 	if (json_object_has_member (item, "user_display"))
 		gs_review_set_reviewer (rev, json_object_get_string_member (item, "user_display"));
 	if (json_object_has_member (item, "summary"))
@@ -252,7 +252,7 @@ gs_plugin_odrs_parse_review_object (GsPlugin *plugin, JsonObject *item)
 	if (json_object_has_member (item, "version"))
 		gs_review_set_version (rev, json_object_get_string_member (item, "version"));
 	if (json_object_has_member (item, "karma"))
-		gs_review_set_karma (rev, json_object_get_int_member (item, "karma"));
+		gs_review_set_karma (rev, (gint) json_object_get_int_member (item, "karma"));
 
 	/* add extra metadata for the plugin */
 	if (json_object_has_member (item, "user_hash")) {
@@ -284,7 +284,7 @@ gs_plugin_odrs_parse_review_object (GsPlugin *plugin, JsonObject *item)
 static GPtrArray *
 gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 			      const gchar *data,
-			      gsize data_len,
+			      gssize data_len,
 			      GError **error)
 {
 	JsonArray *json_reviews;
@@ -357,7 +357,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_odrs_parse_success (const gchar *data, gsize data_len, GError **error)
+gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error)
 {
 	JsonNode *json_root;
 	JsonObject *json_item;
@@ -474,9 +474,9 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 		cnt += tmp;
 	}
 	if (cnt == 0)
-		gs_app_set_rating (app, cnt);
+		gs_app_set_rating (app, (gint) cnt);
 	else
-		gs_app_set_rating (app, acc / cnt);
+		gs_app_set_rating (app, (gint) (acc / cnt));
 
 	return TRUE;
 }
@@ -486,7 +486,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *version;
-	guint karma_min;
+	gint karma_min;
 	guint status_code;
 	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
@@ -805,9 +805,9 @@ gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
 				       gs_review_get_metadata_item (review, "app_id"));
 	tmp = gs_review_get_metadata_item (review, "review_id");
 	if (tmp != NULL) {
-		guint64 review_id;
+		gint64 review_id;
 		json_builder_set_member_name (builder, "review_id");
-		review_id = g_ascii_strtoull (tmp, NULL, 10);
+		review_id = g_ascii_strtoll (tmp, NULL, 10);
 		json_builder_add_int_value (builder, review_id);
 	}
 	json_builder_end_object (builder);

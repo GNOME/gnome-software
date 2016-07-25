@@ -173,12 +173,12 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	if (json_object_has_member (package, "installed-size")) {
 		size = json_object_get_int_member (package, "installed-size");
 		if (size > 0)
-			gs_app_set_size_installed (app, size);
+			gs_app_set_size_installed (app, (guint64) size);
 	}
 	if (json_object_has_member (package, "download-size")) {
 		size = json_object_get_int_member (package, "download-size");
 		if (size > 0)
-			gs_app_set_size_download (app, size);
+			gs_app_set_size_download (app, (guint64) size);
 	}
 	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	icon_url = json_object_get_string_member (package, "icon");
@@ -214,7 +214,7 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 			loader = gdk_pixbuf_loader_new ();
 			gdk_pixbuf_loader_write (loader,
 						 (guint8 *) message->response_body->data,
-						 message->response_body->length,
+						 (gsize) message->response_body->length,
 						 NULL);
 			gdk_pixbuf_loader_close (loader, NULL);
 			icon_pixbuf = g_object_ref (gdk_pixbuf_loader_get_pixbuf (loader));
@@ -311,7 +311,7 @@ get_apps (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "snapd returned status code %d: %s",
+			     "snapd returned status code %u: %s",
 			     status_code, reason_phrase);
 		return FALSE;
 	}
@@ -378,7 +378,7 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "snapd returned status code %d: %s",
+			     "snapd returned status code %u: %s",
 			     status_code, reason_phrase);
 		return FALSE;
 	}
@@ -497,7 +497,7 @@ send_package_action (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "snapd returned status code %d: %s",
+			     "snapd returned status code %u: %s",
 			     status_code, reason_phrase);
 		return FALSE;
 	}
@@ -534,7 +534,7 @@ send_package_action (GsPlugin *plugin,
 				g_set_error (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
-					     "snapd returned status code %d: %s",
+					     "snapd returned status code %u: %s",
 					     status_code, status_reason_phrase);
 				return FALSE;
 			}
@@ -569,7 +569,7 @@ send_package_action (GsPlugin *plugin,
 			}
 
 			if (total > 0)
-				gs_app_set_progress (app, 100 * done / total);
+				gs_app_set_progress (app, (guint) (100 * done / total));
 
 			g_list_free (task_list);
 		}

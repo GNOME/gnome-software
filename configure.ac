@@ -44,6 +44,8 @@ GNOME_COMPILE_WARNINGS([maximum],[
 	-Wmissing-parameter-type
 	-Woverride-init
 	-Wno-discarded-qualifiers
+	-Wconversion
+	-Wformat-signedness
 ])
 
 dnl ---------------------------------------------------------------------------

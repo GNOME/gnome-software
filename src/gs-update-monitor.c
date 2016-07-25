@@ -79,7 +79,7 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	g_settings_get (monitor->settings,
 			"security-timestamp", "x", &security_timestamp);
 	if (security_timestamp > 0) {
-		elapsed_security = g_get_monotonic_time () - security_timestamp;
+		elapsed_security = (guint64) g_get_monotonic_time () - security_timestamp;
 		elapsed_security /= G_USEC_PER_SEC;
 		elapsed_security /= 60 * 60 * 24;
 	}
@@ -183,7 +183,7 @@ get_updates_finished_cb (GObject *object,
 	for (i = 0; i < gs_app_list_length (apps); i++) {
 		app = gs_app_list_index (apps, i);
 		if (gs_app_get_metadata_item (app, "is-security") != NULL) {
-			security_timestamp = g_get_monotonic_time ();
+			security_timestamp = (guint64) g_get_monotonic_time ();
 			break;
 		}
 	}
@@ -192,7 +192,7 @@ get_updates_finished_cb (GObject *object,
 				"security-timestamp", "x", security_timestamp);
 	}
 
-	g_debug ("Got %d updates", gs_app_list_length (apps));
+	g_debug ("got %u updates", gs_app_list_length (apps));
 
 	if (has_important_updates (apps) ||
 	    no_updates_for_a_week (monitor)) {

@@ -100,9 +100,9 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 					continue;
 
 				/* find in cache */
-				tmp.R = p[0] / bin_size;
-				tmp.G = p[1] / bin_size;
-				tmp.B = p[2] / bin_size;
+				tmp.R = (guint8) (p[0] / bin_size);
+				tmp.G = (guint8) (p[1] / bin_size);
+				tmp.B = (guint8) (p[2] / bin_size);
 				key = GUINT_TO_POINTER (cd_color_rgb8_to_uint32 (&tmp));
 				s = g_hash_table_lookup (hash, key);
 				if (s != NULL) {

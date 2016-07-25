@@ -54,7 +54,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return TRUE;
 
 	/* just add all */
-	g_debug ("using hardcoded as only %i apps", gs_app_list_length (list));
+	g_debug ("using hardcoded as only %u apps", gs_app_list_length (list));
 	for (i = 0; apps[i] != NULL; i++) {
 		g_autoptr(GsApp) app = NULL;
 

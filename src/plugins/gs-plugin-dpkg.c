@@ -92,7 +92,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_add_source (app, tokens[0]);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, tokens[0]);
 	gs_app_set_version (app, tokens[1]);
-	gs_app_set_size_installed (app, 1024 * atoi (tokens[2]));
+	gs_app_set_size_installed (app, 1024 * g_ascii_strtoull (tokens[2], NULL, 10));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tokens[3]);
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tokens[4]);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);

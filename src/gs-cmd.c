@@ -57,11 +57,11 @@ gs_cmd_show_results_apps (GsAppList *list)
 static gchar *
 gs_cmd_pad_spaces (const gchar *text, guint length)
 {
-	guint i;
+	gsize i;
 	GString *str;
 	str = g_string_sized_new (length + 1);
 	g_string_append (str, text);
-	for (i = strlen(text); i < length; i++)
+	for (i = strlen (text); i < length; i++)
 		g_string_append_c (str, ' ');
 	return g_string_free (str, FALSE);
 }
@@ -80,7 +80,7 @@ gs_cmd_show_results_categories (GPtrArray *list)
 		parent = gs_category_get_parent (cat);
 		if (parent != NULL){
 			g_autofree gchar *id = NULL;
-			id = g_strdup_printf ("%s/%s [%i]",
+			id = g_strdup_printf ("%s/%s [%u]",
 					      gs_category_get_id (parent),
 					      gs_category_get_id (cat),
 					      gs_category_get_size (cat));
@@ -194,7 +194,7 @@ main (int argc, char **argv)
 	gboolean verbose = FALSE;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gint i;
-	gint cache_age = 0;
+	guint cache_age = 0;
 	gint repeat = 1;
 	int status = 0;
 	g_auto(GStrv) plugin_blacklist = NULL;

@@ -578,7 +578,7 @@ gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gs_plugin_loader_set_scale (priv->plugin_loader,
-				    gtk_widget_get_scale_factor (widget));
+				    (guint) gtk_widget_get_scale_factor (widget));
 }
 
 static void

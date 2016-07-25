@@ -106,7 +106,7 @@ gs_markdown_to_text_line_is_rule (const gchar *line)
 	guint count = 0;
 	g_autofree gchar *copy = NULL;
 
-	len = strlen (line);
+	len = (guint) strlen (line);
 	if (len == 0)
 		return FALSE;
 
@@ -183,7 +183,7 @@ gs_markdown_to_text_line_is_blank (const gchar *line)
 	guint len;
 
 	/* a line with no characters is blank by definition */
-	len = strlen (line);
+	len = (guint) strlen (line);
 	if (len == 0)
 		return TRUE;
 
@@ -246,7 +246,7 @@ gs_markdown_to_text_line_formatter (const gchar *line,
 	g_autofree gchar *copy = NULL;
 
 	/* needed to know for shifts */
-	len = strlen (formatter);
+	len = (guint) strlen (formatter);
 	if (len == 0)
 		return NULL;
 
@@ -401,7 +401,7 @@ gs_markdown_count_chars_in_word (const gchar *text, gchar find)
 	guint count = 0;
 
 	/* get length */
-	len = strlen (text);
+	len = (guint) strlen (text);
 	if (len == 0)
 		return 0;
 

@@ -68,7 +68,7 @@ typedef struct
 	gchar			*locale;		/* allow-none */
 	gchar			*language;		/* allow-none */
 	gchar			*name;
-	gint			 scale;
+	guint			 scale;
 	guint			 order;
 	guint			 priority;
 	guint			 timer_id;
@@ -264,7 +264,7 @@ gs_plugin_action_delay_cb (gpointer user_data)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
 
 	g_debug ("plugin no longer recently active: %s", priv->name);
-	priv->flags &= ~GS_PLUGIN_FLAGS_RECENT;
+	priv->flags &= ~(guint64) GS_PLUGIN_FLAGS_RECENT;
 	priv->timer_id = 0;
 	return FALSE;
 }
@@ -899,7 +899,7 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 
 	/* if it's returning "Found" or an error, ignore the percentage */
 	if (msg->status_code != SOUP_STATUS_OK) {
-		g_debug ("ignoring status code %i (%s)",
+		g_debug ("ignoring status code %u (%s)",
 			 msg->status_code, msg->reason_phrase);
 		return;
 	}
@@ -913,8 +913,8 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 		return;
 
 	/* calulate percentage */
-	percentage = (100 * body_length) / header_size;
-	g_debug ("%s progress: %i%%", gs_app_get_id (helper->app), percentage);
+	percentage = (guint) ((100 * body_length) / header_size);
+	g_debug ("%s progress: %u%%", gs_app_get_id (helper->app), percentage);
 	gs_app_set_progress (helper->app, percentage);
 	gs_plugin_status_update (helper->plugin,
 				 helper->app,
@@ -971,7 +971,7 @@ gs_plugin_download_data (GsPlugin *plugin,
 		return NULL;
 	}
 	return g_bytes_new (msg->response_body->data,
-			    msg->response_body->length);
+			    (gsize) msg->response_body->length);
 }
 
 /**

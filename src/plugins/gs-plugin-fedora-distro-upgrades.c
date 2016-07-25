@@ -144,7 +144,7 @@ gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 		g_autoptr(GFile) file = g_file_new_for_path (priv->cachefn);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
-			g_debug ("%s is only %i seconds old",
+			g_debug ("%s is only %u seconds old",
 				 priv->cachefn, tmp);
 			return TRUE;
 		}
@@ -287,11 +287,11 @@ get_upgrade_css_background (guint version)
 	g_autofree gchar *filename1 = NULL;
 	g_autofree gchar *filename2 = NULL;
 
-	filename1 = g_strdup_printf ("/usr/share/backgrounds/f%d/default/standard/f%d.png", version, version);
+	filename1 = g_strdup_printf ("/usr/share/backgrounds/f%u/default/standard/f%u.png", version, version);
 	if (g_file_test (filename1, G_FILE_TEST_EXISTS))
 		return g_strdup_printf ("url('%s')", filename1);
 
-	filename2 = g_strdup_printf ("/usr/share/gnome-software/backgrounds/f%d.png", version);
+	filename2 = g_strdup_printf ("/usr/share/gnome-software/backgrounds/f%u.png", version);
 	if (g_file_test (filename2, G_FILE_TEST_EXISTS))
 		return g_strdup_printf ("url('%s')", filename2);
 
@@ -325,7 +325,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 	/* parse data */
 	settings = g_settings_new ("org.gnome.software");
-	distros = parse_pkgdb_collections_data (data, len, error);
+	distros = parse_pkgdb_collections_data (data, (gssize) len, error);
 	if (distros == NULL)
 		return FALSE;
 	for (i = 0; i < distros->len; i++) {
@@ -354,16 +354,16 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		}
 
 		/* search in the cache */
-		cache_key = g_strdup_printf ("release-%d", distro_info->version);
+		cache_key = g_strdup_printf ("release-%u", distro_info->version);
 		app = gs_plugin_cache_lookup (plugin, cache_key);
 		if (app != NULL) {
 			gs_app_list_add (list, app);
 			continue;
 		}
 
-		app_id = g_strdup_printf ("org.fedoraproject.release-%d.upgrade",
+		app_id = g_strdup_printf ("org.fedoraproject.release-%u.upgrade",
 					  distro_info->version);
-		app_version = g_strdup_printf ("%d", distro_info->version);
+		app_version = g_strdup_printf ("%u", distro_info->version);
 
 		/* icon from disk */
 		ic = as_icon_new ();
@@ -396,7 +396,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, "packagekit");
 
 		/* show a Fedora magazine article for the release */
-		url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%d-workstation",
+		url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%u-workstation",
 		                       distro_info->version);
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 

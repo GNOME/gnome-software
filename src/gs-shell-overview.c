@@ -214,7 +214,7 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 		goto out;
 	} else if (gs_app_list_length (list) < N_TILES) {
 		g_warning ("hiding category %s featured applications: "
-			   "found only %d to show, need at least %d",
+			   "found only %u to show, need at least %d",
 			   gs_category_get_id (load_data->category),
 			   gs_app_list_length (list), N_TILES);
 		goto out;
@@ -450,14 +450,14 @@ gs_shell_overview_get_random_categories (void)
 			       NULL };
 
 	date = g_date_time_new_now_utc ();
-	rand = g_rand_new_with_seed (g_date_time_get_day_of_year (date));
+	rand = g_rand_new_with_seed ((guint32) g_date_time_get_day_of_year (date));
 	cats = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; ids[i] != NULL; i++)
 		g_ptr_array_add (cats, g_strdup (ids[i]));
 	for (i = 0; i < powl (cats->len + 1, 2); i++) {
 		gpointer tmp;
-		guint rnd1 = g_rand_int_range (rand, 0, cats->len);
-		guint rnd2 = g_rand_int_range (rand, 0, cats->len);
+		guint rnd1 = (guint) g_rand_int_range (rand, 0, (gint32) cats->len);
+		guint rnd2 = (guint) g_rand_int_range (rand, 0, (gint32) cats->len);
 		if (rnd1 == rnd2)
 			continue;
 		tmp = cats->pdata[rnd1];
@@ -466,7 +466,7 @@ gs_shell_overview_get_random_categories (void)
 	}
 	for (i = 0; i < cats->len; i++) {
 		const gchar *tmp = g_ptr_array_index (cats, i);
-		g_debug ("%i = %s", i + 1, tmp);
+		g_debug ("%u = %s", i + 1, tmp);
 	}
 	return cats;
 }

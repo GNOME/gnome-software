@@ -178,7 +178,7 @@ gs_appstream_is_recent_release (AsApp *app)
 {
 	AsRelease *release;
 	GPtrArray *releases;
-	guint secs;
+	guint64 secs;
 
 	/* get newest release */
 	releases = as_app_get_releases (app);
@@ -187,7 +187,7 @@ gs_appstream_is_recent_release (AsApp *app)
 	release = g_ptr_array_index (releases, 0);
 
 	/* is last build less than one year ago? */
-	secs = (g_get_real_time () / G_USEC_PER_SEC) -
+	secs = ((guint64) g_get_real_time () / G_USEC_PER_SEC) -
 		as_release_get_timestamp (release);
 	return secs / (60 * 60 * 24) < 365;
 }
@@ -362,7 +362,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 		rel = g_ptr_array_index (releases, i);
 
 		/* is newer than what's installed */
-		g_debug ("installed %s update is %s [%i]",
+		g_debug ("installed %s update is %s [%u]",
 			 gs_app_get_version (app),
 			 as_release_get_version (rel),
 			 as_release_get_state (rel));

@@ -42,7 +42,7 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 	else if (percentage == 100)
 		css = g_strdup (".install-progress { background-size: 100%; }");
 	else
-		css = g_strdup_printf (".install-progress { background-size: %d%%; }", percentage);
+		css = g_strdup_printf (".install-progress { background-size: %u%%; }", percentage);
 
 	gtk_css_provider_load_from_data (button->css_provider, css, -1, NULL);
 }

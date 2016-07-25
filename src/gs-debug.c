@@ -44,7 +44,7 @@ gs_debug_handler_cb (const gchar *log_domain,
 		     gpointer user_data)
 {
 	GsDebug *debug = (GsDebug *) user_data;
-	guint i;
+	gsize i;
 	g_autofree gchar *tmp = NULL;
 	g_autoptr(GString) domain = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;

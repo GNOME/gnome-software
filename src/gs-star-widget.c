@@ -100,7 +100,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		/* create image */
 		im = gtk_image_new_from_icon_name ("starred-symbolic",
 						   GTK_ICON_SIZE_DIALOG);
-		gtk_image_set_pixel_size (GTK_IMAGE (im), priv->icon_size);
+		gtk_image_set_pixel_size (GTK_IMAGE (im), (gint) priv->icon_size);
 
 		/* create button */
 		if (priv->interactive) {

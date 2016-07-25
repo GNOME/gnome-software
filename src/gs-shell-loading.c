@@ -103,7 +103,7 @@ gs_shell_loading_load (GsShellLoading *self)
 
 	/* ensure that at least some metadata of any age is present, and also
 	 * spin up the plugins enough as to prime caches */
-	gs_plugin_loader_refresh_async (priv->plugin_loader, -1,
+	gs_plugin_loader_refresh_async (priv->plugin_loader, G_MAXUINT,
 					GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					priv->cancellable,
 					gs_shell_loading_refresh_cb,

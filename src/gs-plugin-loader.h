@@ -194,9 +194,9 @@ void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
 GsAuth		*gs_plugin_loader_get_auth_by_id	(GsPluginLoader	*plugin_loader,
 							 const gchar	*provider_id);
-gint		 gs_plugin_loader_get_scale		(GsPluginLoader	*plugin_loader);
+guint		 gs_plugin_loader_get_scale		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_set_scale		(GsPluginLoader	*plugin_loader,
-							 gint		 scale);
+							 guint		 scale);
 void		 gs_plugin_loader_app_refine_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginRefineFlags flags,

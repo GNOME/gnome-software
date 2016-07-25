@@ -620,7 +620,7 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 				      GError *error,
 				      gpointer user_data)
 {
-	g_warning ("CSS parse error %i:%i: %s",
+	g_warning ("CSS parse error %u:%u: %s",
 		   gtk_css_section_get_start_line (section),
 		   gtk_css_section_get_start_position (section),
 		   error->message);
@@ -694,7 +694,7 @@ gs_utils_widget_set_css_app (GsApp *app,
 		GdkRGBA *color = g_ptr_array_index (key_colors, 1);
 		g_autofree gchar *key = NULL;
 		g_autofree gchar *value = NULL;
-		key = g_strdup_printf ("@keycolor-%02i@", i);
+		key = g_strdup_printf ("@keycolor-%02u@", i);
 		value = g_strdup_printf ("rgb(%.0f,%.0f,%.0f)",
 					 color->red * 255.f,
 					 color->green * 255.f,

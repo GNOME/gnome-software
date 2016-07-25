@@ -137,7 +137,7 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
 			continue;
 		tmp = gs_app_to_string (app);
-		g_debug ("removal %d: %s", i, tmp);
+		g_debug ("removal %u: %s", i, tmp);
 		add_app (GTK_LIST_BOX (self->listbox), app);
 	}
 }

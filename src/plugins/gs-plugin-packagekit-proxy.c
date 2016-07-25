@@ -46,7 +46,7 @@ get_proxy_http (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
 	GString *string = NULL;
-	guint port;
+	gint port;
 	GDesktopProxyMode proxy_mode;
 	g_autofree gchar *host = NULL;
 	g_autofree gchar *password = NULL;
@@ -89,7 +89,7 @@ get_proxy_ftp (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GString *string = NULL;
-	guint port;
+	gint port;
 	GDesktopProxyMode proxy_mode;
 	g_autofree gchar *host = NULL;
 

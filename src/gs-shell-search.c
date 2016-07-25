@@ -338,7 +338,7 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	g_string_append_printf (key, "%05x:", gs_app_get_match_value (app));
 
 	/* sort by kudos */
-	g_string_append_printf (key, "%03i:", gs_app_get_kudos_percentage (app));
+	g_string_append_printf (key, "%03u:", gs_app_get_kudos_percentage (app));
 
 	/* sort by length of description */
 	g_string_append_printf (key, "%03" G_GSIZE_FORMAT ":",
@@ -346,7 +346,7 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 
 	/* sort by number of screenshots */
 	ss = gs_app_get_screenshots (app);
-	g_string_append_printf (key, "%02i:", ss->len);
+	g_string_append_printf (key, "%02u:", ss->len);
 
 	/* sort by install date */
 	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",

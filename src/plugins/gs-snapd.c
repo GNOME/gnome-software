@@ -85,7 +85,7 @@ read_from_snapd (GSocket *socket,
 				   error);
 	if (n_read < 0)
 		return FALSE;
-	*read_offset += n_read;
+	*read_offset += (gsize) n_read;
 	buffer[*read_offset] = '\0';
 
 	return TRUE;
@@ -134,7 +134,7 @@ gs_snapd_request (const gchar  *method,
 		g_string_append (request, "\r\n");
 	}
 	if (content)
-		g_string_append_printf (request, "Content-Length: %zi\r\n", strlen (content));
+		g_string_append_printf (request, "Content-Length: %zu\r\n", strlen (content));
 	g_string_append (request, "\r\n");
 	if (content)
 		g_string_append (request, content);
@@ -167,11 +167,11 @@ gs_snapd_request (const gchar  *method,
 
 	/* body starts after header divider */
 	body += 4;
-	header_length = body - data;
+	header_length = (gsize) (body - data);
 
 	/* parse headers */
 	headers = soup_message_headers_new (SOUP_MESSAGE_HEADERS_RESPONSE);
-	if (!soup_headers_parse_response (data, header_length, headers,
+	if (!soup_headers_parse_response (data, (gint) header_length, headers,
 					  NULL, &code, reason_phrase)) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
@@ -238,7 +238,8 @@ gs_snapd_request (const gchar  *method,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Not enough space for snapd response, "
-				     "require %zi octets, have %zi",
+				     "require %" G_GSIZE_FORMAT " octets, "
+				     "have %" G_GSIZE_FORMAT,
 				     n_required, max_data_length);
 			return FALSE;
 		}
@@ -262,7 +263,8 @@ gs_snapd_request (const gchar  *method,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Not enough space for snapd response, "
-				     "require %zi octets, have %zi",
+				     "require %" G_GSIZE_FORMAT " octets, "
+				     "have %" G_GSIZE_FORMAT,
 				     n_required, max_data_length);
 			return FALSE;
 		}

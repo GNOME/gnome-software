@@ -495,7 +495,7 @@ download_review_stats (GsPlugin *plugin, GCancellable *cancellable, GError **err
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to download review stats, server returned status code %d",
+			     "Failed to download review stats, server returned status code %u",
 			     status_code);
 		return FALSE;
 	}
@@ -722,7 +722,7 @@ download_reviews (GsPlugin *plugin, GsApp *app,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to download reviews, server returned status code %d",
+			     "Failed to download reviews, server returned status code %u",
 			     status_code);
 		return FALSE;
 	}
@@ -898,7 +898,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to submit review, server returned status code %d",
+			     "Failed to submit review, server returned status code %u",
 			     status_code);
 		return FALSE;
 	}
@@ -944,7 +944,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to report review, server returned status code %d",
+			     "Failed to report review, server returned status code %u",
 			     status_code);
 		return FALSE;
 	}
@@ -975,7 +975,7 @@ set_review_usefulness (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Got status code %d from reviews.ubuntu.com",
+			     "Got status code %u from reviews.ubuntu.com",
 			     status_code);
 		return FALSE;
 	}
@@ -1052,7 +1052,7 @@ gs_plugin_review_remove (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to remove review, server returned status code %d",
+			     "Failed to remove review, server returned status code %u",
 			     status_code);
 		return FALSE;
 	}

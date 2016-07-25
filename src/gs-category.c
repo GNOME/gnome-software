@@ -75,11 +75,11 @@ gs_category_to_string (GsCategory *category)
 		g_string_append_printf (str, "  icon: %s\n",
 					category->icon);
 	}
-	g_string_append_printf (str, "  size: %i\n",
+	g_string_append_printf (str, "  size: %u\n",
 				category->size);
-	g_string_append_printf (str, "  key-colors: %i\n",
+	g_string_append_printf (str, "  key-colors: %u\n",
 				category->key_colors->len);
-	g_string_append_printf (str, "  desktop-groups: %i\n",
+	g_string_append_printf (str, "  desktop-groups: %u\n",
 				category->desktop_groups->len);
 	if (category->parent != NULL) {
 		g_string_append_printf (str, "  parent: %s\n",
@@ -87,7 +87,7 @@ gs_category_to_string (GsCategory *category)
 	}
 	g_string_append_printf (str, "  score: %i\n", category->score);
 	if (category->children->len == 0) {
-		g_string_append_printf (str, "  children: %i\n",
+		g_string_append_printf (str, "  children: %u\n",
 					category->children->len);
 	} else {
 		g_string_append (str, "  children:\n");
@@ -455,7 +455,7 @@ gs_category_get_sort_key (GsCategory *category)
 		sort_order = 2;
 	else if (g_strcmp0 (gs_category_get_id (category), "other") == 0)
 		sort_order = 9;
-	return g_strdup_printf ("%i:%s",
+	return g_strdup_printf ("%u:%s",
 				sort_order,
 				gs_category_get_name (category));
 }

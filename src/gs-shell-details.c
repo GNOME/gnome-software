@@ -422,7 +422,7 @@ gs_shell_details_refresh_progress (GsShellDetails *self)
 			gtk_widget_set_visible (self->label_progress_percentage, FALSE);
 			gtk_widget_set_visible (self->progressbar_top, FALSE);
 		} else {
-			g_autofree gchar *str = g_strdup_printf ("%i%%", percentage);
+			g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
 			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
 			gtk_widget_set_visible (self->label_progress_percentage, TRUE);
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top),
@@ -844,7 +844,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	} else {
 		g_autoptr(GDateTime) dt = NULL;
 		g_autofree gchar *updated_str = NULL;
-		dt = g_date_time_new_from_unix_utc (updated);
+		dt = g_date_time_new_from_unix_utc ((gint64) updated);
 		updated_str = g_date_time_format (dt, "%x");
 
 		history = gs_app_get_history (self->app);
@@ -1171,7 +1171,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 	GPtrArray *reviews;
 	gboolean show_review_button = TRUE;
 	gboolean show_reviews = FALSE;
-	gint n_reviews = 0;
+	guint n_reviews = 0;
 	guint64 possible_actions = 0;
 	guint i;
 	struct {
@@ -1219,7 +1219,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		}
 		if (review_ratings != NULL) {
 			for (i = 0; i < review_ratings->len; i++)
-				n_reviews += g_array_index (review_ratings, gint, i);
+				n_reviews += (guint) g_array_index (review_ratings, gint, i);
 		} else if (gs_app_get_reviews (self->app) != NULL) {
 			n_reviews = gs_app_get_reviews (self->app)->len;
 		}
@@ -1247,7 +1247,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 	for (i = 0; plugin_vfuncs[i].action != GS_REVIEW_ACTION_LAST; i++) {
 		if (gs_plugin_loader_get_plugin_supported (self->plugin_loader,
 							   plugin_vfuncs[i].plugin_func)) {
-			possible_actions |= 1 << plugin_vfuncs[i].action;
+			possible_actions |= 1u << plugin_vfuncs[i].action;
 		}
 	}
 
@@ -1269,7 +1269,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 			actions = possible_actions & 1 << GS_REVIEW_ACTION_REMOVE;
 			show_review_button = FALSE;
 		} else {
-			actions = possible_actions & ~(1 << GS_REVIEW_ACTION_REMOVE);
+			actions = possible_actions & ~(1u << GS_REVIEW_ACTION_REMOVE);
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);

@@ -52,7 +52,7 @@ struct _GsScreenshotImage
 	gboolean	 use_desktop_background;
 	guint		 width;
 	guint		 height;
-	gint		 scale;
+	guint		 scale;
 };
 
 G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
@@ -92,7 +92,8 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 	gnome_bg_load_from_preferences (bg, settings);
 	return gnome_bg_create_thumbnail (bg, factory,
 					  gdk_screen_get_default (),
-					  ssimg->width, ssimg->height);
+					  (gint) ssimg->width,
+					  (gint) ssimg->height);
 #else
 	return NULL;
 #endif
@@ -128,8 +129,8 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	} else {
 		/* this is always going to have alpha */
 		pixbuf = gdk_pixbuf_new_from_file_at_scale (ssimg->filename,
-							    ssimg->width * ssimg->scale,
-							    ssimg->height * ssimg->scale,
+							    (gint) (ssimg->width * ssimg->scale),
+							    (gint) (ssimg->height * ssimg->scale),
 							    FALSE, NULL);
 		if (pixbuf != NULL) {
 			if (gs_screenshot_image_use_desktop_background (ssimg, pixbuf)) {
@@ -139,7 +140,8 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 				} else {
 					gdk_pixbuf_composite (pixbuf, pixbuf_bg,
 							      0, 0,
-							      ssimg->width, ssimg->height,
+							      (gint) ssimg->width,
+							      (gint) ssimg->height,
 							      0, 0, 1.0f, 1.0f,
 							      GDK_INTERP_NEAREST, 255);
 				}
@@ -153,14 +155,14 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		if (pixbuf_bg != NULL) {
 			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
-							     pixbuf_bg, ssimg->scale);
+							     pixbuf_bg, (gint) ssimg->scale);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
 		ssimg->current_image = "image2";
 	} else {
 		if (pixbuf_bg != NULL) {
 			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
-							     pixbuf_bg, ssimg->scale);
+							     pixbuf_bg, (gint) ssimg->scale);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
 		ssimg->current_image = "image1";
@@ -189,10 +191,10 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
-						     pb, ssimg->scale);
+						     pb, (gint) ssimg->scale);
 	} else {
 		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
-						     pb, ssimg->scale);
+						     pb, (gint) ssimg->scale);
 	}
 }
 
@@ -290,7 +292,7 @@ gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 
 	ssimg->width = width;
 	ssimg->height = height;
-	gtk_widget_set_size_request (ssimg->stack, width, height);
+	gtk_widget_set_size_request (ssimg->stack, (gint) width, (gint) height);
 }
 
 void
@@ -330,7 +332,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	g_return_if_fail (ssimg->height != 0);
 
 	/* load an image according to the scale factor */
-	ssimg->scale = gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
+	ssimg->scale = (guint) gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
 	im = as_screenshot_get_image (ssimg->screenshot,
 				      ssimg->width * ssimg->scale,
 				      ssimg->height * ssimg->scale);

@@ -184,7 +184,7 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
 	last_checked = g_date_time_new_from_unix_local (tmp);
 
 	midnight = time_next_midnight ();
-	days_ago = g_date_time_difference (midnight, last_checked) / G_TIME_SPAN_DAY;
+	days_ago = (gint) (g_date_time_difference (midnight, last_checked) / G_TIME_SPAN_DAY);
 
 #ifdef HAVE_GNOME_DESKTOP
 	clock_format = g_settings_get_enum (self->desktop_settings, "clock-format");
@@ -506,7 +506,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 						     "button_updates_counter"));
 	if (gs_app_list_length (list) > 0 && !gs_update_monitor_is_managed ()) {
 		g_autofree gchar *text = NULL;
-		text = g_strdup_printf ("%d", gs_app_list_length (list));
+		text = g_strdup_printf ("%u", gs_app_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
 		gtk_widget_show (widget);
 	} else {

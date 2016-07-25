@@ -226,12 +226,12 @@ gs_app_list_randomize (GsAppList *list)
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
 	date = g_date_time_new_now_utc ();
-	g_rand_set_seed (rand, g_date_time_get_day_of_year (date));
+	g_rand_set_seed (rand, (guint32) g_date_time_get_day_of_year (date));
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
-		sort_key[0] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
-		sort_key[1] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
-		sort_key[2] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
+		sort_key[0] = (gchar) g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
+		sort_key[1] = (gchar) g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
+		sort_key[2] = (gchar) g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
 		gs_app_set_metadata (app, key, sort_key);
 	}
 	g_ptr_array_sort_with_data (list->array, gs_app_list_randomize_cb, list);

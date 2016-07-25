@@ -71,7 +71,7 @@ gs_plugin_steam_token_kind_to_str (guint8 data)
 
 	/* printable */
 	if (g_ascii_isprint (data)) {
-		tmp[0] = data;
+		tmp[0] = (gchar) data;
 		return tmp;
 	}
 	return "[?]";
@@ -96,7 +96,7 @@ gs_plugin_steam_consume_string (guint8 *data, gsize data_len, guint *idx)
 		(*idx)++;
 		return NULL;
 	}
-	*idx += strlen (tmp) + 1;
+	*idx += (guint) strlen (tmp) + 1;
 	return tmp;
 }
 
@@ -195,7 +195,7 @@ gs_plugin_steam_parse_appinfo_file (const gchar *filename, GError **error)
 			tmp = gs_plugin_steam_consume_string (data, data_len, &i);
 			value = gs_plugin_steam_consume_uint32 (data, data_len, &i);
 			if (debug)
-				g_debug ("\t%s=%i", tmp, value);
+				g_debug ("\t%s=%u", tmp, value);
 			if (tmp != NULL) {
 				if (g_hash_table_lookup (app, tmp) != NULL)
 					continue;
@@ -256,12 +256,12 @@ gs_plugin_steam_capture (const gchar *html,
 		return NULL;
 
 	/* find @start */
-	start_len = strlen (start);
+	start_len = (guint) strlen (start);
 	for (i = *offset; html[i] != '\0'; i++) {
 		if (memcmp (&html[i], start, start_len) != 0)
 			continue;
 		/* find @end */
-		end_len = strlen (end);
+		end_len = (guint) strlen (end);
 		for (j = i + start_len; html[j] != '\0'; j++) {
 			if (memcmp (&html[j], end, end_len) != 0)
 				continue;
@@ -459,12 +459,12 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 
 	/* already exists */
 	if (as_store_get_app_by_id (store, app_id) != NULL) {
-		g_debug ("already exists %i, skipping", gameid);
+		g_debug ("already exists %" G_GUINT32_FORMAT ", skipping", gameid);
 		return TRUE;
 	}
 
 	/* create application with the gameid as the key */
-	g_debug ("parsing steam %i", gameid);
+	g_debug ("parsing steam %" G_GUINT32_FORMAT, gameid);
 	item = as_app_new ();
 	as_app_set_kind (item, AS_APP_KIND_DESKTOP);
 	as_app_set_project_license (item, "Steam");
@@ -520,7 +520,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	if (tmp != NULL) {
 		g_autoptr(GError) error_local = NULL;
 		g_autofree gchar *ic_uri = NULL;
-		ic_uri = g_strdup_printf ("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/%i/%s.icns",
+		ic_uri = g_strdup_printf ("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/%" G_GUINT32_FORMAT "/%s.icns",
 					  gameid, g_variant_get_string (tmp, NULL));
 		if (!gs_plugin_steam_download_icon (plugin, item, ic_uri, &error_local)) {
 			g_warning ("Failed to parse clienticns: %s",
@@ -534,7 +534,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 		if (tmp != NULL) {
 			g_autoptr(GError) error_local = NULL;
 			g_autofree gchar *ic_uri = NULL;
-			ic_uri = g_strdup_printf ("http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/%i/%s.ico",
+			ic_uri = g_strdup_printf ("http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/%" G_GUINT32_FORMAT "/%s.ico",
 						  gameid, g_variant_get_string (tmp, NULL));
 			if (!gs_plugin_steam_download_icon (plugin, item, ic_uri, &error_local)) {
 				g_warning ("Failed to parse clienticon: %s",
@@ -549,7 +549,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 		if (tmp != NULL) {
 			AsIcon *icon = NULL;
 			g_autofree gchar *ic_uri = NULL;
-			ic_uri = g_strdup_printf ("http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/%i/%s.jpg",
+			ic_uri = g_strdup_printf ("http://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/%" G_GUINT32_FORMAT "/%s.jpg",
 						  gameid, g_variant_get_string (tmp, NULL));
 			icon = as_icon_new ();
 			as_icon_set_kind (icon, AS_ICON_KIND_REMOTE);
@@ -610,6 +610,7 @@ static gboolean
 gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps, GError **error)
 {
 	guint i;
+	gdouble pc;
 	GHashTable *app;
 	g_autoptr(GsApp) dummy = gs_app_new (NULL);
 
@@ -619,7 +620,8 @@ gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps,
 			return FALSE;
 
 		/* update progress */
-		gs_app_set_progress (dummy, (gdouble) i * 100.f / (gdouble) apps->len);
+		pc = (gdouble) i * 100.f / (gdouble) apps->len;
+		gs_app_set_progress (dummy, (guint) pc);
 		gs_plugin_status_update (plugin, dummy, GS_PLUGIN_STATUS_DOWNLOADING);
 	}
 	return TRUE;
@@ -653,7 +655,7 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 		guint tmp;
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
-			g_debug ("%s is only %i seconds old, so ignoring refresh",
+			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 fn_xml, tmp);
 			return TRUE;
 		}

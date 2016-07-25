@@ -510,7 +510,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 		file = g_file_new_for_path (priv->lvfs_sig_fn);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
-			g_debug ("%s is only %i seconds old, so ignoring refresh",
+			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 priv->lvfs_sig_fn, tmp);
 			return TRUE;
 		}
@@ -544,7 +544,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_debug ("saving new LVFS signature to %s:", priv->lvfs_sig_fn);
 	if (!g_file_set_contents (priv->lvfs_sig_fn,
 				  g_bytes_get_data (data, NULL),
-				  g_bytes_get_size (data),
+				  (guint) g_bytes_get_size (data),
 				  &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,

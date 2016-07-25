@@ -113,7 +113,7 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 
 	/* invalidate all if a large number of apps changed */
 	if (cnt > GS_PLUGIN_NUMBER_CHANGED_RELOAD) {
-		g_debug ("%i is more than %i AsApps changed",
+		g_debug ("%u is more than %i AsApps changed",
 			 cnt, GS_PLUGIN_NUMBER_CHANGED_RELOAD);
 		gs_plugin_reload (plugin);
 	}
@@ -193,8 +193,8 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 			continue;
 		cnt = g_hash_table_lookup (origins, tmp);
 		perc = (100.f / (gdouble) array->len) * (gdouble) (*cnt);
-		g_debug ("origin %s provides %i apps (%.0f%%)", tmp, *cnt, perc);
-		*cnt = perc;
+		g_debug ("origin %s provides %u apps (%.0f%%)", tmp, *cnt, perc);
+		*cnt = (guint) perc;
 	}
 
 	return origins;

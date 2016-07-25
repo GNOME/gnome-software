@@ -137,7 +137,7 @@ G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
 static void
 gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 {
-	guint i;
+	gsize i;
 	g_string_append_printf (str, "  %s:", key);
 	for (i = strlen (key); i < 18; i++)
 		g_string_append (str, " ");
@@ -251,7 +251,7 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "quirk", qstr);
 	}
 	if (app->progress > 0)
-		gs_app_kv_printf (str, "progress", "%i%%", app->progress);
+		gs_app_kv_printf (str, "progress", "%u%%", app->progress);
 	if (app->id != NULL)
 		gs_app_kv_lpad (str, "id", app->id);
 	if ((app->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
@@ -286,7 +286,7 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "kudo", "sandboxed");
 	if ((app->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
 		gs_app_kv_lpad (str, "kudo", "sandboxed-secure");
-	gs_app_kv_printf (str, "kudo-percentage", "%i",
+	gs_app_kv_printf (str, "kudo-percentage", "%u",
 			  gs_app_get_kudos_percentage (app));
 	if (app->name != NULL)
 		gs_app_kv_lpad (str, "name", app->name);
@@ -310,7 +310,7 @@ gs_app_to_string (GsApp *app)
 	if (app->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", app->match_value);
 	if (app->priority != 0)
-		gs_app_kv_printf (str, "priority", "%i", app->priority);
+		gs_app_kv_printf (str, "priority", "%u", app->priority);
 	if (app->version != NULL)
 		gs_app_kv_lpad (str, "version", app->version);
 	if (app->version_ui != NULL)
@@ -322,7 +322,7 @@ gs_app_to_string (GsApp *app)
 	if (app->update_details != NULL)
 		gs_app_kv_lpad (str, "update-details", app->update_details);
 	if (app->update_urgency != AS_URGENCY_KIND_UNKNOWN) {
-		gs_app_kv_printf (str, "update-urgency", "%i",
+		gs_app_kv_printf (str, "update-urgency", "%u",
 				  app->update_urgency);
 	}
 	if (app->summary != NULL)
@@ -336,7 +336,7 @@ gs_app_to_string (GsApp *app)
 		im = as_screenshot_get_image (ss, 0, 0);
 		if (im == NULL)
 			continue;
-		key = g_strdup_printf ("screenshot-%02i", i);
+		key = g_strdup_printf ("screenshot-%02u", i);
 		gs_app_kv_printf (str, key, "%s [%s]",
 				  as_image_get_url (im),
 				  tmp != NULL ? tmp : "<none>");
@@ -344,13 +344,13 @@ gs_app_to_string (GsApp *app)
 	for (i = 0; i < app->sources->len; i++) {
 		g_autofree gchar *key = NULL;
 		tmp = g_ptr_array_index (app->sources, i);
-		key = g_strdup_printf ("source-%02i", i);
+		key = g_strdup_printf ("source-%02u", i);
 		gs_app_kv_lpad (str, key, tmp);
 	}
 	for (i = 0; i < app->source_ids->len; i++) {
 		g_autofree gchar *key = NULL;
 		tmp = g_ptr_array_index (app->source_ids, i);
-		key = g_strdup_printf ("source-id-%02i", i);
+		key = g_strdup_printf ("source-id-%02u", i);
 		gs_app_kv_lpad (str, key, tmp);
 	}
 	if (app->local_file != NULL) {
@@ -386,12 +386,12 @@ gs_app_to_string (GsApp *app)
 	if (app->review_ratings != NULL) {
 		for (i = 0; i < app->review_ratings->len; i++) {
 			gint rat = g_array_index (app->review_ratings, gint, i);
-			gs_app_kv_printf (str, "review-rating", "[%i:%i]",
+			gs_app_kv_printf (str, "review-rating", "[%u:%i]",
 					  i, rat);
 		}
 	}
 	if (app->reviews != NULL)
-		gs_app_kv_printf (str, "reviews", "%i", app->reviews->len);
+		gs_app_kv_printf (str, "reviews", "%u", app->reviews->len);
 	if (app->install_date != 0) {
 		gs_app_kv_printf (str, "install-date", "%"
 				  G_GUINT64_FORMAT "",
@@ -408,9 +408,9 @@ gs_app_to_string (GsApp *app)
 				  app->size_download / 1024);
 	}
 	if (app->related->len > 0)
-		gs_app_kv_printf (str, "related", "%i", app->related->len);
+		gs_app_kv_printf (str, "related", "%u", app->related->len);
 	if (app->history->len > 0)
-		gs_app_kv_printf (str, "history", "%i", app->history->len);
+		gs_app_kv_printf (str, "history", "%u", app->history->len);
 	for (i = 0; i < app->categories->len; i++) {
 		tmp = g_ptr_array_index (app->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
@@ -418,7 +418,7 @@ gs_app_to_string (GsApp *app)
 	for (i = 0; i < app->key_colors->len; i++) {
 		GdkRGBA *color = g_ptr_array_index (app->key_colors, i);
 		g_autofree gchar *key = NULL;
-		key = g_strdup_printf ("key-color-%02i", i);
+		key = g_strdup_printf ("key-color-%02u", i);
 		gs_app_kv_printf (str, key, "%.0f,%.0f,%.0f",
 				  color->red * 255.f,
 				  color->green * 255.f,

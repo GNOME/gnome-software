@@ -487,7 +487,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_hide (widget);
 	} else {
 		g_autofree gchar *label = NULL;
-		label = g_strdup_printf ("%d", cnt);
+		label = g_strdup_printf ("%u", cnt);
 		gtk_label_set_label (GTK_LABEL (widget), label);
 		gtk_widget_show (widget);
 	}

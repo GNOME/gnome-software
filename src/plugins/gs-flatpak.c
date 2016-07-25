@@ -164,13 +164,13 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		tmp = gs_utils_get_file_age (file_timestamp);
 		if (tmp < cache_age) {
 			g_autofree gchar *fn = g_file_get_path (file_timestamp);
-			g_debug ("%s is only %i seconds old, so ignoring refresh",
+			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 fn, tmp);
 			continue;
 		}
 
 		/* download new data */
-		g_debug ("%s is %i seconds old, so downloading new data",
+		g_debug ("%s is %u seconds old, so downloading new data",
 			 remote_name, tmp);
 		ret = flatpak_installation_update_appstream_sync (self->installation,
 								  remote_name,
@@ -1101,7 +1101,7 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 			       GError **error)
 {
 	const gchar *str;
-	gsize len = -1;
+	gsize len = 0;
 	g_autofree gchar *contents = NULL;
 	g_autofree gchar *installation_path_str = NULL;
 	g_autofree gchar *install_path = NULL;
@@ -1499,6 +1499,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	gint size;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *id_prefixed = NULL;
 	g_autoptr(GBytes) appstream_gz = NULL;
@@ -1577,7 +1578,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 					     "no apps found in AppStream data");
 			return FALSE;
 		}
-		g_debug ("%i applications found in AppStream data",
+		g_debug ("%u applications found in AppStream data",
 			 as_store_get_size (store));
 
 		/* find app */
@@ -1598,8 +1599,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	}
 
 	/* load icon */
-	icon_data = flatpak_bundle_ref_get_icon (xref_bundle,
-						 64 * gs_plugin_get_scale (self->plugin));
+	size = 64 * (gint) gs_plugin_get_scale (self->plugin);
+	icon_data = flatpak_bundle_ref_get_icon (xref_bundle, size);
 	if (icon_data == NULL)
 		icon_data = flatpak_bundle_ref_get_icon (xref_bundle, 64);
 	if (icon_data != NULL) {

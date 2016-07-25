@@ -45,10 +45,10 @@ typedef struct
 G_DEFINE_TYPE_WITH_PRIVATE (GsReviewHistogram, gs_review_histogram, GTK_TYPE_BIN)
 
 static void
-set_label (GtkWidget *label, guint value)
+set_label (GtkWidget *label, gint value)
 {
 	g_autofree gchar *text = NULL;
-	text = g_strdup_printf ("%u", value);
+	text = g_strdup_printf ("%i", value);
 	gtk_label_set_text (GTK_LABEL (label), text);
 }
 

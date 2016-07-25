@@ -36,7 +36,7 @@ struct _GsHidingBox
 	GtkContainer parent_instance;
 
 	GList *children;
-	gint16 spacing;
+	gint spacing;
 };
 
 static void
@@ -150,7 +150,7 @@ static void
 gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
 	GsHidingBox *box = GS_HIDING_BOX (widget);
-	gint nvis_children;
+	gint nvis_children = 0;
 
 	GtkTextDirection direction;
 	GtkAllocation child_allocation;
@@ -168,14 +168,13 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
 	gtk_widget_set_allocation (widget, allocation);
 
-	nvis_children = 0;
 	for (child = box->children; child != NULL; child = child->next) {
 		if (gtk_widget_get_visible (child->data))
 			++nvis_children;
 	}
 
 	/* If there is no visible child, simply return. */
-	if (nvis_children <= 0)
+	if (nvis_children == 0)
 		return;
 
 	direction = gtk_widget_get_direction (widget);
@@ -219,7 +218,7 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	nvis_children = i;
 
 	/* Bring children up to size first */
-	size = gtk_distribute_natural_allocation (MAX (0, size), nvis_children, sizes);
+	size = gtk_distribute_natural_allocation (MAX (0, size), (guint) nvis_children, sizes);
 	/* Only now we can subtract the spacings */
 	size -= (nvis_children - 1) * spacing;
 

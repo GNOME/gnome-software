@@ -206,7 +206,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		g_autofree gchar *date_str = NULL;
 		g_autofree gchar *subtitle = NULL;
 
-		date = g_date_time_new_from_unix_utc (install_date);
+		date = g_date_time_new_from_unix_utc ((gint64) install_date);
 		date_str = g_date_time_format (date, "%x");
 
 		/* TRANSLATORS: this is the subtitle of the installed updates dialog window.

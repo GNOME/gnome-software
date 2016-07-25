@@ -104,7 +104,7 @@ gs_plugin_shell_extensions_convert_state (guint value)
 	case GS_PLUGIN_SHELL_EXTENSION_STATE_UNINSTALLED:
 		return AS_APP_STATE_AVAILABLE;
 	default:
-		g_warning ("unknown state %i", value);
+		g_warning ("unknown state %u", value);
 	}
 	return AS_APP_STATE_UNKNOWN;
 }
@@ -157,21 +157,21 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 			continue;
 		}
 		if (g_strcmp0 (str, "type") == 0) {
-			guint val_int = g_variant_get_double (val);
+			guint val_int = (guint) g_variant_get_double (val);
 			switch (val_int) {
 			case GS_PLUGIN_SHELL_EXTENSION_KIND_SYSTEM:
 			case GS_PLUGIN_SHELL_EXTENSION_KIND_PER_USER:
 				gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
 				break;
 			default:
-				g_warning ("%s unknown type %i", uuid, val_int);
+				g_warning ("%s unknown type %u", uuid, val_int);
 				break;
 			}
 			continue;
 		}
 		if (g_strcmp0 (str, "state") == 0) {
 			AsAppState st;
-			guint val_int = g_variant_get_double (val);
+			guint val_int = (guint) g_variant_get_double (val);
 			st = gs_plugin_shell_extensions_convert_state (val_int);
 			gs_app_set_state (app, st);
 			continue;
@@ -439,7 +439,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	AsApp *app;
 	JsonObject *json_ver_map;
 	const gchar *tmp;
-	guint64 pk;
+	gint64 pk;
 
 	app = as_app_new ();
 	as_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
@@ -498,7 +498,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 		g_autofree gchar *uri = NULL;
 		uri = g_strdup_printf ("%s/static/extension-data/"
 				       "screenshots/"
-				       "screenshot_%" G_GUINT64_FORMAT ".png",
+				       "screenshot_%" G_GINT64_FORMAT ".png",
 				       SHELL_EXTENSIONS_API_URI, pk);
 		im = as_image_new ();
 		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
@@ -526,7 +526,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 static GPtrArray *
 gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 				       const gchar *data,
-				       gsize data_len,
+				       gssize data_len,
 				       GError **error)
 {
 	GPtrArray *apps;
@@ -654,10 +654,10 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 		return NULL;
 	apps = gs_plugin_shell_extensions_parse_apps (plugin,
 						      g_bytes_get_data (data, NULL),
-						      g_bytes_get_size (data),
+						      (gssize) g_bytes_get_size (data),
 						      error);
 	if (apps == NULL) {
-		guint len = g_bytes_get_size (data);
+		gsize len = g_bytes_get_size (data);
 		g_autofree gchar *tmp = NULL;
 
 		/* truncate the string if long */
@@ -671,7 +671,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	/* save to the cache */
 	if (!g_file_set_contents (cachefn,
 				  g_bytes_get_data (data, NULL),
-				  g_bytes_get_size (data),
+				  (guint) g_bytes_get_size (data),
 				  error))
 		return NULL;
 
@@ -706,7 +706,7 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 	if (g_file_query_exists (file, NULL)) {
 		guint age = gs_utils_get_file_age (file);
 		if (age < cache_age) {
-			g_debug ("%s is only %i seconds old, ignoring", fn, age);
+			g_debug ("%s is only %u seconds old, ignoring", fn, age);
 			return TRUE;
 		}
 	}

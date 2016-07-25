@@ -117,6 +117,7 @@ gs_plugin_icons_download (GsPlugin *plugin,
 static GdkPixbuf *
 gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
+	gint size;
 	if (as_icon_get_filename (icon) == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
@@ -124,10 +125,9 @@ gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 				     "icon has no filename");
 		return NULL;
 	}
+	size = (gint) (64 * gs_plugin_get_scale (plugin));
 	return gdk_pixbuf_new_from_file_at_size (as_icon_get_filename (icon),
-						 64 * gs_plugin_get_scale (plugin),
-						 64 * gs_plugin_get_scale (plugin),
-						 error);
+						 size, size, error);
 }
 
 static GdkPixbuf *
@@ -187,6 +187,7 @@ static GdkPixbuf *
 gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	gint size;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->icon_theme_lock);
 
 	/* required */
@@ -198,9 +199,10 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 		return NULL;
 	}
 	gs_plugin_icons_add_theme_path (plugin, as_icon_get_prefix (icon));
+	size = (gint) (64 * gs_plugin_get_scale (plugin));
 	return gtk_icon_theme_load_icon (priv->icon_theme,
 					 as_icon_get_name (icon),
-					 64 * gs_plugin_get_scale (plugin),
+					 size,
 					 GTK_ICON_LOOKUP_USE_BUILTIN |
 					 GTK_ICON_LOOKUP_FORCE_SIZE,
 					 error);
