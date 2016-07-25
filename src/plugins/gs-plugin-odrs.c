@@ -174,8 +174,6 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 		if (tmp < cache_age) {
 			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 fn, tmp);
-			if (!gs_plugin_odrs_load_ratings (plugin, fn, error))
-				g_error ("MOO: %s", (*error)->message);
 			return gs_plugin_odrs_load_ratings (plugin, fn, error);
 		}
 	}
