@@ -1623,7 +1623,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	if (flatpak_bundle_ref_get_origin (xref_bundle))
 		gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
 
-	g_debug ("created local app: %s", gs_app_to_string (app));
+	/* success */
 	gs_app_list_add (list, app);
 	return TRUE;
 }
