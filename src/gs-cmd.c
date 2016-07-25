@@ -355,6 +355,7 @@ main (int argc, char **argv)
 		if (app == NULL) {
 			ret = FALSE;
 		} else {
+			list = gs_app_list_new ();
 			gs_app_list_add (list, app);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
