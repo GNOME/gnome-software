@@ -100,20 +100,8 @@ gs_refine_item_icon (GsPlugin *plugin, GsApp *app, AsApp *item)
 
 	/* remote as a last resort */
 	icon = gs_appstream_get_icon_by_kind (item, AS_ICON_KIND_REMOTE);
-	if (icon != NULL) {
-		if (as_icon_get_filename (icon) == NULL) {
-			g_autofree gchar *fn = NULL;
-			g_autofree gchar *cachedir = NULL;
-			fn = gs_utils_get_cache_filename ("icons",
-							  as_icon_get_name (icon),
-							  GS_UTILS_CACHE_FLAG_WRITEABLE,
-							  NULL);
-			as_icon_set_filename (icon, fn);
-			cachedir = g_path_get_basename (fn);
-			as_icon_set_prefix (icon, cachedir);
-		}
+	if (icon != NULL)
 		gs_app_add_icon (app, icon);
-	}
 }
 
 static void

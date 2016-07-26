@@ -144,9 +144,17 @@ gs_plugin_icons_load_remote (GsPlugin *plugin, AsIcon *icon, GError **error)
 				     "icon has no URL");
 		return NULL;
 	}
+
+	/* set cache filename if not already set */
 	if (as_icon_get_filename (icon) == NULL) {
-		g_error ("MOO");
-		return NULL;
+		g_autofree gchar *fn_cache = NULL;
+		fn_cache = gs_utils_get_cache_filename ("icons",
+							as_icon_get_name (icon),
+							GS_UTILS_CACHE_FLAG_WRITEABLE,
+							error);
+		if (fn_cache == NULL)
+			return NULL;
+		as_icon_set_filename (icon, fn_cache);
 	}
 
 	/* a REMOTE that's really LOCAL */
