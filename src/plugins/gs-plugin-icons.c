@@ -133,11 +133,13 @@ gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 static gchar *
 gs_plugin_icons_get_cache_fn (AsIcon *icon)
 {
+	g_autofree gchar *basename = NULL;
 	g_autofree gchar *checksum = NULL;
 	checksum = g_compute_checksum_for_string (G_CHECKSUM_SHA1,
 						  as_icon_get_url (icon),
 						  -1);
-	return g_strdup_printf ("%s-%s", checksum, as_icon_get_name (icon));
+	basename = g_path_get_basename (as_icon_get_url (icon));
+	return g_strdup_printf ("%s-%s", checksum, basename);
 }
 
 static GdkPixbuf *
