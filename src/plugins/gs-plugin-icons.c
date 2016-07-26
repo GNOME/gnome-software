@@ -130,6 +130,16 @@ gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 						 size, size, error);
 }
 
+static gchar *
+gs_plugin_icons_get_cache_fn (AsIcon *icon)
+{
+	g_autofree gchar *checksum = NULL;
+	checksum = g_compute_checksum_for_string (G_CHECKSUM_SHA1,
+						  as_icon_get_url (icon),
+						  -1);
+	return g_strdup_printf ("%s-%s", checksum, as_icon_get_name (icon));
+}
+
 static GdkPixbuf *
 gs_plugin_icons_load_remote (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
@@ -148,8 +158,12 @@ gs_plugin_icons_load_remote (GsPlugin *plugin, AsIcon *icon, GError **error)
 	/* set cache filename if not already set */
 	if (as_icon_get_filename (icon) == NULL) {
 		g_autofree gchar *fn_cache = NULL;
+		g_autofree gchar *fn_basename = NULL;
+
+		/* use a hash-prefixed filename to avoid cache clashes */
+		fn_basename = gs_plugin_icons_get_cache_fn (icon);
 		fn_cache = gs_utils_get_cache_filename ("icons",
-							as_icon_get_name (icon),
+							fn_basename,
 							GS_UTILS_CACHE_FLAG_WRITEABLE,
 							error);
 		if (fn_cache == NULL)
