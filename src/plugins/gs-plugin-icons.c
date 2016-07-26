@@ -157,6 +157,10 @@ gs_plugin_icons_load_remote (GsPlugin *plugin, AsIcon *icon, GError **error)
 		as_icon_set_filename (icon, fn_cache);
 	}
 
+	/* already in cache */
+	if (g_file_test (as_icon_get_filename (icon), G_FILE_TEST_EXISTS))
+		return gs_plugin_icons_load_local (plugin, icon, error);
+
 	/* a REMOTE that's really LOCAL */
 	if (g_str_has_prefix (as_icon_get_url (icon), "file://")) {
 		as_icon_set_filename (icon, as_icon_get_url (icon) + 7);
