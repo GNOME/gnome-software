@@ -605,26 +605,6 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_add_source:
- * @plugin: a #GsPlugin
- * @app: a #GsApp, with kind %AS_ID_KIND_SOURCE
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Adds a specific source to the system.
- *
- * Adding a source means that applications can be installed from that source,
- * along with any new search results.
- * A new entry is also shown in the "Sources" dialog.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_source			(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
  * gs_plugin_app_upgrade_download:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, with kind %AS_APP_KIND_OS_UPGRADE

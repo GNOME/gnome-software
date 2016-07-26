@@ -495,10 +495,10 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 	return TRUE;
 }
 
-gboolean
-gs_flatpak_add_source (GsFlatpak *self, GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+static gboolean
+gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
+			       GCancellable *cancellable,
+			       GError **error)
 {
 	const gchar *gpg_key;
 	g_autoptr(FlatpakRemote) xremote = NULL;
@@ -1382,6 +1382,14 @@ gs_flatpak_app_install (GsFlatpak *self,
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+	/* add a source */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+		return gs_flatpak_app_install_source (self,
+						      app,
+						      cancellable,
+						      error);
+	}
 
 	/* install required runtime if not already installed */
 	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {

@@ -717,7 +717,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
 	gs_app_set_url (app_source, AS_URL_KIND_HOMEPAGE, testdir_repourl);
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
-					   GS_PLUGIN_LOADER_ACTION_ADD_SOURCE,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);

@@ -63,10 +63,6 @@ gboolean	gs_flatpak_add_sources		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_add_source		(GsFlatpak		*self,
-						 GsApp			*app,
-						 GCancellable		*cancellable,
-						 GError			**error);
 gboolean	gs_flatpak_add_updates		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,

@@ -98,16 +98,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_add_source (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_add_source (priv->flatpak, app, cancellable, error);
-}
-
-gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 		       GsAppList *list,
 		       GCancellable *cancellable,
