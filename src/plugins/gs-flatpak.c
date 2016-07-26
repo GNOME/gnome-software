@@ -887,12 +887,12 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 
 	/* check the system installation if we're on a user one */
 	if (ignore_error &&
-	    flatpak_installation_get_is_user (self->installation) &&
 	    gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
-		g_autoptr(FlatpakInstallation) installation = NULL;
+		g_autoptr(FlatpakInstallation) installation =
+			gs_flatpak_get_installation_counterpart (self,
+								 cancellable,
+								 error);
 
-		installation = flatpak_installation_new_system (cancellable,
-								error);
 		if (installation == NULL)
 			return FALSE;
 
