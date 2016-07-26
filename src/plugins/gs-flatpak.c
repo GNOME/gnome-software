@@ -1695,6 +1695,7 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
 	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
 	gs_app_set_origin_hostname (app, repo_url);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 
 	/* optional data */
 	repo_homepage = g_key_file_get_string (kf, "Flatpak Repo", "Homepage", NULL);
