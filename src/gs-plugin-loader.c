@@ -4165,6 +4165,19 @@ gs_plugin_loader_refresh_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+static AsIcon *
+_gs_app_get_icon_by_kind (GsApp *app, AsIconKind kind)
+{
+	GPtrArray *icons = gs_app_get_icons (app);
+	guint i;
+	for (i = 0; i < icons->len; i++) {
+		AsIcon *ic = g_ptr_array_index (icons, i);
+		if (as_icon_get_kind (ic) == kind)
+			return ic;
+	}
+	return NULL;
+}
+
 static void
 gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 					gpointer object,
@@ -4249,7 +4262,9 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	/* check the apps have an icon set */
 	for (j = 0; j < gs_app_list_length (state->list); j++) {
 		GsApp *app = gs_app_list_index (state->list, j);
-		if (gs_app_get_icons(app)->len == 0) {
+		if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
+		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
+		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
 			g_autoptr(AsIcon) ic = as_icon_new ();
 			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 			if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
