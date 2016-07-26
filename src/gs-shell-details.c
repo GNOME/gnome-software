@@ -569,6 +569,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	switch (gs_app_get_kind (self->app)) {
 	case AS_APP_KIND_CODEC:
 	case AS_APP_KIND_ADDON:
+	case AS_APP_KIND_SOURCE:
 		gtk_widget_set_visible (self->box_details_screenshot_fallback, FALSE);
 		break;
 	default:
