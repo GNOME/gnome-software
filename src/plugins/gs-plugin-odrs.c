@@ -930,9 +930,10 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 
 	/* create the GET data *with* the machine hash so we can later
 	 * review the application ourselves */
-	uri = g_strdup_printf ("%s/moderate/%s",
+	uri = g_strdup_printf ("%s/moderate/%s/%s",
 			       priv->review_server,
-			       priv->user_hash);
+			       priv->user_hash,
+			       gs_plugin_get_locale (plugin));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
