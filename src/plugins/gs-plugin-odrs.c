@@ -453,10 +453,7 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GArray *review_ratings;
-	const guint to_percentage[] = { 0, 20, 40, 60, 80, 100 };
-	guint32 cnt = 0;
-	guint32 acc = 0;
-	guint i;
+	gint rating;
 
 	/* get ratings */
 	review_ratings = g_hash_table_lookup (priv->ratings,
@@ -465,17 +462,14 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 		return TRUE;
 	gs_app_set_review_ratings (app, review_ratings);
 
-	/* find the correct global rating */
-	for (i = 1; i <= 5; i++) {
-		guint32 tmp = g_array_index (review_ratings, guint32, i);
-		acc += to_percentage[i] * tmp;
-		cnt += tmp;
-	}
-	if (cnt == 0)
-		gs_app_set_rating (app, (gint) cnt);
-	else
-		gs_app_set_rating (app, (gint) (acc / cnt));
-
+	/* find the wilson rating */
+	rating = gs_utils_get_wilson_rating (g_array_index (review_ratings, guint32, 1),
+					     g_array_index (review_ratings, guint32, 2),
+					     g_array_index (review_ratings, guint32, 3),
+					     g_array_index (review_ratings, guint32, 4),
+					     g_array_index (review_ratings, guint32, 5));
+	if (rating > 0)
+		gs_app_set_rating (app, rating);
 	return TRUE;
 }
 
