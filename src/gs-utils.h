@@ -65,6 +65,12 @@ gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
 gboolean	 gs_utils_rmtree		(const gchar	*directory,
 						 GError		**error);
+gint		 gs_utils_get_wilson_rating	(guint64	 star1,
+						 guint64	 star2,
+						 guint64	 star3,
+						 guint64	 star4,
+						 guint64	 star5);
+
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */

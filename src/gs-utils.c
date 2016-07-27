@@ -34,6 +34,7 @@
 
 #include <errno.h>
 #include <fnmatch.h>
+#include <math.h>
 #include <glib/gstdio.h>
 
 #ifdef HAVE_POLKIT
@@ -414,6 +415,92 @@ gs_utils_rmtree (const gchar *directory, GError **error)
 {
 	g_debug ("recursively removing directory '%s'", directory);
 	return gs_utils_rmtree_real (directory, error);
+}
+
+static gdouble
+pnormaldist (gdouble qn)
+{
+	static gdouble b[11] = { 1.570796288,      0.03706987906,   -0.8364353589e-3,
+				-0.2250947176e-3,  0.6841218299e-5,  0.5824238515e-5,
+				-0.104527497e-5,   0.8360937017e-7, -0.3231081277e-8,
+				 0.3657763036e-10, 0.6936233982e-12 };
+	gdouble w1, w3;
+	guint i;
+
+	if (qn < 0 || qn > 1)
+		return 0; // This is an error case
+	if (qn == 0.5)
+		return 0;
+
+	w1 = qn;
+	if (qn > 0.5)
+		w1 = 1.0 - w1;
+	w3 = -log (4.0 * w1 * (1.0 - w1));
+	w1 = b[0];
+	for (i = 1; i < 11; i++)
+		w1 = w1 + (b[i] * pow (w3, i));
+
+	if (qn > 0.5)
+		return sqrt (w1 * w3);
+	else
+		return -sqrt (w1 * w3);
+}
+
+static gdouble
+wilson_score (gdouble value, gdouble n, gdouble power)
+{
+	gdouble z, phat;
+	if (value == 0)
+		return 0;
+	z = pnormaldist (1 - power / 2);
+	phat = value / n;
+	return (phat + z * z / (2 * n) -
+		z * sqrt ((phat * (1 - phat) + z * z / (4 * n)) / n)) /
+		(1 + z * z / n);
+}
+
+/**
+ * gs_utils_get_wilson_rating:
+ * @star1: The number of 1 star reviews
+ * @star2: The number of 2 star reviews
+ * @star3: The number of 3 star reviews
+ * @star4: The number of 4 star reviews
+ * @star5: The number of 5 star reviews
+ *
+ * Returns the lower bound of Wilson score confidence interval for a
+ * Bernoulli parameter. This ensures small numbers of ratings don't give overly
+ * high scores.
+ * See https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
+ * for details.
+ *
+ * Returns: Wilson rating percentage, or -1 for error
+ **/
+gint
+gs_utils_get_wilson_rating (guint64 star1,
+			    guint64 star2,
+			    guint64 star3,
+			    guint64 star4,
+			    guint64 star5)
+{
+	gdouble val;
+	guint64 star_sum = star1 + star2 + star3 + star4 + star5;
+	if (star_sum == 0)
+		return -1;
+
+	/* get score */
+	val =  (wilson_score ((gdouble) star1, (gdouble) star_sum, 0.2) * -2);
+	val += (wilson_score ((gdouble) star2, (gdouble) star_sum, 0.2) * -1);
+	val += (wilson_score ((gdouble) star4, (gdouble) star_sum, 0.2) * 1);
+	val += (wilson_score ((gdouble) star5, (gdouble) star_sum, 0.2) * 2);
+
+	/* normalize from -2..+2 to 0..5 */
+	val += 3;
+
+	/* multiply to a percentage */
+	val *= 20;
+
+	/* return rounded up integer */
+	return (gint) ceil (val);
 }
 
 /* vim: set noexpandtab: */

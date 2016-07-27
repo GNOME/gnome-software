@@ -58,6 +58,16 @@ gs_app_list_filter_cb (GsApp *app, gpointer user_data)
 }
 
 static void
+gs_utils_wilson_func (void)
+{
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 0), ==, -1);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 400), ==, 100);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (10, 0, 0, 0, 400), ==, 98);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (0, 0, 0, 0, 1), ==, 76);
+	g_assert_cmpint ((gint64) gs_utils_get_wilson_rating (5, 4, 20, 100, 400), ==, 93);
+}
+
+static void
 gs_os_release_func (void)
 {
 	g_autofree gchar *fn = NULL;
@@ -1115,6 +1125,7 @@ main (int argc, char **argv)
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* generic tests go here */
+	g_test_add_func ("/gnome-software/utils{wilson}", gs_utils_wilson_func);
 	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);

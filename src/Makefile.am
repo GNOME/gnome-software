@@ -128,7 +128,8 @@ gnome_software_cmd_LDADD =				\
 	$(SOUP_LIBS)					\
 	$(LIBSECRET_LIBS)				\
 	$(GLIB_LIBS)					\
-	$(GTK_LIBS)
+	$(GTK_LIBS)					\
+	-lm
 
 gnome_software_cmd_CFLAGS =				\
 	$(WARN_CFLAGS)
@@ -356,7 +357,8 @@ gs_self_test_LDADD =						\
 	$(SOUP_LIBS)						\
 	$(LIBSECRET_LIBS)					\
 	$(GLIB_LIBS)						\
-	$(GTK_LIBS)
+	$(GTK_LIBS)						\
+	-lm
 
 gs_self_test_CFLAGS = $(WARN_CFLAGS)
 
