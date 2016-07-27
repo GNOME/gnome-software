@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <math.h>
 
 #include "gs-common.h"
 #include "gs-star-widget.h"
@@ -89,9 +90,15 @@ gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv = gs_star_widget_get_instance_private (star);
 	guint i;
+	gdouble rating;
 
 	/* remove all existing widgets */
 	gs_container_remove_all (GTK_CONTAINER (priv->box1));
+
+	/* add fudge factor so we can actually get 5 stars in reality,
+	 * and round up to nearest power of 10 */
+	rating = priv->rating + 10;
+	rating = 10 * ceil (rating / 10);
 
 	for (i = 0; i < 5; i++) {
 		GtkWidget *w;
@@ -118,7 +125,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		gtk_widget_set_sensitive (w, priv->interactive);
 		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
 		gtk_style_context_add_class (gtk_widget_get_style_context (im),
-					     priv->rating >= rate_to_star[i] ?
+					     rating >= rate_to_star[i] ?
 					     "star-enabled" : "star-disabled");
 		gtk_widget_set_visible (w, TRUE);
 		gtk_container_add (GTK_CONTAINER (priv->box1), w);
