@@ -484,7 +484,6 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *version;
-	gint karma_min;
 	guint status_code;
 	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
@@ -537,10 +536,6 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "limit");
 	json_builder_add_int_value (builder, ODRS_REVIEW_NUMBER_RESULTS_MAX);
-	json_builder_set_member_name (builder, "karma");
-	karma_min = g_settings_get_int (priv->settings,
-					"review-karma-required");
-	json_builder_add_int_value (builder, karma_min);
 	json_builder_end_object (builder);
 
 	/* export as a string */
