@@ -429,7 +429,8 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
 	GtkWidget *dialog;
-	g_autofree gchar *escaped = NULL;
+	g_autofree gchar *message = NULL;
+	g_autofree gchar *title = NULL;
 
 	/* pending install */
 	helper = g_slice_new0 (GsPageHelper);
@@ -447,20 +448,40 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 		return;
 	}
 
+	/* use different name and summary */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_SOURCE:
+		/* TRANSLATORS: this is a prompt message, and '%s' is an
+		 * source name, e.g. 'GNOME Nightly' */
+		title = g_strdup_printf (_("Are you sure you want to remove "
+					   "the %s source?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("All applications from %s will be "
+					     "removed, and you will have to "
+					     "re-install the source to use them again."),
+					   gs_app_get_name (app));
+		break;
+	default:
+		/* TRANSLATORS: this is a prompt message, and '%s' is an
+		 * application summary, e.g. 'GNOME Clocks' */
+		title = g_strdup_printf (_("Are you sure you want to remove %s?"),
+					 gs_app_get_name (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("%s will be removed, and you will "
+					     "have to install it to use it again."),
+					   gs_app_get_name (app));
+		break;
+	}
+
 	/* ask for confirmation */
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 	                                 GTK_DIALOG_MODAL,
 	                                 GTK_MESSAGE_QUESTION,
 	                                 GTK_BUTTONS_CANCEL,
-	                                 /* TRANSLATORS: this is a prompt message, and
-	                                  * '%s' is an application summary, e.g. 'GNOME Clocks' */
-	                                 _("Are you sure you want to remove %s?"),
-	                                 gs_app_get_name (app));
-	escaped = g_markup_escape_text (gs_app_get_name (app), -1);
-	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
-	                                            /* TRANSLATORS: longer dialog text */
-                                                    _("%s will be removed, and you will have to install it to use it again."),
-                                                    escaped);
+	                                 "%s", title);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  "%s", message);
 
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
