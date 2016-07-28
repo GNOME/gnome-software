@@ -509,8 +509,25 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
+	/* does the remote already exist and is disabled */
+	xremote = flatpak_installation_get_remote_by_name (self->installation,
+							   gs_app_get_id (app),
+							   cancellable, NULL);
+	if (xremote != NULL) {
+		if (!flatpak_remote_get_noenumerate (xremote)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "flatpak source %s already exists",
+				     flatpak_remote_get_name (xremote));
+			return FALSE;
+		}
+	} else {
+		xremote = flatpak_remote_new (gs_app_get_id (app));
+	}
+
 	/* create a new remote */
-	xremote = flatpak_remote_new (gs_app_get_id (app));
+	flatpak_remote_set_noenumerate (xremote, FALSE);
 	flatpak_remote_set_url (xremote, gs_app_get_url (app, AS_URL_KIND_HOMEPAGE));
 	if (gs_app_get_summary (app) != NULL)
 		flatpak_remote_set_title (xremote, gs_app_get_summary (app));
@@ -1334,6 +1351,39 @@ gs_flatpak_launch (GsFlatpak *self,
 					    error);
 }
 
+static gboolean
+gs_flatpak_app_remove_source (GsFlatpak *self,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	g_autoptr(FlatpakRemote) xremote = NULL;
+
+	/* find the remote */
+	xremote = flatpak_installation_get_remote_by_name (self->installation,
+							   gs_app_get_id (app),
+							   cancellable, error);
+	if (xremote == NULL) {
+		g_prefix_error (error,
+				"flatpak source %s not found: ",
+				gs_app_get_id (app));
+		return FALSE;
+	}
+
+	/* we don't actually remove the source; just mark as noenumerate */
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	flatpak_remote_set_noenumerate (xremote, TRUE);
+	if (!flatpak_installation_modify_remote (self->installation,
+						 xremote,
+						 cancellable,
+						 error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	return TRUE;
+}
+
 gboolean
 gs_flatpak_app_remove (GsFlatpak *self,
 		       GsApp *app,
@@ -1350,6 +1400,14 @@ gs_flatpak_app_remove (GsFlatpak *self,
 				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 				    cancellable, error))
 		return FALSE;
+
+	/* is a source */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+		return gs_flatpak_app_remove_source (self,
+						     app,
+						     cancellable,
+						     error);
+	}
 
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);

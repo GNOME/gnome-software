@@ -754,6 +754,15 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (app2 != NULL);
 	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
+
+	/* remove it */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 }
 
 static void
