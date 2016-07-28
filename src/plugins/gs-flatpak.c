@@ -1696,11 +1696,24 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	if (repo_title == NULL || repo_url == NULL || repo_gpgkey == NULL ||
 	    repo_title[0] == '\0' || repo_url[0] == '\0' || repo_gpgkey[0] == '\0') {
 		g_set_error_literal (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "not enough data in file, expected Title, Url, GPGKey");
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "not enough data in file, "
+				     "expected Title, Url, GPGKey");
 		return FALSE;
 	}
+
+	/* user specified a URL */
+	if (g_str_has_prefix (repo_gpgkey, "http://") ||
+	    g_str_has_prefix (repo_gpgkey, "https://")) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Base64 encoded GPGKey required, not URL");
+		return FALSE;
+	}
+
+	/* create source */
 	app = gs_app_new (repo_id);
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);

@@ -677,6 +677,86 @@ gs_plugin_loader_repos_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
+{
+	const gchar *group_name = "remote \"example\"";
+	const gchar *root = NULL;
+	gboolean ret;
+	g_autofree gchar *config_fn = NULL;
+	g_autofree gchar *fn = NULL;
+	g_autofree gchar *remote_url = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* no flatpak, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak-user"))
+		return;
+
+	/* load local file */
+	fn = gs_test_get_filename ("tests/example.flatpakrepo");
+	g_assert (fn != NULL);
+	file = g_file_new_for_path (fn);
+	app = gs_plugin_loader_file_to_app (plugin_loader,
+					    file,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    NULL,
+					    &error);
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_SOURCE);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "example");
+	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "flatpak-user");
+	g_assert_cmpstr (gs_app_get_origin_hostname(app), ==, "foo.bar");
+	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://foo.bar");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "foo-bar");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Longer one line comment");
+	g_assert_cmpstr (gs_app_get_description (app), ==,
+			 "Longer multiline comment that does into detail.");
+	g_assert (gs_app_get_local_file (app) != NULL);
+	g_assert (gs_app_get_pixbuf (app) != NULL);
+
+	/* now install the remote */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+
+	/* check config file was updated */
+	root = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
+	config_fn = g_build_filename (root, "flatpak", "repo", "config", NULL);
+	kf = g_key_file_new ();
+	ret = g_key_file_load_from_file (kf, config_fn, 0, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	g_assert (g_key_file_has_group (kf, "core"));
+	g_assert (g_key_file_has_group (kf, group_name));
+	g_assert (g_key_file_get_boolean (kf, group_name, "gpg-verify", NULL));
+
+	/* check the URL was unmangled */
+	remote_url = g_key_file_get_string (kf, group_name, "url", &error);
+	g_assert_no_error (error);
+	g_assert_cmpstr (remote_url, ==, "http://foo.bar");
+
+	/* try again, check state is correct */
+	app2 = gs_plugin_loader_file_to_app (plugin_loader,
+					     file,
+					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					     NULL,
+					     &error);
+	g_assert_no_error (error);
+	g_assert (app2 != NULL);
+	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
+}
+
+static void
 gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -1197,6 +1277,12 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{distro-upgrades}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_distro_upgrades_func);
+
+	/* done last as it would otherwise try to do downloading in other
+	 * gs_plugin_file_to_app()-using tests */
+	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak:repo}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_flatpak_repo_func);
 	return g_test_run ();
 }
 

@@ -182,7 +182,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
 	/* only handle when installing bundles user-wide */
-	if (g_settings_get_boolean (priv->settings,
+	if (g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR") == NULL &&
+	    g_settings_get_boolean (priv->settings,
 				    "install-bundles-system-wide")) {
 		g_debug ("not handling bundle as per-system specified");
 		return TRUE;
