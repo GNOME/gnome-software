@@ -514,19 +514,16 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 							   gs_app_get_id (app),
 							   cancellable, NULL);
 	if (xremote != NULL) {
-		if (!flatpak_remote_get_noenumerate (xremote)) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "flatpak source %s already exists",
-				     flatpak_remote_get_name (xremote));
-			return FALSE;
-		}
-	} else {
-		xremote = flatpak_remote_new (gs_app_get_id (app));
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "flatpak source %s already exists",
+			     flatpak_remote_get_name (xremote));
+		return FALSE;
 	}
 
 	/* create a new remote */
+	xremote = flatpak_remote_new (gs_app_get_id (app));
 	flatpak_remote_set_noenumerate (xremote, FALSE);
 	flatpak_remote_set_url (xremote, gs_app_get_url (app, AS_URL_KIND_HOMEPAGE));
 	if (gs_app_get_summary (app) != NULL)
@@ -1370,11 +1367,10 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 		return FALSE;
 	}
 
-	/* we don't actually remove the source; just mark as noenumerate */
+	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	flatpak_remote_set_noenumerate (xremote, TRUE);
-	if (!flatpak_installation_modify_remote (self->installation,
-						 xremote,
+	if (!flatpak_installation_remove_remote (self->installation,
+						 gs_app_get_id (app),
 						 cancellable,
 						 error)) {
 		gs_app_set_state_recover (app);
