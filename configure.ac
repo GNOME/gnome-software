@@ -71,6 +71,11 @@ PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= 2.51.92)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
 PKG_CHECK_MODULES(LIBSECRET, libsecret-1)
 AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
+
+# use -lm
+LT_LIB_M
+AC_SUBST(LIBM)
+
 AC_ARG_ENABLE(man,
               [AS_HELP_STRING([--enable-man],
                               [generate man pages [default=auto]])],,

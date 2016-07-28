@@ -127,7 +127,7 @@ gnome_software_cmd_LDADD =				\
 	$(LIBSECRET_LIBS)				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
-	-lm
+	$(LIBM)
 
 gnome_software_cmd_CFLAGS =				\
 	$(WARN_CFLAGS)
@@ -280,7 +280,7 @@ gnome_software_LDADD =					\
 	$(PACKAGEKIT_LIBS)				\
 	$(GNOME_DESKTOP_LIBS)				\
 	$(POLKIT_LIBS)					\
-	-lm
+	$(LIBM)
 
 gnome_software_CFLAGS =					\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
@@ -353,7 +353,7 @@ gs_self_test_LDADD =						\
 	$(LIBSECRET_LIBS)					\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)						\
-	-lm
+	$(LIBM)
 
 gs_self_test_CFLAGS = $(WARN_CFLAGS)
 

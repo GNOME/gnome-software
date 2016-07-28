@@ -76,6 +76,7 @@ GTKDOC_LIBS=							\
 	$(GLIB_LIBS)						\
 	$(POLKIT_LIBS)						\
 	$(APPSTREAM_LIBS)					\
+	$(LIBM)							\
 	$(LIBSECRET_LIBS)					\
 	$(GTK_LIBS)						\
 	$(top_builddir)/src/gnome_software-gs-app-list.o	\
