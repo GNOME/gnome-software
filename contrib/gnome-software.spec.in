@@ -12,6 +12,9 @@
 %define alphatag                        #ALPHATAG#
 %define distrotag                       23
 
+# this should be set using "--without packagekit" when atomic
+%bcond_without packagekit
+
 Summary:   A software center for GNOME
 Name:      gnome-software
 Version:   #VERSION#
@@ -35,7 +38,9 @@ BuildRequires: gtkspell3-devel
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
 BuildRequires: libsoup-devel
+%if %{with packagekit}
 BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
+%endif
 BuildRequires: polkit-devel
 BuildRequires: libsecret-devel
 BuildRequires: flatpak-devel >= %{flatpak_version}
@@ -78,7 +83,14 @@ the source tree. Most users do not need this subpackage installed.
 %setup -q
 
 %build
-%configure --disable-static --disable-silent-rules
+%configure \
+    --disable-static \
+%if %{with packagekit}
+    --enable-packagekit \
+%else
+    --disable-packagekit \
+%endif
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -130,9 +142,50 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-software/featured-*.svg
 %{_datadir}/gnome-software/featured-*.jpg
 %dir %{_libdir}/gs-plugins-%{gs_plugin_version}
-%{_libdir}/gs-plugins-%{gs_plugin_version}/*.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_appstream.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-categories.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-menu-path.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dpkg.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dummy.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_epiphany.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora-distro-upgrades.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora-tagger-usage.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_flatpak-system.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_flatpak-user.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fwupd.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_hardcoded-blacklist.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_hardcoded-featured.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_hardcoded-popular.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_icons.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_key-colors.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_odrs.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_ostree.so
+%if %{with packagekit}
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-history.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-local.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-offline.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-origin.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-proxy.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-refine.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-refresh.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-upgrade.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit.so
+%endif
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_provenance-license.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_provenance.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_repos.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_shell-extensions.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_steam.so
+%if %{with packagekit}
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_systemd-updates.so
+%endif
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_ubuntuone.so
 %{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
+%if %{with packagekit}
 %{_datadir}/dbus-1/services/org.freedesktop.PackageKit.service
+%endif
 %{_datadir}/dbus-1/services/org.gnome.Software.service
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
