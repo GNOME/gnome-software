@@ -24,6 +24,7 @@
 #include <gnome-software.h>
 #include <json-glib/json-glib.h>
 #include <string.h>
+#include <math.h>
 
 /*
  * SECTION:
@@ -239,8 +240,23 @@ gs_plugin_odrs_parse_review_object (GsPlugin *plugin, JsonObject *item)
 	/* assemble review */
 	if (json_object_has_member (item, "rating"))
 		as_review_set_rating (rev, (gint) json_object_get_int_member (item, "rating"));
-	if (json_object_has_member (item, "score"))
+	if (json_object_has_member (item, "score")) {
 		as_review_set_priority (rev, (gint) json_object_get_int_member (item, "score"));
+	} else if (json_object_has_member (item, "karma_up") &&
+		   json_object_has_member (item, "karma_down")) {
+		gdouble ku = (gdouble) json_object_get_int_member (item, "karma_up");
+		gdouble kd = (gdouble) json_object_get_int_member (item, "karma_down");
+		gdouble wilson = 0.f;
+
+		/* from http://www.evanmiller.org/how-not-to-sort-by-average-rating.html */
+		if (ku > 0 || kd > 0) {
+			wilson = ((ku + 1.9208) / (ku + kd) -
+				  1.96 * sqrt ((ku * kd) / (ku + kd) + 0.9604) /
+				  (ku + kd)) / (1 + 3.8416 / (ku + kd));
+			wilson *= 100.f;
+		}
+		as_review_set_priority (rev, (gint) wilson);
+	}
 	if (json_object_has_member (item, "user_hash"))
 		as_review_set_reviewer_id (rev, json_object_get_string_member (item, "user_hash"));
 	if (json_object_has_member (item, "user_display"))
