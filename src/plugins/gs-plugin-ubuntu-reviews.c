@@ -37,11 +37,11 @@ struct GsPluginData {
 };
 
 typedef struct {
-	gint64		 one_star_count;
-	gint64		 two_star_count;
-	gint64		 three_star_count;
-	gint64		 four_star_count;
-	gint64		 five_star_count;
+	guint64		 one_star_count;
+	guint64		 two_star_count;
+	guint64		 three_star_count;
+	guint64		 four_star_count;
+	guint64		 five_star_count;
 } Histogram;
 
 #define UBUNTU_REVIEWS_SERVER		"https://reviews.ubuntu.com/reviews"
@@ -129,7 +129,7 @@ set_package_stats (GsPlugin *plugin,
 	statement = g_strdup_printf ("INSERT OR REPLACE INTO review_stats (package_name, "
 				     "one_star_count, two_star_count, three_star_count, "
 				     "four_star_count, five_star_count) "
-				     "VALUES ('%s', '%" G_GINT64_FORMAT "', '%" G_GINT64_FORMAT"', '%" G_GINT64_FORMAT "', '%" G_GINT64_FORMAT "', '%" G_GINT64_FORMAT "');",
+				     "VALUES ('%s', '%" G_GUINT64_FORMAT "', '%" G_GUINT64_FORMAT"', '%" G_GUINT64_FORMAT "', '%" G_GUINT64_FORMAT "', '%" G_GUINT64_FORMAT "');",
 				     package_name, histogram->one_star_count, histogram->two_star_count,
 				     histogram->three_star_count, histogram->four_star_count, histogram->five_star_count);
 	result = sqlite3_exec (priv->db, statement, NULL, NULL, &error_msg);
@@ -178,11 +178,11 @@ get_review_stats_sqlite_cb (void *data,
 			    gchar **col_name)
 {
 	Histogram *histogram = (Histogram *) data;
-	histogram->one_star_count = g_ascii_strtoll (argv[0], NULL, 10);
-	histogram->two_star_count = g_ascii_strtoll (argv[1], NULL, 10);
-	histogram->three_star_count = g_ascii_strtoll (argv[2], NULL, 10);
-	histogram->four_star_count = g_ascii_strtoll (argv[3], NULL, 10);
-	histogram->five_star_count = g_ascii_strtoll (argv[4], NULL, 10);
+	histogram->one_star_count = g_ascii_strtoull (argv[0], NULL, 10);
+	histogram->two_star_count = g_ascii_strtoull (argv[1], NULL, 10);
+	histogram->three_star_count = g_ascii_strtoull (argv[2], NULL, 10);
+	histogram->four_star_count = g_ascii_strtoull (argv[3], NULL, 10);
+	histogram->five_star_count = g_ascii_strtoull (argv[4], NULL, 10);
 	return 0;
 }
 
@@ -222,11 +222,11 @@ get_review_stats (GsPlugin *plugin,
 					      histogram.four_star_count,
 					      histogram.five_star_count);
 	review_ratings[0] = 0;
-	review_ratings[1] = histogram.one_star_count;
-	review_ratings[2] = histogram.two_star_count;
-	review_ratings[3] = histogram.three_star_count;
-	review_ratings[4] = histogram.four_star_count;
-	review_ratings[5] = histogram.five_star_count;
+	review_ratings[1] = (gint) histogram.one_star_count;
+	review_ratings[2] = (gint) histogram.two_star_count;
+	review_ratings[3] = (gint) histogram.three_star_count;
+	review_ratings[4] = (gint) histogram.four_star_count;
+	review_ratings[5] = (gint) histogram.five_star_count;
 
 	return TRUE;
 }
@@ -246,11 +246,11 @@ parse_histogram (const gchar *text, Histogram *histogram)
 	array = json_node_get_array (json_parser_get_root (parser));
 	if (json_array_get_length (array) != 5)
 		return FALSE;
-	histogram->one_star_count = json_array_get_int_element (array, 0);
-	histogram->two_star_count = json_array_get_int_element (array, 1);
-	histogram->three_star_count = json_array_get_int_element (array, 2);
-	histogram->four_star_count = json_array_get_int_element (array, 3);
-	histogram->five_star_count = json_array_get_int_element (array, 4);
+	histogram->one_star_count = (guint64) json_array_get_int_element (array, 0);
+	histogram->two_star_count = (guint64) json_array_get_int_element (array, 1);
+	histogram->three_star_count = (guint64) json_array_get_int_element (array, 2);
+	histogram->four_star_count = (guint64) json_array_get_int_element (array, 3);
+	histogram->five_star_count = (guint64) json_array_get_int_element (array, 4);
 
 	return TRUE;
 }
@@ -609,7 +609,7 @@ parse_review (AsReview *review, const gchar *our_username, JsonNode *node)
 	as_review_set_version (review, json_object_get_string_member (object, "version"));
 	star_rating = json_object_get_int_member (object, "rating");
 	if (star_rating > 0)
-		as_review_set_rating (review, star_rating * 20 - 10);
+		as_review_set_rating (review, (gint) (star_rating * 20 - 10));
 	as_review_set_date (review, parse_date_time (json_object_get_string_member (object, "date_created")));
 	id_string = g_strdup_printf ("%" G_GINT64_FORMAT, json_object_get_int_member (object, "id"));
 	as_review_add_metadata (review, "ubuntu-id", id_string);
@@ -646,7 +646,7 @@ parse_reviews (GsPlugin *plugin, JsonParser *parser, GsApp *app, GCancellable *c
 
 static gboolean
 download_reviews (GsPlugin *plugin, GsApp *app,
-		  const gchar *package_name, gint page_number,
+		  const gchar *package_name, guint page_number,
 		  GCancellable *cancellable, GError **error)
 {
 	const gchar *language;
@@ -656,7 +656,7 @@ download_reviews (GsPlugin *plugin, GsApp *app,
 
 	/* Get the review stats using HTTP */
 	language = gs_plugin_get_language (plugin);
-	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/page/%d/",
+	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/page/%u/",
 				language, package_name, page_number + 1);
 	if (!send_review_request (plugin, SOUP_METHOD_GET, path,
 				  NULL, FALSE,
