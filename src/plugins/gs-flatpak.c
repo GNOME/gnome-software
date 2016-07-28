@@ -453,6 +453,7 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 		gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
 				 flatpak_remote_get_name (xremote));
@@ -1716,6 +1717,7 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	/* create source */
 	app = gs_app_new (repo_id);
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
 	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
 	gs_app_set_origin_hostname (app, repo_url);
