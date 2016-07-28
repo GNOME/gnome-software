@@ -733,6 +733,7 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "no URL for remote %s",
 			     flatpak_remote_get_name (xremote));
+		return FALSE;
 	}
 	gs_app_set_origin_hostname (app, url);
 	return TRUE;
