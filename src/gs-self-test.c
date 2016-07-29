@@ -475,7 +475,6 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	g_assert (kudos & GS_APP_KUDO_MY_LANGUAGE);
 
 	/* check categories */
-	g_assert (gs_app_has_category (app, "Audio"));
 	g_assert (gs_app_has_category (app, "Player"));
 	g_assert (gs_app_has_category (app, "AudioVideo"));
 	g_assert (!gs_app_has_category (app, "ImageProcessing"));
