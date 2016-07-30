@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-07-29 22:06+0200\n"
-"PO-Revision-Date: 2015-12-03 23:34+0100\n"
+"PO-Revision-Date: 2016-07-30 11:22+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Id-Version: gnome-software master\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -44,10 +44,10 @@ msgid ""
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"El Programari del GNOME ressalta aplicacions populars i destacades amb "
+"El Programari del GNOME mostra aplicacions populars i destacades amb "
 "descripcions útils i amb múltiples captures de pantalla per aplicació. Les "
-"aplicacions es poden trobar tan navegant per la llista de categories com pel "
-"diàleg de cerca. També us permet actualitzar el sistema utilitzant "
+"aplicacions es poden trobar tan navegant per la llista de categories com "
+"cercant. També us permet actualitzar el sistema utilitzant "
 "l'actualització fora de línia."
 
 #: ../data/org.gnome.software.gschema.xml.h:1
@@ -71,12 +71,12 @@ msgid ""
 "If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
 msgstr ""
-"Si s'habilita, el GNOME software baixa actualitzacions automàticament en "
+"Si s'habilita, el Programari del GNOME baixa actualitzacions automàticament en "
 "segon pla i demana a l'usuari instal·lar-les quan estan llestes."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
 msgid "Whether it's the very first run of GNOME Software"
-msgstr "Si és la primera execució del GNOME Software"
+msgstr "Si és la primera execució del Programari del GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:6
 msgid "Show star ratings next to applications"
@@ -84,7 +84,7 @@ msgstr "Mostra les valoracions en estrelles al costat de les aplicacions"
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Non-free applications show a warning dialog before install"
-msgstr "Les aplicacions lliures mostren un diàleg d'avís abans d'instal·lar-se"
+msgstr "Les aplicacions no lliures mostren un diàleg d'avís abans d'instal·lar-se"
 
 #: ../data/org.gnome.software.gschema.xml.h:8
 msgid ""
@@ -159,14 +159,13 @@ msgstr ""
 "programari lliure"
 
 #: ../data/org.gnome.software.gschema.xml.h:22
-#, fuzzy
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Una llista d'aplicacions a usar, substituint les definides pel sistema."
+"Instal·la paquets d'aplicacions per a tots els usuaris del sistema quan sigui possible "
 
 #: ../data/org.gnome.software.gschema.xml.h:23
 msgid "Show the folder management UI"
-msgstr ""
+msgstr "Mostra la interfície de gestió de carpetes"
 
 #: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Allow access to the Software Sources dialog"
@@ -351,7 +350,7 @@ msgstr "Jordi Mas i Hernàndez <jmas@softcatala.org>, 2013-2016"
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:375
 msgid "About Software"
-msgstr "Quant al Programari"
+msgstr "Quant al programari"
 
 #. TRANSLATORS: well, we seem to think so, anyway
 #: ../src/gs-application.c:381
@@ -449,7 +448,7 @@ msgstr "Inicieu la sessió automàticament la propera vegada"
 
 #: ../src/gs-auth-dialog.ui.h:7
 msgid "Enter your one-time pin for two-factor authentication."
-msgstr ""
+msgstr "Introduïu el PIN d'un ús per l'autenticació amb dos components."
 
 #: ../src/gs-auth-dialog.ui.h:8
 msgid "PIN"
@@ -624,11 +623,11 @@ msgstr "Esteu segur de voler suprimir la font %s?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-page.c:460
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the source to use them again."
-msgstr "Se suprimirà %s i haureu d'instal·lar-la per utilitzar-la de nou."
+msgstr "Se suprimiran totes les aplicacions de %s. Haureu d'instal·lar-les per utilitzar-les de nou."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
@@ -668,7 +667,7 @@ msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format can be found on the website."
 msgstr ""
-"Al lloc web es pot trobar informació sobre %s, així com opcions per saber "
+"Al lloc web es pot trobar informació sobre %s, així com diferents opcions de "
 "com obtenir un còdec que pugui reproduir aquest format."
 
 #: ../src/gs-removal-dialog.c:128
@@ -677,6 +676,8 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"Alguns dels programes actualment instal·lats no són compatibles amb %s. Si continueu, "
+"els programes següents seran suprimits automàticament durant l'actualització:"
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
@@ -771,7 +772,7 @@ msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr ""
-"Doneu una descripció curta de la ressenya. Per exemple, «una aplicació molt "
+"Doneu un resum curt de la ressenya. Per exemple, «una aplicació molt "
 "bona que recomano»."
 
 #. Translators: This is where the users enter their opinions about the apps.
@@ -792,7 +793,7 @@ msgstr "Total"
 #. TRANSLATORS: we explain what the action is going to do
 #: ../src/gs-review-row.c:207
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
-msgstr ""
+msgstr "Podeu informar de contingut abusiu, groller o discriminatori."
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: ../src/gs-review-row.c:212
@@ -801,7 +802,7 @@ msgid ""
 "administrator."
 msgstr ""
 "Un cop heu informat, la ressenya s'ocultarà fins que un administrador la "
-"comprovi."
+"revisi."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
@@ -963,7 +964,7 @@ msgstr "No s'ha pogut trobar «%s»."
 #. * any plugin, e.g. if you try installing a .tar.gz
 #: ../src/gs-shell-details.c:1366
 msgid "The file is not supported."
-msgstr ""
+msgstr "El fitxer no està suportat."
 
 #. TRANSLATORS: install or removed failed
 #: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
@@ -984,8 +985,8 @@ msgstr "Programari lliure"
 #: ../src/gs-shell-details.c:1800
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Els usuaris estan lligats a la següent llicència:"
+msgstr[1] "Els usuaris estan lligats a les següents llicències:"
 
 #: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
 msgid "More information"
@@ -1057,7 +1058,7 @@ msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
 msgstr ""
-"En afegir aquest programari tindreu accés a programari i actualitzacions "
+"En afegir aquesta font de programari tindreu accés a programari i actualitzacions "
 "addicionals."
 
 #: ../src/gs-shell-details.ui.h:21
@@ -1163,6 +1164,7 @@ msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
 msgstr ""
+"Això vol dir que el programari pot ser lliurement usat, copiat, distribuït, estudiat i modificat."
 
 #: ../src/gs-shell-details.ui.h:53
 msgid "Proprietary Software"
@@ -1174,6 +1176,8 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
+"Això vol dir que el programari és propietat d'una persona o empresa. Hi ha habitualment "
+"restriccions en el seu ús i normalment no es pot accedir al seu codi font."
 
 #: ../src/gs-shell-details.ui.h:56
 msgid "Unknown Software License"
@@ -1182,7 +1186,7 @@ msgstr "Llicència del programari desconeguda"
 #: ../src/gs-shell-details.ui.h:57
 msgid "The license terms of this software are unknown."
 msgstr "Els termes de llicència d'aquest programa són desconeguts."
-    
+
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:145
 msgid " and "
@@ -1415,7 +1419,7 @@ msgstr "No hi ha ressenyes per moderar"
 #. add button
 #: ../src/gs-shell-overview.c:240
 msgid "More…"
-msgstr ""
+msgstr "Més…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
@@ -1952,7 +1956,7 @@ msgstr ""
 #: ../src/gs-upgrade-banner.c:86
 #, c-format
 msgid "%s %s Now Available"
-msgstr "%s  %s ara disponible."
+msgstr "%s %s ara disponible"
 
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
@@ -2001,7 +2005,7 @@ msgstr "S'ha instal·lat %s"
 #. TRANSLATORS: this is button that opens the newly installed application
 #: ../src/gs-common.c:141
 msgid "Launch"
-msgstr "Execute"
+msgstr "Executa"
 
 #. TRANSLATORS: this is when the install fails
 #: ../src/gs-common.c:168
@@ -2055,7 +2059,7 @@ msgstr "Voleu instal·lar programari de tercers?"
 #. TRANSLATORS: window title
 #: ../src/gs-common.c:276
 msgid "Enable Third-Party Software Source?"
-msgstr "Habilita la font de programari de tercers?"
+msgstr "Voleu habilitar la font de programari de tercers?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -2116,17 +2120,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:405
 msgid "Cartoon characters in unsafe situations"
-msgstr ""
+msgstr "Personatges de animats en situacions insegures"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:408
 msgid "Cartoon characters in aggressive conflict"
-msgstr ""
+msgstr "Personatges animats en conflictes agressius"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:411
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Violència gràfica amb personatges animats"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
@@ -2137,17 +2141,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:417
 msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr ""
+msgstr "Personatges en situacions insegures fàcilment distingibles de la realitat"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:420
 msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr ""
+msgstr "Personatges en conflictes agressius fàcilment distingibles de la realitat"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:423
 msgid "Graphic violence easily distinguishable from reality"
-msgstr ""
+msgstr "Violència gràfica fàcilment distingible de la realitat"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:426
@@ -2158,17 +2162,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
 msgid "Mild realistic characters in unsafe situations"
-msgstr ""
+msgstr "Personatges mig reals en situacions insegures"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:432
 msgid "Depictions of realistic characters in aggressive conflict"
-msgstr ""
+msgstr "Representacions de personatges realistes en conflictes agressius"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:435
 msgid "Graphic violence involving realistic characters"
-msgstr ""
+msgstr "Violència gràfica amb personatges realistes"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:438
@@ -2179,17 +2183,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:441
 msgid "Unrealistic bloodshed"
-msgstr ""
+msgstr "Matances no realista"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:444
 msgid "Realistic bloodshed"
-msgstr ""
+msgstr "Matances realista"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:447
 msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr ""
+msgstr "Representacions de matances i mutilacions de parts del cos"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:450
@@ -2311,7 +2315,7 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:516
 msgid "Slapstick humor"
-msgstr ""
+msgstr "Humor vulgar"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:519
@@ -2556,7 +2560,7 @@ msgstr "Depuradors"
 #: ../src/plugins/gs-desktop-common.c:60
 msgctxt "Menu of Development"
 msgid "IDEs"
-msgstr ""
+msgstr "Entorns integrats de desenvolupament"
 
 #: ../src/plugins/gs-desktop-common.c:69
 msgctxt "Menu of Education"
