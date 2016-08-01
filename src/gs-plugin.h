@@ -231,7 +231,9 @@ typedef enum {
 } GsPluginRule;
 
 /* helpers */
-#define	GS_PLUGIN_ERROR					1
+#define	GS_PLUGIN_ERROR					gs_plugin_error_quark ()
+
+GQuark		 gs_plugin_error_quark			(void);
 
 /* public getters and setters */
 GsPluginData	*gs_plugin_alloc_data			(GsPlugin	*plugin,

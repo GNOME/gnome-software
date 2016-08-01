@@ -77,6 +77,8 @@ typedef struct
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
 
+G_DEFINE_QUARK (gs-plugin-error-quark, gs_plugin_error)
+
 enum {
 	PROP_0,
 	PROP_FLAGS,
