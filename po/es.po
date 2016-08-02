@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-07-25 09:43+0000\n"
+"POT-Creation-Date: 2016-07-28 12:22+0000\n"
 "PO-Revision-Date: 2016-07-26 12:58+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
@@ -393,7 +393,7 @@ msgstr "Instalar"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:466
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:487
 msgid "Remove"
 msgstr "Eliminar"
 
@@ -488,7 +488,7 @@ msgstr "Una aplicación"
 #: ../src/gs-dbus-helper.c:299
 #, c-format
 msgid "%s is requesting additional file format support."
-msgstr "%s necesita soporte para formatos de archivos adicionales"
+msgstr "%s necesita soporte para formatos de archivos adicionales."
 
 #. TRANSLATORS: notification title
 #: ../src/gs-dbus-helper.c:301
@@ -521,7 +521,7 @@ msgstr "Se necesitan codificadores multimedia adicionales"
 #: ../src/gs-dbus-helper.c:317
 #, c-format
 msgid "%s is requesting additional printer drivers."
-msgstr "%s necesita controladores de impresora adicionales"
+msgstr "%s necesita controladores de impresora adicionales."
 
 #. TRANSLATORS: notification title
 #: ../src/gs-dbus-helper.c:319
@@ -618,15 +618,32 @@ msgstr "Histórico"
 msgid "Prepare %s"
 msgstr "Preparar %s"
 
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:457
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * source name, e.g. 'GNOME Nightly'
+#: ../src/gs-page.c:456
+#, fuzzy, c-format
+#| msgid "Are you sure you want to remove %s?"
+msgid "Are you sure you want to remove the %s source?"
+msgstr "¿Está seguro de querer quitar %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:460
+#, fuzzy, c-format
+#| msgid "%s will be removed, and you will have to install it to use it again."
+msgid ""
+"All applications from %s will be removed, and you will have to re-install "
+"the source to use them again."
+msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo."
+
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:468
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:462
+#: ../src/gs-page.c:471
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo."
@@ -773,7 +790,7 @@ msgstr "Opinión"
 #: ../src/gs-review-dialog.ui.h:11
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr ""
-"¿Qué piensa sobre la aplicación? Intente dar una explicación a sus opiniones"
+"¿Qué piensa sobre la aplicación? Intente dar una explicación a sus opiniones."
 
 #: ../src/gs-review-histogram.ui.h:1
 msgid "Total"
@@ -919,7 +936,7 @@ msgid "Removing…"
 msgstr "Quitando…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:684
+#: ../src/gs-shell-details.c:685
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -928,58 +945,58 @@ msgstr ""
 "Internet."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:811
+#: ../src/gs-shell-details.c:812
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:843
+#: ../src/gs-shell-details.c:844
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:889
+#: ../src/gs-shell-details.c:890
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../src/gs-shell-details.c:1307
+#: ../src/gs-shell-details.c:1308
 #, c-format
 msgid "Could not find '%s'"
 msgstr "No se pudo encontrar «%s»"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1365
+#: ../src/gs-shell-details.c:1366
 msgid "The file is not supported."
 msgstr "El archivo no está soportado."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Esto no ha funcionado"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1728
+#: ../src/gs-shell-details.c:1729
 msgid "Public domain"
 msgstr "Dominio público"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1745 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Software libre"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1799
+#: ../src/gs-shell-details.c:1800
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Los usuarios están limitados por la siguiente licencia:"
 msgstr[1] "Los usuarios están limitados por las siguientes licencias:"
 
-#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Más información"
 
@@ -1253,7 +1270,7 @@ msgstr "No hay aplicaciones disponibles para soportar %s."
 #: ../src/gs-shell-extras.c:353
 #, c-format
 msgid "%s is not available."
-msgstr "%s no está disponible"
+msgstr "%s no está disponible."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -1664,8 +1681,6 @@ msgstr ""
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:98
 #, c-format
-#| msgid "%i application installed"
-#| msgid_plural "%i applications installed"
 msgid "%u application installed"
 msgid_plural "%u applications installed"
 msgstr[0] "%u aplicación instalada"
@@ -1675,8 +1690,6 @@ msgstr[1] "%u aplicaciones instaladas"
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:104
 #, c-format
-#| msgid "%i add-on installed"
-#| msgid_plural "%i add-ons installed"
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
 msgstr[0] "%u complemento instalado"
@@ -1687,8 +1700,6 @@ msgstr[1] "%u complementos instalados"
 #. The correct form here depends on the number of applications.
 #: ../src/gs-sources-dialog.c:111
 #, c-format
-#| msgid "%i application"
-#| msgid_plural "%i applications"
 msgid "%u application"
 msgid_plural "%u applications"
 msgstr[0] "%u aplicación"
@@ -1699,8 +1710,6 @@ msgstr[1] "%u aplicaciones"
 #. The correct form here depends on the number of add-ons.
 #: ../src/gs-sources-dialog.c:117
 #, c-format
-#| msgid "%i add-on"
-#| msgid_plural "%i add-ons"
 msgid "%u add-on"
 msgid_plural "%u add-ons"
 msgstr[0] "%u complemento"
