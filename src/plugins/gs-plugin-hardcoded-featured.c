@@ -235,7 +235,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	const gchar *key = "GnomeSoftware::FeatureTile-css";
 	guint i;
 	for (i = 0; myapps[i].id != NULL; i++) {
-		if (g_strcmp0 (gs_app_get_id_no_prefix (app),
+		if (g_strcmp0 (gs_app_get_id (app),
 			       myapps[i].id) != 0)
 			continue;
 		if (gs_app_get_metadata_item (app, key) != NULL)

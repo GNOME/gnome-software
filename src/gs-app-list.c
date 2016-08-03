@@ -62,21 +62,34 @@ void
 gs_app_list_add (GsAppList *list, GsApp *app)
 {
 	const gchar *id;
+	guint i;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* if we're lazy-loading the ID then we can't filter for duplicates */
-	id = gs_app_get_id (app);
+	id = gs_app_get_unique_id (app);
 	if (id == NULL) {
 		g_ptr_array_add (list->array, g_object_ref (app));
 		return;
 	}
 
-	/* check for hash_by_id */
+	/* check for duplicate */
 	if (g_hash_table_lookup (list->hash_by_id, id) != NULL) {
 		g_debug ("not adding duplicate %s", id);
 		return;
+	}
+
+	/* check for duplicate using globs (slower) */
+	for (i = 0; i < list->array->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (list->array, i);
+		if (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+					      gs_app_get_unique_id (app_tmp))) {
+			g_debug ("not adding duplicate %s as %s exists",
+				 gs_app_get_unique_id (app),
+				 gs_app_get_unique_id (app_tmp));
+			return;
+		}
 	}
 
 	/* just use the ref */
@@ -266,9 +279,9 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 				      g_free, (GDestroyNotify) g_object_unref);
 	for (i = 0; i < list->array->len; i++) {
 		app = gs_app_list_index (list, i);
-		id = gs_app_get_id (app);
+		id = gs_app_get_unique_id (app);
 		if (flags & GS_APP_LIST_FILTER_FLAG_PRIORITY)
-			id = gs_app_get_id_no_prefix (app);
+			id = gs_app_get_id (app);
 		if (id == NULL) {
 			g_autofree gchar *str = gs_app_to_string (app);
 			g_debug ("ignoring as no application id for: %s", str);
@@ -276,7 +289,7 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 		}
 		found = g_hash_table_lookup (hash, id);
 		if (found == NULL) {
-			g_debug ("found new %s", gs_app_get_id (app));
+			g_debug ("found new %s", id);
 			g_hash_table_insert (hash,
 					     g_strdup (id),
 					     g_object_ref (app));
@@ -288,7 +301,7 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 			if (gs_app_get_priority (app) >
 			    gs_app_get_priority (found)) {
 				g_debug ("using better %s (priority %u > %u)",
-					 gs_app_get_id (app),
+					 id,
 					 gs_app_get_priority (app),
 					 gs_app_get_priority (found));
 				g_hash_table_insert (hash,
@@ -297,12 +310,12 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 				continue;
 			}
 			g_debug ("ignoring worse duplicate %s (priority %u > %u)",
-				 gs_app_get_id (app),
+				 id,
 				 gs_app_get_priority (app),
 				 gs_app_get_priority (found));
 			continue;
 		}
-		g_debug ("ignoring duplicate %s", gs_app_get_id (app));
+		g_debug ("ignoring duplicate %s", id);
 		continue;
 	}
 

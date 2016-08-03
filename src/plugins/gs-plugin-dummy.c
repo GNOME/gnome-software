@@ -304,7 +304,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	gs_app_list_add (list, app1);
 
 	/* add again, this time with a prefix so it gets deduplicated */
-	app2 = gs_app_new ("dummy:zeus.desktop");
+	app2 = gs_app_new ("zeus.desktop");
+	gs_app_set_unique_id (app2, "user/dummy/*/*/zeus.desktop/*/*/*");
 	gs_app_set_metadata (app2, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app2);
@@ -384,9 +385,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	/* default */
-	if (g_strcmp0 (gs_app_get_id_no_prefix (app), "chiron.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id_no_prefix (app), "mate-spell.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id_no_prefix (app), "zeus.desktop") == 0) {
+	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)

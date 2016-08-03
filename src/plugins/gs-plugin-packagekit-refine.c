@@ -83,12 +83,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
-	const gchar *tmp;
-
-	/* this was installed system-wide and picked up by AppStream */
-	tmp = gs_app_get_metadata_item (app, "appstream::source-file");
-	if (tmp != NULL && g_str_has_prefix (tmp, "/usr/share/") &&
-	    gs_app_get_source_default (app) != NULL) {
+	const gchar *id = gs_app_get_unique_id (app);
+	if (id != NULL && g_str_has_prefix (id, "system/package/")) {
 		gs_app_set_management_plugin (app, "packagekit");
 		return;
 	}
@@ -859,6 +855,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		tmp = gs_app_get_id (app);
 		if (tmp == NULL)
+			continue;
+		if (gs_app_get_management_plugin (app) != NULL)
 			continue;
 		switch (gs_app_get_kind (app)) {
 		case AS_APP_KIND_DESKTOP:

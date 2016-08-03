@@ -47,9 +47,6 @@ typedef enum {
 	GS_FLATPAK_SCOPE_USER
 } GsFlatpakScope;
 
-#define	GS_FLATPAK_SYSTEM_PREFIX	"flatpak"
-#define	GS_FLATPAK_USER_PREFIX		"user-flatpak"
-
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
 						 GsFlatpakScope		 scope);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,

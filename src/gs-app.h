@@ -103,7 +103,6 @@ gchar		*gs_app_to_string		(GsApp		*app);
 const gchar	*gs_app_get_id			(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
-const gchar	*gs_app_get_id_no_prefix	(GsApp		*app);
 AsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
 						 AsAppKind	 kind);
@@ -114,6 +113,9 @@ void		 gs_app_set_state_recover	(GsApp		*app);
 guint		 gs_app_get_progress		(GsApp		*app);
 void		 gs_app_set_progress		(GsApp		*app,
 						 guint		 percentage);
+const gchar	*gs_app_get_unique_id		(GsApp		*app);
+void		 gs_app_set_unique_id		(GsApp		*app,
+						 const gchar	*unique_id);
 const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
 						 GsAppQuality	 quality,

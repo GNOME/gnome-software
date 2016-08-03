@@ -120,12 +120,20 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 	gchar *str;
 	GVariant *val;
 	g_autofree gchar *id = NULL;
-	g_autofree gchar *id_prefix = NULL;
+	g_autofree gchar *unique_id = NULL;
 	g_autoptr(AsIcon) ic = NULL;
 
 	id = gs_plugin_shell_extensions_id_from_uuid (uuid);
-	id_prefix = g_strdup_printf ("user:%s", id);
-	gs_app_set_id (app, id_prefix);
+	unique_id = as_utils_unique_id_build (AS_APP_SCOPE_USER,
+					      AS_BUNDLE_KIND_UNKNOWN,
+					      NULL,	/* origin */
+					      AS_APP_KIND_SHELL_EXTENSION,
+					      id,
+					      NULL,	/* arch */
+					      NULL,	/* branch */
+					      NULL);	/* version */
+	gs_app_set_id (app, id);
+	gs_app_set_unique_id (app, unique_id);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));

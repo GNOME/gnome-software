@@ -327,6 +327,7 @@ get_apps (GsPlugin *plugin,
 	for (l = snaps; l != NULL; l = l->next) {
 		JsonObject *package = json_node_get_object (l->data);
 		g_autoptr(GsApp) app = NULL;
+		g_autofree gchar *unique_id = NULL;
 		const gchar *id;
 
 		id = json_object_get_string_member (package, "name");
@@ -334,7 +335,17 @@ get_apps (GsPlugin *plugin,
 		if (filter_func != NULL && !filter_func (id, package, user_data))
 			continue;
 
+		/* create a unique ID for deduplication, TODO: branch?, arch? */
+		unique_id = as_utils_unique_id_build (AS_APP_SCOPE_SYSTEM,
+						      AS_BUNDLE_KIND_SNAP,
+						      NULL,	/* origin */
+						      AS_APP_KIND_UNKNOWN,
+						      id,
+						      NULL,	/* arch */
+						      NULL,	/* branch */
+						      NULL);	/* version */
 		app = gs_app_new (id);
+		gs_app_set_unique_id (app, unique_id);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);

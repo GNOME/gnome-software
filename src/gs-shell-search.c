@@ -111,8 +111,8 @@ _gs_app_list_is_duplicate (GsAppList *list, GsApp *app)
 		}
 
 		/* same D-Bus ID */
-		if (g_strcmp0 (gs_app_get_id_no_prefix (tmp),
-			       gs_app_get_id_no_prefix (app)) == 0) {
+		if (g_strcmp0 (gs_app_get_id (tmp),
+			       gs_app_get_id (app)) == 0) {
 			return TRUE;
 		}
 

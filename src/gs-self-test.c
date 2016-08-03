@@ -154,22 +154,39 @@ gs_plugin_func (void)
 
 	/* respect priority when deduplicating */
 	list = gs_app_list_new ();
-	app = gs_app_new ("foo:e");
+	app = gs_app_new ("e");
+	gs_app_set_unique_id (app, "user/foo/*/*/e/*/*/*");
 	gs_app_list_add (list, app);
 	gs_app_set_priority (app, 0);
 	g_object_unref (app);
-	app = gs_app_new ("bar:e");
+	app = gs_app_new ("e");
+	gs_app_set_unique_id (app, "user/bar/*/*/e/*/*/*");
 	gs_app_list_add (list, app);
 	gs_app_set_priority (app, 99);
 	g_object_unref (app);
-	app = gs_app_new ("baz:e");
+	app = gs_app_new ("e");
+	gs_app_set_unique_id (app, "user/baz/*/*/e/*/*/*");
 	gs_app_list_add (list, app);
 	gs_app_set_priority (app, 50);
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 3);
 	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
-	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list, 0)), ==, "bar:e");
+	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/bar/*/*/e/*/*/*");
+	g_object_unref (list);
+
+	/* use globs when adding */
+	list = gs_app_list_new ();
+	app = gs_app_new ("b");
+	gs_app_set_unique_id (app, "a/b/c/d/e/f/g/h");
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	app = gs_app_new ("b");
+	gs_app_set_unique_id (app, "a/b/c/*/e/f/g/h");
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list, 0)), ==, "b");
 	g_object_unref (list);
 }
 
@@ -178,11 +195,9 @@ gs_app_func (void)
 {
 	g_autoptr(GsApp) app = NULL;
 
-	app = gs_app_new ("flatpak:gnome-software");
+	app = gs_app_new ("gnome-software.desktop");
 	g_assert (GS_IS_APP (app));
-
-	g_assert_cmpstr (gs_app_get_id (app), ==, "flatpak:gnome-software");
-	g_assert_cmpstr (gs_app_get_id_no_prefix (app), ==, "gnome-software");
+	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-software.desktop");
 
 	/* check we clean up the version, but not at the expense of having
 	 * the same string as the update version */

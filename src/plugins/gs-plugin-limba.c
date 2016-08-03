@@ -282,6 +282,7 @@ gs_plugin_app_from_pki (LiPkgInfo *pki)
 {
 	const gchar *cptkind_str;
 	GsApp *app;
+	g_autofree gchar *unique_id = NULL;
 
 	cptkind_str = li_pkg_info_get_component_kind (pki);
 	if ((cptkind_str != NULL) && (g_strcmp0 (cptkind_str, "desktop") == 0)) {
@@ -297,6 +298,17 @@ gs_plugin_app_from_pki (LiPkgInfo *pki)
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	}
 
+	/* create a unique ID for deduplication, TODO: scope?, branch?, arch? */
+	unique_id = as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
+					      AS_BUNDLE_KIND_LIMBA,
+					      NULL,	/* origin */
+					      AS_APP_KIND_UNKNOWN,
+					      id,
+					      NULL,	/* arch */
+					      NULL,	/* branch */
+					      NULL);	/* version */
+
+	gs_app_set_unique_id (app, unique_id);
 	gs_app_set_management_plugin (app, "limba");
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_name (app,

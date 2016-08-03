@@ -469,7 +469,7 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 
 	/* get ratings */
 	review_ratings = g_hash_table_lookup (priv->ratings,
-					      gs_app_get_id_no_prefix (app));
+					      gs_app_get_id (app));
 	if (review_ratings == NULL)
 		return TRUE;
 	gs_app_set_review_ratings (app, review_ratings);
@@ -503,7 +503,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	g_autoptr(SoupMessage) msg = NULL;
 
 	/* look in the cache */
-	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id_no_prefix (app));
+	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
 	cachefn = gs_utils_get_cache_filename ("reviews",
 					       cachefn_basename,
 					       GS_UTILS_CACHE_FLAG_WRITEABLE,
@@ -516,7 +516,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
 			return NULL;
 		g_debug ("got review data for %s from %s",
-			 gs_app_get_id_no_prefix (app), cachefn);
+			 gs_app_get_id (app), cachefn);
 		return gs_plugin_odrs_parse_reviews (plugin,
 						     json_data, -1,
 						     error);
@@ -533,7 +533,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	json_builder_set_member_name (builder, "user_hash");
 	json_builder_add_string_value (builder, priv->user_hash);
 	json_builder_set_member_name (builder, "app_id");
-	json_builder_add_string_value (builder, gs_app_get_id_no_prefix (app));
+	json_builder_add_string_value (builder, gs_app_get_id (app));
 	json_builder_set_member_name (builder, "locale");
 	json_builder_add_string_value (builder, gs_plugin_get_locale (plugin));
 	json_builder_set_member_name (builder, "distro");
@@ -639,7 +639,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* not valid */
 	if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
 		return TRUE;
-	if (gs_app_get_id_no_prefix (app) == NULL)
+	if (gs_app_get_id (app) == NULL)
 		return TRUE;
 
 	/* add reviews if possible */
@@ -730,7 +730,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 
 	/* save as we don't re-request the review from the server */
 	as_review_set_reviewer_name (review, g_get_real_name ());
-	as_review_add_metadata (review, "app_id", gs_app_get_id_no_prefix (app));
+	as_review_add_metadata (review, "app_id", gs_app_get_id (app));
 	as_review_add_metadata (review, "user_skey",
 				gs_app_get_metadata_item (app, "ODRS::user_skey"));
 
