@@ -175,8 +175,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* no pixbuf */
 	pb = gs_app_get_pixbuf (app);
-	if (pb == NULL)
+	if (pb == NULL) {
+		g_debug ("no pixbuf, so no key colors");
 		return TRUE;
+	}
 
 	/* get a list of key colors */
 	pb_small = gdk_pixbuf_scale_simple (pb, 32, 32, GDK_INTERP_BILINEAR);
