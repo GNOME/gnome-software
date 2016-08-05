@@ -1624,6 +1624,16 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 	g_return_if_fail (GS_IS_APP (app));
 	if (origin == app->origin)
 		return;
+
+	/* trying to change */
+	if (app->origin != NULL && origin != NULL) {
+		g_warning ("automatically prevented from changing "
+			   "origin on %s from %s to %s!",
+			   gs_app_get_id (app),
+			   app->origin, origin);
+		return;
+	}
+
 	g_free (app->origin);
 	app->origin = g_strdup (origin);
 }

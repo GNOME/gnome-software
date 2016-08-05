@@ -274,7 +274,8 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 	}
 
 	/* this is faster than resolving */
-	gs_app_set_origin (app, flatpak_installed_ref_get_origin (xref));
+	if (gs_app_get_origin (app) == NULL)
+		gs_app_set_origin (app, flatpak_installed_ref_get_origin (xref));
 
 	/* this is faster than flatpak_installation_fetch_remote_size_sync() */
 	size_installed = flatpak_installed_ref_get_installed_size (xref);
