@@ -658,9 +658,16 @@ void
 gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
 {
 	g_autofree gchar *class_name = NULL;
-	g_autoptr(GString) str = g_string_sized_new (1024);
+	g_autoptr(GString) str = NULL;
 
+	/* remove custom class if NULL */
 	class_name = g_strdup_printf ("themed-widget_%p", widget);
+	if (css == NULL) {
+		GtkStyleContext *context = gtk_widget_get_style_context (widget);
+		gtk_style_context_remove_class (context, class_name);
+		return;
+	}
+	str = g_string_sized_new (1024);
 	g_string_append_printf (str, ".%s {\n", class_name);
 	g_string_append_printf (str, "%s\n", css);
 	g_string_append (str, "}");
