@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-07-21 14:26+0000\n"
-"PO-Revision-Date: 2016-07-23 17:40+0200\n"
+"POT-Creation-Date: 2016-07-28 12:22+0000\n"
+"PO-Revision-Date: 2016-08-07 18:45+0200\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <fur@li.org>\n"
 "Language: fur\n"
@@ -394,7 +394,7 @@ msgstr "Instale"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:466
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:487
 msgid "Remove"
 msgstr "Gjave"
 
@@ -464,18 +464,18 @@ msgstr "Continue"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:182
+#: ../src/gs-category.c:181
 msgid "Other"
 msgstr "Altri"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:187
+#: ../src/gs-category.c:186
 msgid "All"
 msgstr "Dutis"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:191
+#: ../src/gs-category.c:190
 msgid "Featured"
 msgstr "In risalt"
 
@@ -569,11 +569,11 @@ msgstr "_Nin a fâ compris"
 
 #. TRANSLATORS: Here are 2 strings the same as in gtk/gtkbox.c
 #. in GTK+ project. Please use the same translation.
-#: ../src/gs-hiding-box.c:384
+#: ../src/gs-hiding-box.c:383
 msgid "Spacing"
 msgstr "Spaziadure"
 
-#: ../src/gs-hiding-box.c:385
+#: ../src/gs-hiding-box.c:384
 msgid "The amount of space between children"
 msgstr "La cuantitât di spazi tra i fîs"
 
@@ -618,15 +618,32 @@ msgstr "Cronologjie"
 msgid "Prepare %s"
 msgstr "Preparâ %s"
 
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:457
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * source name, e.g. 'GNOME Nightly'
+#: ../src/gs-page.c:456
+#, c-format
+msgid "Are you sure you want to remove the %s source?"
+msgstr "Sigûrs di gjavâ la sorzint %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:460
+#, c-format
+msgid ""
+"All applications from %s will be removed, and you will have to re-install "
+"the source to use them again."
+msgstr ""
+"Dutis lis aplicazions di %s e vegnaran gjavadis e tu varâs di tornâ a "
+"instalâ la sorzint par podê tornâ a doprâlis."
+
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:468
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Sigûrs di gjavâ %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:462
+#: ../src/gs-page.c:471
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s e vegnarà gjavade e par podêle doprâ di gnûf tu varâs di instalâle."
@@ -680,61 +697,61 @@ msgstr "_Continue"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
-#: ../src/gs-review-dialog.c:93
+#: ../src/gs-review-dialog.c:98
 msgid "Hate it"
 msgstr "La odei"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
-#: ../src/gs-review-dialog.c:97
+#: ../src/gs-review-dialog.c:102
 msgid "Don't like it"
 msgstr "No mi plâs"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
-#: ../src/gs-review-dialog.c:101
+#: ../src/gs-review-dialog.c:106
 msgid "It's OK"
 msgstr "E je buine"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
-#: ../src/gs-review-dialog.c:105
+#: ../src/gs-review-dialog.c:110
 msgid "Like it"
 msgstr "Mi plâs"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
-#: ../src/gs-review-dialog.c:109
+#: ../src/gs-review-dialog.c:114
 msgid "Love it"
 msgstr "Le adori"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: ../src/gs-review-dialog.c:131
+#: ../src/gs-review-dialog.c:136
 msgid "Please take more time writing the review"
 msgstr "Cjapiti plui timp par scrivi une opinion"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:135
+#: ../src/gs-review-dialog.c:140
 msgid "Please choose a star rating"
 msgstr "Sielç une stele come valutazion"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:139
+#: ../src/gs-review-dialog.c:144
 msgid "The summary is too short"
 msgstr "Il struc al è masse curt"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:143
+#: ../src/gs-review-dialog.c:148
 msgid "The summary is too long"
 msgstr "Il struc al è masse lunc"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:147
+#: ../src/gs-review-dialog.c:152
 msgid "The description is too short"
 msgstr "La descrizion e je masse curte"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:151
+#: ../src/gs-review-dialog.c:156
 msgid "The description is too long"
 msgstr "La descrizion e je masse lungje"
 
@@ -837,39 +854,39 @@ msgstr "Gjave..."
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:212
+#: ../src/gs-screenshot-image.c:220
 msgid "Screenshot not found"
 msgstr "Cature di schermi no cjatade"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:228
+#: ../src/gs-screenshot-image.c:236
 msgid "Failed to load image"
 msgstr "Cjariament de imagjin falît"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:342
+#: ../src/gs-screenshot-image.c:350
 msgid "Screenshot size not found"
 msgstr "Dimension de cature di schermi no cjatade"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:370
+#: ../src/gs-screenshot-image.c:378
 msgid "Could not create cache"
 msgstr "Impussibil cjariâ la cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:416
+#: ../src/gs-screenshot-image.c:424
 msgid "Screenshot not valid"
 msgstr "Cature di schermi no valide"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:432
+#: ../src/gs-screenshot-image.c:440
 msgid "Screenshot not available"
 msgstr "Cature di schermi no disponibile"
 
-#: ../src/gs-screenshot-image.c:477
+#: ../src/gs-screenshot-image.c:485
 msgid "Screenshot"
 msgstr "Cature"
 
@@ -919,7 +936,7 @@ msgid "Removing…"
 msgstr "Daûr a gjavâ..."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:684
+#: ../src/gs-shell-details.c:685
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -928,58 +945,58 @@ msgstr ""
 "conession internet."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:811
+#: ../src/gs-shell-details.c:812
 msgctxt "version"
 msgid "Unknown"
 msgstr "No cognossude"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:843
+#: ../src/gs-shell-details.c:844
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:889
+#: ../src/gs-shell-details.c:890
 msgctxt "origin"
 msgid "Unknown"
 msgstr "No cognossude"
 
-#: ../src/gs-shell-details.c:1307
+#: ../src/gs-shell-details.c:1308
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Impussibil cjatâ '%s'"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1365
+#: ../src/gs-shell-details.c:1366
 msgid "The file is not supported."
 msgstr "Il file nol è supuartât."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Chest nol à funzionât"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1728
+#: ../src/gs-shell-details.c:1729
 msgid "Public domain"
 msgstr "Domini public"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1745 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Software Libar"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1799
+#: ../src/gs-shell-details.c:1800
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "I utents a son limitâts de licence chi daurman:"
 msgstr[1] "I utents a son limitâts des licencis chi daurman:"
 
-#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Plui informazions"
 
@@ -1413,25 +1430,25 @@ msgstr "Plui..."
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:450
+#: ../src/gs-shell-overview.c:419
 msgid "Recommended Audio & Video Applications"
 msgstr "Aplicazions audio e video conseadis"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:455
+#: ../src/gs-shell-overview.c:424
 msgid "Recommended Games"
 msgstr "Zûcs conseâts"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:460
+#: ../src/gs-shell-overview.c:429
 msgid "Recommended Graphics Applications"
 msgstr "Aplicazions di grafiche conseadis"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:465
+#: ../src/gs-shell-overview.c:434
 msgid "Recommended Productivity Applications"
 msgstr "Aplicazions di produtivitât conseadis"
 
@@ -1463,105 +1480,105 @@ msgid "No Application Found"
 msgstr "Nissune aplicazion cjatade"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:190
+#: ../src/gs-shell-updates.c:197
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:193
+#: ../src/gs-shell-updates.c:200
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:199
+#: ../src/gs-shell-updates.c:206
 msgid "Yesterday, %R"
 msgstr "Îr, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:203
+#: ../src/gs-shell-updates.c:210
 msgid "Yesterday, %l:%M %p"
 msgstr "Îr, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:206
+#: ../src/gs-shell-updates.c:213
 msgid "Two days ago"
 msgstr "Doi dîs indaûr"
 
-#: ../src/gs-shell-updates.c:208
+#: ../src/gs-shell-updates.c:215
 msgid "Three days ago"
 msgstr "Trê dîs indaûr"
 
-#: ../src/gs-shell-updates.c:210
+#: ../src/gs-shell-updates.c:217
 msgid "Four days ago"
 msgstr "Cuatri dîs indaûr"
 
-#: ../src/gs-shell-updates.c:212
+#: ../src/gs-shell-updates.c:219
 msgid "Five days ago"
 msgstr "Cinc dîs indaûr"
 
-#: ../src/gs-shell-updates.c:214
+#: ../src/gs-shell-updates.c:221
 msgid "Six days ago"
 msgstr "Sîs dîs indaûr"
 
-#: ../src/gs-shell-updates.c:216
+#: ../src/gs-shell-updates.c:223
 msgid "One week ago"
 msgstr "Une setemane indaûr"
 
-#: ../src/gs-shell-updates.c:218
+#: ../src/gs-shell-updates.c:225
 msgid "Two weeks ago"
 msgstr "Dôs setemanis indaûr"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:222
+#: ../src/gs-shell-updates.c:229
 msgid "%e %B %Y"
 msgstr "%e di %B dal %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:235
+#: ../src/gs-shell-updates.c:242
 msgid "Downloading new updates…"
 msgstr "Daûr a discjariâ i gnûfs inzornaments..."
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:239
+#: ../src/gs-shell-updates.c:246
 msgid "Looking for new updates…"
 msgstr "Daûr a cirî gnûfs inzornaments..."
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:279
+#: ../src/gs-shell-updates.c:286
 msgid "Setting up updates…"
 msgstr "Daûr a configurâ i inzornaments..."
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:280 ../src/gs-shell-updates.c:287
+#: ../src/gs-shell-updates.c:287 ../src/gs-shell-updates.c:294
 msgid "(This could take a while)"
 msgstr "(Al podarès tirâle a dilunc)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:417
+#: ../src/gs-shell-updates.c:424
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ultin control: %s"
 
 #. TRANSLATORS: all updates will be installed
-#: ../src/gs-shell-updates.c:490
+#: ../src/gs-shell-updates.c:497
 msgid "_Install All"
 msgstr "_Instale ducj"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:494 ../src/gs-shell-updates.c:1340
+#: ../src/gs-shell-updates.c:501 ../src/gs-shell-updates.c:1347
 msgid "Restart & _Install"
 msgstr "Torne invie e _instale"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:821
+#: ../src/gs-shell-updates.c:828
 msgid "Charges may apply"
 msgstr "Tu podaressis spindi bêçs"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:825
+#: ../src/gs-shell-updates.c:832
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1571,48 +1588,48 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:829
+#: ../src/gs-shell-updates.c:836
 msgid "Check Anyway"
 msgstr "Controle distès"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:845
+#: ../src/gs-shell-updates.c:852
 msgid "No Network"
 msgstr "Nissune rêt"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:849
+#: ../src/gs-shell-updates.c:856
 msgid "Internet access is required to check for updates."
 msgstr "L'acès a internet al è necessari par controlâ i inzornaments."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:853
+#: ../src/gs-shell-updates.c:860
 msgid "Network Settings"
 msgstr "Impostazions di rêt"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:943
+#: ../src/gs-shell-updates.c:950
 msgid "Updates have been installed"
 msgstr "I inzornaments a son stâts instalâts."
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:945
+#: ../src/gs-shell-updates.c:952
 msgid "A restart is required for them to take effect."
 msgstr "Al è necessari tornâ a inviâ par rindiju efetîfs."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:947 ../src/gs-update-monitor.c:102
+#: ../src/gs-shell-updates.c:954 ../src/gs-update-monitor.c:102
 msgid "Not Now"
 msgstr "No cumò"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:949
+#: ../src/gs-shell-updates.c:956
 msgid "Restart"
 msgstr "Torne invie"
 
-#: ../src/gs-shell-updates.c:1358
+#: ../src/gs-shell-updates.c:1365
 msgid "Check for updates"
 msgstr "Control inzornaments"
 
@@ -1665,39 +1682,39 @@ msgstr ""
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:98
 #, c-format
-msgid "%i application installed"
-msgid_plural "%i applications installed"
-msgstr[0] "%i aplicazion instalade"
-msgstr[1] "%i aplicazions instaladis"
+msgid "%u application installed"
+msgid_plural "%u applications installed"
+msgstr[0] "%u aplicazion instalade"
+msgstr[1] "%u aplicazions instaladis"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:104
 #, c-format
-msgid "%i add-on installed"
-msgid_plural "%i add-ons installed"
-msgstr[0] "%i estension instalade"
-msgstr[1] "%i estensions instaladis"
+msgid "%u add-on installed"
+msgid_plural "%u add-ons installed"
+msgstr[0] "%u estension instalade"
+msgstr[1] "%u estensions instaladis"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
 #: ../src/gs-sources-dialog.c:111
 #, c-format
-msgid "%i application"
-msgid_plural "%i applications"
-msgstr[0] "%i aplicazion"
-msgstr[1] "%i aplicazions"
+msgid "%u application"
+msgid_plural "%u applications"
+msgstr[0] "%u aplicazion"
+msgstr[1] "%u aplicazions"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
 #: ../src/gs-sources-dialog.c:117
 #, c-format
-msgid "%i add-on"
-msgid_plural "%i add-ons"
-msgstr[0] "%i estension"
-msgstr[1] "%i estensions"
+msgid "%u add-on"
+msgid_plural "%u add-ons"
+msgstr[0] "%u estension"
+msgstr[1] "%u estensions"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
