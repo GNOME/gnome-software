@@ -1276,12 +1276,16 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	gs_app_remove_quirk (app, AS_APP_QUIRK_COMPULSORY);
 
 	/* AppStream sets the source to appname/arch/branch */
-	if (!gs_refine_item_metadata (self, app, cancellable, error))
+	if (!gs_refine_item_metadata (self, app, cancellable, error)) {
+		g_prefix_error (error, "failed to get metadata: ");
 		return FALSE;
+	}
 
 	/* check the installed state */
-	if (!gs_plugin_refine_item_state (self, app, cancellable, error))
+	if (!gs_plugin_refine_item_state (self, app, cancellable, error)) {
+		g_prefix_error (error, "failed to get state: ");
 		return FALSE;
+	}
 
 	/* version fallback */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
@@ -1295,30 +1299,38 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	/* size */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
 		if (!gs_plugin_refine_item_size (self, app,
-						 cancellable, error))
+						 cancellable, error)) {
+			g_prefix_error (error, "failed to get size: ");
 			return FALSE;
+		}
 	}
 
 	/* permissions */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
 		if (!gs_plugin_refine_item_metadata (self, app,
-						     cancellable, error))
+						     cancellable, error)) {
+			g_prefix_error (error, "failed to get permissions: ");
 			return FALSE;
+		}
 	}
 
 	/* origin */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
 		if (!gs_plugin_refine_item_origin_ui (self, app,
-						      cancellable, error))
+						      cancellable, error)) {
+			g_prefix_error (error, "failed to get origin: ");
 			return FALSE;
+		}
 	}
 
 	/* origin-hostname */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) {
 		if (!gs_plugin_refine_item_origin_hostname (self, app,
 							    cancellable,
-							    error))
+							    error)) {
+			g_prefix_error (error, "failed to get origin-hostname: ");
 			return FALSE;
+		}
 	}
 
 	return TRUE;
