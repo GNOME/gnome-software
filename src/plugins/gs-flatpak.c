@@ -1305,15 +1305,6 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		}
 	}
 
-	/* permissions */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
-		if (!gs_plugin_refine_item_metadata (self, app,
-						     cancellable, error)) {
-			g_prefix_error (error, "failed to get permissions: ");
-			return FALSE;
-		}
-	}
-
 	/* origin */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
 		if (!gs_plugin_refine_item_origin_ui (self, app,
@@ -1329,6 +1320,15 @@ gs_flatpak_refine_app (GsFlatpak *self,
 							    cancellable,
 							    error)) {
 			g_prefix_error (error, "failed to get origin-hostname: ");
+			return FALSE;
+		}
+	}
+
+	/* permissions */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
+		if (!gs_plugin_refine_item_metadata (self, app,
+						     cancellable, error)) {
+			g_prefix_error (error, "failed to get permissions: ");
 			return FALSE;
 		}
 	}
