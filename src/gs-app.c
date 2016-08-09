@@ -826,7 +826,7 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
  * Gets the unique application ID used for de-duplication.
  * If nothing has been set the value from gs_app_get_id() will be used.
  *
- * Returns: The unique ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master/1.2.3`, or %NULL
+ * Returns: The unique ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master`, or %NULL
  **/
 const gchar *
 gs_app_get_unique_id (GsApp *app)
@@ -846,8 +846,7 @@ gs_app_get_unique_id (GsApp *app)
 							   app->kind,
 							   app->id,
 							   NULL,	/* arch */
-							   NULL,	/* branch */
-							   app->version);
+							   NULL);	/* branch */
 	}
 	return app->unique_id;
 }
@@ -855,7 +854,7 @@ gs_app_get_unique_id (GsApp *app)
 /**
  * gs_app_set_unique_id:
  * @app: a #GsApp
- * @unique_id: a unique application ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master/1.2.3`
+ * @unique_id: a unique application ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master`
  *
  * Sets the unique application ID. Any #GsApp using the same ID will be
  * deduplicated. This means that applications that can exist from more than

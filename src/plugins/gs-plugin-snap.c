@@ -342,8 +342,7 @@ get_apps (GsPlugin *plugin,
 						      AS_APP_KIND_UNKNOWN,
 						      id,
 						      NULL,	/* arch */
-						      NULL,	/* branch */
-						      NULL);	/* version */
+						      NULL);	/* branch */
 		app = gs_app_new (id);
 		gs_app_set_unique_id (app, unique_id);
 		gs_app_set_management_plugin (app, "snap");

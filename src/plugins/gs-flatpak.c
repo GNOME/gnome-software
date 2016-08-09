@@ -313,8 +313,7 @@ gs_flatpak_build_unique_id (FlatpakInstallation *installation, FlatpakRef *xref)
 					 kind,
 					 id,
 					 flatpak_ref_get_arch (xref),
-					 flatpak_ref_get_branch (xref),
-					 NULL);	/* version */
+					 flatpak_ref_get_branch (xref));
 }
 
 static GsApp *
