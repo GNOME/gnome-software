@@ -259,46 +259,34 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 			     GsApp *parent,
 			     const gchar *runtime)
 {
-	const gchar *id_parent;
+	GsApp *app_cache;
 	g_autofree gchar *id = NULL;
 	g_autofree gchar *source = NULL;
-	g_auto(GStrv) id_split = NULL;
-	g_auto(GStrv) runtime_split = NULL;
+	g_auto(GStrv) split = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	/* get the name/arch/branch */
-	runtime_split = g_strsplit (runtime, "/", -1);
-	if (g_strv_length (runtime_split) != 3)
+	split = g_strsplit (runtime, "/", -1);
+	if (g_strv_length (split) != 3)
 		return NULL;
-
-	/* find the parent app ID prefix */
-	id_parent = gs_app_get_id (parent);
-	if (id_parent == NULL)
-		return NULL;
-	id_split = g_strsplit (id_parent, ":", 2);
-	if (g_strv_length (id_split) == 2) {
-		id = g_strdup_printf ("%s:%s.runtime",
-				      id_split[0],
-				      runtime_split[0]);
-	} else {
-		id = g_strdup_printf ("%s.runtime", runtime_split[0]);
-	}
-
-	/* search in the cache */
-	app = gs_plugin_cache_lookup (plugin, id);
-	if (app != NULL)
-		return g_steal_pointer (&app);
 
 	/* create the complete GsApp from the single string */
+	id = g_strdup_printf ("%s.runtime", split[0]);
 	app = gs_app_new (id);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
-	gs_app_set_version (app, runtime_split[2]);
+	gs_app_set_branch (app, split[2]);
+	gs_app_set_scope (app, gs_app_get_scope (parent));
+
+	/* search in the cache */
+	app_cache = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app));
+	if (app_cache != NULL)
+		return g_object_ref (app_cache);
 
 	/* save in the cache */
 	gs_plugin_cache_add (plugin, id, app);
-
 	return g_steal_pointer (&app);
 }
 
