@@ -60,6 +60,7 @@ struct _GsApp
 
 	gchar			*id;
 	gchar			*unique_id;
+	gchar			*branch;
 	gchar			*name;
 	GsAppQuality		 name_quality;
 	GPtrArray		*icons;
@@ -381,6 +382,8 @@ gs_app_to_string (GsApp *app)
 		g_autofree gchar *path = g_strjoinv (" → ", app->menu_path);
 		gs_app_kv_lpad (str, "menu-path", path);
 	}
+	if (app->branch != NULL)
+		gs_app_kv_lpad (str, "branch", app->branch);
 	if (app->origin != NULL && app->origin[0] != '\0')
 		gs_app_kv_lpad (str, "origin", app->origin);
 	if (app->origin_ui != NULL && app->origin_ui[0] != '\0')
@@ -877,7 +880,7 @@ gs_app_get_unique_id (GsApp *app)
 							   app->origin,
 							   app->kind,
 							   app->id,
-							   NULL);	/* branch */
+							   app->branch);
 	}
 	return app->unique_id;
 }
@@ -939,6 +942,36 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 
 	g_free (app->name);
 	app->name = g_strdup (name);
+}
+
+/**
+ * gs_app_get_branch:
+ * @app: a #GsApp
+ *
+ * Gets the application branch.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
+const gchar *
+gs_app_get_branch (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->branch;
+}
+
+/**
+ * gs_app_set_branch:
+ * @app: a #GsApp
+ * @branch: The branch, e.g. "master"
+ *
+ * Sets the application branch.
+ **/
+void
+gs_app_set_branch (GsApp *app, const gchar *branch)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->branch);
+	app->branch = g_strdup (branch);
 }
 
 /**
@@ -2945,6 +2978,7 @@ gs_app_finalize (GObject *object)
 
 	g_free (app->id);
 	g_free (app->unique_id);
+	g_free (app->branch);
 	g_free (app->name);
 	g_hash_table_unref (app->urls);
 	g_free (app->license);

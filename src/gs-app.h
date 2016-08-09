@@ -119,6 +119,9 @@ void		 gs_app_set_progress		(GsApp		*app,
 const gchar	*gs_app_get_unique_id		(GsApp		*app);
 void		 gs_app_set_unique_id		(GsApp		*app,
 						 const gchar	*unique_id);
+const gchar	*gs_app_get_branch		(GsApp		*app);
+void		 gs_app_set_branch		(GsApp		*app,
+						 const gchar	*branch);
 const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
 						 GsAppQuality	 quality,
