@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2013 Richard Hughes <richard@hughsie.com> -->
+<!-- Copyright 2013-2016 Richard Hughes <richard@hughsie.com> -->
 <component type="desktop">
   <id>org.gnome.Software.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
@@ -20,17 +20,33 @@
     </_p>
   </description>
   <screenshots>
-    <screenshot type="default" width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-overview.png</screenshot>
-    <screenshot width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-details.png</screenshot>
-    <screenshot width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-installed.png</screenshot>
-    <screenshot width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-updates.png</screenshot>
-    <screenshot width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-updates-details.png</screenshot>
+    <screenshot height="675" width="1200" type="default">
+      <image>https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-overview.png</image>
+      <_caption>Overview panel</_caption>
+    </screenshot>
+    <screenshot height="675" width="1200">
+      <image>https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-details.png</image>
+      <_caption>Details panel</_caption>
+    </screenshot>
+    <screenshot height="675" width="1200">
+      <image>https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-installed.png</image>
+      <_caption>Installed panel</_caption>
+    </screenshot>
+    <screenshot height="675" width="1200">
+      <image>https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-updates.png</image>
+      <_caption>Updates panel</_caption>
+    </screenshot>
+    <screenshot height="675" width="1200">
+      <image>https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-updates-details.png</image>
+      <_caption>The update details</_caption>
+    </screenshot>
   </screenshots>
+
   <!--
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
-    <release version="3.21.4" date="2016-07-18">
+    <release date="2016-07-18" version="3.21.4">
       <description>
         <p>
           This is an unstable release in the 3.21 development series,
@@ -64,10 +80,10 @@
           <li>Show the 'More Reviews' button in the details panel</li>
           <li>Try really hard to have two rows of important categories</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.21.2" date="2016-05-23">
+    <release date="2016-05-23" version="3.21.2">
       <description>
         <p>
           This is an unstable release in the 3.21 development series,
@@ -91,10 +107,10 @@
           <li>Fix launching various KDE4 applications</li>
           <li>Support getting cached content from /var/cache and /usr/share</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.21.1" date="2016-04-25">
+    <release date="2016-04-25" version="3.21.1">
       <description>
         <p>
           This is an unstable release in the 3.21 development series,
@@ -153,10 +169,10 @@
           <li>Use a cache file to respect the fedora-distro-upgrades cache-age</li>
           <li>Use GFile instead of a filename when converting apps</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.19.91" date="2016-02-29">
+    <release date="2016-02-29" version="3.19.91">
       <description>
         <p>
           This is an unstable release in the 3.19 development series,
@@ -177,10 +193,10 @@
           <li>Do not show xdg-app runtimes in the installed panel</li>
           <li>Escape markup before showing modal dialogs</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.19.90" date="2016-02-15">
+    <release date="2016-02-15" version="3.19.90">
       <description>
         <p>
           This is an unstable release in the 3.19 development series,
@@ -200,10 +216,10 @@
           <li>Temporarily remove the remove button in the sources dialog</li>
           <li>Use versioned user cache directories to pick up new screenshots</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.19.4" timestamp="1452867221">
+    <release timestamp="1452867221" version="3.19.4">
       <description>
         <p>
           This is an unstable release in the 3.19 development series,
@@ -226,10 +242,10 @@
           <li>Rework several windows to fit better on small screens</li>
           <li>Use the correct user agent string when downloading firmware</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.18.3" timestamp="1446724044">
+    <release timestamp="1446724044" version="3.18.3">
       <description>
         <p>This stable release fixes the following bugs:</p>
         <ul>
@@ -237,20 +253,20 @@
           <li>Fix a crash in the limba plugin</li>
           <li>Fix installing web applications</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.18.2" timestamp="1444908967">
+    <release timestamp="1444908967" version="3.18.2">
       <description>
         <p>This stable release fixes the following bugs:</p>
         <ul>
-          <li>Fix a regression in 3.18.1 that could lead to the background update monitor never finding any updates</li>
+          <li>Fix a regression that could lead to never finding any updates</li>
           <li>Fix an issue with getting package details for apps without AppData</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.18.1" timestamp="1444738225">
+    <release timestamp="1444738225" version="3.18.1">
       <description>
         <p>This stable release fixes the following bugs:</p>
         <ul>
@@ -263,15 +279,15 @@
           <li>Show an empty space for no category results</li>
           <li>Show applications without AppData in the installed panel</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.18.0" timestamp="1442827658">
+    <release timestamp="1442827658" version="3.18.0">
       <description>
-        <p>This is the first stable release for GNOME 3.18</p>
+        <p>This is the first stable release for the GNOME 3.18 desktop!</p>
       </description>
     </release>
-    <release version="3.17.92" timestamp="1442313469">
+    <release timestamp="1442313469" version="3.17.92">
       <description>
         <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
         <ul>
@@ -279,10 +295,10 @@
           <li>Make the application menu path correct in RTL locales</li>
           <li>Don't keep the application running forever when run as a search provider</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.17.91" timestamp="1441303652">
+    <release timestamp="1441303652" version="3.17.91">
       <description>
         <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
         <ul>
@@ -292,20 +308,20 @@
           <li>Fix incorrect alignment on the front page in RTL languages</li>
           <li>Misc other minor bugs fixed</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.17.90" timestamp="1439990842">
+    <release timestamp="1439990842" version="3.17.90">
       <description>
         <p>This is an unstable release with the following bugs fixed:</p>
         <ul>
           <li>Use CSS to style the error message details</li>
           <li>Correctly align labels in the Add to Folder dialog</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.17.3" timestamp="1439370225">
+    <release timestamp="1439370225" version="3.17.3">
       <description>
         <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
         <ul>
@@ -326,14 +342,13 @@
           <li>Use better error messages on offline update failure</li>
           <li>Withdraw the notification when prepared update gets invalidated</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.17.2" timestamp="1433526589">
+    <release timestamp="1433526589" version="3.17.2">
       <description>
         <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
         <ul>
-          <li>Port to SoupSession</li>
           <li>Make fwupd dependency automagic</li>
         </ul>
         <p>Bugs fixed in this release:</p>
@@ -344,10 +359,10 @@
           <li>Fix a crash when installing rpms that lack description</li>
           <li>Wrap long descriptions in the update dialog</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.17.1" timestamp="1432590395">
+    <release timestamp="1432590395" version="3.17.1">
       <description>
         <p>This is the first unstable release in the 3.17 development series, with a number of new features:</p>
         <ul>
@@ -359,14 +374,10 @@
           <li>Show better human readable names when searching for font scripts</li>
           <li>Show a spinner while loading the data for the update history dialog</li>
         </ul>
-        <p>New dependencies:</p>
-        <ul>
-          <li>iso-codes</li>
-        </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.16.2" timestamp="1431345463">
+    <release timestamp="1431345463" version="3.16.2">
       <description>
         <p>This release fixes the following bugs:</p>
         <ul>
@@ -377,25 +388,25 @@
           <li>Allow searching for packages via the API without appdata</li>
           <li>Fix showing webapps with non-local icons</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.16.1" timestamp="1429029680">
+    <release timestamp="1429029680" version="3.16.1">
       <description>
         <p>This release fixes the following bugs:</p>
         <ul>
           <li>Correctly save HiDPI images to HiDPI directories</li>
           <li>Scroll the contents of the error message dialog</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.16.0" timestamp="1427103917">
+    <release timestamp="1427103917" version="3.16.0">
       <description>
         <p>This stable release marks the release of GNOME 3.16!</p>
       </description>
     </release>
-    <release version="3.15.92" timestamp="1426498834">
+    <release timestamp="1426498834" version="3.15.92">
       <description>
         <p>This unstable release adds the following features:</p>
         <ul>
@@ -410,10 +421,10 @@
           <li>Fall back to showing the top level category when no sub category exists</li>
           <li>Fix a crash when using the pending applications feature</li>
         </ul>
-        <p>This release also updates translations.</p>
+        <p>This release also updates translations for many languages.</p>
       </description>
     </release>
-    <release version="3.15.91" timestamp="1425309931">
+    <release timestamp="1425309931" version="3.15.91">
       <description>
         <p>This unstable release adds the following features:</p>
         <ul>
@@ -428,7 +439,7 @@
         </ul>
       </description>
     </release>
-    <release version="3.15.90" timestamp="1424116753">
+    <release timestamp="1424116753" version="3.15.90">
       <description>
         <p>This unstable release adds the following features:</p>
         <ul>
@@ -442,7 +453,7 @@
         </ul>
       </description>
     </release>
-    <release version="3.15.4" timestamp="1421625600">
+    <release timestamp="1421625600" version="3.15.4">
       <description>
         <p>This unstable release adds the following features:</p>
         <ul>
@@ -458,7 +469,7 @@
         </ul>
       </description>
     </release>
-    <release version="3.15.2" timestamp="1416787200">
+    <release timestamp="1416787200" version="3.15.2">
       <description>
         <p>This unstable release adds the following features:</p>
         <ul>
@@ -481,9 +492,14 @@
     <kudo>Notifications</kudo>
     <kudo>SearchProvider</kudo>
   </kudos>
+  <url type="bugtracker">https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software</url>
+  <url type="donation">http://www.gnome.org/friends/</url>
+  <url type="help"/>
   <url type="homepage">https://wiki.gnome.org/Design/Apps/Software</url>
+  <url type="translate">https://wiki.gnome.org/TranslationProject</url>
   <update_contact>richard_at_hughsie.com</update_contact>
   <compulsory_for_desktop>GNOME</compulsory_for_desktop>
   <project_group>GNOME</project_group>
   <translation type="gettext">gnome-software</translation>
+  <_developer_name>The GNOME Project</_developer_name>
 </component>
