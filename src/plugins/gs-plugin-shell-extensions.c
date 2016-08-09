@@ -131,6 +131,7 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 					      id,
 					      NULL);	/* branch */
 	gs_app_set_id (app, id);
+	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	gs_app_set_unique_id (app, unique_id);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));

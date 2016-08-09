@@ -230,6 +230,15 @@ gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
 }
 
 static void
+gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
+{
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
+		gboolean is_user = flatpak_installation_get_is_user (self->installation);
+		gs_app_set_scope (app, is_user ? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM);
+	}
+}
+
+static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
@@ -238,6 +247,7 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_app_set_flatpak_arch (app, flatpak_ref_get_arch (xref));
 	gs_app_set_flatpak_branch (app, flatpak_ref_get_branch (xref));
 	gs_app_set_flatpak_commit (app, flatpak_ref_get_commit (xref));
+	gs_plugin_refine_item_scope (self, app);
 }
 
 static void
@@ -1132,8 +1142,10 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	/* create runtime */
 	if (gs_app_get_runtime (app) == NULL) {
 		app_runtime = gs_appstream_create_runtime (self->plugin, app, runtime);
-		if (app_runtime != NULL)
+		if (app_runtime != NULL) {
+			gs_plugin_refine_item_scope (self, app_runtime);
 			gs_app_set_runtime (app, app_runtime);
+		}
 	}
 
 	return TRUE;
@@ -1291,6 +1303,9 @@ gs_flatpak_refine_app (GsFlatpak *self,
 
 	/* flatpak apps can always be removed */
 	gs_app_remove_quirk (app, AS_APP_QUIRK_COMPULSORY);
+
+	/* scope is fast, do unconditionally */
+	gs_plugin_refine_item_scope (self, app);
 
 	/* AppStream sets the source to appname/arch/branch */
 	if (!gs_refine_item_metadata (self, app, cancellable, error)) {

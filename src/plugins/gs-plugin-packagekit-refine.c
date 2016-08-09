@@ -929,3 +929,23 @@ gs_plugin_refine (GsPlugin *plugin,
 out:
 	return ret;
 }
+
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
+
+	/* the scope is always system-wide */
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN)
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+
+	return TRUE;
+}

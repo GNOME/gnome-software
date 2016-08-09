@@ -100,6 +100,7 @@ struct _GsApp
 	AsAppKind		 kind;
 	AsAppState		 state;
 	AsAppState		 state_recover;
+	AsAppScope		 scope;
 	guint			 progress;
 	GHashTable		*metadata;
 	GPtrArray		*addons; /* of GsApp */
@@ -257,6 +258,8 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "id", app->id);
 	if (app->unique_id != NULL)
 		gs_app_kv_lpad (str, "unique-id", app->unique_id);
+	if (app->scope != AS_APP_SCOPE_UNKNOWN)
+		gs_app_kv_lpad (str, "scope", as_app_scope_to_string (app->scope));
 	if ((app->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
 		gs_app_kv_lpad (str, "kudo", "my-language");
 	if ((app->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
@@ -520,6 +523,35 @@ gs_app_set_id (GsApp *app, const gchar *id)
 
 	g_free (app->id);
 	app->id = g_strdup (id);
+}
+
+/**
+ * gs_app_get_scope:
+ * @app: a #GsApp
+ *
+ * Gets the scope of the application.
+ *
+ * Returns: the #AsAppScope, e.g. %AS_APP_SCOPE_USER
+ **/
+AsAppScope
+gs_app_get_scope (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), AS_APP_SCOPE_UNKNOWN);
+	return app->scope;
+}
+
+/**
+ * gs_app_set_scope:
+ * @app: a #GsApp
+ * @scope: a #AsAppScope, e.g. AS_APP_SCOPE_SYSTEM
+ *
+ * This sets the scope of the application.
+ **/
+void
+gs_app_set_scope (GsApp *app, AsAppScope scope)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->scope = scope;
 }
 
 /**
@@ -840,7 +872,7 @@ gs_app_get_unique_id (GsApp *app)
 	/* hmm, do what we can */
 	if (app->unique_id == NULL) {
 		g_debug ("autogenerating unique-id for %s", app->id);
-		app->unique_id = as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
+		app->unique_id = as_utils_unique_id_build (app->scope,
 							   AS_BUNDLE_KIND_UNKNOWN,
 							   app->origin,
 							   app->kind,

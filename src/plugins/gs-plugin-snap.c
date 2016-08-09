@@ -343,6 +343,7 @@ get_apps (GsPlugin *plugin,
 						      id,
 						      NULL);	/* branch */
 		app = gs_app_new (id);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_unique_id (app, unique_id);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
