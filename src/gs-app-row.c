@@ -337,7 +337,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 		if (tmp == NULL) {
 			/* TRANSLATORS: this refers to where the app came from */
 			tmp = _("unknown");
-			g_error ("%s", gs_app_to_string (priv->app));
 		}
 		/* TRANSLATORS: this refers to where the app came from */
 		origin_tmp = g_strdup_printf ("%s: %s", _("Source"), tmp);
