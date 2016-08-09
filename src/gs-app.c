@@ -60,6 +60,7 @@ struct _GsApp
 
 	gchar			*id;
 	gchar			*unique_id;
+	gboolean		 unique_id_valid;
 	gchar			*branch;
 	gchar			*name;
 	GsAppQuality		 name_quality;
@@ -531,6 +532,9 @@ gs_app_set_id (GsApp *app, const gchar *id)
 
 	g_free (app->id);
 	app->id = g_strdup (id);
+
+	/* no longer valid */
+	app->unique_id_valid = FALSE;
 }
 
 /**
@@ -560,6 +564,9 @@ gs_app_set_scope (GsApp *app, AsAppScope scope)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->scope = scope;
+
+	/* no longer valid */
+	app->unique_id_valid = FALSE;
 }
 
 /**
@@ -589,6 +596,9 @@ gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->bundle_kind = bundle_kind;
+
+	/* no longer valid */
+	app->unique_id_valid = FALSE;
 }
 
 /**
@@ -907,14 +917,16 @@ gs_app_get_unique_id (GsApp *app)
 		return NULL;
 
 	/* hmm, do what we can */
-	if (app->unique_id == NULL) {
+	if (app->unique_id == NULL || !app->unique_id_valid) {
 		g_debug ("autogenerating unique-id for %s", app->id);
+		g_free (app->unique_id);
 		app->unique_id = as_utils_unique_id_build (app->scope,
 							   app->bundle_kind,
 							   app->origin,
 							   app->kind,
 							   app->id,
 							   app->branch);
+		app->unique_id_valid = TRUE;
 	}
 	return app->unique_id;
 }
@@ -939,6 +951,7 @@ gs_app_set_unique_id (GsApp *app, const gchar *unique_id)
 
 	g_free (app->unique_id);
 	app->unique_id = g_strdup (unique_id);
+	app->unique_id_valid = TRUE;
 }
 
 /**
@@ -1006,6 +1019,9 @@ gs_app_set_branch (GsApp *app, const gchar *branch)
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->branch);
 	app->branch = g_strdup (branch);
+
+	/* no longer valid */
+	app->unique_id_valid = FALSE;
 }
 
 /**
@@ -1779,6 +1795,9 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 
 	g_free (app->origin);
 	app->origin = g_strdup (origin);
+
+	/* no longer valid */
+	app->unique_id_valid = FALSE;
 }
 
 /**
