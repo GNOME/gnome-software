@@ -83,8 +83,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
-	const gchar *id = gs_app_get_unique_id (app);
-	if (id != NULL && g_str_has_prefix (id, "system/package/")) {
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
+	    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM) {
 		gs_app_set_management_plugin (app, "packagekit");
 		return;
 	}

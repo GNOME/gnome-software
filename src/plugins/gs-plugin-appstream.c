@@ -279,19 +279,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* add keyword for non-package sources */
 	for (i = 0; i < items->len; i++) {
-		g_auto(GStrv) split = NULL;
+		AsBundle *bundle;
 		app = g_ptr_array_index (items, i);
-		split = g_strsplit (as_app_get_unique_id (app), "/", -1);
-		if (g_strv_length (split) != 8)
-			continue;
-		if (g_strcmp0 (split[1], "package") == 0)
-			continue;
-		if (g_strcmp0 (split[1], "*") == 0)
+		bundle = as_app_get_bundle_default (app);
+		if (bundle == NULL)
 			continue;
 		g_debug ("Adding keyword '%s' to %s",
-			 split[1],
+			 as_bundle_kind_to_string (as_bundle_get_kind (bundle)),
 			 as_app_get_unique_id (app));
-		as_app_add_keyword (app, NULL, split[1]);
+		as_app_add_keyword (app, NULL,
+				    as_bundle_kind_to_string (as_bundle_get_kind (bundle)));
 	}
 
 	/* fix up these */
@@ -399,7 +396,6 @@ gs_plugin_appstream_create_app (GsPlugin *plugin, AsApp *item)
 	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
 	if (app == NULL) {
 		app = gs_app_new (as_app_get_id (item));
-		gs_app_set_unique_id (app, unique_id);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
 		gs_plugin_cache_add (plugin, unique_id, app);

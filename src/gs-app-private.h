@@ -32,6 +32,8 @@ void		 gs_app_set_last_error		(GsApp		*app,
 void		 gs_app_set_priority		(GsApp		*app,
 						 guint		 priority);
 guint		 gs_app_get_priority		(GsApp		*app);
+void		 gs_app_set_unique_id		(GsApp		*app,
+						 const gchar	*unique_id);
 
 G_END_DECLS
 

@@ -120,8 +120,6 @@ guint		 gs_app_get_progress		(GsApp		*app);
 void		 gs_app_set_progress		(GsApp		*app,
 						 guint		 percentage);
 const gchar	*gs_app_get_unique_id		(GsApp		*app);
-void		 gs_app_set_unique_id		(GsApp		*app,
-						 const gchar	*unique_id);
 const gchar	*gs_app_get_branch		(GsApp		*app);
 void		 gs_app_set_branch		(GsApp		*app,
 						 const gchar	*branch);

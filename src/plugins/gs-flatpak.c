@@ -362,7 +362,6 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	if (app == NULL) {
 		g_autofree gchar *id = gs_flatpak_build_id (FLATPAK_REF (xref));
 		app = gs_app_new (id);
-		gs_app_set_unique_id (app, unique_id);
 		gs_plugin_cache_add (self->plugin, unique_id, app);
 	}
 	gs_flatpak_set_metadata_installed (self, app, xref);
@@ -1643,7 +1642,6 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	if (app == NULL) {
 		g_autofree gchar *id = gs_flatpak_build_id (FLATPAK_REF (xref_bundle));
 		app = gs_app_new (id);
-		gs_app_set_unique_id (app, unique_id);
 		gs_plugin_cache_add (self->plugin, unique_id, app);
 	}
 

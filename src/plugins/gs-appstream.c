@@ -455,6 +455,29 @@ _gs_utils_locale_has_translations (const gchar *locale)
 	return TRUE;
 }
 
+static AsBundleKind
+gs_appstream_get_bundle_kind (AsApp *item)
+{
+	GPtrArray *bundles;
+	GPtrArray *pkgnames;
+
+	/* prefer bundle */
+	bundles = as_app_get_bundles (item);
+	if (bundles->len > 0) {
+		AsBundle *bundle = g_ptr_array_index (bundles, 0);
+		if (as_bundle_get_kind (bundle) != AS_BUNDLE_KIND_UNKNOWN)
+			return as_bundle_get_kind (bundle);
+	}
+
+	/* fallback to packages */
+	pkgnames = as_app_get_pkgnames (item);
+	if (pkgnames->len > 0)
+		return AS_BUNDLE_KIND_PACKAGE;
+
+	/* nothing */
+	return AS_BUNDLE_KIND_UNKNOWN;
+}
+
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
@@ -512,12 +535,17 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
 		gs_app_set_id (app, as_app_get_id (item));
 
-	/* set unique-id */
-	if (as_app_get_unique_id (item) != NULL && gs_app_get_unique_id (app) == NULL)
-		gs_app_set_unique_id (app, as_app_get_unique_id (item));
-
 	/* set source */
 	gs_app_set_metadata (app, "appstream::source-file", as_app_get_source_file (item));
+
+	/* scope */
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN &&
+	    as_app_get_scope (item) != AS_APP_SCOPE_UNKNOWN)
+		gs_app_set_scope (app, as_app_get_scope (item));
+
+	/* bundle-kind */
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN)
+		gs_app_set_bundle_kind (app, gs_appstream_get_bundle_kind (item));
 
 	/* set name */
 	tmp = as_app_get_name (item, NULL);

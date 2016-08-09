@@ -181,8 +181,7 @@ gs_plugin_loader_app_sort_name_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 static gint
 gs_plugin_loader_app_sort_id_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	return g_strcmp0 (gs_app_get_unique_id (app1),
-			  gs_app_get_unique_id (app2));
+	return g_strcmp0 (gs_app_get_id (app1), gs_app_get_id (app2));
 }
 
 static GsPlugin *
