@@ -305,7 +305,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 	/* add again, this time with a prefix so it gets deduplicated */
 	app2 = gs_app_new ("zeus.desktop");
-	gs_app_set_unique_id (app2, "user/dummy/*/*/zeus.desktop/*/*");
+	gs_app_set_unique_id (app2, "user/dummy/*/*/zeus.desktop/*");
 	gs_app_set_metadata (app2, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app2);

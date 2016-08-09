@@ -341,7 +341,6 @@ get_apps (GsPlugin *plugin,
 						      NULL,	/* origin */
 						      AS_APP_KIND_UNKNOWN,
 						      id,
-						      NULL,	/* arch */
 						      NULL);	/* branch */
 		app = gs_app_new (id);
 		gs_app_set_unique_id (app, unique_id);

@@ -304,7 +304,6 @@ gs_plugin_app_from_pki (LiPkgInfo *pki)
 					      NULL,	/* origin */
 					      AS_APP_KIND_UNKNOWN,
 					      id,
-					      NULL,	/* arch */
 					      NULL);	/* branch */
 
 	gs_app_set_unique_id (app, unique_id);

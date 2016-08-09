@@ -845,7 +845,6 @@ gs_app_get_unique_id (GsApp *app)
 							   app->origin,
 							   app->kind,
 							   app->id,
-							   NULL,	/* arch */
 							   NULL);	/* branch */
 	}
 	return app->unique_id;
