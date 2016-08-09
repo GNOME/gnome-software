@@ -946,6 +946,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* the scope is always system-wide */
 	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN)
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN)
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 
 	return TRUE;
 }

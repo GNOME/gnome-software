@@ -241,6 +241,7 @@ gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_flatpak_kind (app, flatpak_ref_get_kind (xref));
 	gs_app_set_flatpak_name (app, flatpak_ref_get_name (xref));

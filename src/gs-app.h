@@ -112,6 +112,9 @@ void		 gs_app_set_state		(GsApp		*app,
 AsAppScope	 gs_app_get_scope		(GsApp		*app);
 void		 gs_app_set_scope		(GsApp		*app,
 						 AsAppScope	 scope);
+AsBundleKind	 gs_app_get_bundle_kind		(GsApp		*app);
+void		 gs_app_set_bundle_kind		(GsApp		*app,
+						 AsBundleKind	 bundle_kind);
 void		 gs_app_set_state_recover	(GsApp		*app);
 guint		 gs_app_get_progress		(GsApp		*app);
 void		 gs_app_set_progress		(GsApp		*app,

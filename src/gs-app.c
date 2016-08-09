@@ -102,6 +102,7 @@ struct _GsApp
 	AsAppState		 state;
 	AsAppState		 state_recover;
 	AsAppScope		 scope;
+	AsBundleKind		 bundle_kind;
 	guint			 progress;
 	GHashTable		*metadata;
 	GPtrArray		*addons; /* of GsApp */
@@ -261,6 +262,10 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "unique-id", app->unique_id);
 	if (app->scope != AS_APP_SCOPE_UNKNOWN)
 		gs_app_kv_lpad (str, "scope", as_app_scope_to_string (app->scope));
+	if (app->bundle_kind != AS_BUNDLE_KIND_UNKNOWN) {
+		gs_app_kv_lpad (str, "bundle-kind",
+				as_bundle_kind_to_string (app->bundle_kind));
+	}
 	if ((app->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
 		gs_app_kv_lpad (str, "kudo", "my-language");
 	if ((app->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
@@ -555,6 +560,35 @@ gs_app_set_scope (GsApp *app, AsAppScope scope)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->scope = scope;
+}
+
+/**
+ * gs_app_get_bundle_kind:
+ * @app: a #GsApp
+ *
+ * Gets the bundle kind of the application.
+ *
+ * Returns: the #AsAppScope, e.g. %AS_BUNDLE_KIND_FLATPAK
+ **/
+AsBundleKind
+gs_app_get_bundle_kind (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), AS_BUNDLE_KIND_UNKNOWN);
+	return app->bundle_kind;
+}
+
+/**
+ * gs_app_set_bundle_kind:
+ * @app: a #GsApp
+ * @bundle_kind: a #AsAppScope, e.g. AS_BUNDLE_KIND_FLATPAK
+ *
+ * This sets the bundle kind of the application.
+ **/
+void
+gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->bundle_kind = bundle_kind;
 }
 
 /**
@@ -876,7 +910,7 @@ gs_app_get_unique_id (GsApp *app)
 	if (app->unique_id == NULL) {
 		g_debug ("autogenerating unique-id for %s", app->id);
 		app->unique_id = as_utils_unique_id_build (app->scope,
-							   AS_BUNDLE_KIND_UNKNOWN,
+							   app->bundle_kind,
 							   app->origin,
 							   app->kind,
 							   app->id,
