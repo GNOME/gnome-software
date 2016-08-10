@@ -332,15 +332,13 @@ gs_app_row_refresh (GsAppRow *app_row)
 
 	/* where did this app come from */
 	if (priv->show_source) {
-		g_autofree gchar *origin_tmp = NULL;
 		tmp = gs_app_get_origin_hostname (priv->app);
-		if (tmp == NULL) {
+		if (tmp != NULL) {
+			g_autofree gchar *origin_tmp = NULL;
 			/* TRANSLATORS: this refers to where the app came from */
-			tmp = _("unknown");
+			origin_tmp = g_strdup_printf ("%s: %s", _("Source"), tmp);
+			gtk_label_set_label (GTK_LABEL (priv->label_origin), origin_tmp);
 		}
-		/* TRANSLATORS: this refers to where the app came from */
-		origin_tmp = g_strdup_printf ("%s: %s", _("Source"), tmp);
-		gtk_label_set_label (GTK_LABEL (priv->label_origin), origin_tmp);
 		gtk_widget_set_visible (priv->label_origin, tmp != NULL);
 	} else {
 		gtk_widget_set_visible (priv->label_origin, FALSE);
