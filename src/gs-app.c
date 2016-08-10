@@ -2495,6 +2495,28 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
 }
 
 /**
+ * gs_app_is_installed:
+ * @app: a #GsApp
+ *
+ * Gets whether the app is installed or not.
+ *
+ * Returns: %TRUE if the app is installed, %FALSE otherwise.
+ **/
+gboolean
+gs_app_is_installed (GsApp *app)
+{
+	AsAppState state;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	state = gs_app_get_state (app);
+
+	return (state == AS_APP_STATE_INSTALLED) ||
+	       (state == AS_APP_STATE_UPDATABLE) ||
+	       (state == AS_APP_STATE_UPDATABLE_LIVE);
+}
+
+/**
  * gs_app_get_categories:
  * @app: a #GsApp
  *
