@@ -247,7 +247,7 @@ void		 gs_app_add_quirk		(GsApp		*app,
 GError		*gs_app_get_last_error		(GsApp		*app);
 void		 gs_app_set_last_error		(GsApp		*app,
 						 GError		*error);
-
+gboolean	 gs_app_is_installed		(GsApp		*app);
 G_END_DECLS
 
 #endif /* __GS_APP_H */
