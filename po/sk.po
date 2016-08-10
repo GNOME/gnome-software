@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-08-04 14:09+0000\n"
-"PO-Revision-Date: 2016-08-05 09:00+0200\n"
+"POT-Creation-Date: 2016-08-09 16:22+0000\n"
+"PO-Revision-Date: 2016-08-10 08:56+0200\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -47,6 +47,31 @@ msgstr ""
 "Aplikácie sa dajú nájsť buď prezeraním zoznamu kategórií alebo pomocou "
 "vyhľadávača. Tiež umožňuje aktualizovať váš systém za pomoci aktualizácií "
 "nevyužívajúcich pripojenie k sieti."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+msgid "Overview panel"
+msgstr "Panel s náhľadom"
+
+# GtkLabel
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+msgid "Details panel"
+msgstr "Panel s podrobnosťami"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+msgid "Installed panel"
+msgstr "Panel s nainštalovaným softvérom"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+msgid "Updates panel"
+msgstr "Panel s aktualizáciami"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+msgid "The update details"
+msgstr "Podrobnosti o aktualizácii"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr "Projekt GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -260,7 +285,7 @@ msgstr "Na_inštalovaný"
 msgid "_Updates"
 msgstr "_Aktualizácie"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:441
 #: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "Čaká na inštaláciu"
@@ -420,7 +445,12 @@ msgid "Device cannot be used during update."
 msgstr "Zariadenie nie je možné používať počas aktualizácie."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
+#: ../src/gs-app-row.c:339
+msgid "unknown"
+msgstr "neznámy"
+
+#. TRANSLATORS: this refers to where the app came from
+#: ../src/gs-app-row.c:342 ../src/gs-shell-details.ui.h:34
 msgid "Source"
 msgstr "Zdroj"
 
@@ -673,24 +703,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1026
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Aktualizácie operačného systému"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1031
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahŕňa vylepšenia výkonu, stability a zvýšenia bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nie sú dostupné žiadne doplnky s kodekmi pre formát %s."
 
-#: ../src/gs-plugin-loader.c:1707
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -965,7 +995,7 @@ msgid "Removing…"
 msgstr "Odstraňuje sa…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:685
+#: ../src/gs-shell-details.c:682
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -973,52 +1003,52 @@ msgstr ""
 "Táto aplikácia sa môže používať iba ak je aktívne internetové pripojenie."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:812
+#: ../src/gs-shell-details.c:809
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:844
+#: ../src/gs-shell-details.c:841
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:890
+#: ../src/gs-shell-details.c:887
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámy"
 
-#: ../src/gs-shell-details.c:1308
+#: ../src/gs-shell-details.c:1305
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nepodarilo sa nájsť „%s“"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1366
+#: ../src/gs-shell-details.c:1363
 msgid "The file is not supported."
 msgstr "Súbor nie je podporovaný."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1373 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Prepáčte, toto nefungovalo"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1729
+#: ../src/gs-shell-details.c:1726
 msgid "Public domain"
 msgstr "Verejná doména"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1745 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1742 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Slobodný softvér"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1800
+#: ../src/gs-shell-details.c:1797
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Používatelia sú viazaní týmito licenciami:"
@@ -1026,7 +1056,7 @@ msgstr[1] "Používatelia sú viazaní touto licenciou:"
 msgstr[2] "Používatelia sú viazaní týmito licenciami:"
 
 # DK:cmd desc
-#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Viac informácií"
 
@@ -1110,7 +1140,7 @@ msgid "_Website"
 msgstr "_Webová stránka"
 
 # GtkLabel
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:783
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:790
 msgid "Details"
 msgstr "Podrobnosti"
 
@@ -2190,7 +2220,7 @@ msgstr "Povoliť a inštalovať"
 #: ../src/gs-common.c:402
 msgctxt "content rating violence-cartoon"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:405
@@ -2211,7 +2241,7 @@ msgstr "Vyobrazené násilie zahŕňajúce kreslené postavy"
 #: ../src/gs-common.c:414
 msgctxt "content rating violence-fantasy"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:417
@@ -2232,7 +2262,7 @@ msgstr "Vyobrazené násilie ľahko odlíšiteľné od reality"
 #: ../src/gs-common.c:426
 msgctxt "content rating violence-realistic"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
@@ -2253,7 +2283,7 @@ msgstr "Vyobrazené násilie zahŕňajúce skutočné postavy"
 #: ../src/gs-common.c:438
 msgctxt "content rating violence-bloodshed"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:441
@@ -2274,7 +2304,7 @@ msgstr "Znázornenia krviprelievania a zohavené časti tiel"
 #: ../src/gs-common.c:450
 msgctxt "content rating violence-sexual"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:453
@@ -2285,7 +2315,7 @@ msgstr "Znásilnenie alebo iné násilné sexuálne správanie"
 #: ../src/gs-common.c:456
 msgctxt "content rating drugs-alcohol"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:459
@@ -2301,7 +2331,7 @@ msgstr "Požívanie alkoholických nápojov"
 #: ../src/gs-common.c:465
 msgctxt "content rating drugs-narcotics"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:468
@@ -2327,12 +2357,12 @@ msgstr "Požívanie tabakových výrobkov"
 #: ../src/gs-common.c:480
 msgctxt "content rating sex-nudity"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:483
 msgid "Brief artistic nudity"
-msgstr ""
+msgstr "Občasná umelecká nahota"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:486
@@ -2343,7 +2373,7 @@ msgstr "Dlhotrvajúca nahota"
 #: ../src/gs-common.c:489
 msgctxt "content rating sex-themes"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:492
@@ -2365,7 +2395,7 @@ msgstr "Vyobrazené sexuálne správanie"
 #: ../src/gs-common.c:501
 msgctxt "content rating language-profanity"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:504
@@ -2386,7 +2416,7 @@ msgstr "Silné alebo časté rúhanie sa"
 #: ../src/gs-common.c:513
 msgctxt "content rating language-humor"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:516
@@ -2407,7 +2437,7 @@ msgstr "Sexuálny humor alebo humor pre dospelých"
 #: ../src/gs-common.c:525
 msgctxt "content rating language-discrimination"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:528
@@ -2430,7 +2460,7 @@ msgstr ""
 #: ../src/gs-common.c:537
 msgctxt "content rating money-advertising"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:540
@@ -2441,6 +2471,8 @@ msgstr "Umiestnenie výrobku"
 #: ../src/gs-common.c:543
 msgid "Explicit references to specific brands or trademarked products"
 msgstr ""
+"Jednoznačné odkazy na produkty špecifických značiek alebo označené obchodnou "
+"známkou"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:546
@@ -2451,17 +2483,17 @@ msgstr "Hráči sú vyzývaný na nákup špecifických položiek v skutočnom s
 #: ../src/gs-common.c:549
 msgctxt "content rating money-gambling"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:552
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Hazardovanie na náhodných podujatiach použitím žetónov alebo kreditov"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:555
 msgid "Gambling using \"play\" money"
-msgstr ""
+msgstr "Hazardovanie s fiktívnymi peniazmi"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:558
@@ -2472,7 +2504,7 @@ msgstr "Hazardovanie so skutočnými peniazmi"
 #: ../src/gs-common.c:561
 msgctxt "content rating money-purchasing"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:564
@@ -2483,7 +2515,7 @@ msgstr "Možnosť utrácania skutočných peňazí v hre"
 #: ../src/gs-common.c:567
 msgctxt "content rating social-chat"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:570
@@ -2504,7 +2536,7 @@ msgstr "Nekontrolovateľné rozhovory medzi hráčmi"
 #: ../src/gs-common.c:579
 msgctxt "content rating social-audio"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:582
@@ -2515,7 +2547,7 @@ msgstr "Nekontrolovateľné zvukové alebo video rozhovory medzi hráčmi"
 #: ../src/gs-common.c:585
 msgctxt "content rating social-contacts"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:588
@@ -2527,7 +2559,7 @@ msgstr ""
 #: ../src/gs-common.c:591
 msgctxt "content rating social-info"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:594
@@ -2538,7 +2570,7 @@ msgstr "Zdieľanie informácií o používateľoch s tretími stranami"
 #: ../src/gs-common.c:597
 msgctxt "content rating social-location"
 msgid "None"
-msgstr ""
+msgstr "Žiadne"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:600
@@ -2548,7 +2580,7 @@ msgstr "Zdieľanie fyzickej lokality ostatným používateľom"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:764
+#: ../src/gs-common.c:771
 msgid "Detailed errors from the package manager follow:"
 msgstr "Podrobné chybové správy od správcu balíkov:"
 
