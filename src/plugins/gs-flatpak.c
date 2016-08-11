@@ -1207,6 +1207,23 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 	return TRUE;
 }
 
+static FlatpakInstalledRef *
+gs_flatpak_get_installed_ref (GsFlatpak *self,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	FlatpakInstalledRef *ref;
+	ref = flatpak_installation_get_installed_ref (self->installation,
+						      gs_app_get_flatpak_kind (app),
+						      gs_app_get_flatpak_name (app),
+						      gs_app_get_flatpak_arch (app),
+						      gs_app_get_flatpak_branch (app),
+						      cancellable,
+						      error);
+	return ref;
+}
+
 static gboolean
 gs_plugin_refine_item_size (GsFlatpak *self,
 			    GsApp *app,
@@ -1214,16 +1231,20 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 			    GError **error)
 {
 	gboolean ret;
-	guint64 download_size;
-	guint64 installed_size;
+	guint64 download_size = GS_APP_SIZE_UNKNOWABLE;
+	guint64 installed_size = GS_APP_SIZE_UNKNOWABLE;
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(FlatpakRef) xref = NULL;
-	g_autoptr(GError) error_local = NULL;
 
 	/* already set */
-	if (gs_app_get_size_installed (app) > 0 &&
-	    gs_app_get_size_download (app) > 0)
+	if (gs_app_is_installed (app)) {
+		/* only care about the installed size if the app is installed */
+		if (gs_app_get_size_installed (app) > 0)
+			return TRUE;
+	} else {
+		if (gs_app_get_size_installed (app) > 0 &&
+		    gs_app_get_size_download (app) > 0)
 		return TRUE;
+	}
 
 	/* need runtime */
 	if (!gs_plugin_refine_item_metadata (self, app, cancellable, error))
@@ -1260,24 +1281,39 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	if (!gs_plugin_refine_item_origin (self, app,
 					   cancellable, error))
 		return FALSE;
-	xref = gs_flatpak_create_fake_ref (app, error);
-	if (xref == NULL)
-		return FALSE;
-	ret = flatpak_installation_fetch_remote_size_sync (self->installation,
-							   gs_app_get_origin (app),
-							   xref,
-							   &download_size,
-							   &installed_size,
-							   cancellable, &error_local);
-	if (!ret) {
-		g_warning ("libflatpak failed to return application size: %s",
-			   error_local->message);
-		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
-		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+
+	/* if the app is installed we use the ref to fetch the installed size
+	 * and ignore the download size as this is faster */
+	if (gs_app_is_installed (app)) {
+		g_autoptr(FlatpakInstalledRef) xref = NULL;
+		xref = gs_flatpak_get_installed_ref (self, app,
+						     cancellable, error);
+		installed_size = flatpak_installed_ref_get_installed_size (xref);
+		if (installed_size == 0)
+			installed_size = GS_APP_SIZE_UNKNOWABLE;
 	} else {
-		gs_app_set_size_installed (app, installed_size);
-		gs_app_set_size_download (app, download_size);
+		g_autoptr(FlatpakRef) xref = NULL;
+		g_autoptr(GError) error_local = NULL;
+		xref = gs_flatpak_create_fake_ref (app, error);
+		if (xref == NULL)
+			return FALSE;
+		ret = flatpak_installation_fetch_remote_size_sync (self->installation,
+								   gs_app_get_origin (app),
+								   xref,
+								   &download_size,
+								   &installed_size,
+								   cancellable,
+								   &error_local);
+
+		if (!ret) {
+			g_warning ("libflatpak failed to return application "
+				   "size: %s", error_local->message);
+		}
 	}
+
+	gs_app_set_size_installed (app, installed_size);
+	gs_app_set_size_download (app, download_size);
+
 	return TRUE;
 }
 
