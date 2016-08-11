@@ -823,15 +823,16 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	/* set the download size */
-	if (gs_app_get_size_download (self->app) == GS_APP_SIZE_UNKNOWABLE) {
-		gtk_widget_hide (self->label_details_size_download_title);
-		gtk_widget_hide (self->label_details_size_download_value);
-	} else {
+	if (!gs_app_is_installed (self->app) &&
+	    gs_app_get_size_download (self->app) != GS_APP_SIZE_UNKNOWABLE) {
 		g_autofree gchar *size = NULL;
 		size = g_format_size (gs_app_get_size_download (self->app));
 		gtk_label_set_label (GTK_LABEL (self->label_details_size_download_value), size);
 		gtk_widget_show (self->label_details_size_download_title);
 		gtk_widget_show (self->label_details_size_download_value);
+	} else {
+		gtk_widget_hide (self->label_details_size_download_title);
+		gtk_widget_hide (self->label_details_size_download_value);
 	}
 
 	/* set the updated date */
