@@ -132,6 +132,8 @@ gs_os_release_initable_init (GInitable *initable,
  * Gets the name from the os-release parser.
  *
  * Returns: a string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_os_release_get_name (GsOsRelease *os_release)
@@ -147,6 +149,8 @@ gs_os_release_get_name (GsOsRelease *os_release)
  * Gets the version from the os-release parser.
  *
  * Returns: a string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_os_release_get_version (GsOsRelease *os_release)
@@ -162,6 +166,8 @@ gs_os_release_get_version (GsOsRelease *os_release)
  * Gets the ID from the os-release parser.
  *
  * Returns: a string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_os_release_get_id (GsOsRelease *os_release)
@@ -177,6 +183,8 @@ gs_os_release_get_id (GsOsRelease *os_release)
  * Gets the version ID from the os-release parser.
  *
  * Returns: a string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_os_release_get_version_id (GsOsRelease *os_release)
@@ -192,6 +200,8 @@ gs_os_release_get_version_id (GsOsRelease *os_release)
  * Gets the pretty name from the os-release parser.
  *
  * Returns: a string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_os_release_get_pretty_name (GsOsRelease *os_release)
@@ -207,6 +217,8 @@ gs_os_release_get_pretty_name (GsOsRelease *os_release)
  * Gets the distro codename from the os-release parser.
  *
  * Returns: a string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_os_release_get_distro_codename (GsOsRelease *os_release)
@@ -253,6 +265,8 @@ gs_os_release_init (GsOsRelease *os_release)
  * Creates a new os_release.
  *
  * Returns: (transfer full): A newly allocated #GsOsRelease, or %NULL for error
+ *
+ * Since: 3.22
  **/
 GsOsRelease *
 gs_os_release_new (GError **error)

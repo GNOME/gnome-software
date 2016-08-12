@@ -101,6 +101,8 @@ typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
  * Converts the #GsPluginStatus enum to a string.
  *
  * Returns: the string representation, or "unknown"
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_plugin_status_to_string (GsPluginStatus status)
@@ -129,6 +131,8 @@ gs_plugin_status_to_string (GsPluginStatus status)
  * Creates a new plugin from an external module.
  *
  * Returns: the #GsPlugin or %NULL
+ *
+ * Since: 3.22
  **/
 GsPlugin *
 gs_plugin_create (const gchar *filename, GError **error)
@@ -202,6 +206,8 @@ gs_plugin_finalize (GObject *object)
  * been called.
  *
  * Returns: the #GsPluginData, or %NULL
+ *
+ * Since: 3.22
  **/
 GsPluginData *
 gs_plugin_get_data (GsPlugin *plugin)
@@ -222,6 +228,8 @@ gs_plugin_get_data (GsPlugin *plugin)
  * not be manually freed.
  *
  * Returns: the #GsPluginData, cleared to NUL butes
+ *
+ * Since: 3.22
  **/
 GsPluginData *
 gs_plugin_alloc_data (GsPlugin *plugin, gsize sz)
@@ -238,6 +246,8 @@ gs_plugin_alloc_data (GsPlugin *plugin, gsize sz)
  * @exclusive: if the plugin action should be performed exclusively
  *
  * Starts a plugin action.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_action_start (GsPlugin *plugin, gboolean exclusive)
@@ -274,6 +284,8 @@ gs_plugin_action_delay_cb (gpointer user_data)
  * @plugin: a #GsPlugin
  *
  * Stops an plugin action.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_action_stop (GsPlugin *plugin)
@@ -308,6 +320,8 @@ gs_plugin_action_stop (GsPlugin *plugin)
  * Gets the external module that backs the plugin.
  *
  * Returns: the #GModule, or %NULL
+ *
+ * Since: 3.22
  **/
 GModule *
 gs_plugin_get_module (GsPlugin *plugin)
@@ -323,6 +337,8 @@ gs_plugin_get_module (GsPlugin *plugin)
  * Gets if the plugin is enabled.
  *
  * Returns: %TRUE if enabled
+ *
+ * Since: 3.22
  **/
 gboolean
 gs_plugin_get_enabled (GsPlugin *plugin)
@@ -338,6 +354,8 @@ gs_plugin_get_enabled (GsPlugin *plugin)
  *
  * Enables or disables a plugin.
  * This is normally only called from gs_plugin_initialize().
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
@@ -353,6 +371,8 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
  * Gets the plugin name.
  *
  * Returns: a string, e.g. "fwupd"
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_plugin_get_name (GsPlugin *plugin)
@@ -368,6 +388,8 @@ gs_plugin_get_name (GsPlugin *plugin)
  * Gets the window scale factor.
  *
  * Returns: the factor, usually 1 for standard screens or 2 for HiDPI
+ *
+ * Since: 3.22
  **/
 guint
 gs_plugin_get_scale (GsPlugin *plugin)
@@ -382,6 +404,8 @@ gs_plugin_get_scale (GsPlugin *plugin)
  * @scale: the window scale factor, usually 1 for standard screens or 2 for HiDPI
  *
  * Sets the window scale factor.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_scale (GsPlugin *plugin, guint scale)
@@ -398,6 +422,8 @@ gs_plugin_set_scale (GsPlugin *plugin, guint scale)
  * numbers.
  *
  * Returns: the integer value
+ *
+ * Since: 3.22
  **/
 guint
 gs_plugin_get_order (GsPlugin *plugin)
@@ -413,6 +439,8 @@ gs_plugin_get_order (GsPlugin *plugin)
  *
  * Sets the plugin order, where higher numbers are run after lower
  * numbers.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_order (GsPlugin *plugin, guint order)
@@ -429,6 +457,8 @@ gs_plugin_set_order (GsPlugin *plugin, guint order)
  * multiple #GsApp's match a specific rule.
  *
  * Returns: the integer value
+ *
+ * Since: 3.22
  **/
 guint
 gs_plugin_get_priority (GsPlugin *plugin)
@@ -444,6 +474,8 @@ gs_plugin_get_priority (GsPlugin *plugin)
  *
  * Sets the plugin priority, where higher values will be chosen where
  * multiple #GsApp's match a specific rule.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_priority (GsPlugin *plugin, guint priority)
@@ -459,6 +491,8 @@ gs_plugin_set_priority (GsPlugin *plugin, guint priority)
  * Gets the user locale.
  *
  * Returns: the locale string, e.g. "en_GB"
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_plugin_get_locale (GsPlugin *plugin)
@@ -474,6 +508,8 @@ gs_plugin_get_locale (GsPlugin *plugin)
  * Gets the user language from the locale.
  *
  * Returns: the language string, e.g. "fr"
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_plugin_get_language (GsPlugin *plugin)
@@ -488,6 +524,8 @@ gs_plugin_get_language (GsPlugin *plugin)
  * @locale: a locale string, e.g. "en_GB"
  *
  * Sets the plugin locale.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_locale (GsPlugin *plugin, const gchar *locale)
@@ -503,6 +541,8 @@ gs_plugin_set_locale (GsPlugin *plugin, const gchar *locale)
  * @language: a language string, e.g. "fr"
  *
  * Sets the plugin language.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
@@ -518,6 +558,8 @@ gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
  * @auth_array: (element-type GsAuth): an array
  *
  * Sets the authentication objects that can be added by the plugin.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_auth_array (GsPlugin *plugin, GPtrArray *auth_array)
@@ -532,6 +574,8 @@ gs_plugin_set_auth_array (GsPlugin *plugin, GPtrArray *auth_array)
  * @auth: a #GsAuth
  *
  * Adds an authentication object that can be used for all the plugins.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
@@ -548,6 +592,8 @@ gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
  * Gets a specific authentication object.
  *
  * Returns: the #GsAuth, or %NULL if not found
+ *
+ * Since: 3.22
  **/
 GsAuth *
 gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
@@ -573,6 +619,8 @@ gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
  * output.
  *
  * Returns: the #AsProfile
+ *
+ * Since: 3.22
  **/
 AsProfile *
 gs_plugin_get_profile (GsPlugin *plugin)
@@ -587,6 +635,8 @@ gs_plugin_get_profile (GsPlugin *plugin)
  * @profile: a #AsProfile
  *
  * Sets the profile object to be used for the plugin.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_profile (GsPlugin *plugin, AsProfile *profile)
@@ -602,6 +652,8 @@ gs_plugin_set_profile (GsPlugin *plugin, AsProfile *profile)
  * Gets the soup session that plugins can use when downloading.
  *
  * Returns: the #SoupSession
+ *
+ * Since: 3.22
  **/
 SoupSession *
 gs_plugin_get_soup_session (GsPlugin *plugin)
@@ -616,6 +668,8 @@ gs_plugin_get_soup_session (GsPlugin *plugin)
  * @soup_session: a #SoupSession
  *
  * Sets the soup session that plugins will use when downloading.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
@@ -632,6 +686,8 @@ gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
  * Finds out if a plugin has a specific flag set.
  *
  * Returns: TRUE if the flag is set
+ *
+ * Since: 3.22
  **/
 gboolean
 gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
@@ -646,6 +702,8 @@ gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
  * @running_other: %TRUE if another plugin is running
  *
  * Inform the plugin that another plugin is running in the loader.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_set_running_other (GsPlugin *plugin, gboolean running_other)
@@ -669,6 +727,8 @@ gs_plugin_set_running_other (GsPlugin *plugin, gboolean running_other)
  *
  * NOTE: The depsolver is iterative and may not solve overly-complicated rules;
  * If depsolving fails then gnome-software will not start.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_add_rule (GsPlugin *plugin, GsPluginRule rule, const gchar *name)
@@ -685,6 +745,8 @@ gs_plugin_add_rule (GsPlugin *plugin, GsPluginRule rule, const gchar *name)
  * Gets the plugin IDs that should be run after this plugin.
  *
  * Returns: (element-type utf8) (transfer none): the list of plugin names, e.g. ['appstream']
+ *
+ * Since: 3.22
  **/
 GPtrArray *
 gs_plugin_get_rules (GsPlugin *plugin, GsPluginRule rule)
@@ -701,6 +763,8 @@ gs_plugin_get_rules (GsPlugin *plugin, GsPluginRule rule)
  * Checks if the distro is compatible.
  *
  * Returns: %TRUE if compatible
+ *
+ * Since: 3.22
  **/
 gboolean
 gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
@@ -754,6 +818,8 @@ gs_plugin_status_update_cb (gpointer user_data)
  * @status: a #GsPluginStatus, e.g. %GS_PLUGIN_STATUS_DOWNLOADING
  *
  * Update the state of the plugin so any UI can be updated.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
@@ -794,6 +860,8 @@ gs_plugin_app_launch_cb (gpointer user_data)
  * Launches the application using GAppInfo.
  *
  * Returns: %TRUE for success
+ *
+ * Since: 3.22
  **/
 gboolean
 gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
@@ -840,6 +908,8 @@ gs_plugin_updates_changed_cb (gpointer user_data)
  *
  * Emit a signal that tells the plugin loader that the list of updates
  * may have changed.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_updates_changed (GsPlugin *plugin)
@@ -864,6 +934,8 @@ gs_plugin_reload_cb (gpointer user_data)
  * gnashing of teeth.
  *
  * Plugins should not call this unless absolutely required.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_reload (GsPlugin *plugin)
@@ -932,6 +1004,8 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
  * Downloads data.
  *
  * Returns: the downloaded data, or %NULL
+ *
+ * Since: 3.22
  **/
 GBytes *
 gs_plugin_download_data (GsPlugin *plugin,
@@ -986,6 +1060,8 @@ gs_plugin_download_data (GsPlugin *plugin,
  * Downloads data and saves it to a file.
  *
  * Returns: %TRUE for success
+ *
+ * Since: 3.22
  **/
 gboolean
 gs_plugin_download_file (GsPlugin *plugin,
@@ -1048,6 +1124,8 @@ gs_plugin_download_file (GsPlugin *plugin,
  * Looks up an application object from the per-plugin cache
  *
  * Returns: (transfer full) (nullable): the #GsApp, or %NULL
+ *
+ * Since: 3.22
  **/
 GsApp *
 gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
@@ -1073,6 +1151,8 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
  *
  * Adds an application to the per-plugin cache. This is optional,
  * and the plugin can use the cache however it likes.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
@@ -1100,6 +1180,8 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
  *
  * Most plugins do not need to call this funtion; if a suitable cache
  * key is being used the old cache item can remain.
+ *
+ * Since: 3.22
  **/
 void
 gs_plugin_cache_invalidate (GsPlugin *plugin)
@@ -1205,6 +1287,8 @@ gs_plugin_init (GsPlugin *plugin)
  * Creates a new plugin.
  *
  * Returns: a #GsPlugin
+ *
+ * Since: 3.22
  **/
 GsPlugin *
 gs_plugin_new (void)

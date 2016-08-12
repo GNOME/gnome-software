@@ -58,6 +58,8 @@ G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
  * Returns a string representation of the category
  *
  * Returns: a string
+ *
+ * Since: 3.22
  **/
 gchar *
 gs_category_to_string (GsCategory *category)
@@ -110,6 +112,8 @@ gs_category_to_string (GsCategory *category)
  * filtered or core applications are not shown.
  *
  * Returns: the number of apps in the category
+ *
+ * Since: 3.22
  **/
 guint
 gs_category_get_size (GsCategory *category)
@@ -125,6 +129,8 @@ gs_category_get_size (GsCategory *category)
  *
  * Sets the number of applications in the category.
  * Most plugins do not need to call this function.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_set_size (GsCategory *category, guint size)
@@ -138,6 +144,8 @@ gs_category_set_size (GsCategory *category, guint size)
  * @category: a #GsCategory
  *
  * Adds one to the size count if an application is available
+ *
+ * Since: 3.22
  **/
 void
 gs_category_increment_size (GsCategory *category)
@@ -153,6 +161,8 @@ gs_category_increment_size (GsCategory *category)
  * Gets the category ID.
  *
  * Returns: the string, e.g. "other"
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_category_get_id (GsCategory *category)
@@ -168,6 +178,8 @@ gs_category_get_id (GsCategory *category)
  * Gets the category name.
  *
  * Returns: the string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_category_get_name (GsCategory *category)
@@ -199,6 +211,8 @@ gs_category_get_name (GsCategory *category)
  * @name: a category name, or %NULL
  *
  * Sets the category name.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_set_name (GsCategory *category, const gchar *name)
@@ -215,6 +229,8 @@ gs_category_set_name (GsCategory *category, const gchar *name)
  * Gets the category icon.
  *
  * Returns: the string, or %NULL
+ *
+ * Since: 3.22
  **/
 const gchar *
 gs_category_get_icon (GsCategory *category)
@@ -238,6 +254,8 @@ gs_category_get_icon (GsCategory *category)
  * @icon: a category icon, or %NULL
  *
  * Sets the category icon.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_set_icon (GsCategory *category, const gchar *icon)
@@ -256,6 +274,8 @@ gs_category_set_icon (GsCategory *category, const gchar *icon)
  * different way, for example with color or in a different section.
  *
  * Returns: the string, or %NULL
+ *
+ * Since: 3.22
  **/
 gint
 gs_category_get_score (GsCategory *category)
@@ -271,6 +291,8 @@ gs_category_get_score (GsCategory *category)
  *
  * Sets the category score, where larger numbers get sorted before lower
  * numbers.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_set_score (GsCategory *category, gint score)
@@ -286,6 +308,8 @@ gs_category_set_score (GsCategory *category, gint score)
  * Gets the list of key colors for the category.
  *
  * Returns: (element-type GdkRGBA) (transfer none): An array
+ *
+ * Since: 3.22
  **/
 GPtrArray *
 gs_category_get_key_colors (GsCategory *category)
@@ -300,6 +324,8 @@ gs_category_get_key_colors (GsCategory *category)
  * @key_color: a #GdkRGBA
  *
  * Adds a key color to the category.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_add_key_color (GsCategory *category, const GdkRGBA *key_color)
@@ -316,6 +342,8 @@ gs_category_add_key_color (GsCategory *category, const GdkRGBA *key_color)
  * Gets the list of AppStream groups for the category.
  *
  * Returns: (element-type utf8) (transfer none): An array
+ *
+ * Since: 3.22
  **/
 GPtrArray *
 gs_category_get_desktop_groups (GsCategory *category)
@@ -332,6 +360,8 @@ gs_category_get_desktop_groups (GsCategory *category)
  * Finds out if the category has the specific AppStream desktop group.
  *
  * Returns: %TRUE if found, %FALSE otherwise
+ *
+ * Since: 3.22
  **/
 gboolean
 gs_category_has_desktop_group (GsCategory *category, const gchar *desktop_group)
@@ -356,6 +386,8 @@ gs_category_has_desktop_group (GsCategory *category, const gchar *desktop_group)
  *
  * Adds a desktop group to the category.
  * A desktop group is a set of category strings that all must exist.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_add_desktop_group (GsCategory *category, const gchar *desktop_group)
@@ -377,6 +409,8 @@ gs_category_add_desktop_group (GsCategory *category, const gchar *desktop_group)
  * Find a child category with a specific ID.
  *
  * Returns: (transfer none): the #GsCategory, or %NULL
+ *
+ * Since: 3.22
  **/
 GsCategory *
 gs_category_find_child (GsCategory *category, const gchar *id)
@@ -400,6 +434,8 @@ gs_category_find_child (GsCategory *category, const gchar *id)
  * Gets the parent category.
  *
  * Returns: the #GsCategory or %NULL
+ *
+ * Since: 3.22
  **/
 GsCategory *
 gs_category_get_parent (GsCategory *category)
@@ -415,6 +451,8 @@ gs_category_get_parent (GsCategory *category)
  * Gets the list if children for a category.
  *
  * Return value: (element-type GsApp) (transfer none): A list of children
+ *
+ * Since: 3.22
  **/
 GPtrArray *
 gs_category_get_children (GsCategory *category)
@@ -429,6 +467,8 @@ gs_category_get_children (GsCategory *category)
  * @subcategory: a #GsCategory
  *
  * Adds a child category to a parent category.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_add_child (GsCategory *category, GsCategory *subcategory)
@@ -475,6 +515,8 @@ gs_category_sort_children_cb (gconstpointer a, gconstpointer b)
  * @category: a #GsCategory
  *
  * Sorts the list of children.
+ *
+ * Since: 3.22
  **/
 void
 gs_category_sort_children (GsCategory *category)
@@ -524,6 +566,8 @@ gs_category_init (GsCategory *category)
  * Creates a new category object.
  *
  * Returns: the new #GsCategory
+ *
+ * Since: 3.22
  **/
 GsCategory *
 gs_category_new (const gchar *id)

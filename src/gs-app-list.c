@@ -57,6 +57,8 @@ G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
  * Applications that have the application ID lazy-loaded will always be addded
  * to the list, and to clean these up the plugin loader will also call the
  * gs_app_list_filter_duplicates() method when all plugins have run.
+ *
+ * Since: 3.22
  **/
 void
 gs_app_list_add (GsAppList *list, GsApp *app)
@@ -105,6 +107,8 @@ gs_app_list_add (GsAppList *list, GsApp *app)
  * Gets an application at a specific position in the list.
  *
  * Returns: (transfer none): a #GsApp, or %NULL if invalid
+ *
+ * Since: 3.22
  **/
 GsApp *
 gs_app_list_index (GsAppList *list, guint idx)
@@ -119,6 +123,8 @@ gs_app_list_index (GsAppList *list, guint idx)
  * Gets the length of the application list.
  *
  * Returns: Integer
+ *
+ * Since: 3.22
  **/
 guint
 gs_app_list_length (GsAppList *list)
@@ -132,6 +138,8 @@ gs_app_list_length (GsAppList *list)
  * @list: A #GsAppList
  *
  * Removes all applications from the list.
+ *
+ * Since: 3.22
  **/
 void
 gs_app_list_remove_all (GsAppList *list)
@@ -148,6 +156,8 @@ gs_app_list_remove_all (GsAppList *list)
  * @user_data: the user pointer to pass to @func
  *
  * If func() returns TRUE for the GsApp, then the app is kept.
+ *
+ * Since: 3.22
  **/
 void
 gs_app_list_filter (GsAppList *list, GsAppListFilterFunc func, gpointer user_data)
@@ -191,6 +201,8 @@ gs_app_list_sort_cb (gconstpointer a, gconstpointer b, gpointer user_data)
  * @func: A #GCompareFunc
  *
  * Sorts the application list.
+ *
+ * Since: 3.22
  **/
 void
 gs_app_list_sort (GsAppList *list, GsAppListSortFunc func, gpointer user_data)
@@ -223,6 +235,8 @@ gs_app_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_data)
  *
  * Randomize the order of the list, but don't change the order until
  * the next day.
+ *
+ * Since: 3.22
  **/
 void
 gs_app_list_randomize (GsAppList *list)
@@ -260,6 +274,8 @@ gs_app_list_randomize (GsAppList *list)
  * @list: A #GsAppList
  *
  * Filter any duplicate applications from the list.
+ *
+ * Since: 3.22
  **/
 void
 gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
@@ -335,6 +351,8 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
  * Returns a deep copy of the application list.
  *
  * Returns: A newly allocated #GsAppList
+ *
+ * Since: 3.22
  **/
 GsAppList *
 gs_app_list_copy (GsAppList *list)
@@ -381,6 +399,8 @@ gs_app_list_init (GsAppList *list)
  * Creates a new list.
  *
  * Returns: A newly allocated #GsAppList
+ *
+ * Since: 3.22
  **/
 GsAppList *
 gs_app_list_new (void)
