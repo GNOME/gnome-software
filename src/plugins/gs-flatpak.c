@@ -1643,6 +1643,9 @@ gs_flatpak_update_app (GsFlatpak *self,
 		return FALSE;
 	}
 
+	/* update UI */
+	gs_plugin_updates_changed (self->plugin);
+
 	/* state is known */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
