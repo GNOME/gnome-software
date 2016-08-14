@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-14 12:14+0300\n"
-"PO-Revision-Date: 2016-08-14 13:46+0300\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
+"PO-Revision-Date: 2016-08-14 15:05+0300\n"
+"Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
 "Language-Team: עברית <>\n"
 "Language: he\n"
 "MIME-Version: 1.0\n"
@@ -42,35 +42,33 @@ msgid ""
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
+"‏GNOME תכנה מציג יישומים מומלצים ופופולריים עם תיאור שימושי ומספר צילומי מסך "
+"לכל יישום. נתן למצוא יישומים דרך קטגוריות או דרך חיפוש.  כמו כן נתן אף לעדכן "
+"את המערכת שלך באמצעות עדכונים לא מקוונים."
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
-#, fuzzy
 msgid "Overview panel"
 msgstr "דף סקירה"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
-#, fuzzy
 msgid "Details panel"
 msgstr "דף פרטים"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
-#, fuzzy
 msgid "Installed panel"
 msgstr "דף התקנה"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
-#, fuzzy
 msgid "Updates panel"
-msgstr "דף עדכונים"
+msgstr "דף עדכון"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
-#, fuzzy
 msgid "The update details"
-msgstr "Show application details"
+msgstr "פרטי עדכון"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
 msgid "The GNOME Project"
-msgstr ""
+msgstr "מיזם GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -993,9 +991,9 @@ msgstr "תכנה חופשית"
 #: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "משתמשים מחוייבים לרישיון הבא:"
+msgstr[1] "משתמשים מחוייבים לרישיונות הבאים:"
+msgstr[2] "משתמשים מחוייבים לרישיונות הבאים:"
 
 #: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
 msgid "More information"
@@ -1201,12 +1199,12 @@ msgstr ", "
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
 #: ../src/gs-shell-extras.c:174
-#, fuzzy, c-format
+#, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "תכנה זמינה עבור %s"
-msgstr[1] "תכנה זמינה עבור %s"
-msgstr[2] "תכנה זמינה עבור %s"
+msgstr[0] "גופנים זמינים עבור התסריט %s"
+msgstr[1] "גופנים זמינים עבור התסריטים %s"
+msgstr[2] "גופנים זמינים עבור התסריטים %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
@@ -1660,43 +1658,43 @@ msgstr "אין יישומים או הרחבות מותקנים; תכנות אח�
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:98
-#, fuzzy, c-format
+#, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
 msgstr[0] "הותקן יישום אחד"
-msgstr[1] "הותקנו %i יישומים"
+msgstr[1] "הותקנו %u יישומים"
 msgstr[2] "הותקנו שני יישומים"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:104
-#, fuzzy, c-format
+#, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
 msgstr[0] "הותקן תוסף אחד"
-msgstr[1] "התוקנו %i תוספים"
+msgstr[1] "התוקנו %u תוספים"
 msgstr[2] "התוקנו שני תוספים"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
 #: ../src/gs-sources-dialog.c:111
-#, fuzzy, c-format
+#, c-format
 msgid "%u application"
 msgid_plural "%u applications"
 msgstr[0] "יישום אחד"
-msgstr[1] "%i יישומים"
+msgstr[1] "%u יישומים"
 msgstr[2] "שני יישומים"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
 #: ../src/gs-sources-dialog.c:117
-#, fuzzy, c-format
+#, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
 msgstr[0] "תוסף אחד"
-msgstr[1] "־%i תוספים"
+msgstr[1] "־%u תוספים"
 msgstr[2] "שני תוספים"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
@@ -2099,21 +2097,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:405
 msgid "Cartoon characters in unsafe situations"
-msgstr ""
+msgstr "Cartoon characters in unsafe situations"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:408
 msgid "Cartoon characters in aggressive conflict"
-msgstr ""
+msgstr "Cartoon characters in aggressive conflict"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:411
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Graphic violence involving cartoon characters"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
-#, fuzzy
 msgctxt "content rating violence-fantasy"
 msgid "None"
 msgstr "ללא"
@@ -2121,21 +2118,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:417
 msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr ""
+msgstr "Characters in unsafe situations easily distinguishable from reality"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:420
 msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr ""
+msgstr "Characters in aggressive conflict easily distinguishable from reality"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:423
 msgid "Graphic violence easily distinguishable from reality"
-msgstr ""
+msgstr "Graphic violence easily distinguishable from reality"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:426
-#, fuzzy
 msgctxt "content rating violence-realistic"
 msgid "None"
 msgstr "ללא"
@@ -2143,21 +2139,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
 msgid "Mild realistic characters in unsafe situations"
-msgstr ""
+msgstr "Mild realistic characters in unsafe situations"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:432
 msgid "Depictions of realistic characters in aggressive conflict"
-msgstr ""
+msgstr "Depictions of realistic characters in aggressive conflict"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:435
 msgid "Graphic violence involving realistic characters"
-msgstr ""
+msgstr "Graphic violence involving realistic characters"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:438
-#, fuzzy
 msgctxt "content rating violence-bloodshed"
 msgid "None"
 msgstr "ללא"
@@ -2165,21 +2160,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:441
 msgid "Unrealistic bloodshed"
-msgstr ""
+msgstr "Unrealistic bloodshed"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:444
 msgid "Realistic bloodshed"
-msgstr ""
+msgstr "Realistic bloodshed"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:447
 msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr ""
+msgstr "Depictions of bloodshed and the mutilation of body parts"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:450
-#, fuzzy
 msgctxt "content rating violence-sexual"
 msgid "None"
 msgstr "ללא"
@@ -2187,11 +2181,10 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:453
 msgid "Rape or other violent sexual behavior"
-msgstr ""
+msgstr "Rape or other violent sexual behavior"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:456
-#, fuzzy
 msgctxt "content rating drugs-alcohol"
 msgid "None"
 msgstr "ללא"
@@ -2199,16 +2192,15 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:459
 msgid "References to alcoholic beverages"
-msgstr ""
+msgstr "References to alcoholic beverages"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:462
 msgid "Use of alcoholic beverages"
-msgstr ""
+msgstr "Use of alcoholic beverages"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:465
-#, fuzzy
 msgctxt "content rating drugs-narcotics"
 msgid "None"
 msgstr "ללא"
@@ -2216,26 +2208,25 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:468
 msgid "References to illicit drugs"
-msgstr ""
+msgstr "References to illicit drugs"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:471
 msgid "Use of illicit drugs"
-msgstr ""
+msgstr "Use of illicit drugs"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:474
 msgid "References to tobacco products"
-msgstr ""
+msgstr "References to tobacco products"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:477
 msgid "Use of tobacco products"
-msgstr ""
+msgstr "Use of tobacco products"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:480
-#, fuzzy
 msgctxt "content rating sex-nudity"
 msgid "None"
 msgstr "ללא"
@@ -2243,16 +2234,15 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:483
 msgid "Brief artistic nudity"
-msgstr ""
+msgstr "Brief artistic nudity"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:486
 msgid "Prolonged nudity"
-msgstr ""
+msgstr "Prolonged nudity"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:489
-#, fuzzy
 msgctxt "content rating sex-themes"
 msgid "None"
 msgstr "ללא"
@@ -2260,22 +2250,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:492
 msgid "Provocative references or depictions"
-msgstr ""
+msgstr "Provocative references or depictions"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:495
-#, fuzzy
 msgid "Sexual references or depictions"
-msgstr "Search for applications"
+msgstr "Sexual references or depictions"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:498
 msgid "Graphic sexual behavior"
-msgstr ""
+msgstr "Graphic sexual behavior"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:501
-#, fuzzy
 msgctxt "content rating language-profanity"
 msgid "None"
 msgstr "ללא"
@@ -2283,21 +2271,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:504
 msgid "Mild or infrequent use of profanity"
-msgstr ""
+msgstr "Mild or infrequent use of profanity"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:507
 msgid "Moderate use of profanity"
-msgstr ""
+msgstr "Moderate use of profanity"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:510
 msgid "Strong or frequent use of profanity"
-msgstr ""
+msgstr "Strong or frequent use of profanity"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:513
-#, fuzzy
 msgctxt "content rating language-humor"
 msgid "None"
 msgstr "ללא"
@@ -2305,21 +2292,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:516
 msgid "Slapstick humor"
-msgstr ""
+msgstr "Slapstick humor"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:519
 msgid "Vulgar or bathroom humor"
-msgstr ""
+msgstr "Vulgar or bathroom humor"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:522
 msgid "Mature or sexual humor"
-msgstr ""
+msgstr "Mature or sexual humor"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:525
-#, fuzzy
 msgctxt "content rating language-discrimination"
 msgid "None"
 msgstr "ללא"
@@ -2327,44 +2313,41 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:528
 msgid "Negativity towards a specific group of people"
-msgstr ""
+msgstr "Negativity towards a specific group of people"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:531
 msgid "Discrimation designed to cause emotional harm"
-msgstr ""
+msgstr "Discrimation designed to cause emotional harm"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:534
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr ""
+msgstr "Explicit discrimination based on gender, sexuality, race or religion"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:537
-#, fuzzy
 msgctxt "content rating money-advertising"
 msgid "None"
 msgstr "ללא"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:540
-#, fuzzy
 msgid "Product placement"
-msgstr "ניהול מיזמים"
+msgstr "Product placement"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:543
 msgid "Explicit references to specific brands or trademarked products"
-msgstr ""
+msgstr "Explicit references to specific brands or trademarked products"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:546
 msgid "Players are encouraged to purchase specific real-world items"
-msgstr ""
+msgstr "Players are encouraged to purchase specific real-world items"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:549
-#, fuzzy
 msgctxt "content rating money-gambling"
 msgid "None"
 msgstr "ללא"
@@ -2372,21 +2355,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:552
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Gambling on random events using tokens or credits"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:555
 msgid "Gambling using \"play\" money"
-msgstr ""
+msgstr "Gambling using \"play\" money"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:558
 msgid "Gambling using real money"
-msgstr ""
+msgstr "Gambling using real money"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:561
-#, fuzzy
 msgctxt "content rating money-purchasing"
 msgid "None"
 msgstr "ללא"
@@ -2394,11 +2376,10 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:564
 msgid "Ability to spend real money in-game"
-msgstr ""
+msgstr "Ability to spend real money in-game"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:567
-#, fuzzy
 msgctxt "content rating social-chat"
 msgid "None"
 msgstr "ללא"
@@ -2406,21 +2387,20 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:570
 msgid "Player-to-player game interactions without chat functionality"
-msgstr ""
+msgstr "Player-to-player game interactions without chat functionality"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:573
 msgid "Player-to-player preset interactions without chat functionality"
-msgstr ""
+msgstr "Player-to-player preset interactions without chat functionality"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:576
 msgid "Uncontrolled chat functionality between players"
-msgstr ""
+msgstr "Uncontrolled chat functionality between players"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:579
-#, fuzzy
 msgctxt "content rating social-audio"
 msgid "None"
 msgstr "ללא"
@@ -2428,11 +2408,10 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:582
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr ""
+msgstr "Uncontrolled audio or video chat functionality between players"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:585
-#, fuzzy
 msgctxt "content rating social-contacts"
 msgid "None"
 msgstr "ללא"
@@ -2440,24 +2419,21 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:588
 msgid "Sharing social network usernames or email addresses"
-msgstr ""
+msgstr "Sharing social network usernames or email addresses"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:591
-#, fuzzy
 msgctxt "content rating social-info"
 msgid "None"
 msgstr "ללא"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:594
-#, fuzzy
 msgid "Sharing user information with 3rd parties"
-msgstr "Show profiling information for the service"
+msgstr "Sharing user information with 3rd parties"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:597
-#, fuzzy
 msgctxt "content rating social-location"
 msgid "None"
 msgstr "ללא"
@@ -2465,7 +2441,7 @@ msgstr "ללא"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:600
 msgid "Sharing physical location to other users"
-msgstr ""
+msgstr "Sharing physical location to other users"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
@@ -2501,33 +2477,28 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:63
 msgid "Software catalog is being downloaded"
-msgstr ""
+msgstr "רשימת תכנות בהורדה"
 
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:68
-#, fuzzy
 msgid "Software catalog is being loaded"
-msgstr "ארע כשל בעדכון התכנות"
+msgstr "רשימת תכנות בטעינה"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-loading.ui.h:1
-#, fuzzy
 msgid "Loading page"
-msgstr "דף מקודדים"
+msgstr "דף בטעינה"
 
 #: ../src/gs-shell-loading.ui.h:2
-#, fuzzy
 msgid "Starting up…"
-msgstr "מגדיר עדכונים…"
+msgstr "מתחיל…"
 
 #: ../src/plugins/gs-desktop-common.c:30
-#, fuzzy
 msgctxt "Menu of AudioVideo"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:33
-#, fuzzy
 msgctxt "Menu of AudioVideo"
 msgid "Featured"
 msgstr "מומלצים"
@@ -2535,28 +2506,24 @@ msgstr "מומלצים"
 #: ../src/plugins/gs-desktop-common.c:36
 msgctxt "Menu of AudioVideo"
 msgid "Audio Creation & Editing"
-msgstr ""
+msgstr "יצירה ועריכת שמע"
 
 #: ../src/plugins/gs-desktop-common.c:42
-#, fuzzy
 msgctxt "Menu of AudioVideo"
 msgid "Music Players"
-msgstr "נגנים"
+msgstr "נגני מוזיקה"
 
 #: ../src/plugins/gs-desktop-common.c:51
-#, fuzzy
 msgctxt "Menu of Development"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:54
-#, fuzzy
 msgctxt "Menu of Development"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:57
-#, fuzzy
 msgctxt "Menu of Development"
 msgid "Debuggers"
 msgstr "מנפי שגיאות"
@@ -2564,226 +2531,189 @@ msgstr "מנפי שגיאות"
 #: ../src/plugins/gs-desktop-common.c:60
 msgctxt "Menu of Development"
 msgid "IDEs"
-msgstr ""
+msgstr "סביבות פיתוח משולבות (IDE)"
 
 #: ../src/plugins/gs-desktop-common.c:69
-#, fuzzy
 msgctxt "Menu of Education"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:72
-#, fuzzy
 msgctxt "Menu of Education"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:75
-#, fuzzy
 msgctxt "Menu of Education"
 msgid "Astronomy"
 msgstr "אסטרונומיה"
 
 #: ../src/plugins/gs-desktop-common.c:78
-#, fuzzy
 msgctxt "Menu of Education"
 msgid "Chemistry"
 msgstr "כימיה"
 
 #: ../src/plugins/gs-desktop-common.c:81
-#, fuzzy
 msgctxt "Menu of Education"
 msgid "Languages"
 msgstr "שפות"
 
 #: ../src/plugins/gs-desktop-common.c:85
-#, fuzzy
 msgctxt "Menu of Education"
 msgid "Math"
 msgstr "מתמטיקה"
 
 #: ../src/plugins/gs-desktop-common.c:94
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:97
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:100
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "פעולה"
 
 #: ../src/plugins/gs-desktop-common.c:103
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "הרפתקה"
 
 #: ../src/plugins/gs-desktop-common.c:106
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "ארקייד"
 
 #: ../src/plugins/gs-desktop-common.c:109
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "בלוקים"
 
 #: ../src/plugins/gs-desktop-common.c:112
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "לוח"
 
 #: ../src/plugins/gs-desktop-common.c:115
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "קלפים"
 
 #: ../src/plugins/gs-desktop-common.c:118
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "הדמייה"
 
 #: ../src/plugins/gs-desktop-common.c:121
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "ילדים"
 
 #: ../src/plugins/gs-desktop-common.c:124
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "היגיון"
 
 #: ../src/plugins/gs-desktop-common.c:127
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "משחקי תפקידים"
 
 #: ../src/plugins/gs-desktop-common.c:130
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "ספורט"
 
 #: ../src/plugins/gs-desktop-common.c:134
-#, fuzzy
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "אסטרטגיה"
 
 #: ../src/plugins/gs-desktop-common.c:142
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:145
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:148
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "3D Graphics"
 msgstr "גרפיקה תלת־ממדית"
 
 #: ../src/plugins/gs-desktop-common.c:151
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "Photography"
 msgstr "צילום"
 
 #: ../src/plugins/gs-desktop-common.c:154
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "Scanning"
 msgstr "סריקה"
 
 #: ../src/plugins/gs-desktop-common.c:157
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "Vector Graphics"
 msgstr "גרפיקה וקטורית"
 
 #: ../src/plugins/gs-desktop-common.c:160
-#, fuzzy
 msgctxt "Menu of Graphics"
 msgid "Viewers"
-msgstr "צופה"
+msgstr "מציגים"
 
 #: ../src/plugins/gs-desktop-common.c:168
-#, fuzzy
 msgctxt "Menu of Office"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:171
-#, fuzzy
 msgctxt "Menu of Office"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:174
-#, fuzzy
 msgctxt "Menu of Office"
 msgid "Calendar"
 msgstr "לוח שנה"
 
 #: ../src/plugins/gs-desktop-common.c:178
-#, fuzzy
 msgctxt "Menu of Office"
 msgid "Database"
 msgstr "מסד נתונים"
 
 #: ../src/plugins/gs-desktop-common.c:181
-#, fuzzy
 msgctxt "Menu of Office"
 msgid "Finance"
 msgstr "כספים"
 
 #: ../src/plugins/gs-desktop-common.c:185
-#, fuzzy
 msgctxt "Menu of Office"
 msgid "Word Processor"
 msgstr "מעבד תמלילים"
 
 #: ../src/plugins/gs-desktop-common.c:194
-#, fuzzy
 msgctxt "Menu of Addons"
 msgid "Fonts"
 msgstr "גופנים"
 
 #: ../src/plugins/gs-desktop-common.c:197
-#, fuzzy
 msgctxt "Menu of Addons"
 msgid "Codecs"
 msgstr "מקודדים"
 
 #: ../src/plugins/gs-desktop-common.c:200
-#, fuzzy
 msgctxt "Menu of Addons"
 msgid "Input Sources"
 msgstr "מקורות קלט"
 
 #: ../src/plugins/gs-desktop-common.c:203
-#, fuzzy
 msgctxt "Menu of Addons"
 msgid "Language Packs"
 msgstr "חבילות שפה"
@@ -2791,142 +2721,120 @@ msgstr "חבילות שפה"
 #: ../src/plugins/gs-desktop-common.c:206
 msgctxt "Menu of Addons"
 msgid "Shell Extensions"
-msgstr ""
+msgstr "הרחבות מעטפת"
 
 #: ../src/plugins/gs-desktop-common.c:209
-#, fuzzy
 msgctxt "Menu of Addons"
 msgid "Localization"
-msgstr "יישום"
+msgstr "בנאום"
 
 #: ../src/plugins/gs-desktop-common.c:217
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:220
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:223
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "Artificial Intelligence"
 msgstr "בינה מלאכותית"
 
 #: ../src/plugins/gs-desktop-common.c:226
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "Astronomy"
 msgstr "אסטרונומיה"
 
 #: ../src/plugins/gs-desktop-common.c:229
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "Chemistry"
 msgstr "כימיה"
 
 #: ../src/plugins/gs-desktop-common.c:232
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "Math"
 msgstr "מתמטיקה"
 
 #: ../src/plugins/gs-desktop-common.c:237
-#, fuzzy
 msgctxt "Menu of Science"
 msgid "Robotics"
 msgstr "רובוטיקה"
 
 #: ../src/plugins/gs-desktop-common.c:245
-#, fuzzy
 msgctxt "Menu of Communication"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:248
-#, fuzzy
 msgctxt "Menu of Communication"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:251
-#, fuzzy
 msgctxt "Menu of Communication"
 msgid "Chat"
 msgstr "צ׳אט"
 
 #: ../src/plugins/gs-desktop-common.c:258
-#, fuzzy
 msgctxt "Menu of Communication"
 msgid "News"
 msgstr "חדשות"
 
 #: ../src/plugins/gs-desktop-common.c:262
-#, fuzzy
 msgctxt "Menu of Communication"
 msgid "Web Browsers"
 msgstr "דפדפנים"
 
 #: ../src/plugins/gs-desktop-common.c:270
-#, fuzzy
 msgctxt "Menu of Utility"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:273
-#, fuzzy
 msgctxt "Menu of Utility"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:276
-#, fuzzy
 msgctxt "Menu of Utility"
 msgid "Text Editors"
-msgstr "עורך טקסט"
+msgstr "עורכי טקסט"
 
 #: ../src/plugins/gs-desktop-common.c:284
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "All"
-msgstr "ה_כול"
+msgstr "הכל"
 
 #: ../src/plugins/gs-desktop-common.c:287
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "מומלצים"
 
 #: ../src/plugins/gs-desktop-common.c:290
-#, fuzzy
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "אומנות"
 
 #: ../src/plugins/gs-desktop-common.c:293
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Biography"
-msgstr "גיאוגרפיה"
+msgstr "ביוגרפיה"
 
 #: ../src/plugins/gs-desktop-common.c:296
 #: ../src/plugins/gs-desktop-common.c:299
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Fiction"
-msgstr "פעולה"
+msgstr "בדיוני"
 
 #: ../src/plugins/gs-desktop-common.c:302
 msgctxt "Menu of Reference"
 msgid "Health"
-msgstr ""
+msgstr "רפואה"
 
 #: ../src/plugins/gs-desktop-common.c:305
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "היסטוריה"
@@ -2934,16 +2842,14 @@ msgstr "היסטוריה"
 #: ../src/plugins/gs-desktop-common.c:308
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
-msgstr ""
+msgstr "אורח חיים"
 
 #: ../src/plugins/gs-desktop-common.c:311
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Politics"
-msgstr "רובוטיקה"
+msgstr "פוליטיקה"
 
 #: ../src/plugins/gs-desktop-common.c:314
-#, fuzzy
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "ספורט"
@@ -2951,11 +2857,10 @@ msgstr "ספורט"
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
 #: ../src/plugins/gs-desktop-common.c:323
 msgid "Audio & Video"
-msgstr ""
+msgstr "שמע ווידאו"
 
 #. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/gs-desktop-common.c:326
-#, fuzzy
 msgid "Developer Tools"
 msgstr "כלי פיתוח"
 
@@ -2971,14 +2876,13 @@ msgstr "משחקים"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/gs-desktop-common.c:335
-#, fuzzy
 msgid "Graphics & Photography"
-msgstr "צילום"
+msgstr "גרפיקה וצילום"
 
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/gs-desktop-common.c:338
 msgid "Productivity"
-msgstr ""
+msgstr "משרד"
 
 #. TRANSLATORS: this is the menu spec main category for Science
 #: ../src/plugins/gs-desktop-common.c:344
@@ -2988,13 +2892,12 @@ msgstr "מדע"
 #. TRANSLATORS: this is the menu spec main category for Communication
 #: ../src/plugins/gs-desktop-common.c:347
 msgid "Communication & News"
-msgstr ""
+msgstr "תקשורת וחדשות"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
 #: ../src/plugins/gs-desktop-common.c:350
-#, fuzzy
 msgid "Reference"
-msgstr "ועידת וידאו"
+msgstr "מראה מקום"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
 #: ../src/plugins/gs-desktop-common.c:353
