@@ -7,8 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-14 12:14+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-08-12 07:38+0000\n"
 "PO-Revision-Date: 2016-08-13 02:28+0200\n"
 "Last-Translator: Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>\n"
 "Language-Team: Esperanto <gnome-l10n-eo@lists.launchpad.net>\n"
@@ -44,26 +45,31 @@ msgstr ""
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
 #, fuzzy
+#| msgid "Overview page"
 msgid "Overview panel"
 msgstr "Superrigarda paĝo"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
 #, fuzzy
+#| msgid "Details page"
 msgid "Details panel"
 msgstr "Paĝo de detaloj"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
 #, fuzzy
+#| msgid "Installed Updates"
 msgid "Installed panel"
 msgstr "Instalitaj ĝisdatigoj"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
 #, fuzzy
+#| msgid "Updates page"
 msgid "Updates panel"
 msgstr "Paĝo de ĝisdatigoj"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
 #, fuzzy
+#| msgid "The update was cancelled."
 msgid "The update details"
 msgstr "La detaloj de la ĝisdatigo"
 
@@ -111,6 +117,7 @@ msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:9
 #, fuzzy
+#| msgid "Search for applications"
 msgid "A list of popular applications"
 msgstr "Serĉi aplikaĵojn"
 
@@ -302,6 +309,7 @@ msgid "SEARCH"
 msgstr "SERĈI"
 
 #: ../src/gs-application.c:102
+#| msgid "Show application details"
 msgid "Show application details (using application ID)"
 msgstr "Montri detalojn de aplikaĵo (uzante aplikaĵan ID-n)"
 
@@ -310,6 +318,7 @@ msgid "ID"
 msgstr "ID"
 
 #: ../src/gs-application.c:104
+#| msgid "Show application details"
 msgid "Show application details (using package name)"
 msgstr "Montri detalojn de aplikaĵo (uzante pakaĵ-nomon)"
 
@@ -469,6 +478,7 @@ msgstr "Alia"
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
 #: ../src/gs-category.c:198
+#| msgid "_All"
 msgid "All"
 msgstr "Ĉiuj"
 
@@ -619,12 +629,14 @@ msgstr "Prepari %s"
 #. * source name, e.g. 'GNOME Nightly'
 #: ../src/gs-page.c:456
 #, c-format
+#| msgid "Are you sure you want to remove %s?"
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Ĉu vi certe volas forigi la fonton de %s?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-page.c:460
 #, c-format
+#| msgid "%s will be removed, and you will have to install it to use it again."
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the source to use them again."
@@ -683,6 +695,7 @@ msgstr ""
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
 #, fuzzy
+#| msgid "Welcome to Software"
 msgid "Incompatible Software"
 msgstr "Bonvenon al Programaro"
 
@@ -753,6 +766,7 @@ msgstr "La priskribo estas tro longa"
 #. vim: set noexpandtab:
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:2
+#| msgid "Review"
 msgid "Post Review"
 msgstr "Sendi recenzon"
 
@@ -762,6 +776,8 @@ msgid "_Post"
 msgstr "_Sendi"
 
 #: ../src/gs-review-dialog.ui.h:6
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Editing"
 msgid "Rating"
 msgstr ""
 
@@ -778,6 +794,7 @@ msgstr ""
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
 #, fuzzy
+#| msgid "Review"
 msgctxt "app review"
 msgid "Review"
 msgstr "Recenzo"
@@ -806,6 +823,7 @@ msgstr ""
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
+#| msgid "Review"
 msgid "Report Review?"
 msgstr "Ĉu raporti recenzon?"
 
@@ -813,6 +831,8 @@ msgstr "Ĉu raporti recenzon?"
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
 msgid "Report"
 msgstr "Raporti"
 
@@ -884,6 +904,7 @@ msgstr "Ekrankopio"
 #. vim: set noexpandtab:
 #: ../src/gs-shell-category.ui.h:1
 #, fuzzy
+#| msgid "Network Settings"
 msgid "Extension Settings"
 msgstr "Retagordoj"
 
@@ -970,11 +991,14 @@ msgstr "Pardonu, tio ne funkcias"
 #. TRANSLATORS: see the wikipedia page
 #: ../src/gs-shell-details.c:1728
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Publishing"
 msgid "Public domain"
 msgstr "Publika havaĵo"
 
 #. TRANSLATORS: see GNU page
 #: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
+#| msgid "Software"
 msgid "Free Software"
 msgstr "Libera programaro"
 
@@ -1006,11 +1030,13 @@ msgstr "_Aldoni klavkombinon"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
 #: ../src/gs-shell-details.ui.h:11
+#| msgid "Remove Source"
 msgid "Re_move shortcut"
 msgstr "Forigi klavko_mbinon"
 
 #: ../src/gs-shell-details.ui.h:12
 #, fuzzy
+#| msgid "Screenshot not valid"
 msgid "No screenshot provided"
 msgstr "Nevalida ekrankopio"
 
@@ -1070,6 +1096,8 @@ msgid "Localized in your Language"
 msgstr ""
 
 #: ../src/gs-shell-details.ui.h:25
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Presentation"
 msgid "Documentation"
 msgstr "Dokumentado"
 
@@ -1079,6 +1107,7 @@ msgstr ""
 
 #: ../src/gs-shell-details.ui.h:27
 #, fuzzy
+#| msgid "System Applications"
 msgid "System Integration"
 msgstr "Aplikaĵoj de sistemo"
 
@@ -1096,6 +1125,7 @@ msgstr "Kategorio"
 
 #: ../src/gs-shell-details.ui.h:32
 #, fuzzy
+#| msgid "Installed"
 msgid "Installed Size"
 msgstr "Intsalite"
 
@@ -1123,6 +1153,8 @@ msgstr "Mallibere"
 
 #. This refers to the license of the application
 #: ../src/gs-shell-details.ui.h:42
+#| msgctxt "app status"
+#| msgid "Unknown"
 msgid "Unknown"
 msgstr "Nekonate"
 
@@ -1140,6 +1172,7 @@ msgstr ""
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: ../src/gs-shell-details.ui.h:46
+#| msgid "Review"
 msgid "Reviews"
 msgstr "Recenzoj"
 
@@ -1160,6 +1193,7 @@ msgid ""
 msgstr ""
 
 #: ../src/gs-shell-details.ui.h:53
+#| msgid "Proprietary"
 msgid "Proprietary Software"
 msgstr "Mallibera programaro"
 
@@ -1171,6 +1205,7 @@ msgid ""
 msgstr ""
 
 #: ../src/gs-shell-details.ui.h:56
+#| msgid "Software Sources"
 msgid "Unknown Software License"
 msgstr "Nekonataj programaraj permesiloj"
 
@@ -1192,6 +1227,8 @@ msgstr ", "
 #. %s will be replaced by name of the script we're searching for.
 #: ../src/gs-shell-extras.c:174
 #, fuzzy, c-format
+#| msgid "Available software for %s"
+#| msgid_plural "Available software for %s"
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
 msgstr[0] "Disponebla programaro por %s"
@@ -1269,6 +1306,7 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:375
 #, fuzzy, c-format
+#| msgid "No addon codecs are available for the %s format."
 msgid "No fonts are available for the %s script support."
 msgstr "Ne disponeblas kodekoj por la dosierformo %s."
 
@@ -1394,6 +1432,7 @@ msgstr "Fo_rigi de dosierujo"
 
 #: ../src/gs-shell-moderate.ui.h:1
 #, fuzzy
+#| msgid "Updates page"
 msgid "Moderate page"
 msgstr "Paĝo de ĝisdatigoj"
 
@@ -1410,6 +1449,7 @@ msgstr "Pli…"
 #. * have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:419
 #, fuzzy
+#| msgid "Recommended Audio Applications"
 msgid "Recommended Audio & Video Applications"
 msgstr "Rekomenditaj son-aplikaĵoj"
 
@@ -1429,6 +1469,7 @@ msgstr "Rekomenditaj grafik-aplikaĵoj"
 #. * have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:434
 #, fuzzy
+#| msgid "Recommended Audio Applications"
 msgid "Recommended Productivity Applications"
 msgstr "Rekomenditaj son-aplikaĵoj"
 
@@ -1544,6 +1585,7 @@ msgstr ""
 #. TRANSLATORS: all updates will be installed
 #: ../src/gs-shell-updates.c:497
 #, fuzzy
+#| msgid "_Install"
 msgid "_Install All"
 msgstr "_Instali"
 
@@ -1590,6 +1632,8 @@ msgstr "Retagordoj"
 
 #. TRANSLATORS: we've just live-updated some apps
 #: ../src/gs-shell-updates.c:950
+#| msgid "An important OS update has been installed."
+#| msgid_plural "Important OS updates have been installed."
 msgid "Updates have been installed"
 msgstr "Instalis ĝisdatigojn"
 
@@ -1619,6 +1663,7 @@ msgstr "Paĝo de ĝisdatigoj"
 
 #: ../src/gs-shell-updates.ui.h:2
 #, fuzzy
+#| msgid "OS Updates"
 msgid "Other Updates"
 msgstr "Operaciumaj ĝisdatigoj"
 
@@ -1658,6 +1703,8 @@ msgstr ""
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:98
 #, c-format
+#| msgid "%i application"
+#| msgid_plural "%i applications"
 msgid "%u application installed"
 msgid_plural "%u applications installed"
 msgstr[0] "%u aplikaĵo instalita"
@@ -1667,6 +1714,8 @@ msgstr[1] "%u aplikaĵoj instalitaj"
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:104
 #, c-format
+#| msgid "%s and %s installed"
+#| msgid_plural "%s and %s installed"
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
 msgstr[0] "%u kromaĵo estas instalita"
@@ -1677,6 +1726,8 @@ msgstr[1] "%u kromaĵoj estas instalitaj"
 #. The correct form here depends on the number of applications.
 #: ../src/gs-sources-dialog.c:111
 #, c-format
+#| msgid "%i application"
+#| msgid_plural "%i applications"
 msgid "%u application"
 msgid_plural "%u applications"
 msgstr[0] "%u aplikaĵo"
@@ -1687,6 +1738,8 @@ msgstr[1] "%u aplikaĵoj"
 #. The correct form here depends on the number of add-ons.
 #: ../src/gs-sources-dialog.c:117
 #, c-format
+#| msgid "%i add-on"
+#| msgid_plural "%i add-ons"
 msgid "%u add-on"
 msgid_plural "%u add-ons"
 msgstr[0] "%u aldonaĵo"
@@ -1718,6 +1771,9 @@ msgstr ""
 #. replaced by the name of the actual distro, e.g. Fedora.
 #: ../src/gs-sources-dialog.c:478
 #, c-format
+#| msgid ""
+#| "Adding this software source will give you access to additional software "
+#| "and upgrades."
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
 "to additional software that is not provided by %s."
@@ -1766,16 +1822,19 @@ msgstr "Retejo"
 
 #: ../src/gs-summary-tile.c:74
 #, c-format
+#| msgid "Installed"
 msgid "%s (Installed)"
 msgstr "%s (Instalite)"
 
 #: ../src/gs-summary-tile.c:82
 #, c-format
+#| msgid "Installing"
 msgid "%s (Installing)"
 msgstr "%s (Instalante)"
 
 #: ../src/gs-summary-tile.c:90
 #, c-format
+#| msgid "Removing"
 msgid "%s (Removing)"
 msgstr "%s (Forigante)"
 
@@ -1801,6 +1860,8 @@ msgstr "Instalitaj ĝisdatigoj"
 
 #: ../src/gs-update-dialog.ui.h:2
 #, fuzzy
+#| msgid "An important OS update has been installed."
+#| msgid_plural "Important OS updates have been installed."
 msgid "No updates have been installed on this system."
 msgstr "Instalado de grava ĝisdatigo por la operaciumo sukcesis."
 
@@ -1813,6 +1874,7 @@ msgid "It is recommended that you install important updates now"
 msgstr ""
 
 #: ../src/gs-update-monitor.c:94
+#| msgid "Restart & _Install"
 msgid "Restart & Install"
 msgstr "Restarti & instali"
 
@@ -1838,6 +1900,7 @@ msgstr ""
 #. TRANSLATORS: this is a distro upgrade
 #: ../src/gs-update-monitor.c:246
 #, fuzzy
+#| msgid "Software Updates Available"
 msgid "Software Upgrade Available"
 msgstr "Programara ĝisdatigo disponeblas"
 
@@ -1876,6 +1939,7 @@ msgstr[1] "Instalado de gravaj ĝisdatigoj por la operaciumo sukcesis."
 #. * "Review (browse) something."
 #: ../src/gs-update-monitor.c:473
 #, fuzzy
+#| msgid "Review"
 msgctxt "updates"
 msgid "Review"
 msgstr "Recenzo"
@@ -1929,6 +1993,7 @@ msgstr ""
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
 #: ../src/gs-upgrade-banner.c:86
 #, c-format
+#| msgid "%s is not available."
 msgid "%s %s Now Available"
 msgstr "%s %s nun estas disponebla"
 
@@ -1937,6 +2002,7 @@ msgstr "%s %s nun estas disponebla"
 #. * is the version, e.g. "Downloading Fedora 23"
 #: ../src/gs-upgrade-banner.c:96
 #, c-format
+#| msgid "Downloading new updates…"
 msgid "Downloading %s %s"
 msgstr "Elŝutante %s %s"
 
@@ -1946,6 +2012,8 @@ msgstr "Elŝutante %s %s"
 #. * e.g. "Fedora 23 Ready to be Installed"
 #: ../src/gs-upgrade-banner.c:107
 #, fuzzy, c-format
+#| msgid "%s and %s installed"
+#| msgid_plural "%s and %s installed"
 msgid "%s %s Ready to be Installed"
 msgstr "%s kaj %s estas instalitaj"
 
@@ -1994,6 +2062,7 @@ msgstr "Forigo de %s malsukcesis."
 #. TRANSLATORS: this is when the upgrade download fails
 #: ../src/gs-common.c:182
 #, fuzzy, c-format
+#| msgid "Removal of %s failed."
 msgid "Upgrade to %s failed."
 msgstr "Forigo de %s malsukcesis."
 
@@ -2001,6 +2070,7 @@ msgstr "Forigo de %s malsukcesis."
 #. * something with no network available
 #: ../src/gs-common.c:196
 #, fuzzy
+#| msgid "Network access was required but not available."
 msgid "Internet access was required but wasn’t available."
 msgstr "Necesas retaliro, sed ĝi ne disponeblas."
 
@@ -2082,6 +2152,8 @@ msgstr "Enŝalti kaj instali"
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:402
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating violence-cartoon"
 msgid "None"
 msgstr "Neniu"
@@ -2104,6 +2176,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating violence-fantasy"
 msgid "None"
 msgstr "Neniu"
@@ -2126,6 +2200,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:426
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating violence-realistic"
 msgid "None"
 msgstr "Neniu"
@@ -2148,6 +2224,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:438
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating violence-bloodshed"
 msgid "None"
 msgstr "Neniu"
@@ -2170,6 +2248,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:450
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating violence-sexual"
 msgid "None"
 msgstr "Neniu"
@@ -2182,6 +2262,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:456
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating drugs-alcohol"
 msgid "None"
 msgstr "Neniu"
@@ -2199,6 +2281,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:465
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating drugs-narcotics"
 msgid "None"
 msgstr "Neniu"
@@ -2226,6 +2310,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:480
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating sex-nudity"
 msgid "None"
 msgstr "Neniu"
@@ -2243,6 +2329,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:489
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating sex-themes"
 msgid "None"
 msgstr "Neniu"
@@ -2255,6 +2343,7 @@ msgstr ""
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:495
 #, fuzzy
+#| msgid "Search for applications"
 msgid "Sexual references or depictions"
 msgstr "Serĉi aplikaĵojn"
 
@@ -2266,6 +2355,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:501
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating language-profanity"
 msgid "None"
 msgstr "Neniu"
@@ -2288,6 +2379,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:513
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating language-humor"
 msgid "None"
 msgstr "Neniu"
@@ -2310,6 +2403,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:525
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating language-discrimination"
 msgid "None"
 msgstr "Neniu"
@@ -2332,6 +2427,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:537
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating money-advertising"
 msgid "None"
 msgstr "Neniu"
@@ -2339,6 +2436,8 @@ msgstr "Neniu"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:540
 #, fuzzy
+#| msgctxt "Menu subcategory of Development Tools"
+#| msgid "Project Management"
 msgid "Product placement"
 msgstr "Projekto-administrado"
 
@@ -2355,6 +2454,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:549
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating money-gambling"
 msgid "None"
 msgstr "Neniu"
@@ -2377,6 +2478,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:561
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating money-purchasing"
 msgid "None"
 msgstr "Neniu"
@@ -2389,6 +2492,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:567
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating social-chat"
 msgid "None"
 msgstr "Neniu"
@@ -2411,6 +2516,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:579
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating social-audio"
 msgid "None"
 msgstr "Neniu"
@@ -2423,6 +2530,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:585
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating social-contacts"
 msgid "None"
 msgstr "Neniu"
@@ -2435,6 +2544,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:591
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating social-info"
 msgid "None"
 msgstr "Neniu"
@@ -2447,6 +2558,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:597
 #, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
 msgctxt "content rating social-location"
 msgid "None"
 msgstr "Neniu"
@@ -2499,21 +2612,25 @@ msgstr ""
 #. vim: set noexpandtab:
 #: ../src/gs-shell-loading.ui.h:1
 #, fuzzy
+#| msgid "Codecs page"
 msgid "Loading page"
 msgstr "Paĝo de kodekoj"
 
 #: ../src/gs-shell-loading.ui.h:2
 #, fuzzy
+#| msgid "Setting up updates…"
 msgid "Starting up…"
 msgstr "Agordante ĝisdatigojn…"
 
 #: ../src/plugins/gs-desktop-common.c:30
+#| msgid "_All"
 msgctxt "Menu of AudioVideo"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:33
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of AudioVideo"
 msgid "Featured"
 msgstr "Elstaranta"
@@ -2525,23 +2642,29 @@ msgstr ""
 
 #: ../src/plugins/gs-desktop-common.c:42
 #, fuzzy
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Players"
 msgctxt "Menu of AudioVideo"
 msgid "Music Players"
 msgstr "Ludiloj"
 
 #: ../src/plugins/gs-desktop-common.c:51
+#| msgid "_All"
 msgctxt "Menu of Development"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:54
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Development"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:57
 #, fuzzy
+#| msgctxt "Menu subcategory of Development Tools"
+#| msgid "Debuggers"
 msgctxt "Menu of Development"
 msgid "Debuggers"
 msgstr "Sencimigiloj"
@@ -2552,59 +2675,75 @@ msgid "IDEs"
 msgstr ""
 
 #: ../src/plugins/gs-desktop-common.c:69
+#| msgid "_All"
 msgctxt "Menu of Education"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:72
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Education"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:75
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Astronomy"
 msgctxt "Menu of Education"
 msgid "Astronomy"
 msgstr "Astronomio"
 
 #: ../src/plugins/gs-desktop-common.c:78
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Chemistry"
 msgctxt "Menu of Education"
 msgid "Chemistry"
 msgstr "Kemio"
 
 #: ../src/plugins/gs-desktop-common.c:81
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Languages"
 msgctxt "Menu of Education"
 msgid "Languages"
 msgstr "Lingvoj"
 
 #: ../src/plugins/gs-desktop-common.c:85
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Math"
 msgctxt "Menu of Education"
 msgid "Math"
 msgstr "Matematiko"
 
 #: ../src/plugins/gs-desktop-common.c:94
+#| msgid "_All"
 msgctxt "Menu of Games"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:97
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Games"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:100
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Action"
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Ago"
 
 #: ../src/plugins/gs-desktop-common.c:103
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Adventure"
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Aventuro"
@@ -2617,154 +2756,202 @@ msgstr "Puzlo"
 
 #: ../src/plugins/gs-desktop-common.c:109
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Blocks"
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Blokoj"
 
 #: ../src/plugins/gs-desktop-common.c:112
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Board"
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Tabulo"
 
 #: ../src/plugins/gs-desktop-common.c:115
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Card"
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Karto"
 
 #: ../src/plugins/gs-desktop-common.c:118
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Emulators"
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Imitiloj"
 
 #: ../src/plugins/gs-desktop-common.c:121
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Kids"
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Infanoj"
 
 #: ../src/plugins/gs-desktop-common.c:124
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Logic"
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Logiko"
 
 #: ../src/plugins/gs-desktop-common.c:127
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Role Playing"
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Rolludo"
 
 #: ../src/plugins/gs-desktop-common.c:130
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Sportoj"
 
 #: ../src/plugins/gs-desktop-common.c:134
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Strategy"
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Strategio"
 
 #: ../src/plugins/gs-desktop-common.c:142
+#| msgid "_All"
 msgctxt "Menu of Graphics"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:145
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Graphics"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:148
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "3D Graphics"
 msgctxt "Menu of Graphics"
 msgid "3D Graphics"
 msgstr "3D-grafiko"
 
 #: ../src/plugins/gs-desktop-common.c:151
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Photography"
 msgctxt "Menu of Graphics"
 msgid "Photography"
 msgstr "Fotografio"
 
 #: ../src/plugins/gs-desktop-common.c:154
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Scanning"
 msgctxt "Menu of Graphics"
 msgid "Scanning"
 msgstr "Skanado"
 
 #: ../src/plugins/gs-desktop-common.c:157
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Vector Graphics"
 msgctxt "Menu of Graphics"
 msgid "Vector Graphics"
 msgstr "Vektora grafiko"
 
 #: ../src/plugins/gs-desktop-common.c:160
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Viewer"
 msgctxt "Menu of Graphics"
 msgid "Viewers"
 msgstr "Vidigilo"
 
 #: ../src/plugins/gs-desktop-common.c:168
+#| msgid "_All"
 msgctxt "Menu of Office"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:171
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Office"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:174
 #, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Calendar"
 msgctxt "Menu of Office"
 msgid "Calendar"
 msgstr "Kalendaro"
 
 #: ../src/plugins/gs-desktop-common.c:178
 #, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Database"
 msgctxt "Menu of Office"
 msgid "Database"
 msgstr "Datumbazo"
 
 #: ../src/plugins/gs-desktop-common.c:181
 #, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Finance"
 msgctxt "Menu of Office"
 msgid "Finance"
 msgstr "Financo"
 
 #: ../src/plugins/gs-desktop-common.c:185
 #, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Word Processor"
 msgctxt "Menu of Office"
 msgid "Word Processor"
 msgstr "Dokumentoredaktilo"
 
 #: ../src/plugins/gs-desktop-common.c:194
 #, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Fonts"
 msgctxt "Menu of Addons"
 msgid "Fonts"
 msgstr "Tiparoj"
 
 #: ../src/plugins/gs-desktop-common.c:197
 #, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Codecs"
 msgctxt "Menu of Addons"
 msgid "Codecs"
 msgstr "Kodekoj"
 
 #: ../src/plugins/gs-desktop-common.c:200
 #, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Input Sources"
 msgctxt "Menu of Addons"
 msgid "Input Sources"
 msgstr "Enigaj fontoj"
 
 #: ../src/plugins/gs-desktop-common.c:203
 #, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Language Packs"
 msgctxt "Menu of Addons"
 msgid "Language Packs"
 msgstr "Lingvo-pakaĵoj"
@@ -2776,116 +2963,147 @@ msgstr ""
 
 #: ../src/plugins/gs-desktop-common.c:209
 #, fuzzy
+#| msgid "An application"
 msgctxt "Menu of Addons"
 msgid "Localization"
 msgstr "Aplikaĵo"
 
 #: ../src/plugins/gs-desktop-common.c:217
+#| msgid "_All"
 msgctxt "Menu of Science"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:220
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Science"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:223
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Artificial Intelligence"
 msgctxt "Menu of Science"
 msgid "Artificial Intelligence"
 msgstr "Artefarita intelekto"
 
 #: ../src/plugins/gs-desktop-common.c:226
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Astronomy"
 msgctxt "Menu of Science"
 msgid "Astronomy"
 msgstr "Astronomio"
 
 #: ../src/plugins/gs-desktop-common.c:229
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Chemistry"
 msgctxt "Menu of Science"
 msgid "Chemistry"
 msgstr "Kemio"
 
 #: ../src/plugins/gs-desktop-common.c:232
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Math"
 msgctxt "Menu of Science"
 msgid "Math"
 msgstr "Matematiko"
 
 #: ../src/plugins/gs-desktop-common.c:237
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Robotics"
 msgctxt "Menu of Science"
 msgid "Robotics"
 msgstr "Robotiko"
 
 #: ../src/plugins/gs-desktop-common.c:245
+#| msgid "_All"
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:248
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Communication"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:251
 #, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Chat"
 msgctxt "Menu of Communication"
 msgid "Chat"
 msgstr "Babilejo"
 
 #: ../src/plugins/gs-desktop-common.c:258
 #, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "News"
 msgctxt "Menu of Communication"
 msgid "News"
 msgstr "Novaĵoj"
 
 #: ../src/plugins/gs-desktop-common.c:262
 #, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Web Browser"
 msgctxt "Menu of Communication"
 msgid "Web Browsers"
 msgstr "Retumilo"
 
 #: ../src/plugins/gs-desktop-common.c:270
+#| msgid "_All"
 msgctxt "Menu of Utility"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:273
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Utility"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:276
 #, fuzzy
+#| msgctxt "Menu subcategory of Utilities"
+#| msgid "Text Editor"
 msgctxt "Menu of Utility"
 msgid "Text Editors"
 msgstr "Tekstredaktilo"
 
 #: ../src/plugins/gs-desktop-common.c:284
+#| msgid "_All"
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "Ĉiuj"
 
 #: ../src/plugins/gs-desktop-common.c:287
 #, fuzzy
+#| msgid "Featured"
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "Elstaranta"
 
 #: ../src/plugins/gs-desktop-common.c:290
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Art"
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Arto"
 
 #: ../src/plugins/gs-desktop-common.c:293
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Geography"
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Geografio"
@@ -2893,6 +3111,8 @@ msgstr "Geografio"
 #: ../src/plugins/gs-desktop-common.c:296
 #: ../src/plugins/gs-desktop-common.c:299
 #, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Action"
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Ago"
@@ -2904,6 +3124,7 @@ msgstr ""
 
 #: ../src/plugins/gs-desktop-common.c:305
 #, fuzzy
+#| msgid "History"
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Historio"
@@ -2915,12 +3136,16 @@ msgstr ""
 
 #: ../src/plugins/gs-desktop-common.c:311
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Robotics"
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Robotiko"
 
 #: ../src/plugins/gs-desktop-common.c:314
 #, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Sportoj"
@@ -2933,6 +3158,7 @@ msgstr ""
 #. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/gs-desktop-common.c:326
 #, fuzzy
+#| msgid "Development Tools"
 msgid "Developer Tools"
 msgstr "Programiloj"
 
@@ -2949,6 +3175,8 @@ msgstr "Ludoj"
 #. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/gs-desktop-common.c:335
 #, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Photography"
 msgid "Graphics & Photography"
 msgstr "Fotografio"
 
@@ -2970,6 +3198,8 @@ msgstr ""
 #. TRANSLATORS: this is the menu spec main category for Reference
 #: ../src/plugins/gs-desktop-common.c:350
 #, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Video Conference"
 msgid "Reference"
 msgstr "Video-konferenco"
 

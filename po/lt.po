@@ -7,8 +7,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-14 12:14+0300\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-07-28 12:22+0000\n"
 "PO-Revision-Date: 2016-08-03 21:46+0300\n"
 "Last-Translator: Aurimas Černius <aurisc4@gmail.com>\n"
 "Language-Team: Lietuvių <gnome-lt@lists.akl.lt>\n"
@@ -47,35 +48,6 @@ msgstr ""
 "naudingais aprašymais bei kelios ekrano nuotraukomis kiekvienai programai. "
 "Programas galima rasti naršant po kategorijų sąrašą arba ieškant. Taip pat "
 "galima atnaujinti sistemą naudojant atnaujinimą atsijungus."
-
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
-#, fuzzy
-msgid "Overview panel"
-msgstr "Apžvalgos puslapis"
-
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
-#, fuzzy
-msgid "Details panel"
-msgstr "Detalių puslapis"
-
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
-#, fuzzy
-msgid "Installed panel"
-msgstr "Įdiegtų puslapis"
-
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
-#, fuzzy
-msgid "Updates panel"
-msgstr "Atnaujinimų puslapis"
-
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
-#, fuzzy
-msgid "The update details"
-msgstr "Paskutinio atnaujinimo laiko žyma"
-
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
-msgid "The GNOME Project"
-msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -485,18 +457,18 @@ msgstr "Tęsti"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:193
+#: ../src/gs-category.c:181
 msgid "Other"
 msgstr "Kita"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:198
+#: ../src/gs-category.c:186
 msgid "All"
 msgstr "Visos"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:202
+#: ../src/gs-category.c:190
 msgid "Featured"
 msgstr "Siūlomos"
 
@@ -643,12 +615,14 @@ msgstr "Paruošiama %s"
 #. * source name, e.g. 'GNOME Nightly'
 #: ../src/gs-page.c:456
 #, c-format
+#| msgid "Are you sure you want to remove %s?"
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Ar tikrai norite pašalinti %s šaltinį?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-page.c:460
 #, c-format
+#| msgid "%s will be removed, and you will have to install it to use it again."
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the source to use them again."
@@ -671,24 +645,24 @@ msgstr "%s bus pašalinta, norint naudotis, reikės vėl įdiegti."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1040
+#: ../src/gs-plugin-loader.c:1026
 msgid "OS Updates"
 msgstr "OS atnaujinimai"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1045
+#: ../src/gs-plugin-loader.c:1031
 msgid "Includes performance, stability and security improvements."
 msgstr "Turi našumo, stabilumo bei saugumo patobulinimus."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nėra papildomų kodekų %s formatui."
 
-#: ../src/gs-plugin-loader.c:1724
+#: ../src/gs-plugin-loader.c:1707
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -957,66 +931,66 @@ msgid "Removing…"
 msgstr "Šalinama…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:685
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Šią programą galima naudoti tik esant aktyviam interneto ryšiui."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:809
+#: ../src/gs-shell-details.c:812
 msgctxt "version"
 msgid "Unknown"
 msgstr "Nežinoma"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:843
+#: ../src/gs-shell-details.c:844
 msgctxt "updated"
 msgid "Never"
 msgstr "Niekada"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:889
+#: ../src/gs-shell-details.c:890
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Nežinoma"
 
-#: ../src/gs-shell-details.c:1307
+#: ../src/gs-shell-details.c:1308
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nepavyko rasti „%s“"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1365
+#: ../src/gs-shell-details.c:1366
 msgid "The file is not supported."
 msgstr "Failas yra nepalaikomas."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Atleiskite, tai nesuveikė"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1728
+#: ../src/gs-shell-details.c:1729
 msgid "Public domain"
 msgstr "Visuotinio naudojimo"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1745 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Laisva programinė įranga"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1799
+#: ../src/gs-shell-details.c:1800
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Naudotojams taikoma ši licencija:"
 msgstr[1] "Naudotojams taikomos šios licencijos:"
 msgstr[2] "Naudotojams taikomos šios licencijos:"
 
-#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Daugiau informacijos"
 
@@ -1097,7 +1071,7 @@ msgstr "Naudoti tik patikimą programinę įrangą."
 msgid "_Website"
 msgstr "_Tinklalapis"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:790
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:783
 msgid "Details"
 msgstr "Detali informacija"
 
@@ -1700,6 +1674,8 @@ msgstr "Nebuvo įdiegta programų ar priedų; gali būti kitos programinės įra
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:98
 #, c-format
+#| msgid "%i application installed"
+#| msgid_plural "%i applications installed"
 msgid "%u application installed"
 msgid_plural "%u applications installed"
 msgstr[0] "Įdiegta %u programa"
@@ -1710,6 +1686,8 @@ msgstr[2] "Įdiegta %u programų"
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:104
 #, c-format
+#| msgid "%i add-on installed"
+#| msgid_plural "%i add-ons installed"
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
 msgstr[0] "Įdiegtas %u priedas"
@@ -1721,6 +1699,8 @@ msgstr[2] "Įdiegta %u priedų"
 #. The correct form here depends on the number of applications.
 #: ../src/gs-sources-dialog.c:111
 #, c-format
+#| msgid "%i application"
+#| msgid_plural "%i applications"
 msgid "%u application"
 msgid_plural "%u applications"
 msgstr[0] "%u programa"
@@ -1732,6 +1712,8 @@ msgstr[2] "%u programų"
 #. The correct form here depends on the number of add-ons.
 #: ../src/gs-sources-dialog.c:117
 #, c-format
+#| msgid "%i add-on"
+#| msgid_plural "%i add-ons"
 msgid "%u add-on"
 msgid_plural "%u add-ons"
 msgstr[0] "%u priedas"
@@ -2497,7 +2479,7 @@ msgstr "Dalinimasis savo fizine būvimo vieta su kitais naudotojais"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:771
+#: ../src/gs-common.c:764
 msgid "Detailed errors from the package manager follow:"
 msgstr "Detalios klaidos iš paketų tvarkytuvės:"
 
