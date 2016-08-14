@@ -8,9 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-07-25 09:43+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-14 12:14+0300\n"
 "PO-Revision-Date: 2016-07-27 08:11+0100\n"
 "Last-Translator: Tiago Santos <tiagofsantos81@sapo.pt>\n"
 "Language-Team: Português <>\n"
@@ -50,6 +49,35 @@ msgstr ""
 "encontradas tanto navegando a lista de categorias com procurando. Também "
 "permite que atualize o seu sistema utilizando uma atualização sem estar "
 "ligado à Internet."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#, fuzzy
+msgid "Overview panel"
+msgstr "Página de visão geral"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#, fuzzy
+msgid "Details panel"
+msgstr "Página de detalhes"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#, fuzzy
+msgid "Installed panel"
+msgstr "Página de instaladas"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#, fuzzy
+msgid "Updates panel"
+msgstr "Página das atualizações"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#, fuzzy
+msgid "The update details"
+msgstr "O data e hora da última atualização"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -398,7 +426,7 @@ msgstr "Instalar"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:466
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:487
 msgid "Remove"
 msgstr "Remover"
 
@@ -468,18 +496,18 @@ msgstr "Continuar"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Outros"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Todas"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "Destaques"
 
@@ -622,39 +650,54 @@ msgstr "Histórico"
 msgid "Prepare %s"
 msgstr "Preparar %s"
 
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:457
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * source name, e.g. 'GNOME Nightly'
+#: ../src/gs-page.c:456
+#, fuzzy, c-format
+msgid "Are you sure you want to remove the %s source?"
+msgstr "Tem certeza que quer remover %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:460
+#, fuzzy, c-format
+msgid ""
+"All applications from %s will be removed, and you will have to re-install "
+"the source to use them again."
+msgstr "%s será removido e para utilizá-lo novamente, terá de o instalar."
+
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:468
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Tem certeza que quer remover %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:462
+#: ../src/gs-page.c:471
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s será removido e para utilizá-lo novamente, terá de o instalar."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1026
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Atualizações do SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1031
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclui melhorias de desempenho, estabilidade e segurança."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Não há complementos de codecs disponíveis para o formato %s."
 
-#: ../src/gs-plugin-loader.c:1707
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -924,7 +967,7 @@ msgid "Removing…"
 msgstr "A remover…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:684
+#: ../src/gs-shell-details.c:682
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -932,7 +975,7 @@ msgstr ""
 "Esta aplicação só pode ser usada se tiver uma ligação à Internet ativa."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:811
+#: ../src/gs-shell-details.c:809
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconhecido"
@@ -1064,7 +1107,7 @@ msgstr "Utilize apenas fontes de aplicações em que confie."
 msgid "_Website"
 msgstr "Página _Web"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:783
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:790
 msgid "Details"
 msgstr "Detalhes"
 
@@ -2462,7 +2505,7 @@ msgstr "Partilha de localizações físicas de outros utilizadores"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:764
+#: ../src/gs-common.c:771
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gestor de pacotes:"
 

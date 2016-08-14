@@ -6,9 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-07-28 12:22+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-14 12:14+0300\n"
 "PO-Revision-Date: 2016-08-07 18:45+0200\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <fur@li.org>\n"
@@ -47,6 +46,35 @@ msgstr ""
 "aplicazions a puedin jessi cjatadis sedial esplorant la liste des categoriis "
 "sedial doprant la ricercje. Al permet ancje di inzornâ il sisteme doprant un "
 "inzornament fûr rêt."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#, fuzzy
+msgid "Overview panel"
+msgstr "Pagjine panoramiche"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#, fuzzy
+msgid "Details panel"
+msgstr "Pagjine di detais"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#, fuzzy
+msgid "Installed panel"
+msgstr "Pagjine instalade"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#, fuzzy
+msgid "Updates panel"
+msgstr "Pagjine inzornaments"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#, fuzzy
+msgid "The update details"
+msgstr "La date dal ultin inzornament"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -464,18 +492,18 @@ msgstr "Continue"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Altri"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Dutis"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "In risalt"
 
@@ -650,24 +678,24 @@ msgstr "%s e vegnarà gjavade e par podêle doprâ di gnûf tu varâs di instal�
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1026
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Inzornament dal SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1031
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Al inclût mioraments di prestazion, stabilitât e sigurece."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nol è disponibil nissun codec pal formât %s."
 
-#: ../src/gs-plugin-loader.c:1707
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -936,7 +964,7 @@ msgid "Removing…"
 msgstr "Daûr a gjavâ..."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:685
+#: ../src/gs-shell-details.c:682
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -945,58 +973,58 @@ msgstr ""
 "conession internet."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:812
+#: ../src/gs-shell-details.c:809
 msgctxt "version"
 msgid "Unknown"
 msgstr "No cognossude"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:844
+#: ../src/gs-shell-details.c:843
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:890
+#: ../src/gs-shell-details.c:889
 msgctxt "origin"
 msgid "Unknown"
 msgstr "No cognossude"
 
-#: ../src/gs-shell-details.c:1308
+#: ../src/gs-shell-details.c:1307
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Impussibil cjatâ '%s'"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1366
+#: ../src/gs-shell-details.c:1365
 msgid "The file is not supported."
 msgstr "Il file nol è supuartât."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Chest nol à funzionât"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1729
+#: ../src/gs-shell-details.c:1728
 msgid "Public domain"
 msgstr "Domini public"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1745 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Software Libar"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1800
+#: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "I utents a son limitâts de licence chi daurman:"
 msgstr[1] "I utents a son limitâts des licencis chi daurman:"
 
-#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Plui informazions"
 
@@ -1077,7 +1105,7 @@ msgstr "Dopre nome lis sorzints software che tu ti fidis."
 msgid "_Website"
 msgstr "Sît _web"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:783
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:790
 msgid "Details"
 msgstr "Detais"
 
@@ -2477,7 +2505,7 @@ msgstr "Condivision posizion fisiche cun altris utents"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:764
+#: ../src/gs-common.c:771
 msgid "Detailed errors from the package manager follow:"
 msgstr "Chi daspò i erôrs in detai dal gjestôr dai pachets:"
 

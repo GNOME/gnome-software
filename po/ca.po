@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-29 22:06+0200\n"
+"POT-Creation-Date: 2016-08-14 12:14+0300\n"
 "PO-Revision-Date: 2016-07-30 11:22+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -47,8 +47,37 @@ msgstr ""
 "El Programari del GNOME mostra aplicacions populars i destacades amb "
 "descripcions útils i amb múltiples captures de pantalla per aplicació. Les "
 "aplicacions es poden trobar tan navegant per la llista de categories com "
-"cercant. També us permet actualitzar el sistema utilitzant "
-"l'actualització fora de línia."
+"cercant. També us permet actualitzar el sistema utilitzant l'actualització "
+"fora de línia."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#, fuzzy
+msgid "Overview panel"
+msgstr "Pàgina de resum"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#, fuzzy
+msgid "Details panel"
+msgstr "Pàgina de detalls"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#, fuzzy
+msgid "Installed panel"
+msgstr "Pàgina d'instal·lació"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#, fuzzy
+msgid "Updates panel"
+msgstr "Pàgina d'actualitzacions"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#, fuzzy
+msgid "The update details"
+msgstr "La marca horària de l'última actualització"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -71,8 +100,8 @@ msgid ""
 "If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
 msgstr ""
-"Si s'habilita, el Programari del GNOME baixa actualitzacions automàticament en "
-"segon pla i demana a l'usuari instal·lar-les quan estan llestes."
+"Si s'habilita, el Programari del GNOME baixa actualitzacions automàticament "
+"en segon pla i demana a l'usuari instal·lar-les quan estan llestes."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
 msgid "Whether it's the very first run of GNOME Software"
@@ -84,7 +113,8 @@ msgstr "Mostra les valoracions en estrelles al costat de les aplicacions"
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Non-free applications show a warning dialog before install"
-msgstr "Les aplicacions no lliures mostren un diàleg d'avís abans d'instal·lar-se"
+msgstr ""
+"Les aplicacions no lliures mostren un diàleg d'avís abans d'instal·lar-se"
 
 #: ../data/org.gnome.software.gschema.xml.h:8
 msgid ""
@@ -161,7 +191,8 @@ msgstr ""
 #: ../data/org.gnome.software.gschema.xml.h:22
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Instal·la paquets d'aplicacions per a tots els usuaris del sistema quan sigui possible "
+"Instal·la paquets d'aplicacions per a tots els usuaris del sistema quan "
+"sigui possible "
 
 #: ../data/org.gnome.software.gschema.xml.h:23
 msgid "Show the folder management UI"
@@ -460,18 +491,18 @@ msgstr "Continua"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Altres"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Tots"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "Destacat"
 
@@ -627,7 +658,9 @@ msgstr "Esteu segur de voler suprimir la font %s?"
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the source to use them again."
-msgstr "Se suprimiran totes les aplicacions de %s. Haureu d'instal·lar-les per utilitzar-les de nou."
+msgstr ""
+"Se suprimiran totes les aplicacions de %s. Haureu d'instal·lar-les per "
+"utilitzar-les de nou."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
@@ -644,24 +677,24 @@ msgstr "Se suprimirà %s i haureu d'instal·lar-la per utilitzar-la de nou."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1026
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Actualitzacions del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1031
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclou millores de rendiment, d'estabilitat i de seguretat."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No s'ha trobat cap còdec disponible per al format %s."
 
-#: ../src/gs-plugin-loader.c:1707
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -676,8 +709,9 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
-"Alguns dels programes actualment instal·lats no són compatibles amb %s. Si continueu, "
-"els programes següents seran suprimits automàticament durant l'actualització:"
+"Alguns dels programes actualment instal·lats no són compatibles amb %s. Si "
+"continueu, els programes següents seran suprimits automàticament durant "
+"l'actualització:"
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
@@ -772,8 +806,8 @@ msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr ""
-"Doneu un resum curt de la ressenya. Per exemple, «una aplicació molt "
-"bona que recomano»."
+"Doneu un resum curt de la ressenya. Per exemple, «una aplicació molt bona "
+"que recomano»."
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
@@ -928,7 +962,7 @@ msgid "Removing…"
 msgstr "S'està suprimint…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:685
+#: ../src/gs-shell-details.c:682
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -937,58 +971,58 @@ msgstr ""
 "Internet."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:812
+#: ../src/gs-shell-details.c:809
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconeguda"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:844
+#: ../src/gs-shell-details.c:843
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:890
+#: ../src/gs-shell-details.c:889
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconegut"
 
-#: ../src/gs-shell-details.c:1308
+#: ../src/gs-shell-details.c:1307
 #, c-format
 msgid "Could not find '%s'"
 msgstr "No s'ha pogut trobar «%s»."
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1366
+#: ../src/gs-shell-details.c:1365
 msgid "The file is not supported."
 msgstr "El fitxer no està suportat."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1376 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "No ha funcionat"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1729
+#: ../src/gs-shell-details.c:1728
 msgid "Public domain"
 msgstr "Domini públic"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1745 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Programari lliure"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1800
+#: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Els usuaris estan lligats a la següent llicència:"
 msgstr[1] "Els usuaris estan lligats a les següents llicències:"
 
-#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Més informació"
 
@@ -1058,8 +1092,8 @@ msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
 msgstr ""
-"En afegir aquesta font de programari tindreu accés a programari i actualitzacions "
-"addicionals."
+"En afegir aquesta font de programari tindreu accés a programari i "
+"actualitzacions addicionals."
 
 #: ../src/gs-shell-details.ui.h:21
 msgid "Only use software sources that you trust."
@@ -1069,7 +1103,7 @@ msgstr "Utilitzeu només fonts de programari de confiança."
 msgid "_Website"
 msgstr "Lloc _web"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:783
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:790
 msgid "Details"
 msgstr "Detalls"
 
@@ -1164,7 +1198,8 @@ msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
 msgstr ""
-"Això vol dir que el programari pot ser lliurement usat, copiat, distribuït, estudiat i modificat."
+"Això vol dir que el programari pot ser lliurement usat, copiat, distribuït, "
+"estudiat i modificat."
 
 #: ../src/gs-shell-details.ui.h:53
 msgid "Proprietary Software"
@@ -1176,8 +1211,9 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
-"Això vol dir que el programari és propietat d'una persona o empresa. Hi ha habitualment "
-"restriccions en el seu ús i normalment no es pot accedir al seu codi font."
+"Això vol dir que el programari és propietat d'una persona o empresa. Hi ha "
+"habitualment restriccions en el seu ús i normalment no es pot accedir al seu "
+"codi font."
 
 #: ../src/gs-shell-details.ui.h:56
 msgid "Unknown Software License"
@@ -2141,12 +2177,14 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:417
 msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr "Personatges en situacions insegures fàcilment distingibles de la realitat"
+msgstr ""
+"Personatges en situacions insegures fàcilment distingibles de la realitat"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:420
 msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr "Personatges en conflictes agressius fàcilment distingibles de la realitat"
+msgstr ""
+"Personatges en conflictes agressius fàcilment distingibles de la realitat"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:423
@@ -2474,7 +2512,7 @@ msgstr "Compartició la ubicació física amb altres usuaris"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:764
+#: ../src/gs-common.c:771
 msgid "Detailed errors from the package manager follow:"
 msgstr "Els errors detallats del gestor de paquets es mostren a continuació:"
 

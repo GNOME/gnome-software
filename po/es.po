@@ -8,9 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-08-08 15:59+0000\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-14 12:14+0300\n"
 "PO-Revision-Date: 2016-08-09 13:04+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
@@ -49,6 +48,35 @@ msgstr ""
 "se pueden encontrar a navegando por la lista de categorías o buscando. "
 "También le permite actualizar su sistema mediante una actualización en modo "
 "desconectado."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#, fuzzy
+msgid "Overview panel"
+msgstr "Página de vista general"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#, fuzzy
+msgid "Details panel"
+msgstr "Página de detalles"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#, fuzzy
+msgid "Installed panel"
+msgstr "Página de instalados"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#, fuzzy
+msgid "Updates panel"
+msgstr "Página de actualizaciones"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#, fuzzy
+msgid "The update details"
+msgstr "La marca de tiempo de la última actualización"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -256,7 +284,7 @@ msgstr "_Instalado"
 msgid "_Updates"
 msgstr "_Actualizaciones"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:442
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
 #: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "Pendiente"
@@ -404,13 +432,7 @@ msgid "Device cannot be used during update."
 msgstr "No se puede usar el dispositivo durante la actualización."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339
-#| msgid "Unknown"
-msgid "unknown"
-msgstr "desconocido"
-
-#. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:343 ../src/gs-shell-details.ui.h:34
+#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
 msgid "Source"
 msgstr "Fuente"
 
@@ -470,18 +492,18 @@ msgstr "Continuar"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Otros"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Todo"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "Destacado"
 
@@ -656,24 +678,24 @@ msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo.
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1041
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1046
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Incluye mejoras en el rendimiento, la estabilidad y la seguridad."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1722 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No hay códecs disponibles para el formato %s."
 
-#: ../src/gs-plugin-loader.c:1725
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -957,52 +979,52 @@ msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:841
+#: ../src/gs-shell-details.c:843
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:887
+#: ../src/gs-shell-details.c:889
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../src/gs-shell-details.c:1305
+#: ../src/gs-shell-details.c:1307
 #, c-format
 msgid "Could not find '%s'"
 msgstr "No se pudo encontrar «%s»"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1363
+#: ../src/gs-shell-details.c:1365
 msgid "The file is not supported."
 msgstr "El archivo no está soportado."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1373 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Esto no ha funcionado"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1726
+#: ../src/gs-shell-details.c:1728
 msgid "Public domain"
 msgstr "Dominio público"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1742 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Software libre"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1797
+#: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Los usuarios están limitados por la siguiente licencia:"
 msgstr[1] "Los usuarios están limitados por las siguientes licencias:"
 
-#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Más información"
 
@@ -2941,6 +2963,10 @@ msgstr "Referencia"
 #: ../src/plugins/gs-desktop-common.c:353
 msgid "Utilities"
 msgstr "Utilidades"
+
+#~| msgid "Unknown"
+#~ msgid "unknown"
+#~ msgstr "desconocido"
 
 #~ msgid "3rd party"
 #~ msgstr "terceras partes"
