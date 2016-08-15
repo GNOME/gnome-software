@@ -46,6 +46,26 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2016-08-15" version="3.21.90">
+      <description>
+        <p>
+          This is an unstable release in the 3.21 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Limit the ODRS moderation queue to a specific language</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Correctly load .flatpakrepo files</li>
+          <li>Don't get the download size for installed flatpak packages</li>
+          <li>Fix showing the progress bar when installing apps</li>
+          <li>Never try to modify the application name</li>
+          <li>Only notify about upgrades once per month</li>
+        </ul>
+        <p>This release also updates translations for many languages.</p>
+      </description>
+    </release>
     <release date="2016-07-18" version="3.21.4">
       <description>
         <p>
