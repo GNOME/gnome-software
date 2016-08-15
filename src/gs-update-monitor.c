@@ -200,6 +200,31 @@ get_updates_finished_cb (GObject *object,
 	}
 }
 
+static gboolean
+should_show_upgrade_notification (GsUpdateMonitor *monitor)
+{
+	GTimeSpan d;
+	gint64 tmp;
+	g_autoptr(GDateTime) now = NULL;
+	g_autoptr(GDateTime) then = NULL;
+
+	g_settings_get (monitor->settings, "upgrade-notification-timestamp", "x", &tmp);
+	if (tmp == 0)
+		return TRUE;
+	then = g_date_time_new_from_unix_local (tmp);
+	if (then == NULL) {
+		g_warning ("failed to parse timestamp %" G_GINT64_FORMAT, tmp);
+		return TRUE;
+	}
+
+	now = g_date_time_new_now_local ();
+	d = g_date_time_difference (now, then);
+	if (d >= 30 * G_TIME_SPAN_DAY)
+		return TRUE;
+
+	return FALSE;
+}
+
 static void
 get_upgrades_finished_cb (GObject *object,
 			  GAsyncResult *res,
@@ -232,6 +257,10 @@ get_upgrades_finished_cb (GObject *object,
 
 	/* do not show if gnome-software is already open */
 	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
+		return;
+
+	/* only nag about upgrades once per month */
+	if (!should_show_upgrade_notification (monitor))
 		return;
 
 	/* just get the first result : FIXME, do we sort these by date? */
