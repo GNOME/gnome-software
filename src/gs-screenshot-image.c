@@ -318,12 +318,12 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				GCancellable *cancellable)
 {
 	AsImage *im = NULL;
-	SoupURI *base_uri = NULL;
 	const gchar *url;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *cache_kind = NULL;
 	g_autofree gchar *cachefn_thumb = NULL;
 	g_autofree gchar *sizedir = NULL;
+	g_autoptr(SoupURI) base_uri = NULL;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 
@@ -422,7 +422,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		/* TRANSLATORS: this is when we try to download a screenshot
 		 * that was not a valid URL */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not valid"));
-		soup_uri_free (base_uri);
 		return;
 	}
 
@@ -438,7 +437,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	if (ssimg->message == NULL) {
 		/* TRANSLATORS: this is when networking is not available */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not available"));
-		soup_uri_free (base_uri);
 		return;
 	}
 
@@ -447,7 +445,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				    g_object_ref (ssimg->message) /* transfer full */,
 				    gs_screenshot_image_complete_cb,
 				    g_object_ref (ssimg));
-	soup_uri_free (base_uri);
 }
 
 static void
