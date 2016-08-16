@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-08-08 15:59+0000\n"
-"PO-Revision-Date: 2016-08-09 13:04+0200\n"
+"software&keywords=I18N+L10N&component=General\n"
+"POT-Creation-Date: 2016-08-15 07:56+0000\n"
+"PO-Revision-Date: 2016-08-16 12:18+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -49,6 +49,35 @@ msgstr ""
 "se pueden encontrar a navegando por la lista de categorías o buscando. "
 "También le permite actualizar su sistema mediante una actualización en modo "
 "desconectado."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#| msgid "Overview page"
+msgid "Overview panel"
+msgstr "Página de vista general"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#| msgid "Details page"
+msgid "Details panel"
+msgstr "Panel de detalles"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#| msgid "Installed page"
+msgid "Installed panel"
+msgstr "Panel de instalados"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#| msgid "Updates page"
+msgid "Updates panel"
+msgstr "Panel de actualizaciones"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#| msgid "The last update timestamp"
+msgid "The update details"
+msgstr "Los detalles de la actualización"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr "El proyecto GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -123,62 +152,67 @@ msgid "The last update check timestamp"
 msgstr "La marca de tiempo de la última comprobación de actualizaciones"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
+#| msgid "The last update timestamp"
+msgid "The last upgrade notification timestamp"
+msgstr "La marca de tiempo de la última notificación de actualización"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
 "La marca de tiempo de la primera actualización de seguridad, eliminada "
 "después de actualizar"
 
-#: ../data/org.gnome.software.gschema.xml.h:15
+#: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The last update timestamp"
 msgstr "La marca de tiempo de la última actualización"
 
-#: ../data/org.gnome.software.gschema.xml.h:16
+#: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The server to use for application reviews"
 msgstr "El servidor que usar para las opiniones sobre las aplicaciones"
 
-#: ../data/org.gnome.software.gschema.xml.h:17
+#: ../data/org.gnome.software.gschema.xml.h:18
 msgid "The minimum karma score for reviews"
 msgstr "La puntuación mínima de karma para las opiniones"
 
-#: ../data/org.gnome.software.gschema.xml.h:18
+#: ../data/org.gnome.software.gschema.xml.h:19
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Las opiniones con menos karma que este número no se mostrarán."
 
-#: ../data/org.gnome.software.gschema.xml.h:19
+#: ../data/org.gnome.software.gschema.xml.h:20
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
 "Una lista de fuentes oficiales que no se deben considerar terceras partes"
 
-#: ../data/org.gnome.software.gschema.xml.h:20
+#: ../data/org.gnome.software.gschema.xml.h:21
 msgid "A list of official sources that should be considered free software"
 msgstr "Una lista de fuentes oficiales que se deben considerar software libre"
 
-#: ../data/org.gnome.software.gschema.xml.h:21
+#: ../data/org.gnome.software.gschema.xml.h:22
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "El URL de la licencia que usar cuando se deba considerar que una aplicación "
 "es software libre"
 
-#: ../data/org.gnome.software.gschema.xml.h:22
+#: ../data/org.gnome.software.gschema.xml.h:23
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Instalar paquetes de aplicaciones para todos los usuarios del sistema cuando "
 "sea posible"
 
-#: ../data/org.gnome.software.gschema.xml.h:23
+#: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Show the folder management UI"
 msgstr "Mostrar la IU de gestión de carpetas"
 
-#: ../data/org.gnome.software.gschema.xml.h:24
+#: ../data/org.gnome.software.gschema.xml.h:25
 msgid "Allow access to the Software Sources dialog"
 msgstr "Permitir acceso al diálogo de fuentes de software"
 
-#: ../data/org.gnome.software.gschema.xml.h:25
+#: ../data/org.gnome.software.gschema.xml.h:26
 msgid "Offer upgrades for pre-releases"
 msgstr "Ofrece actualizaciones para publicaciones preliminares"
 
-#: ../data/org.gnome.software.gschema.xml.h:26
+#: ../data/org.gnome.software.gschema.xml.h:27
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Mostrar algunos elementos de la IU que informen al usuario que la aplicación "
@@ -256,7 +290,7 @@ msgstr "_Instalado"
 msgid "_Updates"
 msgstr "_Actualizaciones"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:442
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
 #: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "Pendiente"
@@ -348,7 +382,7 @@ msgstr "Mostrar el número de versión"
 
 #: ../src/gs-application.c:371
 msgid "translator-credits"
-msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013 - 2016"
+msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013-2016"
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:375
@@ -404,13 +438,7 @@ msgid "Device cannot be used during update."
 msgstr "No se puede usar el dispositivo durante la actualización."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339
-#| msgid "Unknown"
-msgid "unknown"
-msgstr "desconocido"
-
-#. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:343 ../src/gs-shell-details.ui.h:34
+#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
 msgid "Source"
 msgstr "Fuente"
 
@@ -470,18 +498,18 @@ msgstr "Continuar"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Otros"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Todo"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "Destacado"
 
@@ -656,24 +684,24 @@ msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo.
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1041
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1046
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Incluye mejoras en el rendimiento, la estabilidad y la seguridad."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1722 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No hay códecs disponibles para el formato %s."
 
-#: ../src/gs-plugin-loader.c:1725
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -957,52 +985,52 @@ msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:841
+#: ../src/gs-shell-details.c:843
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:887
+#: ../src/gs-shell-details.c:889
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../src/gs-shell-details.c:1305
+#: ../src/gs-shell-details.c:1307
 #, c-format
 msgid "Could not find '%s'"
 msgstr "No se pudo encontrar «%s»"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1363
+#: ../src/gs-shell-details.c:1365
 msgid "The file is not supported."
 msgstr "El archivo no está soportado."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1373 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Esto no ha funcionado"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1726
+#: ../src/gs-shell-details.c:1728
 msgid "Public domain"
 msgstr "Dominio público"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1742 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Software libre"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1797
+#: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Los usuarios están limitados por la siguiente licencia:"
 msgstr[1] "Los usuarios están limitados por las siguientes licencias:"
 
-#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Más información"
 
@@ -1861,39 +1889,39 @@ msgstr "Ver"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:242
+#: ../src/gs-update-monitor.c:271
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Hay una versión nueva de %s disponible para instalar"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:246
+#: ../src/gs-update-monitor.c:275
 msgid "Software Upgrade Available"
 msgstr "Actualización de software disponible"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:433
+#: ../src/gs-update-monitor.c:462
 msgid "Software Updates Failed"
 msgstr "Falló la actualización de software"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:435
+#: ../src/gs-update-monitor.c:464
 msgid "An important OS update failed to be installed."
 msgstr "Falló al instalar una actualización importante del sistema operativo."
 
-#: ../src/gs-update-monitor.c:436
+#: ../src/gs-update-monitor.c:465
 msgid "Show Details"
 msgstr "Mostrar detalles"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:458
+#: ../src/gs-update-monitor.c:487
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Actualización de software instalada"
 msgstr[1] "Actualizaciones de software instaladas"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:462
+#: ../src/gs-update-monitor.c:491
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Se ha instalado una actualización del sistema operativo importante."
@@ -1904,30 +1932,30 @@ msgstr[1] "Se han instalado actualizaciones del sistema operativo importantes."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:473
+#: ../src/gs-update-monitor.c:502
 msgctxt "updates"
 msgid "Review"
 msgstr "Opinar"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:517
+#: ../src/gs-update-monitor.c:546
 msgid "Failed To Update"
 msgstr "Falló al actualizar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:523
+#: ../src/gs-update-monitor.c:552
 msgid "The system was already up to date."
 msgstr "El sistema ya estaba actualizado."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:528
+#: ../src/gs-update-monitor.c:557
 msgid "The update was cancelled."
 msgstr "Se canceló la actualización."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:534
+#: ../src/gs-update-monitor.c:563
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1936,7 +1964,7 @@ msgstr ""
 "Internet e inténtelo de nuevo."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:540
+#: ../src/gs-update-monitor.c:569
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1945,7 +1973,7 @@ msgstr ""
 "proveedor de software para obtener más detalles."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:546
+#: ../src/gs-update-monitor.c:575
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -1953,7 +1981,7 @@ msgstr ""
 "nuevo."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:551
+#: ../src/gs-update-monitor.c:580
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -2941,6 +2969,10 @@ msgstr "Referencia"
 #: ../src/plugins/gs-desktop-common.c:353
 msgid "Utilities"
 msgstr "Utilidades"
+
+#~| msgid "Unknown"
+#~ msgid "unknown"
+#~ msgstr "desconocido"
 
 #~ msgid "3rd party"
 #~ msgstr "terceras partes"
