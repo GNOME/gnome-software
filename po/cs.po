@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-08-08 15:59+0000\n"
-"PO-Revision-Date: 2016-08-09 13:26+0200\n"
+"software&keywords=I18N+L10N&component=General\n"
+"POT-Creation-Date: 2016-08-15 07:56+0000\n"
+"PO-Revision-Date: 2016-08-17 13:50+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: čeština <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -49,6 +49,30 @@ msgstr ""
 "srozumitelného popisu a několika snímků obrazovky. Aplikace můžete najít buď "
 "ručním procházení podle kategorií nebo pomocí textového vyhledávání. Rovněž "
 "můžete aktualizovat svůj systém a to i bez aktuálního připojení k Internetu."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+msgid "Overview panel"
+msgstr "Panel s přehledem"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+msgid "Details panel"
+msgstr "Panel s podrobnostmi a softwaru"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+msgid "Installed panel"
+msgstr "Panel s nainstalovaným softwarem"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+msgid "Updates panel"
+msgstr "Panel s aktualizacemi"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+msgid "The update details"
+msgstr "Podrobnosti o aktualizaci"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr "Projekt GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -120,62 +144,64 @@ msgid "The last update check timestamp"
 msgstr "Datum a čas poslední kontroly aktualizací"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
+msgid "The last upgrade notification timestamp"
+msgstr "Datum a čas posledního upozornění na povýšení"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The timestamp of the first security update, cleared after update"
 msgstr "Datum a čas první bezpečnostní aktualizace, smaže se po aktualizaci"
 
-#: ../data/org.gnome.software.gschema.xml.h:15
+#: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The last update timestamp"
 msgstr "Datum a čas poslední aktualizace"
 
-#: ../data/org.gnome.software.gschema.xml.h:16
+#: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The server to use for application reviews"
 msgstr "Server, který se má používat pro recenze aktualizací"
 
-#: ../data/org.gnome.software.gschema.xml.h:17
+#: ../data/org.gnome.software.gschema.xml.h:18
 msgid "The minimum karma score for reviews"
 msgstr "Minimální karma pro recenze"
 
-#: ../data/org.gnome.software.gschema.xml.h:18
+#: ../data/org.gnome.software.gschema.xml.h:19
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Recenze s karmou nižší než toto číslo nebudou zobrazovány."
 
-#: ../data/org.gnome.software.gschema.xml.h:19
+#: ../data/org.gnome.software.gschema.xml.h:20
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
 "Seznam oficiálních zdrojů, které by neměly být považovány za třetí stranu"
 
-#: ../data/org.gnome.software.gschema.xml.h:20
+#: ../data/org.gnome.software.gschema.xml.h:21
 msgid "A list of official sources that should be considered free software"
 msgstr ""
 "Seznam oficiálních zdrojů, které by měly být považovány za svobodný software"
 
-#: ../data/org.gnome.software.gschema.xml.h:21
+#: ../data/org.gnome.software.gschema.xml.h:22
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "Adresa URL licence, která se má použít, když má aplikace považována za "
 "svobodný software"
 
-#: ../data/org.gnome.software.gschema.xml.h:22
-#, fuzzy
-#| msgid "A list of applications to use, overriding the system defined ones."
+#: ../data/org.gnome.software.gschema.xml.h:23
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Seznam aplikací, které se mají použít. Přepíše ty definované v systému."
+"Kde je to možné, instalovat všem uživatelům v systému přibalené aplikace"
 
-#: ../data/org.gnome.software.gschema.xml.h:23
+#: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Show the folder management UI"
 msgstr "Zobrazovat uživatelské rozhraní pro správu složek"
 
-#: ../data/org.gnome.software.gschema.xml.h:24
-msgid "Allow access to the Software Sources dialog"
-msgstr ""
-
 #: ../data/org.gnome.software.gschema.xml.h:25
+msgid "Allow access to the Software Sources dialog"
+msgstr "Umožnit přístup k dialogovému oknu se zdroji softwaru"
+
+#: ../data/org.gnome.software.gschema.xml.h:26
 msgid "Offer upgrades for pre-releases"
 msgstr "Nabízet povýšení na předběžná vydání"
 
-#: ../data/org.gnome.software.gschema.xml.h:26
+#: ../data/org.gnome.software.gschema.xml.h:27
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Zobrazovat v rozhraní prvky, které informují uživatele, že aplikace není "
@@ -253,7 +279,7 @@ msgstr "Na_instalované"
 msgid "_Updates"
 msgstr "_Aktualizace"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:442
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
 #: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "Čeká na zpracování"
@@ -401,22 +427,14 @@ msgid "Device cannot be used during update."
 msgstr "Zařízení nelze během aktualizace používat."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339
-#, fuzzy
-#| msgctxt "app status"
-#| msgid "Unknown"
-msgid "unknown"
-msgstr "Neznámo"
-
-#. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:343 ../src/gs-shell-details.ui.h:34
+#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
 msgid "Source"
 msgstr "Zdroj"
 
 #. security sandbox
 #: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
 msgid "Sandboxed"
-msgstr ""
+msgstr "Uzavřeno na pískovišti"
 
 #. TRANSLATORS: this is when the service name is not known
 #: ../src/gs-auth-dialog.c:70
@@ -444,7 +462,7 @@ msgstr "Heslo"
 
 #: ../src/gs-auth-dialog.ui.h:4
 msgid "I want to register for an account now"
-msgstr ""
+msgstr "Chci se hned k účtu zaregistrovat"
 
 #: ../src/gs-auth-dialog.ui.h:5
 msgid "I have forgotten my password"
@@ -468,18 +486,18 @@ msgstr "Pokračovat"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Ostatní"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Vše"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "Důležité"
 
@@ -626,20 +644,18 @@ msgstr "Příprava aplikace %s"
 #. * source name, e.g. 'GNOME Nightly'
 #: ../src/gs-page.c:456
 #, c-format
-#| msgid "Are you sure you want to remove %s?"
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Opravdu chcete odebrat zdroj %s?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-page.c:460
-#, fuzzy, c-format
-#| msgid "%s will be removed, and you will have to install it to use it again."
+#, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the source to use them again."
 msgstr ""
-"%s bude odebrán a když jej budete chtít použít, budete jej muset znovu "
-"nainstalovat."
+"Všechny aplikace pocházející ze zdroje %s budou odebrány. Abyste je mohli "
+"znovu použít, budete muset zdroj znovu nainstalovat."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
@@ -658,24 +674,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1041
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1046
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahrnuje zdokonalení výkonu, stability a bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1722 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1725
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -690,10 +706,11 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"Některý z právě instalovaného softwaru není kompatibilní s distribucí %s. "
+"Pokud budete pokračovat, následujíc se během povýšení odstraní:"
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
-#| msgid "Welcome to Software"
 msgid "Incompatible Software"
 msgstr "Nekompatibilní software"
 
@@ -917,10 +934,8 @@ msgstr "_Instalovat"
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
 #: ../src/gs-shell-details.c:292
-#, fuzzy
-#| msgid "_Updates"
 msgid "_Update"
-msgstr "_Aktualizace"
+msgstr "_Aktualizovat"
 
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
@@ -954,55 +969,53 @@ msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:841
+#: ../src/gs-shell-details.c:843
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:887
+#: ../src/gs-shell-details.c:889
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámý"
 
-#: ../src/gs-shell-details.c:1305
+#: ../src/gs-shell-details.c:1307
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nelze najít „%s“"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1363
+#: ../src/gs-shell-details.c:1365
 msgid "The file is not supported."
 msgstr "Soubor není podporován."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1373 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Toto bohužel nefunguje"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1726
+#: ../src/gs-shell-details.c:1728
 msgid "Public domain"
 msgstr "volné dílo"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1742 ../src/gs-shell-details.ui.h:51
-#| msgid "Software"
+#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Svobodný software"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1797
+#: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Uživatelé jsou vázání následující licencí:"
 msgstr[1] "Uživatelé jsou vázání následujícími licencemi:"
 msgstr[2] "Uživatelé jsou vázání následujícími licencemi:"
 
-#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
-#| msgid "Show verbose debugging information"
+#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Podrobné informace"
 
@@ -1435,7 +1448,7 @@ msgstr "Nejsou k dispozici žádné recenze k moderování"
 #. add button
 #: ../src/gs-shell-overview.c:240
 msgid "More…"
-msgstr ""
+msgstr "Více…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
@@ -1458,10 +1471,9 @@ msgstr "Z kategorie grafika doporučujeme"
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:434
-#, fuzzy
 #| msgid "Recommended Audio Applications"
 msgid "Recommended Productivity Applications"
-msgstr "Z kategorie zvuk doporučujeme"
+msgstr "Z kategorie tvorba doporučujeme"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -1870,32 +1882,32 @@ msgstr "Zobrazit"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:242
+#: ../src/gs-update-monitor.c:271
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "K instalaci je dostupná nová verze distribuce %s"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:246
+#: ../src/gs-update-monitor.c:275
 msgid "Software Upgrade Available"
 msgstr "Dostupné povýšení softwaru"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:433
+#: ../src/gs-update-monitor.c:462
 msgid "Software Updates Failed"
 msgstr "Aktualizace softwaru selhaly"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:435
+#: ../src/gs-update-monitor.c:464
 msgid "An important OS update failed to be installed."
 msgstr "Selhala instalace důležité aktualizace OS."
 
-#: ../src/gs-update-monitor.c:436
+#: ../src/gs-update-monitor.c:465
 msgid "Show Details"
 msgstr "Zobrazit podrobnosti"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:458
+#: ../src/gs-update-monitor.c:487
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Aktualizace softwaru nainstalována"
@@ -1903,7 +1915,7 @@ msgstr[1] "Aktualizace softwaru nainstalovány"
 msgstr[2] "Aktualizace softwaru nainstalovány"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:462
+#: ../src/gs-update-monitor.c:491
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Důležitá aktualizace OS byla nainstalována."
@@ -1915,30 +1927,30 @@ msgstr[2] "Důležité aktualizace OS byly nainstalovány."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:473
+#: ../src/gs-update-monitor.c:502
 msgctxt "updates"
 msgid "Review"
 msgstr "Přehled"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:517
+#: ../src/gs-update-monitor.c:546
 msgid "Failed To Update"
 msgstr "Aktualizace selhala"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:523
+#: ../src/gs-update-monitor.c:552
 msgid "The system was already up to date."
 msgstr "Systém již byl aktuální."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:528
+#: ../src/gs-update-monitor.c:557
 msgid "The update was cancelled."
 msgstr "Aktualizace byla zrušena."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:534
+#: ../src/gs-update-monitor.c:563
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1947,7 +1959,7 @@ msgstr ""
 "připojení k Internetu a zkuste to znovu."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:540
+#: ../src/gs-update-monitor.c:569
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1956,7 +1968,7 @@ msgstr ""
 "svým poskytovatelem softwaru."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:546
+#: ../src/gs-update-monitor.c:575
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -1964,7 +1976,7 @@ msgstr ""
 "znovu."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:551
+#: ../src/gs-update-monitor.c:580
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -2043,7 +2055,6 @@ msgstr "Odebrání aplikace %s selhalo."
 #. TRANSLATORS: this is when the upgrade download fails
 #: ../src/gs-common.c:182
 #, c-format
-#| msgid "Removal of %s failed."
 msgid "Upgrade to %s failed."
 msgstr "Povýšení na %s selhalo."
 
@@ -2142,17 +2153,17 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:405
 msgid "Cartoon characters in unsafe situations"
-msgstr "Kreslené postavičky v nebezpečných situacích"
+msgstr "Kreslené postavy v nebezpečných situacích"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:408
 msgid "Cartoon characters in aggressive conflict"
-msgstr "Kreslené postavičky v agresivních střetech"
+msgstr "Kreslené postavy v agresivních střetech"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:411
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Grafické násilí páchané na kreslených postavách"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
@@ -2173,7 +2184,7 @@ msgstr "Osoby v agresivních střetech snadno odlišitelných od skutečnosti"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:423
 msgid "Graphic violence easily distinguishable from reality"
-msgstr ""
+msgstr "Grafické násilí snadno odlišitelné od reality"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:426
@@ -2184,17 +2195,17 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
 msgid "Mild realistic characters in unsafe situations"
-msgstr ""
+msgstr "Mírně realistické osoby v nebezpečných situacích"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:432
 msgid "Depictions of realistic characters in aggressive conflict"
-msgstr ""
+msgstr "Vyobrazení skutečných osob v agresivních konfliktech"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:435
 msgid "Graphic violence involving realistic characters"
-msgstr ""
+msgstr "Grafické násilí páchané na skutečných osobách"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:438
@@ -2215,7 +2226,7 @@ msgstr "Realistické zabíjení"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:447
 msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr ""
+msgstr "Vyobrazení krveprolití a mrzačení lidí"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:450
@@ -2226,7 +2237,7 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:453
 msgid "Rape or other violent sexual behavior"
-msgstr ""
+msgstr "Znásilnění nebo jiné násilné sexuální chování"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:456
@@ -2295,14 +2306,12 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:492
 msgid "Provocative references or depictions"
-msgstr ""
+msgstr "Provokativní zmínky nebo vyobrazení"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:495
-#, fuzzy
-#| msgid "Search for applications"
 msgid "Sexual references or depictions"
-msgstr "Hledat aplikaci"
+msgstr "Zmínky o sexu nebo jeho vyobrazení"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:498
@@ -2339,7 +2348,7 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:516
 msgid "Slapstick humor"
-msgstr ""
+msgstr "Bláznivý humor"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:519
@@ -2360,17 +2369,19 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:528
 msgid "Negativity towards a specific group of people"
-msgstr ""
+msgstr "Špatný pohled na konkrétní skupinu lidí"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:531
 msgid "Discrimation designed to cause emotional harm"
-msgstr ""
+msgstr "Diskriminace cílící na způsobení citové újmy"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:534
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr ""
+"Výslovná diskriminace založená na pohlaví, sexuální orientaci, rase nebo "
+"náboženství"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:537
@@ -2380,11 +2391,8 @@ msgstr "Nic"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:540
-#, fuzzy
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "Project Management"
 msgid "Product placement"
-msgstr "Správa projektů"
+msgstr "Vyobrazení produktů"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:543
@@ -2394,7 +2402,7 @@ msgstr "Výslovné odkazy na konkrétní výrobce nebo značky výrobků"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:546
 msgid "Players are encouraged to purchase specific real-world items"
-msgstr ""
+msgstr "Hráči jsou vybízení k nákupu konkrétního skutečného zboží"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:549
@@ -2405,7 +2413,7 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:552
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Příležitostné hraní s žetony nebo kreditem"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:555
@@ -2437,17 +2445,17 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:570
 msgid "Player-to-player game interactions without chat functionality"
-msgstr ""
+msgstr "Herní interakce hráč-hráč bez komunikace"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:573
 msgid "Player-to-player preset interactions without chat functionality"
-msgstr ""
+msgstr "Přednastavená interakce hráč-hráč bez komunikace"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:576
 msgid "Uncontrolled chat functionality between players"
-msgstr ""
+msgstr "Neřízená textová komunikace mezi hráči"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:579
@@ -2458,7 +2466,7 @@ msgstr "Nic"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:582
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr ""
+msgstr "Neřízená zvuková a obrazová komunikace mezi hráči"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:585
@@ -2528,26 +2536,21 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:63
 msgid "Software catalog is being downloaded"
-msgstr ""
+msgstr "Katalog softwaru se stahuje"
 
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:68
-#, fuzzy
-#| msgid "Software Updates Failed"
 msgid "Software catalog is being loaded"
-msgstr "Aktualizace softwaru selhaly"
+msgstr "Katalog softwaru se načítá"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-loading.ui.h:1
-#| msgid "Codecs page"
 msgid "Loading page"
 msgstr "Načítá se stránka"
 
 #: ../src/gs-shell-loading.ui.h:2
-#, fuzzy
-#| msgid "Setting up updates…"
 msgid "Starting up…"
-msgstr "Nastavují se aktualizace…"
+msgstr "Spouští se…"
 
 #: ../src/plugins/gs-desktop-common.c:30
 msgctxt "Menu of AudioVideo"
@@ -2938,7 +2941,7 @@ msgstr "Grafika a fotografie"
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/gs-desktop-common.c:338
 msgid "Productivity"
-msgstr ""
+msgstr "Tvorba"
 
 #. TRANSLATORS: this is the menu spec main category for Science
 #: ../src/plugins/gs-desktop-common.c:344
@@ -2952,11 +2955,10 @@ msgstr "Komunikace a diskuzní skupiny"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
 #: ../src/plugins/gs-desktop-common.c:350
-#, fuzzy
 #| msgctxt "Menu subcategory of Internet"
 #| msgid "Video Conference"
 msgid "Reference"
-msgstr "Videokonference"
+msgstr "Knihy"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
 #: ../src/plugins/gs-desktop-common.c:353
