@@ -1556,6 +1556,12 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 	}
 
 	g_set_object (&self->cancellable, cancellable);
+
+	if (gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE_LIVE) {
+		gs_page_update_app (GS_PAGE (self), self->app, self->cancellable);
+		return;
+	}
+
 	gs_page_install_app (GS_PAGE (self), self->app, self->cancellable);
 }
 
