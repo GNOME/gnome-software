@@ -41,6 +41,7 @@ struct GsPluginData {
 	FwupdClient		*client;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
+	GsApp			*app_current;
 	gchar			*lvfs_sig_fn;
 	gchar			*lvfs_sig_hash;
 	gchar			*config_fn;
@@ -114,6 +115,60 @@ gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 }
 #endif
 
+#if FWUPD_CHECK_VERSION(0,7,3)
+static void
+gs_plugin_fwupd_notify_percentage_cb (GObject *object,
+				      GParamSpec *pspec,
+				      GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* nothing in progress */
+	if (priv->app_current == NULL) {
+		g_debug ("fwupd percentage: %u%%",
+			 fwupd_client_get_percentage (priv->client));
+		return;
+	}
+	g_debug ("fwupd percentage for %s: %u%%",
+		 gs_app_get_unique_id (priv->app_current),
+		 fwupd_client_get_percentage (priv->client));
+	gs_app_set_progress (priv->app_current,
+			     fwupd_client_get_percentage (priv->client));
+}
+
+static void
+gs_plugin_fwupd_notify_status_cb (GObject *object,
+				  GParamSpec *pspec,
+				  GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* nothing in progress */
+	if (priv->app_current == NULL) {
+		g_debug ("fwupd status: %s",
+			 fwupd_status_to_string (fwupd_client_get_status (priv->client)));
+		return;
+	}
+
+	g_debug ("fwupd status for %s: %s",
+		 gs_app_get_unique_id (priv->app_current),
+		 fwupd_status_to_string (fwupd_client_get_status (priv->client)));
+	switch (fwupd_client_get_status (priv->client)) {
+	case FWUPD_STATUS_DECOMPRESSING:
+	case FWUPD_STATUS_DEVICE_RESTART:
+	case FWUPD_STATUS_DEVICE_WRITE:
+	case FWUPD_STATUS_DEVICE_VERIFY:
+		gs_app_set_state (priv->app_current, AS_APP_STATE_INSTALLING);
+		break;
+	case FWUPD_STATUS_IDLE:
+		g_clear_object (&priv->app_current);
+		break;
+	default:
+		break;
+	}
+}
+#endif
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -132,6 +187,12 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
 	g_signal_connect (priv->client, "device-changed",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
+#endif
+#if FWUPD_CHECK_VERSION(0,7,3)
+	g_signal_connect (priv->client, "notify::percentage",
+			  G_CALLBACK (gs_plugin_fwupd_notify_percentage_cb), plugin);
+	g_signal_connect (priv->client, "notify::status",
+			  G_CALLBACK (gs_plugin_fwupd_notify_status_cb), plugin);
 #endif
 
 	/* get the hash of the previously downloaded file */
@@ -682,6 +743,9 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
 	if (device_id == NULL)
 		device_id = FWUPD_DEVICE_ID_ANY;
+
+	/* set the last object */
+	g_set_object (&priv->app_current, app);
 
 	/* only offline supported */
 	if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
