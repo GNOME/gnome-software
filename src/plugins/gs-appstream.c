@@ -361,7 +361,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 			 as_release_get_version (rel),
 			 as_release_get_state (rel));
 		if (as_utils_vercmp (as_release_get_version (rel),
-				     gs_app_get_version (app)) < 0)
+				     gs_app_get_version (app)) <= 0)
 			continue;
 
 		/* use the 'worst' urgency, e.g. critical over enhancement */
