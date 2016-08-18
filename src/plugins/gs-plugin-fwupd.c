@@ -349,6 +349,12 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 			gs_app_set_update_details (app, tmp);
 	}
 
+#if FWUPD_CHECK_VERSION(0,7,3)
+	/* needs action */
+	if (fwupd_result_has_device_flag (res, FU_DEVICE_FLAG_NEEDS_BOOTLOADER))
+		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
+#endif
+
 	/* the same as we have already */
 	if (g_strcmp0 (fwupd_result_get_device_version (res),
 		       fwupd_result_get_update_version (res)) == 0) {

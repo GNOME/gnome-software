@@ -341,44 +341,13 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 					   helper);
 }
 
-void
-gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
+static void
+gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 {
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	GsPageHelper *helper;
 	GtkWidget *dialog;
-	AsScreenshot *ss;
 	g_autofree gchar *escaped = NULL;
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
-	/* non-firmware applications do not have to be prepared */
-	helper = g_slice_new0 (GsPageHelper);
-	helper->app = g_object_ref (app);
-	helper->page = g_object_ref (page);
-	helper->cancellable = g_object_ref (cancellable);
-	if (gs_app_get_kind (app) != AS_APP_KIND_FIRMWARE ||
-	    gs_app_get_screenshots (app)->len == 0) {
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   helper->app,
-						   GS_PLUGIN_LOADER_ACTION_UPDATE,
-						   helper->cancellable,
-						   gs_page_app_installed_cb,
-						   helper);
-		return;
-	}
-
-	/* tell the user what they have to do */
-	ss = g_ptr_array_index (gs_app_get_screenshots (app), 0);
-	if (as_screenshot_get_caption (ss, NULL) == NULL) {
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   helper->app,
-						   GS_PLUGIN_LOADER_ACTION_UPDATE,
-						   helper->cancellable,
-						   gs_page_app_installed_cb,
-						   helper);
-		return;
-	}
-
-	/* show user caption */
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 					 GTK_DIALOG_MODAL,
 					 GTK_MESSAGE_INFO,
@@ -386,7 +355,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					 /* TRANSLATORS: this is a prompt message, and
 					  * '%s' is an application summary, e.g. 'GNOME Clocks' */
 					 _("Prepare %s"),
-					 gs_app_get_name (app));
+					 gs_app_get_name (helper->app));
 	escaped = g_markup_escape_text (as_screenshot_get_caption (ss, NULL), -1);
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
 						    "%s", escaped);
@@ -397,6 +366,40 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_page_update_app_response_cb), helper);
 	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+}
+
+void
+gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	GsPageHelper *helper;
+
+	/* non-firmware applications do not have to be prepared */
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
+	helper->cancellable = g_object_ref (cancellable);
+
+	/* tell the user what they have to do */
+	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE &&
+	    gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION)) {
+		GPtrArray *screenshots = gs_app_get_screenshots (app);
+		if (screenshots->len > 0) {
+			AsScreenshot *ss = g_ptr_array_index (screenshots, 0);
+			if (as_screenshot_get_caption (ss, NULL) != NULL) {
+				gs_page_needs_user_action (helper, ss);
+				return;
+			}
+		}
+	}
+
+	/* generic fallback */
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   helper->app,
+					   GS_PLUGIN_LOADER_ACTION_UPDATE,
+					   helper->cancellable,
+					   gs_page_app_installed_cb,
+					   helper);
 }
 
 static void

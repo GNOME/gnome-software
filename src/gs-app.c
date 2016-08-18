@@ -180,6 +180,8 @@ _as_app_quirk_flag_to_string (AsAppQuirk quirk)
 		return "has-shortcut";
 	if (quirk == AS_APP_QUIRK_NOT_LAUNCHABLE)
 		return "not-launchable";
+	if (quirk == AS_APP_QUIRK_NEEDS_USER_ACTION)
+		return "needs-user-action";
 	return NULL;
 }
 
