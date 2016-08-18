@@ -246,17 +246,29 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 }
 
 static GsApp *
-gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
+gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 {
 	FwupdDeviceFlags flags;
 	GsApp *app;
 #if FWUPD_CHECK_VERSION(0,7,2)
 	GPtrArray *guids;
 #endif
+	const gchar *id;
 	g_autoptr(AsIcon) icon = NULL;
 
+	/* get from cache */
+#if FWUPD_CHECK_VERSION(0,7,3)
+	id = fwupd_result_get_unique_id (res);
+#else
+	id = fwupd_result_get_update_id (res);
+#endif
+	app = gs_plugin_cache_lookup (plugin, id);
+	if (app == NULL) {
+		app = gs_app_new (id);
+		gs_plugin_cache_add (plugin, id, app);
+	}
+
 	/* default stuff */
-	app = gs_app_new (fwupd_result_get_update_id (res));
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_management_plugin (app, "fwupd");
@@ -380,7 +392,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	g_autoptr(GsApp) app = NULL;
 
 	/* update unsupported */
-	app = gs_plugin_fwupd_new_app_from_results (res);
+	app = gs_plugin_fwupd_new_app_from_results (plugin, res);
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -506,7 +518,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	}
 
 	/* parse */
-	app = gs_plugin_fwupd_new_app_from_results (res);
+	app = gs_plugin_fwupd_new_app_from_results (plugin, res);
 	gs_app_list_add (list, app);
 	return TRUE;
 }
@@ -854,7 +866,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		/* create each app */
-		app = gs_plugin_fwupd_new_app_from_results (res);
+		app = gs_plugin_fwupd_new_app_from_results (plugin, res);
 
 		/* we have no update view for local files */
 		gs_app_set_version (app, gs_app_get_update_version (app));
@@ -869,7 +881,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 					error);
 	if (res == NULL)
 		return FALSE;
-	app = gs_plugin_fwupd_new_app_from_results (res);
+	app = gs_plugin_fwupd_new_app_from_results (plugin, res);
 
 	/* we have no update view for local files */
 	gs_app_set_version (app, gs_app_get_update_version (app));
