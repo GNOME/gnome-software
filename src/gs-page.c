@@ -29,6 +29,7 @@
 #include "gs-shell.h"
 #include "gs-common.h"
 #include "gs-auth-dialog.h"
+#include "gs-screenshot-image.h"
 
 typedef struct
 {
@@ -44,6 +45,7 @@ typedef struct {
 	GsApp		*app;
 	GsPage		*page;
 	GCancellable	*cancellable;
+	SoupSession	*soup_session;
 } GsPageHelper;
 
 static void
@@ -55,6 +57,8 @@ gs_page_helper_free (GsPageHelper *helper)
 		g_object_unref (helper->page);
 	if (helper->cancellable != NULL)
 		g_object_unref (helper->cancellable);
+	if (helper->soup_session != NULL)
+		g_object_unref (helper->soup_session);
 	g_slice_free (GsPageHelper, helper);
 }
 
@@ -344,12 +348,15 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 static void
 gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 {
+	GtkWidget *content_area;
 	GtkWidget *dialog;
+	GtkWidget *ssimg;
 	g_autofree gchar *escaped = NULL;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
-					 GTK_DIALOG_MODAL,
+					 GTK_DIALOG_MODAL |
+					 GTK_DIALOG_USE_HEADER_BAR,
 					 GTK_MESSAGE_INFO,
 					 GTK_BUTTONS_CANCEL,
 					 /* TRANSLATORS: this is a prompt message, and
@@ -361,6 +368,19 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 						    "%s", escaped);
 	/* TRANSLATORS: this is button text to update the firware */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Install"), GTK_RESPONSE_OK);
+
+	/* load screenshot */
+	helper->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+							      gs_user_agent (), NULL);
+	ssimg = gs_screenshot_image_new (helper->soup_session);
+	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
+	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
+	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
+					helper->cancellable);
+	gtk_widget_set_margin_start (ssimg, 24);
+	gtk_widget_set_margin_end (ssimg, 24);
+	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+	gtk_box_pack_end (GTK_BOX (content_area), ssimg, FALSE, FALSE, 0);
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",
