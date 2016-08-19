@@ -46,11 +46,15 @@ typedef struct {
 	GsPage		*page;
 	GCancellable	*cancellable;
 	SoupSession	*soup_session;
+	gulong		 notify_quirk_id;
+	GtkWidget	*button_install;
 } GsPageHelper;
 
 static void
 gs_page_helper_free (GsPageHelper *helper)
 {
+	if (helper->notify_quirk_id > 0)
+		g_signal_handler_disconnect (helper->app, helper->notify_quirk_id);
 	if (helper->app != NULL)
 		g_object_unref (helper->app);
 	if (helper->page != NULL)
@@ -346,6 +350,14 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 }
 
 static void
+gs_page_notify_quirk_cb (GsApp *app, GParamSpec *pspec, GsPageHelper *helper)
+{
+	gtk_widget_set_sensitive (helper->button_install,
+				  !gs_app_has_quirk (helper->app,
+						     AS_APP_QUIRK_NEEDS_USER_ACTION));
+}
+
+static void
 gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 {
 	GtkWidget *content_area;
@@ -366,8 +378,17 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	escaped = g_markup_escape_text (as_screenshot_get_caption (ss, NULL), -1);
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
 						    "%s", escaped);
-	/* TRANSLATORS: this is button text to update the firware */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Install"), GTK_RESPONSE_OK);
+
+	/* this will be enabled when the device is in the right mode */
+	helper->button_install = gtk_dialog_add_button (GTK_DIALOG (dialog),
+							/* TRANSLATORS: update the fw */
+							_("Install"),
+							GTK_RESPONSE_OK);
+	helper->notify_quirk_id =
+		g_signal_connect (helper->app, "notify::quirk",
+				  G_CALLBACK (gs_page_notify_quirk_cb),
+				  helper);
+	gtk_widget_set_sensitive (helper->button_install, FALSE);
 
 	/* load screenshot */
 	helper->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
