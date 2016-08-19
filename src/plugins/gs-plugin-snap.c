@@ -271,7 +271,7 @@ get_apps (GsPlugin *plugin,
 	/* Get all the apps */
 	query_fields = g_ptr_array_new_with_free_func (g_free);
 	if (sources != NULL) {
-		g_autofree gchar *escaped;
+		g_autofree gchar *escaped = NULL;
 		escaped = soup_uri_encode (sources, NULL);
 		g_ptr_array_add (query_fields, g_strdup_printf ("sources=%s", escaped));
 	}
