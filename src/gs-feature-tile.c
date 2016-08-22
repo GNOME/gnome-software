@@ -32,7 +32,6 @@ struct _GsFeatureTile
 	GsAppTile	 parent_instance;
 
 	GsApp		*app;
-	GtkWidget	*image;
 	GtkWidget	*stack;
 	GtkWidget	*title;
 	GtkWidget	*subtitle;
@@ -148,7 +147,6 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-feature-tile.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, image);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, title);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, subtitle);
