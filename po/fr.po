@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-07-25 15:19+0000\n"
-"PO-Revision-Date: 2016-03-18 20:17+0100\n"
+"software&keywords=I18N+L10N&component=General\n"
+"POT-Creation-Date: 2016-08-19 13:20+0000\n"
+"PO-Revision-Date: 2016-08-22 17:42+0200\n"
 "Last-Translator: Alain Lojewski <allomervan@gmail.com>\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -48,6 +48,30 @@ msgstr ""
 "Vous pouvez rechercher des logiciels soit en consultant la liste des "
 "catégories, soit en interrogeant le moteur de recherche. Logiciels permet "
 "aussi de mettre à jour votre système hors ligne."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+msgid "Overview panel"
+msgstr "Panneau de vue d'ensemble"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+msgid "Details panel"
+msgstr "Panneau des descriptions"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+msgid "Installed panel"
+msgstr "Panneau des installations"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+msgid "Updates panel"
+msgstr "Panneau des mises à jour"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+msgid "The update details"
+msgstr "Détails de la mise à jour"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr "Le projet GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -122,69 +146,73 @@ msgid "The last update check timestamp"
 msgstr "L'horodatage de la dernière vérification des mises à jour"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
+msgid "The last upgrade notification timestamp"
+msgstr "L'horodatage de la dernière notification de mise à jour"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
 "L'horodatage de la première mise à jour de sécurité, effacé après mise à jour"
 
-#: ../data/org.gnome.software.gschema.xml.h:15
+#: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The last update timestamp"
 msgstr "L'horodatage de la dernière mise à jour"
 
-#: ../data/org.gnome.software.gschema.xml.h:16
+#: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The server to use for application reviews"
 msgstr "Le serveur à utiliser pour les appréciations d'applications"
 
-#: ../data/org.gnome.software.gschema.xml.h:17
+#: ../data/org.gnome.software.gschema.xml.h:18
 msgid "The minimum karma score for reviews"
 msgstr "Le score minimum pour les appréciations"
 
-#: ../data/org.gnome.software.gschema.xml.h:18
+#: ../data/org.gnome.software.gschema.xml.h:19
 msgid "Reviews with karma less than this number will not be shown."
 msgstr ""
 "Les appréciations dont le karma est inférieur à cette valeur seront masquées."
 
-#: ../data/org.gnome.software.gschema.xml.h:19
+#: ../data/org.gnome.software.gschema.xml.h:20
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
 "Une liste de source officielles qui ne doivent pas être considérées comme "
 "tierces parties"
 
-#: ../data/org.gnome.software.gschema.xml.h:20
-#, fuzzy
-#| msgid "A list of official sources that should not be considered 3rd party"
+#: ../data/org.gnome.software.gschema.xml.h:21
 msgid "A list of official sources that should be considered free software"
 msgstr ""
-"Une liste de source officielles qui ne doivent pas être considérées comme "
-"tierces parties"
+"Une liste des sources officielles qui ne doivent pas être considérées comme "
+"des logiciels libres"
 
-#: ../data/org.gnome.software.gschema.xml.h:21
+#: ../data/org.gnome.software.gschema.xml.h:22
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
-
-#: ../data/org.gnome.software.gschema.xml.h:22
-#, fuzzy
-#| msgid "A list of applications to use, overriding the system defined ones."
-msgid "Install bundled applications for all users on the system where possible"
-msgstr ""
-"Une liste d'application à utiliser, passant outre celle définie par le "
-"système."
+"L'URL de la licence à utiliser lorsqu'une application doit être considérée "
+"comme un logiciel libre"
 
 #: ../data/org.gnome.software.gschema.xml.h:23
-msgid "Show the folder management UI"
+msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
+"Installe si possible les applications enveloppées sur le système pour tout les "
+"utilisateurs"
 
 #: ../data/org.gnome.software.gschema.xml.h:24
-msgid "Allow access to the Software Sources dialog"
-msgstr ""
+msgid "Show the folder management UI"
+msgstr "Affiche l'interface utilisateur de gestion des dossiers"
 
 #: ../data/org.gnome.software.gschema.xml.h:25
-msgid "Offer upgrades for pre-releases"
-msgstr ""
+msgid "Allow access to the Software Sources dialog"
+msgstr "Autorise l'accès à la boîte de dialogue des sources du logiciel"
 
 #: ../data/org.gnome.software.gschema.xml.h:26
+msgid "Offer upgrades for pre-releases"
+msgstr "Propose des mises à jour pour les versions à l'essai"
+
+#: ../data/org.gnome.software.gschema.xml.h:27
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
+"Affiche quelques éléments d'interface montrant à l'utilisateur qu'une "
+"application est non-libre"
 
 #: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -305,20 +333,16 @@ msgid "SEARCH"
 msgstr "RECHERCHER"
 
 #: ../src/gs-application.c:102
-#, fuzzy
-#| msgid "Show application details"
 msgid "Show application details (using application ID)"
-msgstr "Afficher les détails de l'application"
+msgstr "Afficher les détails de l'application (à partir de son identifiant)"
 
 #: ../src/gs-application.c:102
 msgid "ID"
 msgstr "ID"
 
 #: ../src/gs-application.c:104
-#, fuzzy
-#| msgid "Show application details"
 msgid "Show application details (using package name)"
-msgstr "Afficher les détails de l'application"
+msgstr "Afficher les détails de l'application (à partir de son nom de paquet)"
 
 #: ../src/gs-application.c:104
 msgid "PKGNAME"
@@ -342,7 +366,7 @@ msgstr "Afficher les informations de profilage du service"
 
 #: ../src/gs-application.c:112
 msgid "Quit the running instance"
-msgstr ""
+msgstr "Quitter la session en cours"
 
 #: ../src/gs-application.c:114
 msgid "Prefer local file sources to AppStream"
@@ -350,7 +374,7 @@ msgstr "Préférer les sources des fichiers locaux à AppStream"
 
 #: ../src/gs-application.c:116
 msgid "Show version number"
-msgstr "Montrer le numéro de version"
+msgstr "Afficher le numéro de version"
 
 #: ../src/gs-application.c:371
 msgid "translator-credits"
@@ -389,9 +413,9 @@ msgstr "Annuler"
 #. * allows the application to be easily installed
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#. TRANSLATORS: this is button text to update the firware
+#. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:394
+#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:385
 #: ../src/gs-common.c:341
 msgid "Install"
 msgstr "Installer"
@@ -399,7 +423,7 @@ msgstr "Installer"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:466
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:531
 msgid "Remove"
 msgstr "Supprimer"
 
@@ -417,18 +441,18 @@ msgstr "Source"
 #. security sandbox
 #: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
 msgid "Sandboxed"
-msgstr ""
+msgstr "Dans un bac à sable"
 
 #. TRANSLATORS: this is when the service name is not known
 #: ../src/gs-auth-dialog.c:70
 msgid "To continue you need to sign in."
-msgstr ""
+msgstr "Vous devez vous authentifier pour continuer."
 
 #. TRANSLATORS: the %s is a service name, e.g. "Ubuntu One"
 #: ../src/gs-auth-dialog.c:74
 #, c-format
 msgid "To continue you need to sign in to %s."
-msgstr ""
+msgstr "Vous devez vous authentifier auprès de %s pour continuer."
 
 #. vim: set noexpandtab:
 #: ../src/gs-auth-dialog.ui.h:1
@@ -445,23 +469,23 @@ msgstr "Mot de passe"
 
 #: ../src/gs-auth-dialog.ui.h:4
 msgid "I want to register for an account now"
-msgstr ""
+msgstr "Je souhaite enregistrer un compte maintenant"
 
 #: ../src/gs-auth-dialog.ui.h:5
 msgid "I have forgotten my password"
-msgstr ""
+msgstr "J'ai oublié mon mot de passe"
 
 #: ../src/gs-auth-dialog.ui.h:6
 msgid "Sign in automatically next time"
-msgstr ""
+msgstr "M'authentifier automatiquement la prochaine fois"
 
 #: ../src/gs-auth-dialog.ui.h:7
 msgid "Enter your one-time pin for two-factor authentication."
-msgstr ""
+msgstr "Saisir votre code personnel d'authentification à usage unique."
 
 #: ../src/gs-auth-dialog.ui.h:8
 msgid "PIN"
-msgstr ""
+msgstr "Code personnel"
 
 #: ../src/gs-auth-dialog.ui.h:9
 msgid "Continue"
@@ -469,18 +493,18 @@ msgstr "Continuer"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:181
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Autres"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:186
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Tout"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:190
+#: ../src/gs-category.c:202
 msgid "Featured"
 msgstr "Mises en avant"
 
@@ -618,20 +642,37 @@ msgstr "Historique"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:388
+#: ../src/gs-page.c:376
 #, c-format
 msgid "Prepare %s"
 msgstr "Préparation de %s"
 
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:457
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * source name, e.g. 'GNOME Nightly'
+#: ../src/gs-page.c:500
+#, c-format
+msgid "Are you sure you want to remove the %s source?"
+msgstr "Êtes-vous sûr de vouloir supprimer la source %s ?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:504
+#, c-format
+msgid ""
+"All applications from %s will be removed, and you will have to re-install "
+"the source to use them again."
+msgstr ""
+"Toutes les applications de la source %s vont être supprimées et il vous "
+"faudra la réinstaller pour pouvoir utiliser ces logiciels à nouveau."
+
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:512
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Êtes-vous sûr de vouloir supprimer %s ?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:462
+#: ../src/gs-page.c:515
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -640,25 +681,25 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1026
+#: ../src/gs-plugin-loader.c:1040
 msgid "OS Updates"
 msgstr "Mises à jour du système d'exploitation"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1031
+#: ../src/gs-plugin-loader.c:1045
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Elle inclut des améliorations de performances, de stabilité et de sécurité."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1704 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Aucun codec au format %s n'est disponible pour l'extension."
 
-#: ../src/gs-plugin-loader.c:1707
+#: ../src/gs-plugin-loader.c:1724
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -673,6 +714,9 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"Certains logiciels actuellement installés sont incompatibles avec %s. Si "
+"vous continuez, ceux listés ci-dessous seront automatiquement supprimés "
+"pendant la mise à niveau :"
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
@@ -870,11 +914,11 @@ msgid "Screenshot not valid"
 msgstr "Capture d'écran non valide"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:440
+#: ../src/gs-screenshot-image.c:439
 msgid "Screenshot not available"
 msgstr "Capture d'écran indisponible"
 
-#: ../src/gs-screenshot-image.c:485
+#: ../src/gs-screenshot-image.c:482
 msgid "Screenshot"
 msgstr "Capture d'écran"
 
@@ -924,7 +968,7 @@ msgid "Removing…"
 msgstr "Suppression en cours…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:684
+#: ../src/gs-shell-details.c:682
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -933,7 +977,7 @@ msgstr ""
 "active"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:811
+#: ../src/gs-shell-details.c:809
 msgctxt "version"
 msgid "Unknown"
 msgstr "Inconnue"
@@ -981,14 +1025,12 @@ msgstr "Logiciel libre"
 #: ../src/gs-shell-details.c:1799
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Les utilisateurs sont tenus au respect de cette licence :"
+msgstr[1] "Les utilisateurs sont tenus au respect de ces licences :"
 
 #: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
-#, fuzzy
-#| msgid "Show verbose debugging information"
 msgid "More information"
-msgstr "Afficher les informations détaillées de débogage"
+msgstr "Davantage d'informations"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-details.ui.h:1
@@ -1003,20 +1045,16 @@ msgstr "_Lancer"
 #. Translators: A label for a button to add a shortcut to the selected application.
 #: ../src/gs-shell-details.ui.h:9
 msgid "_Add shortcut"
-msgstr ""
+msgstr "_Ajouter un raccourci"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
 #: ../src/gs-shell-details.ui.h:11
-#, fuzzy
-#| msgid "Remove Source"
 msgid "Re_move shortcut"
-msgstr "Supprimer la source"
+msgstr "Suppri_mer le raccourci"
 
 #: ../src/gs-shell-details.ui.h:12
-#, fuzzy
-#| msgid "Screenshot not valid"
 msgid "No screenshot provided"
-msgstr "Capture d'écran non valide"
+msgstr "Aucune capture d'écran fournie"
 
 #: ../src/gs-shell-details.ui.h:13
 msgid "Software Source Included"
@@ -1072,7 +1110,7 @@ msgstr ""
 msgid "_Website"
 msgstr "Site _Web"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:783
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:790
 msgid "Details"
 msgstr "Détails"
 
@@ -1167,6 +1205,8 @@ msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
 msgstr ""
+"Cela signifie que le logiciel peut être librement utilisé, copié, distribué, "
+"étudié et modifié."
 
 #: ../src/gs-shell-details.ui.h:53
 msgid "Proprietary Software"
@@ -1178,14 +1218,17 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
+"Cela signifie que le logiciel est la propriété d'une personne physique ou "
+"morale. Son utilisation est le plus souvent restreinte et son code source "
+"habituellement inaccessible."
 
 #: ../src/gs-shell-details.ui.h:56
 msgid "Unknown Software License"
-msgstr ""
+msgstr "Licence du logiciel inconnue"
 
 #: ../src/gs-shell-details.ui.h:57
 msgid "The license terms of this software are unknown."
-msgstr ""
+msgstr "Les termes de la licence de ce logiciel sont inconnus."
 
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:145
@@ -1419,7 +1462,7 @@ msgstr "Il n'y a pas d'évaluation a modérer"
 #. add button
 #: ../src/gs-shell-overview.c:240
 msgid "More…"
-msgstr ""
+msgstr "Davantage…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
@@ -1610,7 +1653,7 @@ msgstr "Des mises à jour ont été installées sur ce système."
 #. TRANSLATORS: the new apps will not be run until we restart
 #: ../src/gs-shell-updates.c:952
 msgid "A restart is required for them to take effect."
-msgstr ""
+msgstr "Un redémarrage est nécessaire pour terminer l'installation."
 
 #. TRANSLATORS: button text
 #: ../src/gs-shell-updates.c:954 ../src/gs-update-monitor.c:102
@@ -1849,40 +1892,40 @@ msgstr "Afficher"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:242
+#: ../src/gs-update-monitor.c:271
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Une nouvelle version de %s est disponible à l'installation"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:246
+#: ../src/gs-update-monitor.c:275
 msgid "Software Upgrade Available"
 msgstr "Des mises à niveau logicielles sont disponibles"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:433
+#: ../src/gs-update-monitor.c:462
 msgid "Software Updates Failed"
 msgstr "Échec des mises à jour logicielles"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:435
+#: ../src/gs-update-monitor.c:464
 msgid "An important OS update failed to be installed."
 msgstr ""
 "Échec d'installation d'une importante mise à jour du système d'exploitation."
 
-#: ../src/gs-update-monitor.c:436
+#: ../src/gs-update-monitor.c:465
 msgid "Show Details"
 msgstr "Afficher les détails"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:458
+#: ../src/gs-update-monitor.c:487
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Mise à jour logicielle installée"
 msgstr[1] "Mises à jour logicielles installées"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:462
+#: ../src/gs-update-monitor.c:491
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] ""
@@ -1895,30 +1938,30 @@ msgstr[1] ""
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:473
+#: ../src/gs-update-monitor.c:502
 msgctxt "updates"
 msgid "Review"
 msgstr "Passer en revue"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:517
+#: ../src/gs-update-monitor.c:546
 msgid "Failed To Update"
 msgstr "Échec de mise à jour"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:523
+#: ../src/gs-update-monitor.c:552
 msgid "The system was already up to date."
 msgstr "Le système était déjà à jour."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:528
+#: ../src/gs-update-monitor.c:557
 msgid "The update was cancelled."
 msgstr "La mise à jour a été annulée."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:534
+#: ../src/gs-update-monitor.c:563
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1927,7 +1970,7 @@ msgstr ""
 "d'avoir un accès à Internet puis réessayez."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:540
+#: ../src/gs-update-monitor.c:569
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1936,14 +1979,14 @@ msgstr ""
 "votre fournisseur de logiciel pour plus d'informations."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:546
+#: ../src/gs-update-monitor.c:575
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Il n'y avait pas assez d'espace disque. Veuillez en libérer et réessayez."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:551
+#: ../src/gs-update-monitor.c:580
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -2031,44 +2074,28 @@ msgstr "La mise à niveau de %s a échoué."
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
 #: ../src/gs-common.c:196
-#, fuzzy
-#| msgid "Internet access is required to check for updates."
 msgid "Internet access was required but wasn’t available."
-msgstr "L'accès à Internet est nécessaire pour rechercher des mises à jour."
+msgstr "L'accès à Internet était nécessaire mais indisponible."
 
 #. TRANSLATORS: plug in the network cable...
 #: ../src/gs-common.c:199
-#, fuzzy
-#| msgid ""
-#| "Internet access was required but wasn’t available. Please make sure that "
-#| "you have internet access and try again."
 msgid "Please make sure that you have internet access and try again."
-msgstr ""
-"L'accès à Internet est nécessaire mais n'est pas disponible. Assurez-vous "
-"d'avoir un accès à Internet puis réessayez."
+msgstr "Assurez-vous d'avoir un accès à Internet puis réessayez."
 
 #. TRANSLATORS: we ran out of disk space
 #: ../src/gs-common.c:204
-#, fuzzy
-#| msgid ""
-#| "There wasn’t enough disk space. Please free up some space and try again."
 msgid "There wasn’t enough disk space."
-msgstr ""
-"Il n'y avait pas assez d'espace disque. Veuillez en libérer et réessayez."
+msgstr "Il n'y avait pas assez d'espace disque."
 
 #. TRANSLATORS: delete some stuff!
 #: ../src/gs-common.c:207
-#, fuzzy
-#| msgid ""
-#| "There wasn’t enough disk space. Please free up some space and try again."
 msgid "Please free up some space and try again."
-msgstr ""
-"Il n'y avait pas assez d'espace disque. Veuillez en libérer et réessayez."
+msgstr "Veuillez en libérer et réessayez."
 
 #. TRANSLATORS: we didn't handle the error type
 #: ../src/gs-common.c:212
 msgid "If the problem persists, contact your software provider."
-msgstr ""
+msgstr "Si le problème persiste, contactez le fournisseur de votre logiciel."
 
 #. TRANSLATORS: window title
 #: ../src/gs-common.c:272
@@ -2135,9 +2162,6 @@ msgstr "Activer et installer"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:402
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating violence-cartoon"
 msgid "None"
 msgstr "Aucune"
@@ -2145,23 +2169,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:405
 msgid "Cartoon characters in unsafe situations"
-msgstr ""
+msgstr "Personnages de dessin animé en situation de danger"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:408
 msgid "Cartoon characters in aggressive conflict"
-msgstr ""
+msgstr "Personnages de dessin animé en conflit agressif"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:411
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Illustration de violences impliquant les personnages du dessin animé"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating violence-fantasy"
 msgid "None"
 msgstr "Aucune"
@@ -2169,23 +2190,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:417
 msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr ""
+msgstr "Personnages en situations dangereuses franchement irréelles"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:420
 msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr ""
+msgstr "Personnages en situation de conflit agressif franchement irréel"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:423
 msgid "Graphic violence easily distinguishable from reality"
-msgstr ""
+msgstr "Illustration violente franchement irréelle"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:426
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating violence-realistic"
 msgid "None"
 msgstr "Aucune"
@@ -2193,23 +2211,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
 msgid "Mild realistic characters in unsafe situations"
-msgstr ""
+msgstr "Personnages moyennement réalistes en situation dangereuse"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:432
 msgid "Depictions of realistic characters in aggressive conflict"
-msgstr ""
+msgstr "Illustrations de personnages réalistes en conflit agressif"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:435
 msgid "Graphic violence involving realistic characters"
-msgstr ""
+msgstr "Illustrations de violences impliquant des personnages réalistes"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:438
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating violence-bloodshed"
 msgid "None"
 msgstr "Aucune"
@@ -2217,23 +2232,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:441
 msgid "Unrealistic bloodshed"
-msgstr ""
+msgstr "Massacre irréaliste"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:444
 msgid "Realistic bloodshed"
-msgstr ""
+msgstr "Massacre réaliste"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:447
 msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr ""
+msgstr "Illustrations d'un massacre et de mutilations corporelles"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:450
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating violence-sexual"
 msgid "None"
 msgstr "Aucune"
@@ -2241,13 +2253,10 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:453
 msgid "Rape or other violent sexual behavior"
-msgstr ""
+msgstr "Viol ou autre comportement sexuel violent"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:456
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating drugs-alcohol"
 msgid "None"
 msgstr "Aucune"
@@ -2255,18 +2264,15 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:459
 msgid "References to alcoholic beverages"
-msgstr ""
+msgstr "Allusions à des boissons alcoolisées"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:462
 msgid "Use of alcoholic beverages"
-msgstr ""
+msgstr "Usage de boissons alcoolisées"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:465
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating drugs-narcotics"
 msgid "None"
 msgstr "Aucune"
@@ -2274,28 +2280,25 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:468
 msgid "References to illicit drugs"
-msgstr ""
+msgstr "Allusions à des stupéfiants illicites"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:471
 msgid "Use of illicit drugs"
-msgstr ""
+msgstr "Usage de stupéfiants illicites"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:474
 msgid "References to tobacco products"
-msgstr ""
+msgstr "Allusions à des produits dérivés du tabac"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:477
 msgid "Use of tobacco products"
-msgstr ""
+msgstr "Usage de produits dérivés du tabac"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:480
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating sex-nudity"
 msgid "None"
 msgstr "Aucune"
@@ -2303,18 +2306,15 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:483
 msgid "Brief artistic nudity"
-msgstr ""
+msgstr "Nu artistique de courte durée "
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:486
 msgid "Prolonged nudity"
-msgstr ""
+msgstr "État de nudité prolongée"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:489
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating sex-themes"
 msgid "None"
 msgstr "Aucune"
@@ -2322,25 +2322,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:492
 msgid "Provocative references or depictions"
-msgstr ""
+msgstr "Allusions ou images provocatrices"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:495
-#, fuzzy
-#| msgid "Search for applications"
 msgid "Sexual references or depictions"
-msgstr "Rechercher des applications"
+msgstr "Allusions ou images à caractère sexuel"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:498
 msgid "Graphic sexual behavior"
-msgstr ""
+msgstr "Illustrations de comportements sexuels"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:501
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating language-profanity"
 msgid "None"
 msgstr "Aucune"
@@ -2348,23 +2343,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:504
 msgid "Mild or infrequent use of profanity"
-msgstr ""
+msgstr "Utilisation modérée ou occasionnelle d'injures"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:507
 msgid "Moderate use of profanity"
-msgstr ""
+msgstr "Utilisation modérée d'injures"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:510
 msgid "Strong or frequent use of profanity"
-msgstr ""
+msgstr "Utilisation forte ou fréquente d'injures"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:513
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating language-humor"
 msgid "None"
 msgstr "Aucune"
@@ -2372,23 +2364,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:516
 msgid "Slapstick humor"
-msgstr ""
+msgstr "Humour burlesque"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:519
 msgid "Vulgar or bathroom humor"
-msgstr ""
+msgstr "Humour vulgaire ou de caniveau"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:522
 msgid "Mature or sexual humor"
-msgstr ""
+msgstr "Humour pour adultes ou sexuel"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:525
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating language-discrimination"
 msgid "None"
 msgstr "Aucune"
@@ -2396,23 +2385,22 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:528
 msgid "Negativity towards a specific group of people"
-msgstr ""
+msgstr "Attitudes négatives vis à vis de groupes spécifiques de gens"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:531
 msgid "Discrimation designed to cause emotional harm"
-msgstr ""
+msgstr "Discriminations destinées à blesser émotionnellement"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:534
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr ""
+"Discriminations explicites basées sur le genre, le sexe, la race ou la "
+"religion"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:537
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating money-advertising"
 msgid "None"
 msgstr "Aucune"
@@ -2425,18 +2413,16 @@ msgstr "Placement de produits"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:543
 msgid "Explicit references to specific brands or trademarked products"
-msgstr ""
+msgstr "Allusions explicites à des produits de marque spécifique ou déposée"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:546
 msgid "Players are encouraged to purchase specific real-world items"
 msgstr ""
+"Les joueurs sont encouragés à acheter des éléments spécifiques du monde réel"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:549
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating money-gambling"
 msgid "None"
 msgstr "Aucune"
@@ -2444,23 +2430,20 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:552
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Paris sur des événements aléatoires à l'aide de jetons ou à crédit"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:555
 msgid "Gambling using \"play\" money"
-msgstr ""
+msgstr "Paris avec de la monnaie fictive"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:558
 msgid "Gambling using real money"
-msgstr ""
+msgstr "Paris avec du vrai argent"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:561
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating money-purchasing"
 msgid "None"
 msgstr "Aucune"
@@ -2468,13 +2451,10 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:564
 msgid "Ability to spend real money in-game"
-msgstr ""
+msgstr "Propension à dépenser du vrai argent dans le jeu"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:567
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating social-chat"
 msgid "None"
 msgstr "Aucune"
@@ -2482,23 +2462,21 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:570
 msgid "Player-to-player game interactions without chat functionality"
-msgstr ""
+msgstr "Actions de jeu entre joueurs sans possibilité de discussion"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:573
 msgid "Player-to-player preset interactions without chat functionality"
 msgstr ""
+"Actions de jeu pré-définies entre joueurs sans possibilité de discussion"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:576
 msgid "Uncontrolled chat functionality between players"
-msgstr ""
+msgstr "Possibilité de discuter entre joueurs sans contrôle"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:579
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating social-audio"
 msgid "None"
 msgstr "Aucune"
@@ -2506,13 +2484,10 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:582
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr ""
+msgstr "Possibilité de discuter ou se voir entre joueurs sans contrôle"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:585
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating social-contacts"
 msgid "None"
 msgstr "Aucune"
@@ -2521,28 +2496,21 @@ msgstr "Aucune"
 #: ../src/gs-common.c:588
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
+"Partage des noms d'utilisateur de réseaux sociaux ou des adresses courriel"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:591
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating social-info"
 msgid "None"
 msgstr "Aucune"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:594
-#, fuzzy
-#| msgid "Show profiling information for the service"
 msgid "Sharing user information with 3rd parties"
-msgstr "Afficher les informations de profilage du service"
+msgstr "Partage des identifiants d'utilisateur avec des tierces parties"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:597
-#, fuzzy
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating social-location"
 msgid "None"
 msgstr "Aucune"
@@ -2550,12 +2518,12 @@ msgstr "Aucune"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:600
 msgid "Sharing physical location to other users"
-msgstr ""
+msgstr "Partage de l'emplacement physique avec d'autres utilisateurs"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:764
+#: ../src/gs-common.c:771
 msgid "Detailed errors from the package manager follow:"
 msgstr "Voici les détails des erreurs du gestionnaire de paquets :"
 
@@ -2588,31 +2556,23 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:63
 msgid "Software catalog is being downloaded"
-msgstr ""
+msgstr "Téléchargement du catalogue de logiciels en cours"
 
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:68
-#, fuzzy
-#| msgid "Software Updates Failed"
 msgid "Software catalog is being loaded"
-msgstr "Échec des mises à jour logicielles"
+msgstr "Chargement du catalogue de logiciels en cours"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-loading.ui.h:1
-#, fuzzy
-#| msgid "Codecs page"
 msgid "Loading page"
-msgstr "Page de Codecs"
+msgstr "Chargement de la page"
 
 #: ../src/gs-shell-loading.ui.h:2
-#, fuzzy
-#| msgid "Setting up updates…"
 msgid "Starting up…"
-msgstr "Mise en place des mises à jour en cours…"
+msgstr "Démarrage…"
 
 #: ../src/plugins/gs-desktop-common.c:30
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of AudioVideo"
 msgid "All"
 msgstr "Tout"
@@ -2625,7 +2585,7 @@ msgstr "Mises en avant"
 #: ../src/plugins/gs-desktop-common.c:36
 msgctxt "Menu of AudioVideo"
 msgid "Audio Creation & Editing"
-msgstr ""
+msgstr "Créations et modifications audio"
 
 #: ../src/plugins/gs-desktop-common.c:42
 msgctxt "Menu of AudioVideo"
@@ -2633,8 +2593,6 @@ msgid "Music Players"
 msgstr "Lecteurs de musique"
 
 #: ../src/plugins/gs-desktop-common.c:51
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Development"
 msgid "All"
 msgstr "Tout"
@@ -2655,8 +2613,6 @@ msgid "IDEs"
 msgstr "EDI"
 
 #: ../src/plugins/gs-desktop-common.c:69
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Education"
 msgid "All"
 msgstr "Tout"
@@ -2687,8 +2643,6 @@ msgid "Math"
 msgstr "Mathématiques"
 
 #: ../src/plugins/gs-desktop-common.c:94
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Games"
 msgid "All"
 msgstr "Tout"
@@ -2759,8 +2713,6 @@ msgid "Strategy"
 msgstr "Stratégie"
 
 #: ../src/plugins/gs-desktop-common.c:142
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Graphics"
 msgid "All"
 msgstr "Tout"
@@ -2796,8 +2748,6 @@ msgid "Viewers"
 msgstr "Visionneur"
 
 #: ../src/plugins/gs-desktop-common.c:168
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Office"
 msgid "All"
 msgstr "Tout"
@@ -2858,8 +2808,6 @@ msgid "Localization"
 msgstr "Régionalisation"
 
 #: ../src/plugins/gs-desktop-common.c:217
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Science"
 msgid "All"
 msgstr "Tout"
@@ -2895,8 +2843,6 @@ msgid "Robotics"
 msgstr "Robotique"
 
 #: ../src/plugins/gs-desktop-common.c:245
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "Tout"
@@ -2922,8 +2868,6 @@ msgid "Web Browsers"
 msgstr "Navigateurs Web"
 
 #: ../src/plugins/gs-desktop-common.c:270
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Utility"
 msgid "All"
 msgstr "Tout"
@@ -2939,8 +2883,6 @@ msgid "Text Editors"
 msgstr "Éditeurs de texte"
 
 #: ../src/plugins/gs-desktop-common.c:284
-#, fuzzy
-#| msgid "All"
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "Tout"
@@ -2958,7 +2900,7 @@ msgstr "Art"
 #: ../src/plugins/gs-desktop-common.c:293
 msgctxt "Menu of Reference"
 msgid "Biography"
-msgstr ""
+msgstr "Biographie"
 
 #: ../src/plugins/gs-desktop-common.c:296
 #: ../src/plugins/gs-desktop-common.c:299
@@ -2979,7 +2921,7 @@ msgstr "Histoire"
 #: ../src/plugins/gs-desktop-common.c:308
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
-msgstr ""
+msgstr "Style de vie"
 
 #: ../src/plugins/gs-desktop-common.c:311
 msgctxt "Menu of Reference"
@@ -2994,7 +2936,7 @@ msgstr "Sports"
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
 #: ../src/plugins/gs-desktop-common.c:323
 msgid "Audio & Video"
-msgstr ""
+msgstr "Audio et vidéo"
 
 #. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/gs-desktop-common.c:326
@@ -3013,11 +2955,8 @@ msgstr "Jeux"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/gs-desktop-common.c:335
-#, fuzzy
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Photography"
 msgid "Graphics & Photography"
-msgstr "Photographie"
+msgstr "Graphismes et photographie"
 
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/gs-desktop-common.c:338
@@ -3032,7 +2971,7 @@ msgstr "Science"
 #. TRANSLATORS: this is the menu spec main category for Communication
 #: ../src/plugins/gs-desktop-common.c:347
 msgid "Communication & News"
-msgstr ""
+msgstr "Communication et nouvelles"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
 #: ../src/plugins/gs-desktop-common.c:350
@@ -3043,4 +2982,3 @@ msgstr "Référence"
 #: ../src/plugins/gs-desktop-common.c:353
 msgid "Utilities"
 msgstr "Utilitaires"
-
