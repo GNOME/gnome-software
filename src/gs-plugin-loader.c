@@ -737,6 +737,13 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 
+	/* sanity check */
+	if (!gs_app_is_installed (app)) {
+		g_autofree gchar *tmp = gs_app_to_string (app);
+		g_warning ("ignoring non-installed app %s", tmp);
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
