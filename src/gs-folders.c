@@ -184,10 +184,10 @@ load (GsFolders *folders)
 	ids = g_settings_get_strv (folders->settings, "folder-children");
 	g_object_get (folders->settings, "path", &path, NULL);
 	for (i = 0; ids[i]; i++) {
-		g_autofree gchar **apps = NULL;
-		g_autofree gchar **categories = NULL;
+		g_auto(GStrv) apps = NULL;
+		g_auto(GStrv) categories = NULL;
 		g_autofree gchar *child_path = NULL;
-		g_autofree gchar **excluded_apps = NULL;
+		g_auto(GStrv) excluded_apps = NULL;
 		g_autofree gchar *name = NULL;
 		g_autoptr(GSettings) settings = NULL;
 
