@@ -935,6 +935,9 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 
 	app->kind = kind;
 	gs_app_queue_notify (app, "kind");
+
+	/* no longer valid */
+	app->unique_id_valid = FALSE;
 }
 
 /**
