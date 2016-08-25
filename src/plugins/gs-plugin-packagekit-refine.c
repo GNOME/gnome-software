@@ -852,10 +852,11 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = gs_app_list_index (list, i);
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
+		tmp = gs_app_get_management_plugin (app);
+		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
+			continue;
 		tmp = gs_app_get_id (app);
 		if (tmp == NULL)
-			continue;
-		if (gs_app_get_management_plugin (app) != NULL)
 			continue;
 		switch (gs_app_get_kind (app)) {
 		case AS_APP_KIND_DESKTOP:
