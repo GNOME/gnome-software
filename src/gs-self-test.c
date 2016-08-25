@@ -188,6 +188,18 @@ gs_plugin_func (void)
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list, 0)), ==, "b");
 	g_object_unref (list);
+
+	/* lookup with a wildcard */
+	list = gs_app_list_new ();
+	app = gs_app_new ("b");
+	gs_app_set_unique_id (app, "a/b/c/d/e/f");
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	g_assert (gs_app_list_lookup (list, "a/b/c/d/e/f") != NULL);
+	g_assert (gs_app_list_lookup (list, "a/b/c/d/e/*") != NULL);
+	g_assert (gs_app_list_lookup (list, "*/b/c/d/e/f") != NULL);
+	g_assert (gs_app_list_lookup (list, "x/x/x/x/x/x") == NULL);
+	g_object_unref (list);
 }
 
 static void

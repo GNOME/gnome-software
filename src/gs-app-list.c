@@ -46,6 +46,24 @@ struct _GsAppList
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
 
 /**
+ * gs_app_list_lookup:
+ * @list: A #GsAppList
+ * @unique_id: A unique_id
+ *
+ * Finds the first matching application in the list using the usual wildcard
+ * rules allowed in unique_ids.
+ *
+ * Returns: (transfer none): a #GsApp, or %NULL if not found
+ *
+ * Since: 3.22
+ **/
+GsApp *
+gs_app_list_lookup (GsAppList *list, const gchar *unique_id)
+{
+	return g_hash_table_lookup (list->hash_by_id, unique_id);
+}
+
+/**
  * gs_app_list_add:
  * @list: A #GsAppList
  * @app: A #GsApp

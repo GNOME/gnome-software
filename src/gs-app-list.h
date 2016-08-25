@@ -37,6 +37,8 @@ void		 gs_app_list_add		(GsAppList	*list,
 						 GsApp		*app);
 GsApp		*gs_app_list_index		(GsAppList	*list,
 						 guint		 idx);
+GsApp		*gs_app_list_lookup		(GsAppList	*list,
+						 const gchar	*unique_id);
 guint		 gs_app_list_length		(GsAppList	*list);
 
 G_END_DECLS
