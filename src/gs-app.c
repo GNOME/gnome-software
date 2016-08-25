@@ -896,6 +896,17 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 	if (app->kind == kind)
 		return;
 
+	/* trying to change */
+	if (app->kind != AS_APP_KIND_UNKNOWN &&
+	    kind == AS_APP_KIND_UNKNOWN) {
+		g_warning ("automatically prevented from changing "
+			   "kind on %s from %s to %s!",
+			   gs_app_get_unique_id (app),
+			   as_app_kind_to_string (app->kind),
+			   as_app_kind_to_string (kind));
+		return;
+	}
+
 	/* check the state change is allowed */
 	switch (app->kind) {
 	case AS_APP_KIND_UNKNOWN:
