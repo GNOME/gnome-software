@@ -245,6 +245,10 @@ void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
 gboolean	 gs_plugin_has_flags			(GsPlugin	*plugin,
 							 GsPluginFlags	 flags);
+void		 gs_plugin_add_flags			(GsPlugin	*plugin,
+							 GsPluginFlags	 flags);
+void		 gs_plugin_remove_flags			(GsPlugin	*plugin,
+							 GsPluginFlags	 flags);
 guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_locale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);

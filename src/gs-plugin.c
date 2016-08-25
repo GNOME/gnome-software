@@ -259,13 +259,13 @@ gs_plugin_action_start (GsPlugin *plugin, gboolean exclusive)
 	/* lock plugin */
 	if (exclusive) {
 		g_rw_lock_writer_lock (&priv->rwlock);
-		priv->flags |= GS_PLUGIN_FLAGS_EXCLUSIVE;
+		gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_EXCLUSIVE);
 	} else {
 		g_rw_lock_reader_lock (&priv->rwlock);
 	}
 
 	/* set plugin as SELF */
-	priv->flags |= GS_PLUGIN_FLAGS_RUNNING_SELF;
+	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF);
 }
 
 static gboolean
@@ -276,7 +276,7 @@ gs_plugin_action_delay_cb (gpointer user_data)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
 
 	g_debug ("plugin no longer recently active: %s", priv->name);
-	priv->flags &= ~(guint64) GS_PLUGIN_FLAGS_RECENT;
+	gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_RECENT);
 	priv->timer_id = 0;
 	return FALSE;
 }
@@ -296,18 +296,18 @@ gs_plugin_action_stop (GsPlugin *plugin)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
 
 	/* clear plugin as SELF */
-	priv->flags &= ~GS_PLUGIN_FLAGS_RUNNING_SELF;
+	gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF);
 
 	/* unlock plugin */
 	if (priv->flags & GS_PLUGIN_FLAGS_EXCLUSIVE) {
 		g_rw_lock_writer_unlock (&priv->rwlock);
-		priv->flags &= ~GS_PLUGIN_FLAGS_EXCLUSIVE;
+		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_EXCLUSIVE);
 	} else {
 		g_rw_lock_reader_unlock (&priv->rwlock);
 	}
 
 	/* unset this flag after 5 seconds */
-	priv->flags |= GS_PLUGIN_FLAGS_RECENT;
+	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_RECENT);
 	if (priv->timer_id > 0)
 		g_source_remove (priv->timer_id);
 	priv->timer_id = g_timeout_add (5000,
@@ -699,6 +699,38 @@ gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
 }
 
 /**
+ * gs_plugin_add_flags:
+ * @plugin: a #GsPlugin
+ * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_RUNNING_SELF
+ *
+ * Adds specific flags to the plugin.
+ *
+ * Since: 3.22
+ **/
+void
+gs_plugin_add_flags (GsPlugin *plugin, GsPluginFlags flags)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->flags |= flags;
+}
+
+/**
+ * gs_plugin_remove_flags:
+ * @plugin: a #GsPlugin
+ * @flags: a #GsPluginFlags, e.g. %GS_PLUGIN_FLAGS_RUNNING_SELF
+ *
+ * Removes specific flags from the plugin.
+ *
+ * Since: 3.22
+ **/
+void
+gs_plugin_remove_flags (GsPlugin *plugin, GsPluginFlags flags)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->flags &= ~flags;
+}
+
+/**
  * gs_plugin_set_running_other:
  * @plugin: a #GsPlugin
  * @running_other: %TRUE if another plugin is running
@@ -710,11 +742,10 @@ gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
 void
 gs_plugin_set_running_other (GsPlugin *plugin, gboolean running_other)
 {
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	if (running_other)
-		priv->flags |= GS_PLUGIN_FLAGS_RUNNING_OTHER;
+		gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER);
 	else
-		priv->flags &= ~GS_PLUGIN_FLAGS_RUNNING_OTHER;
+		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER);
 }
 
 /**
