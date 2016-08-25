@@ -531,6 +531,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	    as_app_get_scope (item) != AS_APP_SCOPE_UNKNOWN)
 		gs_app_set_scope (app, as_app_get_scope (item));
 
+	/* set branch */
+	if (as_app_get_branch (item) != NULL &&
+	    gs_app_get_branch (app) == NULL)
+		gs_app_set_branch (app, as_app_get_branch (item));
+
 	/* bundle-kind */
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN)
 		gs_app_set_bundle_kind (app, gs_appstream_get_bundle_kind (item));
