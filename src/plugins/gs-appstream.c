@@ -286,7 +286,7 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 		return g_object_ref (app_cache);
 
 	/* save in the cache */
-	gs_plugin_cache_add (plugin, id, app);
+	gs_plugin_cache_add (plugin, gs_app_get_unique_id (app), app);
 	return g_steal_pointer (&app);
 }
 
