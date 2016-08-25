@@ -85,6 +85,7 @@ typedef enum {
  * @GS_PLUGIN_FLAGS_RUNNING_OTHER:	Another plugin is running
  * @GS_PLUGIN_FLAGS_EXCLUSIVE:		An exclusive action is running
  * @GS_PLUGIN_FLAGS_RECENT:		This plugin recently ran
+ * @GS_PLUGIN_FLAGS_GLOBAL_CACHE:	Use the global app cache
  *
  * The flags for the plugin at this point in time.
  **/
@@ -93,6 +94,7 @@ typedef enum {
 #define GS_PLUGIN_FLAGS_RUNNING_OTHER	(1u << 1)
 #define GS_PLUGIN_FLAGS_EXCLUSIVE	(1u << 2)
 #define GS_PLUGIN_FLAGS_RECENT		(1u << 3)
+#define GS_PLUGIN_FLAGS_GLOBAL_CACHE	(1u << 4)
 typedef guint64 GsPluginFlags;
 
 /**

@@ -29,7 +29,7 @@
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
 #include "gs-os-release.h"
-#include "gs-plugin.h"
+#include "gs-plugin-private.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 #include "gs-utils.h"
@@ -86,6 +86,42 @@ gs_os_release_func (void)
 	g_assert_cmpstr (gs_os_release_get_version (os_release), ==, "25 (Workstation Edition)");
 	g_assert_cmpstr (gs_os_release_get_version_id (os_release), ==, "25");
 	g_assert_cmpstr (gs_os_release_get_pretty_name (os_release), ==, "Fedora 25 (Workstation Edition)");
+}
+
+static void
+gs_plugin_global_cache_func (void)
+{
+	const gchar *unique_id;
+	g_autoptr(GsPlugin) plugin1 = NULL;
+	g_autoptr(GsPlugin) plugin2 = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
+	g_autoptr(GsApp) app1 = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+
+	plugin1 = gs_plugin_new ();
+	gs_plugin_set_global_cache (plugin1, list);
+
+	plugin2 = gs_plugin_new ();
+	gs_plugin_set_global_cache (plugin2, list);
+
+	/* both plugins not opted into the global cache */
+	unique_id = gs_app_get_unique_id (app);
+	gs_plugin_cache_add (plugin1, unique_id, app);
+	g_assert (gs_plugin_cache_lookup (plugin2, unique_id) == NULL);
+	app1 = gs_plugin_cache_lookup (plugin1, unique_id);
+	g_assert (app1 != NULL);
+
+	/* one plugin opted in */
+	gs_plugin_add_flags (plugin1, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
+	gs_plugin_cache_add (plugin1, unique_id, app);
+	g_assert (gs_plugin_cache_lookup (plugin2, unique_id) == NULL);
+
+	/* both plugins opted in */
+	gs_plugin_add_flags (plugin2, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
+	gs_plugin_cache_add (plugin1, unique_id, app);
+	app2 = gs_plugin_cache_lookup (plugin2, unique_id);
+	g_assert (app2 != NULL);
 }
 
 static void
@@ -1244,6 +1280,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
+	g_test_add_func ("/gnome-software/plugin{global-cache}", gs_plugin_global_cache_func);
 	g_test_add_func ("/gnome-software/auth{secret}", gs_auth_secret_func);
 
 	/* we can only load this once per process */

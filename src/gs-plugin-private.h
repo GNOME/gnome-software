@@ -56,6 +56,8 @@ void		 gs_plugin_set_auth_array		(GsPlugin	*plugin,
 							 GPtrArray	*auth_array);
 void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
 							 SoupSession	*soup_session);
+void		 gs_plugin_set_global_cache		(GsPlugin	*plugin,
+							 GsAppList	*global_cache);
 void		 gs_plugin_set_running_other		(GsPlugin	*plugin,
 							 gboolean	 running_other);
 GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,

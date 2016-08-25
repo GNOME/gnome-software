@@ -43,6 +43,7 @@ typedef struct
 	gchar			*locale;
 	gchar			*language;
 	GsPluginStatus		 status_last;
+	GsAppList		*global_cache;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
 	GPtrArray		*auth_array;
@@ -3470,6 +3471,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_language (plugin, priv->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
+	gs_plugin_set_global_cache (plugin, priv->global_cache);
 	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
 	/* add to array */
@@ -3865,6 +3867,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_free (priv->location);
 	g_free (priv->locale);
 	g_free (priv->language);
+	g_object_unref (priv->global_cache);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
 
@@ -3915,6 +3918,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	guint i;
 
 	priv->scale = 1;
+	priv->global_cache = gs_app_list_new ();
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->status_last = GS_PLUGIN_STATUS_LAST;
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);

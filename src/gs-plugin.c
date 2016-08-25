@@ -63,6 +63,7 @@ typedef struct
 	GsPluginData		*data;			/* for gs-plugin-{name}.c */
 	GsPluginFlags		 flags;
 	SoupSession		*soup_session;
+	GsAppList		*global_cache;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	gboolean		 enabled;
 	gchar			*locale;		/* allow-none */
@@ -192,12 +193,17 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->language);
 	g_rw_lock_clear (&priv->rwlock);
 	g_object_unref (priv->profile);
-	g_ptr_array_unref (priv->auth_array);
-	g_object_unref (priv->soup_session);
+	if (priv->auth_array != NULL)
+		g_ptr_array_unref (priv->auth_array);
+	if (priv->soup_session != NULL)
+		g_object_unref (priv->soup_session);
+	if (priv->global_cache != NULL)
+		g_object_unref (priv->global_cache);
 	g_hash_table_unref (priv->cache);
 	g_mutex_clear (&priv->cache_mutex);
 	g_mutex_clear (&priv->timer_mutex);
-	g_module_close (priv->module);
+	if (priv->module != NULL)
+		g_module_close (priv->module);
 }
 
 /**
@@ -678,6 +684,22 @@ gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_set_object (&priv->soup_session, soup_session);
+}
+
+/**
+ * gs_plugin_set_global_cache:
+ * @plugin: a #GsPlugin
+ * @global_cache: a #GsAppList
+ *
+ * Sets the global cache that plugins can opt to use.
+ *
+ * Since: 3.22
+ **/
+void
+gs_plugin_set_global_cache (GsPlugin *plugin, GsAppList *global_cache)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_set_object (&priv->global_cache, global_cache);
 }
 
 /**
@@ -1170,7 +1192,16 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
 	g_return_val_if_fail (key != NULL, NULL);
 
-	app = g_hash_table_lookup (priv->cache, key);
+	/* global, so using a unique_id */
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
+		if (!as_utils_unique_id_valid (key)) {
+			g_critical ("key %s is not a unique_id", key);
+			return NULL;
+		}
+		app = gs_app_list_lookup (priv->global_cache, key);
+	} else {
+		app = g_hash_table_lookup (priv->cache, key);
+	}
 	if (app == NULL)
 		return NULL;
 	return g_object_ref (app);
@@ -1196,6 +1227,16 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_return_if_fail (key != NULL);
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* global, so using internal unique_id */
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
+		if (!as_utils_unique_id_valid (key)) {
+			g_critical ("key %s is not a unique_id", key);
+			return;
+		}
+		gs_app_list_add (priv->global_cache, app);
+		return;
+	}
 
 	if (g_hash_table_lookup (priv->cache, key) == app)
 		return;

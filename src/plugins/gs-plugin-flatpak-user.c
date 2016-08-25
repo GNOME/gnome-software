@@ -46,6 +46,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->flatpak = gs_flatpak_new (plugin, GS_FLATPAK_SCOPE_USER);
 	priv->settings = g_settings_new ("org.gnome.software");
 
+	/* set plugin flags */
+	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
+
 	/* getting app properties from appstream is quicker */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 
