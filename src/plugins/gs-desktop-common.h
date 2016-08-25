@@ -34,7 +34,7 @@ typedef struct {
 
 typedef struct {
 	const gchar	*id;
-	GsDesktopMap	*mapping;
+	const GsDesktopMap *mapping;
 	const gchar	*name;
 	const gchar	*icon;
 	const gchar	*key_colors;

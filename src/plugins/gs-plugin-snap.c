@@ -115,7 +115,7 @@ static void
 get_macaroon (GsPlugin *plugin, gchar **macaroon, gchar ***discharges)
 {
 	GsAuth *auth;
-	gchar *serialized_macaroon;
+	const gchar *serialized_macaroon;
 	g_autoptr(GVariant) macaroon_variant = NULL;
 	g_autoptr (GError) error_local = NULL;
 

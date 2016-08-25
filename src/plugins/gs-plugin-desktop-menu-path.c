@@ -72,9 +72,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* find a top level category the app has */
 	msdata = gs_desktop_get_data ();
 	for (i = 0; !found && msdata[i].id != NULL; i++) {
-		GsDesktopData *data = &msdata[i];
+		const GsDesktopData *data = &msdata[i];
 		for (j = 0; !found && data->mapping[j].id != NULL; j++) {
-			GsDesktopMap *map = &data->mapping[j];
+			const GsDesktopMap *map = &data->mapping[j];
 			if (g_strcmp0 (map->id, "all") == 0)
 				continue;
 			if (g_strcmp0 (map->id, "featured") == 0)
