@@ -1305,10 +1305,17 @@ gs_plugin_init (GsPlugin *plugin)
 	priv->enabled = TRUE;
 	priv->scale = 1;
 	priv->profile = as_profile_new ();
+#if AS_CHECK_VERSION(0,6,2)
+	priv->cache = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
+					     (GEqualFunc) as_utils_unique_id_equal,
+					     g_free,
+					     (GDestroyNotify) g_object_unref);
+#else
 	priv->cache = g_hash_table_new_full (g_str_hash,
 					     g_str_equal,
 					     g_free,
 					     (GDestroyNotify) g_object_unref);
+#endif
 	g_mutex_init (&priv->cache_mutex);
 	g_mutex_init (&priv->timer_mutex);
 	g_rw_lock_init (&priv->rwlock);
