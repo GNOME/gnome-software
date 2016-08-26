@@ -98,6 +98,14 @@ row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 }
 
 static void
+gs_shell_installed_unreveal_row (GsAppRow *app_row)
+{
+	gs_app_row_unreveal (app_row);
+	g_signal_connect (app_row, "unrevealed",
+			  G_CALLBACK (row_unrevealed), NULL);
+}
+
+static void
 gs_shell_installed_app_removed (GsPage *page, GsApp *app)
 {
 	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
@@ -108,9 +116,7 @@ gs_shell_installed_app_removed (GsPage *page, GsApp *app)
 	for (l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		if (gs_app_row_get_app (app_row) == app) {
-			gs_app_row_unreveal (app_row);
-			g_signal_connect (app_row, "unrevealed",
-			                  G_CALLBACK (row_unrevealed), NULL);
+			gs_shell_installed_unreveal_row (app_row);
 		}
 	}
 }
@@ -129,8 +135,15 @@ static gboolean
 gs_shell_installed_invalidate_sort_idle (gpointer user_data)
 {
 	GsAppRow *app_row = user_data;
+	GsApp *app = gs_app_row_get_app (app_row);
+	AsAppState state = gs_app_get_state (app);
 
 	gtk_list_box_row_changed (GTK_LIST_BOX_ROW (app_row));
+
+	/* if the app has been uninstalled (which can happen from another view)
+	 * we should removed it from the installed view */
+	if (state == AS_APP_STATE_AVAILABLE || state == AS_APP_STATE_UNKNOWN)
+		gs_shell_installed_unreveal_row (app_row);
 
 	g_object_unref (app_row);
 	return G_SOURCE_REMOVE;
