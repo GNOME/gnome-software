@@ -61,8 +61,6 @@ void		 gs_utils_widget_set_css_app	(GsApp		*app,
 						 const gchar	*metadata_css);
 void		 gs_utils_widget_set_css_simple	(GtkWidget	*widget,
 						 const gchar	*css);
-gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
-						 const gchar	*str);
 const gchar	*gs_utils_get_error_value	(const GError	*error);
 void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*title,

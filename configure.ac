@@ -67,6 +67,7 @@ WARN_CFLAGS_EXTRA="
 	-Wunused-but-set-variable
 	-Wwrite-strings"
 AX_APPEND_COMPILE_FLAGS([$WARN_CFLAGS_EXTRA], [WARN_CFLAGS])
+AC_SUBST(WARN_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl - gettext stuff
