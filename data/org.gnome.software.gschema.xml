@@ -90,9 +90,21 @@
       <default>true</default>
       <summary>Show some UI elements informing the user that an app is non-free</summary>
     </key>
+    <key name="show-nonfree-prompt" type="b">
+      <default>true</default>
+      <summary>Show the prompt to install nonfree software sources</summary>
+    </key>
+    <key name="show-nonfree-software" type="b">
+      <default>false</default>
+      <summary>Show non-free software in search results</summary>
+    </key>
     <key name="nonfree-software-uri" type="s">
       <default>'https://en.wikipedia.org/wiki/Proprietary_software'</default>
       <summary>The URI that explains nonfree and proprietary software</summary>
+    </key>
+    <key name="nonfree-sources" type="as">
+      <default>['google-chrome']</default>
+      <summary>A list of non-free sources that can be optionally enabled</summary>
     </key>
   </schema>
 </schemalist>
