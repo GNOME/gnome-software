@@ -31,8 +31,15 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsSourcesDialogRow, gs_sources_dialog_row, GS, SOURCES_DIALOG_ROW, GtkListBoxRow)
 
 GtkWidget	*gs_sources_dialog_row_new		(void);
+void		 gs_sources_dialog_row_set_switch_enabled (GsSourcesDialogRow	*row,
+							 gboolean		 switch_enabled);
+void		 gs_sources_dialog_row_set_switch_active (GsSourcesDialogRow	*row,
+							 gboolean		 switch_active);
+gboolean	 gs_sources_dialog_row_get_switch_active (GsSourcesDialogRow	*row);
 void		 gs_sources_dialog_row_set_name		(GsSourcesDialogRow	*row,
 							 const gchar		*name);
+void		 gs_sources_dialog_row_set_comment	(GsSourcesDialogRow	*row,
+							 const gchar		*comment);
 void		 gs_sources_dialog_row_set_description	(GsSourcesDialogRow	*row,
 							 const gchar		*description);
 
