@@ -2,20 +2,21 @@
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 #
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2013.
+# Mario Blättermann <mario.blaettermann@gmail.com>, 2013, 2016.
 # Alexander Wilms <f.alexander.wilms _at_ gmail.com>, 2013.
 # Paul Seyfert <pseyfert@mathphys.fsk.uni-heidelberg.de>, 2015.
 # Bernd Homuth <dev@hmt.im>, 2015.
 # Christian Kirbach <christian.kirbach@gmail.com>, 2015.
+# Wolfgang Stöggl <c72578@yahoo.de>, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-08-19 17:22+0000\n"
-"PO-Revision-Date: 2016-08-19 20:55+0200\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"POT-Creation-Date: 2016-08-29 09:17+0000\n"
+"PO-Revision-Date: 2016-08-29 18:39+0200\n"
+"Last-Translator: Wolfgang Stoeggl <c72578@yahoo.de>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -204,11 +205,11 @@ msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Show the folder management UI"
-msgstr ""
+msgstr "Grafische Oberfläche der Ordnerverwaltung anzeigen"
 
 #: ../data/org.gnome.software.gschema.xml.h:25
 msgid "Allow access to the Software Sources dialog"
-msgstr ""
+msgstr "Zugriff auf den Softwarequellen-Dialog erlauben"
 
 #: ../data/org.gnome.software.gschema.xml.h:26
 msgid "Offer upgrades for pre-releases"
@@ -217,6 +218,8 @@ msgstr "Aktualisierungen für Vorab-Veröffentlichungen anbieten"
 #: ../data/org.gnome.software.gschema.xml.h:27
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
+"Elemente der grafischen Oberfläche anzeigen, die den Benutzer auf den "
+"unfreien Status einer Anwendung hinweisen"
 
 #: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -225,7 +228,7 @@ msgstr "Zu Anwendungsordner hinzufügen"
 #: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
 #: ../src/gs-removal-dialog.ui.h:2 ../src/gs-review-dialog.ui.h:3
 #: ../src/gs-shell-details.c:358 ../src/gs-shell-details.ui.h:6
-#: ../src/gs-shell-installed.c:516 ../src/gs-upgrade-banner.ui.h:5
+#: ../src/gs-shell-installed.c:529 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_Abbrechen"
 
@@ -693,24 +696,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1040
+#: ../src/gs-plugin-loader.c:1048
 msgid "OS Updates"
 msgstr "Betriebssystemaktualisierungen"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1045
+#: ../src/gs-plugin-loader.c:1053
 msgid "Includes performance, stability and security improvements."
 msgstr "Beinhaltet Leistungs-, Stabilitäts- und Sicherheitsverbesserungen."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1729 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Es sind keine zusätzlichen Codecs für das Format %s verfügbar."
 
-#: ../src/gs-plugin-loader.c:1724
+#: ../src/gs-plugin-loader.c:1732
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1186,7 +1189,7 @@ msgstr "Unbekannte"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:424
+#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:437
 #: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:341
 msgid "Add-ons"
 msgstr "Erweiterungen"
@@ -1228,8 +1231,8 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
-"Dies bedeutet, dass die Softwarerechte in den Händen einer Person oder "
-"eines Unternehmens liegen. Die Nutzung ist oftmals beschränkt und der Quellcode "
+"Dies bedeutet, dass die Softwarerechte in den Händen einer Person oder eines "
+"Unternehmens liegen. Die Nutzung ist oftmals beschränkt und der Quellcode "
 "ist normalerweise nicht zugänglich."
 
 #: ../src/gs-shell-details.ui.h:56
@@ -1431,15 +1434,15 @@ msgstr "Seite mit Codecs"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:414
+#: ../src/gs-shell-installed.c:427
 msgid "System Applications"
 msgstr "Systemanwendungen"
 
-#: ../src/gs-shell-installed.c:524
+#: ../src/gs-shell-installed.c:537
 msgid "Click on items to select them"
 msgstr "Klicken Sie auf Objekte, um diese auszuwählen"
 
-#: ../src/gs-shell-installed.c:724
+#: ../src/gs-shell-installed.c:737
 msgid "Select"
 msgstr "Auswählen"
 
@@ -2137,7 +2140,7 @@ msgid ""
 msgstr ""
 "%s ist nicht <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
 "source_software\">freie und quelloffene Software</a> und wird durch »%s« "
-"bereit gestellt."
+"bereitgestellt."
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -2188,33 +2191,37 @@ msgstr "Nichts auswählen"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:405
 msgid "Cartoon characters in unsafe situations"
-msgstr ""
+msgstr "Animationsfiguren in unsicheren Situationen"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:408
 msgid "Cartoon characters in aggressive conflict"
-msgstr ""
+msgstr "Animationsfiguren in aggressivem Konflikt"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:411
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Grafische Gewaltdarstellung durch Animationsfiguren"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
 msgctxt "content rating violence-fantasy"
 msgid "None"
-msgstr "Nichts auswählen"
+msgstr "Nichts"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:417
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr ""
+"Figuren in unsicheren Situationen, die einfach von der Realität zu "
+"unterscheiden sind"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:420
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr ""
+"Figuren in aggressiven Konflikten, die einfach von der Realität zu "
+"unterscheiden sind"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:423
@@ -2230,7 +2237,7 @@ msgstr "Nichts auswählen"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
 msgid "Mild realistic characters in unsafe situations"
-msgstr ""
+msgstr "Harmlose realistische Figuren in unsicheren Situationen"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:432
@@ -2390,7 +2397,7 @@ msgstr "Slapstick-Humor"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:519
 msgid "Vulgar or bathroom humor"
-msgstr ""
+msgstr "Vulgärer oder Kneipenstammtischhumor"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:522
@@ -2449,7 +2456,7 @@ msgstr "Nichts auswählen"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:552
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Glücksspiele mit Jetons oder Guthaben"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:555
@@ -2481,17 +2488,17 @@ msgstr "Nichts auswählen"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:570
 msgid "Player-to-player game interactions without chat functionality"
-msgstr ""
+msgstr "Zwei-Teilnehmer-Spielinteraktionen ohne Chat-Funktion"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:573
 msgid "Player-to-player preset interactions without chat functionality"
-msgstr ""
+msgstr "Voreingestellte Zwei-Teilnehmer-Spielinteraktionen ohne Chat-Funktion"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:576
 msgid "Uncontrolled chat functionality between players"
-msgstr ""
+msgstr "Nicht kontrollierte Chat-Funktion zwischen Spielern"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:579
@@ -2502,7 +2509,7 @@ msgstr "Nichts auswählen"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:582
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr ""
+msgstr "Nicht kontrollierte Audio- oder Video-Chat-Funktion zwischen Spielern"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:585
