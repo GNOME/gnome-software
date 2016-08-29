@@ -1808,7 +1808,8 @@ static void
 gs_shell_details_license_nonfree_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	g_autofree gchar *str = NULL;
-	const gchar *uri = "https://en.wikipedia.org/wiki/Proprietary_software";
+	g_autofree gchar *uri = NULL;
+	uri = g_settings_get_string (self->settings, "nonfree-software-uri");
 	str = g_strdup_printf ("<a href=\"%s\">%s</a>",
 			       uri,
 			       _("More information"));
