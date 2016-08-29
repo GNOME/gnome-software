@@ -197,6 +197,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
+		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
+			continue;
 		add_source (GTK_LIST_BOX (dialog->listbox), app);
 	}
 }

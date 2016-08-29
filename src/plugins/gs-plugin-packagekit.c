@@ -181,7 +181,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
 					 PK_FILTER_ENUM_NOT_SUPPORTED,
-					 PK_FILTER_ENUM_INSTALLED,
 					 -1);
 	results = pk_client_get_repo_list (PK_CLIENT(priv->task),
 					   filter,
@@ -199,7 +198,8 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, pk_repo_detail_get_enabled (rd) ?
+				  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
 				 pk_repo_detail_get_description (rd));
