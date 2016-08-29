@@ -51,81 +51,94 @@ struct _GsSourcesDialog
 
 G_DEFINE_TYPE (GsSourcesDialog, gs_sources_dialog, GTK_TYPE_DIALOG)
 
+static gchar *
+get_source_installed_text (GPtrArray *sources)
+{
+	guint cnt_addon = 0;
+	guint cnt_apps = 0;
+	guint i;
+	guint j;
+	g_autofree gchar *addons_text = NULL;
+	g_autofree gchar *apps_text = NULL;
+
+	/* split up the types */
+	for (j = 0; j < sources->len; j++) {
+		GsApp *app = g_ptr_array_index (sources, j);
+		GPtrArray *related = gs_app_get_related (app);
+		for (i = 0; i < related->len; i++) {
+			GsApp *app_tmp = g_ptr_array_index (related, i);
+			switch (gs_app_get_kind (app_tmp)) {
+			case AS_APP_KIND_WEB_APP:
+			case AS_APP_KIND_DESKTOP:
+				cnt_apps++;
+				break;
+			case AS_APP_KIND_FONT:
+			case AS_APP_KIND_CODEC:
+			case AS_APP_KIND_INPUT_METHOD:
+			case AS_APP_KIND_ADDON:
+				cnt_addon++;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	/* nothing! */
+	if (cnt_apps == 0 && cnt_addon == 0) {
+		/* TRANSLATORS: This string describes a software source that
+		   has no software installed from it. */
+		return g_strdup (_("No applications or addons installed; other software might still be"));
+	}
+	if (cnt_addon == 0) {
+		/* TRANSLATORS: This string is used to construct the 'X applications
+		   installed' sentence, describing a software source. */
+		return g_strdup_printf (ngettext ("%u application installed",
+						  "%u applications installed",
+						  cnt_apps), cnt_apps);
+	}
+	if (cnt_apps == 0) {
+		/* TRANSLATORS: This string is used to construct the 'X add-ons
+		   installed' sentence, describing a software source. */
+		return g_strdup_printf (ngettext ("%u add-on installed",
+						  "%u add-ons installed",
+						  cnt_addon), cnt_addon);
+	}
+
+	/* TRANSLATORS: This string is used to construct the 'X applications
+	   and y add-ons installed' sentence, describing a software source.
+	   The correct form here depends on the number of applications. */
+	apps_text = g_strdup_printf (ngettext ("%u application",
+					       "%u applications",
+					       cnt_apps), cnt_apps);
+	/* TRANSLATORS: This string is used to construct the 'X applications
+	   and y add-ons installed' sentence, describing a software source.
+	   The correct form here depends on the number of add-ons. */
+	addons_text = g_strdup_printf (ngettext ("%u add-on",
+						 "%u add-ons",
+						 cnt_addon), cnt_addon);
+	/* TRANSLATORS: This string is used to construct the 'X applications
+	   and y add-ons installed' sentence, describing a software source.
+	   The correct form here depends on the total number of
+	   applications and add-ons. */
+	return g_strdup_printf (ngettext ("%s and %s installed",
+					  "%s and %s installed",
+					  cnt_apps + cnt_addon),
+					  apps_text, addons_text);
+}
+
 static void
 add_source (GtkListBox *listbox, GsApp *app)
 {
 	GtkWidget *row;
-	GPtrArray *related;
-	guint cnt_addon = 0;
-	guint cnt_apps = 0;
-	guint i;
-	g_autofree gchar *addons_text = NULL;
-	g_autofree gchar *apps_text = NULL;
 	g_autofree gchar *text = NULL;
+	g_autoptr(GPtrArray) sources = g_ptr_array_new ();
 
 	row = gs_sources_dialog_row_new ();
 	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (row),
 	                                gs_app_get_name (app));
-
-	related = gs_app_get_related (app);
-
-	/* split up the types */
-	for (i = 0; i < related->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (related, i);
-		switch (gs_app_get_kind (app_tmp)) {
-		case AS_APP_KIND_WEB_APP:
-		case AS_APP_KIND_DESKTOP:
-			cnt_apps++;
-			break;
-		case AS_APP_KIND_FONT:
-		case AS_APP_KIND_CODEC:
-		case AS_APP_KIND_INPUT_METHOD:
-		case AS_APP_KIND_ADDON:
-			cnt_addon++;
-			break;
-		default:
-			break;
-		}
-	}
-
-	if (cnt_apps == 0 && cnt_addon == 0) {
-		/* TRANSLATORS: This string describes a software source that
-		   has no software installed from it. */
-		text = g_strdup (_("No applications or addons installed; other software might still be"));
-	} else if (cnt_addon == 0) {
-		/* TRANSLATORS: This string is used to construct the 'X applications
-		   installed' sentence, describing a software source. */
-		text = g_strdup_printf (ngettext ("%u application installed",
-						  "%u applications installed",
-						  cnt_apps), cnt_apps);
-	} else if (cnt_apps == 0) {
-		/* TRANSLATORS: This string is used to construct the 'X add-ons
-		   installed' sentence, describing a software source. */
-		text = g_strdup_printf (ngettext ("%u add-on installed",
-						  "%u add-ons installed",
-						  cnt_addon), cnt_addon);
-	} else {
-		/* TRANSLATORS: This string is used to construct the 'X applications
-		   and y add-ons installed' sentence, describing a software source.
-		   The correct form here depends on the number of applications. */
-		apps_text = g_strdup_printf (ngettext ("%u application",
-						       "%u applications",
-						       cnt_apps), cnt_apps);
-		/* TRANSLATORS: This string is used to construct the 'X applications
-		   and y add-ons installed' sentence, describing a software source.
-		   The correct form here depends on the number of add-ons. */
-		addons_text = g_strdup_printf (ngettext ("%u add-on",
-		                                         "%u add-ons",
-		                                         cnt_addon), cnt_addon);
-		/* TRANSLATORS: This string is used to construct the 'X applications
-		   and y add-ons installed' sentence, describing a software source.
-		   The correct form here depends on the total number of
-		   applications and add-ons. */
-		text = g_strdup_printf (ngettext ("%s and %s installed",
-		                                  "%s and %s installed",
-		                                  cnt_apps + cnt_addon),
-		                                  apps_text, addons_text);
-	}
+	g_ptr_array_add (sources, app);
+	text = get_source_installed_text (sources);
 	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (row),
 	                                       text);
 
