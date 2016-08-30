@@ -607,19 +607,6 @@ gs_shell_overview_categories_expander_cb (GtkButton *button, GsShellOverview *se
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), TRUE);
 }
 
-static gchar *
-gs_utils_build_source_unique_id (const gchar *id)
-{
-	if (as_utils_unique_id_valid (id))
-		return g_strdup (id);
-	return as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
-					 AS_BUNDLE_KIND_UNKNOWN,
-					 NULL,
-					 AS_APP_KIND_SOURCE,
-					 id,
-					 NULL);
-}
-
 static void
 g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
 				 GAsyncResult *res,
@@ -651,7 +638,8 @@ g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
 		g_autofree gchar *unique_id = NULL;
 
 		/* match the ID from GSettings to an actual GsApp */
-		unique_id = gs_utils_build_source_unique_id (nonfree_ids[i]);
+		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
+							   nonfree_ids[i]);
 		app = gs_app_list_lookup (list, unique_id);
 		if (app == NULL) {
 			g_warning ("no source for %s", unique_id);

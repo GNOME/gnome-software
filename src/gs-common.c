@@ -918,4 +918,27 @@ gs_utils_get_error_value (const GError *error)
 	return (const gchar *) str + 1;
 }
 
+/**
+ * gs_utils_build_unique_id_kind:
+ * @kind: A #AsAppKind
+ * @id: An application ID
+ *
+ * Converts the ID valid into a wildcard unique ID of a specific kind.
+ * If @id is already a unique ID, then it is returned unchanged.
+ *
+ * Returns: (transfer full): a unique ID, or %NULL
+ */
+gchar *
+gs_utils_build_unique_id_kind (AsAppKind kind, const gchar *id)
+{
+	if (as_utils_unique_id_valid (id))
+		return g_strdup (id);
+	return as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
+					 AS_BUNDLE_KIND_UNKNOWN,
+					 NULL,
+					 kind,
+					 id,
+					 NULL);
+}
+
 /* vim: set noexpandtab: */

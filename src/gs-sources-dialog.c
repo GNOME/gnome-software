@@ -163,19 +163,6 @@ add_source (GtkListBox *listbox, GsApp *app)
 	gtk_widget_show (row);
 }
 
-static gchar *
-gs_utils_build_source_unique_id (const gchar *id)
-{
-	if (as_utils_unique_id_valid (id))
-		return g_strdup (id);
-	return as_utils_unique_id_build (AS_APP_SCOPE_UNKNOWN,
-					 AS_BUNDLE_KIND_UNKNOWN,
-					 NULL,
-					 AS_APP_KIND_SOURCE,
-					 id,
-					 NULL);
-}
-
 static void
 source_modified_cb (GObject *source,
 		    GAsyncResult *res,
@@ -202,7 +189,8 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 	for (i = 0; nonfree_ids[i] != NULL; i++) {
 		GsApp *app;
 		g_autofree gchar *unique_id = NULL;
-		unique_id = gs_utils_build_source_unique_id (nonfree_ids[i]);
+		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
+							   nonfree_ids[i]);
 		app = gs_app_list_lookup (dialog->source_list, unique_id);
 		if (app == NULL) {
 			g_warning ("no source for %s", unique_id);
@@ -294,7 +282,8 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 	for (i = 0; nonfree_ids[i] != NULL; i++) {
 		GsApp *app;
 		g_autofree gchar *unique_id = NULL;
-		unique_id = gs_utils_build_source_unique_id (nonfree_ids[i]);
+		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
+							   nonfree_ids[i]);
 		app = gs_app_list_lookup (dialog->source_list, unique_id);
 		if (app == NULL) {
 			g_warning ("no source for %s", unique_id);
