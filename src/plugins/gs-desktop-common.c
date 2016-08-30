@@ -293,7 +293,7 @@ static const GsDesktopMap map_reference[] = {
 	{ "biography",		NC_("Menu of Reference", "Biography"),
 					{ "Reference::Biography",
 					  NULL} },
-	{ "comics",		NC_("Menu of Reference", "Fiction"),
+	{ "comics",		NC_("Menu of Reference", "Comics"),
 					{ "Reference::Comics",
 					  NULL} },
 	{ "fiction",		NC_("Menu of Reference", "Fiction"),

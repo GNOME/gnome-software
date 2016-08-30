@@ -426,7 +426,7 @@ gs_utils_get_content_rating (void)
 	C_("content rating violence-realistic", "None") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Mild realistic characters in unsafe situations") },
+	_("Mildly realistic characters in unsafe situations") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Depictions of realistic characters in aggressive conflict") },
