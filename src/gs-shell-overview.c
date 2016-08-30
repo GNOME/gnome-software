@@ -661,7 +661,6 @@ g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
 		/* depending on the new policy, add or remove the source */
 		if (g_settings_get_boolean (priv->settings, "show-nonfree-software")) {
 			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
-				g_error ("not ready yet");
 				gs_page_install_app (GS_PAGE (self), app,
 						     priv->cancellable);
 			}

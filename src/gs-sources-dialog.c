@@ -220,7 +220,6 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 								   dialog);
 			}
 		} else {
-			g_error ("Don't leave me this way!");
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
