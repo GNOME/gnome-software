@@ -528,7 +528,7 @@ gs_utils_get_content_rating (void)
 	_("Negativity towards a specific group of people") },
 	{ "language-discrimination", AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Discrimation designed to cause emotional harm") },
+	_("Discrimination designed to cause emotional harm") },
 	{ "language-discrimination", AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Explicit discrimination based on gender, sexuality, race or religion") },
