@@ -254,10 +254,9 @@ gs_shell_change_mode (GsShell *shell,
 	gtk_widget_hide (widget);
 
 	/* hide unless we're going to search */
-	if (mode != GS_SHELL_MODE_SEARCH) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget), FALSE);
-	}
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget),
+					mode == GS_SHELL_MODE_SEARCH);
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
