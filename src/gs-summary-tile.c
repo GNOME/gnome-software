@@ -228,11 +228,7 @@ static void
 gs_app_get_preferred_width (GtkWidget *widget,
 			    gint *min, gint *nat)
 {
-#if GTK_CHECK_VERSION(3,20,0)
 	gint m;
-#else
-	gint m, n;
-#endif
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (widget);
 
 	if (app_tile->preferred_width < 0) {
@@ -241,13 +237,7 @@ gs_app_get_preferred_width (GtkWidget *widget,
 		return;
 	}
 
-	/* It's because of some bugs in gtkbutton.c 3.18 and before.
-	 * We can remove this when we branch for 3.20 *and* require GTK 3.20. */
-#if GTK_CHECK_VERSION(3,20,0)
 	GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->get_preferred_width (widget, &m, NULL);
-#else
-	GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->get_preferred_width (widget, &m, &n);
-#endif
 
 	if (min != NULL)
 		*min = m;
