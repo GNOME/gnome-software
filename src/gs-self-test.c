@@ -839,6 +839,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *desktop_fn = NULL;
 	g_autofree gchar *kf_remote_url = NULL;
 	g_autofree gchar *metadata_fn = NULL;
+	g_autofree gchar *repodir_fn = NULL;
 	g_autofree gchar *runtime_fn = NULL;
 	g_autofree gchar *testdir = NULL;
 	g_autofree gchar *testdir_repourl = NULL;
@@ -852,6 +853,13 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak-user"))
 		return;
+
+	/* no files to use */
+	repodir_fn = gs_test_get_filename ("tests/flatpak/repo");
+	if (!g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
+		g_test_skip ("no flatpak test repo");
+		return;
+	}
 
 	/* check changed file exists */
 	root = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
