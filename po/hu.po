@@ -9,16 +9,16 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-08-29 20:45+0000\n"
-"PO-Revision-Date: 2016-08-29 23:11+0200\n"
-"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"POT-Creation-Date: 2016-08-31 07:27+0000\n"
+"PO-Revision-Date: 2016-08-31 15:03+0200\n"
+"Last-Translator: Meskó Balázs <meskobalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope at googlegroups dot com>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.2\n"
+"X-Generator: Poedit 1.8.8\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -224,7 +224,6 @@ msgid "The URI that explains nonfree and proprietary software"
 msgstr "Az URI, amely elmagyarázza a nem szabad és a tulajdonosi szoftvereket"
 
 #: ../data/org.gnome.software.gschema.xml.h:31
-#| msgid "The list of extra sources that have been previously enabled"
 msgid "A list of non-free sources that can be optionally enabled"
 msgstr "Nem szabad források listája, amely választhatóan engedélyezhető"
 
@@ -976,7 +975,7 @@ msgstr "_Telepítés…"
 msgid "_Remove"
 msgstr "_Eltávolítás"
 
-#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:516
+#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:504
 msgid "Removing…"
 msgstr "Eltávolítás…"
 
@@ -1024,23 +1023,23 @@ msgid "Sorry, this did not work"
 msgstr "Elnézést, ez nem sikerült"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1728
+#: ../src/gs-shell-details.c:1734
 msgid "Public domain"
 msgstr "Közkincs"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1750 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Szabad szoftverek"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1799
+#: ../src/gs-shell-details.c:1805
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "A felhasználót a következő licenc köti:"
 msgstr[1] "A felhasználót a következő licencek kötik:"
 
-#: ../src/gs-shell-details.c:1815 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1821 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "További információk"
 
@@ -1140,7 +1139,7 @@ msgstr "Kiadási tevékenység"
 msgid "System Integration"
 msgstr "Rendszer-integráció"
 
-#: ../src/gs-shell-details.ui.h:29 ../src/gs-sources-dialog.ui.h:9
+#: ../src/gs-shell-details.ui.h:29 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Verzió"
 
@@ -1497,7 +1496,7 @@ msgid "Recommended Productivity Applications"
 msgstr "Javasolt termelékenységi alkalmazások"
 
 #. TRANSLATORS: this is the proprietary info bar
-#: ../src/gs-shell-overview.c:725
+#: ../src/gs-shell-overview.c:712
 msgid ""
 "Provides access to additional software, including web browsers and games."
 msgstr ""
@@ -1505,7 +1504,7 @@ msgstr ""
 "játékokat."
 
 #. TRANSLATORS: this is the proprietary info bar
-#: ../src/gs-shell-overview.c:729
+#: ../src/gs-shell-overview.c:716
 msgid "Proprietary software has restrictions on use and access to source code."
 msgstr ""
 "A tulajdonosi szoftvereknek megkötéseik vannak a használatra és a "
@@ -1513,12 +1512,12 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the proprietary info bar
-#: ../src/gs-shell-overview.c:736 ../src/gs-sources-dialog.c:276
+#: ../src/gs-shell-overview.c:723 ../src/gs-sources-dialog.c:263
 msgid "Find out more…"
 msgstr "Tudjon meg többet…"
 
 #. TRANSLATORS: button to turn on proprietary software sources
-#: ../src/gs-shell-overview.c:770
+#: ../src/gs-shell-overview.c:757
 msgid "Enable"
 msgstr "Engedélyezés"
 
@@ -1528,7 +1527,6 @@ msgid "Overview page"
 msgstr "Áttekintés oldal"
 
 #: ../src/gs-shell-overview.ui.h:2
-#| msgid "Enable Third-Party Software Source?"
 msgid "Enable Proprietary Software Sources?"
 msgstr "Engedélyezi a tulajdonosi szoftverforrásokat?"
 
@@ -1803,32 +1801,31 @@ msgstr[0] "%s és %s telepítve"
 msgstr[1] "%s és %s telepítve"
 
 #. TRANSLATORS: nonfree software
-#: ../src/gs-sources-dialog.c:266
+#: ../src/gs-sources-dialog.c:253
 msgid "Typically has restrictions on use and access to source code."
 msgstr ""
 "Jellemzően megkötéseik vannak a használatra és a forráskódhoz való "
 "hozzáférésre vonatkozóan."
 
 #. TRANSLATORS: list header
-#: ../src/gs-sources-dialog.c:287
-#| msgid "Proprietary Software"
+#: ../src/gs-sources-dialog.c:274
 msgid "Proprietary Software Sources"
 msgstr "Tulajdonosi szoftverforrások"
 
-#: ../src/gs-sources-dialog.c:502 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:490 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Forrás eltávolítása"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:585
+#: ../src/gs-sources-dialog.c:573
 msgid "the operating system"
 msgstr "az operációs rendszer"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:678
+#: ../src/gs-sources-dialog.c:666
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1843,43 +1840,37 @@ msgid "Software Sources"
 msgstr "Szoftverforrások"
 
 #: ../src/gs-sources-dialog.ui.h:3
-#| msgid "Software Sources"
-msgid "Additional Software Sources"
-msgstr "További szoftverforrások"
-
-#: ../src/gs-sources-dialog.ui.h:4
-#| msgid "Additional Fonts Required"
 msgid "Additional Sources"
 msgstr "További források"
 
-#: ../src/gs-sources-dialog.ui.h:5
+#: ../src/gs-sources-dialog.ui.h:4
 msgid ""
 "Removing a source will also remove any software you have installed from it."
 msgstr ""
 "Egy forrás eltávolításakor a belőle telepített szoftverek is eltávolításra "
 "kerülnek."
 
-#: ../src/gs-sources-dialog.ui.h:6
+#: ../src/gs-sources-dialog.ui.h:5
 msgid "No software installed from this source"
 msgstr "Nincs szoftver telepítve ebből a forrásból"
 
-#: ../src/gs-sources-dialog.ui.h:7
+#: ../src/gs-sources-dialog.ui.h:6
 msgid "Installed from this Source"
 msgstr "Ebből a forrásból telepítve"
 
-#: ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-sources-dialog.ui.h:7
 msgid "Source Details"
 msgstr "Forrás részletei"
 
-#: ../src/gs-sources-dialog.ui.h:10
+#: ../src/gs-sources-dialog.ui.h:9
 msgid "Last Checked"
 msgstr "Utolsó ellenőrzés"
 
-#: ../src/gs-sources-dialog.ui.h:11
+#: ../src/gs-sources-dialog.ui.h:10
 msgid "Added"
 msgstr "Felvéve"
 
-#: ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.ui.h:11
 msgid "Website"
 msgstr "Weboldal"
 
@@ -2263,7 +2254,7 @@ msgstr "Nincs"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
-msgid "Mild realistic characters in unsafe situations"
+msgid "Mildly realistic characters in unsafe situations"
 msgstr "Enyhén valósághű karakterek veszélyes helyzetekben"
 
 #. TRANSLATORS: content rating description: comments welcome
@@ -2442,7 +2433,7 @@ msgstr "Negatívság egy bizonyos embercsoport felé"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:531
-msgid "Discrimation designed to cause emotional harm"
+msgid "Discrimination designed to cause emotional harm"
 msgstr "Érzelmi károsodást okozó tervezett diszkrimináció"
 
 #. TRANSLATORS: content rating description: comments welcome
@@ -2958,6 +2949,10 @@ msgid "Biography"
 msgstr "Életrajz"
 
 #: ../src/plugins/gs-desktop-common.c:296
+msgctxt "Menu of Reference"
+msgid "Comics"
+msgstr "Képregény"
+
 #: ../src/plugins/gs-desktop-common.c:299
 msgctxt "Menu of Reference"
 msgid "Fiction"
@@ -3037,3 +3032,7 @@ msgstr "Hivatkozás"
 #: ../src/plugins/gs-desktop-common.c:353
 msgid "Utilities"
 msgstr "Segédprogramok"
+
+#~| msgid "Software Sources"
+#~ msgid "Additional Software Sources"
+#~ msgstr "További szoftverforrások"
