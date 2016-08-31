@@ -82,6 +82,7 @@ typedef struct
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
+	gulong			 search_changed_id;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -441,6 +442,15 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 	case GS_SHELL_MODE_SEARCH:
 		g_debug ("popping back entry for %s with %s",
 			 page_name[entry->mode], entry->search);
+
+		/* set the text in the entry and move cursor to the end */
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		g_signal_handler_block (widget, priv->search_changed_id);
+		gtk_entry_set_text (GTK_ENTRY (widget), entry->search);
+		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
+		g_signal_handler_unblock (widget, priv->search_changed_id);
+
+		/* set the mode directly */
 		gs_shell_change_mode (shell, entry->mode,
 				      (gpointer) entry->search, FALSE);
 		break;
@@ -732,8 +742,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect (priv->main_window, "key-press-event",
 			  G_CALLBACK (window_keypress_handler), shell);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	g_signal_connect (widget, "search-changed",
-			  G_CALLBACK (search_changed_handler), shell);
+	priv->search_changed_id =
+		g_signal_connect (widget, "search-changed",
+				  G_CALLBACK (search_changed_handler), shell);
 
 	/* load content */
 	g_signal_connect (priv->shell_loading, "refreshed",
