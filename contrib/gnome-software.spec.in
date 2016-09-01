@@ -1,12 +1,12 @@
 %global glib2_version 2.46.0
-%global gtk3_version 3.18.2
+%global gtk3_version 3.20.0
 %global json_glib_version 1.1.1
-%global packagekit_version 1.1.0
-%global appstream_glib_version 0.5.11
+%global packagekit_version 1.1.1
+%global appstream_glib_version 0.6.2
 %global libsoup_version 2.51.92
 %global gsettings_desktop_schemas_version 3.11.5
 %global gnome_desktop_version 3.17.92
-%global fwupd_version 0.6.3
+%global fwupd_version 0.7.0
 %global flatpak_version 0.5.2
 
 %define alphatag                        #ALPHATAG#
@@ -22,7 +22,7 @@ Release:   0.#BUILD#%{?alphatag}%{?dist}
 License:   GPLv2+
 Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   http://download.gnome.org/sources/gnome-software/3.20/%{name}-%{version}.tar.xz
+Source0:   http://download.gnome.org/sources/gnome-software/3.21/%{name}-%{version}.tar.xz
 
 BuildRequires: gettext
 BuildRequires: intltool
@@ -44,11 +44,15 @@ BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
 BuildRequires: polkit-devel
 BuildRequires: libsecret-devel
 BuildRequires: flatpak-devel >= %{flatpak_version}
+BuildRequires: ostree-devel
+BuildRequires: rpm-devel
 
 Requires: appstream-data
 %if 0%{?fedora}
 Requires: epiphany-runtime
 %endif
+Requires: flatpak%{?_isa} >= %{flatpak_version}
+Requires: flatpak-libs%{?_isa} >= %{flatpak_version}
 Requires: fwupd%{?_isa} >= %{fwupd_version}
 Requires: glib2%{?_isa} >= %{glib2_version}
 Requires: gnome-desktop3%{?_isa} >= %{gnome_desktop_version}
@@ -73,7 +77,7 @@ and update software in the GNOME desktop.
 
 %package devel
 Summary: Headers for building external gnome-software plugins
-Requires: libappstream-glib-devel%{?_isa}
+Requires: %{name}%{?_isa} = %{version}-%{release}
 
 %description devel
 These development files are for building gnome-software plugins outside
