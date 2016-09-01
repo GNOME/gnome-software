@@ -476,7 +476,7 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 		gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, flatpak_remote_get_disabled (xremote) ?
-				  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+				  AS_APP_STATE_AVAILABLE : AS_APP_STATE_INSTALLED);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
