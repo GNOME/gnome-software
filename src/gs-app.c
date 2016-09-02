@@ -97,6 +97,7 @@ struct _GsApp
 	gint			 rating;
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of AsReview */
+	GPtrArray		*provides; /* of AsProvide */
 	guint64			 size_installed;
 	guint64			 size_download;
 	AsAppKind		 kind;
@@ -411,6 +412,8 @@ gs_app_to_string (GsApp *app)
 	}
 	if (app->reviews != NULL)
 		gs_app_kv_printf (str, "reviews", "%u", app->reviews->len);
+	if (app->provides != NULL)
+		gs_app_kv_printf (str, "provides", "%u", app->provides->len);
 	if (app->install_date != 0) {
 		gs_app_kv_printf (str, "install-date", "%"
 				  G_GUINT64_FORMAT "",
@@ -2369,6 +2372,40 @@ gs_app_remove_review (GsApp *app, AsReview *review)
 }
 
 /**
+ * gs_app_get_provides:
+ * @app: a #GsApp
+ *
+ * Gets all the provides for the application.
+ *
+ * Returns: (element-type AsProvide) (transfer none): the list of provides
+ *
+ * Since: 3.22
+ **/
+GPtrArray *
+gs_app_get_provides (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->provides;
+}
+
+/**
+ * gs_app_add_provide:
+ * @app: a #GsApp
+ * @provide: a #AsProvide
+ *
+ * Adds a provide to the application.
+ *
+ * Since: 3.22
+ **/
+void
+gs_app_add_provide (GsApp *app, AsProvide *provide)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (AS_IS_PROVIDE (provide));
+	g_ptr_array_add (app->provides, g_object_ref (provide));
+}
+
+/**
  * gs_app_get_size_download:
  * @app: A #GsApp
  *
@@ -3287,6 +3324,7 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&app->related, g_ptr_array_unref);
 	g_clear_pointer (&app->screenshots, g_ptr_array_unref);
 	g_clear_pointer (&app->reviews, g_ptr_array_unref);
+	g_clear_pointer (&app->provides, g_ptr_array_unref);
 	g_clear_pointer (&app->icons, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
@@ -3448,6 +3486,7 @@ gs_app_init (GsApp *app)
 	app->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	app->provides = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->metadata = g_hash_table_new_full (g_str_hash,
 	                                        g_str_equal,

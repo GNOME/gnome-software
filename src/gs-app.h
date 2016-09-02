@@ -228,6 +228,9 @@ void		 gs_app_add_review		(GsApp		*app,
 						 AsReview	*review);
 void		 gs_app_remove_review		(GsApp		*app,
 						 AsReview	*review);
+GPtrArray	*gs_app_get_provides		(GsApp		*app);
+void		 gs_app_add_provide		(GsApp		*app,
+						 AsProvide	*provide);
 guint64		 gs_app_get_size_installed	(GsApp		*app);
 void		 gs_app_set_size_installed	(GsApp		*app,
 						 guint64	 size_installed);
