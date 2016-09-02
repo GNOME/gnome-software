@@ -209,6 +209,9 @@ static const GsDesktopMap map_addons[] = {
 	{ "localization",	NC_("Menu of Addons", "Localization"),
 					{ "Addons::Localization",
 					  NULL} },
+	{ "drivers",		NC_("Menu of Addons", "Hardware Drivers"),
+					{ "Addons::Drivers",
+					  NULL} },
 	{ NULL }
 };
 
