@@ -189,8 +189,12 @@ gs_shell_category_create_filter_list (GsShellCategory *self,
 	children = gs_category_get_children (category);
 	for (i = 0; i < children->len; i++) {
 		s = GS_CATEGORY (g_ptr_array_index (children, i));
-		if (gs_category_get_size (s) < 1)
+		if (gs_category_get_size (s) < 1) {
+			g_debug ("not showing %s/%s as no apps",
+				 gs_category_get_id (category),
+				 gs_category_get_id (s));
 			continue;
+		}
 		row = gtk_label_new (gs_category_get_name (s));
 		g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
 		g_object_set (row, "xalign", 0.0, "margin", 10, NULL);
