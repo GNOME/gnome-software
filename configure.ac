@@ -91,6 +91,7 @@ PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= 2.51.92)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
 PKG_CHECK_MODULES(LIBSECRET, libsecret-1)
+PKG_CHECK_MODULES(GUDEV, gudev-1.0)
 AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 
 # use -lm

@@ -314,6 +314,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		}
 	}
 
+	/* fix up drivers with our nonstandard groups */
+	for (i = 0; i < items->len; i++) {
+		app = g_ptr_array_index (items, i);
+		if (as_app_get_kind (app) == AS_APP_KIND_DRIVER) {
+			as_app_add_category (app, "Addons");
+			as_app_add_category (app, "Drivers");
+		}
+	}
+
 	/* rely on the store keeping itself updated */
 	return TRUE;
 }

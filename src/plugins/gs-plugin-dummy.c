@@ -79,6 +79,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	if (g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "com.hughski.ColorHug2.driver") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0 ||
 	    g_strcmp0 (gs_app_get_source_default (app), "chiron") == 0)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
@@ -388,6 +389,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* default */
 	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "com.hughski.ColorHug2.driver") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
