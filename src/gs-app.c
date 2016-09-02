@@ -1758,7 +1758,7 @@ gs_app_get_license_token_is_nonfree (const gchar *token)
 		return FALSE;
 
 	/* a token, but still nonfree */
-	if (g_strcmp0 (token, "@LicenseRef-proprietary") == 0)
+	if (g_str_has_prefix (token, "@LicenseRef-proprietary"))
 		return TRUE;
 
 	/* if it has a prefix, assume it is free */
