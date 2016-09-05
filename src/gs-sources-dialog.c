@@ -233,7 +233,6 @@ gs_sources_dialog_switch_active_cb (GsSourcesDialogRow *row,
 static void
 gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 {
-	GtkWidget *row;
 	gboolean switch_active;
 	guint i;
 	g_autofree gchar *text = NULL;
