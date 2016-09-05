@@ -106,6 +106,7 @@ typedef enum {
 #endif
 
 GsApp		*gs_app_new			(const gchar	*id);
+GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
 gchar		*gs_app_to_string		(GsApp		*app);
 
 const gchar	*gs_app_get_id			(GsApp		*app);

@@ -239,6 +239,23 @@ gs_plugin_func (void)
 }
 
 static void
+gs_app_unique_id_func (void)
+{
+	g_autoptr(GsApp) app = NULL;
+	const gchar *unique_id;
+
+	unique_id = "system/flatpak/gnome/desktop/org.gnome.Software.desktop/master";
+	app = gs_app_new_from_unique_id (unique_id);
+	g_assert (GS_IS_APP (app));
+	g_assert_cmpint (gs_app_get_scope (app), ==, AS_APP_SCOPE_SYSTEM);
+	g_assert_cmpint (gs_app_get_bundle_kind (app), ==, AS_BUNDLE_KIND_FLATPAK);
+	g_assert_cmpstr (gs_app_get_origin (app), ==, "gnome");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.gnome.Software.desktop");
+	g_assert_cmpstr (gs_app_get_branch (app), ==, "master");
+}
+
+static void
 gs_app_func (void)
 {
 	g_autoptr(GsApp) app = NULL;
@@ -1322,6 +1339,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/utils{wilson}", gs_utils_wilson_func);
 	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
+	g_test_add_func ("/gnome-software/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/plugin{global-cache}", gs_plugin_global_cache_func);
 	g_test_add_func ("/gnome-software/auth{secret}", gs_auth_secret_func);

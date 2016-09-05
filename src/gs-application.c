@@ -590,7 +590,12 @@ details_activated (GSimpleAction *action,
 		gs_shell_show_search_result (app->shell, id, search);
 	else {
 		g_autoptr (GsApp) a = NULL;
-		a = gs_app_new (id);
+
+		if (as_utils_unique_id_valid (id))
+			a = gs_app_new_from_unique_id (id);
+		else
+			a = gs_app_new (id);
+
 		gs_shell_show_app (app->shell, a);
 	}
 }

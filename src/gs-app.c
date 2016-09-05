@@ -3538,4 +3538,47 @@ gs_app_new (const gchar *id)
 	return GS_APP (app);
 }
 
+/**
+ * gs_app_new_from_unique_id:
+ * @unique_id: an application unique ID, e.g.
+ *	`system/flatpak/gnome/desktop/org.gnome.Software.desktop/master`
+ *
+ * Creates a new application object.
+ *
+ * The unique ID will be parsed to set some information in the application such
+ * as the scope, bundle kind, id, etc. Unlike gs_app_new(), it cannot take a
+ * %NULL argument.
+ *
+ * Returns: a new #GsApp
+ *
+ * Since: 3.22
+ **/
+GsApp *
+gs_app_new_from_unique_id (const gchar *unique_id)
+{
+	GsApp *app;
+	g_auto(GStrv) split = NULL;
+
+	g_return_val_if_fail (unique_id != NULL, NULL);
+
+	split = g_strsplit (unique_id, "/", -1);
+	if (g_strv_length (split) != 6)
+		return NULL;
+
+	app = gs_app_new (NULL);
+	if (g_strcmp0 (split[0], "*") != 0)
+		gs_app_set_scope (app, as_app_scope_from_string (split[0]));
+	if (g_strcmp0 (split[1], "*") != 0)
+		gs_app_set_bundle_kind (app, as_bundle_kind_from_string (split[1]));
+	if (g_strcmp0 (split[2], "*") != 0)
+		gs_app_set_origin (app, split[2]);
+	if (g_strcmp0 (split[3], "*") != 0)
+		gs_app_set_kind (app, as_app_kind_from_string (split[3]));
+	if (g_strcmp0 (split[4], "*") != 0)
+		gs_app_set_id (app, split[4]);
+	if (g_strcmp0 (split[5], "*") != 0)
+		gs_app_set_branch (app, split[5]);
+	return app;
+}
+
 /* vim: set noexpandtab: */

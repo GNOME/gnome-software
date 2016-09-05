@@ -143,7 +143,7 @@ gs_app_notify_installed (GsApp *app)
 						       gs_app_get_id (app));
 	}
 	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
-						       gs_app_get_id (app), "");
+						       gs_app_get_unique_id (app), "");
 	g_application_send_notification (g_application_get_default (), "installed", n);
 }
 
