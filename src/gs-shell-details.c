@@ -892,17 +892,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	} else {
 		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), tmp);
 	}
-	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (self->label_details_origin_value, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->label_details_origin_value, FALSE);
-		break;
-	}
 
 	/* set MyLanguage kudo */
 	kudos = gs_app_get_kudos (self->app);
