@@ -2750,7 +2750,8 @@ gs_app_is_installed (GsApp *app)
 
 	return (state == AS_APP_STATE_INSTALLED) ||
 	       (state == AS_APP_STATE_UPDATABLE) ||
-	       (state == AS_APP_STATE_UPDATABLE_LIVE);
+	       (state == AS_APP_STATE_UPDATABLE_LIVE) ||
+	       (state == AS_APP_STATE_REMOVING);
 }
 
 /**
