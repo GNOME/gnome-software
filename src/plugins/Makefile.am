@@ -40,7 +40,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_fedora-distro-upgrades.la		\
-	libgs_plugin_modalias.la			\
 	libgs_plugin_provenance.la			\
 	libgs_plugin_provenance-license.la		\
 	libgs_plugin_repos.la				\
@@ -65,6 +64,10 @@ endif
 
 if HAVE_WEBAPPS
 plugin_LTLIBRARIES += libgs_plugin_epiphany.la
+endif
+
+if HAVE_GUDEV
+plugin_LTLIBRARIES += libgs_plugin_modalias.la
 endif
 
 if HAVE_UBUNTU_REVIEWS
@@ -131,10 +134,12 @@ libgs_plugin_fedora_distro_upgrades_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LI
 libgs_plugin_fedora_distro_upgrades_la_LDFLAGS = -module -avoid-version
 libgs_plugin_fedora_distro_upgrades_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS) $(WARN_CFLAGS)
 
+if HAVE_GUDEV
 libgs_plugin_modalias_la_SOURCES = gs-plugin-modalias.c
 libgs_plugin_modalias_la_LIBADD = $(GS_PLUGIN_LIBS) $(GUDEV_LIBS)
 libgs_plugin_modalias_la_LDFLAGS = -module -avoid-version
 libgs_plugin_modalias_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
 
 libgs_plugin_provenance_la_SOURCES = gs-plugin-provenance.c
 libgs_plugin_provenance_la_LIBADD = $(GS_PLUGIN_LIBS)

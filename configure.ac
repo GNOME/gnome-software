@@ -91,7 +91,6 @@ PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= 2.51.92)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
 PKG_CHECK_MODULES(LIBSECRET, libsecret-1)
-PKG_CHECK_MODULES(GUDEV, gudev-1.0)
 AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 
 # use -lm
@@ -369,6 +368,28 @@ AC_ARG_ENABLE(webapps,
               enable_webapps=yes)
 AM_CONDITIONAL(HAVE_WEBAPPS, [test "x$enable_webapps" = "xyes"])
 
+# GUDev
+AC_ARG_ENABLE(gudev,
+              [AS_HELP_STRING([--enable-gudev],
+                              [enable GUDev support [default=auto]])],,
+              enable_gudev=maybe)
+AS_IF([test "x$enable_gudev" != "xno"], [
+    PKG_CHECK_MODULES(GUDEV,
+                      gudev-1.0,
+                      [have_gudev=yes],
+                      [have_gudev=no])
+], [
+    have_gudev=no
+])
+AS_IF([test "x$have_gudev" = "xyes"], [
+    AC_DEFINE(HAVE_GUDEV, 1, [Build GUDev support])
+], [
+    AS_IF([test "x$enable_gudev" = "xyes"], [
+          AC_MSG_ERROR([GUDEV support requested but 'gudev-1.0' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_GUDEV, test x$have_gudev = xyes)
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=11
@@ -425,6 +446,7 @@ echo "
         GtkSpell support:          ${have_gtkspell}
         GNOME desktop support:     ${have_gnome_desktop}
         RPM support:               ${have_rpm}
+        GUDev support:             ${have_gudev}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
         ODRS support:              ${enable_odrs}

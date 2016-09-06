@@ -90,6 +90,7 @@ the source tree. Most users do not need this subpackage installed.
 %build
 %configure \
     --disable-static \
+    --enable-gudev \
 %if %{with packagekit}
     --enable-packagekit \
 %else
