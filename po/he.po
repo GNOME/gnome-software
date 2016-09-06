@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-14 12:14+0300\n"
-"PO-Revision-Date: 2016-08-14 15:20+0300\n"
+"POT-Creation-Date: 2016-09-06 12:01+0300\n"
+"PO-Revision-Date: 2016-09-06 12:08+0300\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: עברית <>\n"
 "Language: he\n"
@@ -139,59 +139,79 @@ msgid "The last update check timestamp"
 msgstr "The last update check timestamp"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
+msgid "The last upgrade notification timestamp"
+msgstr "The last upgrade notification timestamp"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The timestamp of the first security update, cleared after update"
 msgstr "The timestamp of the first security update, cleared after update"
 
-#: ../data/org.gnome.software.gschema.xml.h:15
+#: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The last update timestamp"
 msgstr "The last update timestamp"
 
-#: ../data/org.gnome.software.gschema.xml.h:16
+#: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The server to use for application reviews"
 msgstr "The server to use for application reviews"
 
-#: ../data/org.gnome.software.gschema.xml.h:17
+#: ../data/org.gnome.software.gschema.xml.h:18
 msgid "The minimum karma score for reviews"
 msgstr "The minimum karma score for reviews"
 
-#: ../data/org.gnome.software.gschema.xml.h:18
+#: ../data/org.gnome.software.gschema.xml.h:19
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Reviews with karma less than this number will not be shown."
 
-#: ../data/org.gnome.software.gschema.xml.h:19
+#: ../data/org.gnome.software.gschema.xml.h:20
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr "A list of official sources that should not be considered 3rd party"
 
-#: ../data/org.gnome.software.gschema.xml.h:20
+#: ../data/org.gnome.software.gschema.xml.h:21
 msgid "A list of official sources that should be considered free software"
 msgstr "A list of official sources that should be considered free software"
 
-#: ../data/org.gnome.software.gschema.xml.h:21
+#: ../data/org.gnome.software.gschema.xml.h:22
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "The licence URL to use when an application should be considered free software"
 
-#: ../data/org.gnome.software.gschema.xml.h:22
+#: ../data/org.gnome.software.gschema.xml.h:23
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Install bundled applications for all users on the system where possible"
 
-#: ../data/org.gnome.software.gschema.xml.h:23
+#: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Show the folder management UI"
 msgstr "Show the folder management UI"
 
-#: ../data/org.gnome.software.gschema.xml.h:24
+#: ../data/org.gnome.software.gschema.xml.h:25
 msgid "Allow access to the Software Sources dialog"
 msgstr "Allow access to the Software Sources dialog"
 
-#: ../data/org.gnome.software.gschema.xml.h:25
+#: ../data/org.gnome.software.gschema.xml.h:26
 msgid "Offer upgrades for pre-releases"
 msgstr "Offer upgrades for pre-releases"
 
-#: ../data/org.gnome.software.gschema.xml.h:26
+#: ../data/org.gnome.software.gschema.xml.h:27
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr "Show some UI elements informing the user that an app is non-free"
+
+#: ../data/org.gnome.software.gschema.xml.h:28
+msgid "Show the prompt to install nonfree software sources"
+msgstr "Show the prompt to install nonfree software sources"
+
+#: ../data/org.gnome.software.gschema.xml.h:29
+msgid "Show non-free software in search results"
+msgstr "Show non-free software in search results"
+
+#: ../data/org.gnome.software.gschema.xml.h:30
+msgid "The URI that explains nonfree and proprietary software"
+msgstr "The URI that explains nonfree and proprietary software"
+
+#: ../data/org.gnome.software.gschema.xml.h:31
+msgid "A list of non-free sources that can be optionally enabled"
+msgstr "A list of non-free sources that can be optionally enabled"
 
 #: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -200,7 +220,7 @@ msgstr "הוספה לתיקיית יישומים"
 #: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
 #: ../src/gs-removal-dialog.ui.h:2 ../src/gs-review-dialog.ui.h:3
 #: ../src/gs-shell-details.c:358 ../src/gs-shell-details.ui.h:6
-#: ../src/gs-shell-installed.c:516 ../src/gs-upgrade-banner.ui.h:5
+#: ../src/gs-shell-installed.c:529 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_ביטול"
 
@@ -393,9 +413,9 @@ msgstr "ביטול"
 #. * allows the application to be easily installed
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#. TRANSLATORS: this is button text to update the firware
+#. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:394
+#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:385
 #: ../src/gs-common.c:341
 msgid "Install"
 msgstr "התקנה"
@@ -403,7 +423,7 @@ msgstr "התקנה"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:487
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:531
 msgid "Remove"
 msgstr "הסרה"
 
@@ -621,20 +641,20 @@ msgstr "היסטוריה"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:388
+#: ../src/gs-page.c:376
 #, c-format
 msgid "Prepare %s"
 msgstr "מכין את %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * source name, e.g. 'GNOME Nightly'
-#: ../src/gs-page.c:456
+#: ../src/gs-page.c:500
 #, c-format
 msgid "Are you sure you want to remove the %s source?"
 msgstr "האם אכן ברצונך להסיר את המקור %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:460
+#: ../src/gs-page.c:504
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -645,37 +665,37 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:468
+#: ../src/gs-page.c:512
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "האם אכן ברצונך להסיר את %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:471
+#: ../src/gs-page.c:515
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "‏%s יוסר, ויהיה צורך להתקין אותו כדי להשתמש בו שוב."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1040
+#: ../src/gs-plugin-loader.c:1048
 msgid "OS Updates"
 msgstr "עדכונים למערכת ההפעלה"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1045
+#: ../src/gs-plugin-loader.c:1053
 msgid "Includes performance, stability and security improvements."
 msgstr "לרבות שיפורי ביצועים, יציבות ואבטחה."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1721 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1729 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "לא זמינים מקודדים עבור התבנית %s."
 
-#: ../src/gs-plugin-loader.c:1724
+#: ../src/gs-plugin-loader.c:1732
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -883,11 +903,11 @@ msgid "Screenshot not valid"
 msgstr "צילום מסך לא תקף"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:440
+#: ../src/gs-screenshot-image.c:439
 msgid "Screenshot not available"
 msgstr "לא זמין צילום מסך"
 
-#: ../src/gs-screenshot-image.c:485
+#: ../src/gs-screenshot-image.c:482
 msgid "Screenshot"
 msgstr "צילום מסך"
 
@@ -931,71 +951,71 @@ msgstr "_התקנה…"
 msgid "_Remove"
 msgstr "ה_סרה"
 
-#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:338
+#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:503
 msgid "Removing…"
 msgstr "בהסרה…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:684
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "יישום זה ניתן לשימוש רק כאשר יש חיבור אינטרנט פעיל."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:809
+#: ../src/gs-shell-details.c:811
 msgctxt "version"
 msgid "Unknown"
 msgstr "לא ידוע"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:843
+#: ../src/gs-shell-details.c:845
 msgctxt "updated"
 msgid "Never"
 msgstr "לעולם לא"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:889
+#: ../src/gs-shell-details.c:891
 msgctxt "origin"
 msgid "Unknown"
 msgstr "לא ידוע"
 
-#: ../src/gs-shell-details.c:1307
+#: ../src/gs-shell-details.c:1298
 #, c-format
 msgid "Could not find '%s'"
 msgstr "לא נתן למצוא את „%s”"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1365
+#: ../src/gs-shell-details.c:1356
 msgid "The file is not supported."
 msgstr "הקובץ אינו נתמך."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1375 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1366 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "זה לא עבד, עמך הסליחה"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1728
+#: ../src/gs-shell-details.c:1725
 msgid "Public domain"
 msgstr "נחלת הכלל"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1744 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1741 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "תכנה חופשית"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1799
+#: ../src/gs-shell-details.c:1796
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "משתמשים מחוייבים לרישיון הבא:"
 msgstr[1] "משתמשים מחוייבים לרישיונות הבאים:"
 msgstr[2] "משתמשים מחוייבים לרישיונות הבאים:"
 
-#: ../src/gs-shell-details.c:1814 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "מידע נוסף"
 
@@ -1134,8 +1154,8 @@ msgstr "לא ידוע"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:424
-#: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:341
+#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:437
+#: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:344
 msgid "Add-ons"
 msgstr "תוספים"
 
@@ -1368,15 +1388,15 @@ msgstr "דף מקודדים"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:414
+#: ../src/gs-shell-installed.c:427
 msgid "System Applications"
 msgstr "יישומי מערכת"
 
-#: ../src/gs-shell-installed.c:524
+#: ../src/gs-shell-installed.c:537
 msgid "Click on items to select them"
 msgstr "יש ללחוץ על פריטים כדי לבחור אותם"
 
-#: ../src/gs-shell-installed.c:724
+#: ../src/gs-shell-installed.c:737
 msgid "Select"
 msgstr "בחירה"
 
@@ -1407,33 +1427,55 @@ msgid "There are no reviews to moderate"
 msgstr ""
 
 #. add button
-#: ../src/gs-shell-overview.c:240
+#: ../src/gs-shell-overview.c:243
 msgid "More…"
 msgstr "עוד…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:419
+#: ../src/gs-shell-overview.c:422
 msgid "Recommended Audio & Video Applications"
 msgstr "יישומי שמע ווידאו מומלצים"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:424
+#: ../src/gs-shell-overview.c:427
 msgid "Recommended Games"
 msgstr "משחקים מומלצים"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:429
+#: ../src/gs-shell-overview.c:432
 msgid "Recommended Graphics Applications"
 msgstr "יישומי גרפיקה מומלצים"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:434
+#: ../src/gs-shell-overview.c:437
 msgid "Recommended Productivity Applications"
 msgstr "יישומים משרדיים מומלצים"
+
+#. TRANSLATORS: this is the proprietary info bar
+#: ../src/gs-shell-overview.c:712
+msgid ""
+"Provides access to additional software, including web browsers and games."
+msgstr "מספק גישה לתכנה נוספת, לרבות דפדפנים ומשחקים."
+
+#. TRANSLATORS: this is the proprietary info bar
+#: ../src/gs-shell-overview.c:716
+msgid "Proprietary software has restrictions on use and access to source code."
+msgstr "לתכנה קניינית הגבלות בשימוש ובגישה לקוד המקור."
+
+#. TRANSLATORS: this is the clickable
+#. * link on the proprietary info bar
+#: ../src/gs-shell-overview.c:723 ../src/gs-sources-dialog.c:262
+msgid "Find out more…"
+msgstr "למידע נוסף…"
+
+#. TRANSLATORS: button to turn on proprietary software sources
+#: ../src/gs-shell-overview.c:757
+msgid "Enable"
+msgstr "לאפשר"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -1441,15 +1483,19 @@ msgid "Overview page"
 msgstr "דף סקירה"
 
 #: ../src/gs-shell-overview.ui.h:2
+msgid "Enable Proprietary Software Sources?"
+msgstr "לאפשר מקורות תכנה קניינית?"
+
+#: ../src/gs-shell-overview.ui.h:3
 msgid "Categories"
 msgstr "קטגוריות"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gs-shell-overview.ui.h:4
+#: ../src/gs-shell-overview.ui.h:5
 msgid "Editor's Picks"
 msgstr "יישומים נבחרים"
 
-#: ../src/gs-shell-overview.ui.h:5
+#: ../src/gs-shell-overview.ui.h:6
 msgid "No Application Data Found"
 msgstr "לא נמצא מידע על יישומים"
 
@@ -1651,13 +1697,13 @@ msgstr "העדכונים מנוהלים אוטומטית"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:94
+#: ../src/gs-sources-dialog.c:99
 msgid "No applications or addons installed; other software might still be"
 msgstr "אין יישומים או הרחבות מותקנים; תכנות אחרות עדיין עשויות להימצא"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:98
+#: ../src/gs-sources-dialog.c:104
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -1667,7 +1713,7 @@ msgstr[2] "הותקנו שני יישומים"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:104
+#: ../src/gs-sources-dialog.c:111
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -1678,7 +1724,7 @@ msgstr[2] "התוקנו שני תוספים"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:111
+#: ../src/gs-sources-dialog.c:119
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -1689,7 +1735,7 @@ msgstr[2] "שני יישומים"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:117
+#: ../src/gs-sources-dialog.c:125
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -1701,7 +1747,7 @@ msgstr[2] "שני תוספים"
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:124
+#: ../src/gs-sources-dialog.c:132
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -1709,20 +1755,30 @@ msgstr[0] "%s ו%s הותקנו"
 msgstr[1] "%s ו%s הותקנו"
 msgstr[2] "%s ו%s הותקנו"
 
-#: ../src/gs-sources-dialog.c:324 ../src/gs-sources-dialog.ui.h:12
+#. TRANSLATORS: nonfree software
+#: ../src/gs-sources-dialog.c:252
+msgid "Typically has restrictions on use and access to source code."
+msgstr "על פי רוב יש הגבלות בשימוש ובגישה לקוד המקור."
+
+#. TRANSLATORS: list header
+#: ../src/gs-sources-dialog.c:273
+msgid "Proprietary Software Sources"
+msgstr "מקורות תכנה קניינית"
+
+#: ../src/gs-sources-dialog.c:489 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "הסרת מקור"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:407
+#: ../src/gs-sources-dialog.c:572
 msgid "the operating system"
 msgstr "מערכת ההפעלה"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:478
+#: ../src/gs-sources-dialog.c:665
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1737,8 +1793,8 @@ msgid "Software Sources"
 msgstr "מקורות תכנה"
 
 #: ../src/gs-sources-dialog.ui.h:3
-msgid "Software sources give you access to additional software."
-msgstr "מקורות תכנה נותנים לך גישה לתכנות נוספות."
+msgid "Additional Sources"
+msgstr "מקורות נוספים"
 
 #: ../src/gs-sources-dialog.ui.h:4
 msgid ""
@@ -1834,32 +1890,32 @@ msgstr "הצגה"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:242
+#: ../src/gs-update-monitor.c:271
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "גרסה חדשה של %s זמינה להתקנה"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:246
+#: ../src/gs-update-monitor.c:275
 msgid "Software Upgrade Available"
 msgstr "שדרוג תכנה זמין"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:433
+#: ../src/gs-update-monitor.c:462
 msgid "Software Updates Failed"
 msgstr "ארע כשל בעדכון התכנות"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:435
+#: ../src/gs-update-monitor.c:464
 msgid "An important OS update failed to be installed."
 msgstr "ארע כשל בהתקנת עדכונים מערכת חשובים."
 
-#: ../src/gs-update-monitor.c:436
+#: ../src/gs-update-monitor.c:465
 msgid "Show Details"
 msgstr "הצגת פרטים"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:458
+#: ../src/gs-update-monitor.c:487
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "הותקן עדכון מערכת"
@@ -1867,7 +1923,7 @@ msgstr[1] "הותקנו עדכוני מערכת"
 msgstr[2] "הותקנו עדכוני מערכת"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:462
+#: ../src/gs-update-monitor.c:491
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "הותקן עדכון מערכת חשוב"
@@ -1879,30 +1935,30 @@ msgstr[2] "הותקנו עדכונים מערכת חשובים"
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:473
+#: ../src/gs-update-monitor.c:502
 msgctxt "updates"
 msgid "Review"
 msgstr "סקירה"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:517
+#: ../src/gs-update-monitor.c:546
 msgid "Failed To Update"
 msgstr "ארע כשל בעדכון"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:523
+#: ../src/gs-update-monitor.c:552
 msgid "The system was already up to date."
 msgstr "המערכת כבר היתה מעודכנת."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:528
+#: ../src/gs-update-monitor.c:557
 msgid "The update was cancelled."
 msgstr "העדכון בוטל."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:534
+#: ../src/gs-update-monitor.c:563
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1911,20 +1967,20 @@ msgstr ""
 "ואחר לנסות שוב."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:540
+#: ../src/gs-update-monitor.c:569
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "היתה בעיית אבטחה עם העדכון. נא להתייעץ עם ספק התכנה שלך למידע נוסף."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:546
+#: ../src/gs-update-monitor.c:575
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "לא היה מספיק מקום פנוי בכונן הקשיח שלך. נא לפנות מעט מקום ולנסות שוב."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:551
+#: ../src/gs-update-monitor.c:580
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -2138,8 +2194,8 @@ msgstr "ללא"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:429
-msgid "Mild realistic characters in unsafe situations"
-msgstr "Mild realistic characters in unsafe situations"
+msgid "Mildly realistic characters in unsafe situations"
+msgstr "Mildly realistic characters in unsafe situations"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:432
@@ -2317,8 +2373,8 @@ msgstr "Negativity towards a specific group of people"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:531
-msgid "Discrimation designed to cause emotional harm"
-msgstr "Discrimation designed to cause emotional harm"
+msgid "Discrimination designed to cause emotional harm"
+msgstr "Discrimination designed to cause emotional harm"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:534
@@ -2728,181 +2784,193 @@ msgctxt "Menu of Addons"
 msgid "Localization"
 msgstr "בנאום"
 
-#: ../src/plugins/gs-desktop-common.c:217
+#: ../src/plugins/gs-desktop-common.c:212
+msgctxt "Menu of Addons"
+msgid "Hardware Drivers"
+msgstr "התקני חומרה"
+
+#: ../src/plugins/gs-desktop-common.c:220
 msgctxt "Menu of Science"
 msgid "All"
 msgstr "הכל"
 
-#: ../src/plugins/gs-desktop-common.c:220
+#: ../src/plugins/gs-desktop-common.c:223
 msgctxt "Menu of Science"
 msgid "Featured"
 msgstr "מומלצים"
 
-#: ../src/plugins/gs-desktop-common.c:223
+#: ../src/plugins/gs-desktop-common.c:226
 msgctxt "Menu of Science"
 msgid "Artificial Intelligence"
 msgstr "בינה מלאכותית"
 
-#: ../src/plugins/gs-desktop-common.c:226
+#: ../src/plugins/gs-desktop-common.c:229
 msgctxt "Menu of Science"
 msgid "Astronomy"
 msgstr "אסטרונומיה"
 
-#: ../src/plugins/gs-desktop-common.c:229
+#: ../src/plugins/gs-desktop-common.c:232
 msgctxt "Menu of Science"
 msgid "Chemistry"
 msgstr "כימיה"
 
-#: ../src/plugins/gs-desktop-common.c:232
+#: ../src/plugins/gs-desktop-common.c:235
 msgctxt "Menu of Science"
 msgid "Math"
 msgstr "מתמטיקה"
 
-#: ../src/plugins/gs-desktop-common.c:237
+#: ../src/plugins/gs-desktop-common.c:240
 msgctxt "Menu of Science"
 msgid "Robotics"
 msgstr "רובוטיקה"
 
-#: ../src/plugins/gs-desktop-common.c:245
+#: ../src/plugins/gs-desktop-common.c:248
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "הכל"
 
-#: ../src/plugins/gs-desktop-common.c:248
+#: ../src/plugins/gs-desktop-common.c:251
 msgctxt "Menu of Communication"
 msgid "Featured"
 msgstr "מומלצים"
 
-#: ../src/plugins/gs-desktop-common.c:251
+#: ../src/plugins/gs-desktop-common.c:254
 msgctxt "Menu of Communication"
 msgid "Chat"
 msgstr "צ׳אט"
 
-#: ../src/plugins/gs-desktop-common.c:258
+#: ../src/plugins/gs-desktop-common.c:261
 msgctxt "Menu of Communication"
 msgid "News"
 msgstr "חדשות"
 
-#: ../src/plugins/gs-desktop-common.c:262
+#: ../src/plugins/gs-desktop-common.c:265
 msgctxt "Menu of Communication"
 msgid "Web Browsers"
 msgstr "דפדפנים"
 
-#: ../src/plugins/gs-desktop-common.c:270
+#: ../src/plugins/gs-desktop-common.c:273
 msgctxt "Menu of Utility"
 msgid "All"
 msgstr "הכל"
 
-#: ../src/plugins/gs-desktop-common.c:273
+#: ../src/plugins/gs-desktop-common.c:276
 msgctxt "Menu of Utility"
 msgid "Featured"
 msgstr "מומלצים"
 
-#: ../src/plugins/gs-desktop-common.c:276
+#: ../src/plugins/gs-desktop-common.c:279
 msgctxt "Menu of Utility"
 msgid "Text Editors"
 msgstr "עורכי טקסט"
 
-#: ../src/plugins/gs-desktop-common.c:284
+#: ../src/plugins/gs-desktop-common.c:287
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "הכל"
 
-#: ../src/plugins/gs-desktop-common.c:287
+#: ../src/plugins/gs-desktop-common.c:290
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "מומלצים"
 
-#: ../src/plugins/gs-desktop-common.c:290
+#: ../src/plugins/gs-desktop-common.c:293
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "אומנות"
 
-#: ../src/plugins/gs-desktop-common.c:293
+#: ../src/plugins/gs-desktop-common.c:296
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "ביוגרפיה"
 
-#: ../src/plugins/gs-desktop-common.c:296
 #: ../src/plugins/gs-desktop-common.c:299
+msgctxt "Menu of Reference"
+msgid "Comics"
+msgstr "קומיקס"
+
+#: ../src/plugins/gs-desktop-common.c:302
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "בדיוני"
 
-#: ../src/plugins/gs-desktop-common.c:302
+#: ../src/plugins/gs-desktop-common.c:305
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "רפואה"
 
-#: ../src/plugins/gs-desktop-common.c:305
+#: ../src/plugins/gs-desktop-common.c:308
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "היסטוריה"
 
-#: ../src/plugins/gs-desktop-common.c:308
+#: ../src/plugins/gs-desktop-common.c:311
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "אורח חיים"
 
-#: ../src/plugins/gs-desktop-common.c:311
+#: ../src/plugins/gs-desktop-common.c:314
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "פוליטיקה"
 
-#: ../src/plugins/gs-desktop-common.c:314
+#: ../src/plugins/gs-desktop-common.c:317
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "ספורט"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: ../src/plugins/gs-desktop-common.c:323
+#: ../src/plugins/gs-desktop-common.c:326
 msgid "Audio & Video"
 msgstr "שמע ווידאו"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: ../src/plugins/gs-desktop-common.c:326
+#: ../src/plugins/gs-desktop-common.c:329
 msgid "Developer Tools"
 msgstr "כלי פיתוח"
 
 #. TRANSLATORS: this is the menu spec main category for Education
-#: ../src/plugins/gs-desktop-common.c:329
+#: ../src/plugins/gs-desktop-common.c:332
 msgid "Education"
 msgstr "חינוך"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: ../src/plugins/gs-desktop-common.c:332
+#: ../src/plugins/gs-desktop-common.c:335
 msgid "Games"
 msgstr "משחקים"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: ../src/plugins/gs-desktop-common.c:335
+#: ../src/plugins/gs-desktop-common.c:338
 msgid "Graphics & Photography"
 msgstr "גרפיקה וצילום"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: ../src/plugins/gs-desktop-common.c:338
+#: ../src/plugins/gs-desktop-common.c:341
 msgid "Productivity"
 msgstr "משרד"
 
 #. TRANSLATORS: this is the menu spec main category for Science
-#: ../src/plugins/gs-desktop-common.c:344
+#: ../src/plugins/gs-desktop-common.c:347
 msgid "Science"
 msgstr "מדע"
 
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: ../src/plugins/gs-desktop-common.c:347
+#: ../src/plugins/gs-desktop-common.c:350
 msgid "Communication & News"
 msgstr "תקשורת וחדשות"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: ../src/plugins/gs-desktop-common.c:350
+#: ../src/plugins/gs-desktop-common.c:353
 msgid "Reference"
 msgstr "מראה מקום"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: ../src/plugins/gs-desktop-common.c:353
+#: ../src/plugins/gs-desktop-common.c:356
 msgid "Utilities"
 msgstr "עזרים"
+
+#~ msgid "Software sources give you access to additional software."
+#~ msgstr "מקורות תכנה נותנים לך גישה לתכנות נוספות."
 
 #~ msgid "Enter GApplication service mode"
 #~ msgstr "Enter GApplication service mode"
@@ -3490,9 +3558,6 @@ msgstr "עזרים"
 #~ msgstr[1] "הותקנו %i יישומים ו־%i תוספים"
 #~ msgstr[2] "הותקנו שני יישומים ושני תוספים"
 
-#~ msgid "You're About to Install Non-Free Software"
-#~ msgstr "הנך על סף התקנת תכנה לא חופשית"
-
 #~ msgid ""
 #~ "Depending on your country of residence, installing it could make you "
 #~ "liable to prosecution."
@@ -3503,9 +3568,6 @@ msgstr "עזרים"
 
 #~ msgid "Do you want to enable it?"
 #~ msgstr "האם אכן ברצונך לאפשר זאת?"
-
-#~ msgid "Enable"
-#~ msgstr "לאפשר"
 
 #~ msgid "Web app"
 #~ msgstr "יישום רשת"
@@ -3578,9 +3640,6 @@ msgstr "עזרים"
 
 #~ msgid "Settings"
 #~ msgstr "הגדרות"
-
-#~ msgid "Hardware Settings"
-#~ msgstr "הגדרות חומרה"
 
 #~ msgid "Package Manager"
 #~ msgstr "מנהל חבילות"
