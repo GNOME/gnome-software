@@ -139,6 +139,11 @@ gs_plugin_func (void)
 	GsAppList *list_dup;
 	GsAppList *list_remove;
 	GsApp *app;
+	guint i;
+
+	/* check enums converted */
+	for (i = 0; i < GS_PLUGIN_ACTION_LAST; i++)
+		g_assert (gs_plugin_action_to_string (i) != NULL);
 
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");
@@ -331,7 +336,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 	gs_app_set_management_plugin (app, "dummy");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   GS_PLUGIN_ACTION_INSTALL,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -341,7 +346,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 	/* remove -- we're really testing for return code UNKNOWN,
 	 * but dummy::refine() sets it */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   GS_PLUGIN_ACTION_REMOVE,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -366,7 +371,7 @@ gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 	gs_app_set_management_plugin (app, "dummy");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_UPDATE,
+					   GS_PLUGIN_ACTION_UPDATE,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -501,7 +506,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	/* download the update */
 	ret = gs_plugin_loader_app_action (plugin_loader,
 					   app,
-					   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -511,7 +516,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	/* trigger the update */
 	ret = gs_plugin_loader_app_action (plugin_loader,
 					   app,
-					   GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
+					   GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -834,7 +839,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* now install the remote */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   GS_PLUGIN_ACTION_INSTALL,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -870,7 +875,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	/* remove it */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   GS_PLUGIN_ACTION_REMOVE,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -937,7 +942,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
 	gs_app_set_url (app_source, AS_URL_KIND_HOMEPAGE, testdir_repourl);
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   GS_PLUGIN_ACTION_INSTALL,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -998,7 +1003,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 
 	/* install, also installing runtime */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   GS_PLUGIN_ACTION_INSTALL,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -1045,7 +1050,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 
 	/* remove the application */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   GS_PLUGIN_ACTION_REMOVE,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -1105,7 +1110,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 
 	/* do an action that returns a URL */
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
-					    GS_AUTH_ACTION_REGISTER,
+					    GS_PLUGIN_ACTION_AUTH_REGISTER,
 					    NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
 	g_assert (!ret);
@@ -1116,7 +1121,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	app = gs_app_new (NULL);
 	review = as_review_new ();
 	ret = gs_plugin_loader_review_action (plugin_loader, app, review,
-					      GS_PLUGIN_REVIEW_ACTION_REMOVE,
+					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
 					      NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED);
 	g_assert (!ret);
@@ -1124,7 +1129,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 
 	/* pretend to auth with no credentials */
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
-					    GS_AUTH_ACTION_LOGIN,
+					    GS_PLUGIN_ACTION_AUTH_LOGIN,
 					    NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
 	g_assert (!ret);
@@ -1135,7 +1140,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	gs_auth_set_username (auth, "dummy");
 	gs_auth_set_password (auth, "dummy");
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
-					    GS_AUTH_ACTION_LOGIN,
+					    GS_PLUGIN_ACTION_AUTH_LOGIN,
 					    NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -1144,7 +1149,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	/* do the action that requires a login */
 	review2 = as_review_new ();
 	ret = gs_plugin_loader_review_action (plugin_loader, app, review2,
-					      GS_PLUGIN_REVIEW_ACTION_REMOVE,
+					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
 					      NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);

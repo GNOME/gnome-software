@@ -148,6 +148,7 @@ typedef struct {
 	GsApp				*app;
 	AsReview			*review;
 	GsAuth				*auth;
+	GsPluginAction			 action;
 } GsPluginLoaderAsyncState;
 
 static void
@@ -1145,6 +1146,7 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_UPDATES;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1222,6 +1224,7 @@ gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1299,6 +1302,7 @@ gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1379,6 +1383,7 @@ gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_SOURCES;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1472,6 +1477,7 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_INSTALLED;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1568,6 +1574,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_POPULAR;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1678,6 +1685,7 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_GET_FEATURED;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1906,6 +1914,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	state->flags = flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
+	state->action = GS_PLUGIN_ACTION_SEARCH;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2072,6 +2081,7 @@ gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
 	state->flags = flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
+	state->action = GS_PLUGIN_ACTION_SEARCH_FILES;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2238,6 +2248,7 @@ gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
 	state->flags = flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
+	state->action = GS_PLUGIN_ACTION_SEARCH_PROVIDES;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2416,6 +2427,7 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
 	state->catlist = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	state->action = GS_PLUGIN_ACTION_GET_CATEGORIES;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2569,6 +2581,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 	state->flags = flags;
 	state->list = gs_app_list_new ();
 	state->category = g_object_ref (category);
+	state->action = GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2652,6 +2665,7 @@ gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->app = g_object_ref (app);
 	state->flags = flags;
+	state->action = GS_PLUGIN_ACTION_REFINE;
 
 	/* enforce this */
 	if (state->flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
@@ -3011,7 +3025,7 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 void
 gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 				   GsApp *app,
-				   GsPluginLoaderAction action,
+				   GsPluginAction action,
 				   GCancellable *cancellable,
 				   GAsyncReadyCallback callback,
 				   gpointer user_data)
@@ -3025,7 +3039,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* handle with a fake list */
-	if (action == GS_PLUGIN_LOADER_ACTION_UPDATE) {
+	if (action == GS_PLUGIN_ACTION_UPDATE) {
 		g_autoptr(GsAppList) list = gs_app_list_new ();
 		gs_app_list_add (list, app);
 		gs_plugin_loader_update_async (plugin_loader, list,
@@ -3034,7 +3048,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	if (action == GS_PLUGIN_LOADER_ACTION_REMOVE) {
+	if (action == GS_PLUGIN_ACTION_REMOVE) {
 		if (remove_app_from_install_queue (plugin_loader, app)) {
 			task = g_task_new (plugin_loader, cancellable, callback, user_data);
 			g_task_return_boolean (task, TRUE);
@@ -3042,7 +3056,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	if (action == GS_PLUGIN_LOADER_ACTION_INSTALL &&
+	if (action == GS_PLUGIN_ACTION_INSTALL &&
 	    !priv->online) {
 		add_app_to_install_queue (plugin_loader, app);
 		task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -3053,33 +3067,34 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->app = g_object_ref (app);
+	state->action = action;
 
 	switch (action) {
-	case GS_PLUGIN_LOADER_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_INSTALL:
 		state->function_name = "gs_plugin_app_install";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_REMOVE:
 		state->function_name = "gs_plugin_app_remove";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_SET_RATING:
+	case GS_PLUGIN_ACTION_SET_RATING:
 		state->function_name = "gs_plugin_app_set_rating";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD:
+	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 		state->function_name = "gs_plugin_app_upgrade_download";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER:
+	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
 		state->function_name = "gs_plugin_app_upgrade_trigger";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_LAUNCH:
+	case GS_PLUGIN_ACTION_LAUNCH:
 		state->function_name = "gs_plugin_launch";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL:
+	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
 		state->function_name = "gs_plugin_update_cancel";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_ADD_SHORTCUT:
+	case GS_PLUGIN_ACTION_ADD_SHORTCUT:
 		state->function_name = "gs_plugin_add_shortcut";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REMOVE_SHORTCUT:
+	case GS_PLUGIN_ACTION_REMOVE_SHORTCUT:
 		state->function_name = "gs_plugin_remove_shortcut";
 		break;
 	default:
@@ -3097,7 +3112,7 @@ void
 gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 				      GsApp *app,
 				      AsReview *review,
-				      GsPluginReviewAction action,
+				      GsPluginAction action,
 				      GCancellable *cancellable,
 				      GAsyncReadyCallback callback,
 				      gpointer user_data)
@@ -3113,24 +3128,25 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->app = g_object_ref (app);
 	state->review = g_object_ref (review);
+	state->action = action;
 
 	switch (action) {
-	case GS_PLUGIN_REVIEW_ACTION_SUBMIT:
+	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
 		state->function_name = "gs_plugin_review_submit";
 		break;
-	case GS_PLUGIN_REVIEW_ACTION_UPVOTE:
+	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
 		state->function_name = "gs_plugin_review_upvote";
 		break;
-	case GS_PLUGIN_REVIEW_ACTION_DOWNVOTE:
+	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
 		state->function_name = "gs_plugin_review_downvote";
 		break;
-	case GS_PLUGIN_REVIEW_ACTION_REPORT:
+	case GS_PLUGIN_ACTION_REVIEW_REPORT:
 		state->function_name = "gs_plugin_review_report";
 		break;
-	case GS_PLUGIN_REVIEW_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
 		state->function_name = "gs_plugin_review_remove";
 		break;
-	case GS_PLUGIN_REVIEW_ACTION_DISMISS:
+	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
 		state->function_name = "gs_plugin_review_dismiss";
 		break;
 	default:
@@ -3222,7 +3238,7 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 void
 gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 				    GsAuth *auth,
-				    GsAuthAction action,
+				    GsPluginAction action,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -3237,18 +3253,19 @@ gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->auth = g_object_ref (auth);
+	state->action = action;
 
 	switch (action) {
-	case GS_AUTH_ACTION_LOGIN:
+	case GS_PLUGIN_ACTION_AUTH_LOGIN:
 		state->function_name = "gs_plugin_auth_login";
 		break;
-	case GS_AUTH_ACTION_LOGOUT:
+	case GS_PLUGIN_ACTION_AUTH_LOGOUT:
 		state->function_name = "gs_plugin_auth_logout";
 		break;
-	case GS_AUTH_ACTION_REGISTER:
+	case GS_PLUGIN_ACTION_AUTH_REGISTER:
 		state->function_name = "gs_plugin_auth_register";
 		break;
-	case GS_AUTH_ACTION_LOST_PASSWORD:
+	case GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:
 		state->function_name = "gs_plugin_auth_lost_password";
 		break;
 	default:
@@ -4033,7 +4050,7 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 		app = gs_app_list_index (queue, i);
 		gs_plugin_loader_app_action_async (plugin_loader,
 						   app,
-						   GS_PLUGIN_LOADER_ACTION_INSTALL,
+						   GS_PLUGIN_ACTION_INSTALL,
 						   NULL,
 						   gs_plugin_loader_app_installed_cb,
 						   g_object_ref (app));
@@ -4166,6 +4183,7 @@ gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
 	state->cache_age = cache_age;
+	state->action = GS_PLUGIN_ACTION_REFRESH;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4361,6 +4379,7 @@ gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
 	state->flags = flags;
 	state->list = gs_app_list_new ();
 	state->file = g_object_ref (file);
+	state->action = GS_PLUGIN_ACTION_FILE_TO_APP;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4522,6 +4541,7 @@ gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->list = gs_app_list_copy (apps);
+	state->action = GS_PLUGIN_ACTION_UPDATE;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);

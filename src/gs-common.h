@@ -38,7 +38,7 @@ void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
 void	 gs_app_notify_installed	(GsApp		*app);
 void	 gs_app_notify_failed_modal	(GsApp		*app,
 					 GtkWindow	*parent_window,
-					 GsPluginLoaderAction action,
+					 GsPluginAction	 action,
 					 const GError	*error);
 GtkResponseType
 	gs_app_notify_unavailable	(GsApp		*app,

@@ -1059,7 +1059,7 @@ typedef struct {
 	GsShellDetails		*self;
 	AsReview		*review;
 	GsApp			*app;
-	GsPluginReviewAction		 action;
+	GsPluginAction		 action;
 } GsShellDetailsReviewHelper;
 
 static void
@@ -1138,7 +1138,7 @@ gs_shell_details_app_set_review_cb (GObject *source,
 
 static void
 gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
-					   GsPluginReviewAction action,
+					   GsPluginAction action,
 					   GsShellDetails *self)
 {
 	GsShellDetailsReviewHelper *helper = g_new0 (GsShellDetailsReviewHelper, 1);
@@ -1166,15 +1166,15 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 	guint64 possible_actions = 0;
 	guint i;
 	struct {
-		GsPluginReviewAction action;
+		GsPluginAction action;
 		const gchar *plugin_func;
 	} plugin_vfuncs[] = {
-		{ GS_PLUGIN_REVIEW_ACTION_UPVOTE,	"gs_plugin_review_upvote" },
-		{ GS_PLUGIN_REVIEW_ACTION_DOWNVOTE,	"gs_plugin_review_downvote" },
-		{ GS_PLUGIN_REVIEW_ACTION_REPORT,	"gs_plugin_review_report" },
-		{ GS_PLUGIN_REVIEW_ACTION_SUBMIT,	"gs_plugin_review_submit" },
-		{ GS_PLUGIN_REVIEW_ACTION_REMOVE,	"gs_plugin_review_remove" },
-		{ GS_PLUGIN_REVIEW_ACTION_LAST,	NULL }
+		{ GS_PLUGIN_ACTION_REVIEW_UPVOTE,	"gs_plugin_review_upvote" },
+		{ GS_PLUGIN_ACTION_REVIEW_DOWNVOTE,	"gs_plugin_review_downvote" },
+		{ GS_PLUGIN_ACTION_REVIEW_REPORT,	"gs_plugin_review_report" },
+		{ GS_PLUGIN_ACTION_REVIEW_SUBMIT,	"gs_plugin_review_submit" },
+		{ GS_PLUGIN_ACTION_REVIEW_REMOVE,	"gs_plugin_review_remove" },
+		{ GS_PLUGIN_ACTION_LAST,	NULL }
 	};
 
 	/* show or hide the entire reviews section */
@@ -1235,7 +1235,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		return;
 
 	/* find what the plugins support */
-	for (i = 0; plugin_vfuncs[i].action != GS_PLUGIN_REVIEW_ACTION_LAST; i++) {
+	for (i = 0; plugin_vfuncs[i].action != GS_PLUGIN_ACTION_LAST; i++) {
 		if (gs_plugin_loader_get_plugin_supported (self->plugin_loader,
 							   plugin_vfuncs[i].plugin_func)) {
 			possible_actions |= 1u << plugin_vfuncs[i].action;
@@ -1257,10 +1257,10 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_shell_details_review_button_clicked_cb), self);
 		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
-			actions = possible_actions & 1 << GS_PLUGIN_REVIEW_ACTION_REMOVE;
+			actions = possible_actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE;
 			show_review_button = FALSE;
 		} else {
-			actions = possible_actions & ~(1u << GS_PLUGIN_REVIEW_ACTION_REMOVE);
+			actions = possible_actions & ~(1u << GS_PLUGIN_ACTION_REVIEW_REMOVE);
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
@@ -1644,7 +1644,7 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 	helper->self = g_object_ref (self);
 	helper->app = g_object_ref (self->app);
 	helper->review = g_object_ref (review);
-	helper->action = GS_PLUGIN_REVIEW_ACTION_SUBMIT;
+	helper->action = GS_PLUGIN_ACTION_REVIEW_SUBMIT;
 	gs_plugin_loader_review_action_async (self->plugin_loader,
 					      helper->app,
 					      helper->review,

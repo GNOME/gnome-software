@@ -27,7 +27,7 @@
 #include "gs-app.h"
 #include "gs-auth.h"
 #include "gs-category.h"
-#include "gs-plugin.h"
+#include "gs-plugin-private.h"
 
 G_BEGIN_DECLS
 
@@ -45,42 +45,6 @@ struct _GsPluginLoaderClass
 	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*reload)		(GsPluginLoader	*plugin_loader);
 };
-
-typedef enum {
-	GS_PLUGIN_LOADER_ACTION_INSTALL,
-	GS_PLUGIN_LOADER_ACTION_REMOVE,
-	GS_PLUGIN_LOADER_ACTION_UPDATE,
-	GS_PLUGIN_LOADER_ACTION_SET_RATING,
-	GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
-	GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
-	GS_PLUGIN_LOADER_ACTION_LAUNCH,
-	GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
-	GS_PLUGIN_LOADER_ACTION_ADD_SHORTCUT,
-	GS_PLUGIN_LOADER_ACTION_REMOVE_SHORTCUT,
-	GS_PLUGIN_LOADER_ACTION_LAST
-} GsPluginLoaderAction;
-
-/**
- * GsPluginReviewAction:
- * @GS_PLUGIN_REVIEW_ACTION_SUBMIT:	Submit a new review
- * @GS_PLUGIN_REVIEW_ACTION_UPVOTE:	Upvote an existing review
- * @GS_PLUGIN_REVIEW_ACTION_DOWNVOTE:	Downvote an existing review
- * @GS_PLUGIN_REVIEW_ACTION_REPORT:	Report an existing review
- * @GS_PLUGIN_REVIEW_ACTION_REMOVE:	Remove a review written by the user
- * @GS_PLUGIN_REVIEW_ACTION_DISMISS:	Dismiss (ignore) a review when moderating
- *
- * The review action.
- **/
-typedef enum {
-	GS_PLUGIN_REVIEW_ACTION_SUBMIT,
-	GS_PLUGIN_REVIEW_ACTION_UPVOTE,
-	GS_PLUGIN_REVIEW_ACTION_DOWNVOTE,
-	GS_PLUGIN_REVIEW_ACTION_REPORT,
-	GS_PLUGIN_REVIEW_ACTION_REMOVE,
-	GS_PLUGIN_REVIEW_ACTION_DISMISS,
-	/*< private >*/
-	GS_PLUGIN_REVIEW_ACTION_LAST
-} GsPluginReviewAction;
 
 typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
@@ -229,7 +193,7 @@ gboolean	 gs_plugin_loader_app_refine_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_app_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginLoaderAction a,
+							 GsPluginAction	 a,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -242,7 +206,7 @@ gboolean	 gs_plugin_loader_review_action_finish	(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 AsReview	*review,
-							 GsPluginReviewAction	 action,
+							 GsPluginAction	 action,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -251,7 +215,7 @@ gboolean	 gs_plugin_loader_auth_action_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_auth_action_async	(GsPluginLoader	*plugin_loader,
 							 GsAuth		*auth,
-							 GsAuthAction	 action,
+							 GsPluginAction	 action,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);

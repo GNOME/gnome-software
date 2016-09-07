@@ -73,18 +73,18 @@ gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginLoaderAction action,
+							 GsPluginAction	 action,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_review_action		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 AsReview	*review,
-							 GsPluginReviewAction	 action,
+							 GsPluginAction	 action,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_auth_action		(GsPluginLoader	*plugin_loader,
 							 GsAuth		*auth,
-							 GsAuthAction	 action,
+							 GsPluginAction	 action,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_refresh		(GsPluginLoader	*plugin_loader,

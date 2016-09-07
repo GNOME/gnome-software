@@ -317,7 +317,7 @@ main (int argc, char **argv)
 		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		ret = gs_plugin_loader_app_action (plugin_loader,
 						   app,
-						   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+						   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 						   NULL,
 						   &error);
 		if (ret)
@@ -339,7 +339,7 @@ main (int argc, char **argv)
 		for (i = 0; i < repeat; i++) {
 			ret = gs_plugin_loader_app_action (plugin_loader,
 							   app,
-							   GS_PLUGIN_LOADER_ACTION_LAUNCH,
+							   GS_PLUGIN_ACTION_LAUNCH,
 							   NULL,
 							   &error);
 			if (!ret)

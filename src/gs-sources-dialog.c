@@ -202,7 +202,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
-								   GS_PLUGIN_LOADER_ACTION_INSTALL,
+								   GS_PLUGIN_ACTION_INSTALL,
 								   dialog->cancellable,
 								   source_modified_cb,
 								   dialog);
@@ -211,7 +211,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
-								   GS_PLUGIN_LOADER_ACTION_REMOVE,
+								   GS_PLUGIN_ACTION_REMOVE,
 								   dialog->cancellable,
 								   source_modified_cb,
 								   dialog);
@@ -511,7 +511,7 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 	g_debug ("removing source '%s'", gs_app_get_name (app));
 	gs_plugin_loader_app_action_async (dialog->plugin_loader,
 					   app,
-					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   GS_PLUGIN_ACTION_REMOVE,
 					   dialog->cancellable,
 					   app_removed_cb,
 					   dialog);

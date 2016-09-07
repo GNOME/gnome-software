@@ -906,7 +906,7 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   gs_app_list_index (apps, 0),
-					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
+					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,
 					   self);
@@ -1018,7 +1018,7 @@ upgrade_download_finished_cb (GObject *source,
 		           last_error->message);
 		gs_app_notify_failed_modal (helper->app,
 					    gs_shell_get_window (helper->self->shell),
-					    GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					    GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					    last_error);
 		return;
 	}
@@ -1046,7 +1046,7 @@ gs_shell_updates_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	self->cancellable_upgrade_download = g_cancellable_new ();
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   app,
-					   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					   self->cancellable_upgrade_download,
 					   upgrade_download_finished_cb,
 					   helper);
@@ -1081,7 +1081,7 @@ upgrade_reboot_failed_cb (GObject *source,
 	/* cancel trigger */
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   app,
-					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
+					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,
 					   self);
@@ -1128,7 +1128,7 @@ trigger_upgrade (GsShellUpdates *self)
 
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 	                                   upgrade,
-	                                   GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
+	                                   GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 	                                   self->cancellable,
 	                                   upgrade_trigger_finished_cb,
 	                                   self);

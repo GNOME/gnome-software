@@ -1314,6 +1314,90 @@ gs_plugin_error_to_string (GsPluginError error)
 	return NULL;
 }
 
+/**
+ * gs_plugin_action_to_string:
+ * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ERROR_NO_NETWORK
+ *
+ * Converts the enumerated action to a string.
+ *
+ * Returns: a string, or %NULL for invalid
+ **/
+const gchar *
+gs_plugin_action_to_string (GsPluginAction action)
+{
+	if (action == GS_PLUGIN_ACTION_INSTALL)
+		return "install";
+	if (action == GS_PLUGIN_ACTION_REMOVE)
+		return "remove";
+	if (action == GS_PLUGIN_ACTION_UPDATE)
+		return "update";
+	if (action == GS_PLUGIN_ACTION_SET_RATING)
+		return "set-rating";
+	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
+		return "upgrade-download";
+	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
+		return "upgrade-trigger";
+	if (action == GS_PLUGIN_ACTION_LAUNCH)
+		return "launch";
+	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
+		return "update-cancel";
+	if (action == GS_PLUGIN_ACTION_ADD_SHORTCUT)
+		return "add-shortcut";
+	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
+		return "remove-shortcut";
+	if (action == GS_PLUGIN_ACTION_REVIEW_SUBMIT)
+		return "review-submit";
+	if (action == GS_PLUGIN_ACTION_REVIEW_UPVOTE)
+		return "review-upvote";
+	if (action == GS_PLUGIN_ACTION_REVIEW_DOWNVOTE)
+		return "review-downvote";
+	if (action == GS_PLUGIN_ACTION_REVIEW_REPORT)
+		return "review-report";
+	if (action == GS_PLUGIN_ACTION_REVIEW_REMOVE)
+		return "review-remove";
+	if (action == GS_PLUGIN_ACTION_REVIEW_DISMISS)
+		return "review-dismiss";
+	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
+		return "get-updates";
+	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
+		return "get-distro-updates";
+	if (action == GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS)
+		return "get-unvoted-reviews";
+	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
+		return "get-sources";
+	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
+		return "get-installed";
+	if (action == GS_PLUGIN_ACTION_GET_POPULAR)
+		return "get-popular";
+	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
+		return "get-featured";
+	if (action == GS_PLUGIN_ACTION_SEARCH)
+		return "search";
+	if (action == GS_PLUGIN_ACTION_SEARCH_FILES)
+		return "search-files";
+	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
+		return "search-provides";
+	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
+		return "get-categories";
+	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
+		return "get-category-apps";
+	if (action == GS_PLUGIN_ACTION_REFINE)
+		return "refine";
+	if (action == GS_PLUGIN_ACTION_REFRESH)
+		return "refresh";
+	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
+		return "file-to-app";
+	if (action == GS_PLUGIN_ACTION_AUTH_LOGIN)
+		return "auth-login";
+	if (action == GS_PLUGIN_ACTION_AUTH_LOGOUT)
+		return "auth-logout";
+	if (action == GS_PLUGIN_ACTION_AUTH_REGISTER)
+		return "auth-register";
+	if (action == GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD)
+		return "auth-lost-password";
+	return NULL;
+}
+
 static void
 gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {

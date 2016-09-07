@@ -67,7 +67,7 @@ gs_shell_moderate_app_set_review_cb (GObject *source,
 
 static void
 gs_shell_moderate_review_clicked_cb (GsReviewRow *row,
-				     GsPluginReviewAction action,
+				     GsPluginAction action,
 				     GsShellModerate *self)
 {
 	GsApp *app = g_object_get_data (G_OBJECT (row), "GsApp");
@@ -119,10 +119,10 @@ gs_shell_moderate_add_app (GsShellModerate *self, GsApp *app)
 		gtk_widget_set_margin_start (row, 250);
 		gtk_widget_set_margin_end (row, 250);
 		gs_review_row_set_actions (GS_REVIEW_ROW (row),
-					   1 << GS_PLUGIN_REVIEW_ACTION_UPVOTE |
-					   1 << GS_PLUGIN_REVIEW_ACTION_DOWNVOTE |
-					   1 << GS_PLUGIN_REVIEW_ACTION_DISMISS |
-					   1 << GS_PLUGIN_REVIEW_ACTION_REPORT);
+					   1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
+					   1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
+					   1 << GS_PLUGIN_ACTION_REVIEW_DISMISS |
+					   1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
 		g_signal_connect (row, "button-clicked",
 				  G_CALLBACK (gs_shell_moderate_review_clicked_cb), self);
 		g_object_set_data_full (G_OBJECT (row), "GsApp",

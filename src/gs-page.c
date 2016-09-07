@@ -89,7 +89,7 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 	}
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
+	                                   GS_PLUGIN_ACTION_INSTALL,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -116,7 +116,7 @@ gs_page_remove_authenticate_cb (GtkDialog *dialog,
 	}
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-	                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
+	                                   GS_PLUGIN_ACTION_REMOVE,
 					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
@@ -171,7 +171,7 @@ gs_page_app_installed_cb (GObject *source,
 		           error->message);
 		gs_app_notify_failed_modal (helper->app,
 		                            gs_shell_get_window (priv->shell),
-		                            GS_PLUGIN_LOADER_ACTION_INSTALL,
+		                            GS_PLUGIN_ACTION_INSTALL,
 		                            error);
 		return;
 	}
@@ -184,7 +184,7 @@ gs_page_app_installed_cb (GObject *source,
 		           last_error->message);
 		gs_app_notify_failed_modal (helper->app,
 					    gs_shell_get_window (priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_INSTALL,
+					    GS_PLUGIN_ACTION_INSTALL,
 					    last_error);
 		return;
 	}
@@ -245,7 +245,7 @@ gs_page_app_removed_cb (GObject *source,
 		g_warning ("failed to remove: %s", error->message);
 		gs_app_notify_failed_modal (helper->app,
 		                            gs_shell_get_window (priv->shell),
-		                            GS_PLUGIN_LOADER_ACTION_REMOVE,
+		                            GS_PLUGIN_ACTION_REMOVE,
 		                            error);
 		return;
 	}
@@ -258,7 +258,7 @@ gs_page_app_removed_cb (GObject *source,
 		           last_error->message);
 		gs_app_notify_failed_modal (helper->app,
 					    gs_shell_get_window (priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_REMOVE,
+					    GS_PLUGIN_ACTION_REMOVE,
 					    last_error);
 		return;
 	}
@@ -319,7 +319,7 @@ gs_page_install_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->cancellable = g_object_ref (cancellable);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
-	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
+	                                   GS_PLUGIN_ACTION_INSTALL,
 	                                   helper->cancellable,
 	                                   gs_page_app_installed_cb,
 	                                   helper);
@@ -343,7 +343,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	g_debug ("update %s", gs_app_get_id (helper->app));
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-					   GS_PLUGIN_LOADER_ACTION_UPDATE,
+					   GS_PLUGIN_ACTION_UPDATE,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -437,7 +437,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	/* generic fallback */
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-					   GS_PLUGIN_LOADER_ACTION_UPDATE,
+					   GS_PLUGIN_ACTION_UPDATE,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -461,7 +461,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	g_debug ("remove %s", gs_app_get_id (helper->app));
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   GS_PLUGIN_ACTION_REMOVE,
 					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
@@ -485,7 +485,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 		g_debug ("remove %s", gs_app_get_id (app));
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 		                                   app,
-		                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
+		                                   GS_PLUGIN_ACTION_REMOVE,
 		                                   helper->cancellable,
 		                                   gs_page_app_removed_cb,
 		                                   helper);
@@ -555,7 +555,7 @@ gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
-	                                   GS_PLUGIN_LOADER_ACTION_LAUNCH,
+	                                   GS_PLUGIN_ACTION_LAUNCH,
 	                                   cancellable,
 	                                   gs_page_app_launched_cb,
 	                                   NULL);
@@ -580,7 +580,7 @@ gs_page_shortcut_add (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
-	                                   GS_PLUGIN_LOADER_ACTION_ADD_SHORTCUT,
+	                                   GS_PLUGIN_ACTION_ADD_SHORTCUT,
 	                                   cancellable,
 	                                   gs_page_app_shortcut_added_cb,
 	                                   NULL);
@@ -605,7 +605,7 @@ gs_page_shortcut_remove (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
-	                                   GS_PLUGIN_LOADER_ACTION_REMOVE_SHORTCUT,
+	                                   GS_PLUGIN_ACTION_REMOVE_SHORTCUT,
 	                                   cancellable,
 	                                   gs_page_app_shortcut_removed_cb,
 	                                   NULL);
