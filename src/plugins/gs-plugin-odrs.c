@@ -565,7 +565,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 		/* not sure what to do here */
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     "status code invalid");
 		return NULL;
 	}
@@ -945,7 +945,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 		/* not sure what to do here */
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     "status code invalid");
 		return FALSE;
 	}

@@ -439,7 +439,7 @@ download_review_stats (GsPlugin *plugin, GCancellable *cancellable, GError **err
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 			     "Failed to download review stats, server returned status code %u",
 			     status_code);
 		return FALSE;

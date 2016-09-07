@@ -89,7 +89,7 @@ gs_plugin_icons_download (GsPlugin *plugin,
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 			     "Failed to download icon %s: %s",
 			     uri, soup_status_get_phrase (status_code));
 		return FALSE;

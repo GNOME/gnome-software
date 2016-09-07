@@ -1094,7 +1094,7 @@ gs_plugin_download_data (GsPlugin *plugin,
 		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 			     "failed to download %s: %s",
 			     uri, str->str);
 		return NULL;
@@ -1152,7 +1152,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 			     "failed to download %s: %s",
 			     uri, str->str);
 		return FALSE;
@@ -1303,6 +1303,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "account-deactivated";
 	if (error == GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED)
 		return "plugin-depsolve-failed";
+	if (error == GS_PLUGIN_ERROR_DOWNLOAD_FAILED)
+		return "download-failed";
 	return NULL;
 }
 
