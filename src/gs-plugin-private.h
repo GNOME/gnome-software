@@ -117,6 +117,7 @@ GsPlugin	*gs_plugin_create			(const gchar	*filename,
 const gchar	*gs_plugin_error_to_string		(GsPluginError	 error);
 const gchar	*gs_plugin_action_to_string		(GsPluginAction	 action);
 
+void		 gs_plugin_error_strip_unique_id	(GError		*error);
 void		 gs_plugin_action_start			(GsPlugin	*plugin,
 							 gboolean	 exclusive);
 void		 gs_plugin_action_stop			(GsPlugin	*plugin);

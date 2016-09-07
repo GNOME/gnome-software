@@ -92,8 +92,22 @@ static void
 gs_plugin_error_func (void)
 {
 	guint i;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
+
 	for (i = 0; i < GS_PLUGIN_ERROR_LAST; i++)
 		g_assert (gs_plugin_error_to_string (i) != NULL);
+
+	gs_plugin_error_add_unique_id (&error, app);
+	g_set_error (&error,
+		     GS_PLUGIN_ERROR,
+		     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+		     "failed");
+	g_assert_cmpstr (error->message, ==, "failed");
+	gs_plugin_error_add_unique_id (&error, app);
+	g_assert_cmpstr (error->message, ==, "[*/*/*/*/gimp.desktop/*] failed");
+	gs_plugin_error_strip_unique_id (error);
+	g_assert_cmpstr (error->message, ==, "failed");
 }
 
 static void
