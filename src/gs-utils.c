@@ -353,7 +353,7 @@ gs_utils_unlink (const gchar *filename, GError **error)
 	if (g_unlink (filename) != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_DELETE_FAILED,
 			     "failed to delete %s",
 			     filename);
 		return FALSE;
@@ -384,7 +384,7 @@ gs_utils_rmtree_real (const gchar *directory, GError **error)
 			if (g_unlink (src) != 0) {
 				g_set_error (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_DELETE_FAILED,
 					     "Failed to delete: %s", src);
 				return FALSE;
 			}
@@ -394,7 +394,7 @@ gs_utils_rmtree_real (const gchar *directory, GError **error)
 	if (g_rmdir (directory) != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_DELETE_FAILED,
 			     "Failed to remove: %s", directory);
 		return FALSE;
 	}

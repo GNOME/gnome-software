@@ -1309,6 +1309,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "write-failed";
 	if (error == GS_PLUGIN_ERROR_INVALID_FORMAT)
 		return "invalid-format";
+	if (error == GS_PLUGIN_ERROR_DELETE_FAILED)
+		return "delete-failed";
 	return NULL;
 }
 
