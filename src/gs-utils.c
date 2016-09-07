@@ -314,7 +314,7 @@ gs_utils_get_desktop_app_info (const gchar *id)
 /**
  * gs_utils_symlink:
  * @target: the full path of the symlink to create
- * @source: where the symlink should point to
+ * @linkpath: where the symlink should point to
  * @error: A #GError, or %NULL
  *
  * Creates a symlink that can cross filesystem boundaries.

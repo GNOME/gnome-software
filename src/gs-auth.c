@@ -68,8 +68,7 @@ G_DEFINE_TYPE (GsAuth, gs_auth, G_TYPE_OBJECT)
  * gs_auth_get_provider_id:
  * @auth: a #GsAuth
  *
- * Gets the authentication service name. This must match the string in
- * gs_app_get_auth_provider() to be used.
+ * Gets the authentication service ID.
  *
  * Returns: the string to use for searching, e.g. "UbuntuOne"
  */

@@ -155,7 +155,7 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
  * lock held.
  *
  * All functions can block, but should sent progress notifications, e.g. using
- * gs_plugin_progress_update() if they will take more than tens of milliseconds
+ * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
  * This function will also not be called if gs_plugin_initialize() self-disabled.
@@ -506,10 +506,10 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
  * Install the application.
  *
  * Plugins are expected to send progress notifications to the UI using
- * gs_plugin_progress_update() using the passed in @app.
+ * gs_app_set_progress() using the passed in @app.
  *
  * All functions can block, but should sent progress notifications, e.g. using
- * gs_plugin_progress_update() if they will take more than tens of milliseconds
+ * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
  * On failure the error message returned will usually only be shown on the
@@ -536,10 +536,10 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
  * Remove the application.
  *
  * Plugins are expected to send progress notifications to the UI using
- * gs_plugin_progress_update() using the passed in @app.
+ * gs_app_set_progress() using the passed in @app.
  *
  * All functions can block, but should sent progress notifications, e.g. using
- * gs_plugin_progress_update() if they will take more than tens of milliseconds
+ * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
  * On failure the error message returned will usually only be shown on the
@@ -584,10 +584,10 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
  * Update the application live.
  *
  * Plugins are expected to send progress notifications to the UI using
- * gs_plugin_progress_update() using the passed in @app.
+ * gs_app_set_progress() using the passed in @app.
  *
  * All functions can block, but should sent progress notifications, e.g. using
- * gs_plugin_progress_update() if they will take more than tens of milliseconds
+ * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
  * On failure the error message returned will usually only be shown on the
@@ -614,7 +614,7 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
  * Starts downloading a distribution upgrade in the background.
  *
  * All functions can block, but should sent progress notifications, e.g. using
- * gs_plugin_progress_update() if they will take more than tens of milliseconds
+ * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
  * Returns: %TRUE for success or if not relevant
@@ -775,7 +775,7 @@ gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
  * This is used to pre-download package updates and firmware.
  *
  * All functions can block, but should sent progress notifications, e.g. using
- * gs_plugin_progress_update() if they will take more than tens of milliseconds
+ * gs_app_set_progress() if they will take more than tens of milliseconds
  * to complete.
  *
  * Returns: %TRUE for success or if not relevant
