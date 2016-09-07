@@ -2384,7 +2384,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	if (state->catlist->len == 0) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_FAILED,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					 "no categories to show");
 		return;
 	}

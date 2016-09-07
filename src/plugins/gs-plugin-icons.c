@@ -79,7 +79,7 @@ gs_plugin_icons_download (GsPlugin *plugin,
 	if (msg == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "%s is not a valid URL", uri);
 		return FALSE;
 	}
@@ -121,7 +121,7 @@ gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 	if (as_icon_get_filename (icon) == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "icon has no filename");
 		return NULL;
 	}
@@ -152,7 +152,7 @@ gs_plugin_icons_load_remote (GsPlugin *plugin, AsIcon *icon, GError **error)
 	if (as_icon_get_url (icon) == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "icon has no URL");
 		return NULL;
 	}
@@ -222,7 +222,7 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 	if (as_icon_get_name (icon) == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "icon has no name");
 		return NULL;
 	}
@@ -286,7 +286,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		default:
 			g_set_error (&error_local,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "icon kind '%s' unknown",
 				     as_icon_kind_to_string (as_icon_get_kind (icon)));
 			break;

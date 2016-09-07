@@ -405,7 +405,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	default:
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "do not know how to install app in state %s",
 			     as_app_state_to_string (gs_app_get_state (app)));
 		return FALSE;

@@ -398,7 +398,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "%s [%s] cannot be updated",
 			     gs_app_get_name (app), gs_app_get_id (app));
 		return FALSE;

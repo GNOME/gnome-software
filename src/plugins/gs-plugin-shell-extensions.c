@@ -790,7 +790,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		gs_app_set_state_recover (app);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "failed to uninstall %s",
 			     gs_app_get_id (app));
 		return FALSE;

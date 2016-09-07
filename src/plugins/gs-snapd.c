@@ -53,7 +53,7 @@ open_snapd_socket (GCancellable *cancellable, GError **error)
 	if (!socket) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "Unable to open snapd socket: %s",
 			     error_local->message);
 		return NULL;
@@ -62,7 +62,7 @@ open_snapd_socket (GCancellable *cancellable, GError **error)
 	if (!g_socket_connect (socket, address, cancellable, &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "Unable to connect snapd socket: %s",
 			     error_local->message);
 		g_object_unref (socket);

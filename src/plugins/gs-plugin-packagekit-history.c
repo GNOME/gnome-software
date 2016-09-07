@@ -177,7 +177,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "Failed to get history: %s",
 			     error_local->message);
 		return FALSE;

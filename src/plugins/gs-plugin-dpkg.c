@@ -81,7 +81,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	if (g_strv_length (tokens) < 5) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "dpkg-deb output format incorrect:\n\"%s\"\n", output);
 		return FALSE;
 	}
