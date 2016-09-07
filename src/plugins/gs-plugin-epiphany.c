@@ -130,7 +130,7 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 		} else {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_WRITE_FAILED,
 				     "Can't symlink icon: %s",
 				     error_local->message);
 			return FALSE;

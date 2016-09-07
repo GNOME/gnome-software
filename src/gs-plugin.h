@@ -112,6 +112,7 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED:	User account has been deactivated
  * @GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED:	The plugins installed are incompatible
  * @GS_PLUGIN_ERROR_DOWNLOAD_FAILED:		The download action failed
+ * @GS_PLUGIN_ERROR_WRITE_FAILED:		The save-to-disk failed
  *
  * The failure error types.
  **/
@@ -129,6 +130,7 @@ typedef enum {
 	GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED,
 	GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED,
 	GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+	GS_PLUGIN_ERROR_WRITE_FAILED,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;

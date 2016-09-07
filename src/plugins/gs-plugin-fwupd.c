@@ -629,7 +629,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				  &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_WRITE_FAILED,
 			     "Failed to save firmware: %s",
 			     error_local->message);
 		return FALSE;
@@ -727,7 +727,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 					  &error_local)) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_WRITE_FAILED,
 				     "Failed to save firmware: %s",
 				     error_local->message);
 			return FALSE;

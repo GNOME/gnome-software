@@ -1163,7 +1163,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 				  &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_WRITE_FAILED,
 			     "Failed to save file: %s",
 			     error_local->message);
 		return FALSE;
@@ -1305,6 +1305,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "plugin-depsolve-failed";
 	if (error == GS_PLUGIN_ERROR_DOWNLOAD_FAILED)
 		return "download-failed";
+	if (error == GS_PLUGIN_ERROR_WRITE_FAILED)
+		return "write-failed";
 	return NULL;
 }
 

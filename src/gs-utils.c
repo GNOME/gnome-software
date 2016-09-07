@@ -330,7 +330,7 @@ gs_utils_symlink (const gchar *target, const gchar *linkpath, GError **error)
 	if (symlink (target, linkpath) != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_WRITE_FAILED,
 			     "failed to create symlink from %s to %s",
 			     linkpath, target);
 		return FALSE;
