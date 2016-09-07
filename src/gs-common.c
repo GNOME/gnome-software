@@ -150,7 +150,7 @@ gs_app_notify_installed (GsApp *app)
 void
 gs_app_notify_failed_modal (GsApp *app,
 			    GtkWindow *parent_window,
-			    GsPluginLoaderAction action,
+			    GsPluginAction action,
 			    const GError *error)
 {
 	const gchar *title;
@@ -163,17 +163,17 @@ gs_app_notify_failed_modal (GsApp *app,
 	/* say what we tried to do */
 	msg = g_string_new ("");
 	switch (action) {
-	case GS_PLUGIN_LOADER_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_INSTALL:
 		/* TRANSLATORS: this is when the install fails */
 		g_string_append_printf (msg, _("Installation of %s failed."),
 					gs_app_get_name (app));
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_REMOVE:
 		/* TRANSLATORS: this is when the remove fails */
 		g_string_append_printf (msg, _("Removal of %s failed."),
 					gs_app_get_name (app));
 		break;
-	case GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD:
+	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
 	{
 		g_autofree gchar *name_version = g_strdup_printf ("%s %s",
 		                                                  gs_app_get_name (app),

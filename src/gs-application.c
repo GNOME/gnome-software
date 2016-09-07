@@ -428,7 +428,7 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	/* cancel trigger */
 	gs_plugin_loader_app_action_async (app->plugin_loader,
 					   NULL, /* everything! */
-					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
+					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
 					   app->cancellable,
 					   cancel_trigger_failed_cb,
 					   app);

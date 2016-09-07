@@ -159,16 +159,16 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 static void
 gs_auth_dialog_continue_cb (GtkWidget *widget, GsAuthDialog *dialog)
 {
-	GsPluginLoaderAction action = GS_AUTH_ACTION_LOGIN;
+	GsPluginAction action = GS_PLUGIN_ACTION_AUTH_LOGIN;
 
 	gtk_widget_set_sensitive (dialog->box_dialog, FALSE);
 	gtk_widget_set_sensitive (dialog->button_continue, FALSE);
 
 	/* alternate actions */
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_lost_pwd)))
-		action = GS_AUTH_ACTION_LOST_PASSWORD;
+		action = GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD;
 	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_register)))
-		action = GS_AUTH_ACTION_REGISTER;
+		action = GS_PLUGIN_ACTION_AUTH_REGISTER;
 	gs_plugin_loader_auth_action_async (dialog->plugin_loader,
 					    dialog->auth,
 					    action,

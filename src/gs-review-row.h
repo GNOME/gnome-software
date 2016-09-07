@@ -36,7 +36,7 @@ struct _GsReviewRowClass
 {
 	GtkListBoxRowClass	 parent_class;
 	void			(*button_clicked)	(GsReviewRow	*review_row,
-							 GsPluginReviewAction	 action);
+							 GsPluginAction	 action);
 };
 
 GtkWidget	*gs_review_row_new		(AsReview	*review);
