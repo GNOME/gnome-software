@@ -704,14 +704,9 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		       gs_auth_get_provider_id (priv->auth)) != 0)
 		return TRUE;
 
-	/* already done */
-	if (priv->has_auth) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "authentication already done");
-		return FALSE;
-	}
+	/* already logged in */
+	if (priv->has_auth)
+		return TRUE;
 
 	/* check username and password */
 	if (g_strcmp0 (gs_auth_get_username (priv->auth), "dummy") != 0 ||
@@ -740,14 +735,10 @@ gs_plugin_auth_logout (GsPlugin *plugin, GsAuth *auth,
 		       gs_auth_get_provider_id (priv->auth)) != 0)
 		return TRUE;
 
-	/* not done */
-	if (!priv->has_auth) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "authentication not already done");
-		return FALSE;
-	}
+	/* not logged in */
+	if (!priv->has_auth)
+		TRUE;
+
 	priv->has_auth = FALSE;
 	gs_auth_set_flags (priv->auth, 0);
 	g_debug ("dummy now not authenticated");
