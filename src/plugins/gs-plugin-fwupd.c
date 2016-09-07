@@ -427,7 +427,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		if (update_hash == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_NO_SECURITY,
 				     "%s [%s] (%s) has no checksum, ignoring as unsafe",
 				     gs_app_get_name (app),
 				     gs_app_get_id (app),
