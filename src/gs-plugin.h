@@ -110,6 +110,7 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_PIN_REQUIRED:		PIN required for authentication
  * @GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED:		User account has been suspended
  * @GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED:	User account has been deactivated
+ * @GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED:	The plugins installed are incompatible
  *
  * The failure error types.
  **/
@@ -125,6 +126,7 @@ typedef enum {
 	GS_PLUGIN_ERROR_PIN_REQUIRED,
 	GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED,
 	GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED,
+	GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;

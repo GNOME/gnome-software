@@ -1301,6 +1301,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "account-suspended";
 	if (error == GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED)
 		return "account-deactivated";
+	if (error == GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED)
+		return "plugin-depsolve-failed";
 	return NULL;
 }
 
