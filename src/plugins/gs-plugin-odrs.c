@@ -122,14 +122,14 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	if (json_root == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no ratings root");
 		return FALSE;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no ratings array");
 		return FALSE;
 	}
@@ -307,7 +307,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 	if (data == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "server returned no data");
 		return NULL;
 	}
@@ -320,14 +320,14 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 	if (json_root == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no root");
 		return NULL;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_ARRAY) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no array");
 		return NULL;
 	}
@@ -345,7 +345,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 		if (json_node_get_node_type (json_review) != JSON_NODE_OBJECT) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
 					     "no object type");
 			return NULL;
 		}
@@ -353,7 +353,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 		if (json_item == NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
 					     "no object");
 			return NULL;
 		}
@@ -378,7 +378,7 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 	if (data == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "server returned no data");
 		return FALSE;
 	}
@@ -391,14 +391,14 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 	if (json_root == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no error root");
 		return FALSE;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no error object");
 		return FALSE;
 	}
@@ -406,7 +406,7 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 	if (json_item == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no error object");
 		return FALSE;
 	}
@@ -417,7 +417,7 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 	if (!json_object_get_boolean_member (json_item, "success")) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     msg != NULL ? msg : "unknown failure");
 		return FALSE;
 	}

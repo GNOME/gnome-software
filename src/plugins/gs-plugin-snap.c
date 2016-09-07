@@ -79,14 +79,14 @@ parse_result (const gchar *response, const gchar *response_type, GError **error)
 	if (response_type == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "snapd returned no content type");
 		return NULL;
 	}
 	if (g_strcmp0 (response_type, "application/json") != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "snapd returned unexpected content type %s", response_type);
 		return NULL;
 	}
@@ -95,7 +95,7 @@ parse_result (const gchar *response, const gchar *response_type, GError **error)
 	if (!json_parser_load_from_data (parser, response, -1, &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Unable to parse snapd response: %s",
 			     error_local->message);
 		return NULL;
@@ -103,7 +103,7 @@ parse_result (const gchar *response, const gchar *response_type, GError **error)
 	if (!JSON_NODE_HOLDS_OBJECT (json_parser_get_root (parser))) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "snapd response does is not a valid JSON object");
 		return NULL;
 	}
@@ -310,7 +310,7 @@ get_apps (GsPlugin *plugin,
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "snapd returned status code %u: %s",
 			     status_code, reason_phrase);
 		return FALSE;
@@ -380,7 +380,7 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "snapd returned status code %u: %s",
 			     status_code, reason_phrase);
 		return FALSE;
@@ -394,7 +394,7 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 	if (result == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "snapd returned no results for %s", gs_app_get_id (app));
 		return FALSE;
 	}
@@ -499,7 +499,7 @@ send_package_action (GsPlugin *plugin,
 	if (status_code != SOUP_STATUS_ACCEPTED) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "snapd returned status code %u: %s",
 			     status_code, reason_phrase);
 		return FALSE;
@@ -536,7 +536,7 @@ send_package_action (GsPlugin *plugin,
 			if (status_code != SOUP_STATUS_OK) {
 				g_set_error (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
 					     "snapd returned status code %u: %s",
 					     status_code, status_reason_phrase);
 				return FALSE;
@@ -708,7 +708,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (data == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "Failed to generate JSON request");
 		return FALSE;
 	}

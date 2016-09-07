@@ -1307,6 +1307,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "download-failed";
 	if (error == GS_PLUGIN_ERROR_WRITE_FAILED)
 		return "write-failed";
+	if (error == GS_PLUGIN_ERROR_INVALID_FORMAT)
+		return "invalid-format";
 	return NULL;
 }
 

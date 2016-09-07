@@ -119,7 +119,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (data == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "Failed to generate JSON request");
 		return FALSE;
 	}
@@ -176,7 +176,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (tmp == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Response from %s missing required field consumer_key",
 			     UBUNTU_LOGIN_HOST);
 		return FALSE;
@@ -188,7 +188,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (tmp == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Response from %s missing required field consumer_secret",
 			     UBUNTU_LOGIN_HOST);
 		return FALSE;
@@ -200,7 +200,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (tmp == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Response from %s missing required field token_key",
 			     UBUNTU_LOGIN_HOST);
 		return FALSE;
@@ -212,7 +212,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (tmp == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Response from %s missing required field token_secret",
 			     UBUNTU_LOGIN_HOST);
 		return FALSE;

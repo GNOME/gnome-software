@@ -95,7 +95,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Failed to get prepared IDs: %s",
 			     error_local->message);
 		return FALSE;

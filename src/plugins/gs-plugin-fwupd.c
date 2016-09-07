@@ -438,7 +438,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		if (update_uri == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no location available for %s [%s]",
 				     gs_app_get_name (app), gs_app_get_id (app));
 			return FALSE;
@@ -456,7 +456,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			gs_plugin_fwupd_add_required_location (plugin, update_uri);
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "%s does not yet exist, wait patiently",
 				     filename_cache);
 			return FALSE;
@@ -471,7 +471,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		if (g_strcmp0 (update_hash, checksum) != 0) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "%s does not match checksum, expected %s got %s",
 				     filename_cache, update_hash, checksum);
 			g_unlink (filename_cache);
@@ -815,7 +815,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 		if (device_id == NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
 					     "not enough data for fwupd unlock");
 			return FALSE;
 		}

@@ -162,7 +162,7 @@ gs_snapd_request (const gchar  *method,
 	if (!body) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "Unable to find header separator in snapd response");
 		return FALSE;
 	}
@@ -177,7 +177,7 @@ gs_snapd_request (const gchar  *method,
 					  NULL, &code, reason_phrase)) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "snapd response HTTP headers not parseable");
 		return FALSE;
 	}
@@ -193,7 +193,7 @@ gs_snapd_request (const gchar  *method,
 			if (n_read == max_data_length) {
 				g_set_error_literal (error,
 						     GS_PLUGIN_ERROR,
-						     GS_PLUGIN_ERROR_FAILED,
+						     GS_PLUGIN_ERROR_INVALID_FORMAT,
 						     "Out of space reading snapd response");
 				return FALSE;
 			}
@@ -225,7 +225,7 @@ gs_snapd_request (const gchar  *method,
 		if (!chunk_start) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
 					     "Unable to find chunk header in "
 					     "snapd response");
 			return FALSE;
@@ -238,7 +238,7 @@ gs_snapd_request (const gchar  *method,
 		if (n_required > max_data_length) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "Not enough space for snapd response, "
 				     "require %" G_GSIZE_FORMAT " octets, "
 				     "have %" G_GSIZE_FORMAT,
@@ -263,7 +263,7 @@ gs_snapd_request (const gchar  *method,
 		if (n_required > max_data_length) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "Not enough space for snapd response, "
 				     "require %" G_GSIZE_FORMAT " octets, "
 				     "have %" G_GSIZE_FORMAT,
@@ -283,7 +283,7 @@ gs_snapd_request (const gchar  *method,
 	default:
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "Unable to determine content "
 				     "length of snapd response");
 		return FALSE;
@@ -316,14 +316,14 @@ gs_snapd_parse_result (const gchar	*response_type,
 	if (response_type == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "snapd returned no content type");
 		return FALSE;
 	}
 	if (g_strcmp0 (response_type, "application/json") != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "snapd returned unexpected content type %s", response_type);
 		return FALSE;
 	}
@@ -332,7 +332,7 @@ gs_snapd_parse_result (const gchar	*response_type,
 	if (!json_parser_load_from_data (parser, response, -1, &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Unable to parse snapd response: %s",
 			     error_local->message);
 		return FALSE;
@@ -341,7 +341,7 @@ gs_snapd_parse_result (const gchar	*response_type,
 	if (!JSON_NODE_HOLDS_OBJECT (json_parser_get_root (parser))) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "snapd response does is not a valid JSON object");
 		return FALSE;
 	}
@@ -349,7 +349,7 @@ gs_snapd_parse_result (const gchar	*response_type,
 	if (!json_object_has_member (root, "result")) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "snapd response does not contain a \"result\" field");
 		return FALSE;
 	}

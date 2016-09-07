@@ -768,7 +768,7 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 	if (url == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "no URL for remote %s",
 			     flatpak_remote_get_name (xremote));
 		return FALSE;
@@ -1749,7 +1749,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		if (item == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "application %s not found",
 				     id);
 			return FALSE;

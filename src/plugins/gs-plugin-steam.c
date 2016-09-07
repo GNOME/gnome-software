@@ -401,7 +401,7 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 	    gdk_pixbuf_get_height (pb) < 48) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "icon is too small %ix%i",
 			     gdk_pixbuf_get_width (pb),
 			     gdk_pixbuf_get_height (pb));

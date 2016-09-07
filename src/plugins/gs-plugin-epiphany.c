@@ -266,7 +266,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (name == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "name unset for %s",
 			     gs_app_get_id (app));
 		return FALSE;

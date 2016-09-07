@@ -417,7 +417,7 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	if (version == 0) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no version in map!");
 		return FALSE;
 	}
@@ -540,7 +540,7 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	if (data == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "server returned no data");
 		return NULL;
 	}
@@ -553,14 +553,14 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	if (json_root == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no data root");
 		return NULL;
 	}
 	if (json_node_get_node_type (json_root) != JSON_NODE_OBJECT) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no data object");
 		return NULL;
 	}
@@ -568,7 +568,7 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	if (json_item == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no data object");
 		return NULL;
 	}
@@ -579,7 +579,7 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	if (json_extensions == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no extensions object");
 		return NULL;
 	}
@@ -587,7 +587,7 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	if (json_extensions_array == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
 				     "no extensions array");
 		return NULL;
 	}

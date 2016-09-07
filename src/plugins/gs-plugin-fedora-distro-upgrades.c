@@ -122,7 +122,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (endptr == verstr || priv->os_version > G_MAXUINT) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "Failed parse VERSION_ID: %s", verstr);
 		return FALSE;
 	}
@@ -216,7 +216,7 @@ parse_pkgdb_collections_data (const gchar *data,
 	if (root == NULL) {
 		g_set_error (error,
 		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_FAILED,
+		             GS_PLUGIN_ERROR_INVALID_FORMAT,
 		             "no root object");
 		return NULL;
 	}
@@ -225,7 +225,7 @@ parse_pkgdb_collections_data (const gchar *data,
 	if (collections == NULL) {
 		g_set_error (error,
 		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_FAILED,
+		             GS_PLUGIN_ERROR_INVALID_FORMAT,
 		             "no collections object");
 		return NULL;
 	}
