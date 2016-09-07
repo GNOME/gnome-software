@@ -748,7 +748,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (!json_object_has_member (result, "macaroon")) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
+				     GS_PLUGIN_ERROR_AUTH_INVALID,
 				     "Login response missing macaroon");
 		return FALSE;
 	}
@@ -760,7 +760,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		if (!JSON_NODE_HOLDS_VALUE (node) && json_node_get_value_type (node) != G_TYPE_STRING) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_AUTH_INVALID,
 					     "Macaroon discharge contains unexpected value");
 			return FALSE;
 		}

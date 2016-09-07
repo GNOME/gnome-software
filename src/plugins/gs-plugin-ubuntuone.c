@@ -165,7 +165,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		} else {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
+					     GS_PLUGIN_ERROR_AUTH_INVALID,
 					     message);
 		}
 		return FALSE;
