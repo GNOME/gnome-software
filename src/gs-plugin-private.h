@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 GsPlugin	*gs_plugin_new				(void);
 GsPlugin	*gs_plugin_create			(const gchar	*filename,
 							 GError		**error);
-
+const gchar	*gs_plugin_error_to_string		(GsPluginError	 error);
 void		 gs_plugin_action_start			(GsPlugin	*plugin,
 							 gboolean	 exclusive);
 void		 gs_plugin_action_stop			(GsPlugin	*plugin);

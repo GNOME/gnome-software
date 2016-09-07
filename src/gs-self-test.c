@@ -89,6 +89,14 @@ gs_os_release_func (void)
 }
 
 static void
+gs_plugin_error_func (void)
+{
+	guint i;
+	for (i = 0; i < GS_PLUGIN_ERROR_LAST; i++)
+		g_assert (gs_plugin_error_to_string (i) != NULL);
+}
+
+static void
 gs_plugin_global_cache_func (void)
 {
 	const gchar *unique_id;
@@ -1341,6 +1349,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
+	g_test_add_func ("/gnome-software/plugin{error}", gs_plugin_error_func);
 	g_test_add_func ("/gnome-software/plugin{global-cache}", gs_plugin_global_cache_func);
 	g_test_add_func ("/gnome-software/auth{secret}", gs_auth_secret_func);
 

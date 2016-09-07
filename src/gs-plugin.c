@@ -1268,6 +1268,42 @@ gs_plugin_cache_invalidate (GsPlugin *plugin)
 	g_hash_table_remove_all (priv->cache);
 }
 
+/**
+ * gs_plugin_error_to_string:
+ * @error: a #GsPluginError, e.g. %GS_PLUGIN_ERROR_NO_NETWORK
+ *
+ * Converts the enumerated error to a string.
+ *
+ * Returns: a string, or %NULL for invalid
+ **/
+const gchar *
+gs_plugin_error_to_string (GsPluginError error)
+{
+	if (error == GS_PLUGIN_ERROR_FAILED)
+		return "failed";
+	if (error == GS_PLUGIN_ERROR_NOT_SUPPORTED)
+		return "not-supported";
+	if (error == GS_PLUGIN_ERROR_CANCELLED)
+		return "cancelled";
+	if (error == GS_PLUGIN_ERROR_NO_NETWORK)
+		return "no-network";
+	if (error == GS_PLUGIN_ERROR_NO_SECURITY)
+		return "no-security";
+	if (error == GS_PLUGIN_ERROR_NO_SPACE)
+		return "no-space";
+	if (error == GS_PLUGIN_ERROR_AUTH_REQUIRED)
+		return "auth-required";
+	if (error == GS_PLUGIN_ERROR_AUTH_INVALID)
+		return "auth-invalid";
+	if (error == GS_PLUGIN_ERROR_PIN_REQUIRED)
+		return "pin-required";
+	if (error == GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED)
+		return "account-suspended";
+	if (error == GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED)
+		return "account-deactivated";
+	return NULL;
+}
+
 static void
 gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
