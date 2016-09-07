@@ -45,6 +45,7 @@ struct GsPluginData {
 	gchar			*lvfs_sig_fn;
 	gchar			*lvfs_sig_hash;
 	gchar			*config_fn;
+	gchar			*download_uri;
 };
 
 void
@@ -62,6 +63,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	if (!g_file_test (priv->config_fn, G_FILE_TEST_EXISTS)) {
 		g_debug ("fwupd configuration not found, disabling plugin.");
 		gs_plugin_set_enabled (plugin, FALSE);
+		return;
 	}
 }
 
@@ -72,6 +74,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (priv->lvfs_sig_fn);
 	g_free (priv->lvfs_sig_hash);
 	g_free (priv->config_fn);
+	g_free (priv->download_uri);
 	g_object_unref (priv->client);
 	g_ptr_array_unref (priv->to_download);
 	g_ptr_array_unref (priv->to_ignore);
@@ -175,6 +178,19 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gsize len;
 	g_autofree gchar *data = NULL;
+	g_autoptr(GKeyFile) config = NULL;
+
+	/* read config file */
+	config = g_key_file_new ();
+	if (!g_key_file_load_from_file (config, priv->config_fn,
+					G_KEY_FILE_NONE, error))
+		return FALSE;
+
+	/* get the download URI */
+	priv->download_uri = g_key_file_get_string (config, "fwupd",
+						    "DownloadURI", error);
+	if (priv->download_uri == NULL)
+		return FALSE;
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();
@@ -573,16 +589,9 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_autofree gchar *basename_data = NULL;
 	g_autofree gchar *cache_fn_data = NULL;
 	g_autofree gchar *checksum = NULL;
-	g_autofree gchar *url_data = NULL;
 	g_autofree gchar *url_sig = NULL;
 	g_autoptr(GBytes) data = NULL;
-	g_autoptr(GKeyFile) config = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-
-	/* read config file */
-	config = g_key_file_new ();
-	if (!g_key_file_load_from_file (config, priv->config_fn, G_KEY_FILE_NONE, error))
-		return FALSE;
 
 	/* check cache age */
 	if (cache_age > 0) {
@@ -597,13 +606,8 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 		}
 	}
 
-	/* download the signature */
-	url_data = g_key_file_get_string (config, "fwupd", "DownloadURI", error);
-	if (url_data == NULL)
-		return FALSE;
-
 	/* download the signature first, it's smaller */
-	url_sig = g_strdup_printf ("%s.asc", url_data);
+	url_sig = g_strdup_printf ("%s.asc", priv->download_uri);
 	data = gs_plugin_download_data (plugin,
 					app_dl,
 					url_sig,
@@ -640,7 +644,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	priv->lvfs_sig_hash = g_strdup (checksum);
 
 	/* download the payload and save to file */
-	basename_data = g_path_get_basename (url_data);
+	basename_data = g_path_get_basename (priv->download_uri);
 	cache_fn_data = gs_utils_get_cache_filename ("firmware",
 						     basename_data,
 						     GS_UTILS_CACHE_FLAG_WRITEABLE,
@@ -650,7 +654,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_debug ("saving new LVFS data to %s:", cache_fn_data);
 	if (!gs_plugin_download_file (plugin,
 				      app_dl,
-				      url_data,
+				      priv->download_uri,
 				      cache_fn_data,
 				      cancellable,
 				      error))
