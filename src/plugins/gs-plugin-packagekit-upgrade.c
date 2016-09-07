@@ -89,18 +89,12 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
 
+	/* check is distro-upgrade */
+	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+		return TRUE;
+
 	data.app = app;
 	data.plugin = plugin;
-
-	/* check is distro-upgrade */
-	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "app %s is not a distro upgrade",
-			     gs_app_get_id (app));
-		return FALSE;
-	}
 
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
