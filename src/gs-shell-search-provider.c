@@ -134,7 +134,9 @@ execute_search (GsShellSearchProvider  *self,
 	g_application_hold (g_application_get_default ());
 	self->cancellable = g_cancellable_new ();
 	gs_plugin_loader_search_async (self->plugin_loader,
-				       string, 0, self->cancellable,
+				       string,
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				       self->cancellable,
 				       search_done_cb,
 				       pending_search);
 }
