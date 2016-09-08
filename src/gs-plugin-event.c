@@ -242,7 +242,7 @@ gboolean
 gs_plugin_event_has_flag (GsPluginEvent *event, GsPluginEventFlag flag)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_EVENT (event), FALSE);
-	return (event->flags & flag > 0);
+	return ((event->flags & flag) > 0);
 }
 
 /**
