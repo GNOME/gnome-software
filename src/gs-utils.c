@@ -503,4 +503,48 @@ gs_utils_get_wilson_rating (guint64 star1,
 	return (gint) ceil (val);
 }
 
+/**
+ * gs_utils_error_add_unique_id:
+ * @error: a #GError
+ * @app: a #GsApp
+ *
+ * Adds a unique ID prefix to the error.
+ *
+ * Since: 3.22
+ **/
+void
+gs_utils_error_add_unique_id (GError **error, GsApp *app)
+{
+	if (error == NULL || *error == NULL)
+		return;
+	g_prefix_error (error, "[%s] ", gs_app_get_unique_id (app));
+}
+
+/**
+ * gs_utils_error_strip_unique_id:
+ * @error: a #GError
+ * @app: a #GsApp
+ *
+ * Removes a possible unique ID prefix from the error.
+ *
+ * Since: 3.22
+ **/
+void
+gs_utils_error_strip_unique_id (GError *error)
+{
+	gchar *str;
+	if (error == NULL)
+		return;
+	if (!g_str_has_prefix (error->message, "["))
+		return;
+	str = g_strstr_len (error->message, -1, " ");
+	if (str == NULL)
+		return;
+
+	/* gahh, my eyes are bleeding */
+	str = g_strdup (str + 1);
+	g_free (error->message);
+	error->message = str;
+}
+
 /* vim: set noexpandtab: */

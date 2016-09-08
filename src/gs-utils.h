@@ -70,6 +70,9 @@ gint		 gs_utils_get_wilson_rating	(guint64	 star1,
 						 guint64	 star3,
 						 guint64	 star4,
 						 guint64	 star5);
+void		 gs_utils_error_add_unique_id	(GError		**error,
+						 GsApp		*app);
+void		 gs_utils_error_strip_unique_id	(GError		*error);
 
 G_END_DECLS
 

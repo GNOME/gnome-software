@@ -468,7 +468,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("updates-shell: failed to get updates: %s", error->message);
-		gs_plugin_error_strip_unique_id (error);
+		gs_utils_error_strip_unique_id (error);
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
 				     error->message);
 		gs_shell_updates_set_state (self,
@@ -703,7 +703,7 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 			return;
 		}
 		g_warning ("failed to refresh: %s", error->message);
-		gs_plugin_error_strip_unique_id (error);
+		gs_utils_error_strip_unique_id (error);
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
 				     error->message);
 		gs_shell_updates_set_state (self,

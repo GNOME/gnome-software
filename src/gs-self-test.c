@@ -89,7 +89,7 @@ gs_os_release_func (void)
 }
 
 static void
-gs_plugin_error_func (void)
+gs_utils_error_func (void)
 {
 	guint i;
 	g_autoptr(GError) error = NULL;
@@ -98,15 +98,15 @@ gs_plugin_error_func (void)
 	for (i = 0; i < GS_PLUGIN_ERROR_LAST; i++)
 		g_assert (gs_plugin_error_to_string (i) != NULL);
 
-	gs_plugin_error_add_unique_id (&error, app);
+	gs_utils_error_add_unique_id (&error, app);
 	g_set_error (&error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 		     "failed");
 	g_assert_cmpstr (error->message, ==, "failed");
-	gs_plugin_error_add_unique_id (&error, app);
+	gs_utils_error_add_unique_id (&error, app);
 	g_assert_cmpstr (error->message, ==, "[*/*/*/*/gimp.desktop/*] failed");
-	gs_plugin_error_strip_unique_id (error);
+	gs_utils_error_strip_unique_id (error);
 	g_assert_cmpstr (error->message, ==, "failed");
 }
 
@@ -1364,11 +1364,11 @@ main (int argc, char **argv)
 
 	/* generic tests go here */
 	g_test_add_func ("/gnome-software/utils{wilson}", gs_utils_wilson_func);
+	g_test_add_func ("/gnome-software/utils{error}", gs_utils_error_func);
 	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
-	g_test_add_func ("/gnome-software/plugin{error}", gs_plugin_error_func);
 	g_test_add_func ("/gnome-software/plugin{global-cache}", gs_plugin_global_cache_func);
 	g_test_add_func ("/gnome-software/auth{secret}", gs_auth_secret_func);
 
