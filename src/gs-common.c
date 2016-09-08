@@ -183,9 +183,10 @@ gs_app_notify_failed_modal (GsApp *app,
 		break;
 	}
 	default:
-		g_assert_not_reached ();
 		break;
 	}
+	if (msg->len == 0)
+		return;
 	g_string_append (msg, " ");
 
 	/* give details about the error */
