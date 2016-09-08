@@ -42,6 +42,7 @@ struct GsPluginData {
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
 	GsApp			*app_current;
+	GsApp			*cached_origin;
 	gchar			*lvfs_sig_fn;
 	gchar			*lvfs_sig_hash;
 	gchar			*config_fn;
@@ -71,6 +72,8 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->cached_origin != NULL)
+		g_object_unref (priv->cached_origin);
 	g_free (priv->lvfs_sig_fn);
 	g_free (priv->lvfs_sig_hash);
 	g_free (priv->config_fn);
@@ -191,6 +194,19 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 						    "DownloadURI", error);
 	if (priv->download_uri == NULL)
 		return FALSE;
+
+	/* add source */
+	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
+	gs_app_set_origin_hostname (priv->cached_origin, priv->download_uri);
+	gs_app_set_origin_ui (priv->cached_origin, "Linux Vendor Firmware Project");
+
+	/* add the source to the plugin cache which allows us to match the
+	 * unique ID to a GsApp when creating an event */
+	gs_plugin_cache_add (plugin,
+			     gs_app_get_unique_id (priv->cached_origin),
+			     priv->cached_origin);
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();

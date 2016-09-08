@@ -32,6 +32,7 @@ struct GsPluginData {
 	guint			 quirk_id;
 	guint			 has_auth;
 	GsAuth			*auth;
+	GsApp			*cached_origin;
 };
 
 void
@@ -55,6 +56,18 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* lets assume we read this from disk somewhere */
 	gs_auth_set_username (priv->auth, "dummy");
 
+	/* add source */
+	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	gs_app_set_origin_hostname (priv->cached_origin, "http://www.bbc.co.uk/");
+	gs_app_set_origin_ui (priv->cached_origin, "Dummy Repo");
+
+	/* add the source to the plugin cache which allows us to match the
+	 * unique ID to a GsApp when creating an event */
+	gs_plugin_cache_add (plugin,
+			     gs_app_get_unique_id (priv->cached_origin),
+			     priv->cached_origin);
+
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
@@ -66,6 +79,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (priv->quirk_id > 0)
 		g_source_remove (priv->quirk_id);
+	g_object_unref (priv->cached_origin);
 }
 
 void

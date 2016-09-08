@@ -31,6 +31,7 @@ struct GsPluginData {
 	GFileMonitor	*cachefn_monitor;
 	gchar		*os_name;
 	guint64		 os_version;
+	GsApp		*cached_origin;
 };
 
 void
@@ -51,6 +52,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (priv->cachefn_monitor != NULL)
 		g_object_unref (priv->cachefn_monitor);
+	if (priv->cached_origin != NULL)
+		g_object_unref (priv->cached_origin);
 	g_free (priv->os_name);
 	g_free (priv->cachefn);
 }
@@ -126,6 +129,19 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			     "Failed parse VERSION_ID: %s", verstr);
 		return FALSE;
 	}
+
+	/* add source */
+	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	gs_app_set_origin_ui (priv->cached_origin, "Fedora Project PkgDb");
+	gs_app_set_origin_hostname (priv->cached_origin,
+				    FEDORA_PKGDB_COLLECTIONS_API_URI);
+
+	/* add the source to the plugin cache which allows us to match the
+	 * unique ID to a GsApp when creating an event */
+	gs_plugin_cache_add (plugin,
+			     gs_app_get_unique_id (priv->cached_origin),
+			     priv->cached_origin);
 
 	/* success */
 	return TRUE;
