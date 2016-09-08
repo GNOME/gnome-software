@@ -35,6 +35,7 @@
 #include "gs-update-list.h"
 #include "gs-update-monitor.h"
 #include "gs-upgrade-banner.h"
+#include "gs-utils.h"
 #include "gs-application.h"
 #include "gs-utils.h"
 
@@ -1005,7 +1006,6 @@ upgrade_download_finished_cb (GObject *source,
                               gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GError *last_error;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 
@@ -1013,18 +1013,6 @@ upgrade_download_finished_cb (GObject *source,
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
 		g_warning ("failed to upgrade-download: %s", error->message);
-	}
-
-	last_error = gs_app_get_last_error (helper->app);
-	if (last_error != NULL) {
-		g_warning ("failed to upgrade-download %s: %s",
-		           gs_app_get_id (helper->app),
-		           last_error->message);
-		gs_app_notify_failed_modal (helper->app,
-					    gs_shell_get_window (helper->self->shell),
-					    GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					    last_error);
-		return;
 	}
 }
 

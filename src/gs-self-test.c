@@ -371,10 +371,15 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 static void
 gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 {
+	GsPluginEvent *event;
+	const GError *app_error;
 	gboolean ret;
-	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
-	GError *last_error;
+	g_autoptr(GPtrArray) events = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* remove previous errors */
+	gs_plugin_loader_remove_events (plugin_loader);
 
 	/* suppress this */
 	g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
@@ -394,9 +399,27 @@ gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 	/* ensure we failed the plugin action */
 	g_test_assert_expected_messages ();
 
-	/* retrieve the error from the application */
-	last_error = gs_app_get_last_error (app);
-	g_assert_error (last_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK);
+	/* get event by app-id */
+	event = gs_plugin_loader_get_event_by_id (plugin_loader,
+						  "*/*/*/source/dummy/*");
+	g_assert (event != NULL);
+	g_assert (gs_plugin_event_get_app (event) == app);
+
+	/* get last active event */
+	event = gs_plugin_loader_get_event_default (plugin_loader);
+	g_assert (event != NULL);
+	g_assert (gs_plugin_event_get_app (event) == app);
+
+	/* check all the events */
+	events = gs_plugin_loader_get_events (plugin_loader);
+	g_assert_cmpint (events->len, ==, 1);
+	event = g_ptr_array_index (events, 0);
+	g_assert (gs_plugin_event_get_app (event) == app);
+	app_error = gs_plugin_event_get_error (event);
+	g_assert (app_error != NULL);
+	g_assert_error (app_error,
+			GS_PLUGIN_ERROR,
+			GS_PLUGIN_ERROR_DOWNLOAD_FAILED);
 }
 
 static void

@@ -614,6 +614,57 @@ gs_shell_monitor_permission (GsShell *shell)
 				  G_CALLBACK (on_permission_changed), shell);
 }
 
+static gboolean
+gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	gs_app_notify_failed_modal (gs_plugin_event_get_app (event),
+				    priv->main_window,
+				    gs_plugin_event_get_action (event),
+				    gs_plugin_event_get_error (event));
+	/* we want to mark the event as invalid */
+	return FALSE;
+}
+
+static void
+gs_shell_rescan_events (GsShell *shell)
+{
+	GsPluginEvent *event;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *widget;
+	guint i;
+
+	/* find the first active event and show it */
+	event = gs_plugin_loader_get_event_default (priv->plugin_loader);
+	if (event != NULL) {
+		if (!gs_shell_show_event (shell, event)) {
+			GsPluginAction action = gs_plugin_event_get_action (event);
+			const GError *error = gs_plugin_event_get_error (event);
+			g_warning ("not handling error %s for action %s: %s",
+				   gs_plugin_error_to_string (error->code),
+				   gs_plugin_action_to_string (action),
+				   error->message);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID);
+			return;
+		}
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE);
+		return;
+	}
+
+	/* nothing to show */
+	g_debug ("no events to show");
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
+	gtk_widget_set_visible (widget, FALSE);
+}
+
+static void
+gs_shell_events_notify_cb (GsPluginLoader *plugin_loader,
+			   GParamSpec *pspec,
+			   GsShell *shell)
+{
+	gs_shell_rescan_events (shell);
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -625,6 +676,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "reload",
 			  G_CALLBACK (gs_shell_reload_cb), shell);
+	g_signal_connect_object (priv->plugin_loader, "notify::events",
+				 G_CALLBACK (gs_shell_events_notify_cb),
+				 shell, 0);
 	priv->cancellable = g_object_ref (cancellable);
 
 	gs_shell_monitor_permission (shell);
@@ -749,6 +803,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* load content */
 	g_signal_connect (priv->shell_loading, "refreshed",
 			  G_CALLBACK (initial_overview_load_done), shell);
+
+	/* coldplug */
+	gs_shell_rescan_events (shell);
 }
 
 void

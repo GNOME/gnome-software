@@ -27,6 +27,7 @@
 #include "gs-app.h"
 #include "gs-auth.h"
 #include "gs-category.h"
+#include "gs-plugin-event.h"
 #include "gs-plugin-private.h"
 
 G_BEGIN_DECLS
@@ -233,6 +234,12 @@ void		 gs_plugin_loader_set_network_status    (GsPluginLoader *plugin_loader,
 							 gboolean        online);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_func);
+
+GPtrArray	*gs_plugin_loader_get_events		(GsPluginLoader	*plugin_loader);
+GsPluginEvent	*gs_plugin_loader_get_event_by_id	(GsPluginLoader	*plugin_loader,
+							 const gchar	*unique_id);
+GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
+void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
 
 G_END_DECLS
 

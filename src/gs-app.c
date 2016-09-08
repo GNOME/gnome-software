@@ -75,7 +75,6 @@ struct _GsApp
 	gchar			*summary_missing;
 	gchar			*description;
 	GsAppQuality		 description_quality;
-	GError			*last_error;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GPtrArray		*key_colors;
@@ -253,8 +252,6 @@ gs_app_to_string (GsApp *app)
 	str = g_string_new ("GsApp:");
 	g_string_append_printf (str, " [%p]\n", app);
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (app->kind));
-	if (app->last_error != NULL)
-		gs_app_kv_lpad (str, "last-error", app->last_error->message);
 	gs_app_kv_lpad (str, "state", as_app_state_to_string (app->state));
 	if (app->quirk > 0) {
 		g_autofree gchar *qstr = _as_app_quirk_to_string (app->quirk);
@@ -793,9 +790,6 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 				 app->id, as_app_state_to_string (state));
 			app->state_recover = state;
 		}
-
-		/* clear the error as the application has changed state */
-		g_clear_error (&app->last_error);
 		break;
 	}
 
@@ -3185,38 +3179,6 @@ gs_app_get_priority (GsApp *app)
 	return app->priority;
 }
 
-/**
- * gs_app_get_last_error:
- * @app: a #GsApp
- *
- * Get the last error.
- *
- * Returns: a #GError, or %NULL
- *
- * Since: 3.22
- **/
-GError *
-gs_app_get_last_error (GsApp *app)
-{
-	return app->last_error;
-}
-
-/**
- * gs_app_set_last_error:
- * @app: a #GsApp
- * @error: a #GError
- *
- * Sets the last error.
- *
- * Since: 3.22
- **/
-void
-gs_app_set_last_error (GsApp *app, GError *error)
-{
-	g_clear_error (&app->last_error);
-	app->last_error = g_error_copy (error);
-}
-
 static void
 gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -3365,8 +3327,6 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (app->key_colors);
 	if (app->keywords != NULL)
 		g_ptr_array_unref (app->keywords);
-	if (app->last_error != NULL)
-		g_error_free (app->last_error);
 	if (app->local_file != NULL)
 		g_object_unref (app->local_file);
 	if (app->pixbuf != NULL)

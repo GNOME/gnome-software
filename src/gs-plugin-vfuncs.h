@@ -513,8 +513,7 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
  * to complete.
  *
  * On failure the error message returned will usually only be shown on the
- * console, but it may also be retained on the #GsApp object.
- * The UI code can retrieve the error using gs_app_get_last_error().
+ * console, but they can also be retrieved using gs_plugin_loader_get_events().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_INSTALLED.
@@ -543,8 +542,7 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
  * to complete.
  *
  * On failure the error message returned will usually only be shown on the
- * console, but it may also be retained on the #GsApp object.
- * The UI code can retrieve the error using gs_app_get_last_error().
+ * console, but they can also be retrieved using gs_plugin_loader_get_events().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_AVAILABLE or %AS_APP_STATE_UNKNOWN if not known.
@@ -591,8 +589,7 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
  * to complete.
  *
  * On failure the error message returned will usually only be shown on the
- * console, but it may also be retained on the #GsApp object.
- * The UI code can retrieve the error using gs_app_get_last_error().
+ * console, but they can also be retrieved using gs_plugin_loader_get_events().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_INSTALLED or %AS_APP_STATE_UNKNOWN if not known.
