@@ -663,8 +663,10 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 			       SHELL_EXTENSIONS_API_URI,
 			       priv->shell_version);
 	data = gs_plugin_download_data (plugin, dummy, uri, cancellable, error);
-	if (data == NULL)
+	if (data == NULL) {
+		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return NULL;
+	}
 	apps = gs_plugin_shell_extensions_parse_apps (plugin,
 						      g_bytes_get_data (data, NULL),
 						      (gssize) g_bytes_get_size (data),

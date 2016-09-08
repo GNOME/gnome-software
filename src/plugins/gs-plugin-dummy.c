@@ -380,6 +380,8 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -388,8 +390,9 @@ gs_plugin_update_app (GsPlugin *plugin,
 	/* always fail */
 	g_set_error_literal (error,
 			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NO_NETWORK,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 			     "no network connection is available");
+	gs_utils_error_add_unique_id (error, priv->cached_origin);
 	return FALSE;
 }
 

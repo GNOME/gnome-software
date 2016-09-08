@@ -136,8 +136,10 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					     cancellable,
 					     gs_plugin_packagekit_progress_cb, &data,
 					     error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_utils_error_add_unique_id (error, app);
 		return FALSE;
+	}
 	array = pk_results_get_files_array (results);
 	if (array->len == 0) {
 		g_set_error (error,

@@ -167,11 +167,17 @@ gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 	}
 
 	/* download new file */
-	return gs_plugin_download_file (plugin, NULL,
-					FEDORA_PKGDB_COLLECTIONS_API_URI,
-					priv->cachefn,
-					cancellable,
-					error);
+	if (!gs_plugin_download_file (plugin, NULL,
+				      FEDORA_PKGDB_COLLECTIONS_API_URI,
+				      priv->cachefn,
+				      cancellable,
+				      error)) {
+		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
 }
 
 gboolean

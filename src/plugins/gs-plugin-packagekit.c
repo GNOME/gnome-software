@@ -239,8 +239,10 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_utils_error_add_unique_id (error, app);
 		return FALSE;
+	}
 	return TRUE;
 }
 
@@ -439,8 +441,10 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_utils_error_add_unique_id (error, app);
 		return FALSE;
+	}
 	return TRUE;
 }
 

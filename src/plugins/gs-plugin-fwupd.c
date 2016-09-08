@@ -629,8 +629,10 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 					url_sig,
 					cancellable,
 					error);
-	if (data == NULL)
+	if (data == NULL) {
+		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return FALSE;
+	}
 
 	/* is the signature hash the same as we had before? */
 	checksum = g_compute_checksum_for_data (G_CHECKSUM_SHA1,
@@ -673,8 +675,10 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				      priv->download_uri,
 				      cache_fn_data,
 				      cancellable,
-				      error))
+				      error)) {
+		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return FALSE;
+	}
 
 	/* phew, lets send all this to fwupd */
 	if (!fwupd_client_update_metadata (priv->client,
