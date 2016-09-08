@@ -33,6 +33,7 @@ G_BEGIN_DECLS
 
 /**
  * GsPluginAction:
+ * @GS_PLUGIN_ACTION_SETUP:			Plugin setup (internal)
  * @GS_PLUGIN_ACTION_INSTALL:			Install an application
  * @GS_PLUGIN_ACTION_REMOVE:			Remove an application
  * @GS_PLUGIN_ACTION_UPDATE:			Update an application
@@ -72,6 +73,7 @@ G_BEGIN_DECLS
  * The plugin action.
  **/
 typedef enum {
+	GS_PLUGIN_ACTION_SETUP,
 	GS_PLUGIN_ACTION_INSTALL,
 	GS_PLUGIN_ACTION_REMOVE,
 	GS_PLUGIN_ACTION_UPDATE,

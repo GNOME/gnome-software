@@ -1325,6 +1325,8 @@ gs_plugin_error_to_string (GsPluginError error)
 const gchar *
 gs_plugin_action_to_string (GsPluginAction action)
 {
+	if (action == GS_PLUGIN_ACTION_SETUP)
+		return "setup";
 	if (action == GS_PLUGIN_ACTION_INSTALL)
 		return "install";
 	if (action == GS_PLUGIN_ACTION_REMOVE)
