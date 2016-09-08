@@ -737,7 +737,7 @@ gs_plugin_auth_logout (GsPlugin *plugin, GsAuth *auth,
 
 	/* not logged in */
 	if (!priv->has_auth)
-		TRUE;
+		return TRUE;
 
 	priv->has_auth = FALSE;
 	gs_auth_set_flags (priv->auth, 0);
