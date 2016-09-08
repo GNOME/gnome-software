@@ -115,6 +115,7 @@ gnome_software_cmd_SOURCES =				\
 	gs-debug.c					\
 	gs-utils.c					\
 	gs-os-release.c					\
+	gs-plugin-event.c				\
 	gs-plugin-loader.c				\
 	gs-plugin-loader-sync.c				\
 	gs-category.c					\
@@ -194,6 +195,8 @@ gnome_software_SOURCES =				\
 	gs-page.h					\
 	gs-plugin.c					\
 	gs-plugin.h					\
+	gs-plugin-event.c				\
+	gs-plugin-event.h				\
 	gs-plugin-private.h				\
 	gs-plugin-vfuncs.h				\
 	gs-progress-button.c				\
@@ -342,6 +345,7 @@ gs_self_test_SOURCES =						\
 	gs-category.c						\
 	gs-common.c						\
 	gs-os-release.c						\
+	gs-plugin-event.c					\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
