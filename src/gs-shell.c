@@ -25,6 +25,8 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gd-notification.h"
+
 #include "gs-common.h"
 #include "gs-shell.h"
 #include "gs-shell-details.h"
@@ -413,6 +415,12 @@ save_back_entry (GsShell *shell)
 }
 
 static void
+gs_shell_plugin_events_sources_cb (GtkWidget *widget, GsShell *shell)
+{
+	gs_shell_show_sources (shell);
+}
+
+static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
@@ -665,6 +673,27 @@ gs_shell_events_notify_cb (GsPluginLoader *plugin_loader,
 	gs_shell_rescan_events (shell);
 }
 
+static void
+gs_shell_plugin_event_dismissed_cb (GdNotification *notification, GsShell *shell)
+{
+	GPtrArray *events;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	guint i;
+
+	/* mark any events currently showing as invalid */
+	events = gs_plugin_loader_get_events (priv->plugin_loader);
+	for (i = 0; i < events->len; i++) {
+		GsPluginEvent *event = g_ptr_array_index (events, i);
+		if (gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE)) {
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID);
+			gs_plugin_event_remove_flag (event, GS_PLUGIN_EVENT_FLAG_VISIBLE);
+		}
+	}
+
+	/* show the next event */
+	gs_shell_rescan_events (shell);
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -736,6 +765,14 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
+
+	/* set up in-app notification controls */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
+	g_signal_connect (widget, "dismissed",
+			  G_CALLBACK (gs_shell_plugin_event_dismissed_cb), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_sources"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_plugin_events_sources_cb), shell);
 
 	priv->shell_overview = GS_SHELL_OVERVIEW (gtk_builder_get_object (priv->builder, "shell_overview"));
 	gs_shell_overview_setup (priv->shell_overview,
