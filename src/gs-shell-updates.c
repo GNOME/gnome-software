@@ -35,6 +35,7 @@
 #include "gs-update-monitor.h"
 #include "gs-upgrade-banner.h"
 #include "gs-application.h"
+#include "gs-utils.h"
 
 #ifdef HAVE_GNOME_DESKTOP
 #include <gdesktop-enums.h>
