@@ -91,40 +91,6 @@ gs_shell_search_waiting_cancel (GsShellSearch *self)
 	self->waiting_id = 0;
 }
 
-static gboolean
-_gs_app_list_is_duplicate (GsAppList *list, GsApp *app)
-{
-	guint i;
-	GsApp *tmp;
-
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		tmp = gs_app_list_index (list, i);
-
-		/* ignore if the same object */
-		if (app == tmp)
-			continue;
-
-		/* ignore with the same source */
-		if (g_strcmp0 (gs_app_get_origin_hostname (tmp),
-			       gs_app_get_origin_hostname (app)) == 0) {
-			continue;
-		}
-
-		/* same D-Bus ID */
-		if (g_strcmp0 (gs_app_get_id (tmp),
-			       gs_app_get_id (app)) == 0) {
-			return TRUE;
-		}
-
-		/* same name */
-		if (g_strcmp0 (gs_app_get_name (tmp),
-			       gs_app_get_name (app)) == 0) {
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-
 static void
 gs_shell_search_get_search_cb (GObject *source_object,
 			       GAsyncResult *res,
@@ -169,9 +135,9 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		app = gs_app_list_index (list, i);
 		app_row = gs_app_row_new (app);
 		gs_app_row_set_show_sandbox (GS_APP_ROW (app_row), TRUE);
-		gs_app_row_set_show_source (GS_APP_ROW (app_row),
-					    !gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
-					    _gs_app_list_is_duplicate (list, app));
+		if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
+		    gs_utils_list_has_app_fuzzy (list, app))
+			gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_shell_search_app_row_clicked_cb),
 				  self);
