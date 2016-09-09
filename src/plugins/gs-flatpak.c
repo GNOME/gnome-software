@@ -1408,6 +1408,7 @@ gs_flatpak_launch (GsFlatpak *self,
 		   GCancellable *cancellable,
 		   GError **error)
 {
+	GsApp *runtime;
 	const gchar *branch = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -1418,13 +1419,34 @@ gs_flatpak_launch (GsFlatpak *self,
 	branch = gs_app_get_flatpak_branch (app);
 	if (branch == NULL)
 		branch = "master";
-	return flatpak_installation_launch (self->installation,
-					    gs_app_get_flatpak_name (app),
-					    NULL,
-					    branch,
-					    NULL,
-					    cancellable,
-					    error);
+
+	/* check the runtime is installed */
+	runtime = gs_app_get_runtime (app);
+	if (runtime != NULL) {
+		if (!gs_plugin_refine_item_state (self, runtime, cancellable, error))
+			return FALSE;
+		if (!gs_app_is_installed (runtime)) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "runtime is not installed");
+			gs_utils_error_add_unique_id (error, runtime);
+			gs_plugin_cache_add (self->plugin, NULL, runtime);
+			return FALSE;
+		}
+	}
+
+	/* launch the app */
+	if (!flatpak_installation_launch (self->installation,
+					  gs_app_get_flatpak_name (app),
+					  NULL,
+					  branch,
+					  NULL,
+					  cancellable,
+					  error)) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 static gboolean
