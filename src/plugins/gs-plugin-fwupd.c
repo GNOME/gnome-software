@@ -58,6 +58,10 @@ gs_plugin_fwupd_error_convert (GError **perror)
 	if (error == NULL)
 		return;
 
+	/* already correct */
+	if (error->domain == GS_PLUGIN_ERROR)
+		return;
+
 	/* custom to this plugin */
 	if (error->domain == FWUPD_ERROR) {
 		switch (error->code) {

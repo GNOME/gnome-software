@@ -92,6 +92,10 @@ gs_plugin_packagekit_error_convert (GError **error)
 	if (error_tmp == NULL)
 		return FALSE;
 
+	/* already correct */
+	if (error_tmp->domain == GS_PLUGIN_ERROR)
+		return TRUE;
+
 	/* get a local version */
 	if (error_tmp->domain != PK_CLIENT_ERROR)
 		return FALSE;

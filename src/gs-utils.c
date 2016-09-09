@@ -554,7 +554,7 @@ gs_utils_error_strip_unique_id (GError *error)
  *
  * Converts the #GIOError to an error with a GsPluginError domain.
  *
- * Returns: %TRUE if the error was converted
+ * Returns: %TRUE if the error was converted, or already correct
  **/
 gboolean
 gs_utils_error_convert_gio (GError **perror)
@@ -564,11 +564,13 @@ gs_utils_error_convert_gio (GError **perror)
 	/* not set */
 	if (error == NULL)
 		return FALSE;
+	if (error->domain == GS_PLUGIN_ERROR)
+		return TRUE;
 	if (error->domain != G_IO_ERROR)
 		return FALSE;
-	error->domain = GS_PLUGIN_ERROR;
 	switch (error->code) {
 	case G_IO_ERROR_FAILED:
+	case G_IO_ERROR_TIMED_OUT:
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	case G_IO_ERROR_NOT_SUPPORTED:
@@ -597,6 +599,7 @@ gs_utils_error_convert_gio (GError **perror)
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	}
+	error->domain = GS_PLUGIN_ERROR;
 	return TRUE;
 }
 
@@ -606,7 +609,7 @@ gs_utils_error_convert_gio (GError **perror)
  *
  * Converts the #GdkPixbufError to an error with a GsPluginError domain.
  *
- * Returns: %TRUE if the error was converted
+ * Returns: %TRUE if the error was converted, or already correct
  **/
 gboolean
 gs_utils_error_convert_gdk_pixbuf (GError **perror)
@@ -616,9 +619,10 @@ gs_utils_error_convert_gdk_pixbuf (GError **perror)
 	/* not set */
 	if (error == NULL)
 		return FALSE;
+	if (error->domain == GS_PLUGIN_ERROR)
+		return TRUE;
 	if (error->domain != GDK_PIXBUF_ERROR)
 		return FALSE;
-	error->domain = GS_PLUGIN_ERROR;
 	switch (error->code) {
 	case GDK_PIXBUF_ERROR_UNSUPPORTED_OPERATION:
 	case GDK_PIXBUF_ERROR_UNKNOWN_TYPE:
@@ -636,6 +640,7 @@ gs_utils_error_convert_gdk_pixbuf (GError **perror)
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	}
+	error->domain = GS_PLUGIN_ERROR;
 	return TRUE;
 }
 
@@ -645,7 +650,7 @@ gs_utils_error_convert_gdk_pixbuf (GError **perror)
  *
  * Converts the #JsonParserError to an error with a GsPluginError domain.
  *
- * Returns: %TRUE if the error was converted
+ * Returns: %TRUE if the error was converted, or already correct
  **/
 gboolean
 gs_utils_error_convert_json_glib (GError **perror)
@@ -655,9 +660,10 @@ gs_utils_error_convert_json_glib (GError **perror)
 	/* not set */
 	if (error == NULL)
 		return FALSE;
+	if (error->domain == GS_PLUGIN_ERROR)
+		return TRUE;
 	if (error->domain != JSON_PARSER_ERROR)
 		return FALSE;
-	error->domain = GS_PLUGIN_ERROR;
 	switch (error->code) {
 	case JSON_PARSER_ERROR_UNKNOWN:
 		error->code = GS_PLUGIN_ERROR_FAILED;
@@ -665,6 +671,7 @@ gs_utils_error_convert_json_glib (GError **perror)
 		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
 		break;
 	}
+	error->domain = GS_PLUGIN_ERROR;
 	return TRUE;
 }
 
@@ -675,16 +682,18 @@ gs_utils_error_convert_json_glib (GError **perror)
  * Converts the various AppStream error types to an error with a GsPluginError
  * domain.
  *
- * Returns: %TRUE if the error was converted
+ * Returns: %TRUE if the error was converted, or already correct
  **/
-void
+gboolean
 gs_utils_error_convert_appstream (GError **perror)
 {
 	GError *error = perror != NULL ? *perror : NULL;
 
 	/* not set */
 	if (error == NULL)
-		return;
+		return FALSE;
+	if (error->domain == GS_PLUGIN_ERROR)
+		return TRUE;
 
 	/* custom to this plugin */
 	if (error->domain == AS_UTILS_ERROR) {
@@ -710,6 +719,7 @@ gs_utils_error_convert_appstream (GError **perror)
 		error->code = GS_PLUGIN_ERROR_FAILED;
 	}
 	error->domain = GS_PLUGIN_ERROR;
+	return TRUE;
 }
 
 /* vim: set noexpandtab: */

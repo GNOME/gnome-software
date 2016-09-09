@@ -76,7 +76,7 @@ void		 gs_utils_error_strip_unique_id	(GError		*error);
 gboolean	 gs_utils_error_convert_gio	(GError		**perror);
 gboolean	 gs_utils_error_convert_gdk_pixbuf(GError	**perror);
 gboolean	 gs_utils_error_convert_json_glib (GError	**perror);
-void		 gs_utils_error_convert_appstream (GError	**perror);
+gboolean	 gs_utils_error_convert_appstream (GError	**perror);
 
 G_END_DECLS
 
