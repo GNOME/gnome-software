@@ -146,7 +146,7 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
 	if (!json_parser_load_from_file (json_parser, fn, error))
-		return NULL;
+		return FALSE;
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
@@ -194,7 +194,7 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 	/* check cache age */
 	cachedir = gs_utils_get_cachedir ("ratings", error);
 	if (cachedir == NULL)
-		return NULL;
+		return FALSE;
 	fn = g_strdup_printf ("%s/odrs.json", cachedir);
 	if (cache_age > 0) {
 		guint tmp;
