@@ -79,7 +79,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (priv->quirk_id > 0)
 		g_source_remove (priv->quirk_id);
-	g_object_unref (priv->cached_origin);
+	if (priv->cached_origin != NULL)
+		g_object_unref (priv->cached_origin);
 }
 
 void
