@@ -942,4 +942,52 @@ gs_utils_build_unique_id_kind (AsAppKind kind, const gchar *id)
 					 NULL);
 }
 
+/**
+ * gs_utils_list_has_app_fuzzy:
+ * @list: A #GsAppList
+ * @app: A #GsApp
+ *
+ * Finds out if any application in the list would match a given application,
+ * where the match is valid for a matching D-Bus bus name,
+ * the label in the UI or the same icon.
+ *
+ * This function is normally used to work out if the source should be shown
+ * in a GsAppRow.
+ *
+ * Returns: %TRUE if the app is visually the "same"
+ */
+gboolean
+gs_utils_list_has_app_fuzzy (GsAppList *list, GsApp *app)
+{
+	guint i;
+	GsApp *tmp;
+
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		tmp = gs_app_list_index (list, i);
+
+		/* ignore if the same object */
+		if (app == tmp)
+			continue;
+
+		/* ignore with the same source */
+		if (g_strcmp0 (gs_app_get_origin_hostname (tmp),
+			       gs_app_get_origin_hostname (app)) == 0) {
+			continue;
+		}
+
+		/* same D-Bus ID */
+		if (g_strcmp0 (gs_app_get_id (tmp),
+			       gs_app_get_id (app)) == 0) {
+			return TRUE;
+		}
+
+		/* same name */
+		if (g_strcmp0 (gs_app_get_name (tmp),
+			       gs_app_get_name (app)) == 0) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 /* vim: set noexpandtab: */

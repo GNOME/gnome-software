@@ -160,7 +160,7 @@ gs_shell_installed_notify_state_changed_cb (GsApp *app,
 static void selection_changed (GsShellInstalled *self);
 
 static void
-gs_shell_installed_add_app (GsShellInstalled *self, GsApp *app)
+gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 {
 	GtkWidget *app_row;
 
@@ -168,8 +168,9 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsApp *app)
 	gs_app_row_set_colorful (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_folders (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
-	gs_app_row_set_show_source (GS_APP_ROW (app_row),
-				    !gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE));
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
+	    gs_utils_list_has_app_fuzzy (list, app))
+		gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), self);
 	g_signal_connect_object (app, "notify::state",
@@ -216,7 +217,7 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	}
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
-		gs_shell_installed_add_app (self, app);
+		gs_shell_installed_add_app (self, list, app);
 	}
 out:
 	gs_shell_installed_pending_apps_changed_cb (plugin_loader, self);
@@ -487,7 +488,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 
 		/* do not to add pending apps more than once. */
 		if (gs_shell_installed_has_app (self, app) == FALSE)
-			gs_shell_installed_add_app (self, app);
+			gs_shell_installed_add_app (self, pending, app);
 
 		/* incremement the label */
 		cnt++;

@@ -68,6 +68,8 @@ void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*details);
 gchar		*gs_utils_build_unique_id_kind	(AsAppKind	 kind,
 						 const gchar	*id);
+gboolean	 gs_utils_list_has_app_fuzzy	(GsAppList	*list,
+						 GsApp		*app);
 GtkWidget	*gs_search_button_new		(GtkSearchBar	*search_bar);
 
 G_END_DECLS
