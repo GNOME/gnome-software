@@ -319,7 +319,7 @@ get_ubuntuone_token (GsPlugin *plugin,
 	*consumer_secret = g_strdup (gs_auth_get_metadata_item (auth, "consumer-secret"));
 	*token_key = g_strdup (gs_auth_get_metadata_item (auth, "token-key"));
 	*token_secret = g_strdup (gs_auth_get_metadata_item (auth, "token-secret"));
-	return TRUE;
+	return *consumer_key != NULL && *consumer_secret != NULL && *token_key != NULL && *token_secret != NULL;
 }
 
 static void
