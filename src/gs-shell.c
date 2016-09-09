@@ -1139,6 +1139,56 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 }
 
 static gboolean
+gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
+{
+	GsApp *app = gs_plugin_event_get_app (event);
+	GsApp *origin = gs_plugin_event_get_origin (event);
+	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	const GError *error = gs_plugin_event_get_error (event);
+	g_autoptr(GString) str = g_string_new (NULL);
+	g_autofree gchar *str_app = NULL;
+	g_autofree gchar *str_origin = NULL;
+
+	switch (error->code) {
+	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+		if (app != NULL && origin != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to launch %s: %s is not installed"),
+					        str_app,
+					        str_origin);
+		}
+		break;
+	case GS_PLUGIN_ERROR_NO_SPACE:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Not enough disk space — free up some space "
+					"and try again"));
+		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		break;
+	default:
+		break;
+	}
+	if (str->len == 0)
+		return FALSE;
+
+	/* add more-info button */
+	if (origin != NULL) {
+		const gchar *uri = gs_app_get_url (origin, AS_URL_KIND_HELP);
+		if (uri != NULL) {
+			g_free (priv->events_info_uri);
+			priv->events_info_uri = g_strdup (uri);
+			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
+		}
+	}
+
+	/* show in-app notification */
+	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	return TRUE;
+}
+
+static gboolean
 gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *origin = gs_plugin_event_get_origin (event);
@@ -1208,6 +1258,8 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 		return gs_shell_show_event_upgrade (shell, event);
 	case GS_PLUGIN_ACTION_REMOVE:
 		return gs_shell_show_event_remove (shell, event);
+	case GS_PLUGIN_ACTION_LAUNCH:
+		return gs_shell_show_event_launch (shell, event);
 	default:
 		break;
 	}
