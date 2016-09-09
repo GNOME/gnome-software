@@ -53,8 +53,6 @@ typedef struct {
 /* Number of pages of reviews to download */
 #define N_PAGES				3
 
-#define SECRET_SCHEMA_NAME		"com.ubuntu.UbuntuOne.GnomeSoftware"
-
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
