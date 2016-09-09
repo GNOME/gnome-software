@@ -1210,7 +1210,7 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 /**
  * gs_plugin_cache_add:
  * @plugin: a #GsPlugin
- * @key: a string
+ * @key: a string, or %NULL if the unique ID should be used
  * @app: a #GsApp
  *
  * Adds an application to the per-plugin cache. This is optional,
@@ -1225,8 +1225,11 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
-	g_return_if_fail (key != NULL);
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* default */
+	if (key == NULL)
+		key = gs_app_get_unique_id (app);
 
 	/* global, so using internal unique_id */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
