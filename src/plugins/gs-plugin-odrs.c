@@ -129,8 +129,10 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
-	if (!json_parser_load_from_file (json_parser, fn, error))
+	if (!json_parser_load_from_file (json_parser, fn, error)) {
+		gs_utils_error_convert_json_glib (error);
 		return FALSE;
+	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
@@ -330,8 +332,10 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 
 	/* parse the data and find the array or ratings */
 	json_parser = json_parser_new ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error))
+	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
+		gs_utils_error_convert_json_glib (error);
 		return NULL;
+	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
@@ -401,8 +405,10 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error))
+	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
+		gs_utils_error_convert_json_glib (error);
 		return FALSE;
+	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,

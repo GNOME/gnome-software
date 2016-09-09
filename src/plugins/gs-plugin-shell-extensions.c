@@ -154,8 +154,10 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 						 AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 						 NULL);
 			tmp2 = as_markup_convert_simple (tmp1, error);
-			if (tmp2 == NULL)
+			if (tmp2 == NULL) {
+				gs_utils_error_convert_appstream (error);
 				return FALSE;
+			}
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, tmp2);
 			continue;
 		}
@@ -280,8 +282,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 						     "org.gnome.Shell.Extensions",
 						     cancellable,
 						     error);
-	if (priv->proxy == NULL)
+	if (priv->proxy == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 	g_signal_connect (priv->proxy, "g-signal",
 			  G_CALLBACK (gs_plugin_shell_extensions_changed_cb), plugin);
 
@@ -314,8 +318,10 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					 -1,
 					 cancellable,
 					 error);
-	if (retval == NULL)
+	if (retval == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 
 	/* parse each installed extension */
 	g_variant_get (retval, "(a{sa{sv}})", &iter);
@@ -462,8 +468,10 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	if (tmp != NULL) {
 		g_autofree gchar *desc = NULL;
 		desc = as_markup_import (tmp, AS_MARKUP_CONVERT_FORMAT_SIMPLE, error);
-		if (desc == NULL)
+		if (desc == NULL) {
+			gs_utils_error_convert_appstream (error);
 			return NULL;
+		}
 		as_app_set_description (app, NULL, desc);
 	}
 	tmp = json_object_get_string_member (json_app, "name");
@@ -561,8 +569,10 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error))
+	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
+		gs_utils_error_convert_json_glib (error);
 		return NULL;
+	}
 	json_root = json_parser_get_root (json_parser);
 	if (json_root == NULL) {
 		g_set_error_literal (error,
@@ -796,6 +806,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 					 cancellable,
 					 error);
 	if (retval == NULL) {
+		gs_utils_error_convert_gio (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -898,8 +909,10 @@ gs_plugin_launch (GsPlugin *plugin,
 					 -1,
 					 cancellable,
 					 error);
-	if (retval == NULL)
+	if (retval == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 	return TRUE;
 }
 

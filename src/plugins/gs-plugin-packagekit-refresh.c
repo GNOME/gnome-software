@@ -146,7 +146,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results2 == NULL) {
-			gs_plugin_packagekit_convert_gerror (error);
+			gs_plugin_packagekit_error_convert (error);
 			return FALSE;
 		}
 	}

@@ -402,8 +402,10 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 		desc = as_markup_convert (as_release_get_description (rel, NULL),
 					  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 					  error);
-		if (desc == NULL)
+		if (desc == NULL) {
+			gs_utils_error_convert_appstream (error);
 			return FALSE;
+		}
 		gs_app_set_update_details (app, desc);
 
 	/* get the descriptions with a version prefix */
@@ -415,8 +417,10 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 			desc = as_markup_convert (as_release_get_description (rel, NULL),
 						  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 						  error);
-			if (desc == NULL)
+			if (desc == NULL) {
+				gs_utils_error_convert_appstream (error);
 				return FALSE;
+			}
 			g_string_append_printf (update_desc,
 						"Version %s:\n%s\n\n",
 						as_release_get_version (rel),
@@ -610,6 +614,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		g_autofree gchar *from_xml = NULL;
 		from_xml = as_markup_convert_simple (tmp, error);
 		if (from_xml == NULL) {
+			gs_utils_error_convert_appstream (error);
 			g_prefix_error (error, "trying to parse '%s': ", tmp);
 			return FALSE;
 		}

@@ -36,6 +36,7 @@
 #include <fnmatch.h>
 #include <math.h>
 #include <glib/gstdio.h>
+#include <json-glib/json-glib.h>
 
 #ifdef HAVE_POLKIT
 #include <polkit/polkit.h>
@@ -545,6 +546,170 @@ gs_utils_error_strip_unique_id (GError *error)
 	str = g_strdup (str + 1);
 	g_free (error->message);
 	error->message = str;
+}
+
+/**
+ * gs_utils_error_convert_gio:
+ * @perror: a pointer to a #GError, or %NULL
+ *
+ * Converts the #GIOError to an error with a GsPluginError domain.
+ *
+ * Returns: %TRUE if the error was converted
+ **/
+gboolean
+gs_utils_error_convert_gio (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return FALSE;
+	if (error->domain != G_IO_ERROR)
+		return FALSE;
+	error->domain = GS_PLUGIN_ERROR;
+	switch (error->code) {
+	case G_IO_ERROR_FAILED:
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	case G_IO_ERROR_NOT_SUPPORTED:
+		error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
+		break;
+	case G_IO_ERROR_CANCELLED:
+		error->code = GS_PLUGIN_ERROR_CANCELLED;
+		break;
+	case G_IO_ERROR_NO_SPACE:
+		error->code = GS_PLUGIN_ERROR_NO_SPACE;
+		break;
+	case G_IO_ERROR_HOST_NOT_FOUND:
+	case G_IO_ERROR_HOST_UNREACHABLE:
+	case G_IO_ERROR_CONNECTION_REFUSED:
+	case G_IO_ERROR_PROXY_FAILED:
+	case G_IO_ERROR_PROXY_AUTH_FAILED:
+	case G_IO_ERROR_PROXY_NOT_ALLOWED:
+		error->code = GS_PLUGIN_ERROR_DOWNLOAD_FAILED;
+		break;
+	case G_IO_ERROR_NETWORK_UNREACHABLE:
+		error->code = GS_PLUGIN_ERROR_NO_NETWORK;
+		break;
+	default:
+		g_warning ("can't reliably fixup error code %i in domain %s",
+			   error->code, g_quark_to_string (error->domain));
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	}
+	return TRUE;
+}
+
+/**
+ * gs_utils_error_convert_gdk_pixbuf:
+ * @perror: a pointer to a #GError, or %NULL
+ *
+ * Converts the #GdkPixbufError to an error with a GsPluginError domain.
+ *
+ * Returns: %TRUE if the error was converted
+ **/
+gboolean
+gs_utils_error_convert_gdk_pixbuf (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return FALSE;
+	if (error->domain != GDK_PIXBUF_ERROR)
+		return FALSE;
+	error->domain = GS_PLUGIN_ERROR;
+	switch (error->code) {
+	case GDK_PIXBUF_ERROR_UNSUPPORTED_OPERATION:
+	case GDK_PIXBUF_ERROR_UNKNOWN_TYPE:
+		error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
+		break;
+	case GDK_PIXBUF_ERROR_FAILED:
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	case GDK_PIXBUF_ERROR_CORRUPT_IMAGE:
+		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
+		break;
+	default:
+		g_warning ("can't reliably fixup error code %i in domain %s",
+			   error->code, g_quark_to_string (error->domain));
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	}
+	return TRUE;
+}
+
+/**
+ * gs_utils_error_convert_json_glib:
+ * @perror: a pointer to a #GError, or %NULL
+ *
+ * Converts the #JsonParserError to an error with a GsPluginError domain.
+ *
+ * Returns: %TRUE if the error was converted
+ **/
+gboolean
+gs_utils_error_convert_json_glib (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return FALSE;
+	if (error->domain != JSON_PARSER_ERROR)
+		return FALSE;
+	error->domain = GS_PLUGIN_ERROR;
+	switch (error->code) {
+	case JSON_PARSER_ERROR_UNKNOWN:
+		error->code = GS_PLUGIN_ERROR_FAILED;
+	default:
+		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
+		break;
+	}
+	return TRUE;
+}
+
+/**
+ * gs_utils_error_convert_appstream:
+ * @perror: a pointer to a #GError, or %NULL
+ *
+ * Converts the various AppStream error types to an error with a GsPluginError
+ * domain.
+ *
+ * Returns: %TRUE if the error was converted
+ **/
+void
+gs_utils_error_convert_appstream (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return;
+
+	/* custom to this plugin */
+	if (error->domain == AS_UTILS_ERROR) {
+		switch (error->code) {
+		case AS_UTILS_ERROR_INVALID_TYPE:
+			error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
+			break;
+		case AS_UTILS_ERROR_FAILED:
+		default:
+			error->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
+	} else if (error->domain == AS_STORE_ERROR) {
+		switch (error->code) {
+		case AS_UTILS_ERROR_FAILED:
+		default:
+			error->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
+	} else {
+		g_warning ("can't reliably fixup error from domain %s",
+			   g_quark_to_string (error->domain));
+		error->code = GS_PLUGIN_ERROR_FAILED;
+	}
+	error->domain = GS_PLUGIN_ERROR;
 }
 
 /* vim: set noexpandtab: */

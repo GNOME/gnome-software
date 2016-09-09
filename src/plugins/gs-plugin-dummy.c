@@ -115,6 +115,7 @@ gs_plugin_dummy_delay (GsPlugin *plugin,
 	for (i = 0; i < 100; i++) {
 		g_usleep (timeout_us);
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+			gs_utils_error_convert_gio (error);
 			ret = FALSE;
 			break;
 		}

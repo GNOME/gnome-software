@@ -36,7 +36,7 @@ gboolean	gs_plugin_packagekit_add_results	(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 PkResults	*results,
 							 GError		**error);
-gboolean	gs_plugin_packagekit_convert_gerror	(GError		**error);
+gboolean	gs_plugin_packagekit_error_convert	(GError		**error);
 gboolean	gs_plugin_packagekit_results_valid	(PkResults	*results,
 							 GError		**error);
 

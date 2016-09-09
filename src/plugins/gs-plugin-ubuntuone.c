@@ -130,8 +130,10 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 
 	parser = json_parser_new ();
-	if (!json_parser_load_from_data (parser, msg->response_body->data, -1, error))
+	if (!json_parser_load_from_data (parser, msg->response_body->data, -1, error)) {
+		gs_utils_error_convert_json_glib (error);
 		return FALSE;
+	}
 	response_root = json_parser_get_root (parser);
 
 	if (status_code != SOUP_STATUS_OK) {

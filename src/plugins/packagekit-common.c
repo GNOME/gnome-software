@@ -82,7 +82,7 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 }
 
 gboolean
-gs_plugin_packagekit_convert_gerror (GError **error)
+gs_plugin_packagekit_error_convert (GError **error)
 {
 	GError *error_tmp;
 
@@ -159,7 +159,7 @@ gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
 
 	/* method failed? */
 	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
 

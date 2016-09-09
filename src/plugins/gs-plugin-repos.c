@@ -80,8 +80,10 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 
 	/* search all files */
 	dir = g_dir_open (priv->reposdir, 0, error);
-	if (dir == NULL)
+	if (dir == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		g_autofree gchar *filename = NULL;
 		g_auto(GStrv) groups = NULL;
@@ -96,8 +98,10 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 		filename = g_build_filename (priv->reposdir, fn, NULL);
 		if (!g_key_file_load_from_file (kf, filename,
 						G_KEY_FILE_NONE,
-						error))
+						error)) {
+			gs_utils_error_convert_gio (error);
 			return FALSE;
+		}
 
 		/* we can have multiple repos in one file */
 		groups = g_key_file_get_groups (kf, NULL);
@@ -144,8 +148,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* watch for changes */
 	priv->monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, cancellable, error);
-	if (priv->monitor == NULL)
+	if (priv->monitor == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 	g_signal_connect (priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_repos_changed_cb), plugin);
 

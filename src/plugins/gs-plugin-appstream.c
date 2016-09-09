@@ -244,8 +244,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				     AS_STORE_LOAD_FLAG_APP_INSTALL,
 				     NULL,
 				     error);
-		if (!ret)
+		if (!ret) {
+			gs_utils_error_convert_appstream (error);
 			return FALSE;
+		}
 	}
 	items = as_store_get_apps (priv->store);
 	if (items->len == 0) {

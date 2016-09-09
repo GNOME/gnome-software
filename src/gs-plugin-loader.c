@@ -280,8 +280,12 @@ gs_plugin_loader_create_event_from_error (GsPluginLoader *plugin_loader,
 	/* invalid */
 	if (error == NULL)
 		return;
-	if (error->domain != GS_PLUGIN_ERROR)
+	if (error->domain != GS_PLUGIN_ERROR) {
+		g_critical ("not GsPlugin error %s:%i",
+			    g_quark_to_string (error->domain),
+			    error->code);
 		return;
+	}
 
 	/* create plugin event */
 	event = gs_plugin_event_new ();

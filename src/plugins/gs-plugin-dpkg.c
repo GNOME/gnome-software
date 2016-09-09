@@ -73,8 +73,10 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	argv[3] = g_file_get_path (file);
 	if (!g_spawn_sync (NULL, argv, NULL,
 			   G_SPAWN_SEARCH_PATH | G_SPAWN_STDERR_TO_DEV_NULL,
-			   NULL, NULL, &output, NULL, NULL, error))
+			   NULL, NULL, &output, NULL, NULL, error)) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 
 	/* parse output */
 	tokens = g_strsplit (output, "\n", 0);
