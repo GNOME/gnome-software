@@ -5,17 +5,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-so"
-"ftware&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-05 10:24+0000\n"
-"PO-Revision-Date: 2016-03-05 15:39+0200\n"
+"ftware&keywords=I18N+L10N&component=General\n"
+"POT-Creation-Date: 2016-09-08 14:10+0000\n"
+"PO-Revision-Date: 2016-09-10 09:14+0200\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : "
-"2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 :"
+" 2);\n"
 "X-Generator: Lokalize 2.0\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -46,6 +46,35 @@ msgstr ""
 "nu pārlūkojot kategoriju sarakstu, vai arī meklējot. Tā jums ļauj arī atrast "
 "sistēmas atjauninājumus, izmantojot nesaistes atjaunināšanu."
 
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#| msgid "Overview page"
+msgid "Overview panel"
+msgstr "Pārskata rūts"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#| msgid "Details page"
+msgid "Details panel"
+msgstr "Sīkākas informācijas rūts"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#| msgid "Installed page"
+msgid "Installed panel"
+msgstr "Instalēto lietotņu rūts"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#| msgid "Updates page"
+msgid "Updates panel"
+msgstr "Atjauninājumu rūts"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#| msgid "The last update timestamp"
+msgid "The update details"
+msgstr "Atjauninājumu informācija"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
+msgid "The GNOME Project"
+msgstr "GNOME projekts"
+
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
 msgstr "Saraksts ar savietojamiem projektiem"
@@ -55,8 +84,8 @@ msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
 msgstr ""
-"Šis ir saraksts ar savietojamiem projektiem, ko rādīt, piemēram GNOME, KDE un "
-"XFCE."
+"Šis ir saraksts ar savietojamiem projektiem, ko rādīt, piemēram GNOME, KDE "
+"un XFCE."
 
 #: ../data/org.gnome.software.gschema.xml.h:3
 msgid "Whether to automatically download updates"
@@ -91,7 +120,6 @@ msgstr ""
 "nosaka, vai dialoglodziņu nerādīt."
 
 #: ../data/org.gnome.software.gschema.xml.h:9
-#| msgid "Search for applications"
 msgid "A list of popular applications"
 msgstr "Populāru lietotņu saraksts"
 
@@ -116,53 +144,113 @@ msgid "The last update check timestamp"
 msgstr "Pēdējās atjauninājumu pārbaudīšanas laika spiedogs"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
+#| msgid "The last update timestamp"
+msgid "The last upgrade notification timestamp"
+msgstr "Pēdējā uzlabošanas paziņojuma laika spiedogs"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
 "Laika spiedogs pirmajam drošības atjauninājumam, pēc atjaunināšanas tiek "
 "attīrīts"
 
-#: ../data/org.gnome.software.gschema.xml.h:15
+#: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The last update timestamp"
 msgstr "Pēdējais atjauninājuma laika spiedogs"
 
-#: ../data/org.gnome.software.gschema.xml.h:16
+#: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The server to use for application reviews"
 msgstr "Serveris, ko izmantot lietotņu recenzijām"
 
-#: ../data/org.gnome.software.gschema.xml.h:17
+#: ../data/org.gnome.software.gschema.xml.h:18
 msgid "The minimum karma score for reviews"
 msgstr "Recenziju minimālais karmas reitings"
 
-#: ../data/org.gnome.software.gschema.xml.h:18
+#: ../data/org.gnome.software.gschema.xml.h:19
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Netiks rādītas recenzijas, kurām karma ir mazāka par šo skaitli."
 
-#: ../data/org.gnome.software.gschema.xml.h:19
+#: ../data/org.gnome.software.gschema.xml.h:20
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
-"Saraksts ar oficiālajiem avotiem, kurus nevajadzētu uzskatīt par trešās puses "
-"avotiem"
+"Saraksts ar oficiālajiem avotiem, kurus nevajadzētu uzskatīt par trešās "
+"puses avotiem"
 
-#: ../src/app-folder-dialog.ui.h:1
+#: ../data/org.gnome.software.gschema.xml.h:21
+#| msgid "A list of official sources that should not be considered 3rd party"
+msgid "A list of official sources that should be considered free software"
+msgstr ""
+"Saraksts ar oficiālajiem avotiem, kurus vajadzētu uzskatīt par brīvo"
+" progammatūru"
+
+#: ../data/org.gnome.software.gschema.xml.h:22
+msgid ""
+"The licence URL to use when an application should be considered free software"
+msgstr ""
+"Licences URL, ko izmantot, kad lietotni jāuzskata par brīvu programmatūru"
+
+#: ../data/org.gnome.software.gschema.xml.h:23
+#| msgid "A list of applications to use, overriding the system defined ones."
+msgid "Install bundled applications for all users on the system where possible"
+msgstr "Ja iespējams, instalēt sakopotās lietotnes visiem sistēmas lietotājiem"
+
+#: ../data/org.gnome.software.gschema.xml.h:24
+msgid "Show the folder management UI"
+msgstr "Rādīt mapju pārvaldības UI"
+
+#: ../data/org.gnome.software.gschema.xml.h:25
+msgid "Allow access to the Software Sources dialog"
+msgstr "Ļaut piekļūt programmatūras avotu dialoglodziņam"
+
+#: ../data/org.gnome.software.gschema.xml.h:26
+msgid "Offer upgrades for pre-releases"
+msgstr "Piedāvāt uzlabojumus testa laidieniem"
+
+#: ../data/org.gnome.software.gschema.xml.h:27
+msgid "Show some UI elements informing the user that an app is non-free"
+msgstr "Rādīt dažus UI elementus, kas informē lietotāju, ka lietotne nav brīva"
+
+#: ../data/org.gnome.software.gschema.xml.h:28
+msgid "Show the prompt to install nonfree software sources"
+msgstr "Rādīt uzvedni, lai instalētu nebrīvus programmatūras avotus"
+
+#: ../data/org.gnome.software.gschema.xml.h:29
+msgid "Show non-free software in search results"
+msgstr "Rādīt nebrīvu programmatūru meklēšanas rezultātos"
+
+#: ../data/org.gnome.software.gschema.xml.h:30
+msgid "The URI that explains nonfree and proprietary software"
+msgstr "URI, kur izskaidro nebrīvu un īpašnieku programmatūru"
+
+#: ../data/org.gnome.software.gschema.xml.h:31
+#| msgid "The list of extra sources that have been previously enabled"
+msgid "A list of non-free sources that can be optionally enabled"
+msgstr "Saraksts ar nebrīviem avotiem, kurus var ieslēgt"
+
+#: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Pievienot lietotņu mapei"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
-#: ../src/gs-shell-installed.c:514
+#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
+#: ../src/gs-removal-dialog.ui.h:2 ../src/gs-review-dialog.ui.h:3
+#: ../src/gs-shell-details.c:358 ../src/gs-shell-details.ui.h:6
+#: ../src/gs-shell-installed.c:529 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "At_celt"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
+#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:327
 msgid "_Add"
 msgstr "_Pievienot"
 
+#. vim: set noexpandtab:
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:78
-#: ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
-#: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
-#: ../src/popular-tile.ui.h:1
+#. vim: set noexpandtab:
+#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
+#: ../src/gs-app-row.ui.h:1 ../src/gs-feature-tile.c:66
+#: ../src/gs-popular-tile.c:72 ../src/gs-popular-tile.c:75
+#: ../src/gs-summary-tile.c:78 ../src/gs-summary-tile.ui.h:1
+#: ../src/gs-popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalēts"
 
@@ -185,8 +273,8 @@ msgstr "Neizvēlēties nevienu"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:372
-#: ../src/gs-shell.c:162 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:378
+#: ../src/gs-shell.c:266 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Programmatūra"
 
@@ -211,22 +299,8 @@ msgstr "_Instalētās"
 msgid "_Updates"
 msgstr "_Atjauninājumi"
 
-#: ../src/gnome-software.ui.h:11
-msgid "Restart & _Install"
-msgstr "Pārstartēt un _instalēt"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Select"
-msgstr "Izvēlēties"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Check for updates"
-msgstr "Pārbaudīt atjauninājumus"
-
-#. TRANSLATORS: this is a label that describes an application
-#. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:274
-#: ../src/gs-shell-details.ui.h:4
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
+#: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "Gaida"
 
@@ -234,8 +308,8 @@ msgstr "Gaida"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:312
-#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:219
+#: ../src/gs-shell-details.c:410 ../src/gs-summary-tile.c:86
 msgid "Installing"
 msgstr "Instalē"
 
@@ -243,128 +317,109 @@ msgstr "Instalē"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:321
-#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:225
+#: ../src/gs-summary-tile.c:94
 msgid "Removing"
 msgstr "Izņem"
 
-#. TRANSLATORS: This is how we join the licences and can
-#. * be considered a "Conjunctive AND Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1315 ../src/gs-shell-extras.c:146
-msgid " and "
-msgstr " un "
-
-#. TRANSLATORS: This is how we join the licences and can
-#. * be considered a "Disjunctive OR Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1323
-msgid " or "
-msgstr " vai "
-
-#. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1346
-msgid "Proprietary"
-msgstr "Īpašnieka"
-
-#. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1356
-msgid "Public domain"
-msgstr "Sabiedriskā īpašuma"
-
-#: ../src/gs-app-folder-dialog.c:305
+#: ../src/gs-app-folder-dialog.c:311
 msgid "Folder Name"
 msgstr "Mapes nosaukums"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:97
+#: ../src/gs-application.c:98
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Ieslēgšanās režīms: var būt “updates”, “updated”, “installed” vai “overview”"
 
-#: ../src/gs-application.c:97
+#: ../src/gs-application.c:98
 msgid "MODE"
 msgstr "REŽĪMS"
 
-#: ../src/gs-application.c:99
+#: ../src/gs-application.c:100
 msgid "Search for applications"
 msgstr "Meklēt lietotnes"
 
-#: ../src/gs-application.c:99
+#: ../src/gs-application.c:100
 msgid "SEARCH"
 msgstr "MEKLĒT"
 
-#: ../src/gs-application.c:101
-msgid "Show application details"
-msgstr "Rādīt informāciju par lietotni"
+#: ../src/gs-application.c:102
+#| msgid "Show application details"
+msgid "Show application details (using application ID)"
+msgstr "Rādīt informāciju par lietotni (izmantojot lietotnes ID)"
 
-#: ../src/gs-application.c:101
+#: ../src/gs-application.c:102
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:103
+#: ../src/gs-application.c:104
+#| msgid "Show application details"
+msgid "Show application details (using package name)"
+msgstr "Rādīt informāciju par lietotni (izmantojot pakotes nosaukumu)"
+
+#: ../src/gs-application.c:104
+msgid "PKGNAME"
+msgstr "PKGNOSAUKUMS"
+
+#: ../src/gs-application.c:106
 msgid "Open a local package file"
 msgstr "Atvērt lokālas pakotnes datni"
 
-#: ../src/gs-application.c:103
+#: ../src/gs-application.c:106
 msgid "FILENAME"
 msgstr "DATNES_NOSAUKUMS"
 
-#: ../src/gs-application.c:105
+#: ../src/gs-application.c:108
 msgid "Show verbose debugging information"
 msgstr "Rādīt izvērstu atkļūdošanas informāciju"
 
-#: ../src/gs-application.c:107
+#: ../src/gs-application.c:110
 msgid "Show profiling information for the service"
 msgstr "Rādīt pakalpojuma profilēšanas informāciju"
 
-#: ../src/gs-application.c:109
+#: ../src/gs-application.c:112
+msgid "Quit the running instance"
+msgstr "Iziet no strādājošas instances"
+
+#: ../src/gs-application.c:114
 msgid "Prefer local file sources to AppStream"
 msgstr "Dot priekšroku lokālo datņu avotiem, nevis AppStream"
 
-#: ../src/gs-application.c:111
+#: ../src/gs-application.c:116
 msgid "Show version number"
 msgstr "Rādīt versijas numuru"
 
+#: ../src/gs-application.c:371
+msgid "translator-credits"
+msgstr "Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>"
+
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:370
+#: ../src/gs-application.c:375
 msgid "About Software"
 msgstr "Par “Programmatūru”"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:375
+#: ../src/gs-application.c:381
 msgid "A nice way to manage the software on your system."
 msgstr "Labs veids, kā pārvaldīt programmatūru uz sava datora."
 
-#: ../src/gs-application.c:379
-msgid "translator-credits"
-msgstr "Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>"
-
-#. TRANSLATORS: during the update the device
-#. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:160
-msgid "Device cannot be used during update."
-msgstr "Uzlabošanas laikā nevar izmantot ierīci"
-
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:258
+#: ../src/gs-app-row.c:172
 msgid "Visit website"
 msgstr "Apmeklēt tīmekļa vietni"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:263
+#: ../src/gs-app-row.c:177
 msgid "Install…"
 msgstr "Instalēt…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:271
+#: ../src/gs-app-row.c:184
 msgid "Cancel"
 msgstr "Atcelt"
 
@@ -372,111 +427,163 @@ msgstr "Atcelt"
 #. * allows the application to be easily installed
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#. TRANSLATORS: this is button text to update the firware
+#. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:288 ../src/gs-page.c:206
-#: ../src/gs-utils.c:317
+#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:385
+#: ../src/gs-common.c:342
 msgid "Install"
 msgstr "Instalēt"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:292 ../src/gs-app-row.c:303 ../src/gs-page.c:235
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:531
 msgid "Remove"
 msgstr "Izņemt"
 
+#. TRANSLATORS: during the update the device
+#. * will restart into a special update-only mode
+#: ../src/gs-app-row.c:329
+msgid "Device cannot be used during update."
+msgstr "Uzlabošanas laikā nevar izmantot ierīci"
+
+#. TRANSLATORS: this refers to where the app came from
+#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
+msgid "Source"
+msgstr "Avots"
+
+#. security sandbox
+#: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
+msgid "Sandboxed"
+msgstr "Smilškastē"
+
+#. TRANSLATORS: this is when the service name is not known
+#: ../src/gs-auth-dialog.c:70
+msgid "To continue you need to sign in."
+msgstr "Lai turpinātu, jums jāierakstās."
+
+#. TRANSLATORS: the %s is a service name, e.g. "Ubuntu One"
+#: ../src/gs-auth-dialog.c:74
+#, c-format
+msgid "To continue you need to sign in to %s."
+msgstr "Lai turpinātu, jums jāierakstās %s."
+
 #. vim: set noexpandtab:
-#. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:2 ../src/gs-shell-details.ui.h:31
-msgid "3rd party"
-msgstr "Trešās puses"
+#: ../src/gs-auth-dialog.ui.h:1
+msgid "Email address"
+msgstr "E-pasta adrese"
 
-#. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:32
-msgid "web app"
-msgstr "tīmekļa lietotne"
+#: ../src/gs-auth-dialog.ui.h:2
+msgid "I have an account already"
+msgstr "Man jau ir konts"
 
-#. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:6
-msgid "nonfree"
-msgstr "nav brīva"
+#: ../src/gs-auth-dialog.ui.h:3
+msgid "Password"
+msgstr "Parole"
+
+#: ../src/gs-auth-dialog.ui.h:4
+msgid "I want to register for an account now"
+msgstr "Vēlos reģistrēt kontu tagad"
+
+#: ../src/gs-auth-dialog.ui.h:5
+msgid "I have forgotten my password"
+msgstr "Aizmirsu savu paroli"
+
+#: ../src/gs-auth-dialog.ui.h:6
+msgid "Sign in automatically next time"
+msgstr "Nākamajā reizē ierakstīties automātiski"
+
+#: ../src/gs-auth-dialog.ui.h:7
+msgid "Enter your one-time pin for two-factor authentication."
+msgstr "Ievadiet savu vienreizējo paroli divu pakāpju autentifikācijai."
+
+#: ../src/gs-auth-dialog.ui.h:8
+msgid "PIN"
+msgstr "PIN"
+
+#: ../src/gs-auth-dialog.ui.h:9
+msgid "Continue"
+msgstr "Turpināt"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:235
+#: ../src/gs-category.c:193
 msgid "Other"
 msgstr "Citas"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:239
-#| msgid "_All"
+#: ../src/gs-category.c:198
 msgid "All"
 msgstr "Visi"
 
+#. TRANSLATORS: this is a subcategory of featured apps
+#: ../src/gs-category.c:202
+msgid "Featured"
+msgstr "Piedāvātā"
+
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: ../src/gs-dbus-helper.c:307
+#: ../src/gs-dbus-helper.c:293
 msgid "An application"
 msgstr "Lietotne"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: ../src/gs-dbus-helper.c:313
+#: ../src/gs-dbus-helper.c:299
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "%s pieprasa papildu datņu formātu atbalstu."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:315
+#: ../src/gs-dbus-helper.c:301
 msgid "Additional MIME Types Required"
 msgstr "Nepieciešami papildu MIME tipi"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: ../src/gs-dbus-helper.c:319
+#: ../src/gs-dbus-helper.c:305
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "%s pieprasa papildu fontus."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:321
+#: ../src/gs-dbus-helper.c:307
 msgid "Additional Fonts Required"
 msgstr "Nepieciešami papildu fonti"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: ../src/gs-dbus-helper.c:325
+#: ../src/gs-dbus-helper.c:311
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "%s pieprasa papildu multimediju kodekus."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:327
+#: ../src/gs-dbus-helper.c:313
 msgid "Additional Multimedia Codecs Required"
 msgstr "Nepieciešami papildu multimediju kodeki"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: ../src/gs-dbus-helper.c:331
+#: ../src/gs-dbus-helper.c:317
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "%s pieprasa papildu printeru draiverus."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:333
+#: ../src/gs-dbus-helper.c:319
 msgid "Additional Printer Drivers Required"
 msgstr "Nepieciešami printeru draiveri"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: ../src/gs-dbus-helper.c:337
+#: ../src/gs-dbus-helper.c:323
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "%s pieprasa papildu pakotnes."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:339
+#: ../src/gs-dbus-helper.c:325
 msgid "Additional Packages Required"
 msgstr "Nepieciešama papildu pakotnes"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: ../src/gs-dbus-helper.c:348
+#: ../src/gs-dbus-helper.c:334
 msgid "Find in Software"
 msgstr "Meklēt programmatūrā"
 
@@ -504,11 +611,11 @@ msgstr "_Iesim iepirkties"
 
 #. TRANSLATORS: Here are 2 strings the same as in gtk/gtkbox.c
 #. in GTK+ project. Please use the same translation.
-#: ../src/gs-hiding-box.c:384
+#: ../src/gs-hiding-box.c:383
 msgid "Spacing"
 msgstr "Atstarpe"
 
-#: ../src/gs-hiding-box.c:385
+#: ../src/gs-hiding-box.c:384
 msgid "The amount of space between children"
 msgstr "Atstarpes lielums starp bērniem"
 
@@ -548,44 +655,63 @@ msgstr "Vēsture"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:200
+#: ../src/gs-page.c:376
 #, c-format
 msgid "Prepare %s"
 msgstr "Sagatavot %s"
 
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:227
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * source name, e.g. 'GNOME Nightly'
+#: ../src/gs-page.c:500
+#, c-format
+#| msgid "Are you sure you want to remove %s?"
+msgid "Are you sure you want to remove the %s source?"
+msgstr "Vai tiešām vēlaties izņemt %s avotu?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:504
+#, c-format
+#| msgid "%s will be removed, and you will have to install it to use it again."
+msgid ""
+"All applications from %s will be removed, and you will have to re-install "
+"the source to use them again."
+msgstr ""
+"Visas lietotnes no %s tiks izņemtas. Lai tās lietotu atkal, tā būs"
+" jāpārinstalē avots."
+
+#. TRANSLATORS: this is a prompt message, and '%s' is an
+#. * application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:512
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Vai tiešām vēlaties izņemt %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:232
+#: ../src/gs-page.c:515
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s tiks izņemta. Lai to lietotu atkal, tā būs jāuzinstalē."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:786
+#: ../src/gs-plugin-loader.c:1048
 msgid "OS Updates"
 msgstr "OS atjauninājumi"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:791
+#: ../src/gs-plugin-loader.c:1053
 msgid "Includes performance, stability and security improvements."
 msgstr "Iekļauj veiktspējas, stabilitātes un drošības uzlabojumus."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1517 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1729 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s formātam nav pieejamu papildinājuma kodeku."
 
-#: ../src/gs-plugin-loader.c:1520
+#: ../src/gs-plugin-loader.c:1732
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -594,70 +720,88 @@ msgstr ""
 "Informāciju par %s, kā arī opcijas par to, kā saņemt kodeku, kas var "
 "atskaņot šo formātu, var atrast tīmekļa vietnē."
 
+#: ../src/gs-removal-dialog.c:128
+#, c-format
+msgid ""
+"Some of the currently installed software is not compatible with %s. If you "
+"continue, the following will be automatically removed during the upgrade:"
+msgstr ""
+"Daļa no pašlaik instalētās programmatūras nav savienojama ar %s. Ja"
+" turpināsiet, uzlabošanas laikā tiks automātiski izņemtas:"
+
+#. vim: set noexpandtab:
+#: ../src/gs-removal-dialog.ui.h:1
+#| msgid "Welcome to Software"
+msgid "Incompatible Software"
+msgstr "Nesavietojamā programmatūra"
+
+#: ../src/gs-removal-dialog.ui.h:3
+msgid "_Continue"
+msgstr "_Turpināt"
+
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
-#: ../src/gs-review-dialog.c:93
+#: ../src/gs-review-dialog.c:98
 msgid "Hate it"
 msgstr "Nevaru ciest"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
-#: ../src/gs-review-dialog.c:97
+#: ../src/gs-review-dialog.c:102
 msgid "Don't like it"
 msgstr "Nepatīk"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
-#: ../src/gs-review-dialog.c:101
+#: ../src/gs-review-dialog.c:106
 msgid "It's OK"
 msgstr "Tā neko"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
-#: ../src/gs-review-dialog.c:105
+#: ../src/gs-review-dialog.c:110
 msgid "Like it"
 msgstr "Patīk"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
-#: ../src/gs-review-dialog.c:109
+#: ../src/gs-review-dialog.c:114
 msgid "Love it"
 msgstr "Esmu sajūsmā"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: ../src/gs-review-dialog.c:131
+#: ../src/gs-review-dialog.c:136
 msgid "Please take more time writing the review"
 msgstr "Lūdzu, veltiet vairāk laika, rakstot atsauksmi"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:135
+#: ../src/gs-review-dialog.c:140
 msgid "Please choose a star rating"
 msgstr "Ludzu, izvēlieties zvaigznes vērtējumu"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:139
+#: ../src/gs-review-dialog.c:144
 msgid "The summary is too short"
 msgstr "Kopsavilkums ir pārāk īss"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:143
+#: ../src/gs-review-dialog.c:148
 msgid "The summary is too long"
 msgstr "Kopsavilkums ir pārāk garš"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:147
+#: ../src/gs-review-dialog.c:152
 msgid "The description is too short"
 msgstr "Apraksts ir pārāk īss"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:151
+#: ../src/gs-review-dialog.c:156
 msgid "The description is too long"
 msgstr "Apraksts ir pārāk garš"
 
 #. vim: set noexpandtab:
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:2
-#| msgid "Review"
 msgid "Post Review"
 msgstr "Publicēt atsauksmi"
 
@@ -667,8 +811,6 @@ msgid "_Post"
 msgstr "_Sūtīt"
 
 #: ../src/gs-review-dialog.ui.h:6
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Editing"
 msgid "Rating"
 msgstr "Vērtējums"
 
@@ -685,7 +827,6 @@ msgstr ""
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
-#| msgid "Review"
 msgctxt "app review"
 msgid "Review"
 msgstr "Atsauksme"
@@ -716,15 +857,12 @@ msgstr ""
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
-#| msgid "Review"
 msgid "Report Review?"
 msgstr "Ziņot par atsauksmi?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Sports"
 msgid "Report"
 msgstr "Ziņot"
 
@@ -739,8 +877,6 @@ msgid "Yes"
 msgstr "Jā"
 
 #: ../src/gs-review-row.ui.h:4
-#| msgctxt "menu category"
-#| msgid "None"
 msgid "No"
 msgstr "Nē"
 
@@ -754,36 +890,35 @@ msgid "Report…"
 msgstr "Ziņot…"
 
 #: ../src/gs-review-row.ui.h:8
-#| msgid "Remove"
 msgid "Remove…"
 msgstr "Izņemt…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:232
+#: ../src/gs-screenshot-image.c:220
 msgid "Screenshot not found"
 msgstr "Ekrānattēls nav atrasts"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:248
+#: ../src/gs-screenshot-image.c:236
 msgid "Failed to load image"
 msgstr "Neizdevās ielādēt attēlu"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:379
+#: ../src/gs-screenshot-image.c:350
 msgid "Screenshot size not found"
 msgstr "Ekrānattēla izmērs nav atrasts"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:395
+#: ../src/gs-screenshot-image.c:378
 msgid "Could not create cache"
 msgstr "Neizdevās izveidot kešu"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:423
+#: ../src/gs-screenshot-image.c:424
 msgid "Screenshot not valid"
 msgstr "Ekrānattēls nav derīgs"
 
@@ -792,12 +927,16 @@ msgstr "Ekrānattēls nav derīgs"
 msgid "Screenshot not available"
 msgstr "Ekrānattēls nav pieejams"
 
-#: ../src/gs-screenshot-image.c:490
+#: ../src/gs-screenshot-image.c:482
 msgid "Screenshot"
 msgstr "Ekrānattēls"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-category.ui.h:1
+msgid "Extension Settings"
+msgstr "Paplašinājuma iestatījumi"
+
+#: ../src/gs-shell-category.ui.h:2
 msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
@@ -805,118 +944,104 @@ msgstr ""
 "Paplašinājumus izmantojiet uz savu atbildību. Ja gadās problēmas ar sistēmu, "
 "tos ir ieteicams izslēgt."
 
-#: ../src/gs-shell-category.ui.h:2
-#| msgid "Network Settings"
-msgid "Extension Settings"
-msgstr "Paplašinājuma iestatījumi"
-
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
-#: ../src/gs-upgrade-banner.ui.h:4
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#: ../src/gs-shell-details.c:267 ../src/gs-shell-details.c:287
+#: ../src/gs-shell-details.ui.h:2 ../src/gs-upgrade-banner.ui.h:6
 msgid "_Install"
 msgstr "_Instalēt"
 
 #. TRANSLATORS: button text in the header when an application
-#. * is in the process of being installed
-#: ../src/gs-shell-details.c:206
-msgid "_Installing"
-msgstr "_Instalē"
+#. * can be live-updated
+#: ../src/gs-shell-details.c:292
+#| msgid "_Updates"
+msgid "_Update"
+msgstr "Atja_unināt"
 
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:224
+#: ../src/gs-shell-details.c:305
 msgid "_Install…"
 msgstr "_Instalēt…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:352 ../src/gs-shell-details.ui.h:5
 msgid "_Remove"
 msgstr "_Izņemt"
 
-#. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:277
-msgid "_Removing"
-msgstr "_Izņem"
-
-#. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:647
-msgctxt "license"
-msgid "Unknown"
-msgstr "Nezināma"
-
-#. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:660
-msgctxt "version"
-msgid "Unknown"
-msgstr "Nezināma"
-
-#. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:666
-msgctxt "size"
-msgid "Calculating…"
-msgstr "Aprēķina…"
-
-#. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:669
-msgctxt "size"
-msgid "Unknown"
-msgstr "Nezināms"
-
-#. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:681
-msgctxt "updated"
-msgid "Never"
-msgstr "Nekad"
-
-#. TRANSLATORS: this is the application isn't in any
-#. * defined menu category
-#: ../src/gs-shell-details.c:695
-msgctxt "menu category"
-msgid "None"
-msgstr "Nav"
-
-#. TRANSLATORS: this is where we don't know the origin of the
-#. * application
-#: ../src/gs-shell-details.c:712
-msgctxt "origin"
-msgid "Unknown"
-msgstr "Nezināma"
+#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:503
+msgid "Removing…"
+msgstr "Izņem…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:758
+#: ../src/gs-shell-details.c:684
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Šo lietotni var izmantot tikai tad, kad ir savienojums ar internetu."
 
-#. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:769
-msgid "This software comes from a 3rd party."
-msgstr "Šo programmatūru nodrošina trešā puse."
+#. TRANSLATORS: this is where the version is not known
+#: ../src/gs-shell-details.c:811
+msgctxt "version"
+msgid "Unknown"
+msgstr "Nezināma"
 
-#. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:778
-msgid ""
-"This software comes from a 3rd party and may contain non-free components."
-msgstr ""
-"Šī programmatūra nāk no trešajām pusēm un var saturēt nebrīvas komponentes."
+#. TRANSLATORS: this is where the updated date is not known
+#: ../src/gs-shell-details.c:845
+msgctxt "updated"
+msgid "Never"
+msgstr "Nekad"
 
-#. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:787
-msgid "This software may contain non-free components."
-msgstr "Šī programmatūra var saturēt nebrīvas komponentes."
+#. TRANSLATORS: this is where we don't know the origin of the
+#. * application
+#: ../src/gs-shell-details.c:891
+msgctxt "origin"
+msgid "Unknown"
+msgstr "Nezināma"
 
-#: ../src/gs-shell-details.c:1109
+#: ../src/gs-shell-details.c:1298
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nevarēja atrasts “%s”"
 
-#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
+#. TRANSLATORS: the file format was not recognised by
+#. * any plugin, e.g. if you try installing a .tar.gz
+#: ../src/gs-shell-details.c:1356
+msgid "The file is not supported."
+msgstr "Datne nav atbalstīta."
+
+#. TRANSLATORS: install or removed failed
+#: ../src/gs-shell-details.c:1366 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Diemžēl tas nenostrādāja"
+
+#. TRANSLATORS: see the wikipedia page
+#: ../src/gs-shell-details.c:1725
+msgid "Public domain"
+msgstr "Sabiedriskā īpašuma"
+
+#. TRANSLATORS: see GNU page
+#: ../src/gs-shell-details.c:1741 ../src/gs-shell-details.ui.h:51
+#| msgid "Software"
+msgid "Free Software"
+msgstr "Brīvā programmatūra"
+
+#. TRANSLATORS: for the free software popover
+#: ../src/gs-shell-details.c:1796
+msgid "Users are bound by the following license:"
+msgid_plural "Users are bound by the following licenses:"
+msgstr[0] "Uz lietotāju attiecas šī licence:"
+msgstr[1] "Uz lietotāju attiecas šīs licences:"
+msgstr[2] "Uz lietotāju attiecas šīs licences:"
+
+#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
+#| msgid "Show verbose debugging information"
+msgid "More information"
+msgstr "Vairāk informācijas"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-details.ui.h:1
@@ -924,15 +1049,31 @@ msgid "Details page"
 msgstr "Sīkākas informācijas lapa"
 
 #. Translators: A label for a button to execute the selected application.
-#: ../src/gs-shell-details.ui.h:6
+#: ../src/gs-shell-details.ui.h:4
 msgid "_Launch"
 msgstr "Pa_laist"
 
-#: ../src/gs-shell-details.ui.h:7
+#. Translators: A label for a button to add a shortcut to the selected application.
+#: ../src/gs-shell-details.ui.h:9
+msgid "_Add shortcut"
+msgstr "Pievienot s_aīsni"
+
+#. Translators: A label for a button to remove a shortcut to the selected application.
+#: ../src/gs-shell-details.ui.h:11
+#| msgid "Remove Source"
+msgid "Re_move shortcut"
+msgstr "Izņe_mt saīsni"
+
+#: ../src/gs-shell-details.ui.h:12
+#| msgid "Screenshot not valid"
+msgid "No screenshot provided"
+msgstr "Ekrānattēls nav nodrošināts"
+
+#: ../src/gs-shell-details.ui.h:13
 msgid "Software Source Included"
 msgstr "Programmatūras avots ir iekļauts"
 
-#: ../src/gs-shell-details.ui.h:8
+#: ../src/gs-shell-details.ui.h:14
 msgid ""
 "This application includes a software source which provides updates, as well "
 "as access to other software."
@@ -940,11 +1081,11 @@ msgstr ""
 "Šī lietotne iekļauj programmatūras avotu, kas sniedz atjauninājumus, kā arī "
 "piekļuvi citai programmatūrai."
 
-#: ../src/gs-shell-details.ui.h:9
+#: ../src/gs-shell-details.ui.h:15
 msgid "No Software Source Included"
 msgstr "Nav iekļautu programmatūras avotu"
 
-#: ../src/gs-shell-details.ui.h:10
+#: ../src/gs-shell-details.ui.h:16
 msgid ""
 "This application does not include a software source. It will not be updated "
 "with new versions."
@@ -952,7 +1093,7 @@ msgstr ""
 "Šī lietotne neiekļauj programmatūras avotus. Tā netiks atjaunināta līdz ar "
 "jaunām versijām."
 
-#: ../src/gs-shell-details.ui.h:11
+#: ../src/gs-shell-details.ui.h:17
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -960,11 +1101,11 @@ msgstr ""
 "Šo programmatūru jau piegādā jūsu distribūcija un to nevajadzētu aizvietot."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: ../src/gs-shell-details.ui.h:13
+#: ../src/gs-shell-details.ui.h:19
 msgid "Software Source Identified"
 msgstr "Programmatūras avots identificēts"
 
-#: ../src/gs-shell-details.ui.h:14
+#: ../src/gs-shell-details.ui.h:20
 msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
@@ -972,106 +1113,152 @@ msgstr ""
 "Šīs programmatūras pievienošana jums sniegs piekļuvi papildu programmatūrai "
 "un uzlabojumiem."
 
-#: ../src/gs-shell-details.ui.h:15
+#: ../src/gs-shell-details.ui.h:21
 msgid "Only use software sources that you trust."
 msgstr "Izmantojiet tikai uzticamas programmatūras krātuves."
 
-#: ../src/gs-shell-details.ui.h:16
+#: ../src/gs-shell-details.ui.h:22
 msgid "_Website"
 msgstr "_Tīmekļa vietne"
 
-#: ../src/gs-shell-details.ui.h:17
-msgid "_History"
-msgstr "_Vēsture"
-
-#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:556
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:791
 msgid "Details"
 msgstr "Sīkāka informācija"
 
-#: ../src/gs-shell-details.ui.h:19
+#: ../src/gs-shell-details.ui.h:24
 msgid "Localized in your Language"
 msgstr "Lokalizēts jūsu valodā"
 
-#: ../src/gs-shell-details.ui.h:20
+#: ../src/gs-shell-details.ui.h:25
 msgid "Documentation"
 msgstr "Dokumentācija"
 
-#: ../src/gs-shell-details.ui.h:21
+#: ../src/gs-shell-details.ui.h:26
 msgid "Release Activity"
 msgstr "Laidiena aktivitāte"
 
-#: ../src/gs-shell-details.ui.h:22
+#: ../src/gs-shell-details.ui.h:27
 msgid "System Integration"
 msgstr "Sistēmas integrācija"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-shell-details.ui.h:29 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Versija"
 
-#: ../src/gs-shell-details.ui.h:24
+#: ../src/gs-shell-details.ui.h:30
 msgid "Updated"
 msgstr "Atjaunināta"
 
-#: ../src/gs-shell-details.ui.h:25
+#: ../src/gs-shell-details.ui.h:31
 msgid "Category"
 msgstr "Kategorija"
 
-#: ../src/gs-shell-details.ui.h:26
-msgid "Size"
-msgstr "Izmērs"
+#: ../src/gs-shell-details.ui.h:32
+#| msgid "Installed page"
+msgid "Installed Size"
+msgstr "Instalācijas izmērs"
 
-#: ../src/gs-shell-details.ui.h:27
-msgid "Source"
-msgstr "Avots"
+#: ../src/gs-shell-details.ui.h:33
+#| msgid "_Download"
+msgid "Download Size"
+msgstr "Lejupielādes izmērs"
 
-#: ../src/gs-shell-details.ui.h:28
+#: ../src/gs-shell-details.ui.h:35
 msgid "Developer"
 msgstr "Izstrādātājs"
 
-#: ../src/gs-shell-details.ui.h:29
+#: ../src/gs-shell-details.ui.h:36
 msgid "License"
 msgstr "Licence"
 
-#: ../src/gs-shell-details.ui.h:30
-msgid "non-free"
-msgstr "nebrīva"
+#. This refers to the license of the application
+#: ../src/gs-shell-details.ui.h:38
+msgid "Free"
+msgstr "Brīva"
+
+#. This refers to the license of the application
+#: ../src/gs-shell-details.ui.h:40
+msgid "Proprietary"
+msgstr "Īpašnieka"
+
+#. This refers to the license of the application
+#: ../src/gs-shell-details.ui.h:42
+#| msgctxt "app status"
+#| msgid "Unknown"
+msgid "Unknown"
+msgstr "Nezināma"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
-#. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:431
-#: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
+#. TRANSLATORS: this is the menu spec main category for Add-ons
+#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:437
+#: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:344
 msgid "Add-ons"
 msgstr "Pielikumi"
 
-#: ../src/gs-shell-details.ui.h:34
+#: ../src/gs-shell-details.ui.h:44
 msgid "Selected add-ons will be installed with the application."
 msgstr "Izvēlētie papildinājumi tiks instalēti kopā ar lietotni."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: ../src/gs-shell-details.ui.h:36
-#| msgid "Review"
+#: ../src/gs-shell-details.ui.h:46
 msgid "Reviews"
 msgstr "Atsauksmes"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: ../src/gs-shell-details.ui.h:38
+#: ../src/gs-shell-details.ui.h:48
 msgid "_Write a Review"
 msgstr "_Rakstīt atsauksmi"
 
 #. Translators: Button to return more application-submitted reviews.
-#: ../src/gs-shell-details.ui.h:40
+#: ../src/gs-shell-details.ui.h:50
 msgid "_Show More"
 msgstr "_Rādīt vairāk"
 
+#: ../src/gs-shell-details.ui.h:52
+msgid ""
+"This means that the software can be freely run, copied, distributed, studied "
+"and modified."
+msgstr ""
+"Tas nozīmē, ka programmatūru var brīvi izpildīt, kopēt, izplatīt, pētīt un"
+" modificēt."
+
+#: ../src/gs-shell-details.ui.h:53
+#| msgid "Proprietary"
+msgid "Proprietary Software"
+msgstr "Īpašnieka programmatūra"
+
+#: ../src/gs-shell-details.ui.h:54
+msgid ""
+"This means that the software is owned by an individual or a company. There "
+"are often restrictions on its use and its source code cannot usually be "
+"accessed."
+msgstr ""
+"Tas nozīmē, ka programmatūra var piederēt indivīdiem vai uzņēmumam. Nereti ir"
+" ierobežojumi tās izmantošanai un parasti tās pirmkodam nevar piekļūt."
+
+#: ../src/gs-shell-details.ui.h:56
+#| msgid "Software Sources"
+msgid "Unknown Software License"
+msgstr "Nezināma programmatūras licence"
+
+#: ../src/gs-shell-details.ui.h:57
+msgid "The license terms of this software are unknown."
+msgstr "Šīs programmatūras licences nosacījumi nav zināmi."
+
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:149
+#: ../src/gs-shell-extras.c:145
+msgid " and "
+msgstr " un "
+
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-shell-extras.c:148
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:175
+#: ../src/gs-shell-extras.c:174
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1081,7 +1268,7 @@ msgstr[2] "Pieejamie fonti %s skriptiem"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:183
+#: ../src/gs-shell-extras.c:182
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -1089,32 +1276,32 @@ msgstr[0] "Pieejamā programmatūra kodekam %s"
 msgstr[1] "Pieejamā programmatūra kodekiem %s"
 msgstr[2] "Pieejamā programmatūra kodekiem %s"
 
-#: ../src/gs-shell-extras.c:225
+#: ../src/gs-shell-extras.c:224
 msgid "Unable to Find Requested Software"
 msgstr "Nevarēja atrast pieprasīto programmatūru"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:321
+#: ../src/gs-shell-extras.c:320
 #, c-format
 msgid "%s not found"
 msgstr "%s nav atrasts"
 
 #. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:325
+#: ../src/gs-shell-extras.c:324
 msgid "on the website"
 msgstr "tīmekļa vietnē"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:332
+#: ../src/gs-shell-extras.c:331
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Nav lietotņu, kas nodrošinātu datni %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:336 ../src/gs-shell-extras.c:347
-#: ../src/gs-shell-extras.c:358
+#: ../src/gs-shell-extras.c:335 ../src/gs-shell-extras.c:346
+#: ../src/gs-shell-extras.c:357
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1125,21 +1312,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
+#: ../src/gs-shell-extras.c:342 ../src/gs-shell-extras.c:364
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "%s atbalstam nav pieejamu lietotņu."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:354
+#: ../src/gs-shell-extras.c:353
 #, c-format
 msgid "%s is not available."
 msgstr "%s nav pieejams."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:369
+#: ../src/gs-shell-extras.c:368
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1150,14 +1337,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:376
+#: ../src/gs-shell-extras.c:375
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "%s rakstības atbalstam nav pieejamu fontu."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:380
+#: ../src/gs-shell-extras.c:379
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1168,7 +1355,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:391
+#: ../src/gs-shell-extras.c:390
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1179,14 +1366,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:398
+#: ../src/gs-shell-extras.c:397
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "%s atbalstam nav pieejamu Plasma resursu."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:402
+#: ../src/gs-shell-extras.c:401
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1197,14 +1384,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:409
+#: ../src/gs-shell-extras.c:408
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "%s nav pieejamu printera draiveru."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:413
+#: ../src/gs-shell-extras.c:412
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1213,12 +1400,12 @@ msgstr ""
 "Informāciju par %s, kā arī opcijas par to, kā saņemt draiveri, kas atbalsta "
 "šo printeri, var atrast %s."
 
-#: ../src/gs-shell-extras.c:459
+#: ../src/gs-shell-extras.c:457
 msgid "this website"
 msgstr "šī tīmekļa vietne"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:463
+#: ../src/gs-shell-extras.c:461
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1236,12 +1423,12 @@ msgstr[2] ""
 "Diemžēl neizdevās atrast jūsu meklētos kodekus %s. Lūdzu, skatiet %s, lai "
 "uzzinātu vairāk."
 
-#: ../src/gs-shell-extras.c:543 ../src/gs-shell-extras.c:591
-#: ../src/gs-shell-extras.c:641
+#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
+#: ../src/gs-shell-extras.c:640
 msgid "Failed to find any search results"
 msgstr "Neizdevās atrast nevienu meklēšanas rezultātu"
 
-#: ../src/gs-shell-extras.c:810
+#: ../src/gs-shell-extras.c:814
 #, c-format
 msgid "%s file format"
 msgstr "%s datnes formāts"
@@ -1253,13 +1440,17 @@ msgstr "Kodeku lapa"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:421
+#: ../src/gs-shell-installed.c:427
 msgid "System Applications"
 msgstr "Sistēmas lietotnes"
 
-#: ../src/gs-shell-installed.c:522
+#: ../src/gs-shell-installed.c:537
 msgid "Click on items to select them"
 msgstr "Spiediet uz vienumiem, lai tos izvēlētos"
+
+#: ../src/gs-shell-installed.c:737
+msgid "Select"
+msgstr "Izvēlēties"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-installed.ui.h:1
@@ -1279,7 +1470,6 @@ msgid "_Remove from Folder"
 msgstr "_Izņemt no mapes"
 
 #: ../src/gs-shell-moderate.ui.h:1
-#| msgid "Updates page"
 msgid "Moderate page"
 msgstr "Moderācijas lapa"
 
@@ -1287,25 +1477,60 @@ msgstr "Moderācijas lapa"
 msgid "There are no reviews to moderate"
 msgstr "Nav atsauksmju, ko pārbaudīt"
 
-#. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:367
-msgid "Recommended Audio Applications"
-msgstr "Ieteiktās audio lietotnes"
+#. add button
+#: ../src/gs-shell-overview.c:243
+msgid "More…"
+msgstr "Vairāk…"
 
-#. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:372
+#. TRANSLATORS: this is a heading for audio applications which
+#. * have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:422
+#| msgid "Recommended Audio Applications"
+msgid "Recommended Audio & Video Applications"
+msgstr "Ieteiktās audio un video lietotnes"
+
+#. TRANSLATORS: this is a heading for games which have been
+#. * featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:427
 msgid "Recommended Games"
 msgstr "Ieteiktās spēles"
 
-#. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:377
+#. TRANSLATORS: this is a heading for graphics applications
+#. * which have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:432
 msgid "Recommended Graphics Applications"
 msgstr "Ieteiktās grafikas lietotnes"
 
-#. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:382
-msgid "Recommended Office Applications"
-msgstr "Ieteiktās biroja lietotnes"
+#. TRANSLATORS: this is a heading for office applications which
+#. * have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:437
+#| msgid "Recommended Audio Applications"
+msgid "Recommended Productivity Applications"
+msgstr "Ieteiktās produktivitātes lietotnes"
+
+#. TRANSLATORS: this is the proprietary info bar
+#: ../src/gs-shell-overview.c:712
+msgid ""
+"Provides access to additional software, including web browsers and games."
+msgstr ""
+"Sniedz pieeju papildu programmatūrai, tai skaitā tīmekļa pārlūkiem un spēlēm."
+
+#. TRANSLATORS: this is the proprietary info bar
+#: ../src/gs-shell-overview.c:716
+msgid "Proprietary software has restrictions on use and access to source code."
+msgstr ""
+"Īpašnieka programmatūrai ir ierobežojumi lietošanai un piekļuvei pirmkodam."
+
+#. TRANSLATORS: this is the clickable
+#. * link on the proprietary info bar
+#: ../src/gs-shell-overview.c:723 ../src/gs-sources-dialog.c:262
+msgid "Find out more…"
+msgstr "Uzzināt vairāk…"
+
+#. TRANSLATORS: button to turn on proprietary software sources
+#: ../src/gs-shell-overview.c:757
+msgid "Enable"
+msgstr "Ieslēgt"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -1313,17 +1538,18 @@ msgid "Overview page"
 msgstr "Pārskata lapa"
 
 #: ../src/gs-shell-overview.ui.h:2
-msgid "Featured Application"
-msgstr "Izceltās lietotnes"
+#| msgid "Enable Third-Party Software Source?"
+msgid "Enable Proprietary Software Sources?"
+msgstr "Ieslēgt īpašnieku programmatūras avotus?"
 
-#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gs-shell-overview.ui.h:4
-msgid "Editor's Picks"
-msgstr "Redaktora izlase"
-
-#: ../src/gs-shell-overview.ui.h:5
+#: ../src/gs-shell-overview.ui.h:3
 msgid "Categories"
 msgstr "Kategorijas"
+
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gs-shell-overview.ui.h:5
+msgid "Editor's Picks"
+msgstr "Redaktora izlase"
 
 #: ../src/gs-shell-overview.ui.h:6
 msgid "No Application Data Found"
@@ -1339,95 +1565,106 @@ msgid "No Application Found"
 msgstr "Nav atrastu lietotņu"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:198
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:150
+#: ../src/gs-shell-updates.c:201
 msgid "%l:%M %p"
 msgstr "%l.%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:156
+#: ../src/gs-shell-updates.c:207
 msgid "Yesterday, %R"
 msgstr "Vakar, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:211
 msgid "Yesterday, %l:%M %p"
 msgstr "Vakar %l.%M %p"
 
-#: ../src/gs-shell-updates.c:163
+#: ../src/gs-shell-updates.c:214
 msgid "Two days ago"
 msgstr "Pirms divām dienām"
 
-#: ../src/gs-shell-updates.c:165
+#: ../src/gs-shell-updates.c:216
 msgid "Three days ago"
 msgstr "Pirms trīs dienām"
 
-#: ../src/gs-shell-updates.c:167
+#: ../src/gs-shell-updates.c:218
 msgid "Four days ago"
 msgstr "Pirms četrām dienām"
 
-#: ../src/gs-shell-updates.c:169
+#: ../src/gs-shell-updates.c:220
 msgid "Five days ago"
 msgstr "Pirms piecām dienām"
 
-#: ../src/gs-shell-updates.c:171
+#: ../src/gs-shell-updates.c:222
 msgid "Six days ago"
 msgstr "Pirms sešām dienām"
 
-#: ../src/gs-shell-updates.c:173
+#: ../src/gs-shell-updates.c:224
 msgid "One week ago"
 msgstr "Pirms nedēļas"
 
-#: ../src/gs-shell-updates.c:175
+#: ../src/gs-shell-updates.c:226
 msgid "Two weeks ago"
 msgstr "Pirms divām nedēļām"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:179
+#: ../src/gs-shell-updates.c:230
 msgid "%e %B %Y"
 msgstr "%e. %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:195
+#: ../src/gs-shell-updates.c:243
 msgid "Downloading new updates…"
 msgstr "Lejupielādē jaunus atjauninājumus…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:199
+#: ../src/gs-shell-updates.c:247
 msgid "Looking for new updates…"
 msgstr "Meklē jaunus atjauninājumus…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:240
+#: ../src/gs-shell-updates.c:287
 msgid "Setting up updates…"
 msgstr "Iestata atjauninājumus…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:241 ../src/gs-shell-updates.c:248
+#: ../src/gs-shell-updates.c:288 ../src/gs-shell-updates.c:295
 msgid "(This could take a while)"
 msgstr "(Tas var aizņemt kādu laiciņu)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:404
+#: ../src/gs-shell-updates.c:425
 #, c-format
 msgid "Last checked: %s"
 msgstr "Pēdējo reizi pārbaudīts: %s"
 
+#. TRANSLATORS: all updates will be installed
+#: ../src/gs-shell-updates.c:498
+#| msgid "_Install"
+msgid "_Install All"
+msgstr "_Instalēt visu"
+
+#. TRANSLATORS: this is an offline update
+#: ../src/gs-shell-updates.c:502 ../src/gs-shell-updates.c:1348
+msgid "Restart & _Install"
+msgstr "Pārstartēt un _instalēt"
+
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:810
+#: ../src/gs-shell-updates.c:829
 msgid "Charges may apply"
 msgstr "Var tikt piemērota maksa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:814
+#: ../src/gs-shell-updates.c:833
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1437,26 +1674,51 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:818
+#: ../src/gs-shell-updates.c:837
 msgid "Check Anyway"
 msgstr "Tomēr pārbaudīt"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:834
+#: ../src/gs-shell-updates.c:853
 msgid "No Network"
 msgstr "Nav tīkla"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:838
+#: ../src/gs-shell-updates.c:857
 msgid "Internet access is required to check for updates."
 msgstr "Lai pārbaudītu atjauninājumus, nepieciešama piekļuve internetam."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:842
+#: ../src/gs-shell-updates.c:861
 msgid "Network Settings"
 msgstr "Tīkla iestatījumi"
+
+#. TRANSLATORS: we've just live-updated some apps
+#: ../src/gs-shell-updates.c:951
+#| msgid "No updates have been installed on this system."
+msgid "Updates have been installed"
+msgstr "Atjauninājumi tika uzinstalēti."
+
+#. TRANSLATORS: the new apps will not be run until we restart
+#: ../src/gs-shell-updates.c:953
+msgid "A restart is required for them to take effect."
+msgstr "Nepieciešama pārstartēšana, lai tie stātos spēkā."
+
+#. TRANSLATORS: button text
+#: ../src/gs-shell-updates.c:955 ../src/gs-update-monitor.c:102
+msgid "Not Now"
+msgstr "Ne tagad"
+
+#. TRANSLATORS: button text
+#: ../src/gs-shell-updates.c:957
+msgid "Restart"
+msgstr "Pārstartēt"
+
+#: ../src/gs-shell-updates.c:1366
+msgid "Check for updates"
+msgstr "Pārbaudīt atjauninājumus"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
@@ -1464,10 +1726,15 @@ msgid "Updates page"
 msgstr "Atjauninājumu mape"
 
 #: ../src/gs-shell-updates.ui.h:2
+#| msgid "OS Updates"
+msgid "Other Updates"
+msgstr "Citi atjauninājumi"
+
+#: ../src/gs-shell-updates.ui.h:3
 msgid "Software is up to date"
 msgstr "Programmatūra ir aktuāla"
 
-#: ../src/gs-shell-updates.ui.h:3
+#: ../src/gs-shell-updates.ui.h:4
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -1475,25 +1742,25 @@ msgstr ""
 "Atjauninājumu pārbaudīšana, lietojot mobilo platjoslas savienojumu, var "
 "izmaksās papildus"
 
-#: ../src/gs-shell-updates.ui.h:4
+#: ../src/gs-shell-updates.ui.h:5
 msgid "_Check Anyway"
 msgstr "_Tomēr pārbaudīt"
 
-#: ../src/gs-shell-updates.ui.h:5
+#: ../src/gs-shell-updates.ui.h:6
 msgid "Go online to check for updates"
 msgstr "Doties tiešsaistē, lai pārbaudītu atjauninājumus"
 
-#: ../src/gs-shell-updates.ui.h:6
+#: ../src/gs-shell-updates.ui.h:7
 msgid "_Network Settings"
 msgstr "_Tīkla iestatījumi"
 
-#: ../src/gs-shell-updates.ui.h:7
+#: ../src/gs-shell-updates.ui.h:8
 msgid "Updates are automatically managed"
 msgstr "Atjauninājumi tika automātiski sapludināti"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:94
+#: ../src/gs-sources-dialog.c:99
 msgid "No applications or addons installed; other software might still be"
 msgstr ""
 "Netika instalēta neviena lietotne vai papildinājums; cita programmatūra "
@@ -1501,51 +1768,59 @@ msgstr ""
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:98
+#: ../src/gs-sources-dialog.c:104
 #, c-format
-msgid "%i application installed"
-msgid_plural "%i applications installed"
-msgstr[0] "Instalēta %i lietotne"
-msgstr[1] "Instalētas %i lietotnes"
-msgstr[2] "Instalētas %i lietotnes"
+#| msgid "%i application installed"
+#| msgid_plural "%i applications installed"
+msgid "%u application installed"
+msgid_plural "%u applications installed"
+msgstr[0] "Instalēta %u lietotne"
+msgstr[1] "Instalētas %u lietotnes"
+msgstr[2] "Instalētas %u lietotnes"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:104
+#: ../src/gs-sources-dialog.c:111
 #, c-format
-msgid "%i add-on installed"
-msgid_plural "%i add-ons installed"
-msgstr[0] "Instalēts %i papildinājums"
-msgstr[1] "Instalēti %i papildinājumi"
-msgstr[2] "Instalēti %i papildinājumi"
+#| msgid "%i add-on installed"
+#| msgid_plural "%i add-ons installed"
+msgid "%u add-on installed"
+msgid_plural "%u add-ons installed"
+msgstr[0] "Instalēts %u papildinājums"
+msgstr[1] "Instalēti %u papildinājumi"
+msgstr[2] "Instalēti %u papildinājumi"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:111
+#: ../src/gs-sources-dialog.c:119
 #, c-format
-msgid "%i application"
-msgid_plural "%i applications"
-msgstr[0] "%i lietotne"
-msgstr[1] "%i lietotnes"
-msgstr[2] "%i lietotņu"
+#| msgid "%i application"
+#| msgid_plural "%i applications"
+msgid "%u application"
+msgid_plural "%u applications"
+msgstr[0] "%u lietotne"
+msgstr[1] "%u lietotnes"
+msgstr[2] "%u lietotņu"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:117
+#: ../src/gs-sources-dialog.c:125
 #, c-format
-msgid "%i add-on"
-msgid_plural "%i add-ons"
-msgstr[0] "%i papildinājums"
-msgstr[1] "%i papildinājumi"
-msgstr[2] "%i papildinājumu"
+#| msgid "%i add-on"
+#| msgid_plural "%i add-ons"
+msgid "%u add-on"
+msgid_plural "%u add-ons"
+msgstr[0] "%u papildinājums"
+msgstr[1] "%u papildinājumi"
+msgstr[2] "%u papildinājumu"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:124
+#: ../src/gs-sources-dialog.c:132
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -1553,24 +1828,31 @@ msgstr[0] "%s un %s instalēts"
 msgstr[1] "%s un %s instalēti"
 msgstr[2] "%s un %s instalēti"
 
-#: ../src/gs-sources-dialog.c:322 ../src/gs-sources-dialog.ui.h:12
+#. TRANSLATORS: nonfree software
+#: ../src/gs-sources-dialog.c:252
+msgid "Typically has restrictions on use and access to source code."
+msgstr "Parasti ir ierobežojumi lietošanai un piekļuvei pirmkodam."
+
+#. TRANSLATORS: list header
+#: ../src/gs-sources-dialog.c:273
+#| msgid "Software Sources"
+msgid "Proprietary Software Sources"
+msgstr "Īpašnieku programmatūras avoti"
+
+#: ../src/gs-sources-dialog.c:489 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Izņemt avotu"
 
-#: ../src/gs-sources-dialog.c:336
-msgid "Removing…"
-msgstr "Izņem…"
-
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:402
+#: ../src/gs-sources-dialog.c:572
 msgid "the operating system"
 msgstr "šī operētājsistēma"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:473
+#: ../src/gs-sources-dialog.c:665
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1585,8 +1867,9 @@ msgid "Software Sources"
 msgstr "Programmatūras avoti"
 
 #: ../src/gs-sources-dialog.ui.h:3
-msgid "Software sources give you access to additional software."
-msgstr "Programmatūras avots dod piekļuvi papildu programmatūrai."
+#| msgid "Additional Fonts Required"
+msgid "Additional Sources"
+msgstr "Papildu avoti"
 
 #: ../src/gs-sources-dialog.ui.h:4
 msgid ""
@@ -1619,30 +1902,27 @@ msgstr "Pievienots"
 msgid "Website"
 msgstr "Tīmekļa vietne"
 
-#: ../src/gs-star-widget.ui.h:1
-msgid "One Star"
-msgstr "Viena zvaigzne"
+#: ../src/gs-summary-tile.c:74
+#, c-format
+#| msgid "Installed"
+msgid "%s (Installed)"
+msgstr "%s (instalēts)"
 
-#: ../src/gs-star-widget.ui.h:2
-msgid "Two Stars"
-msgstr "Divas zvaigznes"
+#: ../src/gs-summary-tile.c:82
+#, c-format
+#| msgid "Installing"
+msgid "%s (Installing)"
+msgstr "%s (instalē)"
 
-#: ../src/gs-star-widget.ui.h:3
-msgid "Three Stars"
-msgstr "Trīs zvaigznes"
+#: ../src/gs-summary-tile.c:90
+#, c-format
+#| msgid "Removing"
+msgid "%s (Removing)"
+msgstr "%s (izņem)"
 
-#: ../src/gs-star-widget.ui.h:4
-msgid "Four Stars"
-msgstr "Četras zvaigznes"
-
-#: ../src/gs-star-widget.ui.h:5
-msgid "Five Stars"
-msgstr "Piecas zvaigznes"
-
-#. TRANSLATORS: this is where the
-#. * packager did not write a
-#. * description for the update
-#: ../src/gs-update-dialog.c:119
+#. TRANSLATORS: this is where the packager did not write
+#. * a description for the update
+#: ../src/gs-update-dialog.c:121
 msgid "No update description available."
 msgstr "Nav pieejams atjauninājumu apraksts."
 
@@ -1650,13 +1930,13 @@ msgstr "Nav pieejams atjauninājumu apraksts."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: ../src/gs-update-dialog.c:225
+#: ../src/gs-update-dialog.c:216
 #, c-format
 msgid "Installed on %s"
 msgstr "Instalēts %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:245
+#: ../src/gs-update-dialog.c:236
 msgid "Installed Updates"
 msgstr "Instalētās lietotnes"
 
@@ -1664,63 +1944,59 @@ msgstr "Instalētās lietotnes"
 msgid "No updates have been installed on this system."
 msgstr "Uz šīs sistēmas netika instalēti nekādi atjauninājumi."
 
-#: ../src/gs-update-monitor.c:89
+#: ../src/gs-update-monitor.c:90
 msgid "Security Updates Pending"
 msgstr "Rindā gaida drošības atjauninājumi"
 
-#: ../src/gs-update-monitor.c:90
+#: ../src/gs-update-monitor.c:91
 msgid "It is recommended that you install important updates now"
 msgstr "Ieteicams jau tagad instalēt svarīgus atjauninājumus"
 
-#: ../src/gs-update-monitor.c:93
+#: ../src/gs-update-monitor.c:94
 msgid "Restart & Install"
 msgstr "Pārstartēt un instalēt"
 
-#: ../src/gs-update-monitor.c:97
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "Pieejami programmatūras atjauninājumi"
 
-#: ../src/gs-update-monitor.c:98
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Svarīgi operētājsistēmas un lietotņu atjauninājumi ir gatavi instalēšanai"
 
-#: ../src/gs-update-monitor.c:101
-msgid "Not Now"
-msgstr "Ne tagad"
-
-#: ../src/gs-update-monitor.c:102
+#: ../src/gs-update-monitor.c:103
 msgid "View"
 msgstr "Skatīt"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:230
+#: ../src/gs-update-monitor.c:271
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Jauna %s versija ir pieejama instalēšanai"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:234
+#: ../src/gs-update-monitor.c:275
 msgid "Software Upgrade Available"
 msgstr "Pieejami programmatūras atjauninājumi"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:428
+#: ../src/gs-update-monitor.c:462
 msgid "Software Updates Failed"
 msgstr "Neizdevās atjaunināt programmatūru"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:430
+#: ../src/gs-update-monitor.c:464
 msgid "An important OS update failed to be installed."
 msgstr "Neizdevās uzinstalēt svarīgus OS atjauninājumus."
 
-#: ../src/gs-update-monitor.c:432
+#: ../src/gs-update-monitor.c:465
 msgid "Show Details"
 msgstr "Rādīt sīkāku informāciju"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:447
+#: ../src/gs-update-monitor.c:487
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Programmatūras atjauninājums uzinstalēts"
@@ -1728,7 +2004,7 @@ msgstr[1] "Programmatūras atjauninājumi uzinstalēti"
 msgstr[2] "Programmatūras atjauninājumi uzinstalēti"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:451
+#: ../src/gs-update-monitor.c:491
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tika uzinstalēts svarīgs OS atjauninājums."
@@ -1740,38 +2016,30 @@ msgstr[2] "Tika uzinstalēti svarīgi OS atjauninājumi."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:462
-#| msgid "Review"
+#: ../src/gs-update-monitor.c:502
 msgctxt "updates"
 msgid "Review"
-msgstr "Rakstīt atsauksmi"
-
-#. TRANSLATORS: these are show_detailed_error messages from the
-#. * package manager no mortal is supposed to understand,
-#. * but google might know what they mean
-#: ../src/gs-update-monitor.c:537
-msgid "Detailed errors from the package manager follow:"
-msgstr "Seko detalizēta informācija par kļūdām no pakotņu pārvaldnieka:"
+msgstr "Pārskats"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:598
+#: ../src/gs-update-monitor.c:546
 msgid "Failed To Update"
 msgstr "Neizdevās atjaunināt"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:604
+#: ../src/gs-update-monitor.c:552
 msgid "The system was already up to date."
 msgstr "Sistēma jau ir aktuāla."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:609
+#: ../src/gs-update-monitor.c:557
 msgid "The update was cancelled."
 msgstr "Atjaunināšana tika atcelta."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:615
+#: ../src/gs-update-monitor.c:563
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1780,7 +2048,7 @@ msgstr ""
 "Pārliecinieties, ka jums ir pieeja internetam un mēģiniet vēlreiz."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:621
+#: ../src/gs-update-monitor.c:569
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1789,13 +2057,13 @@ msgstr ""
 "programmatūras nodrošinātāju, lai uzzinātu vairāk."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:627
+#: ../src/gs-update-monitor.c:575
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Nepietika diska vietas. Lūdzu, atbrīvojiet vietu un mēģiniet vēlreiz."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:632
+#: ../src/gs-update-monitor.c:580
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -1807,7 +2075,7 @@ msgstr ""
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: ../src/gs-upgrade-banner.c:75
+#: ../src/gs-upgrade-banner.c:86
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s tagad pieejams."
@@ -1815,7 +2083,7 @@ msgstr "%s %s tagad pieejams."
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: ../src/gs-upgrade-banner.c:88
+#: ../src/gs-upgrade-banner.c:96
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Lejupielādē %s %s"
@@ -1824,7 +2092,7 @@ msgstr "Lejupielādē %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: ../src/gs-upgrade-banner.c:102
+#: ../src/gs-upgrade-banner.c:107
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s ir gatavs instalēšanai"
@@ -1839,45 +2107,88 @@ msgid "_Learn More"
 msgstr "_Uzzināt vairāk"
 
 #: ../src/gs-upgrade-banner.ui.h:3
-msgid "_Download"
-msgstr "_Lejupielādēt"
-
-#: ../src/gs-upgrade-banner.ui.h:5
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr "Pirms uzlabošanas ieteicams izveidot datu un datņu dublējumu."
 
+#: ../src/gs-upgrade-banner.ui.h:4
+msgid "_Download"
+msgstr "_Lejupielādēt"
+
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:140
+#: ../src/gs-common.c:137
 #, c-format
 msgid "%s is now installed"
 msgstr "%s tagad ir instalēts"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:144
+#: ../src/gs-common.c:141
 msgid "Launch"
 msgstr "Palaist"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:170
+#: ../src/gs-common.c:168
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Neizdevās %s instalēšana."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:175
+#: ../src/gs-common.c:173
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Neizdevās %s izņemšana."
 
+#. TRANSLATORS: this is when the upgrade download fails
+#: ../src/gs-common.c:182
+#, c-format
+#| msgid "Removal of %s failed."
+msgid "Upgrade to %s failed."
+msgstr "Neizdevās %s uzlabošana."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-common.c:197
+#| msgid "Internet access is required to check for updates."
+msgid "Internet access was required but wasn’t available."
+msgstr "Bija nepieciešama pieeja internetam, bet tā nebija pieejama."
+
+#. TRANSLATORS: plug in the network cable...
+#: ../src/gs-common.c:200
+#| msgid ""
+#| "Internet access was required but wasn’t available. Please make sure that "
+#| "you have internet access and try again."
+msgid "Please make sure that you have internet access and try again."
+msgstr "Pārliecinieties, ka jums ir pieeja internetam un mēģiniet vēlreiz."
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-common.c:205
+#| msgid ""
+#| "There wasn’t enough disk space. Please free up some space and try again."
+msgid "There wasn’t enough disk space."
+msgstr "Nepietika diska vietas."
+
+#. TRANSLATORS: delete some stuff!
+#: ../src/gs-common.c:208
+#| msgid ""
+#| "There wasn’t enough disk space. Please free up some space and try again."
+msgid "Please free up some space and try again."
+msgstr "Lūdzu, atbrīvojiet vietu un mēģiniet vēlreiz."
+
+#. TRANSLATORS: we didn't handle the error type
+#: ../src/gs-common.c:213
+msgid "If the problem persists, contact your software provider."
+msgstr ""
+"Ja problēma neatrisinās, sazinieties ar programmatūras "
+"nodrošinātāju."
+
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:248
+#: ../src/gs-common.c:273
 msgid "Install Third-Party Software?"
 msgstr "Instalēt trešās puses programmatūru?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:252
+#: ../src/gs-common.c:277
 msgid "Enable Third-Party Software Source?"
 msgstr "Ieslēgt trešās puses programmatūras avotus?"
 
@@ -1885,7 +2196,7 @@ msgstr "Ieslēgt trešās puses programmatūras avotus?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:270
+#: ../src/gs-common.c:295
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1897,48 +2208,455 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:280
+#: ../src/gs-common.c:305
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s nodrošina “%s”."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:290
+#: ../src/gs-common.c:315
 msgid "This software source must be enabled to continue installation."
 msgstr "Jāieslēdz šie programmatūras avoti, lai varētu turpināt instalēšanu."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:300
+#: ../src/gs-common.c:325
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "%s instalēšana vai izmantošana dažās valstīs varētu būt nelegāla."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:306
+#: ../src/gs-common.c:331
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Šī kodeka instalēšana vai izmantošana dažās valstīs varētu būt nelegāla."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:313
+#: ../src/gs-common.c:338
 msgid "Don't Warn Again"
 msgstr "Vairs nebrīdināt"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:322
+#: ../src/gs-common.c:347
 msgid "Enable and Install"
 msgstr "Ieslēgt un instalēt"
 
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:403
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-cartoon"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:406
+msgid "Cartoon characters in unsafe situations"
+msgstr "Multeņu tēli nedrošās situācijās"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:409
+msgid "Cartoon characters in aggressive conflict"
+msgstr "Multeņu tēli agresīvā konfliktā"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:412
+msgid "Graphic violence involving cartoon characters"
+msgstr "Grafiska vardarbība, kur iesaistīti multeņu tēli"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:415
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-fantasy"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:418
+msgid "Characters in unsafe situations easily distinguishable from reality"
+msgstr "Tēli nedrošās situācijās, ko viegli atšķirt no realitātes"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:421
+msgid "Characters in aggressive conflict easily distinguishable from reality"
+msgstr "Tēli agresīvā konfliktā, ko viegli atšķirt no realitātes"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:424
+msgid "Graphic violence easily distinguishable from reality"
+msgstr "Grafiska vardarbība, ko viegli atšķirt no realitātes"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:427
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-realistic"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:430
+msgid "Mildly realistic characters in unsafe situations"
+msgstr "Nedaudz reālistiski tēli nedrošās situācijās"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:433
+msgid "Depictions of realistic characters in aggressive conflict"
+msgstr "Ataino reālistiskus tēlus agresīvā konfliktā"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:436
+msgid "Graphic violence involving realistic characters"
+msgstr "Grafiska vardarbība, kur iesaistīti reālistiski tēli"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:439
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-bloodshed"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:442
+msgid "Unrealistic bloodshed"
+msgstr "Nereālistiska asinsizliešana"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:445
+msgid "Realistic bloodshed"
+msgstr "Reālistiska asinsizliešana"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:448
+msgid "Depictions of bloodshed and the mutilation of body parts"
+msgstr "Ataino asinsizliešanu un ķermeņu daļu kropļošanu"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:451
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-sexual"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:454
+msgid "Rape or other violent sexual behavior"
+msgstr "Izvarošana un cita vardarbīga seksuāla uzvedība"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:457
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating drugs-alcohol"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:460
+msgid "References to alcoholic beverages"
+msgstr "Norādes uz alkoholiskiem dzērieniem"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:463
+msgid "Use of alcoholic beverages"
+msgstr "Alkoholisku dzērienu lietošana"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:466
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating drugs-narcotics"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:469
+msgid "References to illicit drugs"
+msgstr "Norādes uz nelegālām narkotikām"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:472
+msgid "Use of illicit drugs"
+msgstr "Nelegālu narkotiku lietošana"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:475
+msgid "References to tobacco products"
+msgstr "Norādes uz tabakas produktiem"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:478
+msgid "Use of tobacco products"
+msgstr "Tabakas produktu izmantošana"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:481
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating sex-nudity"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:484
+msgid "Brief artistic nudity"
+msgstr "Īss māksliniecisks kailums"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:487
+msgid "Prolonged nudity"
+msgstr "Ilglaicīgs kailums"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:490
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating sex-themes"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:493
+msgid "Provocative references or depictions"
+msgstr "Provocējošas norādes vai atainojumi"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:496
+#| msgid "Search for applications"
+msgid "Sexual references or depictions"
+msgstr "Seksuālas norādes vai atainojumi"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:499
+msgid "Graphic sexual behavior"
+msgstr "Grafiska seksuāla uzvedība"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:502
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating language-profanity"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:505
+msgid "Mild or infrequent use of profanity"
+msgstr "Neliela vai reta rupjību lietošana"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:508
+msgid "Moderate use of profanity"
+msgstr "Mērena rupjību lietošana"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:511
+msgid "Strong or frequent use of profanity"
+msgstr "Stipra vai bieža rupjību lietošana"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:514
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating language-humor"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:517
+msgid "Slapstick humor"
+msgstr "Farsa humors"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:520
+msgid "Vulgar or bathroom humor"
+msgstr "Vulgārs vai atejas humors"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:523
+msgid "Mature or sexual humor"
+msgstr "Pieaugušo vai seksuāls humors"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:526
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating language-discrimination"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:529
+msgid "Negativity towards a specific group of people"
+msgstr "Negativitāte pret noteiktu cilvēku grupu"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:532
+msgid "Discrimination designed to cause emotional harm"
+msgstr "Diskriminācija, kas paredzēta emocionāla kaitējuma izraisīšanai"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:535
+msgid "Explicit discrimination based on gender, sexuality, race or religion"
+msgstr "Eksplicīta dzimuma, seksualitātes, rases vai reliģijas diskriminācija"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:538
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating money-advertising"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:541
+#| msgctxt "Menu subcategory of Development Tools"
+#| msgid "Project Management"
+msgid "Product placement"
+msgstr "Produktu izvietošana"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:544
+msgid "Explicit references to specific brands or trademarked products"
+msgstr "Atklātas norādes uz noteikiem zīmoliem vai preču zīmju produktiem"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:547
+msgid "Players are encouraged to purchase specific real-world items"
+msgstr "Spēlētāji tiek iedrošināti iegādāties noteiktas reālās pasaules preces"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:550
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating money-gambling"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:553
+msgid "Gambling on random events using tokens or credits"
+msgstr "Likt derības uz nejaušiem notikumiem, izmantojot žetonus vai kredītus"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:556
+msgid "Gambling using \"play\" money"
+msgstr "Likt derības ar “spēļu” naudu"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:559
+msgid "Gambling using real money"
+msgstr "Likt derības ar īstu naudu"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:562
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating money-purchasing"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:565
+msgid "Ability to spend real money in-game"
+msgstr "Iespēja spēlē tērēt īstu naudu"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:568
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-chat"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:571
+msgid "Player-to-player game interactions without chat functionality"
+msgstr "Spēlētāju savstarpēja interakcija bez tērzēšanas iespējām"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:574
+msgid "Player-to-player preset interactions without chat functionality"
+msgstr ""
+"Spēlētāju savstarpēja piekšiestatīta interakcija bez tērzēšanas iespējām"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:577
+msgid "Uncontrolled chat functionality between players"
+msgstr "Nekontrolēta tērzēšanas iespēja starp spēlētājiem"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:580
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-audio"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:583
+msgid "Uncontrolled audio or video chat functionality between players"
+msgstr "Nekontrolēta audio un video tērzēšanas iespēja starp spēlētājiem"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:586
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-contacts"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:589
+msgid "Sharing social network usernames or email addresses"
+msgstr "Dalās ar sociālo tīklu lietotājvārdiem vai e-pasta adresēm"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:592
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-info"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:595
+#| msgid "Show profiling information for the service"
+msgid "Sharing user information with 3rd parties"
+msgstr "Dalās ar lietotāju informāciju ar trešajām pusēm"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:598
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-location"
+msgid "None"
+msgstr "Nav"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:601
+msgid "Sharing physical location to other users"
+msgstr "Dalās ar citiem lietotājiem ar fizisko atrašanās vietu"
+
+#. TRANSLATORS: these are show_detailed_error messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-common.c:772
+msgid "Detailed errors from the package manager follow:"
+msgstr "Seko detalizēta informācija par kļūdām no pakotņu pārvaldnieka:"
+
 #. vim: set noexpandtab:
-#: ../src/menus.ui.h:1
+#: ../src/gs-menus.ui.h:1
 msgid "_Software Sources"
 msgstr "Programmatūra_s avoti"
 
-#: ../src/menus.ui.h:2
+#: ../src/gs-menus.ui.h:2
 msgid "_About"
 msgstr "P_ar"
 
-#: ../src/menus.ui.h:3
+#: ../src/gs-menus.ui.h:3
 msgid "_Quit"
 msgstr "I_ziet"
 
@@ -1954,888 +2672,1144 @@ msgstr ""
 "Atjauninājumi;Uzlabojumi;Avoti;Krātuves;Repozitoriji;Iestatījumi;Instalēt;"
 "Uzstādīt;Atinstalēt;Noņemt;Programmatūra;Lietotne;Veikals;"
 
-#: ../src/plugins/gs-plugin-appstream.c:199
-#, c-format
-msgid "No AppStream data found"
-msgstr "Nav atrastu AppStream datu"
+#. TRANSLATORS: initial start
+#: ../src/gs-shell-loading.c:63
+msgid "Software catalog is being downloaded"
+msgstr "Programmatūras katalogs tiek lejupielādēts"
 
-#: ../src/plugins/gs-plugin-moduleset.c:153
+#. TRANSLATORS: initial start
+#: ../src/gs-shell-loading.c:68
+#| msgid "Software Updates Failed"
+msgid "Software catalog is being loaded"
+msgstr "Programmatūras katalogs tiek ielādēts"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-loading.ui.h:1
+#| msgid "Codecs page"
+msgid "Loading page"
+msgstr "Ielādē lapu"
+
+#: ../src/gs-shell-loading.ui.h:2
+#| msgid "Setting up updates…"
+msgid "Starting up…"
+msgstr "Startējas…"
+
+#: ../src/plugins/gs-desktop-common.c:30
+#| msgid "All"
+msgctxt "Menu of AudioVideo"
+msgid "All"
+msgstr "Visas"
+
+#: ../src/plugins/gs-desktop-common.c:33
+#| msgid "Featured"
+msgctxt "Menu of AudioVideo"
 msgid "Featured"
-msgstr "Piedāvātā"
+msgstr "Piedāvātās"
 
-#. TRANSLATORS: this is the menu spec main category for Audio
-#: ../src/plugins/menu-spec-common.c:30
-msgid "Audio"
-msgstr "Audio"
+#: ../src/plugins/gs-desktop-common.c:36
+msgctxt "Menu of AudioVideo"
+msgid "Audio Creation & Editing"
+msgstr "Audio veidošana un rediģēšana"
 
-#: ../src/plugins/menu-spec-common.c:31
-msgctxt "Menu subcategory of Audio"
-msgid "Editing"
-msgstr "Rediģēšana"
+#: ../src/plugins/gs-desktop-common.c:42
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Players"
+msgctxt "Menu of AudioVideo"
+msgid "Music Players"
+msgstr "Mūzikas atskaņotāji"
 
-#: ../src/plugins/menu-spec-common.c:32
-msgctxt "Menu subcategory of Audio"
-msgid "Databases"
-msgstr "Datubāzes"
+#: ../src/plugins/gs-desktop-common.c:51
+#| msgid "All"
+msgctxt "Menu of Development"
+msgid "All"
+msgstr "Visas"
 
-#: ../src/plugins/menu-spec-common.c:33
-msgctxt "Menu subcategory of Audio"
-msgid "Disc Burning"
-msgstr "Disku rakstīšana"
+#: ../src/plugins/gs-desktop-common.c:54
+#| msgid "Featured"
+msgctxt "Menu of Development"
+msgid "Featured"
+msgstr "Piedāvātās"
 
-#: ../src/plugins/menu-spec-common.c:34
-msgctxt "Menu subcategory of Audio"
-msgid "Ham Radio"
-msgstr "Ham radio"
-
-#: ../src/plugins/menu-spec-common.c:35
-msgctxt "Menu subcategory of Audio"
-msgid "MIDI"
-msgstr "MIDI"
-
-#: ../src/plugins/menu-spec-common.c:36
-msgctxt "Menu subcategory of Audio"
-msgid "Mixer"
-msgstr "Mikseri"
-
-#: ../src/plugins/menu-spec-common.c:37
-msgctxt "Menu subcategory of Audio"
-msgid "Music"
-msgstr "Mūzika"
-
-#: ../src/plugins/menu-spec-common.c:38
-msgctxt "Menu subcategory of Audio"
-msgid "Players"
-msgstr "Atskaņotāji"
-
-#: ../src/plugins/menu-spec-common.c:39
-msgctxt "Menu subcategory of Audio"
-msgid "Recorders"
-msgstr "Ierakstītāji"
-
-#: ../src/plugins/menu-spec-common.c:40
-msgctxt "Menu subcategory of Audio"
-msgid "Sequencers"
-msgstr "Sekvencētāji"
-
-#: ../src/plugins/menu-spec-common.c:41
-msgctxt "Menu subcategory of Audio"
-msgid "Tuners"
-msgstr "Skaņotāji"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: ../src/plugins/menu-spec-common.c:43
-msgid "Development Tools"
-msgstr "Izstrādes rīki"
-
-#: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development Tools"
-msgid "Building"
-msgstr "Būvēšana"
-
-#: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development Tools"
-msgid "Databases"
-msgstr "Datubāzes"
-
-#: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development Tools"
+#: ../src/plugins/gs-desktop-common.c:57
+#| msgctxt "Menu subcategory of Development Tools"
+#| msgid "Debuggers"
+msgctxt "Menu of Development"
 msgid "Debuggers"
 msgstr "Atkļūdotāji"
 
-#: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development Tools"
-msgid "GUI Designers"
-msgstr "GUI projektētāji"
+#: ../src/plugins/gs-desktop-common.c:60
+msgctxt "Menu of Development"
+msgid "IDEs"
+msgstr "Izstrādes vides"
 
-#: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development Tools"
-msgid "IDE"
-msgstr "IDE"
+#: ../src/plugins/gs-desktop-common.c:69
+#| msgid "All"
+msgctxt "Menu of Education"
+msgid "All"
+msgstr "Visas"
 
-#: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development Tools"
-msgid "Profiling"
-msgstr "Profilēšana"
+#: ../src/plugins/gs-desktop-common.c:72
+#| msgid "Featured"
+msgctxt "Menu of Education"
+msgid "Featured"
+msgstr "Piedāvātās"
 
-#: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development Tools"
-msgid "Project Management"
-msgstr "Projektu pārvaldība"
-
-#: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development Tools"
-msgid "Revision Control"
-msgstr "Versiju vadība"
-
-#: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development Tools"
-msgid "Translation"
-msgstr "Tulkošana"
-
-#: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development Tools"
-msgid "Web Development"
-msgstr "Tīmekļa izstrāde"
-
-#. TRANSLATORS: this is the menu spec main category for Education
-#: ../src/plugins/menu-spec-common.c:55
-msgid "Education"
-msgstr "Izglītība"
-
-#: ../src/plugins/menu-spec-common.c:56
-msgctxt "Menu subcategory of Education"
-msgid "Art"
-msgstr "Māksla"
-
-#: ../src/plugins/menu-spec-common.c:57
-msgctxt "Menu subcategory of Education"
-msgid "Artificial Intelligence"
-msgstr "Mākslīgais intelekts"
-
-#: ../src/plugins/menu-spec-common.c:58
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:75
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Astronomy"
+msgctxt "Menu of Education"
 msgid "Astronomy"
 msgstr "Astronomija"
 
-#: ../src/plugins/menu-spec-common.c:59
-msgctxt "Menu subcategory of Education"
-msgid "Biology"
-msgstr "Bioloģija"
-
-#: ../src/plugins/menu-spec-common.c:60
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:78
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Chemistry"
+msgctxt "Menu of Education"
 msgid "Chemistry"
 msgstr "Ķīmija"
 
-#: ../src/plugins/menu-spec-common.c:61
-msgctxt "Menu subcategory of Education"
-msgid "Computer Science"
-msgstr "Datorzinātne"
-
-#: ../src/plugins/menu-spec-common.c:62
-msgctxt "Menu subcategory of Education"
-msgid "Construction"
-msgstr "Būvniecība"
-
-#: ../src/plugins/menu-spec-common.c:63
-msgctxt "Menu subcategory of Education"
-msgid "Data Visualization"
-msgstr "Datu vizualizēšana"
-
-#: ../src/plugins/menu-spec-common.c:64
-msgctxt "Menu subcategory of Education"
-msgid "Economy"
-msgstr "Ekonomika"
-
-#: ../src/plugins/menu-spec-common.c:65
-msgctxt "Menu subcategory of Education"
-msgid "Electricity"
-msgstr "Elektrība"
-
-#: ../src/plugins/menu-spec-common.c:66
-msgctxt "Menu subcategory of Education"
-msgid "Electronics"
-msgstr "Elektronika"
-
-#: ../src/plugins/menu-spec-common.c:67
-msgctxt "Menu subcategory of Education"
-msgid "Engineering"
-msgstr "Inženierija"
-
-#: ../src/plugins/menu-spec-common.c:68
-msgctxt "Menu subcategory of Education"
-msgid "Geography"
-msgstr "Ģeogrāfija"
-
-#: ../src/plugins/menu-spec-common.c:69
-msgctxt "Menu subcategory of Education"
-msgid "Geology"
-msgstr "Ģeoloģija"
-
-#: ../src/plugins/menu-spec-common.c:70
-msgctxt "Menu subcategory of Education"
-msgid "Geoscience"
-msgstr "Ģeozinātne"
-
-#: ../src/plugins/menu-spec-common.c:71
-msgctxt "Menu subcategory of Education"
-msgid "History"
-msgstr "Vēsture"
-
-#: ../src/plugins/menu-spec-common.c:72
-msgctxt "Menu subcategory of Education"
-msgid "Humanities"
-msgstr "Humanitārās zinātnes"
-
-#: ../src/plugins/menu-spec-common.c:73
-msgctxt "Menu subcategory of Education"
-msgid "Image Processing"
-msgstr "Attēlu apstrāde"
-
-#: ../src/plugins/menu-spec-common.c:74
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:81
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Languages"
+msgctxt "Menu of Education"
 msgid "Languages"
 msgstr "Valodas"
 
-#: ../src/plugins/menu-spec-common.c:75
-msgctxt "Menu subcategory of Education"
-msgid "Literature"
-msgstr "Literatūra"
-
-#: ../src/plugins/menu-spec-common.c:76
-msgctxt "Menu subcategory of Education"
-msgid "Maps"
-msgstr "Kartes"
-
-#: ../src/plugins/menu-spec-common.c:77
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:85
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Math"
+msgctxt "Menu of Education"
 msgid "Math"
 msgstr "Matemātika"
 
-#: ../src/plugins/menu-spec-common.c:78
-msgctxt "Menu subcategory of Education"
-msgid "Medical"
-msgstr "Medicīna"
+#: ../src/plugins/gs-desktop-common.c:94
+#| msgid "All"
+msgctxt "Menu of Games"
+msgid "All"
+msgstr "Visas"
 
-#: ../src/plugins/menu-spec-common.c:79
-msgctxt "Menu subcategory of Education"
-msgid "Music"
-msgstr "Mūzika"
+#: ../src/plugins/gs-desktop-common.c:97
+#| msgid "Featured"
+msgctxt "Menu of Games"
+msgid "Featured"
+msgstr "Piedāvātās"
 
-#: ../src/plugins/menu-spec-common.c:80
-msgctxt "Menu subcategory of Education"
-msgid "Numerical Analysis"
-msgstr "Skaitliskā analīze"
-
-#: ../src/plugins/menu-spec-common.c:81
-msgctxt "Menu subcategory of Education"
-msgid "Parallel Computing"
-msgstr "Paralēlā skaitļošana"
-
-#: ../src/plugins/menu-spec-common.c:82
-msgctxt "Menu subcategory of Education"
-msgid "Physics"
-msgstr "Fizika"
-
-#: ../src/plugins/menu-spec-common.c:83
-msgctxt "Menu subcategory of Education"
-msgid "Robotics"
-msgstr "Robotika"
-
-#: ../src/plugins/menu-spec-common.c:84
-msgctxt "Menu subcategory of Education"
-msgid "Spirituality"
-msgstr "Garīgums"
-
-#: ../src/plugins/menu-spec-common.c:85
-msgctxt "Menu subcategory of Education"
-msgid "Sports"
-msgstr "Sports"
-
-#. TRANSLATORS: this is the menu spec main category for Games
-#: ../src/plugins/menu-spec-common.c:87
-msgid "Games"
-msgstr "Spēles"
-
-#: ../src/plugins/menu-spec-common.c:88
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:100
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Action"
+msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Darbības"
 
-#: ../src/plugins/menu-spec-common.c:89
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:103
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Adventure"
+msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Piedzīvojumu"
 
-#: ../src/plugins/menu-spec-common.c:90
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:106
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Arcade"
+msgctxt "Menu of Games"
 msgid "Arcade"
-msgstr "Arkāde"
+msgstr "Arkādes"
 
-#: ../src/plugins/menu-spec-common.c:91
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:109
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Blocks"
+msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Bloku"
 
-#: ../src/plugins/menu-spec-common.c:92
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:112
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Board"
+msgctxt "Menu of Games"
 msgid "Board"
-msgstr "Galdiņa"
+msgstr "Galda"
 
-#: ../src/plugins/menu-spec-common.c:93
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:115
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Card"
+msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Kāršu"
 
-#: ../src/plugins/menu-spec-common.c:94
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:118
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Emulators"
+msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Emulatori"
 
-#: ../src/plugins/menu-spec-common.c:95
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:121
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Kids"
+msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Bērnu"
 
-#: ../src/plugins/menu-spec-common.c:96
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:124
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Logic"
+msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Loģikas"
 
-#: ../src/plugins/menu-spec-common.c:97
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:127
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Role Playing"
+msgctxt "Menu of Games"
 msgid "Role Playing"
-msgstr "Lomu spēles"
+msgstr "Lomu spēļu"
 
-#: ../src/plugins/menu-spec-common.c:98
-msgctxt "Menu subcategory of Games"
-msgid "Shooter"
-msgstr "Šaušanas"
-
-#: ../src/plugins/menu-spec-common.c:99
-msgctxt "Menu subcategory of Games"
-msgid "Simulation"
-msgstr "Simulācijas"
-
-#: ../src/plugins/menu-spec-common.c:100
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:130
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
+msgctxt "Menu of Games"
 msgid "Sports"
-msgstr "Sports"
+msgstr "Sporta"
 
-#: ../src/plugins/menu-spec-common.c:101
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:134
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Strategy"
+msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Stratēģijas"
 
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: ../src/plugins/menu-spec-common.c:103
-msgid "Graphics"
-msgstr "Grafika"
+#: ../src/plugins/gs-desktop-common.c:142
+#| msgid "All"
+msgctxt "Menu of Graphics"
+msgid "All"
+msgstr "Visas"
 
-#: ../src/plugins/menu-spec-common.c:104
-msgctxt "Menu subcategory of Graphics"
-msgid "2D Graphics"
-msgstr "2D grafika"
+#: ../src/plugins/gs-desktop-common.c:145
+#| msgid "Featured"
+msgctxt "Menu of Graphics"
+msgid "Featured"
+msgstr "Piedāvātās"
 
-#: ../src/plugins/menu-spec-common.c:105
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:148
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "3D Graphics"
+msgctxt "Menu of Graphics"
 msgid "3D Graphics"
 msgstr "3D grafika"
 
-#: ../src/plugins/menu-spec-common.c:106
-msgctxt "Menu subcategory of Graphics"
-msgid "OCR"
-msgstr "OCR"
-
-#: ../src/plugins/menu-spec-common.c:107
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:151
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Photography"
+msgctxt "Menu of Graphics"
 msgid "Photography"
 msgstr "Fotografēšana"
 
-#: ../src/plugins/menu-spec-common.c:108
-msgctxt "Menu subcategory of Graphics"
-msgid "Publishing"
-msgstr "Publicēšana"
-
-#: ../src/plugins/menu-spec-common.c:109
-msgctxt "Menu subcategory of Graphics"
-msgid "Raster Graphics"
-msgstr "Rastrgrafika"
-
-#: ../src/plugins/menu-spec-common.c:110
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:154
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Scanning"
+msgctxt "Menu of Graphics"
 msgid "Scanning"
 msgstr "Skenēšana"
 
-#: ../src/plugins/menu-spec-common.c:111
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:157
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Vector Graphics"
+msgctxt "Menu of Graphics"
 msgid "Vector Graphics"
 msgstr "Vektorgrafika"
 
-#: ../src/plugins/menu-spec-common.c:112
-msgctxt "Menu subcategory of Graphics"
-msgid "Viewer"
-msgstr "Skatītājs"
+#: ../src/plugins/gs-desktop-common.c:160
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Viewer"
+msgctxt "Menu of Graphics"
+msgid "Viewers"
+msgstr "Skatītāji"
 
-#. TRANSLATORS: this is the menu spec main category for Network
-#: ../src/plugins/menu-spec-common.c:114
-msgid "Internet"
-msgstr "Internets"
+#: ../src/plugins/gs-desktop-common.c:168
+#| msgid "All"
+msgctxt "Menu of Office"
+msgid "All"
+msgstr "Visas"
 
-#: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Internet"
-msgid "Chat"
-msgstr "Tērzēšana"
+#: ../src/plugins/gs-desktop-common.c:171
+#| msgid "Featured"
+msgctxt "Menu of Office"
+msgid "Featured"
+msgstr "Piedāvātās"
 
-#: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Internet"
-msgid "Dialup"
-msgstr "Modems"
-
-#: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Internet"
-msgid "Email"
-msgstr "E-pasts"
-
-#: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Internet"
-msgid "Feed"
-msgstr "Plūsma"
-
-#: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Internet"
-msgid "File Transfer"
-msgstr "Datņu pārraide"
-
-#: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Internet"
-msgid "Ham Radio"
-msgstr "Ham radio"
-
-#: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Internet"
-msgid "Instant Messaging"
-msgstr "Tūlītēja ziņojumapmaiņa"
-
-#: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Internet"
-msgid "IRC Clients"
-msgstr "IRC klienti"
-
-#: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Internet"
-msgid "Monitor"
-msgstr "Pārraudzīšana"
-
-#: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Internet"
-msgid "News"
-msgstr "Ziņas"
-
-#: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Internet"
-msgid "P2P"
-msgstr "P2P"
-
-#: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Internet"
-msgid "Remote Access"
-msgstr "Attālinātā piekļuve"
-
-#: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Internet"
-msgid "Telephony"
-msgstr "Telefonija"
-
-#: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Internet"
-msgid "Video Conference"
-msgstr "Video konferences"
-
-#: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Internet"
-msgid "Web Browser"
-msgstr "Tīmekļa pārlūki"
-
-#: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Internet"
-msgid "Web Development"
-msgstr "Tīmekļa izstrāde"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: ../src/plugins/menu-spec-common.c:132
-msgid "Office"
-msgstr "Birojs"
-
-#: ../src/plugins/menu-spec-common.c:133
-msgctxt "Menu subcategory of Office"
+#: ../src/plugins/gs-desktop-common.c:174
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Calendar"
+msgctxt "Menu of Office"
 msgid "Calendar"
 msgstr "Kalendāri"
 
-#: ../src/plugins/menu-spec-common.c:134
-msgctxt "Menu subcategory of Office"
-msgid "Chart"
-msgstr "Diagrammas"
-
-#: ../src/plugins/menu-spec-common.c:135
-msgctxt "Menu subcategory of Office"
-msgid "Contact Management"
-msgstr "Kontaktu pārvaldība"
-
-#: ../src/plugins/menu-spec-common.c:136
-msgctxt "Menu subcategory of Office"
-msgid "Database"
-msgstr "Datubāze"
-
-#: ../src/plugins/menu-spec-common.c:137
-msgctxt "Menu subcategory of Office"
-msgid "Dictionary"
-msgstr "Vārdnīca"
-
-#: ../src/plugins/menu-spec-common.c:138
-msgctxt "Menu subcategory of Office"
-msgid "Email"
-msgstr "E-pasts"
-
-#: ../src/plugins/menu-spec-common.c:139
-msgctxt "Menu subcategory of Office"
-msgid "Finance"
-msgstr "Finanses"
-
-#: ../src/plugins/menu-spec-common.c:140
-msgctxt "Menu subcategory of Office"
-msgid "Flow Chart"
-msgstr "Plūsmu diagrammas"
-
-#: ../src/plugins/menu-spec-common.c:141
-msgctxt "Menu subcategory of Office"
-msgid "PDA"
-msgstr "PDA"
-
-#: ../src/plugins/menu-spec-common.c:142
-msgctxt "Menu subcategory of Office"
-msgid "Photography"
-msgstr "Fotografēšana"
-
-#: ../src/plugins/menu-spec-common.c:143
-msgctxt "Menu subcategory of Office"
-msgid "Presentation"
-msgstr "Prezentācijas"
-
-#: ../src/plugins/menu-spec-common.c:144
-msgctxt "Menu subcategory of Office"
-msgid "Project Management"
-msgstr "Projektu pārvaldība"
-
-#: ../src/plugins/menu-spec-common.c:145
-msgctxt "Menu subcategory of Office"
-msgid "Publishing"
-msgstr "Publicēšana"
-
-#: ../src/plugins/menu-spec-common.c:146
-msgctxt "Menu subcategory of Office"
-msgid "Spreadsheet"
-msgstr "Izklājlapas"
-
-#: ../src/plugins/menu-spec-common.c:147
-msgctxt "Menu subcategory of Office"
-msgid "Viewer"
-msgstr "Skatītājs"
-
-#: ../src/plugins/menu-spec-common.c:148
-msgctxt "Menu subcategory of Office"
-msgid "Word Processor"
-msgstr "Tekstapstrādes programmas"
-
-#. TRANSLATORS: this is the menu spec main category for Science
-#: ../src/plugins/menu-spec-common.c:150
-msgid "Science"
-msgstr "Zinātne"
-
-#: ../src/plugins/menu-spec-common.c:151
-msgctxt "Menu subcategory of Science"
-msgid "Art"
-msgstr "Māksla"
-
-#: ../src/plugins/menu-spec-common.c:152
-msgctxt "Menu subcategory of Science"
-msgid "Artificial Intelligence"
-msgstr "Mākslīgais intelekts"
-
-#: ../src/plugins/menu-spec-common.c:153
-msgctxt "Menu subcategory of Science"
-msgid "Astronomy"
-msgstr "Astronomija"
-
-#: ../src/plugins/menu-spec-common.c:154
-msgctxt "Menu subcategory of Science"
-msgid "Biology"
-msgstr "Bioloģija"
-
-#: ../src/plugins/menu-spec-common.c:155
-msgctxt "Menu subcategory of Science"
-msgid "Chemistry"
-msgstr "Ķīmija"
-
-#: ../src/plugins/menu-spec-common.c:156
-msgctxt "Menu subcategory of Science"
-msgid "Computer Science"
-msgstr "Datorzinātne"
-
-#: ../src/plugins/menu-spec-common.c:157
-msgctxt "Menu subcategory of Science"
-msgid "Construction"
-msgstr "Būvniecība"
-
-#: ../src/plugins/menu-spec-common.c:158
-msgctxt "Menu subcategory of Science"
-msgid "Data Visualization"
-msgstr "Datu vizualizēšana"
-
-#: ../src/plugins/menu-spec-common.c:159
-msgctxt "Menu subcategory of Science"
-msgid "Economy"
-msgstr "Ekonomika"
-
-#: ../src/plugins/menu-spec-common.c:160
-msgctxt "Menu subcategory of Science"
-msgid "Electricity"
-msgstr "Elektrība"
-
-#: ../src/plugins/menu-spec-common.c:161
-msgctxt "Menu subcategory of Science"
-msgid "Electronics"
-msgstr "Elektronika"
-
-#: ../src/plugins/menu-spec-common.c:162
-msgctxt "Menu subcategory of Science"
-msgid "Engineering"
-msgstr "Inženierija"
-
-#: ../src/plugins/menu-spec-common.c:163
-msgctxt "Menu subcategory of Science"
-msgid "Geography"
-msgstr "Ģeogrāfija"
-
-#: ../src/plugins/menu-spec-common.c:164
-msgctxt "Menu subcategory of Science"
-msgid "Geology"
-msgstr "Ģeoloģija"
-
-#: ../src/plugins/menu-spec-common.c:165
-msgctxt "Menu subcategory of Science"
-msgid "Geoscience"
-msgstr "Ģeozinātne"
-
-#: ../src/plugins/menu-spec-common.c:166
-msgctxt "Menu subcategory of Science"
-msgid "History"
-msgstr "Vēsture"
-
-#: ../src/plugins/menu-spec-common.c:167
-msgctxt "Menu subcategory of Science"
-msgid "Humanities"
-msgstr "Humanitārās zinātnes"
-
-#: ../src/plugins/menu-spec-common.c:168
-msgctxt "Menu subcategory of Science"
-msgid "Image Processing"
-msgstr "Attēlu apstrāde"
-
-#: ../src/plugins/menu-spec-common.c:169
-msgctxt "Menu subcategory of Science"
-msgid "Languages"
-msgstr "Valodas"
-
-#: ../src/plugins/menu-spec-common.c:170
-msgctxt "Menu subcategory of Science"
-msgid "Literature"
-msgstr "Literatūra"
-
-#: ../src/plugins/menu-spec-common.c:171
-msgctxt "Menu subcategory of Science"
-msgid "Maps"
-msgstr "Kartes"
-
-#: ../src/plugins/menu-spec-common.c:172
-msgctxt "Menu subcategory of Science"
-msgid "Math"
-msgstr "Matemātika"
-
-#: ../src/plugins/menu-spec-common.c:173
-msgctxt "Menu subcategory of Science"
-msgid "Medical"
-msgstr "Medicīna"
-
-#: ../src/plugins/menu-spec-common.c:174
-msgctxt "Menu subcategory of Science"
-msgid "Numerical Analysis"
-msgstr "Skaitliskā analīze"
-
-#: ../src/plugins/menu-spec-common.c:175
-msgctxt "Menu subcategory of Science"
-msgid "Parallel Computing"
-msgstr "Paralēlā skaitļošana"
-
-#: ../src/plugins/menu-spec-common.c:176
-msgctxt "Menu subcategory of Science"
-msgid "Physics"
-msgstr "Fizika"
-
-#: ../src/plugins/menu-spec-common.c:177
-msgctxt "Menu subcategory of Science"
-msgid "Robotics"
-msgstr "Robotika"
-
-#: ../src/plugins/menu-spec-common.c:178
-msgctxt "Menu subcategory of Science"
-msgid "Spirituality"
-msgstr "Garīgums"
-
-#: ../src/plugins/menu-spec-common.c:179
-msgctxt "Menu subcategory of Science"
-msgid "Sports"
-msgstr "Sports"
-
-#. TRANSLATORS: this is the menu spec main category for System
-#: ../src/plugins/menu-spec-common.c:181
-msgid "System"
-msgstr "Sistēma"
-
-#: ../src/plugins/menu-spec-common.c:182
-msgctxt "Menu subcategory of System"
-msgid "Emulator"
-msgstr "Emulators"
-
-#: ../src/plugins/menu-spec-common.c:183
-msgctxt "Menu subcategory of System"
-msgid "File Manager"
-msgstr "Datņu pārvaldnieks"
-
-#: ../src/plugins/menu-spec-common.c:184
-msgctxt "Menu subcategory of System"
-msgid "File System"
-msgstr "Datņu sistēma"
-
-#: ../src/plugins/menu-spec-common.c:185
-msgctxt "Menu subcategory of System"
-msgid "File Tools"
-msgstr "Datņu rīki"
-
-#: ../src/plugins/menu-spec-common.c:186
-msgctxt "Menu subcategory of System"
-msgid "Monitor"
-msgstr "Pārraudzīšana"
-
-#: ../src/plugins/menu-spec-common.c:187
-msgctxt "Menu subcategory of System"
-msgid "Security"
-msgstr "Drošība"
-
-#: ../src/plugins/menu-spec-common.c:188
-msgctxt "Menu subcategory of System"
-msgid "Terminal Emulator"
-msgstr "Termināļa emulatori"
-
-#. TRANSLATORS: this is the menu spec main category for Utility
-#: ../src/plugins/menu-spec-common.c:190
-msgid "Utilities"
-msgstr "Utilītprogrammas"
-
-#: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utilities"
-msgid "Accessibility"
-msgstr "Pieejamība"
-
-#: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utilities"
-msgid "Archiving"
-msgstr "Arhivēšana"
-
-#: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utilities"
-msgid "Calculator"
-msgstr "Kalkulatori"
-
-#: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utilities"
-msgid "Clock"
-msgstr "Pulksteņi"
-
-#: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utilities"
-msgid "Compression"
-msgstr "Saspiešana"
-
-#: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utilities"
-msgid "File Tools"
-msgstr "Datņu rīki"
-
-#: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utilities"
-msgid "Maps"
-msgstr "Kartes"
-
-#: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utilities"
-msgid "Spirituality"
-msgstr "Garīgums"
-
-#: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utilities"
-msgid "Telephony Tools"
-msgstr "Telefonijas rīki"
-
-#: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utilities"
-msgid "Text Editor"
-msgstr "Teksta redaktori"
-
-#. TRANSLATORS: this is the menu spec main category for Video
-#: ../src/plugins/menu-spec-common.c:202
-msgid "Video"
-msgstr "Video"
-
-#: ../src/plugins/menu-spec-common.c:203
-msgctxt "Menu subcategory of Video"
-msgid "Editing"
-msgstr "Rediģēšana"
-
-#: ../src/plugins/menu-spec-common.c:204
-msgctxt "Menu subcategory of Video"
+#: ../src/plugins/gs-desktop-common.c:178
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Database"
+msgctxt "Menu of Office"
 msgid "Database"
 msgstr "Datubāzes"
 
-#: ../src/plugins/menu-spec-common.c:205
-msgctxt "Menu subcategory of Video"
-msgid "Disc Burning"
-msgstr "Disku rakstīšana"
+#: ../src/plugins/gs-desktop-common.c:181
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Finance"
+msgctxt "Menu of Office"
+msgid "Finance"
+msgstr "Finanses"
 
-#: ../src/plugins/menu-spec-common.c:206
-msgctxt "Menu subcategory of Video"
-msgid "Players"
-msgstr "Atskaņotāji"
+#: ../src/plugins/gs-desktop-common.c:185
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Word Processor"
+msgctxt "Menu of Office"
+msgid "Word Processor"
+msgstr "Tekstapstrādes programmas"
 
-#: ../src/plugins/menu-spec-common.c:207
-msgctxt "Menu subcategory of Video"
-msgid "Recorders"
-msgstr "Ierakstītāji"
-
-#: ../src/plugins/menu-spec-common.c:208
-msgctxt "Menu subcategory of Video"
-msgid "TV"
-msgstr "TV"
-
-#: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:194
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Fonts"
+msgctxt "Menu of Addons"
 msgid "Fonts"
 msgstr "Fonti"
 
-#: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:197
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Codecs"
+msgctxt "Menu of Addons"
 msgid "Codecs"
 msgstr "Kodeki"
 
-#: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:200
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Input Sources"
+msgctxt "Menu of Addons"
 msgid "Input Sources"
 msgstr "Ievades avoti"
 
-#: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:203
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Language Packs"
+msgctxt "Menu of Addons"
 msgid "Language Packs"
 msgstr "Valodu pakas"
 
-#: ../src/plugins/menu-spec-common.c:215
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:206
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Shell Extensions"
+msgctxt "Menu of Addons"
 msgid "Shell Extensions"
 msgstr "Čaulas paplašinājumi"
 
-#: ../src/plugins/menu-spec-common.c:216
-#| msgid "An application"
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:209
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Localization"
+msgctxt "Menu of Addons"
 msgid "Localization"
 msgstr "Lokalizācija"
 
+#: ../src/plugins/gs-desktop-common.c:212
+msgctxt "Menu of Addons"
+msgid "Hardware Drivers"
+msgstr "Aparatūra un draiveri"
+
+#: ../src/plugins/gs-desktop-common.c:220
+#| msgid "All"
+msgctxt "Menu of Science"
+msgid "All"
+msgstr "Visas"
+
+#: ../src/plugins/gs-desktop-common.c:223
+#| msgid "Featured"
+msgctxt "Menu of Science"
+msgid "Featured"
+msgstr "Piedāvātās"
+
+#: ../src/plugins/gs-desktop-common.c:226
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Artificial Intelligence"
+msgctxt "Menu of Science"
+msgid "Artificial Intelligence"
+msgstr "Mākslīgais intelekts"
+
+#: ../src/plugins/gs-desktop-common.c:229
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Astronomy"
+msgctxt "Menu of Science"
+msgid "Astronomy"
+msgstr "Astronomija"
+
+#: ../src/plugins/gs-desktop-common.c:232
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Chemistry"
+msgctxt "Menu of Science"
+msgid "Chemistry"
+msgstr "Ķīmija"
+
+#: ../src/plugins/gs-desktop-common.c:235
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Math"
+msgctxt "Menu of Science"
+msgid "Math"
+msgstr "Matemātika"
+
+#: ../src/plugins/gs-desktop-common.c:240
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Robotics"
+msgctxt "Menu of Science"
+msgid "Robotics"
+msgstr "Robotika"
+
+#: ../src/plugins/gs-desktop-common.c:248
+#| msgid "All"
+msgctxt "Menu of Communication"
+msgid "All"
+msgstr "Visas"
+
+#: ../src/plugins/gs-desktop-common.c:251
+#| msgid "Featured"
+msgctxt "Menu of Communication"
+msgid "Featured"
+msgstr "Piedāvātās"
+
+#: ../src/plugins/gs-desktop-common.c:254
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Chat"
+msgctxt "Menu of Communication"
+msgid "Chat"
+msgstr "Tērzēšanai"
+
+#: ../src/plugins/gs-desktop-common.c:261
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "News"
+msgctxt "Menu of Communication"
+msgid "News"
+msgstr "Ziņas"
+
+#: ../src/plugins/gs-desktop-common.c:265
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Web Browser"
+msgctxt "Menu of Communication"
+msgid "Web Browsers"
+msgstr "Tīmekļa pārlūki"
+
+#: ../src/plugins/gs-desktop-common.c:273
+#| msgid "All"
+msgctxt "Menu of Utility"
+msgid "All"
+msgstr "Visas"
+
+#: ../src/plugins/gs-desktop-common.c:276
+#| msgid "Featured"
+msgctxt "Menu of Utility"
+msgid "Featured"
+msgstr "Piedāvātās"
+
+#: ../src/plugins/gs-desktop-common.c:279
+#| msgctxt "Menu subcategory of Utilities"
+#| msgid "Text Editor"
+msgctxt "Menu of Utility"
+msgid "Text Editors"
+msgstr "Teksta redaktori"
+
+#: ../src/plugins/gs-desktop-common.c:287
+#| msgid "All"
+msgctxt "Menu of Reference"
+msgid "All"
+msgstr "Visas"
+
+#: ../src/plugins/gs-desktop-common.c:290
+#| msgid "Featured"
+msgctxt "Menu of Reference"
+msgid "Featured"
+msgstr "Piedāvātās"
+
+#: ../src/plugins/gs-desktop-common.c:293
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Art"
+msgctxt "Menu of Art"
+msgid "Art"
+msgstr "Māksla"
+
+#: ../src/plugins/gs-desktop-common.c:296
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Geography"
+msgctxt "Menu of Reference"
+msgid "Biography"
+msgstr "Biogrāfija"
+
+#: ../src/plugins/gs-desktop-common.c:299
+msgctxt "Menu of Reference"
+msgid "Comics"
+msgstr "Komiksi"
+
+#: ../src/plugins/gs-desktop-common.c:302
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Action"
+msgctxt "Menu of Reference"
+msgid "Fiction"
+msgstr "Daiļliteratūra"
+
+#: ../src/plugins/gs-desktop-common.c:305
+msgctxt "Menu of Reference"
+msgid "Health"
+msgstr "Veselība"
+
+#: ../src/plugins/gs-desktop-common.c:308
+#| msgid "History"
+msgctxt "Menu of Reference"
+msgid "History"
+msgstr "Vēsture"
+
+#: ../src/plugins/gs-desktop-common.c:311
+msgctxt "Menu of Reference"
+msgid "Lifestyle"
+msgstr "Dzīvesveids"
+
+#: ../src/plugins/gs-desktop-common.c:314
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Robotics"
+msgctxt "Menu of Reference"
+msgid "Politics"
+msgstr "Politika"
+
+#: ../src/plugins/gs-desktop-common.c:317
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
+msgctxt "Menu of Reference"
+msgid "Sports"
+msgstr "Sports"
+
+#. TRANSLATORS: this is the menu spec main category for Audio & Video
+#: ../src/plugins/gs-desktop-common.c:326
+msgid "Audio & Video"
+msgstr "Audio un video"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-desktop-common.c:329
+#| msgid "Development Tools"
+msgid "Developer Tools"
+msgstr "Izstrādes rīki"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-desktop-common.c:332
+msgid "Education"
+msgstr "Izglītība"
+
+#. TRANSLATORS: this is the menu spec main category for Game
+#: ../src/plugins/gs-desktop-common.c:335
+msgid "Games"
+msgstr "Spēles"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-desktop-common.c:338
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Photography"
+msgid "Graphics & Photography"
+msgstr "Grafika un fotografēšana"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-desktop-common.c:341
+msgid "Productivity"
+msgstr "Produktivitāte"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-desktop-common.c:347
+msgid "Science"
+msgstr "Zinātne"
+
+#. TRANSLATORS: this is the menu spec main category for Communication
+#: ../src/plugins/gs-desktop-common.c:350
+msgid "Communication & News"
+msgstr "Komunikācijas un ziņas"
+
+#. TRANSLATORS: this is the menu spec main category for Reference
+#: ../src/plugins/gs-desktop-common.c:353
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Video Conference"
+msgid "Reference"
+msgstr "Uzziņas"
+
+#. TRANSLATORS: this is the menu spec main category for Utilities
+#: ../src/plugins/gs-desktop-common.c:356
+msgid "Utilities"
+msgstr "Utilītprogrammas"
+
+#~ msgid " or "
+#~ msgstr " vai "
+
+#~ msgid "3rd party"
+#~ msgstr "Trešās puses"
+
+#~ msgid "web app"
+#~ msgstr "tīmekļa lietotne"
+
+#~ msgid "nonfree"
+#~ msgstr "nav brīva"
+
+#~ msgid "_Installing"
+#~ msgstr "_Instalē"
+
+#~ msgid "_Removing"
+#~ msgstr "_Izņem"
+
+#~ msgctxt "license"
+#~ msgid "Unknown"
+#~ msgstr "Nezināma"
+
+#~ msgctxt "size"
+#~ msgid "Calculating…"
+#~ msgstr "Aprēķina…"
+
+#~ msgctxt "size"
+#~ msgid "Unknown"
+#~ msgstr "Nezināms"
+
+#~ msgid "This software comes from a 3rd party."
+#~ msgstr "Šo programmatūru nodrošina trešā puse."
+
+#~ msgid ""
+#~ "This software comes from a 3rd party and may contain non-free components."
+#~ msgstr ""
+#~ "Šī programmatūra nāk no trešajām pusēm un var saturēt nebrīvas "
+#~ "komponentes."
+
+#~ msgid "This software may contain non-free components."
+#~ msgstr "Šī programmatūra var saturēt nebrīvas komponentes."
+
+#~ msgid "_History"
+#~ msgstr "_Vēsture"
+
+#~ msgid "Size"
+#~ msgstr "Izmērs"
+
+#~ msgid "non-free"
+#~ msgstr "nebrīva"
+
+#~ msgid "Recommended Office Applications"
+#~ msgstr "Ieteiktās biroja lietotnes"
+
+#~ msgid "Featured Application"
+#~ msgstr "Izceltās lietotnes"
+
+#~ msgid "Software sources give you access to additional software."
+#~ msgstr "Programmatūras avots dod piekļuvi papildu programmatūrai."
+
+#~ msgid "One Star"
+#~ msgstr "Viena zvaigzne"
+
+#~ msgid "Two Stars"
+#~ msgstr "Divas zvaigznes"
+
+#~ msgid "Three Stars"
+#~ msgstr "Trīs zvaigznes"
+
+#~ msgid "Four Stars"
+#~ msgstr "Četras zvaigznes"
+
+#~ msgid "Five Stars"
+#~ msgstr "Piecas zvaigznes"
+
+#~ msgid "No AppStream data found"
+#~ msgstr "Nav atrastu AppStream datu"
+
+#~ msgid "Audio"
+#~ msgstr "Audio"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Editing"
+#~ msgstr "Rediģēšana"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Databases"
+#~ msgstr "Datubāzes"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Disc Burning"
+#~ msgstr "Disku rakstīšana"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Ham Radio"
+#~ msgstr "Ham radio"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "MIDI"
+#~ msgstr "MIDI"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Mixer"
+#~ msgstr "Mikseri"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Music"
+#~ msgstr "Mūzika"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Recorders"
+#~ msgstr "Ierakstītāji"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Sequencers"
+#~ msgstr "Sekvencētāji"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Tuners"
+#~ msgstr "Skaņotāji"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Building"
+#~ msgstr "Būvēšana"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Databases"
+#~ msgstr "Datubāzes"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "GUI Designers"
+#~ msgstr "GUI projektētāji"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "IDE"
+#~ msgstr "IDE"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Profiling"
+#~ msgstr "Profilēšana"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Revision Control"
+#~ msgstr "Versiju vadība"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Translation"
+#~ msgstr "Tulkošana"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Web Development"
+#~ msgstr "Tīmekļa izstrāde"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Biology"
+#~ msgstr "Bioloģija"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Computer Science"
+#~ msgstr "Datorzinātne"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Construction"
+#~ msgstr "Būvniecība"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Data Visualization"
+#~ msgstr "Datu vizualizēšana"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Economy"
+#~ msgstr "Ekonomika"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Electricity"
+#~ msgstr "Elektrība"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Electronics"
+#~ msgstr "Elektronika"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Engineering"
+#~ msgstr "Inženierija"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geology"
+#~ msgstr "Ģeoloģija"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geoscience"
+#~ msgstr "Ģeozinātne"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "History"
+#~ msgstr "Vēsture"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Humanities"
+#~ msgstr "Humanitārās zinātnes"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Image Processing"
+#~ msgstr "Attēlu apstrāde"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Literature"
+#~ msgstr "Literatūra"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Maps"
+#~ msgstr "Kartes"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Medical"
+#~ msgstr "Medicīna"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Music"
+#~ msgstr "Mūzika"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Numerical Analysis"
+#~ msgstr "Skaitliskā analīze"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Parallel Computing"
+#~ msgstr "Paralēlā skaitļošana"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Physics"
+#~ msgstr "Fizika"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Spirituality"
+#~ msgstr "Garīgums"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Shooter"
+#~ msgstr "Šaušanas"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Simulation"
+#~ msgstr "Simulācijas"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Sports"
+#~ msgstr "Sports"
+
+#~ msgid "Graphics"
+#~ msgstr "Grafika"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "2D Graphics"
+#~ msgstr "2D grafika"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "OCR"
+#~ msgstr "OCR"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "Publishing"
+#~ msgstr "Publicēšana"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "Raster Graphics"
+#~ msgstr "Rastrgrafika"
+
+#~ msgid "Internet"
+#~ msgstr "Internets"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Dialup"
+#~ msgstr "Modems"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Email"
+#~ msgstr "E-pasts"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Feed"
+#~ msgstr "Plūsma"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "File Transfer"
+#~ msgstr "Datņu pārraide"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Ham Radio"
+#~ msgstr "Ham radio"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Instant Messaging"
+#~ msgstr "Tūlītēja ziņojumapmaiņa"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "IRC Clients"
+#~ msgstr "IRC klienti"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Monitor"
+#~ msgstr "Pārraudzīšana"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "P2P"
+#~ msgstr "P2P"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Remote Access"
+#~ msgstr "Attālinātā piekļuve"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Telephony"
+#~ msgstr "Telefonija"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Web Development"
+#~ msgstr "Tīmekļa izstrāde"
+
+#~ msgid "Office"
+#~ msgstr "Birojs"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Chart"
+#~ msgstr "Diagrammas"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Contact Management"
+#~ msgstr "Kontaktu pārvaldība"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Dictionary"
+#~ msgstr "Vārdnīca"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Email"
+#~ msgstr "E-pasts"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Flow Chart"
+#~ msgstr "Plūsmu diagrammas"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "PDA"
+#~ msgstr "PDA"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Photography"
+#~ msgstr "Fotografēšana"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Presentation"
+#~ msgstr "Prezentācijas"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Project Management"
+#~ msgstr "Projektu pārvaldība"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Publishing"
+#~ msgstr "Publicēšana"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Spreadsheet"
+#~ msgstr "Izklājlapas"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Viewer"
+#~ msgstr "Skatītājs"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Art"
+#~ msgstr "Māksla"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Artificial Intelligence"
+#~ msgstr "Mākslīgais intelekts"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Astronomy"
+#~ msgstr "Astronomija"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Biology"
+#~ msgstr "Bioloģija"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Chemistry"
+#~ msgstr "Ķīmija"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Computer Science"
+#~ msgstr "Datorzinātne"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Construction"
+#~ msgstr "Būvniecība"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Data Visualization"
+#~ msgstr "Datu vizualizēšana"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Economy"
+#~ msgstr "Ekonomika"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Electricity"
+#~ msgstr "Elektrība"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Electronics"
+#~ msgstr "Elektronika"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Engineering"
+#~ msgstr "Inženierija"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geography"
+#~ msgstr "Ģeogrāfija"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geology"
+#~ msgstr "Ģeoloģija"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geoscience"
+#~ msgstr "Ģeozinātne"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "History"
+#~ msgstr "Vēsture"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Humanities"
+#~ msgstr "Humanitārās zinātnes"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Image Processing"
+#~ msgstr "Attēlu apstrāde"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Languages"
+#~ msgstr "Valodas"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Literature"
+#~ msgstr "Literatūra"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Maps"
+#~ msgstr "Kartes"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Math"
+#~ msgstr "Matemātika"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Medical"
+#~ msgstr "Medicīna"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Numerical Analysis"
+#~ msgstr "Skaitliskā analīze"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Parallel Computing"
+#~ msgstr "Paralēlā skaitļošana"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Physics"
+#~ msgstr "Fizika"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Robotics"
+#~ msgstr "Robotika"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Spirituality"
+#~ msgstr "Garīgums"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Sports"
+#~ msgstr "Sports"
+
+#~ msgid "System"
+#~ msgstr "Sistēma"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Emulator"
+#~ msgstr "Emulators"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File Manager"
+#~ msgstr "Datņu pārvaldnieks"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File System"
+#~ msgstr "Datņu sistēma"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File Tools"
+#~ msgstr "Datņu rīki"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Monitor"
+#~ msgstr "Pārraudzīšana"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Security"
+#~ msgstr "Drošība"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Terminal Emulator"
+#~ msgstr "Termināļa emulatori"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Accessibility"
+#~ msgstr "Pieejamība"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Archiving"
+#~ msgstr "Arhivēšana"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Calculator"
+#~ msgstr "Kalkulatori"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Clock"
+#~ msgstr "Pulksteņi"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Compression"
+#~ msgstr "Saspiešana"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "File Tools"
+#~ msgstr "Datņu rīki"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Maps"
+#~ msgstr "Kartes"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Spirituality"
+#~ msgstr "Garīgums"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Telephony Tools"
+#~ msgstr "Telefonijas rīki"
+
+#~ msgid "Video"
+#~ msgstr "Video"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Editing"
+#~ msgstr "Rediģēšana"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Database"
+#~ msgstr "Datubāzes"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Disc Burning"
+#~ msgstr "Disku rakstīšana"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Players"
+#~ msgstr "Atskaņotāji"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Recorders"
+#~ msgstr "Ierakstītāji"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "TV"
+#~ msgstr "TV"
