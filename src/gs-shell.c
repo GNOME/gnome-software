@@ -710,12 +710,16 @@ gs_shell_get_title_from_origin (GsApp *app)
 	return g_strdup_printf ("“%s”", gs_app_get_id (app));
 }
 
+/* return a name for the app, using quotes if the name is more than one word */
 static gchar *
 gs_shell_get_title_from_app (GsApp *app)
 {
-	/* get a title, falling back */
-	if (gs_app_get_name (app) != NULL)
-		return g_strdup_printf ("“%s”", gs_app_get_name (app));
+	const gchar *tmp = gs_app_get_name (app);
+	if (tmp != NULL) {
+		if (g_strstr_len (tmp, -1, " ") != NULL)
+			return g_strdup_printf ("“%s”", tmp);
+		return g_strdup (tmp);
+	}
 	return g_strdup_printf ("“%s”", gs_app_get_id (app));
 }
 
