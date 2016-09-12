@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <json-glib/json-glib.h>
+#include <snapd-glib/snapd-glib.h>
 #include <gnome-software.h>
 
 #include "gs-snapd.h"
@@ -425,8 +426,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		      GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
+	g_autoptr(SnapdAuthData) auth_data = NULL;
 	g_autoptr(GVariant) macaroon_variant = NULL;
 	g_autofree gchar *serialized_macaroon = NULL;
 	g_autoptr(GError) local_error = NULL;
@@ -434,15 +434,31 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (auth != priv->auth)
 		return TRUE;
 
-	if (!gs_snapd_login (gs_auth_get_username (auth),
-			     gs_auth_get_password (auth),
-			     gs_auth_get_pin (auth),
-			     &macaroon,
-			     &discharges,
-			     cancellable, &local_error))
+	auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, &local_error);
+	if (auth_data == NULL) {
+		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_TWO_FACTOR_REQUIRED)) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_PIN_REQUIRED,
+					     local_error->message);
+		} else if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_AUTH_DATA_INVALID) ||
+			   g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_TWO_FACTOR_INVALID)) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_AUTH_INVALID,
+					     local_error->message);
+		} else {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     local_error->message);
+		}
 		return FALSE;
+	}
 
-	macaroon_variant = g_variant_new ("(s^as)", macaroon, discharges);
+	macaroon_variant = g_variant_new ("(s^as)",
+					  snapd_auth_data_get_macaroon (auth_data),
+					  snapd_auth_data_get_discharges (auth_data));
 	serialized_macaroon = g_variant_print (macaroon_variant, FALSE);
 	gs_auth_add_metadata (auth, "macaroon", serialized_macaroon);
 

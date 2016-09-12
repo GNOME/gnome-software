@@ -29,14 +29,6 @@ typedef void (*GsSnapdProgressCallback) (JsonObject *object, gpointer user_data)
 
 gboolean gs_snapd_exists		(void);
 
-gboolean gs_snapd_login			(const gchar	*username,
-					 const gchar	*password,
-					 const gchar	*otp,
-					 gchar		**macaroon,
-					 gchar		***discharges,
-					 GCancellable	*cancellable,
-					 GError		**error);
-
 JsonObject *gs_snapd_list_one		(const gchar	*macaroon,
 					 gchar		**discharges,
 					 const gchar	*name,
