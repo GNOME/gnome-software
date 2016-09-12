@@ -70,47 +70,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-static JsonParser *
-parse_result (const gchar *response, const gchar *response_type, GError **error)
-{
-	g_autoptr(JsonParser) parser = NULL;
-	g_autoptr(GError) error_local = NULL;
-
-	if (response_type == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "snapd returned no content type");
-		return NULL;
-	}
-	if (g_strcmp0 (response_type, "application/json") != 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "snapd returned unexpected content type %s", response_type);
-		return NULL;
-	}
-
-	parser = json_parser_new ();
-	if (!json_parser_load_from_data (parser, response, -1, &error_local)) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "Unable to parse snapd response: %s",
-			     error_local->message);
-		return NULL;
-	}
-	if (!JSON_NODE_HOLDS_OBJECT (json_parser_get_root (parser))) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "snapd response does is not a valid JSON object");
-		return NULL;
-	}
-
-	return g_object_ref (parser);
-}
-
 static void
 get_macaroon (GsPlugin *plugin, gchar **macaroon, gchar ***discharges)
 {
@@ -183,26 +142,24 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	icon_url = json_object_get_string_member (package, "icon");
 	if (g_str_has_prefix (icon_url, "/")) {
-		g_autofree gchar *icon_response = NULL;
-		gsize icon_response_length;
+		g_autofree gchar *icon_data = NULL;
+		gsize icon_data_length;
+		g_autoptr(GError) error = NULL;
 
-		if (gs_snapd_request ("GET", icon_url, NULL,
-				      macaroon, discharges,
-				      NULL, NULL,
-				      NULL, &icon_response, &icon_response_length,
-				      cancellable, NULL)) {
+		icon_data = gs_snapd_get_resource (macaroon, discharges, icon_url, &icon_data_length, cancellable, &error);
+		if (icon_data != NULL) {
 			g_autoptr(GdkPixbufLoader) loader = NULL;
 
 			loader = gdk_pixbuf_loader_new ();
 			gdk_pixbuf_loader_write (loader,
-						 (guchar *) icon_response,
-						 icon_response_length,
+						 (guchar *) icon_data,
+						 icon_data_length,
 						 NULL);
 			gdk_pixbuf_loader_close (loader, NULL);
 			icon_pixbuf = g_object_ref (gdk_pixbuf_loader_get_pixbuf (loader));
 		}
 		else
-			g_printerr ("Failed to get icon\n");
+			g_printerr ("Failed to get icon: %s\n", error->message);
 	}
 	else {
 		g_autoptr(SoupMessage) message = NULL;
@@ -244,98 +201,41 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	}
 }
 
-static gboolean
-get_apps (GsPlugin *plugin,
-	  const gchar *sources,
-	  gchar **search_terms,
-	  GsAppList *list,
-	  AppFilterFunc filter_func,
-	  gpointer user_data,
-	  GCancellable *cancellable,
-	  GError **error)
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_clear_object (&priv->auth);
+}
+
+gboolean
+gs_plugin_add_installed (GsPlugin *plugin,
+			 GsAppList *list,
+			 GCancellable *cancellable,
+			 GError **error)
 {
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
-	guint status_code;
-	GPtrArray *query_fields;
-	g_autoptr (GString) path = NULL;
-	g_autofree gchar *reason_phrase = NULL, *response_type = NULL, *response = NULL;
-	g_autoptr(JsonParser) parser = NULL;
-	JsonObject *root;
-	JsonArray *result;
-	GList *snaps;
-	GList *l;
+	g_autoptr(JsonArray) result = NULL;
+	guint i;
 
 	get_macaroon (plugin, &macaroon, &discharges);
-
-	/* Get all the apps */
-	query_fields = g_ptr_array_new_with_free_func (g_free);
-	if (sources != NULL) {
-		g_autofree gchar *escaped = NULL;
-		escaped = soup_uri_encode (sources, NULL);
-		g_ptr_array_add (query_fields, g_strdup_printf ("sources=%s", escaped));
-	}
-	if (search_terms != NULL && search_terms[0] != NULL) {
-		g_autoptr (GString) query = NULL;
-		g_autofree gchar *escaped = NULL;
-		gint i;
-
-		query = g_string_new ("q=");
-		escaped = soup_uri_encode (search_terms[0], NULL);
-		g_string_append (query, escaped);
-		for (i = 1; search_terms[i] != NULL; i++) {
-			g_autofree gchar *e = soup_uri_encode (search_terms[0], NULL);
-			g_string_append_printf (query, "+%s", e);
-		}
-		g_ptr_array_add (query_fields, g_strdup (query->str));
-		path = g_string_new ("/v2/find");
-	}
-	else
-		path = g_string_new ("/v2/snaps");
-	g_ptr_array_add (query_fields, NULL);
-	if (query_fields->len > 1) {
-		g_autofree gchar *fields = NULL;
-		g_string_append (path, "?");
-		fields = g_strjoinv ("&", (gchar **) query_fields->pdata);
-		g_string_append (path, fields);
-	}
-	g_ptr_array_free (query_fields, TRUE);
-	if (!gs_snapd_request ("GET", path->str, NULL,
-			       macaroon, discharges,
-			       &status_code, &reason_phrase,
-			       &response_type, &response, NULL,
-			       cancellable, error))
+	result = gs_snapd_list (macaroon, discharges, cancellable, error);
+	if (result == NULL)
 		return FALSE;
 
-	if (status_code != SOUP_STATUS_OK) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "snapd returned status code %u: %s",
-			     status_code, reason_phrase);
-		return FALSE;
-	}
-
-	parser = parse_result (response, response_type, error);
-	if (parser == NULL)
-		return FALSE;
-
-	root = json_node_get_object (json_parser_get_root (parser));
-	result = json_object_get_array_member (root, "result");
-	snaps = json_array_get_elements (result);
-
-	for (l = snaps; l != NULL; l = l->next) {
-		JsonObject *package = json_node_get_object (l->data);
+	for (i = 0; i < json_array_get_length (result); i++) {
+		JsonObject *package = json_array_get_object_element (result, i);
 		g_autoptr(GsApp) app = NULL;
-		const gchar *id;
+		const gchar *status, *name;
 
-		id = json_object_get_string_member (package, "name");
-
-		if (filter_func != NULL && !filter_func (id, package, user_data))
+		status = json_object_get_string_member (package, "status");
+		if (g_strcmp0 (status, "active") != 0)
 			continue;
 
 		/* create a unique ID for deduplication, TODO: branch? */
-		app = gs_app_new (id);
+		name = json_object_get_string_member (package, "name");
+		app = gs_app_new (name);
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
@@ -345,86 +245,7 @@ get_apps (GsPlugin *plugin,
 		gs_app_list_add (list, app);
 	}
 
-	g_list_free (snaps);
-
 	return TRUE;
-}
-
-static gboolean
-get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
-{
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	guint status_code;
-	g_autofree gchar *path = NULL;
-	g_autofree gchar *reason_phrase = NULL;
-	g_autofree gchar *response = NULL;
-	g_autofree gchar *response_type = NULL;
-	g_autoptr(JsonParser) parser = NULL;
-	JsonObject *root;
-	JsonObject *result;
-
-	get_macaroon (plugin, &macaroon, &discharges);
-
-	path = g_strdup_printf ("/v2/snaps/%s", gs_app_get_id (app));
-	if (!gs_snapd_request ("GET", path, NULL,
-			       macaroon, discharges,
-			       &status_code, &reason_phrase,
-			       &response_type, &response, NULL,
-			       cancellable, error))
-		return FALSE;
-
-	if (status_code == SOUP_STATUS_NOT_FOUND)
-		return TRUE;
-
-	if (status_code != SOUP_STATUS_OK) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "snapd returned status code %u: %s",
-			     status_code, reason_phrase);
-		return FALSE;
-	}
-
-	parser = parse_result (response, response_type, error);
-	if (parser == NULL)
-		return FALSE;
-	root = json_node_get_object (json_parser_get_root (parser));
-	result = json_object_get_object_member (root, "result");
-	if (result == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "snapd returned no results for %s", gs_app_get_id (app));
-		return FALSE;
-	}
-
-	refine_app (plugin, app, result, FALSE, cancellable);
-
-	return TRUE;
-}
-
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_clear_object (&priv->auth);
-}
-
-static gboolean
-is_active (const gchar *id, JsonObject *object, gpointer data)
-{
-	const gchar *status = json_object_get_string_member (object, "status");
-	return g_strcmp0 (status, "active") == 0;
-}
-
-gboolean
-gs_plugin_add_installed (GsPlugin *plugin,
-			 GsAppList *list,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	return get_apps (plugin, "local", NULL, list, is_active, NULL, cancellable, error);
 }
 
 gboolean
@@ -434,7 +255,34 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	return get_apps (plugin, NULL, values, list, NULL, values, cancellable, error);
+	g_autofree gchar *macaroon = NULL;
+	g_auto(GStrv) discharges = NULL;
+	g_autoptr(JsonArray) result = NULL;
+	guint i;
+
+	get_macaroon (plugin, &macaroon, &discharges);
+	result = gs_snapd_find (macaroon, discharges, values, cancellable, error);
+	if (result == NULL)
+		return FALSE;
+
+	for (i = 0; i < json_array_get_length (result); i++) {
+		JsonObject *package = json_array_get_object_element (result, i);
+		g_autoptr(GsApp) app = NULL;
+		const gchar *name;
+
+		/* create a unique ID for deduplication, TODO: branch? */
+		name = json_object_get_string_member (package, "name");
+		app = gs_app_new (name);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+		gs_app_set_management_plugin (app, "snap");
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+		refine_app (plugin, app, package, TRUE, cancellable);
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
 }
 
 gboolean
@@ -444,149 +292,51 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	g_autofree gchar *macaroon = NULL;
+	g_auto(GStrv) discharges = NULL;
+	g_autoptr(JsonObject) result = NULL;
+
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
-	// Get info from snapd
-	return get_app (plugin, app, cancellable, error);
-}
-
-static gboolean
-send_package_action (GsPlugin *plugin,
-		     GsApp *app,
-		     const gchar *id,
-		     const gchar *action,
-		     GCancellable *cancellable,
-		     GError **error)
-{
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	g_autofree gchar *content = NULL, *path = NULL;
-	guint status_code;
-	g_autofree gchar *reason_phrase = NULL;
-	g_autofree gchar *response_type = NULL;
-	g_autofree gchar *response = NULL;
-	g_autofree gchar *status = NULL;
-	g_autoptr(JsonParser) parser = NULL;
-	JsonObject *root, *result, *task, *progress;
-	JsonArray *tasks;
-	GList *task_list, *l;
-	gint64 done, total, task_done, task_total;
-        const gchar *resource_path;
-	const gchar *type;
-	const gchar *change_id;
-
 	get_macaroon (plugin, &macaroon, &discharges);
 
-	content = g_strdup_printf ("{\"action\": \"%s\"}", action);
-	path = g_strdup_printf ("/v2/snaps/%s", id);
-	if (!gs_snapd_request ("POST", path, content,
-			       macaroon, discharges,
-			       &status_code, &reason_phrase,
-			       &response_type, &response, NULL,
-			       cancellable, error))
+	result = gs_snapd_list_one (macaroon, discharges, gs_app_get_id (app), cancellable, error);
+	if (result == NULL)
 		return FALSE;
-
-	if (status_code == SOUP_STATUS_UNAUTHORIZED) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_AUTH_REQUIRED,
-				     "Requires authentication with @snapd");
-		return FALSE;
-	}
-
-	if (status_code != SOUP_STATUS_ACCEPTED) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "snapd returned status code %u: %s",
-			     status_code, reason_phrase);
-		return FALSE;
-	}
-
-	parser = parse_result (response, response_type, error);
-	if (parser == NULL)
-		return FALSE;
-
-	root = json_node_get_object (json_parser_get_root (parser));
-	type = json_object_get_string_member (root, "type");
-
-	if (g_strcmp0 (type, "async") == 0) {
-		change_id = json_object_get_string_member (root, "change");
-		resource_path = g_strdup_printf ("/v2/changes/%s", change_id);
-
-		while (TRUE) {
-			g_autofree gchar *status_reason_phrase = NULL;
-			g_autofree gchar *status_response_type = NULL;
-			g_autofree gchar *status_response = NULL;
-			g_autoptr(JsonParser) status_parser = NULL;
-
-			/* Wait for a little bit before polling */
-			g_usleep (100 * 1000);
-
-			if (!gs_snapd_request ("GET", resource_path, NULL,
-					       macaroon, discharges,
-					       &status_code, &status_reason_phrase,
-					       &status_response_type, &status_response, NULL,
-					       cancellable, error)) {
-				return FALSE;
-			}
-
-			if (status_code != SOUP_STATUS_OK) {
-				g_set_error (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
-					     "snapd returned status code %u: %s",
-					     status_code, status_reason_phrase);
-				return FALSE;
-			}
-
-			status_parser = parse_result (status_response, status_response_type, error);
-			if (status_parser == NULL)
-				return FALSE;
-
-			root = json_node_get_object (json_parser_get_root (status_parser));
-			result = json_object_get_object_member (root, "result");
-
-			g_free (status);
-			status = g_strdup (json_object_get_string_member (result, "status"));
-
-			if (g_strcmp0 (status, "Done") == 0)
-				break;
-
-			tasks = json_object_get_array_member (result, "tasks");
-			task_list = json_array_get_elements (tasks);
-
-			done = 0;
-			total = 0;
-
-			for (l = task_list; l != NULL; l = l->next) {
-				task = json_node_get_object (l->data);
-				progress = json_object_get_object_member (task, "progress");
-				task_done = json_object_get_int_member (progress, "done");
-				task_total = json_object_get_int_member (progress, "total");
-
-				done += task_done;
-				total += task_total;
-			}
-
-			if (total > 0)
-				gs_app_set_progress (app, (guint) (100 * done / total));
-
-			g_list_free (task_list);
-		}
-	}
-
-	if (g_strcmp0 (status, "Done") != 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "snapd operation finished with status %s", status);
-		return FALSE;
-	}
+	refine_app (plugin, app, result, FALSE, cancellable);
 
 	return TRUE;
+}
+
+static void
+progress_cb (JsonObject *result, gpointer user_data)
+{
+	GsApp *app = user_data;
+	JsonArray *tasks;
+	GList *task_list, *l;
+	gint64 done = 0, total = 0;
+
+	tasks = json_object_get_array_member (result, "tasks");
+	task_list = json_array_get_elements (tasks);
+
+	for (l = task_list; l != NULL; l = l->next) {
+		JsonObject *task, *progress;
+		gint64 task_done, task_total;
+
+		task = json_node_get_object (l->data);
+		progress = json_object_get_object_member (task, "progress");
+		task_done = json_object_get_int_member (progress, "done");
+		task_total = json_object_get_int_member (progress, "total");
+
+		done += task_done;
+		total += task_total;
+	}
+
+	gs_app_set_progress (app, (guint) (100 * done / total));
+
+	g_list_free (task_list);
 }
 
 gboolean
@@ -595,15 +345,18 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	gboolean ret;
+	g_autofree gchar *macaroon = NULL;
+	g_auto(GStrv) discharges = NULL;
 
 	/* We can only install apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
+	get_macaroon (plugin, &macaroon, &discharges);
+
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	ret = send_package_action (plugin, app, gs_app_get_id (app), "install", cancellable, error);
-	if (!ret) {
+	get_macaroon (plugin, &macaroon, &discharges);
+	if (!gs_snapd_install (macaroon, discharges, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -649,16 +402,19 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	gboolean ret;
+	g_autofree gchar *macaroon = NULL;
+	g_auto(GStrv) discharges = NULL;
 
 	/* We can only remove apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
+	get_macaroon (plugin, &macaroon, &discharges);
+
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	ret = send_package_action (plugin, app, gs_app_get_id (app), "remove", cancellable, error);
-	if (!ret) {
+	if (!gs_snapd_remove (macaroon, discharges, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -670,14 +426,6 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		      GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(JsonBuilder) builder = NULL;
-	g_autoptr(JsonNode) json_root = NULL;
-	g_autoptr(JsonGenerator) json_generator = NULL;
-	g_autofree gchar *data = NULL;
-	guint status_code;
-	g_autofree gchar *reason_phrase = NULL;
-	g_autofree gchar *response_type = NULL;
-	g_autofree gchar *response = NULL;
 	g_autoptr(JsonObject) result = NULL;
 	JsonArray *discharges;
 	guint i;
@@ -688,61 +436,8 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (auth != priv->auth)
 		return TRUE;
 
-	builder = json_builder_new ();
-	json_builder_begin_object (builder);
-	json_builder_set_member_name (builder, "username");
-	json_builder_add_string_value (builder, gs_auth_get_username (auth));
-	json_builder_set_member_name (builder, "password");
-	json_builder_add_string_value (builder, gs_auth_get_password (auth));
-	if (gs_auth_get_pin (auth)) {
-		json_builder_set_member_name (builder, "otp");
-		json_builder_add_string_value (builder, gs_auth_get_pin (auth));
-	}
-	json_builder_end_object (builder);
-
-	json_root = json_builder_get_root (builder);
-	json_generator = json_generator_new ();
-	json_generator_set_pretty (json_generator, TRUE);
-	json_generator_set_root (json_generator, json_root);
-	data = json_generator_to_data (json_generator, NULL);
-	if (data == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "Failed to generate JSON request");
-		return FALSE;
-	}
-
-	if (!gs_snapd_request ("POST", "/v2/login", data,
-			       NULL, NULL,
-			       &status_code, &reason_phrase,
-			       &response_type, &response, NULL,
-			       cancellable, error))
-		return FALSE;
-
-	if (status_code != SOUP_STATUS_OK) {
-		g_autofree gchar *error_message = NULL;
-		g_autofree gchar *error_kind = NULL;
-
-		if (!gs_snapd_parse_error (response_type, response, &error_message, &error_kind, error))
-			return FALSE;
-
-		if (g_strcmp0 (error_kind, "two-factor-required") == 0) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_PIN_REQUIRED,
-					     error_message);
-		}
-		else {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     error_message);
-		}
-		return FALSE;
-	}
-
-	if (!gs_snapd_parse_result (response_type, response, &result, error))
+	result = gs_snapd_login (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), cancellable, error);
+	if (result == NULL)
 		return FALSE;
 
 	if (!json_object_has_member (result, "macaroon")) {
