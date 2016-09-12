@@ -38,6 +38,7 @@ struct _GsUpdateMonitor {
 	GCancellable    *cancellable;
 	GSettings	*settings;
 	GsPluginLoader	*plugin_loader;
+	GDBusProxy	*proxy_upower;
 	GError		*last_offline_error;
 
 	guint		 cleanup_notifications_id;	/* at startup */
@@ -322,6 +323,16 @@ refresh_cache_finished_cb (GObject *object,
 	get_updates (monitor);
 }
 
+typedef enum {
+	UP_DEVICE_LEVEL_UNKNOWN,
+	UP_DEVICE_LEVEL_NONE,
+	UP_DEVICE_LEVEL_DISCHARGING,
+	UP_DEVICE_LEVEL_LOW,
+	UP_DEVICE_LEVEL_CRITICAL,
+	UP_DEVICE_LEVEL_ACTION,
+	UP_DEVICE_LEVEL_LAST
+} UpDeviceLevel;
+
 static void
 check_updates (GsUpdateMonitor *monitor)
 {
@@ -337,6 +348,22 @@ check_updates (GsUpdateMonitor *monitor)
 	if (!g_network_monitor_get_network_available (monitor->network_monitor) ||
 	    g_network_monitor_get_network_metered (monitor->network_monitor))
 		return;
+
+	/* never refresh when the battery is low */
+	if (monitor->proxy_upower != NULL) {
+		g_autoptr(GVariant) val = NULL;
+		val = g_dbus_proxy_get_cached_property (monitor->proxy_upower,
+							"WarningLevel");
+		if (val != NULL) {
+			guint32 level = g_variant_get_uint32 (val);
+			if (level >= UP_DEVICE_LEVEL_LOW) {
+				g_debug ("not getting updates on low power");
+				return;
+			}
+		}
+	} else {
+		g_debug ("no UPower support, so not doing power level checks");
+	}
 
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
 	last_refreshed = g_date_time_new_from_unix_local (tmp);
@@ -419,6 +446,15 @@ check_updates_on_startup_cb (gpointer data)
 
 	monitor->check_startup_id = 0;
 	return G_SOURCE_REMOVE;
+}
+
+static void
+check_updates_upower_changed_cb (GDBusProxy *proxy,
+				 GParamSpec *pspec,
+				 GsUpdateMonitor *monitor)
+{
+	g_debug ("upower changed updates check");
+	check_updates (monitor);
 }
 
 static void
@@ -593,6 +629,7 @@ gs_update_monitor_show_error (GsUpdateMonitor *monitor, GsShell *shell)
 static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
+	g_autoptr(GError) error = NULL;
 	monitor->settings = g_settings_new ("org.gnome.software");
 
 	/* cleanup at startup */
@@ -608,6 +645,23 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	if (monitor->network_monitor != NULL) {
 		g_signal_connect (monitor->network_monitor, "network-changed",
 				  G_CALLBACK (notify_network_state_cb), monitor);
+	}
+
+	/* connect to UPower to get the system power state */
+	monitor->proxy_upower = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
+					G_DBUS_PROXY_FLAGS_NONE,
+					NULL,
+					"org.freedesktop.UPower",
+					"/org/freedesktop/UPower/devices/DisplayDevice",
+					"org.freedesktop.UPower.Device",
+					NULL,
+					&error);
+	if (monitor->proxy_upower != NULL) {
+		g_signal_connect (monitor->proxy_upower, "notify",
+				  G_CALLBACK (check_updates_upower_changed_cb),
+				  monitor);
+	} else {
+		g_warning ("failed to connect to upower: %s", error->message);
 	}
 }
 
@@ -653,6 +707,7 @@ gs_update_monitor_dispose (GObject *object)
 		monitor->plugin_loader = NULL;
 	}
 	g_clear_object (&monitor->settings);
+	g_clear_object (&monitor->proxy_upower);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->dispose (object);
 }
