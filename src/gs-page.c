@@ -172,7 +172,7 @@ gs_page_app_installed_cb (GObject *source,
 	}
 
 	/* only show this if the window is not active */
-	if (gs_app_get_state (helper->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
+	if (gs_app_is_installed (helper->app) &&
 	    !gs_shell_is_active (priv->shell))
 		gs_app_notify_installed (helper->app);
 
