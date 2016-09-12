@@ -69,11 +69,4 @@ gchar *gs_snapd_get_resource	(const gchar	*macaroon,
 				 GCancellable	*cancellable,
 				 GError		**error);
 
-JsonObject *gs_snapd_login	(const gchar	*username,
-				 const gchar	*password,
-				 const gchar	*otp,
-				 GCancellable	*cancellable,
-				 GError		**error);
-
-
 #endif /* __GS_SNAPD_H__ */

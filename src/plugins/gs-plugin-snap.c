@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <json-glib/json-glib.h>
+#include <snapd-glib/snapd-glib.h>
 #include <gnome-software.h>
 
 #include "gs-snapd.h"
@@ -426,44 +427,39 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		      GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(JsonObject) result = NULL;
-	JsonArray *discharges;
-	guint i;
-	g_autoptr(GVariantBuilder) b = NULL;
+	g_autoptr(SnapdAuthData) auth_data = NULL;
 	g_autoptr(GVariant) macaroon_variant = NULL;
 	g_autofree gchar *serialized_macaroon = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	if (auth != priv->auth)
 		return TRUE;
 
-	result = gs_snapd_login (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), cancellable, error);
-	if (result == NULL)
-		return FALSE;
-
-	if (!json_object_has_member (result, "macaroon")) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_AUTH_INVALID,
-				     "Login response missing macaroon");
-		return FALSE;
-	}
-	discharges = json_object_get_array_member (result, "discharges");
-	b = g_variant_builder_new (G_VARIANT_TYPE ("as"));
-	for (i = 0; i < json_array_get_length (discharges); i++) {
-		JsonNode *node;
-		node = json_array_get_element (discharges, i);
-		if (!JSON_NODE_HOLDS_VALUE (node) && json_node_get_value_type (node) != G_TYPE_STRING) {
+	auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, &local_error);
+	if (auth_data == NULL) {
+		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_TWO_FACTOR_REQUIRED)) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_PIN_REQUIRED,
+					     local_error->message);
+		} else if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_AUTH_DATA_INVALID) ||
+			   g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_TWO_FACTOR_INVALID)) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_AUTH_INVALID,
-					     "Macaroon discharge contains unexpected value");
-			return FALSE;
+					     local_error->message);
+		} else {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     local_error->message);
 		}
-		g_variant_builder_add (b, "s", json_node_get_string (node));
+		return FALSE;
 	}
-	macaroon_variant = g_variant_new ("(sas)",
-					  json_object_get_string_member (result, "macaroon"),
-					  b);
+
+	macaroon_variant = g_variant_new ("(s^as)",
+					  snapd_auth_data_get_macaroon (auth_data),
+					  snapd_auth_data_get_discharges (auth_data));
 	serialized_macaroon = g_variant_print (macaroon_variant, FALSE);
 	gs_auth_add_metadata (auth, "macaroon", serialized_macaroon);
 

@@ -17,6 +17,7 @@ AM_CPPFLAGS =						\
 	$(FLATPAK_CFLAGS)				\
 	$(RPM_CFLAGS)					\
 	$(OAUTH_CFLAGS)					\
+	$(SNAP_CFLAGS)					\
 	-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE	\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
@@ -365,6 +366,7 @@ libgs_plugin_snap_la_SOURCES =				\
 	gs-snapd.c
 libgs_plugin_snap_la_LIBADD =				\
 	$(GS_PLUGIN_LIBS)				\
+	$(SNAP_LIBS)					\
 	$(SOUP_LIBS)					\
 	$(JSON_GLIB_LIBS)
 libgs_plugin_snap_la_LDFLAGS = -module -avoid-version
