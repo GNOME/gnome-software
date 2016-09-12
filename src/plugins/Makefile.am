@@ -46,8 +46,11 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_repos.la				\
 	libgs_plugin_fedora-tagger-usage.la		\
 	libgs_plugin_icons.la				\
-	libgs_plugin_snap.la				\
 	libgs_plugin_ubuntuone.la
+
+if HAVE_SNAP
+plugin_LTLIBRARIES += libgs_plugin_snap.la
+endif
 
 if HAVE_PACKAGEKIT
 plugin_LTLIBRARIES +=					\
@@ -360,6 +363,7 @@ libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
+if HAVE_SNAP
 libgs_plugin_snap_la_SOURCES =				\
 	gs-plugin-snap.c				\
 	gs-snapd.h					\
@@ -371,6 +375,7 @@ libgs_plugin_snap_la_LIBADD =				\
 	$(JSON_GLIB_LIBS)
 libgs_plugin_snap_la_LDFLAGS = -module -avoid-version
 libgs_plugin_snap_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
 
 libgs_plugin_ubuntuone_la_SOURCES =			\
 	gs-plugin-ubuntuone.c
