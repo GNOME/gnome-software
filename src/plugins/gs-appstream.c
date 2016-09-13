@@ -27,6 +27,20 @@
 
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
+GsApp *
+gs_appstream_create_app (GsPlugin *plugin, AsApp *item)
+{
+	const gchar *unique_id = as_app_get_unique_id (item);
+	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
+	if (app == NULL) {
+		app = gs_app_new (as_app_get_id (item));
+		gs_app_set_metadata (app, "GnomeSoftware::Creator",
+				     gs_plugin_get_name (plugin));
+		gs_plugin_cache_add (plugin, unique_id, app);
+	}
+	return app;
+}
+
 static AsIcon *
 gs_appstream_get_icon_by_kind (AsApp *app, AsIconKind icon_kind)
 {
