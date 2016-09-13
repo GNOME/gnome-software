@@ -741,3 +741,71 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	return TRUE;
 }
+
+static gboolean
+gs_appstream_store_search_item (GsPlugin *plugin,
+				AsApp *item,
+				gchar **values,
+				GsAppList *list,
+				GCancellable *cancellable,
+				GError **error)
+{
+	AsApp *item_tmp;
+	GPtrArray *addons;
+	guint i;
+	guint match_value;
+	g_autoptr(GsApp) app = NULL;
+
+	/* match against the app or any of the addons */
+	match_value = as_app_search_matches_all (item, values);
+	addons = as_app_get_addons (item);
+	for (i = 0; i < addons->len; i++) {
+		item_tmp = g_ptr_array_index (addons, i);
+		match_value |= as_app_search_matches_all (item_tmp, values);
+	}
+
+	/* no match */
+	if (match_value == 0)
+		return TRUE;
+
+	/* create app */
+	app = gs_appstream_create_app (plugin, item);
+	if (!gs_appstream_refine_app (plugin, app, item, error))
+		return FALSE;
+	gs_app_set_match_value (app, match_value);
+	gs_app_list_add (list, app);
+	return TRUE;
+}
+
+gboolean
+gs_appstream_store_search (GsPlugin *plugin,
+			   AsStore *store,
+			   gchar **values,
+			   GsAppList *list,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	gboolean ret = TRUE;
+	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* search categories for the search term */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::search");
+	g_assert (ptask != NULL);
+	array = as_store_get_apps (store);
+	for (i = 0; i < array->len; i++) {
+		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+			return FALSE;
+
+		item = g_ptr_array_index (array, i);
+		ret = gs_appstream_store_search_item (plugin, item,
+						      values, list,
+						      cancellable, error);
+		if (!ret)
+			return FALSE;
+	}
+	return TRUE;
+}

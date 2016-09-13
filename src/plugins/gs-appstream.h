@@ -35,6 +35,12 @@ gboolean	 gs_appstream_refine_app		(GsPlugin	*plugin,
 GsApp		*gs_appstream_create_runtime		(GsPlugin	*plugin,
 							 GsApp		*parent,
 							 const gchar	*runtime);
+gboolean	 gs_appstream_store_search		(GsPlugin	*plugin,
+							 AsStore	*store,
+							 gchar		**values,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 
