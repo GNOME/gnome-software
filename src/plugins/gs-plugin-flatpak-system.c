@@ -135,6 +135,19 @@ gs_plugin_refine_app (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_refine_wildcard (GsPlugin *plugin,
+			   GsApp *app,
+			   GsAppList *list,
+			   GsPluginRefineFlags flags,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_refine_wildcard (priv->flatpak, app, list, flags,
+					   cancellable, error);
+}
+
+gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,
 		  GCancellable *cancellable,
@@ -192,4 +205,45 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	return gs_flatpak_file_to_app (priv->flatpak, list, file,
 				       cancellable, error);
+}
+
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      gchar **values,
+		      GsAppList *list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_search (priv->flatpak,
+				  values,
+				  list,
+				  cancellable,
+				  error);
+}
+
+gboolean
+gs_plugin_add_categories (GsPlugin *plugin,
+			  GPtrArray *list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_add_categories (priv->flatpak, list,
+					  cancellable, error);
+}
+
+gboolean
+gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsCategory *category,
+			     GsAppList *list,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_add_category_apps (priv->flatpak,
+					     category,
+					     list,
+					     cancellable,
+					     error);
 }

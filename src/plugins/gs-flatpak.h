@@ -69,6 +69,12 @@ gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
 						 GsPluginRefineFlags	flags,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_refine_wildcard	(GsFlatpak		*self,
+						 GsApp			*app,
+						 GsAppList		*list,
+						 GsPluginRefineFlags	 flags,
+						 GCancellable		*cancellable,
+						 GError			**error);
 gboolean	gs_flatpak_launch		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
@@ -88,6 +94,20 @@ gboolean	gs_flatpak_update_app		(GsFlatpak		*self,
 gboolean	gs_flatpak_file_to_app		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GFile			*file,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	gs_flatpak_search		(GsFlatpak		*self,
+						 gchar			**values,
+						 GsAppList		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	gs_flatpak_add_categories	(GsFlatpak		*self,
+						 GPtrArray		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	gs_flatpak_add_category_apps	(GsFlatpak		*self,
+						 GsCategory		*category,
+						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
 

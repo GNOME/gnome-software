@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-gboolean	 gs_flatpak_symlinks_rebuild	(FlatpakInstallation	*installation,
+gboolean	 gs_flatpak_symlinks_cleanup	(FlatpakInstallation	*installation,
 						 GCancellable		*cancellable,
 						 GError			**error);
 
