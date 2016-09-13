@@ -41,6 +41,17 @@ gboolean	 gs_appstream_store_search		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_store_add_categories	(GsPlugin	*plugin,
+							 AsStore	*store,
+							 GPtrArray	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_appstream_store_add_category_apps	(GsPlugin	*plugin,
+							 AsStore	*store,
+							 GsCategory	*category,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 
