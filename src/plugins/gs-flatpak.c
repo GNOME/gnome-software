@@ -40,7 +40,7 @@ struct _GsFlatpak {
 	FlatpakInstallation	*installation;
 	GHashTable		*broken_remotes;
 	GFileMonitor		*monitor;
-	GsFlatpakScope		 scope;
+	AsAppScope		 scope;
 	GsPlugin		*plugin;
 };
 
@@ -98,10 +98,10 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 		self->installation = flatpak_installation_new_for_path (file, TRUE,
 									cancellable,
 									error);
-	} else if (self->scope == GS_FLATPAK_SCOPE_SYSTEM) {
+	} else if (self->scope == AS_APP_SCOPE_SYSTEM) {
 		self->installation = flatpak_installation_new_system (cancellable,
 								      error);
-	} else if (self->scope == GS_FLATPAK_SCOPE_USER) {
+	} else if (self->scope == AS_APP_SCOPE_USER) {
 		self->installation = flatpak_installation_new_user (cancellable,
 								    error);
 	}
@@ -1963,7 +1963,7 @@ gs_flatpak_init (GsFlatpak *self)
 }
 
 GsFlatpak *
-gs_flatpak_new (GsPlugin *plugin, GsFlatpakScope scope)
+gs_flatpak_new (GsPlugin *plugin, AsAppScope scope)
 {
 	GsFlatpak *self;
 	self = g_object_new (GS_TYPE_FLATPAK, NULL);
