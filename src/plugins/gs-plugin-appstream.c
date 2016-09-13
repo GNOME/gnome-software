@@ -242,7 +242,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				     AS_STORE_LOAD_FLAG_APPDATA |
 				     AS_STORE_LOAD_FLAG_DESKTOP |
 				     AS_STORE_LOAD_FLAG_APP_INSTALL,
-				     NULL,
+				     cancellable,
 				     error);
 		if (!ret) {
 			gs_utils_error_convert_appstream (error);
