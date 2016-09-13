@@ -43,7 +43,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	priv->flatpak = gs_flatpak_new (plugin, GS_FLATPAK_SCOPE_USER);
+	priv->flatpak = gs_flatpak_new (plugin, AS_APP_SCOPE_USER);
 	priv->settings = g_settings_new ("org.gnome.software");
 
 	/* set plugin flags */

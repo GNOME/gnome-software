@@ -42,13 +42,8 @@ G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
 #define	gs_app_set_flatpak_branch(app,val)	gs_app_set_metadata(app,"flatpak::branch",val)
 #define	gs_app_set_flatpak_commit(app,val)	gs_app_set_metadata(app,"flatpak::commit",val)
 
-typedef enum {
-	GS_FLATPAK_SCOPE_SYSTEM,
-	GS_FLATPAK_SCOPE_USER
-} GsFlatpakScope;
-
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
-						 GsFlatpakScope		 scope);
+						 AsAppScope		 scope);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,
 						 GCancellable		*cancellable,
 						 GError			**error);
