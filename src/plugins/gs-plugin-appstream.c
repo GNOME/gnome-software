@@ -403,20 +403,6 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	return gs_appstream_refine_app (plugin, app, item, error);
 }
 
-static GsApp *
-gs_plugin_appstream_create_app (GsPlugin *plugin, AsApp *item)
-{
-	const gchar *unique_id = as_app_get_unique_id (item);
-	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
-	if (app == NULL) {
-		app = gs_app_new (as_app_get_id (item));
-		gs_app_set_metadata (app, "GnomeSoftware::Creator",
-				     gs_plugin_get_name (plugin));
-		gs_plugin_cache_add (plugin, unique_id, app);
-	}
-	return app;
-}
-
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,
@@ -437,7 +423,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			continue;
 
 		/* create */
-		app = gs_plugin_appstream_create_app (plugin, item);
+		app = gs_appstream_create_app (plugin, item);
 		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		if (!gs_appstream_refine_app (plugin, app, item, error))
@@ -506,7 +492,7 @@ gs_plugin_appstream_add_wildcards (GsPlugin *plugin,
 		/* new app */
 		g_debug ("found %s for wildcard %s",
 			 as_app_get_id (item), id);
-		new = gs_plugin_appstream_create_app (plugin, item);
+		new = gs_appstream_create_app (plugin, item);
 		if (!gs_appstream_refine_app (plugin, new, item, error))
 			return FALSE;
 		gs_app_list_add (list, new);
@@ -599,7 +585,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 				continue;
 
 			/* add all the data we can */
-			app = gs_plugin_appstream_create_app (plugin, item);
+			app = gs_appstream_create_app (plugin, item);
 			if (!gs_appstream_refine_app (plugin, app, item, error))
 				return FALSE;
 			gs_app_list_add (list, app);
@@ -695,7 +681,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
 			g_autoptr(GsApp) app = NULL;
-			app = gs_plugin_appstream_create_app (plugin, item);
+			app = gs_appstream_create_app (plugin, item);
 			if (!gs_appstream_refine_app (plugin, app, item, error))
 				return FALSE;
 			gs_app_list_add (list, app);
@@ -790,7 +776,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			continue;
 		if (!as_app_has_kudo (item, "GnomeSoftware::popular"))
 			continue;
-		app = gs_plugin_appstream_create_app (plugin, item);
+		app = gs_appstream_create_app (plugin, item);
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 		gs_app_list_add (list, app);
 	}
@@ -821,7 +807,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			continue;
 		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
 			continue;
-		app = gs_plugin_appstream_create_app (plugin, item);
+		app = gs_appstream_create_app (plugin, item);
 		if (!gs_appstream_refine_app (plugin, app, item, error))
 			return FALSE;
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
