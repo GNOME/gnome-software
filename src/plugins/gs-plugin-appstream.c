@@ -282,20 +282,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		}
 	}
 
-	/* add keyword for non-package sources */
-	for (i = 0; i < items->len; i++) {
-		AsBundle *bundle;
-		app = g_ptr_array_index (items, i);
-		bundle = as_app_get_bundle_default (app);
-		if (bundle == NULL)
-			continue;
-		g_debug ("Adding keyword '%s' to %s",
-			 as_bundle_kind_to_string (as_bundle_get_kind (bundle)),
-			 as_app_get_unique_id (app));
-		as_app_add_keyword (app, NULL,
-				    as_bundle_kind_to_string (as_bundle_get_kind (bundle)));
-	}
-
 	/* fix up these */
 	for (i = 0; i < items->len; i++) {
 		app = g_ptr_array_index (items, i);
@@ -354,7 +340,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (item == NULL) {
 		guint i;
 		GPtrArray *apps;
-		g_debug ("no app with ID %s found in appstream", unique_id);
+		g_debug ("no app with ID %s found in system appstream", unique_id);
 		apps = as_store_get_apps (priv->store);
 		for (i = 0; i < apps->len; i++) {
 			item = g_ptr_array_index (apps, i);
