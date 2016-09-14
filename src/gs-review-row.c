@@ -66,7 +66,11 @@ gs_review_row_refresh (GsReviewRow *row)
 	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
 				   as_review_get_rating (priv->review));
 	reviewer = as_review_get_reviewer_name (priv->review);
-	gtk_label_set_text (GTK_LABEL (priv->author_label), reviewer ? reviewer : "");
+	if (reviewer == NULL) {
+		/* TRANSLATORS: this is when a user doesn't specify a name */
+		reviewer = _("Unknown");
+	}
+	gtk_label_set_text (GTK_LABEL (priv->author_label), reviewer);
 	date = as_review_get_date (priv->review);
 	if (date != NULL)
 		text = g_date_time_format (date, "%e %B %Y");
