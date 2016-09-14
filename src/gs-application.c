@@ -864,7 +864,6 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"profile",
 						NULL);
-		return 0;
 	}
 	if (g_variant_dict_contains (options, "quit")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
@@ -877,27 +876,22 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"set-mode",
 						g_variant_new_string (mode));
-		return 0;
 	} else if (g_variant_dict_lookup (options, "search", "&s", &search)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"search",
 						g_variant_new_string (search));
-		return 0;
 	} else if (g_variant_dict_lookup (options, "details", "&s", &id)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
-		return 0;
 	} else if (g_variant_dict_lookup (options, "details-pkg", "&s", &pkgname)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details-pkg",
 						g_variant_new_string (pkgname));
-		return 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"filename",
 						g_variant_new ("(s)", local_filename));
-		return 0;
 	}
 
 	return -1;
