@@ -1272,6 +1272,35 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 }
 
 static void
+gs_shell_details_app_refine2_cb (GObject *source,
+				GAsyncResult *res,
+				gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to refine %s: %s",
+			   gs_app_get_id (self->app),
+			   error->message);
+		return;
+	}
+	gs_shell_details_refresh_reviews (self);
+}
+
+static void
+gs_shell_details_app_refine2 (GsShellDetails *self)
+{
+	gs_plugin_loader_app_refine_async (self->plugin_loader, self->app,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
+					   self->cancellable,
+					   gs_shell_details_app_refine2_cb,
+					   self);
+}
+
+static void
 gs_shell_details_app_refine_cb (GObject *source,
 				GAsyncResult *res,
 				gpointer user_data)
@@ -1310,6 +1339,9 @@ gs_shell_details_app_refine_cb (GObject *source,
 	gs_shell_details_refresh_reviews (self);
 	gs_shell_details_refresh_all (self);
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
+
+	/* do 2nd stage refine */
+	gs_shell_details_app_refine2 (self);
 }
 
 static void
@@ -1398,6 +1430,9 @@ gs_shell_details_file_to_app_cb (GObject *source,
 	gs_shell_details_refresh_reviews (self);
 	gs_shell_details_refresh_all (self);
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
+
+	/* do 2nd stage refine */
+	gs_shell_details_app_refine2 (self);
 }
 
 void
@@ -1410,10 +1445,7 @@ gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
 	gs_plugin_loader_file_to_app_async (self->plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
 					    self->cancellable,
 					    gs_shell_details_file_to_app_cb,
 					    self);
@@ -1427,7 +1459,6 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
@@ -1436,9 +1467,7 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
 					   self->cancellable,
 					   gs_shell_details_app_refine_cb,
 					   self);
