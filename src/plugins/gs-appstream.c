@@ -520,16 +520,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* is installed already */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
-		switch (as_app_get_source_kind (item)) {
-		case AS_APP_SOURCE_KIND_APPDATA:
-		case AS_APP_SOURCE_KIND_DESKTOP:
-		case AS_APP_SOURCE_KIND_METAINFO:
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-			break;
-		default:
-			break;
-		}
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
+	    as_app_get_state (item) != AS_APP_STATE_UNKNOWN) {
+		gs_app_set_state (app, as_app_get_state (item));
 	}
 
 	/* types we can never launch */
