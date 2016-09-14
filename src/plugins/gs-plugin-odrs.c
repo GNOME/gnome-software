@@ -639,8 +639,6 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 		/* ignore invalid reviews */
 		if (as_review_get_rating (review) == 0)
 			continue;
-		if (as_review_get_reviewer_name (review) == NULL)
-			continue;
 
 		/* the user_hash matches, so mark this as our own review */
 		if (g_strcmp0 (as_review_get_reviewer_id (review),
