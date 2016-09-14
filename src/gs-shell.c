@@ -86,6 +86,7 @@ typedef struct
 	GPtrArray		*modal_dialogs;
 	gulong			 search_changed_id;
 	gchar			*events_info_uri;
+	gboolean		 profile_mode;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -152,6 +153,26 @@ gs_shell_activate (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gtk_window_present (priv->main_window);
+}
+
+void
+gs_shell_profile_dump (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	if (priv->profile_mode) {
+		AsProfile *profile = gs_plugin_loader_get_profile (priv->plugin_loader);
+#if AS_CHECK_VERSION(0,6,4)
+		as_profile_prune (profile, 5000);
+#endif
+		as_profile_dump (profile);
+	}
+}
+
+void
+gs_shell_set_profile_mode (GsShell *shell, gboolean profile_mode)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	priv->profile_mode = profile_mode;
 }
 
 static void

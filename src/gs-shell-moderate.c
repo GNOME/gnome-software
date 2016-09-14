@@ -168,6 +168,9 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 		app = gs_app_list_index (list, i);
 		gs_shell_moderate_add_app (self, app);
 	}
+
+	/* seems a good place */
+	gs_shell_profile_dump (self->shell);
 }
 
 static void

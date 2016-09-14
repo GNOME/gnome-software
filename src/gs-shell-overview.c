@@ -44,7 +44,7 @@ typedef struct
 	GCancellable		*cancellable;
 	gboolean		 cache_valid;
 	GsShell			*shell;
-	gint			 refresh_count;
+	gint			 action_cnt;
 	gboolean		 loading_featured;
 	gboolean		 loading_popular;
 	gboolean		 loading_popular_rotating;
@@ -124,6 +124,27 @@ filter_category (GsApp *app, gpointer user_data)
 }
 
 static void
+gs_shell_overview_decrement_action_cnt (GsShellOverview *self)
+{
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+
+	/* every job increcements this */
+	if (priv->action_cnt == 0) {
+		g_warning ("action_cnt already zero!");
+		return;
+	}
+	if (--priv->action_cnt > 0)
+		return;
+
+	/* all done */
+	priv->cache_valid = TRUE;
+	g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
+
+	/* seems a good place */
+	gs_shell_profile_dump (priv->shell);
+}
+
+static void
 gs_shell_overview_get_popular_cb (GObject *source_object,
 				  GAsyncResult *res,
 				  gpointer user_data)
@@ -164,11 +185,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 
 out:
 	priv->loading_popular = FALSE;
-	priv->refresh_count--;
-	if (priv->refresh_count == 0) {
-		priv->cache_valid = TRUE;
-		g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
-	}
+	gs_shell_overview_decrement_action_cnt (self);
 }
 
 static void
@@ -275,11 +292,7 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 out:
 	load_data_free (load_data);
 	priv->loading_popular_rotating = FALSE;
-	priv->refresh_count--;
-	if (priv->refresh_count == 0) {
-		priv->cache_valid = TRUE;
-		g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
-	}
+	gs_shell_overview_decrement_action_cnt (self);
 }
 
 static void
@@ -329,11 +342,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 
 out:
 	priv->loading_featured = FALSE;
-	priv->refresh_count--;
-	if (priv->refresh_count == 0) {
-		priv->cache_valid = TRUE;
-		g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
-	}
+	gs_shell_overview_decrement_action_cnt (self);
 }
 
 static void
@@ -406,11 +415,7 @@ out:
 	gtk_widget_set_visible (priv->category_heading, added_cnt > 0);
 
 	priv->loading_categories = FALSE;
-	priv->refresh_count--;
-	if (priv->refresh_count == 0) {
-		priv->cache_valid = TRUE;
-		g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
-	}
+	gs_shell_overview_decrement_action_cnt (self);
 }
 
 static const gchar *
@@ -489,7 +494,7 @@ gs_shell_overview_load (GsShellOverview *self)
 						     priv->cancellable,
 						     gs_shell_overview_get_featured_cb,
 						     self);
-		priv->refresh_count++;
+		priv->action_cnt++;
 	}
 
 	if (!priv->loading_popular) {
@@ -500,7 +505,7 @@ gs_shell_overview_load (GsShellOverview *self)
 						    priv->cancellable,
 						    gs_shell_overview_get_popular_cb,
 						    self);
-		priv->refresh_count++;
+		priv->action_cnt++;
 	}
 
 	if (!priv->loading_popular_rotating) {
@@ -535,7 +540,7 @@ gs_shell_overview_load (GsShellOverview *self)
 								  priv->cancellable,
 								  gs_shell_overview_get_category_apps_cb,
 								  load_data);
-			priv->refresh_count++;
+			priv->action_cnt++;
 		}
 		priv->loading_popular_rotating = TRUE;
 	}
@@ -547,7 +552,7 @@ gs_shell_overview_load (GsShellOverview *self)
 						       priv->cancellable,
 						       gs_shell_overview_get_categories_cb,
 						       self);
-		priv->refresh_count++;
+		priv->action_cnt++;
 	}
 }
 
@@ -592,7 +597,7 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 
 	gs_grab_focus_when_mapped (priv->scrolledwindow_overview);
 
-	if (priv->cache_valid || priv->refresh_count > 0)
+	if (priv->cache_valid || priv->action_cnt > 0)
 		return;
 	gs_shell_overview_load (self);
 }

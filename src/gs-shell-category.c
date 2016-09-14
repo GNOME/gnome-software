@@ -104,6 +104,9 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
+
+	/* seems a good place */
+	gs_shell_profile_dump (self->shell);
 }
 
 static void

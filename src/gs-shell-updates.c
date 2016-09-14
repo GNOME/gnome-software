@@ -74,7 +74,7 @@ struct _GsShellUpdates
 	GSettings		*settings;
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
-	guint			 in_flight;
+	guint			 action_cnt;
 	gboolean		 all_updates_are_live;
 	gboolean		 any_require_reboot;
 	GsShell			*shell;
@@ -445,6 +445,24 @@ gs_shell_updates_set_state (GsShellUpdates *self, GsShellUpdatesState state)
 }
 
 static void
+gs_shell_updates_decrement_refresh_count (GsShellUpdates *self)
+{
+	/* every job increcements this */
+	if (self->action_cnt == 0) {
+		g_warning ("action_cnt already zero!");
+		return;
+	}
+	if (--self->action_cnt > 0)
+		return;
+
+	/* all done */
+	gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
+
+	/* seems a good place */
+	gs_shell_profile_dump (self->shell);
+}
+
+static void
 gs_shell_updates_notify_network_state_cb (GNetworkMonitor *network_monitor,
 					  gboolean available,
 					  GsShellUpdates *self)
@@ -533,8 +551,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* only when both set */
-	if (--self->in_flight == 0)
-		gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
+	gs_shell_updates_decrement_refresh_count (self);
 }
 
 static void
@@ -565,8 +582,7 @@ gs_shell_updates_get_upgrades_cb (GObject *source_object,
 	}
 
 	/* only when both set */
-	if (--self->in_flight == 0)
-		gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
+	gs_shell_updates_decrement_refresh_count (self);
 }
 
 static void
@@ -574,7 +590,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 {
 	guint64 refine_flags;
 
-	if (self->in_flight > 0)
+	if (self->action_cnt > 0)
 		return;
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_updates));
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -583,7 +599,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	gs_shell_updates_set_state (self,
 				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
-	self->in_flight++;
+	self->action_cnt++;
 	gs_plugin_loader_get_updates_async (self->plugin_loader,
 					    refine_flags,
 					    self->cancellable,
@@ -598,7 +614,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 							    self->cancellable,
 							    gs_shell_updates_get_upgrades_cb,
 							    self);
-		self->in_flight++;
+		self->action_cnt++;
 	}
 }
 

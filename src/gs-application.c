@@ -52,6 +52,7 @@
 
 struct _GsApplication {
 	GtkApplication	 parent;
+	gboolean	 enable_profile_mode;
 	GCancellable	*cancellable;
 	GtkApplication	*application;
 	GtkCssProvider	*provider;
@@ -319,6 +320,9 @@ gs_application_initialize_ui (GsApplication *app)
 	/* setup UI */
 	app->shell = gs_shell_new ();
 
+	/* this lets gs_shell_profile_dump() work from shells */
+	gs_shell_set_profile_mode (app->shell, app->enable_profile_mode);
+
 	app->cancellable = g_cancellable_new ();
 
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
@@ -397,6 +401,9 @@ profile_activated (GSimpleAction *action,
 		   gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
+	app->enable_profile_mode = TRUE;
+
+	/* dump right now as well */
 	if (app->plugin_loader != NULL) {
 		AsProfile *profile = gs_plugin_loader_get_profile (app->plugin_loader);
 		as_profile_dump (profile);

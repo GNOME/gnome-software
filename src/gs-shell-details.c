@@ -1286,6 +1286,9 @@ gs_shell_details_app_refine2_cb (GObject *source,
 		return;
 	}
 	gs_shell_details_refresh_reviews (self);
+
+	/* seems a good place */
+	gs_shell_profile_dump (self->shell);
 }
 
 static void

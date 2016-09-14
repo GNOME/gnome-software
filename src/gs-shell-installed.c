@@ -221,6 +221,9 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	}
 out:
 	gs_shell_installed_pending_apps_changed_cb (plugin_loader, self);
+
+	/* seems a good place */
+	gs_shell_profile_dump (self->shell);
 }
 
 static void
