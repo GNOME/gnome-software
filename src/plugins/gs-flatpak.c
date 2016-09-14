@@ -880,6 +880,11 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 		/* check the application has already been downloaded */
 		commit = flatpak_ref_get_commit (FLATPAK_REF (xref));
 		latest_commit = flatpak_installed_ref_get_latest_commit (xref);
+		if (latest_commit == NULL) {
+			g_debug ("could not get latest commit for %s",
+				 flatpak_ref_get_name (FLATPAK_REF (xref)));
+			continue;
+		}
 		if (g_strcmp0 (commit, latest_commit) == 0) {
 			g_debug ("no downloaded update for %s",
 				 flatpak_ref_get_name (FLATPAK_REF (xref)));
