@@ -52,7 +52,6 @@
 
 struct _GsApplication {
 	GtkApplication	 parent;
-	AsProfile	*profile;
 	GCancellable	*cancellable;
 	GtkApplication	*application;
 	GtkCssProvider	*provider;
@@ -121,7 +120,6 @@ gs_application_init (GsApplication *application)
 
 	g_application_add_main_option_entries (G_APPLICATION (application), options);
 
-	application->profile = as_profile_new ();
 	application->network_changed_handler = 0;
 }
 
@@ -399,7 +397,10 @@ profile_activated (GSimpleAction *action,
 		   gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-	as_profile_dump (app->profile);
+	if (app->plugin_loader != NULL) {
+		AsProfile *profile = gs_plugin_loader_get_profile (app->plugin_loader);
+		as_profile_dump (profile);
+	}
 }
 
 static void
@@ -812,7 +813,6 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
-	g_clear_object (&app->profile);
 	if (app->network_changed_handler != 0) {
 		g_signal_handler_disconnect (app->network_monitor, app->network_changed_handler);
 		app->network_changed_handler = 0;

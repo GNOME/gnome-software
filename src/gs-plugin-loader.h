@@ -241,6 +241,8 @@ GsPluginEvent	*gs_plugin_loader_get_event_by_id	(GsPluginLoader	*plugin_loader,
 GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
 
+AsProfile	*gs_plugin_loader_get_profile		(GsPluginLoader	*plugin_loader);
+
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_LOADER_H */

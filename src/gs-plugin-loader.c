@@ -4851,4 +4851,11 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+AsProfile *
+gs_plugin_loader_get_profile (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->profile;
+}
+
 /* vim: set noexpandtab: */
