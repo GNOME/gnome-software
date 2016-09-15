@@ -48,6 +48,7 @@ typedef struct {
 	SoupSession	*soup_session;
 	gulong		 notify_quirk_id;
 	GtkWidget	*button_install;
+	GsPluginAction	 action;
 } GsPageHelper;
 
 static void
@@ -173,6 +174,7 @@ gs_page_app_installed_cb (GObject *source,
 
 	/* only show this if the window is not active */
 	if (gs_app_is_installed (helper->app) &&
+	    helper->action == GS_PLUGIN_ACTION_INSTALL &&
 	    !gs_shell_is_active (priv->shell))
 		gs_app_notify_installed (helper->app);
 
@@ -278,12 +280,13 @@ gs_page_install_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	}
 
 	helper = g_slice_new0 (GsPageHelper);
+	helper->action = GS_PLUGIN_ACTION_INSTALL;
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
-	                                   GS_PLUGIN_ACTION_INSTALL,
+	                                   helper->action,
 	                                   helper->cancellable,
 	                                   gs_page_app_installed_cb,
 	                                   helper);
@@ -381,6 +384,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	/* non-firmware applications do not have to be prepared */
 	helper = g_slice_new0 (GsPageHelper);
+	helper->action = GS_PLUGIN_ACTION_UPDATE;
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
@@ -401,7 +405,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	/* generic fallback */
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-					   GS_PLUGIN_ACTION_UPDATE,
+					   helper->action,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -425,7 +429,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	g_debug ("remove %s", gs_app_get_id (helper->app));
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
-					   GS_PLUGIN_ACTION_REMOVE,
+					   helper->action,
 					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
@@ -442,6 +446,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	/* pending install */
 	helper = g_slice_new0 (GsPageHelper);
+	helper->action = GS_PLUGIN_ACTION_REMOVE;
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
