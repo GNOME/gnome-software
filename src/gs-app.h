@@ -97,14 +97,6 @@ typedef enum {
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
 
-#if !AS_CHECK_VERSION(0,6,2)
-#define AS_APP_QUIRK_NEEDS_USER_ACTION		(1 << 8)
-#endif
-
-#if !AS_CHECK_VERSION(0,6,3)
-#define AS_APP_KIND_DRIVER			(AS_APP_KIND_LOCALIZATION+1)
-#endif
-
 GsApp		*gs_app_new			(const gchar	*id);
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
 gchar		*gs_app_to_string		(GsApp		*app);
