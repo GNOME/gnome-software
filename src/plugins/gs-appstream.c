@@ -373,12 +373,8 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	g_autoptr(GPtrArray) updates_list = NULL;
 
 	/* not enough data to make sense */
-	if (gs_app_get_version (app) == NULL) {
-		g_debug ("no installed version for %s, "
-			 "so unable to add AppStream releases",
-			 gs_app_get_id (app));
+	if (gs_app_get_version (app) == NULL)
 		return TRUE;
-	}
 
 	/* make a list of valid updates */
 	updates_list = g_ptr_array_new ();
