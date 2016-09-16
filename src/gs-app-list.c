@@ -87,6 +87,13 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 		return TRUE;
 	}
 
+	/* do a sanity check */
+	if (!as_utils_unique_id_equal (id, id_old)) {
+		g_debug ("unique-id non-equal %s as %s but hash matched!",
+			 id, id_old);
+		return TRUE;
+	}
+
 	/* already exists */
 	g_debug ("not adding duplicate %s as %s already exists", id, id_old);
 	return FALSE;
