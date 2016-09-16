@@ -841,6 +841,7 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	const gchar *local_filename;
 	const gchar *mode;
 	const gchar *search;
+	gint rc = -1;
 	g_autoptr(GError) error = NULL;
 
 	if (g_variant_dict_contains (options, "verbose"))
@@ -876,25 +877,30 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"set-mode",
 						g_variant_new_string (mode));
+		rc = 0;
 	} else if (g_variant_dict_lookup (options, "search", "&s", &search)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"search",
 						g_variant_new_string (search));
+		rc = 0;
 	} else if (g_variant_dict_lookup (options, "details", "&s", &id)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
+		rc = 0;
 	} else if (g_variant_dict_lookup (options, "details-pkg", "&s", &pkgname)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details-pkg",
 						g_variant_new_string (pkgname));
+		rc = 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"filename",
 						g_variant_new ("(s)", local_filename));
+		rc = 0;
 	}
 
-	return -1;
+	return rc;
 }
 
 static void
