@@ -116,20 +116,6 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 	if (!gs_app_list_check_for_duplicate (list, app))
 		return;
 
-#if !AS_CHECK_VERSION(0,6,2)
-	/* check for duplicate using globs (slower) */
-	for (i = 0; i < list->array->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (list->array, i);
-		if (as_utils_unique_id_equal (gs_app_get_unique_id (app),
-					      gs_app_get_unique_id (app_tmp))) {
-			g_debug ("not adding duplicate %s as %s exists",
-				 gs_app_get_unique_id (app),
-				 gs_app_get_unique_id (app_tmp));
-			return;
-		}
-	}
-#endif
-
 	/* just use the ref */
 	g_ptr_array_add (list->array, g_object_ref (app));
 	g_hash_table_insert (list->hash_by_id, (gpointer) id, (gpointer) app);
@@ -463,12 +449,8 @@ gs_app_list_init (GsAppList *list)
 {
 	g_mutex_init (&list->mutex);
 	list->array = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-#if AS_CHECK_VERSION(0,6,2)
 	list->hash_by_id = g_hash_table_new ((GHashFunc) as_utils_unique_id_hash,
 					     (GEqualFunc) as_utils_unique_id_equal);
-#else
-	list->hash_by_id = g_hash_table_new (g_str_hash, g_str_equal);
-#endif
 }
 
 /**

@@ -4246,18 +4246,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
-
-#if AS_CHECK_VERSION(0,6,2)
 	priv->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
 					            (GEqualFunc) as_utils_unique_id_equal,
 						    NULL,
 						    (GDestroyNotify) g_object_unref);
-#else
-	priv->events_by_id = g_hash_table_new_full (g_str_hash,
-						    g_str_equal,
-						    NULL,
-						    (GDestroyNotify) g_object_unref);
-#endif
 
 	/* share a soup session (also disable the double-compression) */
 	priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
