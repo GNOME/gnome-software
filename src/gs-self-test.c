@@ -263,6 +263,19 @@ gs_plugin_func (void)
 	g_assert (gs_app_list_lookup (list, "*/b/c/d/e/f") != NULL);
 	g_assert (gs_app_list_lookup (list, "x/x/x/x/x/x") == NULL);
 	g_object_unref (list);
+
+	/* allow duplicating a wildcard */
+	list = gs_app_list_new ();
+	app = gs_app_new ("gimp.desktop");
+	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	app = gs_app_new ("gimp.desktop");
+	gs_app_set_unique_id (app, "system/flatpak/*/*/gimp.desktop/stable");
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list), ==, 2);
+	g_object_unref (list);
 }
 
 static void

@@ -65,6 +65,33 @@ gs_app_list_lookup (GsAppList *list, const gchar *unique_id)
 	return g_hash_table_lookup (list->hash_by_id, unique_id);
 }
 
+static gboolean
+gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
+{
+	GsApp *app_old;
+	const gchar *id;
+	const gchar *id_old = NULL;
+
+	/* does not exist */
+	id = gs_app_get_unique_id (app);
+	app_old = g_hash_table_lookup (list->hash_by_id, id);
+	if (app_old == NULL) {
+		g_debug ("adding %s as nothing matched hash", id);
+		return TRUE;
+	}
+
+	/* existing app is a wildcard */
+	id_old = gs_app_get_unique_id (app_old);
+	if (gs_app_has_quirk (app_old, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+		g_debug ("adding %s as %s is a wildcard", id, id_old);
+		return TRUE;
+	}
+
+	/* already exists */
+	g_debug ("not adding duplicate %s as %s already exists", id, id_old);
+	return FALSE;
+}
+
 static void
 gs_app_list_add_safe (GsAppList *list, GsApp *app)
 {
@@ -79,10 +106,8 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 	}
 
 	/* check for duplicate */
-	if (g_hash_table_lookup (list->hash_by_id, id) != NULL) {
-		g_debug ("not adding duplicate %s", id);
+	if (!gs_app_list_check_for_duplicate (list, app))
 		return;
-	}
 
 #if !AS_CHECK_VERSION(0,6,2)
 	/* check for duplicate using globs (slower) */
