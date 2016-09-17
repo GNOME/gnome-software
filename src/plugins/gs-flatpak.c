@@ -920,6 +920,13 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 {
 	g_autoptr(FlatpakRemote) xremote = NULL;
 	g_autofree gchar *url = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* profile */
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "flatpak::refine-origin-hostname{%s}",
+				  gs_app_get_id (app));
+	g_assert (ptask != NULL);
 
 	/* already set */
 	if (gs_app_get_origin_hostname (app) != NULL)
@@ -1519,6 +1526,14 @@ gs_flatpak_refine_appstream (GsFlatpak *self, GsApp *app, GError **error)
 {
 	AsApp *item;
 	const gchar *unique_id = gs_app_get_unique_id (app);
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* profile */
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "flatpak::refine-appstream{%s}",
+				  gs_app_get_id (app));
+	g_assert (ptask != NULL);
+
 	if (unique_id == NULL)
 		return TRUE;
 	item = as_store_get_app_by_unique_id (self->store,
