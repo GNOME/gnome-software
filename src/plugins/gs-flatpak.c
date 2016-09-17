@@ -48,6 +48,7 @@ G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
 
 static gboolean
 gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
+			      GsPluginRefreshFlags flags,
 			      GCancellable *cancellable, GError **error);
 
 static void
@@ -100,7 +101,7 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	}
 
 	/* if this is a new remote, get the AppStream data */
-	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, NULL, &error_md)) {
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0, NULL, &error_md)) {
 		g_warning ("failed to get initial available data: %s",
 			   error_md->message);
 	}
@@ -163,6 +164,7 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 
 static gboolean
 gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
+			      GsPluginRefreshFlags flags,
 			      GCancellable *cancellable, GError **error)
 {
 	gboolean ret;
@@ -225,6 +227,11 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 				g_hash_table_insert (self->broken_remotes,
 						     g_strdup (remote_name),
 						     GUINT_TO_POINTER (1));
+				continue;
+			}
+			if ((flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) == 0) {
+				g_warning ("Failed to get AppStream metadata: %s",
+					   error_local->message);
 				continue;
 			}
 			g_set_error (error,
@@ -440,7 +447,7 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 	guint i;
 
 	/* if we've never ever run before, get the AppStream data */
-	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT,
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
 					   cancellable,
 					   &error_md)) {
 		g_warning ("failed to get initial available data: %s",
@@ -707,9 +714,8 @@ gs_flatpak_refresh (GsFlatpak *self,
 
 	/* update AppStream metadata */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
-		if (!gs_flatpak_refresh_appstream (self,
-						   cache_age, cancellable,
-						   error))
+		if (!gs_flatpak_refresh_appstream (self, cache_age, flags,
+						   cancellable, error))
 			return FALSE;
 	}
 
