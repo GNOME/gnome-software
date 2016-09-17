@@ -318,8 +318,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
-				     G_IO_ERROR,
-				     G_IO_ERROR_CANCELLED)) {
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("get sources cancelled");
 		} else {
 			g_warning ("failed to get sources: %s", error->message);

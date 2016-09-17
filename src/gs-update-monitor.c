@@ -165,7 +165,7 @@ get_updates_finished_cb (GObject *object,
 	/* get result */
 	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get updates: %s", error->message);
 		return;
 	}
@@ -241,7 +241,7 @@ get_upgrades_finished_cb (GObject *object,
 	/* get result */
 	apps = gs_plugin_loader_get_distro_upgrades_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_warning ("failed to get upgrades: %s",
 				   error->message);
 		}
@@ -316,7 +316,7 @@ refresh_cache_finished_cb (GObject *object,
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_refresh_finish (GS_PLUGIN_LOADER (object), res, &error)) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}

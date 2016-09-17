@@ -139,8 +139,8 @@ gs_page_app_installed_cb (GObject *source,
 	                                          res,
 	                                          &error);
 	if (g_error_matches (error,
-			     G_IO_ERROR,
-			     G_IO_ERROR_CANCELLED)) {
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_CANCELLED)) {
 		g_debug ("%s", error->message);
 		return;
 	}
@@ -198,8 +198,8 @@ gs_page_app_removed_cb (GObject *source,
 	                                          res,
 	                                          &error);
 	if (g_error_matches (error,
-			     G_IO_ERROR,
-			     G_IO_ERROR_CANCELLED)) {
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_CANCELLED)) {
 		g_debug ("%s", error->message);
 		return;
 	}

@@ -179,8 +179,8 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
-				    G_IO_ERROR,
-				    G_IO_ERROR_CANCELLED)) {
+				    GS_PLUGIN_ERROR,
+				    GS_PLUGIN_ERROR_CANCELLED)) {
 			/* This should only ever happen while the dialog is being closed */
 			g_debug ("get installed updates cancelled");
 			return;

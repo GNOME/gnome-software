@@ -163,7 +163,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	gtk_widget_set_visible (priv->box_popular, list != NULL);
 	gtk_widget_set_visible (priv->popular_heading, list != NULL);
 	if (list == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get popular apps: %s", error->message);
 		goto out;
 	}
@@ -226,7 +226,7 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	/* get popular apps */
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			goto out;
 		g_warning ("failed to get category %s featured applications: %s",
 			   gs_category_get_id (load_data->category),
@@ -309,7 +309,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
-	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 		goto out;
 
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
@@ -375,7 +375,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
 		goto out;
 	}
@@ -627,8 +627,8 @@ g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
-				     G_IO_ERROR,
-				     G_IO_ERROR_CANCELLED)) {
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("get sources cancelled");
 		} else {
 			g_warning ("failed to get sources: %s", error->message);

@@ -88,6 +88,12 @@ gs_plugin_packagekit_error_convert (GError **error)
 
 	if (error == NULL)
 		return FALSE;
+
+	/* this are allowed for low-level errors */
+	if (gs_utils_error_convert_gio (error))
+		return TRUE;
+
+	/* not set */
 	error_tmp = *error;
 	if (error_tmp == NULL)
 		return FALSE;

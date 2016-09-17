@@ -486,7 +486,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("updates-shell: failed to get updates: %s", error->message);
 		gs_utils_error_strip_unique_id (error);
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
@@ -568,7 +568,7 @@ gs_shell_updates_get_upgrades_cb (GObject *source_object,
 	list = gs_plugin_loader_get_distro_upgrades_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_warning ("updates-shell: failed to get upgrades: %s",
 				   error->message);
 		}
@@ -715,8 +715,8 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 	if (!ret) {
 		/* user cancel */
 		if (g_error_matches (error,
-				     G_IO_ERROR,
-				     G_IO_ERROR_CANCELLED)) {
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED)) {
 			gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
 			return;
 		}
@@ -1026,7 +1026,7 @@ upgrade_download_finished_cb (GObject *source,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
-		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			return;
 		g_warning ("failed to upgrade-download: %s", error->message);
 	}
