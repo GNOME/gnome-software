@@ -442,10 +442,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	gboolean found = FALSE;
 
-	/* handled already */
-	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
-		return TRUE;
-
 	/* find by ID then package name */
 	if (!gs_plugin_refine_from_id (plugin, app, &found, error))
 		return FALSE;
@@ -458,17 +454,20 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_appstream_add_wildcards (GsPlugin *plugin,
-				   GsAppList *list,
-				   GsApp *app,
-				   GError **error)
+gboolean
+gs_plugin_refine_wildcard (GsPlugin *plugin,
+			   GsApp *app,
+			   GsAppList *list,
+			   GsPluginRefineFlags flags,
+			   GCancellable *cancellable,
+			   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
 	guint i;
 	g_autoptr(GPtrArray) items = NULL;
 
+	/* not enough info to find */
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
@@ -497,30 +496,8 @@ gs_plugin_appstream_add_wildcards (GsPlugin *plugin,
 			return FALSE;
 		gs_app_list_add (list, new);
 	}
-	return TRUE;
-}
 
-/* wildcard results get added to the list, not replaced */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GsAppList *list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	guint i;
-
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
-			continue;
-		if (!gs_plugin_appstream_add_wildcards (plugin,
-							list,
-							app,
-							error))
-			return FALSE;
-	}
-
+	/* sucess */
 	return TRUE;
 }
 
