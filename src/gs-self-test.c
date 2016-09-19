@@ -962,7 +962,8 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 
 	/* no files to use */
 	repodir_fn = gs_test_get_filename ("tests/flatpak/repo");
-	if (!g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
+	if (repodir_fn == NULL ||
+	    !g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
 		return;
 	}
