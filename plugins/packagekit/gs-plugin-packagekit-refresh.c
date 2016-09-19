@@ -118,11 +118,11 @@ gs_plugin_refresh (GsPlugin *plugin,
 		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
 		pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-		results = pk_client_get_updates (PK_CLIENT (priv->task),
-						 filter,
-						 cancellable,
-						 gs_plugin_packagekit_progress_cb, &data,
-						 error);
+		results = pk_task_get_updates_sync (priv->task,
+						    filter,
+						    cancellable,
+						    gs_plugin_packagekit_progress_cb, &data,
+						    error);
 		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			g_prefix_error (error, "failed to get updates for refresh: ");
 			return FALSE;
