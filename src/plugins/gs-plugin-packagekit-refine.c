@@ -581,6 +581,8 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		g_autoptr (PkPackage) pkg = NULL;
 		app = gs_app_list_index (list, i);
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
 		package_id = gs_app_get_source_id_default (app);
 		if (package_id == NULL)
 			continue;
@@ -650,6 +652,8 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
@@ -822,6 +826,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	resolve_all = gs_app_list_new ();
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		tmp = gs_app_get_management_plugin (app);
@@ -858,6 +864,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
 		app = gs_app_list_index (list, i);
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
 		tmp = gs_app_get_management_plugin (app);
@@ -898,6 +906,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	updatedetails_all = gs_app_list_new ();
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
 			continue;
 		tmp = gs_app_get_management_plugin (app);

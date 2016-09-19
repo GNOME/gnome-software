@@ -119,6 +119,12 @@ typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsAppList	*list,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,
@@ -295,6 +301,84 @@ gs_plugin_loader_review_score_sort_cb (gconstpointer a, gconstpointer b)
 	return 0;
 }
 
+static void
+gs_plugin_loader_run_refine_wildcard (GsPluginLoader *plugin_loader,
+				      GsPlugin *plugin,
+				      GsApp *app,
+				      GsAppList *list,
+				      GsPluginRefineFlags flags,
+				      GCancellable *cancellable)
+{
+	GsPluginRefineWildcardFunc plugin_func = NULL;
+	const gchar *function_name = "gs_plugin_refine_wildcard";
+	gboolean ret;
+	g_autoptr(GError) error_local = NULL;
+
+	/* load the possible symbols */
+	g_module_symbol (gs_plugin_get_module (plugin),
+			 function_name,
+			 (gpointer *) &plugin_func);
+	if (plugin_func == NULL)
+		return;
+
+	gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
+	ret = plugin_func (plugin, app, list, flags,
+			   cancellable, &error_local);
+	gs_plugin_loader_action_stop (plugin_loader, plugin);
+	if (!ret) {
+		/* badly behaved plugin */
+		if (error_local == NULL) {
+			g_critical ("%s did not set error for %s",
+				    gs_plugin_get_name (plugin),
+				    function_name);
+			return;
+		}
+		g_warning ("failed to call %s on %s: %s",
+			   function_name,
+			   gs_plugin_get_name (plugin),
+			   error_local->message);
+	}
+}
+
+static void
+gs_plugin_loader_run_refine_app (GsPluginLoader *plugin_loader,
+				GsPlugin *plugin,
+				GsApp *app,
+				GsAppList *list,
+				GsPluginRefineFlags flags,
+				GCancellable *cancellable)
+{
+	GsPluginRefineAppFunc plugin_func = NULL;
+	const gchar *function_name = "gs_plugin_refine_app";
+	gboolean ret;
+	g_autoptr(GError) error_local = NULL;
+
+	g_module_symbol (gs_plugin_get_module (plugin),
+			 function_name,
+			 (gpointer *) &plugin_func);
+	if (plugin_func == NULL)
+		return;
+
+	gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
+	ret = plugin_func (plugin, app, flags,
+				     cancellable, &error_local);
+	gs_plugin_loader_action_stop (plugin_loader, plugin);
+	if (!ret) {
+		/* badly behaved plugin */
+		if (error_local == NULL) {
+			g_critical ("%s did not set error for %s",
+				    gs_plugin_get_name (plugin),
+				    function_name);
+			return;
+		}
+		g_warning ("failed to call %s on %s: %s",
+			   function_name,
+			   gs_plugin_get_name (plugin),
+			   error_local->message);
+	}
+
+}
+
 static gboolean
 gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 				      const gchar *function_name_parent,
@@ -310,7 +394,6 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	GPtrArray *related;
 	GsApp *app;
 	GsPlugin *plugin;
-	const gchar *function_name_app = "gs_plugin_refine_app";
 	const gchar *function_name = "gs_plugin_refine";
 	gboolean ret = TRUE;
 
@@ -325,7 +408,6 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
-		GsPluginRefineAppFunc plugin_app_func = NULL;
 		GsPluginRefineFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 
@@ -337,11 +419,6 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 		g_module_symbol (gs_plugin_get_module (plugin),
 				 function_name,
 				 (gpointer *) &plugin_func);
-		g_module_symbol (gs_plugin_get_module (plugin),
-				 function_name_app,
-				 (gpointer *) &plugin_app_func);
-		if (plugin_func == NULL && plugin_app_func == NULL)
-			continue;
 
 		/* profile the plugin runtime */
 		if (function_name_parent == NULL) {
@@ -382,31 +459,23 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 				continue;
 			}
 		}
-		if (plugin_app_func != NULL) {
-			for (j = 0; j < gs_app_list_length (list); j++) {
-				g_autoptr(GError) error_local = NULL;
-				gboolean ret_local;
-
-				app = gs_app_list_index (list, j);
-				gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-				ret_local = plugin_app_func (plugin, app, flags,
-				                             cancellable, &error_local);
-				gs_plugin_loader_action_stop (plugin_loader, plugin);
-				if (!ret_local) {
-					/* badly behaved plugin */
-					if (error_local == NULL) {
-						g_critical ("%s did not set error for %s",
-							    gs_plugin_get_name (plugin),
-							    function_name_app);
-						continue;
-					}
-					g_warning ("failed to call %s on %s: %s",
-						   function_name_app,
-						   gs_plugin_get_name (plugin),
-						   error_local->message);
-					continue;
-				}
+		for (j = 0; j < gs_app_list_length (list); j++) {
+			app = gs_app_list_index (list, j);
+			if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+				gs_plugin_loader_run_refine_app (plugin_loader,
+								 plugin,
+								 app,
+								 list,
+								 flags,
+								 cancellable);
+				continue;
 			}
+			gs_plugin_loader_run_refine_wildcard (plugin_loader,
+							      plugin,
+							      app,
+							      list,
+							      flags,
+							      cancellable);
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
@@ -542,19 +611,13 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	if (!ret)
 		goto out;
 
-	/* second pass for any unadopted apps in the wildcard state */
+	/* second pass for any unadopted apps */
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-
-		/* not needing to resolve */
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
-			continue;
-		if (gs_app_get_management_plugin (app) != NULL)
-			continue;
-
-		/* this doesn't make sense outside the plugin loader */
-		gs_app_remove_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-		has_match_any_prefix = TRUE;
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+			has_match_any_prefix = TRUE;
+			break;
+		}
 	}
 	if (has_match_any_prefix) {
 		g_debug ("2nd resolve pass for unadopted wildcards");
