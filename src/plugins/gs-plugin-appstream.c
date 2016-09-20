@@ -598,7 +598,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			continue;
 		if (!as_app_has_kudo (item, "GnomeSoftware::popular"))
 			continue;
-		app = gs_appstream_create_app (plugin, item);
+		app = gs_app_new (as_app_get_id (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 		gs_app_list_add (list, app);
 	}
@@ -629,9 +629,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			continue;
 		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
 			continue;
-		app = gs_appstream_create_app (plugin, item);
-		if (!gs_appstream_refine_app (plugin, app, item, error))
-			return FALSE;
+		app = gs_app_new (as_app_get_id (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 		gs_app_list_add (list, app);
 	}
