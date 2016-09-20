@@ -118,6 +118,7 @@ struct _GsApp
 	gboolean		 license_is_free;
 	GsApp			*runtime;
 	GFile			*local_file;
+	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;
 };
 
@@ -371,6 +372,15 @@ gs_app_to_string (GsApp *app)
 	if (app->local_file != NULL) {
 		g_autofree gchar *fn = g_file_get_path (app->local_file);
 		gs_app_kv_lpad (str, "local-filename", fn);
+	}
+	if (app->content_rating != NULL) {
+		guint age = as_content_rating_get_minimum_age (app->content_rating);
+		if (age != G_MAXUINT) {
+			g_autofree gchar *value = g_strdup_printf ("%u", age);
+			gs_app_kv_lpad (str, "content-age", value);
+		}
+		gs_app_kv_lpad (str, "content-rating",
+				as_content_rating_get_kind (app->content_rating));
 	}
 	tmp = g_hash_table_lookup (app->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
@@ -1376,6 +1386,39 @@ gs_app_set_local_file (GsApp *app, GFile *local_file)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->local_file, local_file);
+}
+
+/**
+ * gs_app_get_content_rating:
+ * @app: a #GsApp
+ *
+ * Gets the content rating for this application.
+ *
+ * Returns: (transfer none): a #AsContentRating, or %NULL
+ *
+ * Since: 3.24
+ **/
+AsContentRating *
+gs_app_get_content_rating (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->content_rating;
+}
+
+/**
+ * gs_app_set_content_rating:
+ * @app: a #GsApp
+ * @content_rating: a #AsContentRating, or %NULL
+ *
+ * Sets the content rating for this application.
+ *
+ * Since: 3.24
+ **/
+void
+gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_set_object (&app->content_rating, content_rating);
 }
 
 /**
@@ -3356,6 +3399,8 @@ gs_app_finalize (GObject *object)
 		g_ptr_array_unref (app->keywords);
 	if (app->local_file != NULL)
 		g_object_unref (app->local_file);
+	if (app->content_rating != NULL)
+		g_object_unref (app->content_rating);
 	if (app->pixbuf != NULL)
 		g_object_unref (app->pixbuf);
 

@@ -206,6 +206,9 @@ void		 gs_app_add_icon		(GsApp		*app,
 GFile		*gs_app_get_local_file		(GsApp		*app);
 void		 gs_app_set_local_file		(GsApp		*app,
 						 GFile		*local_file);
+AsContentRating	*gs_app_get_content_rating	(GsApp		*app);
+void		 gs_app_set_content_rating	(GsApp		*app,
+						 AsContentRating *content_rating);
 GsApp		*gs_app_get_runtime		(GsApp		*app);
 void		 gs_app_set_runtime		(GsApp		*app,
 						 GsApp		*runtime);
