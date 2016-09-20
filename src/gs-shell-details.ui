@@ -145,6 +145,7 @@
                                 <property name="position">1</property>
                               </packing>
                             </child>
+
                             <child>
                               <object class="GtkBox" id="star_box">
                                 <property name="visible">True</property>
@@ -184,6 +185,7 @@
                                 <property name="position">2</property>
                               </packing>
                             </child>
+
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -798,6 +800,45 @@
                                     <property name="top_attach">0</property>
                                   </packing>
                                 </child>
+
+                                <child>
+                                  <object class="GtkLabel" id="label_details_rating_title">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Age Rating</property>
+                                    <property name="xalign">0</property>
+                                    <property name="yalign">0.5</property>
+                                    <property name="vexpand">True</property>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">8</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_details_rating_value">
+                                    <property name="use_underline">True</property>
+                                    <property name="label">18</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="vexpand">False</property>
+                                    <property name="halign">start</property>
+                                    <style>
+                                      <class name="content-rating"/>
+                                    </style>
+                                    <accessibility>
+                                      <relation type="labelled-by" target="label_details_version_title"/>
+                                    </accessibility>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">8</property>
+                                  </packing>
+                                </child>
+
                                 <child>
                                   <object class="GtkLabel" id="label_details_updated_title">
                                     <property name="visible">True</property>
@@ -1503,4 +1544,56 @@
       </object>
     </child>
   </object>
+
+  <object class="GtkPopover" id="popover_content_rating">
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkBox" id="box_content_rating">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="border_width">24</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
+        <child>
+          <object class="GtkLabel" id="label_content_rating_title">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">The application was rated this way because it features:</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_content_rating_message">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label">• Use of alcoholic beverages</property>
+            <property name="xalign">0</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_content_rating_none">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">No details were available for this rating.</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+
 </interface>

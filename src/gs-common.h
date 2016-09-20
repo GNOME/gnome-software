@@ -48,7 +48,8 @@ void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
 void	gs_image_set_from_pixbuf		(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf);
 
-const gchar 	*gs_utils_get_content_rating	(void);
+const gchar	*gs_utils_content_rating_kv_to_str (const gchar	*id,
+						AsContentRatingValue value);
 
 const gchar	*gs_user_agent			(void);
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);

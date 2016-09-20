@@ -311,223 +311,222 @@ gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
 	gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
 }
 
-/**
- * gs_utils_get_content_rating:
- *
- * Note: These are strings marked for translation for comment.
- * This functionality is not currently used.
- **/
 const gchar *
-gs_utils_get_content_rating (void)
+gs_utils_content_rating_kv_to_str (const gchar *id, AsContentRatingValue value)
 {
+	guint i;
 	struct {
 		const gchar		*id;
 		AsContentRatingValue	 value;
 		const gchar		*desc;
-	} content_rating_oars[] =  {
+	} tab[] =  {
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating violence-cartoon", "None") },
+	_("No cartoon violence") },
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Cartoon characters in unsafe situations") },
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Cartoon characters in aggressive conflict") },
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Graphic violence involving cartoon characters") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating violence-fantasy", "None") },
+	_("No fantasy violence") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Characters in unsafe situations easily distinguishable from reality") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Characters in aggressive conflict easily distinguishable from reality") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Graphic violence easily distinguishable from reality") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating violence-realistic", "None") },
+	_("No realistic violence") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Mildly realistic characters in unsafe situations") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Depictions of realistic characters in aggressive conflict") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Graphic violence involving realistic characters") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating violence-bloodshed", "None") },
+	_("No bloodshed") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Unrealistic bloodshed") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Realistic bloodshed") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Depictions of bloodshed and the mutilation of body parts") },
 	{ "violence-sexual",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating violence-sexual", "None") },
+	_("No sexual violence") },
 	{ "violence-sexual",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Rape or other violent sexual behavior") },
 	{ "drugs-alcohol",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating drugs-alcohol", "None") },
+	_("No references to alcohol") },
 	{ "drugs-alcohol",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("References to alcoholic beverages") },
 	{ "drugs-alcohol",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Use of alcoholic beverages") },
 	{ "drugs-narcotics",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating drugs-narcotics", "None") },
+	_("No references to illicit drugs") },
 	{ "drugs-narcotics",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("References to illicit drugs") },
 	{ "drugs-narcotics",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Use of illicit drugs") },
 	{ "drugs-tobacco",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("References to tobacco products") },
 	{ "drugs-tobacco",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Use of tobacco products") },
 	{ "sex-nudity",		AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating sex-nudity", "None") },
+	_("No nudity of any sort") },
 	{ "sex-nudity",		AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Brief artistic nudity") },
 	{ "sex-nudity",		AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Prolonged nudity") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating sex-themes", "None") },
+	_("No references or depictions of sexual nature") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Provocative references or depictions") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Sexual references or depictions") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Graphic sexual behavior") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating language-profanity", "None") },
+	_("No profanity of any kind") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Mild or infrequent use of profanity") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Moderate use of profanity") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Strong or frequent use of profanity") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating language-humor", "None") },
+	_("No innappropriate humor") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Slapstick humor") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Vulgar or bathroom humor") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Mature or sexual humor") },
 	{ "language-discrimination", AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating language-discrimination", "None") },
+	_("No discriminatory language of any kind") },
 	{ "language-discrimination", AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Negativity towards a specific group of people") },
 	{ "language-discrimination", AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Discrimination designed to cause emotional harm") },
 	{ "language-discrimination", AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Explicit discrimination based on gender, sexuality, race or religion") },
 	{ "money-advertising", AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating money-advertising", "None") },
+	_("No advertising of any kind") },
 	{ "money-advertising", AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Product placement") },
 	{ "money-advertising", AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Explicit references to specific brands or trademarked products") },
 	{ "money-advertising", AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Players are encouraged to purchase specific real-world items") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating money-gambling", "None") },
+	_("No gambling of any kind") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Gambling on random events using tokens or credits") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Gambling using \"play\" money") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Gambling using real money") },
 	{ "money-purchasing",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating money-purchasing", "None") },
+	_("No ability to spend money") },
 	{ "money-purchasing",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Ability to spend real money in-game") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating social-chat", "None") },
+	_("No way to chat with other players") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MILD,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Player-to-player game interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MODERATE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Player-to-player preset interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Uncontrolled chat functionality between players") },
 	{ "social-audio",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating social-audio", "None") },
+	_("No way to talk with other players") },
 	{ "social-audio",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Uncontrolled audio or video chat functionality between players") },
 	{ "social-contacts",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating social-contacts", "None") },
+	_("No sharing of social network usernames or email addresses") },
 	{ "social-contacts",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Sharing social network usernames or email addresses") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating social-info", "None") },
+	_("No sharing of user information with 3rd parties") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Sharing user information with 3rd parties") },
 	{ "social-location",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	C_("content rating social-location", "None") },
+	_("No sharing of physical location to other users") },
 	{ "social-location",	AS_CONTENT_RATING_VALUE_INTENSE,
-	/* TRANSLATORS: content rating description: comments welcome */
+	/* TRANSLATORS: content rating description */
 	_("Sharing physical location to other users") },
 	{ NULL, 0, NULL } };
-	return content_rating_oars[0].desc;
+	for (i = 0; tab[i].id != NULL; i++) {
+		if (g_strcmp0 (tab[i].id, id) == 0 && tab[i].value == value)
+			return tab[i].desc;
+	}
+	return NULL;
 }
 
 gboolean

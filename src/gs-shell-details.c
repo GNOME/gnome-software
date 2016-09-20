@@ -134,6 +134,12 @@ struct _GsShellDetails
 	GtkWidget		*popover_license_free;
 	GtkWidget		*popover_license_nonfree;
 	GtkWidget		*popover_license_unknown;
+	GtkWidget		*popover_content_rating;
+	GtkWidget		*label_content_rating_title;
+	GtkWidget		*label_content_rating_message;
+	GtkWidget		*label_content_rating_none;
+	GtkWidget		*button_details_rating_value;
+	GtkWidget		*label_details_rating_title;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
@@ -1304,6 +1310,44 @@ gs_shell_details_app_refine2 (GsShellDetails *self)
 }
 
 static void
+gs_shell_details_content_rating_set_css (GtkWidget *widget, guint age)
+{
+	GtkStyleContext *ctx = gtk_widget_get_style_context (widget);
+	gtk_style_context_remove_class (ctx, "content-rating-adult");
+	gtk_style_context_remove_class (ctx, "content-rating-parental-guidance");
+	if (age >= 18) {
+		gtk_style_context_add_class (ctx, "content-rating-adult");
+		return;
+	}
+	if (age >= 5) {
+		gtk_style_context_add_class (ctx, "content-parental-guidance");
+		return;
+	}
+}
+
+static void
+gs_shell_details_refresh_content_rating (GsShellDetails *self)
+{
+	AsContentRating *content_rating;
+	guint age = 0;
+
+	/* only show the button if a game and has a content rating */
+	content_rating = gs_app_get_content_rating (self->app);
+	if (content_rating != NULL)
+		age = as_content_rating_get_minimum_age (content_rating);
+	if (age > 3) {
+		g_autofree gchar *tmp = g_strdup_printf ("%u+", age);
+		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), tmp);
+		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
+		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
+		gs_shell_details_content_rating_set_css (self->button_details_rating_value, age);
+	} else {
+		gtk_widget_set_visible (self->button_details_rating_value, FALSE);
+		gtk_widget_set_visible (self->label_details_rating_title, FALSE);
+	}
+}
+
+static void
 gs_shell_details_app_refine_cb (GObject *source,
 				GAsyncResult *res,
 				gpointer user_data)
@@ -1341,6 +1385,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 	gs_shell_details_refresh_addons (self);
 	gs_shell_details_refresh_reviews (self);
 	gs_shell_details_refresh_all (self);
+	gs_shell_details_refresh_content_rating (self);
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
 
 	/* do 2nd stage refine */
@@ -1720,6 +1765,79 @@ gs_shell_details_more_reviews_button_cb (GtkWidget *widget, GsShellDetails *self
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
+static void
+gs_shell_details_content_rating_button_cb (GtkWidget *widget, GsShellDetails *self)
+{
+	AsContentRating *cr;
+	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
+	const gchar *tmp;
+	guint i, j;
+	g_autoptr(GString) str = g_string_new (NULL);
+	struct {
+		const gchar *ids[5];	/* ordered inside from worst to best */
+	} id_map[] = {
+		{ "violence-bloodshed",
+		  "violence-realistic",
+		  "violence-fantasy",
+		  "violence-cartoon", NULL },
+		{ "violence-sexual", NULL },
+		{ "drugs-alcohol", NULL },
+		{ "drugs-narcotics", NULL },
+		{ "sex-nudity", NULL },
+		{ "sex-themes", NULL },
+		{ "language-profanity", NULL },
+		{ "language-humor", NULL },
+		{ "language-discrimination", NULL },
+		{ "money-advertising", NULL },
+		{ "money-gambling", NULL },
+		{ "money-purchasing", NULL },
+		{ "social-audio",
+		  "social-chat",
+		  "social-contacts",
+		  "social-info", NULL },
+		{ "social-location", NULL },
+		{ NULL }
+	};
+
+	/* get the worst thing */
+	cr = gs_app_get_content_rating (self->app);
+	if (cr == NULL)
+		return;
+	for (j = 0; id_map[j].ids[0] != NULL; j++) {
+		for (i = 0; id_map[j].ids[i] != NULL; i++) {
+			AsContentRatingValue value;
+			value = as_content_rating_get_value (cr, id_map[j].ids[i]);
+			if (value > value_bad)
+				value_bad = value;
+		}
+	}
+
+	/* get the content rating description for the worst things about the app */
+	for (j = 0; id_map[j].ids[0] != NULL; j++) {
+		for (i = 0; id_map[j].ids[i] != NULL; i++) {
+			AsContentRatingValue value;
+			value = as_content_rating_get_value (cr, id_map[j].ids[i]);
+			if (value < value_bad)
+				continue;
+			tmp = gs_utils_content_rating_kv_to_str (id_map[j].ids[i], value);
+			g_string_append_printf (str, "• %s\n", tmp);
+			break;
+		}
+	}
+	if (str->len > 0)
+		g_string_truncate (str, str->len - 1);
+
+	/* enable the details if there are any */
+	gtk_label_set_label (GTK_LABEL (self->label_content_rating_message), str->str);
+	gtk_widget_set_visible (self->label_content_rating_title, str->len > 0);
+	gtk_widget_set_visible (self->label_content_rating_message, str->len > 0);
+	gtk_widget_set_visible (self->label_content_rating_none, str->len == 0);
+
+	/* show popover */
+	gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
+	gtk_widget_show (self->popover_content_rating);
+}
+
 static gboolean
 gs_shell_details_activate_link_cb (GtkLabel *label,
 				   const gchar *uri,
@@ -1890,6 +2008,9 @@ gs_shell_details_setup (GsShellDetails *self,
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_shell_details_more_reviews_button_cb),
 			  self);
+	g_signal_connect (self->button_details_rating_value, "clicked",
+			  G_CALLBACK (gs_shell_details_content_rating_button_cb),
+			  self);
 	g_signal_connect (self->label_details_updated_value, "activate-link",
 			  G_CALLBACK (gs_shell_details_history_cb),
 			  self);
@@ -2033,6 +2154,12 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_unknown);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_license_nonfree_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_licenses_intro);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_content_rating);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_content_rating_title);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_content_rating_message);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_content_rating_none);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_rating_value);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_rating_title);
 }
 
 static void
