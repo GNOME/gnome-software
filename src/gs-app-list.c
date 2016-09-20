@@ -118,7 +118,7 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 
 	/* just use the ref */
 	g_ptr_array_add (list->array, g_object_ref (app));
-	g_hash_table_insert (list->hash_by_id, (gpointer) id, (gpointer) app);
+	g_hash_table_insert (list->hash_by_id, g_strdup (id), g_object_ref (app));
 }
 
 /**
@@ -449,8 +449,10 @@ gs_app_list_init (GsAppList *list)
 {
 	g_mutex_init (&list->mutex);
 	list->array = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	list->hash_by_id = g_hash_table_new ((GHashFunc) as_utils_unique_id_hash,
-					     (GEqualFunc) as_utils_unique_id_equal);
+	list->hash_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
+						  (GEqualFunc) as_utils_unique_id_equal,
+						  g_free,
+						  (GDestroyNotify) g_object_unref);
 }
 
 /**
