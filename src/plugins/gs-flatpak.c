@@ -1357,20 +1357,31 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 
 static gboolean
 gs_plugin_refine_item_metadata (GsFlatpak *self,
-			       GsApp *app,
-			       GCancellable *cancellable,
-			       GError **error)
+				GsApp *app,
+				GCancellable *cancellable,
+				GError **error)
 {
 	const gchar *str;
 	gsize len = 0;
 	g_autofree gchar *contents = NULL;
 	g_autofree gchar *installation_path_str = NULL;
 	g_autofree gchar *install_path = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GBytes) data = NULL;
 	g_autoptr(GFile) installation_path = NULL;
 
+	/* profile */
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "flatpak::refine-metadata{%s}",
+				  gs_app_get_id (app));
+	g_assert (ptask != NULL);
+
 	/* not applicable */
 	if (gs_app_get_flatpak_kind (app) != FLATPAK_REF_KIND_APP)
+		return TRUE;
+
+	/* already done */
+	if (gs_app_has_kudo (app, GS_APP_KUDO_SANDBOXED))
 		return TRUE;
 
 	/* this is quicker than doing network IO */
