@@ -497,6 +497,18 @@ gs_appstream_get_bundle_kind (AsApp *item)
 	return AS_BUNDLE_KIND_UNKNOWN;
 }
 
+static gboolean
+gs_utils_is_current_desktop (const gchar *name)
+{
+	const gchar *tmp;
+	g_auto(GStrv) names = NULL;
+	tmp = g_getenv ("XDG_CURRENT_DESKTOP");
+	if (tmp == NULL)
+		return FALSE;
+	names = g_strsplit (tmp, ":", -1);
+	return g_strv_contains ((const gchar * const *) names, name);
+}
+
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
@@ -504,6 +516,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 GError **error)
 {
 	GHashTable *urls;
+	GPtrArray *array;
 	GPtrArray *pkgnames;
 	GPtrArray *kudos;
 	const gchar *tmp;
@@ -640,9 +653,14 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_project_group (app, as_app_get_project_group (item));
 
 	/* this is a core application for the desktop and cannot be removed */
-	if (as_app_has_compulsory_for_desktop (item, "GNOME") &&
-	    gs_app_get_kind (app) == AS_APP_KIND_DESKTOP)
-		gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+	array = as_app_get_compulsory_for_desktops (item);
+	for (i = 0; i < array->len; i++) {
+		tmp = g_ptr_array_index (array, i);
+		if (gs_utils_is_current_desktop (tmp)) {
+			gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+			break;
+		}
+	}
 
 	/* set id kind */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)
