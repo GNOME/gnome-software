@@ -53,6 +53,8 @@ typedef struct
 	GPtrArray		*pending_apps;
 
 	GSettings		*settings;
+
+	GMutex			 events_by_id_mutex;
 	GHashTable		*events_by_id;		/* unique-id : GsPluginEvent */
 
 	gchar			**compatible_projects;
@@ -264,6 +266,7 @@ static void
 gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 	g_hash_table_insert (priv->events_by_id,
 			     (gpointer) gs_plugin_event_get_unique_id (event),
 			     g_object_ref (event));
@@ -1072,6 +1075,7 @@ GsPluginEvent *
 gs_plugin_loader_get_event_by_id (GsPluginLoader *plugin_loader, const gchar *unique_id)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 	return g_hash_table_lookup (priv->events_by_id, unique_id);
 }
 
@@ -3575,6 +3579,7 @@ gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
 	GPtrArray *events = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	GList *l;
 	g_autoptr(GList) keys = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 
 	/* just add everything */
 	keys = g_hash_table_get_keys (priv->events_by_id);
@@ -3601,6 +3606,7 @@ gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *l;
 	g_autoptr(GList) keys = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 
 	/* just add everything */
 	keys = g_hash_table_get_keys (priv->events_by_id);
@@ -3624,6 +3630,7 @@ void
 gs_plugin_loader_remove_events (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 	g_hash_table_remove_all (priv->events_by_id);
 }
 
@@ -4175,6 +4182,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_hash_table_unref (priv->events_by_id);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
+	g_mutex_clear (&priv->events_by_id_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
@@ -4280,6 +4288,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		*match = '\0';
 
 	g_mutex_init (&priv->pending_apps_mutex);
+	g_mutex_init (&priv->events_by_id_mutex);
 
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
