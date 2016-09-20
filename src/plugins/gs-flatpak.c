@@ -91,6 +91,50 @@ gs_plugin_flatpak_error_convert (GError **perror)
 	error->domain = GS_PLUGIN_ERROR;
 }
 
+static gchar *
+gs_flatpak_build_id (FlatpakRef *xref)
+{
+	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
+		return g_strdup_printf ("%s.desktop",
+					flatpak_ref_get_name (xref));
+	}
+	return g_strdup_printf ("%s.runtime",
+				flatpak_ref_get_name (xref));
+}
+
+static GsApp *
+gs_plugin_create_app (GsFlatpak *self, FlatpakRef *xref)
+{
+	GsApp *app_cached;
+	g_autofree gchar *id = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* create a temp GsApp */
+	id = gs_flatpak_build_id (xref);
+	app = gs_app_new (id);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
+	if (flatpak_installation_get_is_user (self->installation)) {
+		gs_app_set_scope (app, AS_APP_SCOPE_USER);
+	} else {
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	}
+	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
+		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+	}
+
+	/* we already have one, returned the ref'd cached copy */
+	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+	if (app_cached != NULL)
+		return app_cached;
+
+	/* no existing match, just steal the temp object */
+	gs_plugin_cache_add (self->plugin, NULL, app);
+	return g_steal_pointer (&app);
+}
+
 static void
 gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFile *child,
@@ -445,44 +489,11 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 		gs_app_set_size_installed (app, size_installed);
 }
 
-static gchar *
-gs_flatpak_build_id (FlatpakRef *xref)
-{
-	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
-		return g_strdup_printf ("%s.desktop",
-					flatpak_ref_get_name (xref));
-	}
-	return g_strdup_printf ("%s.runtime",
-				flatpak_ref_get_name (xref));
-}
-
-static gchar *
-gs_flatpak_build_unique_id (FlatpakInstallation *installation, FlatpakRef *xref)
-{
-	AsAppKind kind = AS_APP_KIND_DESKTOP;
-	AsAppScope scope = AS_APP_SCOPE_SYSTEM;
-	g_autofree gchar *id = NULL;
-
-	/* use a different prefix if we're somehow running this as per-user */
-	if (flatpak_installation_get_is_user (installation))
-		scope = AS_APP_SCOPE_USER;
-	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME)
-		kind = AS_APP_KIND_RUNTIME;
-	id = gs_flatpak_build_id (xref);
-	return as_utils_unique_id_build (scope,
-					 AS_BUNDLE_KIND_FLATPAK,
-					 NULL,	/* origin */
-					 kind,
-					 id,
-					 flatpak_ref_get_branch (xref));
-}
-
 static GsApp *
 gs_flatpak_create_installed (GsFlatpak *self,
 			     FlatpakInstalledRef *xref,
 			     GError **error)
 {
-	g_autofree gchar *unique_id = NULL;
 	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GsApp) app = NULL;
 
@@ -507,14 +518,7 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	}
 
 	/* create new object */
-	unique_id = gs_flatpak_build_unique_id (self->installation,
-						FLATPAK_REF (xref));
-	app = gs_plugin_cache_lookup (self->plugin, unique_id);
-	if (app == NULL) {
-		g_autofree gchar *id = gs_flatpak_build_id (FLATPAK_REF (xref));
-		app = gs_app_new (id);
-		gs_plugin_cache_add (self->plugin, unique_id, app);
-	}
+	app = gs_plugin_create_app (self, FLATPAK_REF (xref));
 	gs_flatpak_set_metadata_installed (self, app, xref);
 
 	switch (flatpak_ref_get_kind (FLATPAK_REF(xref))) {
@@ -1138,11 +1142,11 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 static gboolean
 gs_flatpak_app_matches_xref (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
-	g_autofree gchar *id = NULL;
+	g_autoptr(GsApp) app_tmp = gs_plugin_create_app (self, xref);
 
 	/* check ID */
-	id = gs_flatpak_build_unique_id (self->installation, xref);
-	if (g_strcmp0 (id, gs_app_get_unique_id (app)) == 0)
+	if (g_strcmp0 (gs_app_get_unique_id (app),
+	    gs_app_get_unique_id (app_tmp)) == 0)
 		return TRUE;
 
 	/* do all the metadata items match? */
@@ -1957,7 +1961,6 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 {
 	gint size;
 	g_autofree gchar *content_type = NULL;
-	g_autofree gchar *unique_id = NULL;
 	g_autoptr(GBytes) appstream_gz = NULL;
 	g_autoptr(GBytes) icon_data = NULL;
 	g_autoptr(GBytes) metadata = NULL;
@@ -1972,17 +1975,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		return FALSE;
 	}
 
-	/* create a virtual ID */
-	unique_id = gs_flatpak_build_unique_id (self->installation,
-						FLATPAK_REF (xref_bundle));
-	app = gs_plugin_cache_lookup (self->plugin, unique_id);
-	if (app == NULL) {
-		g_autofree gchar *id = gs_flatpak_build_id (FLATPAK_REF (xref_bundle));
-		app = gs_app_new (id);
-		gs_plugin_cache_add (self->plugin, unique_id, app);
-	}
-
 	/* load metadata */
+	app = gs_plugin_create_app (self, FLATPAK_REF (xref_bundle));
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
@@ -2242,7 +2236,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	const gchar *remote_name;
 	gsize len = 0;
 	g_autofree gchar *contents = NULL;
-	g_autofree gchar *unique_id = NULL;
 	g_autoptr(FlatpakRemoteRef) xref = NULL;
 	g_autoptr(GBytes) ref_file_data = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -2280,17 +2273,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	return FALSE;
 #endif
 
-	/* create a virtual ID */
-	unique_id = gs_flatpak_build_unique_id (self->installation,
-						FLATPAK_REF (xref));
-	app = gs_plugin_cache_lookup (self->plugin, unique_id);
-	if (app == NULL) {
-		g_autofree gchar *id = gs_flatpak_build_id (FLATPAK_REF (xref));
-		app = gs_app_new (id);
-		gs_plugin_cache_add (self->plugin, unique_id, app);
-	}
-
 	/* load metadata */
+	app = gs_plugin_create_app (self, FLATPAK_REF (xref));
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
