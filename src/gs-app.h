@@ -271,6 +271,8 @@ void		 gs_app_set_keywords		(GsApp		*app,
 						 GPtrArray	*keywords);
 void		 gs_app_add_kudo		(GsApp		*app,
 						 GsAppKudo	 kudo);
+gboolean	 gs_app_has_kudo		(GsApp		*app,
+						 GsAppKudo	 kudo);
 guint64		 gs_app_get_kudos		(GsApp		*app);
 guint		 gs_app_get_kudos_percentage	(GsApp		*app);
 gboolean	 gs_app_get_to_be_installed	(GsApp		*app);

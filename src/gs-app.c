@@ -2948,6 +2948,24 @@ gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 }
 
 /**
+ * gs_app_has_kudo:
+ * @app: a #GsApp
+ * @kudo: a #GsAppKudo, e.g. %GS_APP_KUDO_MY_LANGUAGE
+ *
+ * Finds out if a kudo has been awarded by the application.
+ *
+ * Returns: %TRUE if the app has the specified kudo
+ *
+ * Since: 3.22
+ **/
+gboolean
+gs_app_has_kudo (GsApp *app, GsAppKudo kudo)
+{
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return (app->kudos & kudo) > 0;
+}
+
+/**
  * gs_app_get_kudos:
  * @app: a #GsApp
  *
