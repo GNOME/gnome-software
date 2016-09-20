@@ -530,7 +530,10 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_id (app, as_app_get_id (item));
 
 	/* set source */
-	gs_app_set_metadata (app, "appstream::source-file", as_app_get_source_file (item));
+	if (gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
+		gs_app_set_metadata (app, "appstream::source-file",
+				     as_app_get_source_file (item));
+	}
 
 	/* scope */
 	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN &&
