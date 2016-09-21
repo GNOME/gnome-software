@@ -159,6 +159,8 @@ gnome_software_SOURCES =				\
 	gs-category-private.h				\
 	gs-common.c					\
 	gs-common.h					\
+	gs-content-rating.c				\
+	gs-content-rating.h				\
 	gs-debug.c					\
 	gs-debug.h					\
 	gs-app-addon-row.c				\

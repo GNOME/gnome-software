@@ -26,6 +26,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-common.h"
+#include "gs-content-rating.h"
 
 #include "gs-shell-details.h"
 #include "gs-app-private.h"
@@ -1329,15 +1330,33 @@ static void
 gs_shell_details_refresh_content_rating (GsShellDetails *self)
 {
 	AsContentRating *content_rating;
+	GsContentRatingSystem system;
 	guint age = 0;
+	gchar *str;
+	const gchar *display = NULL;
+	g_autofree gchar *locale = NULL;
+
+	/* get the content rating system from the locale */
+	locale = g_strdup (setlocale (LC_MESSAGES, NULL));
+	str = g_strstr_len (locale, -1, ".UTF-8");
+	if (str != NULL)
+		*str = '\0';
+	str = g_strstr_len (locale, -1, ".utf8");
+	if (str != NULL)
+		*str = '\0';
+	system = gs_utils_content_rating_system_from_locale (locale);
+	g_debug ("content rating system is guessed as %s from %s",
+		 gs_content_rating_system_to_str (system),
+		 locale);
 
 	/* only show the button if a game and has a content rating */
 	content_rating = gs_app_get_content_rating (self->app);
-	if (content_rating != NULL)
+	if (content_rating != NULL) {
 		age = as_content_rating_get_minimum_age (content_rating);
-	if (age > 3) {
-		g_autofree gchar *tmp = g_strdup_printf ("%u+", age);
-		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), tmp);
+		display = gs_utils_content_rating_age_to_str (system, age);
+	}
+	if (display != NULL) {
+		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), display);
 		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
 		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
 		gs_shell_details_content_rating_set_css (self->button_details_rating_value, age);
@@ -1819,7 +1838,7 @@ gs_shell_details_content_rating_button_cb (GtkWidget *widget, GsShellDetails *se
 			value = as_content_rating_get_value (cr, id_map[j].ids[i]);
 			if (value < value_bad)
 				continue;
-			tmp = gs_utils_content_rating_kv_to_str (id_map[j].ids[i], value);
+			tmp = gs_content_rating_key_value_to_str (id_map[j].ids[i], value);
 			g_string_append_printf (str, "• %s\n", tmp);
 			break;
 		}
