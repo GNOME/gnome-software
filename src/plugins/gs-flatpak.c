@@ -2067,6 +2067,12 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		/* copy details from AppStream to app */
 		if (!gs_appstream_refine_app (self->plugin, app, item, error))
 			return FALSE;
+	} else {
+		g_warning ("no appstream metadata in file");
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
+				 gs_app_get_flatpak_name (app));
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+				    "A flatpak application");
 	}
 
 	/* load icon */
