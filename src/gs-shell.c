@@ -863,6 +863,20 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 						str_app);
 		}
 		break;
+	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+		if (origin != NULL) {
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install %s as "
+						       "runtime %s not available"),
+					       str_app, str_origin);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install %s "
+						       "as not supported"),
+						str_app);
+		}
+		break;
 	case GS_PLUGIN_ERROR_NO_NETWORK:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to install: internet access was "

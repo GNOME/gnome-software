@@ -1856,14 +1856,17 @@ gs_flatpak_app_install (GsFlatpak *self,
 
 		/* the runtime could come from a different remote to the app */
 		if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
+			gs_utils_error_add_unique_id (error, runtime);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 		if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
+			gs_utils_error_add_unique_id (error, runtime);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 		if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
+			gs_utils_error_add_unique_id (error, runtime);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -1873,6 +1876,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "Failed to find runtime %s",
 				     gs_app_get_source_default (runtime));
+			gs_utils_error_add_unique_id (error, runtime);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
