@@ -883,6 +883,10 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 				        "required but wasn’t available"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
 		break;
+	case GS_PLUGIN_ERROR_INVALID_FORMAT:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Unable to install: the application has an invalid format"));
+		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append_printf (str, _("Unable to install %s: "
