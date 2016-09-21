@@ -1855,21 +1855,25 @@ gs_flatpak_app_install (GsFlatpak *self,
 		runtime = gs_app_get_runtime (app);
 
 		/* the runtime could come from a different remote to the app */
-		if (!gs_refine_item_metadata (self, runtime, cancellable,
-					      error))
+		if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
+			gs_app_set_state_recover (app);
 			return FALSE;
-		if (!gs_plugin_refine_item_origin (self,
-						   runtime, cancellable, error))
+		}
+		if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
+			gs_app_set_state_recover (app);
 			return FALSE;
-		if (!gs_plugin_refine_item_state (self, runtime,
-						  cancellable, error))
+		}
+		if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
+			gs_app_set_state_recover (app);
 			return FALSE;
+		}
 		if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "Failed to find runtime %s",
 				     gs_app_get_source_default (runtime));
+			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 
@@ -1888,6 +1892,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 							     cancellable, error);
 			if (xref == NULL) {
 				gs_app_set_state_recover (runtime);
+				gs_app_set_state_recover (app);
 				return FALSE;
 			}
 			gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
