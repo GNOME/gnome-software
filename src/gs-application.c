@@ -637,6 +637,7 @@ filename_activated (GSimpleAction *action,
 	const gchar *filename;
 
 	gs_application_initialize_ui (app);
+	gs_application_monitor_network (GS_APPLICATION (app));
 
 	g_variant_get (parameter, "(&s)", &filename);
 	gs_shell_show_filename (app->shell, filename);
