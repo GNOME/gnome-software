@@ -1314,17 +1314,23 @@ gs_shell_details_app_refine2 (GsShellDetails *self)
 static void
 gs_shell_details_content_rating_set_css (GtkWidget *widget, guint age)
 {
-	GtkStyleContext *ctx = gtk_widget_get_style_context (widget);
-	gtk_style_context_remove_class (ctx, "content-rating-adult");
-	gtk_style_context_remove_class (ctx, "content-rating-parental-guidance");
+	g_autoptr(GString) css = g_string_new (NULL);
+	const gchar *color_bg = NULL;
+	const gchar *color_fg = "#ffffff";
 	if (age >= 18) {
-		gtk_style_context_add_class (ctx, "content-rating-adult");
-		return;
+		color_bg = "#ee2222";
+	} else if (age >= 15) {
+		color_bg = "#f1c000";
+	} else if (age >= 12) {
+		color_bg = "#2a97c9";
+	} else if (age >= 5) {
+		color_bg = "#3f756c";
+	} else {
+		color_bg = "#009d66";
 	}
-	if (age >= 5) {
-		gtk_style_context_add_class (ctx, "content-parental-guidance");
-		return;
-	}
+	g_string_append_printf (css, "color: %s;\n", color_fg);
+	g_string_append_printf (css, "background-color: %s;\n", color_bg);
+	gs_utils_widget_set_css_simple (widget, css->str);
 }
 
 static void

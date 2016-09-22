@@ -431,7 +431,7 @@ gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 			return "E10+";
 		if (age >= 6)
 			return "E";
-		return "EC";
+		return "eC";
 	}
 	/* IARC = everything else */
 	if (age >= 18)
