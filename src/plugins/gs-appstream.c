@@ -497,18 +497,6 @@ gs_appstream_get_bundle_kind (AsApp *item)
 	return AS_BUNDLE_KIND_UNKNOWN;
 }
 
-static gboolean
-gs_utils_is_current_desktop (const gchar *name)
-{
-	const gchar *tmp;
-	g_auto(GStrv) names = NULL;
-	tmp = g_getenv ("XDG_CURRENT_DESKTOP");
-	if (tmp == NULL)
-		return FALSE;
-	names = g_strsplit (tmp, ":", -1);
-	return g_strv_contains ((const gchar * const *) names, name);
-}
-
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
@@ -519,6 +507,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	GPtrArray *array;
 	GPtrArray *pkgnames;
 	GPtrArray *kudos;
+	const gchar *current_desktop;
 	const gchar *tmp;
 	guint i;
 
@@ -665,11 +654,23 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	    gs_app_get_project_group (app) == NULL)
 		gs_app_set_project_group (app, as_app_get_project_group (item));
 
-	/* this is a core application for the desktop and cannot be removed */
+	/*
+	 * Set the core applications for the current desktop that cannot be
+	 * removed -- but note: XDG_CURRENT_DESKTOP="GNOME" is different to
+	 * XDG_CURRENT_DESKTOP="Ubuntu:GNOME" here.
+	 *
+	 * To define what is compulsory for the hybrid desktop either:
+	 *
+	 *  - Add an appstream merge file downstream with the tag
+	 *    <compulsory_for_desktop>Ubuntu:GNOME</compulsory_for_desktop>
+	 *
+	 *  - Get upstream projects to add the <compulsory_for_desktop> tag
+	 */
 	array = as_app_get_compulsory_for_desktops (item);
+	current_desktop = g_getenv ("XDG_CURRENT_DESKTOP");
 	for (i = 0; i < array->len; i++) {
 		tmp = g_ptr_array_index (array, i);
-		if (gs_utils_is_current_desktop (tmp)) {
+		if (g_strcmp0 (current_desktop, tmp) == 0) {
 			gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 			break;
 		}
