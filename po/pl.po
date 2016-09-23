@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-09 02:55+0200\n"
-"PO-Revision-Date: 2016-09-09 02:57+0200\n"
+"POT-Creation-Date: 2016-09-23 18:47+0200\n"
+"PO-Revision-Date: 2016-09-23 18:48+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -231,7 +231,7 @@ msgstr "Dodanie do katalogu programów"
 #: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
 #: ../src/gs-removal-dialog.ui.h:2 ../src/gs-review-dialog.ui.h:3
 #: ../src/gs-shell-details.c:358 ../src/gs-shell-details.ui.h:6
-#: ../src/gs-shell-installed.c:529 ../src/gs-upgrade-banner.ui.h:5
+#: ../src/gs-shell-installed.c:530 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_Anuluj"
 
@@ -837,15 +837,21 @@ msgstr "Co sądzisz o tym programie? Proszę uzasadnić swoje zdanie."
 msgid "Total"
 msgstr "Razem"
 
+#. TRANSLATORS: this is when a user doesn't specify a name
+#. This refers to the license of the application
+#: ../src/gs-review-row.c:71 ../src/gs-shell-details.ui.h:42
+msgid "Unknown"
+msgstr "Nieznana"
+
 #. TRANSLATORS: we explain what the action is going to do
-#: ../src/gs-review-row.c:207
+#: ../src/gs-review-row.c:211
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Można zgłosić recenzję za znieważające, nieprzyzwoite lub dyskryminujące "
 "zachowanie."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: ../src/gs-review-row.c:212
+#: ../src/gs-review-row.c:216
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -856,13 +862,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: ../src/gs-review-row.c:226
+#: ../src/gs-review-row.c:230
 msgid "Report Review?"
 msgstr "Zgłosić recenzję?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: ../src/gs-review-row.c:230
+#: ../src/gs-review-row.c:234
 msgid "Report"
 msgstr "Zgłoś"
 
@@ -1004,41 +1010,41 @@ msgctxt "origin"
 msgid "Unknown"
 msgstr "Nieznane"
 
-#: ../src/gs-shell-details.c:1298
+#: ../src/gs-shell-details.c:1327
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nie można odnaleźć „%s”"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1356
+#: ../src/gs-shell-details.c:1388
 msgid "The file is not supported."
 msgstr "Plik jest nieobsługiwany."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1366 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1398 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "To nie zadziałało"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1725
+#: ../src/gs-shell-details.c:1754
 msgid "Public domain"
 msgstr "Domena publiczna"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1741 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1770 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Wolne oprogramowanie"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1796
+#: ../src/gs-shell-details.c:1825
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Użytkowników obowiązuje ta licencja:"
 msgstr[1] "Użytkowników obowiązują te licencje:"
 msgstr[2] "Użytkowników obowiązują te licencje:"
 
-#: ../src/gs-shell-details.c:1812 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1841 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Więcej informacji"
 
@@ -1177,15 +1183,10 @@ msgstr "Wolna"
 msgid "Proprietary"
 msgstr "Własnościowa"
 
-#. This refers to the license of the application
-#: ../src/gs-shell-details.ui.h:42
-msgid "Unknown"
-msgstr "Nieznana"
-
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:437
+#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:438
 #: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:344
 msgid "Add-ons"
 msgstr "Dodatki"
@@ -1430,15 +1431,15 @@ msgstr "Strona kodeków"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:427
+#: ../src/gs-shell-installed.c:428
 msgid "System Applications"
 msgstr "Programy systemowe"
 
-#: ../src/gs-shell-installed.c:537
+#: ../src/gs-shell-installed.c:538
 msgid "Click on items to select them"
 msgstr "Kliknięcie elementów zaznacza je"
 
-#: ../src/gs-shell-installed.c:737
+#: ../src/gs-shell-installed.c:738
 msgid "Select"
 msgstr "Zaznacz"
 
@@ -2610,12 +2611,12 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:63
 msgid "Software catalog is being downloaded"
-msgstr "Katalog oprogramowania jest pobierany"
+msgstr "Pobieranie katalogu oprogramowania"
 
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:68
 msgid "Software catalog is being loaded"
-msgstr "Katalog oprogramowania jest wczytywany"
+msgstr "Wczytywanie katalogu oprogramowania"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-loading.ui.h:1
