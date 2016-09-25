@@ -292,7 +292,7 @@ animation_timeout_cb (gpointer user_data)
   }
 
   if (priv->dismissed && priv->animate_y == 0)
-    gtk_widget_destroy (GTK_WIDGET (notification));
+    gtk_widget_hide (GTK_WIDGET (notification));
 
   priv->animate_timeout = 0;
   return G_SOURCE_REMOVE;
