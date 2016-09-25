@@ -268,7 +268,7 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 	g_hash_table_insert (priv->events_by_id,
-			     (gpointer) gs_plugin_event_get_unique_id (event),
+			     g_strdup (gs_plugin_event_get_unique_id (event)),
 			     g_object_ref (event));
 	g_idle_add (gs_plugin_loader_notify_idle_cb, plugin_loader);
 }
@@ -3586,6 +3586,10 @@ gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
 	for (l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		GsPluginEvent *event = g_hash_table_lookup (priv->events_by_id, key);
+		if (event == NULL) {
+			g_warning ("failed to get event for '%s'", key);
+			continue;
+		}
 		g_ptr_array_add (events, g_object_ref (event));
 	}
 	return events;
@@ -3613,6 +3617,10 @@ gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 	for (l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		GsPluginEvent *event = g_hash_table_lookup (priv->events_by_id, key);
+		if (event == NULL) {
+			g_warning ("failed to get event for '%s'", key);
+			continue;
+		}
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID))
 			return event;
 	}
@@ -4248,7 +4256,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->settings = g_settings_new ("org.gnome.software");
 	priv->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
 					            (GEqualFunc) as_utils_unique_id_equal,
-						    NULL,
+						    g_free,
 						    (GDestroyNotify) g_object_unref);
 
 	/* share a soup session (also disable the double-compression) */
