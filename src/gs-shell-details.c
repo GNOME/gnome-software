@@ -1419,18 +1419,6 @@ gs_shell_details_app_refine_cb (GObject *source,
 }
 
 static void
-gs_shell_details_failed_response_cb (GtkDialog *dialog,
-				     gint response,
-				     GsShellDetails *self)
-{
-	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	/* switch away from the details view that failed to load */
-	gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
-}
-
-static void
 gs_shell_details_file_to_app_cb (GObject *source,
 				 GAsyncResult *res,
 				 gpointer user_data)
@@ -1445,38 +1433,16 @@ gs_shell_details_file_to_app_cb (GObject *source,
 		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_progress_changed_cb, self);
 	}
+
 	/* save app */
 	g_set_object (&self->app,
 		      gs_plugin_loader_file_to_app_finish (plugin_loader,
 							   res,
 							   &error));
 	if (self->app == NULL) {
-		GtkWidget *dialog;
-		const gchar *msg;
-
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
-			/* TRANSLATORS: the file format was not recognised by
-			 * any plugin, e.g. if you try installing a .tar.gz */
-			msg = _("The file is not supported.");
-		} else {
-			msg = error->message;
-		}
-
-		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
-		                                 GTK_DIALOG_MODAL |
-		                                 GTK_DIALOG_DESTROY_WITH_PARENT,
-		                                 GTK_MESSAGE_ERROR,
-		                                 GTK_BUTTONS_CLOSE,
-		                                 _("Sorry, this did not work"));
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-		                                          "%s", msg);
-		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_shell_details_failed_response_cb), self);
-		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
-
 		g_warning ("failed to convert to GsApp: %s", error->message);
+		/* switch away from the details view that failed to load */
+		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 		return;
 	}
 
