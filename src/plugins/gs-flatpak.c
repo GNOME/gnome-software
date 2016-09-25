@@ -1093,6 +1093,10 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 	if (gs_app_get_origin (app) != NULL)
 		return TRUE;
 
+	/* not applicable */
+	if (gs_app_get_state(app) == AS_APP_STATE_AVAILABLE_LOCAL)
+		return TRUE;
+
 	/* ensure metadata exists */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-origin");
@@ -1453,6 +1457,10 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	guint64 download_size = GS_APP_SIZE_UNKNOWABLE;
 	guint64 installed_size = GS_APP_SIZE_UNKNOWABLE;
 	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* not applicable */
+	if (gs_app_get_state(app) == AS_APP_STATE_AVAILABLE_LOCAL)
+		return TRUE;
 
 	/* already set */
 	if (gs_app_is_installed (app)) {
