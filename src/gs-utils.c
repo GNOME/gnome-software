@@ -549,6 +549,65 @@ gs_utils_error_strip_unique_id (GError *error)
 }
 
 /**
+ * gs_utils_error_convert_gdbus:
+ * @perror: a pointer to a #GError, or %NULL
+ *
+ * Converts the #GDBusError to an error with a GsPluginError domain.
+ *
+ * Returns: %TRUE if the error was converted, or already correct
+ **/
+gboolean
+gs_utils_error_convert_gdbus (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return FALSE;
+	if (error->domain == GS_PLUGIN_ERROR)
+		return TRUE;
+	if (error->domain != G_DBUS_ERROR)
+		return FALSE;
+	switch (error->code) {
+	case G_DBUS_ERROR_FAILED:
+	case G_DBUS_ERROR_NO_REPLY:
+	case G_DBUS_ERROR_TIMEOUT:
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	case G_DBUS_ERROR_IO_ERROR:
+	case G_DBUS_ERROR_NAME_HAS_NO_OWNER:
+	case G_DBUS_ERROR_NOT_SUPPORTED:
+	case G_DBUS_ERROR_SERVICE_UNKNOWN:
+	case G_DBUS_ERROR_UNKNOWN_INTERFACE:
+	case G_DBUS_ERROR_UNKNOWN_METHOD:
+	case G_DBUS_ERROR_UNKNOWN_OBJECT:
+	case G_DBUS_ERROR_UNKNOWN_PROPERTY:
+		error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
+		break;
+	case G_DBUS_ERROR_NO_MEMORY:
+		error->code = GS_PLUGIN_ERROR_NO_SPACE;
+		break;
+	case G_DBUS_ERROR_ACCESS_DENIED:
+	case G_DBUS_ERROR_AUTH_FAILED:
+		error->code = GS_PLUGIN_ERROR_NO_SECURITY;
+		break;
+	case G_DBUS_ERROR_NO_NETWORK:
+		error->code = GS_PLUGIN_ERROR_NO_NETWORK;
+		break;
+	case G_DBUS_ERROR_INVALID_FILE_CONTENT:
+		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
+		break;
+	default:
+		g_warning ("can't reliably fixup error code %i in domain %s",
+			   error->code, g_quark_to_string (error->domain));
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	}
+	error->domain = GS_PLUGIN_ERROR;
+	return TRUE;
+}
+
+/**
  * gs_utils_error_convert_gio:
  * @perror: a pointer to a #GError, or %NULL
  *

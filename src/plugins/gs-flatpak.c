@@ -72,6 +72,10 @@ gs_plugin_flatpak_error_convert (GError **perror)
 	if (gs_utils_error_convert_gio (perror))
 		return;
 
+	/* this are allowed for low-level errors */
+	if (gs_utils_error_convert_gdbus (perror))
+		return;
+
 	/* custom to this plugin */
 	if (error->domain == FLATPAK_ERROR) {
 		switch (error->code) {
