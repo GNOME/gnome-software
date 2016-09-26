@@ -818,8 +818,10 @@ gs_appstream_store_search (GsPlugin *plugin,
 	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
 	for (i = 0; i < array->len; i++) {
-		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+			gs_utils_error_convert_gio (error);
 			return FALSE;
+		}
 
 		item = g_ptr_array_index (array, i);
 		ret = gs_appstream_store_search_item (plugin, item,
