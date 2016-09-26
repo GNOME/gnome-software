@@ -236,6 +236,65 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	return TRUE;
 }
 
+static void
+gs_flatpak_rescan_installed (GsFlatpak *self, GCancellable *cancellable, GError **error)
+{
+	GPtrArray *icons;
+	gchar *fn;
+	guint i;
+	g_autoptr(GFile) path = NULL;
+	g_autoptr(GDir) dir = NULL;
+	g_autofree gchar *path_str = NULL;
+	g_autofree gchar *path_exports = NULL;
+	g_autofree gchar *path_apps = NULL;
+
+	/* add all installed desktop files */
+	path = flatpak_installation_get_path (self->installation);
+	path_str = g_file_get_path (path);
+	path_exports = g_build_filename (path_str, "exports", NULL);
+	path_apps = g_build_filename (path_exports, "share", "applications", NULL);
+	dir = g_dir_open (path_apps, 0, NULL);
+	if (dir == NULL)
+		return;
+	while ((fn = g_dir_read_name (dir)) != NULL) {
+		g_autofree gchar *fn_desktop = NULL;
+		g_autoptr(GError) error_local = NULL;
+		g_autoptr(AsApp) app = NULL;
+
+		/* ignore */
+		if (g_strcmp0 (fn, "mimeinfo.cache") == 0)
+			continue;
+
+		/* parse desktop files */
+		app = as_app_new ();
+		fn_desktop = g_build_filename (path_apps, fn, NULL);
+		if (!as_app_parse_file (app, fn_desktop, 0, &error_local)) {
+			g_warning ("failed to parse %s: %s",
+				   fn_desktop, error_local->message);
+			continue;
+		}
+
+		/* fix up icons */
+		icons = as_app_get_icons (app);
+		for (i = 0; i < icons->len; i++) {
+			AsIcon *ic = g_ptr_array_index (icons, i);
+			if (as_icon_get_kind (ic) == AS_ICON_KIND_UNKNOWN) {
+				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+				as_icon_set_prefix (ic, path_exports);
+			}
+		}
+
+		/* add */
+		as_app_set_state (app, AS_APP_STATE_INSTALLED);
+		as_app_set_scope (app, self->scope);
+		as_app_set_source_kind (app, AS_APP_SOURCE_KIND_DESKTOP);
+		as_app_set_source_file (app, fn_desktop);
+		as_app_set_icon_path (app, path_exports);
+		as_app_add_keyword (app, NULL, "flatpak");
+		as_store_add_app (self->store, app);
+	}
+}
+
 static gboolean
 gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 				   GCancellable *cancellable,
@@ -264,6 +323,10 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		if (!gs_flatpak_add_apps_from_xremote (self, xremote, cancellable, error))
 			return FALSE;
 	}
+
+	/* add any installed files without AppStream info */
+	gs_flatpak_rescan_installed (self, cancellable, error);
+
 	return TRUE;
 }
 
@@ -2413,6 +2476,16 @@ gs_flatpak_search (GsFlatpak *self,
 		   GCancellable *cancellable,
 		   GError **error)
 {
+	g_autoptr(GError) error_md = NULL;
+
+	/* if we've never ever run before, get the AppStream data */
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
+					   cancellable,
+					   &error_md)) {
+		g_warning ("failed to get initial available data: %s",
+			   error_md->message);
+	}
+
 	return gs_appstream_store_search (self->plugin, self->store,
 					  values, list,
 					  cancellable, error);
