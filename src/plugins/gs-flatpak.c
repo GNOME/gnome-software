@@ -1982,7 +1982,8 @@ gs_flatpak_app_install (GsFlatpak *self,
 	}
 
 	/* use the source for local apps */
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+	if (gs_app_get_local_file (app) != NULL) {
+		g_debug ("installing bundle %s", gs_app_get_unique_id (app));
 		xref = flatpak_installation_install_bundle (self->installation,
 							    gs_app_get_local_file (app),
 							    gs_flatpak_progress_cb,
