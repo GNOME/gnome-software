@@ -116,6 +116,11 @@ gs_refine_item_icon (GsPlugin *plugin, GsApp *app, AsApp *item)
 	icon = gs_appstream_get_icon_by_kind (item, AS_ICON_KIND_REMOTE);
 	if (icon != NULL)
 		gs_app_add_icon (app, icon);
+
+	/* unhandled icon type */
+	icon = as_app_get_icon_default (item);
+	g_warning ("could not refine using icon of type: %s",
+		   as_icon_kind_to_string (as_icon_get_kind (icon)));
 }
 
 static void
