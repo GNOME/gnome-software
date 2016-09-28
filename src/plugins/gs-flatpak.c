@@ -1292,8 +1292,9 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	 * and ignore the download size as this is faster */
 	if (gs_app_is_installed (app)) {
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
-		xref = gs_flatpak_get_installed_ref (self, app,
-						     cancellable, error);
+		xref = gs_flatpak_get_installed_ref (self, app, cancellable, error);
+		if (xref == NULL)
+			return FALSE;
 		installed_size = flatpak_installed_ref_get_installed_size (xref);
 		if (installed_size == 0)
 			installed_size = GS_APP_SIZE_UNKNOWABLE;
