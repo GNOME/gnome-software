@@ -470,7 +470,10 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		if (!ret) {
 			if (g_error_matches (error_local,
 					     G_IO_ERROR,
-					     G_IO_ERROR_FAILED)) {
+					     G_IO_ERROR_FAILED) ||
+			    g_error_matches (error_local,
+					     G_IO_ERROR,
+					     G_IO_ERROR_NOT_FOUND)) {
 				g_debug ("Failed to get AppStream metadata: %s",
 					 error_local->message);
 				/* don't try to fetch this again until refresh() */
@@ -480,8 +483,10 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 				continue;
 			}
 			if ((flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) == 0) {
-				g_warning ("Failed to get AppStream metadata: %s",
-					   error_local->message);
+				g_warning ("Failed to get AppStream metadata: %s [%s:%i]",
+					   error_local->message,
+					   g_quark_to_string (error_local->domain),
+					   error_local->code);
 				continue;
 			}
 			g_set_error (error,
