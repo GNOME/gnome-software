@@ -163,6 +163,26 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	}
 }
 
+static void
+gs_flatpak_remove_prefixed_names (AsApp *app)
+{
+	GHashTable *names;
+	GList *l;
+	g_autoptr(GList) keys = NULL;
+
+	names = as_app_get_names (app);
+	keys = g_hash_table_get_keys (names);
+	for (l = keys; l != NULL; l = l->next) {
+		const gchar *locale = l->data;
+		const gchar *value = g_hash_table_lookup (names, locale);
+		if (value == NULL)
+			continue;
+		if (!g_str_has_prefix (value, "(Nightly) "))
+			continue;
+		as_app_set_name (app, locale, value + 10);
+	}
+}
+
 static gboolean
 gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				  FlatpakRemote *xremote,
@@ -224,6 +244,9 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 			continue;
 		}
 
+		/* fix the names when using old versions of appstream-compose */
+		gs_flatpak_remove_prefixed_names (app);
+
 		/* add */
 		as_app_set_scope (app, self->scope);
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));
@@ -283,6 +306,9 @@ gs_flatpak_rescan_installed (GsFlatpak *self, GCancellable *cancellable, GError 
 				as_icon_set_prefix (ic, path_exports);
 			}
 		}
+
+		/* fix the names when using old versions of appstream-compose */
+		gs_flatpak_remove_prefixed_names (app);
 
 		/* add */
 		as_app_set_state (app, AS_APP_STATE_INSTALLED);

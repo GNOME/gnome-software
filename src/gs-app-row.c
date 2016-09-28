@@ -379,8 +379,17 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->label_installed, FALSE);
 	}
 
-	gtk_label_set_label (GTK_LABEL (priv->name_label),
-			     gs_app_get_name (priv->app));
+	/* name */
+	if (g_strcmp0 (gs_app_get_branch (priv->app), "master") == 0) {
+		g_autofree gchar *name = NULL;
+		/* TRANSLATORS: not translated to match what flatpak does */
+		name = g_strdup_printf ("(Nightly) %s",
+					gs_app_get_name (priv->app));
+		gtk_label_set_label (GTK_LABEL (priv->name_label), name);
+	} else {
+		gtk_label_set_label (GTK_LABEL (priv->name_label),
+				     gs_app_get_name (priv->app));
+	}
 	if (priv->show_update &&
 	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
 	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
