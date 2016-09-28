@@ -1469,6 +1469,7 @@ gs_shell_details_file_to_app_cb (GObject *source,
 	gs_shell_details_refresh_addons (self);
 	gs_shell_details_refresh_reviews (self);
 	gs_shell_details_refresh_all (self);
+	gs_shell_details_refresh_content_rating (self);
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
 
 	/* do 2nd stage refine */
