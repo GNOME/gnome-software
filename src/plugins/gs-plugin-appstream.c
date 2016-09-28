@@ -409,11 +409,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			continue;
 
 		/* create */
-		app = gs_appstream_create_app (plugin, item);
+		app = gs_appstream_create_app (plugin, item, error);
+		if (app == NULL)
+			return FALSE;
 		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-		if (!gs_appstream_refine_app (plugin, app, item, error))
-			return FALSE;
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
@@ -477,8 +477,8 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		/* new app */
 		g_debug ("found %s for wildcard %s",
 			 as_app_get_id (item), id);
-		new = gs_appstream_create_app (plugin, item);
-		if (!gs_appstream_refine_app (plugin, new, item, error))
+		new = gs_appstream_create_app (plugin, item, error);
+		if (new == NULL)
 			return FALSE;
 		gs_app_list_add (list, new);
 	}
@@ -540,8 +540,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
 			g_autoptr(GsApp) app = NULL;
-			app = gs_appstream_create_app (plugin, item);
-			if (!gs_appstream_refine_app (plugin, app, item, error))
+			app = gs_appstream_create_app (plugin, item, error);
+			if (app == NULL)
 				return FALSE;
 			gs_app_list_add (list, app);
 		}

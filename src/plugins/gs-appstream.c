@@ -28,7 +28,7 @@
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
 GsApp *
-gs_appstream_create_app (GsPlugin *plugin, AsApp *item)
+gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 {
 	const gchar *unique_id = as_app_get_unique_id (item);
 	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
@@ -36,6 +36,8 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item)
 		app = gs_app_new (as_app_get_id (item));
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
+		if (!gs_appstream_refine_app (plugin, app, item, error))
+			return NULL;
 		gs_plugin_cache_add (plugin, unique_id, app);
 	}
 	return app;
@@ -795,8 +797,8 @@ gs_appstream_store_search_item (GsPlugin *plugin,
 		return TRUE;
 
 	/* create app */
-	app = gs_appstream_create_app (plugin, item);
-	if (!gs_appstream_refine_app (plugin, app, item, error))
+	app = gs_appstream_create_app (plugin, item, error);
+	if (app == NULL)
 		return FALSE;
 	gs_app_set_match_value (app, match_value);
 	gs_app_list_add (list, app);
@@ -930,8 +932,8 @@ gs_appstream_store_add_category_apps (GsPlugin *plugin,
 				continue;
 
 			/* add all the data we can */
-			app = gs_appstream_create_app (plugin, item);
-			if (!gs_appstream_refine_app (plugin, app, item, error))
+			app = gs_appstream_create_app (plugin, item, error);
+			if (app == NULL)
 				return FALSE;
 			gs_app_list_add (list, app);
 		}

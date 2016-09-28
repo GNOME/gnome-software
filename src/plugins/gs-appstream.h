@@ -27,7 +27,8 @@
 G_BEGIN_DECLS
 
 GsApp		*gs_appstream_create_app		(GsPlugin	*plugin,
-							 AsApp		*item);
+							 AsApp		*item,
+							 GError		**error);
 gboolean	 gs_appstream_refine_app		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 AsApp		*item,
