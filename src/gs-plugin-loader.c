@@ -1342,6 +1342,7 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -1421,6 +1422,7 @@ gs_plugin_loader_get_distro_upgrades_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -1500,6 +1502,7 @@ gs_plugin_loader_get_unvoted_reviews_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -1582,6 +1585,7 @@ gs_plugin_loader_get_sources_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -1677,6 +1681,7 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -1775,6 +1780,7 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -1887,6 +1893,7 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -2116,6 +2123,7 @@ gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -2283,6 +2291,7 @@ gs_plugin_loader_search_files_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -2450,6 +2459,7 @@ gs_plugin_loader_search_what_provides_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -2634,6 +2644,7 @@ gs_plugin_loader_get_categories_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -2793,6 +2804,7 @@ gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
@@ -4740,6 +4752,7 @@ gs_plugin_loader_file_to_app_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
