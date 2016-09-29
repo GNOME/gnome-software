@@ -213,7 +213,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	AsApp *app;
 	GPtrArray *items;
 	gboolean ret;
-	const gchar *origin;
+	const gchar *tmp;
 	const gchar *test_xml;
 	const gchar *test_icon_root;
 	guint *perc;
@@ -271,14 +271,30 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	origins = gs_plugin_appstream_get_origins_hash (items);
 	for (i = 0; i < items->len; i++) {
 		app = g_ptr_array_index (items, i);
-		origin = as_app_get_origin (app);
-		if (origin == NULL || origin[0] == '\0')
+		tmp = as_app_get_origin (app);
+		if (tmp == NULL || tmp[0] == '\0')
 			continue;
-		perc = g_hash_table_lookup (origins, origin);
+		perc = g_hash_table_lookup (origins, tmp);
 		if (*perc < 10) {
-			g_debug ("Adding keyword '%s' to %s",
-				 origin, as_app_get_id (app));
-			as_app_add_keyword (app, NULL, origin);
+			g_debug ("adding keyword '%s' to %s",
+				 tmp, as_app_get_id (app));
+			as_app_add_keyword (app, NULL, tmp);
+		}
+	}
+
+	/* add more search terms */
+	for (i = 0; i < items->len; i++) {
+		app = g_ptr_array_index (items, i);
+		switch (as_app_get_kind (app)) {
+		case AS_APP_KIND_WEB_APP:
+		case AS_APP_KIND_INPUT_METHOD:
+			tmp = as_app_kind_to_string (as_app_get_kind (app));
+			g_debug ("adding keyword '%s' to %s",
+				 tmp, as_app_get_unique_id (app));
+			as_app_add_keyword (app, NULL, tmp);
+			break;
+		default:
+			break;
 		}
 	}
 
