@@ -128,7 +128,9 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST,
 			 json_object_get_string_member (package, "summary"));
 	gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST,
-			    json_object_get_string_member (package, "description"));
+			    json_object_get_string_member (package, "summary"));
+	gs_app_set_description (app, GS_APP_QUALITY_HIGHEST,
+				json_object_get_string_member (package, "description"));
 	gs_app_set_version (app, json_object_get_string_member (package, "version"));
 	if (json_object_has_member (package, "installed-size")) {
 		size = json_object_get_int_member (package, "installed-size");
