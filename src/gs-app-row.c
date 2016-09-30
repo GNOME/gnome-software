@@ -197,7 +197,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		if (priv->show_update) {
 			/* TRANSLATORS: this is a button in the updates panel
 			 * that allows the app to be easily updated live */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
 		} else {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily removed */

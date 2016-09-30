@@ -516,11 +516,11 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	if (self->all_updates_are_live) {
 		gtk_button_set_label (GTK_BUTTON (self->button_update_all),
 				      /* TRANSLATORS: all updates will be installed */
-				      _("_Install All"));
+				      _("U_pdate All"));
 	} else {
 		gtk_button_set_label (GTK_BUTTON (self->button_update_all),
 				      /* TRANSLATORS: this is an offline update */
-				      _("Restart & _Install"));
+				      _("_Restart & Update"));
 	}
 
 	/* update the counter */
