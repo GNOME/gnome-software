@@ -27,46 +27,51 @@
 
 typedef void (*GsSnapdProgressCallback) (JsonObject *object, gpointer user_data);
 
-gboolean gs_snapd_exists	(void);
+gboolean gs_snapd_exists		(void);
 
-JsonObject *gs_snapd_list_one	(const gchar	*macaroon,
-				 gchar		**discharges,
-				 const gchar	*name,
-				 GCancellable	*cancellable,
-				 GError		**error);
+JsonObject *gs_snapd_list_one		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 const gchar	*name,
+					 GCancellable	*cancellable,
+					 GError		**error);
 
-JsonArray *gs_snapd_list	(const gchar	*macaroon,
-				 gchar		**discharges,
-				 GCancellable	*cancellable,
-				 GError		**error);
+JsonArray *gs_snapd_list		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 GCancellable	*cancellable,
+					 GError		**error);
 
-JsonArray *gs_snapd_find	(const gchar	*macaroon,
-				 gchar		**discharges,
-				 gchar		**values,
-				 GCancellable	*cancellable,
-				 GError		**error);
+JsonArray *gs_snapd_find		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 gchar		**values,
+					 GCancellable	*cancellable,
+					 GError		**error);
 
-gboolean gs_snapd_install	(const gchar	*macaroon,
-				 gchar		**discharges,
-				 const gchar	*name,
-				 GsSnapdProgressCallback callback,
-				 gpointer	 user_data,
-				 GCancellable	*cancellable,
-				 GError		**error);
+JsonObject *gs_snapd_get_interfaces	(const gchar	*macaroon,
+					 gchar		**discharges,
+					 GCancellable	*cancellable,
+					 GError		**error);
 
-gboolean gs_snapd_remove	(const gchar	*macaroon,
-				 gchar		**discharges,
-				 const gchar	*name,
-				 GsSnapdProgressCallback callback,
-				 gpointer	 user_data,
-				 GCancellable	*cancellable,
-				 GError		**error);
+gboolean gs_snapd_install		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 const gchar	*name,
+					 GsSnapdProgressCallback callback,
+					 gpointer	 user_data,
+					 GCancellable	*cancellable,
+					 GError		**error);
 
-gchar *gs_snapd_get_resource	(const gchar	*macaroon,
-				 gchar		**discharges,
-				 const gchar	*path,
-				 gsize		*data_length,
-				 GCancellable	*cancellable,
-				 GError		**error);
+gboolean gs_snapd_remove		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 const gchar	*name,
+					 GsSnapdProgressCallback callback,
+					 gpointer	 user_data,
+					 GCancellable	*cancellable,
+					 GError		**error);
+
+gchar *gs_snapd_get_resource		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 const gchar	*path,
+					 gsize		*data_length,
+					 GCancellable	*cancellable,
+					 GError		**error);
 
 #endif /* __GS_SNAPD_H__ */

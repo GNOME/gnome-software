@@ -365,6 +365,44 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
+// Check if an app is graphical by checking if it uses a known GUI interface.
+// This doesn't necessarily mean that every binary uses this interfaces, but is probably true.
+// https://bugs.launchpad.net/bugs/1595023
+static gboolean
+is_graphical (GsApp *app, GCancellable *cancellable)
+{
+	g_autoptr(JsonObject) result = NULL;
+	JsonArray *plugs;
+	guint i;
+	g_autoptr(GError) error = NULL;
+
+	result = gs_snapd_get_interfaces (cancellable, &error);
+	if (result == NULL) {
+		g_warning ("Failed to check interfaces: %s", error->message);
+		return FALSE;
+	}
+
+	plugs = json_object_get_array_member (result, "plugs");
+	for (i = 0; i < json_array_get_length (plugs); i++) {
+		JsonObject *plug = json_array_get_object_element (plugs, i);
+		const gchar *interface;
+
+		// Only looks at the plugs for this snap
+		g_printerr ("~%s\n", json_object_get_string_member (plug, "snap"));
+		if (g_strcmp0 (json_object_get_string_member (plug, "snap"), gs_app_get_id (app)) != 0)
+			continue;
+
+		interface = json_object_get_string_member (plug, "interface");
+		if (interface == NULL)
+			continue;
+
+		if (strcmp (interface, "unity7") == 0 || strcmp (interface, "x11") == 0 || strcmp (interface, "mir") == 0)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,
@@ -373,7 +411,9 @@ gs_plugin_launch (GsPlugin *plugin,
 {
 	const gchar *launch_name;
 	g_autofree gchar *binary_name = NULL;
+	GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
 	g_autoptr(GAppInfo) info = NULL;
+
 
 	/* We can only launch apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -388,9 +428,9 @@ gs_plugin_launch (GsPlugin *plugin,
 	else
 		binary_name = g_strdup_printf ("/snap/bin/%s.%s", gs_app_get_id (app), launch_name);
 
-	// FIXME: Since we don't currently know if this app needs a terminal or not we launch everything with one
-	// https://bugs.launchpad.net/bugs/1595023
-	info = g_app_info_create_from_commandline (binary_name, NULL, G_APP_INFO_CREATE_NEEDS_TERMINAL, error);
+	if (!is_graphical (app, cancellable))
+		flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
+	info = g_app_info_create_from_commandline (binary_name, NULL, flags, error);
 	if (info == NULL)
 		return FALSE;
 
