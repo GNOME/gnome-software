@@ -188,6 +188,26 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 		gs_app_add_icon (app, icon);
 	}
 
+	if (json_object_has_member (package, "screenshots") && gs_app_get_screenshots (app)->len <= 0) {
+		JsonArray *screenshots;
+		guint i;
+
+		screenshots = json_object_get_array_member (package, "screenshots");
+		for (i = 0; i < json_array_get_length (screenshots); i++) {
+			JsonObject *screenshot = json_array_get_object_element (screenshots, i);
+			g_autoptr(AsScreenshot) ss = NULL;
+			g_autoptr(AsImage) image = NULL;
+
+			ss = as_screenshot_new ();
+			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
+			image = as_image_new ();
+			as_image_set_url (image, json_object_get_string_member (screenshot, "url"));
+			as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
+			as_screenshot_add_image (ss, image);
+			gs_app_add_screenshot (app, ss);
+		}
+	}
+
 	if (!from_search) {
 		JsonArray *apps;
 
