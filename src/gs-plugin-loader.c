@@ -32,6 +32,7 @@
 #include "gs-plugin.h"
 #include "gs-plugin-private.h"
 #include "gs-common.h"
+#include "gs-utils.h"
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
 #define GS_PLUGIN_LOADER_RELOAD_DELAY		5	/* s */
@@ -2939,6 +2940,11 @@ save_install_queue (GsPluginLoader *plugin_loader)
 				 "gnome-software",
 				 "install-queue",
 				 NULL);
+	if (!gs_mkdir_parent (file, &error)) {
+		g_warning ("failed to create dir for %s: %s",
+			   file, error->message);
+		return;
+	}
 	g_debug ("saving install queue to %s", file);
 	ret = g_file_set_contents (file, s->str, (gssize) s->len, &error);
 	if (!ret)
