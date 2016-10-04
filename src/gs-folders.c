@@ -199,18 +199,18 @@ load (GsFolders *folders)
 
 		excluded_apps = g_settings_get_strv (settings, "excluded-apps");
 		for (j = 0; excluded_apps[j]; j++) {
-			g_hash_table_add (folder->excluded_apps, excluded_apps[j]);
+			g_hash_table_add (folder->excluded_apps, g_strdup (excluded_apps[j]));
 		}
 
 		apps = g_settings_get_strv (settings, "apps");
 		for (j = 0; apps[j]; j++) {
 			if (!g_hash_table_contains (folder->excluded_apps, apps[j]))
-				g_hash_table_add (folder->apps, apps[j]);
+				g_hash_table_add (folder->apps, g_strdup (apps[j]));
 		}
 
 		categories = g_settings_get_strv (settings, "categories");
 		for (j = 0; categories[j]; j++) {
-			g_hash_table_add (folder->categories, categories[j]);
+			g_hash_table_add (folder->categories, g_strdup (categories[j]));
 		}
 
 		g_hash_table_insert (folders->folders, (gpointer)folder->id, folder);
