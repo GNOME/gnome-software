@@ -37,7 +37,6 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsShellDetails, gs_shell_details, GS, SHELL_DETAILS, GsPage)
 
 GsShellDetails	*gs_shell_details_new		(void);
-void		 gs_shell_details_invalidate	(GsShellDetails		*self);
 void		 gs_shell_details_set_app	(GsShellDetails		*self,
 						 GsApp			*app);
 void		 gs_shell_details_set_filename	(GsShellDetails		*self,
