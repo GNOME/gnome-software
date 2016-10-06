@@ -193,10 +193,12 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	guint i;
 	g_autofree gchar *appstream_dir_fn = NULL;
 	g_autofree gchar *appstream_fn = NULL;
+	g_autofree gchar *default_branch = NULL;
 	g_autofree gchar *only_app_id = NULL;
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GSettings) settings = NULL;
 
 	/* get the AppStream data location */
 	appstream_dir = flatpak_remote_get_appstream_dir (xremote, NULL);
@@ -232,6 +234,11 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		only_app_id = g_strdup_printf ("%s.desktop", tmp);
 	}
 
+	/* do we want to filter to the default branch */
+	settings = g_settings_new ("org.gnome.software");
+	if (g_settings_get_boolean (settings, "filter-default-branch"))
+		default_branch = flatpak_remote_get_default_branch (xremote);
+
 	/* get all the apps and fix them up */
 	apps = as_store_get_apps (store);
 	for (i = 0; i < apps->len; i++) {
@@ -241,6 +248,14 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		if (only_app_id != NULL &&
 		    g_strcmp0 (as_app_get_id (app), only_app_id) != 0) {
 			as_app_set_kind (app, AS_APP_KIND_UNKNOWN);
+			continue;
+		}
+
+		/* filter by branch */
+		if (default_branch != NULL &&
+		    g_strcmp0 (as_app_get_branch (app), default_branch) != 0) {
+			g_debug ("not adding app with branch %s as filtering to %s",
+				 as_app_get_branch (app), default_branch);
 			continue;
 		}
 
