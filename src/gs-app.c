@@ -75,6 +75,7 @@ struct _GsApp
 	gchar			*summary_missing;
 	gchar			*description;
 	GsAppQuality		 description_quality;
+	gchar			*default_branch;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GPtrArray		*key_colors;
@@ -129,6 +130,7 @@ enum {
 	PROP_VERSION,
 	PROP_SUMMARY,
 	PROP_DESCRIPTION,
+	PROP_DEFAULT_BRANCH,
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
@@ -345,6 +347,8 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "summary", app->summary);
 	if (app->description != NULL)
 		gs_app_kv_lpad (str, "description", app->description);
+	if (app->default_branch != NULL)
+		gs_app_kv_lpad (str, "default branch", app->default_branch);
 	for (i = 0; i < app->screenshots->len; i++) {
 		g_autofree gchar *key = NULL;
 		ss = g_ptr_array_index (app->screenshots, i);
@@ -1712,6 +1716,48 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 
 	g_free (app->description);
 	app->description = g_strdup (description);
+}
+
+/**
+ * gs_app_get_default_branch:
+ * @app: a #GsApp
+ *
+ * Gets the default_branch of the source.
+ *
+ * Returns: a string, or %NULL for unset
+ *
+ * Since: 3.24
+ **/
+const gchar *
+gs_app_get_default_branch (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	/* This only makes sense for software sources */
+	if (app->kind != AS_APP_KIND_SOURCE)
+		return NULL;
+	return app->default_branch;
+}
+
+/**
+ * gs_app_set_default_branch:
+ * @app: a #GsApp
+ * @default_branch: a string specifying the default branch for a source.
+ *
+ * Sets the default_branch of the software source.
+ *
+ * Since: 3.24
+ **/
+void
+gs_app_set_default_branch (GsApp *app, const gchar *default_branch)
+{
+	g_return_if_fail (GS_IS_APP (app));
+
+	/* This only makes sense for software sources */
+	if (app->kind != AS_APP_KIND_SOURCE)
+		return;
+	g_free (app->default_branch);
+	app->default_branch = g_strdup (default_branch);
 }
 
 /**
@@ -3270,6 +3316,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_DESCRIPTION:
 		g_value_set_string (value, app->description);
 		break;
+	case PROP_DEFAULT_BRANCH:
+		g_value_set_string (value, app->default_branch);
+		break;
 	case PROP_RATING:
 		g_value_set_int (value, app->rating);
 		break;
@@ -3320,6 +3369,10 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_description (app,
 					GS_APP_QUALITY_UNKNOWN,
 					g_value_get_string (value));
+		break;
+	case PROP_DEFAULT_BRANCH:
+		gs_app_set_default_branch (app,
+					   g_value_get_string (value));
 		break;
 	case PROP_RATING:
 		gs_app_set_rating (app, g_value_get_int (value));
@@ -3386,6 +3439,7 @@ gs_app_finalize (GObject *object)
 	g_free (app->summary);
 	g_free (app->summary_missing);
 	g_free (app->description);
+	g_free (app->default_branch);
 	g_free (app->update_version);
 	g_free (app->update_version_ui);
 	g_free (app->update_details);
@@ -3449,10 +3503,21 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_SUMMARY, pspec);
 
+	/**
+	 * GsApp:description:
+	 */
 	pspec = g_param_spec_string ("description", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_DESCRIPTION, pspec);
+
+	/**
+	 * GsApp:default_branch:
+	 */
+	pspec = g_param_spec_string ("default branch", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_DEFAULT_BRANCH, pspec);
 
 	/**
 	 * GsApp:rating:

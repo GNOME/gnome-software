@@ -159,6 +159,9 @@ const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
 						 GsAppQuality	 quality,
 						 const gchar	*description);
+const gchar	*gs_app_get_default_branch	(GsApp		*app);
+void		 gs_app_set_default_branch	(GsApp		*app,
+						 const gchar	*description);
 const gchar	*gs_app_get_url			(GsApp		*app,
 						 AsUrlKind	 kind);
 void		 gs_app_set_url			(GsApp		*app,
