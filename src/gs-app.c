@@ -3503,6 +3503,9 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_SUMMARY, pspec);
 
+	/**
+	 * GsApp:description:
+	 */
 	pspec = g_param_spec_string ("description", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
