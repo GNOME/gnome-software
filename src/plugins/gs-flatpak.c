@@ -831,6 +831,7 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 			       GError **error)
 {
 	const gchar *gpg_key;
+	const gchar *branch;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 
 	/* only process this source if was created for this plugin */
@@ -871,6 +872,11 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	} else {
 		flatpak_remote_set_gpg_verify (xremote, FALSE);
 	}
+
+	/* default branch */
+	branch = gs_app_get_branch (app);
+	if (branch != NULL)
+		flatpak_remote_set_default_branch (xremote, branch);
 
 	/* install it */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -2283,6 +2289,7 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	g_autofree gchar *filename = NULL;
 	g_autofree gchar *repo_comment = NULL;
 	g_autofree gchar *repo_description = NULL;
+	g_autofree gchar *repo_default_branch = NULL;
 	g_autofree gchar *repo_gpgkey = NULL;
 	g_autofree gchar *repo_homepage = NULL;
 	g_autofree gchar *repo_icon = NULL;
@@ -2357,6 +2364,9 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	repo_description = g_key_file_get_string (kf, "Flatpak Repo", "Description", NULL);
 	if (repo_description != NULL)
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, repo_description);
+	repo_default_branch = g_key_file_get_string (kf, "Flatpak Repo", "DefaultBranch", NULL);
+	if (repo_default_branch != NULL)
+		gs_app_set_branch (app, repo_default_branch);
 	repo_icon = g_key_file_get_string (kf, "Flatpak Repo", "Icon", NULL);
 	if (repo_icon != NULL) {
 		g_autoptr(AsIcon) ic = as_icon_new ();
