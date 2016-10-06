@@ -278,7 +278,7 @@ css_error (GtkCssProvider *provider,
            gpointer        data)
 {
   if (!g_error_matches (error, GTK_CSS_PROVIDER_ERROR, GTK_CSS_PROVIDER_ERROR_DEPRECATED))
-    g_error ("CSS parsing error: %s", error->message);
+    g_warning ("CSS parsing error: %s", error->message);
 }
 
 static void
