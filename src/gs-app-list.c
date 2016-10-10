@@ -69,7 +69,9 @@ static void
 gs_app_list_add_safe (GsAppList *list, GsApp *app)
 {
 	const gchar *id;
+#if !AS_CHECK_VERSION(0,6,2)
 	guint i;
+#endif
 
 	/* if we're lazy-loading the ID then we can't filter for duplicates */
 	id = gs_app_get_unique_id (app);
