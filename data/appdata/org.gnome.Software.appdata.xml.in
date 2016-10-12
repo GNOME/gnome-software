@@ -46,6 +46,49 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2016-10-12" version="3.22.1">
+      <description>
+        <p>This stable release fixes the following bugs:</p>
+        <ul>
+          <li>Fix several issues with flatpak bundles</li>
+          <li>Fix installing local packages</li>
+          <li>Fix a crash when failing to get an installed flatpak ref</li>
+          <li>Speed up loading the details and overview pages</li>
+          <li>Switch to using the ODRS server hosted by GNOME</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
+    <release date="2016-09-19" version="3.22.0">
+      <description>
+        <p>
+          This is the first stable release for GNOME 3.22 and updates several
+          translations.
+        </p>
+      </description>
+    </release>
+    <release date="2016-09-13" version="3.21.92">
+      <description>
+        <p>
+          This is an unstable release in the 3.21 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add a new section name in the Addons category for drivers</li>
+          <li>Add a plugin to match a hardware modalias</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Do not hide the origin when installing or removing an app</li>
+          <li>Do not show the screenshot fallback image for firmware or drivers</li>
+          <li>Fix launching app's details from the installed notification</li>
+          <li>Fix showing the source line in the installed panel</li>
+          <li>Unbreak the GNOME Shell search provider</li>
+          <li>Use the same padding as a GtkStackSwitcher</li>
+        </ul>
+        <p>This release also updates translations for many languages.</p>
+      </description>
+    </release>
     <release date="2016-08-31" version="3.21.91">
       <description>
         <p>
