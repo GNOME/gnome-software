@@ -335,6 +335,16 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 	const gchar *destdir;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
+	/* load just the wildcards */
+	if (!as_store_load (self->store,
+			    AS_STORE_LOAD_FLAG_ONLY_MERGE_APPS |
+			    AS_STORE_LOAD_FLAG_ONLY_UNCOMPRESSED |
+			    AS_STORE_LOAD_FLAG_APP_INFO_USER |
+			    AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM,
+			    cancellable, error)) {
+		return FALSE;
+	}
+
 	/* we use a permissions helper to elevate privs */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::ensure-origin");
