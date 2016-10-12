@@ -541,20 +541,24 @@ static gboolean
 window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GtkWidget *widget;
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	GtkWidget *w;
 
 	/* handle ctrl+f shortcut */
 	if (event->type == GDK_KEY_PRESS) {
 		GdkEventKey *e = (GdkEventKey *) event;
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
-			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget), TRUE);
+			w = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), TRUE);
+			w = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+			gtk_widget_grab_focus (w);
 			return GDK_EVENT_PROPAGATE;
 		}
 	}
 
-	return gtk_search_bar_handle_event (GTK_SEARCH_BAR (widget), event);
+	/* pass to search bar */
+	w = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	return gtk_search_bar_handle_event (GTK_SEARCH_BAR (w), event);
 }
 
 static void
