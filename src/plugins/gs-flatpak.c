@@ -865,8 +865,8 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 
 	/* create a new remote */
 	xremote = flatpak_remote_new (gs_app_get_id (app));
+	flatpak_remote_set_url (xremote, gs_app_get_metadata_item (app, "flatpak::url"));
 	flatpak_remote_set_noenumerate (xremote, FALSE);
-	flatpak_remote_set_url (xremote, gs_app_get_url (app, AS_URL_KIND_HOMEPAGE));
 	if (gs_app_get_summary (app) != NULL)
 		flatpak_remote_set_title (xremote, gs_app_get_summary (app));
 
@@ -2366,6 +2366,7 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
 	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
+	gs_app_set_metadata (app, "flatpak::url", repo_url);
 	gs_app_set_origin_hostname (app, repo_url);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 
