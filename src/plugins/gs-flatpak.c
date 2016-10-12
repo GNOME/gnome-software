@@ -385,7 +385,7 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 
 	/* we use a permissions helper to elevate privs */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::ensure-origin");
+					  "flatpak::setup");
 	g_assert (ptask != NULL);
 	destdir = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
 	if (destdir != NULL) {
