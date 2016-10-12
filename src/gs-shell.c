@@ -549,9 +549,14 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
 			w = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-			gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), TRUE);
-			w = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-			gtk_widget_grab_focus (w);
+			if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (w))) {
+				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), TRUE);
+				w = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+								        "entry_search"));
+				gtk_widget_grab_focus (w);
+			} else {
+				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), FALSE);
+			}
 			return GDK_EVENT_PROPAGATE;
 		}
 	}
