@@ -1542,6 +1542,8 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 	g_assert (ptask != NULL);
 
 	/* not applicable */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+		return TRUE;
 	if (gs_app_get_flatpak_kind (app) != FLATPAK_REF_KIND_APP)
 		return TRUE;
 
@@ -1620,7 +1622,9 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* not applicable */
-	if (gs_app_get_state(app) == AS_APP_STATE_AVAILABLE_LOCAL)
+	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
+		return TRUE;
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return TRUE;
 
 	/* already set */
