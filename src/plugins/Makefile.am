@@ -23,6 +23,7 @@ AM_CPPFLAGS =						\
 	-DDATADIR=\"$(datadir)\"			\
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\
 	-DLIBDIR=\""$(libdir)"\"			\
+	-DLIBEXECDIR=\""$(libexecdir)"\"		\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DSBINDIR=\"$(sbindir)\"			\
 	-DSYSCONFDIR=\""$(sysconfdir)"\"		\
@@ -47,6 +48,13 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_fedora-tagger-usage.la		\
 	libgs_plugin_icons.la				\
 	libgs_plugin_ubuntuone.la
+
+if HAVE_EXTERNAL_APPSTREAM
+plugin_LTLIBRARIES += libgs_plugin_external-appstream.la
+
+libexec_SCRIPTS =			\
+	gnome-software-install-appstream
+endif
 
 if HAVE_SNAP
 plugin_LTLIBRARIES += libgs_plugin_snap.la
@@ -120,6 +128,21 @@ libgs_plugin_dpkg_la_SOURCES = gs-plugin-dpkg.c
 libgs_plugin_dpkg_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dpkg_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dpkg_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_external_appstream_la_SOURCES =		\
+	gs-plugin-external-appstream.c
+libgs_plugin_external_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
+libgs_plugin_external_appstream_la_LDFLAGS = -module -avoid-version
+libgs_plugin_external_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS) $(SOUP_CFLAGS)
+
+gnome-software-install-appstream: gnome-software-install-appstream.in Makefile
+	$(AM_V_GEN) sed -e "s|@localstatedir[@]|$(localstatedir)|g" $< > $@
+
+EXTRA_DIST =						\
+	gnome-software-install-appstream.in
+
+CLEANFILES =						\
+	gnome-software-install-appstream
 
 libgs_plugin_key_colors_la_SOURCES = gs-plugin-key-colors.c
 libgs_plugin_key_colors_la_LIBADD = $(GS_PLUGIN_LIBS)

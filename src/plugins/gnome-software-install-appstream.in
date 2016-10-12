@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+APPSTREAM_FILE=$1
+TARGET_FILE=$2
+APPSTREAM_SYSTEM_LOCATION=@localstatedir@/cache/app-info/xmls
+
+mkdir -p "${APPSTREAM_SYSTEM_LOCATION}"
+mv "${APPSTREAM_FILE}" "${APPSTREAM_SYSTEM_LOCATION}/${TARGET_FILE}"

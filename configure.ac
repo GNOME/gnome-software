@@ -418,6 +418,13 @@ AS_IF([test "x$have_snap" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_SNAP, test "$have_snap" != no)
 
+# External appstream
+AC_ARG_ENABLE(external-appstream,
+              [AS_HELP_STRING([--enable-external-appstream],
+                              [enable External Appstream support [default=yes]])],,
+              enable_external_appstream=yes)
+AM_CONDITIONAL(HAVE_EXTERNAL_APPSTREAM, test "x$enable_external_appstream" = "xyes")
+
 GLIB_TESTS
 
 dnl ---------------------------------------------------------------------------
@@ -475,4 +482,5 @@ echo "
         Webapps support:           ${enable_webapps}
         Ubuntu Reviews support:    ${enable_ubuntu_reviews}
         Snap support:              ${have_snap}
+        Ext. appstream support:    ${enable_external_appstream}
 "

@@ -155,6 +155,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dpkg.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dummy.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_epiphany.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_external-appstream.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora-distro-upgrades.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora-tagger-usage.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_flatpak-system.so
@@ -197,6 +198,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override
+%{_datadir}/polkit-1/actions/org.gnome.software.external-appstream.policy
+%{_libexecdir}/gnome-software-install-appstream
 
 %files devel
 %{_libdir}/pkgconfig/gnome-software.pc

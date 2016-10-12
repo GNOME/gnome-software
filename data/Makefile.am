@@ -39,8 +39,19 @@ install-sample-data:
 	rm fedora-20-icons.tar.gz; \
 	cd -
 
-EXTRA_DIST =						\
+polkit_policydir = $(datadir)/polkit-1/actions
+polkit_policy_in_files = org.gnome.software.external-appstream.policy.in
+polkit_policy_DATA = $(polkit_policy_in_files:.policy.in=.policy)
+
+%.policy: %.policy.in Makefile
+	$(AM_V_GEN) sed -e "s|@libexecdir[@]|$(libexecdir)|g" $< > $@
+
+EXTRA_DIST =							\
+	org.gnome.software.external-appstream.policy.in		\
 	$(gsettings_SCHEMAS)
+
+CLEANFILES =						\
+	org.gnome.software.external-appstream.policy
 
 MAINTAINERCLEANFILES =					\
 	*~						\
