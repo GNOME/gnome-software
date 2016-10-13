@@ -125,53 +125,6 @@ gs_application_init (GsApplication *application)
 }
 
 static void
-download_updates_setting_changed (GSettings     *settings,
-				  const gchar   *key,
-				  GsApplication *app)
-{
-	if (!gs_update_monitor_is_managed () &&
-	    g_settings_get_boolean (settings, key)) {
-		g_debug ("Enabling update monitor");
-		app->update_monitor = gs_update_monitor_new (app);
-	} else {
-		g_debug ("Disabling update monitor");
-		g_clear_object (&app->update_monitor);
-	}
-}
-
-static void
-on_permission_changed (GPermission *permission,
-                       GParamSpec  *pspec,
-                       gpointer     data)
-{
-	GsApplication *app = data;
-
-	if (app->settings)
-		download_updates_setting_changed (app->settings, "download-updates", app);
-}
-
-static void
-gs_application_monitor_permission (GsApplication *app)
-{
-	GPermission *permission;
-
-	permission = gs_update_monitor_permission_get ();
-	if (permission != NULL)
-		g_signal_connect (permission, "notify",
-				  G_CALLBACK (on_permission_changed), app);
-}
-
-static void
-gs_application_monitor_updates (GsApplication *app)
-{
-	g_signal_connect (app->settings, "changed::download-updates",
-			  G_CALLBACK (download_updates_setting_changed), app);
-	download_updates_setting_changed (app->settings,
-					  "download-updates",
-					  app);
-}
-
-static void
 network_changed_cb (GNetworkMonitor *monitor,
 		    gboolean available,
 		    GsApplication *app)
@@ -771,8 +724,8 @@ gs_application_startup (GApplication *application)
 				  G_CALLBACK (gs_application_settings_changed_cb),
 				  application);
 
-	gs_application_monitor_permission (GS_APPLICATION (application));
-	gs_application_monitor_updates (GS_APPLICATION (application));
+	GS_APPLICATION (application)->update_monitor =
+		gs_update_monitor_new (GS_APPLICATION (application));
 	gs_folders_convert ();
 
 	gs_application_update_software_sources_presence (application);
