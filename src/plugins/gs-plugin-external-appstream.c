@@ -112,6 +112,7 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 	SoupSession *soup_session;
 	const gchar *tmp_file_path = NULL;
 	guint status_code;
+	gboolean file_written;
 	g_autofree gchar *file_name = NULL;
 	g_autofree gchar *local_mod_date = NULL;
 	g_autofree gchar *target_file_path = NULL;
@@ -169,13 +170,20 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 		return FALSE;
 
 	tmp_file_path = g_file_get_path (tmp_file);
+
 	g_debug ("Downloaded appstream file %s", tmp_file_path);
 
 	/* write to file */
 	outstream = g_io_stream_get_output_stream (G_IO_STREAM (iostream));
-	if (!g_output_stream_write_all (outstream, msg->response_body->data,
-					msg->response_body->length, NULL,
-					cancellable, error)) {
+	file_written = g_output_stream_write_all (outstream,
+						  msg->response_body->data,
+						  msg->response_body->length,
+						  NULL, cancellable, error);
+
+	/* close the file */
+	g_output_stream_close (outstream, cancellable, NULL);
+
+	if (!file_written) {
 		/* clean up the temporary file if we could not write */
 		g_file_delete (tmp_file, NULL, NULL);
 		return FALSE;
