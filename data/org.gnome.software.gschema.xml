@@ -10,6 +10,11 @@
       <summary>Whether to automatically download updates</summary>
       <description>If enabled, GNOME Software automatically downloads updates in the background and prompts the user to install them when ready.</description>
     </key>
+    <key name="refresh-when-metered" type="b">
+      <default>false</default>
+      <summary>Whether to automatically refresh when on a metered connection</summary>
+      <description>If enabled, GNOME Software automatically refreshes in the background even when using a metered connection (eventually downloading some metadata, checking for updates, etc., which may incur in costs for the user).</description>
+    </key>
     <key name="first-run" type="b">
       <default>true</default>
       <summary>Whether it's the very first run of GNOME Software</summary>
