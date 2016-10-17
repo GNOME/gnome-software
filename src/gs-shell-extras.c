@@ -526,28 +526,25 @@ search_files_cb (GObject *source_object,
 
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
+		g_autofree gchar *str = NULL;
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("extras: search files cancelled");
 			return;
 		}
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED)) {
-			GsApp *app;
+		g_warning ("failed to find any search results: %s", error->message);
+		str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
+		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+		gs_shell_extras_set_state (self, GS_SHELL_EXTRAS_STATE_FAILED);
+		return;
+	}
 
-			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
-			app = create_missing_app (search_data);
-			gs_app_list_add (list, app);
-		} else {
-			g_autofree gchar *str = NULL;
-
-			g_warning ("failed to find any search results: %s", error->message);
-			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
-			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
-			gs_shell_extras_set_state (self,
-						    GS_SHELL_EXTRAS_STATE_FAILED);
-			return;
-		}
+	/* add missing item */
+	if (gs_app_list_length (list) == 0) {
+		g_autoptr(GsApp) app = NULL;
+		g_debug ("extras: no search result for %s, showing as missing",
+			 search_data->title);
+		app = create_missing_app (search_data);
+		gs_app_list_add (list, app);
 	}
 
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -624,28 +621,25 @@ get_search_what_provides_cb (GObject *source_object,
 
 	list = gs_plugin_loader_search_what_provides_finish (plugin_loader, res, &error);
 	if (list == NULL) {
+		g_autofree gchar *str = NULL;
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("extras: search what provides cancelled");
 			return;
 		}
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED)) {
-			GsApp *app;
+		g_warning ("failed to find any search results: %s", error->message);
+		str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
+		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+		gs_shell_extras_set_state (self, GS_SHELL_EXTRAS_STATE_FAILED);
+		return;
+	}
 
-			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
-			app = create_missing_app (search_data);
-			gs_app_list_add (list, app);
-		} else {
-			g_autofree gchar *str = NULL;
-
-			g_warning ("failed to find any search results: %s", error->message);
-			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
-			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
-			gs_shell_extras_set_state (self,
-						    GS_SHELL_EXTRAS_STATE_FAILED);
-			return;
-		}
+	/* add missing item */
+	if (gs_app_list_length (list) == 0) {
+		g_autoptr(GsApp) app = NULL;
+		g_debug ("extras: no search result for %s, showing as missing",
+			 search_data->title);
+		app = create_missing_app (search_data);
+		gs_app_list_add (list, app);
 	}
 
 	for (i = 0; i < gs_app_list_length (list); i++) {
