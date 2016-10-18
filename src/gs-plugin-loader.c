@@ -993,6 +993,13 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 }
 
 static gboolean
+gs_plugin_loader_app_is_valid_updatable (GsApp *app, gpointer user_data)
+{
+	return gs_plugin_loader_app_is_valid (app, user_data) &&
+		gs_app_is_updatable (app);
+}
+
+static gboolean
 gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 {
 	/* hide the QT versions in preference to the GTK ones */
@@ -1266,9 +1273,9 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 		return;
 	}
 
-	/* remove any packages that are not proper applications or
-	 * OS updates */
-	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
+	/* remove any apps that are not proper applications or OS updates */
+	gs_app_list_filter (state->list,
+			    gs_plugin_loader_app_is_valid_updatable, state);
 
 	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
