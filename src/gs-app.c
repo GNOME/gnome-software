@@ -2801,6 +2801,27 @@ gs_app_is_installed (GsApp *app)
 }
 
 /**
+ * gs_app_is_updatable:
+ * @app: a #GsApp
+ *
+ * Gets whether the app is updatable or not.
+ *
+ * Returns: %TRUE if the app is updatable, %FALSE otherwise.
+ *
+ * Since: 3.24
+ **/
+gboolean
+gs_app_is_updatable (GsApp *app)
+{
+	AsAppState state;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	return (app->state == AS_APP_STATE_UPDATABLE) ||
+	       (app->state == AS_APP_STATE_UPDATABLE_LIVE);
+}
+
+/**
  * gs_app_get_categories:
  * @app: a #GsApp
  *

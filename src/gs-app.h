@@ -284,6 +284,7 @@ void		 gs_app_add_quirk		(GsApp		*app,
 void		 gs_app_remove_quirk		(GsApp		*app,
 						 AsAppQuirk	 quirk);
 gboolean	 gs_app_is_installed		(GsApp		*app);
+gboolean	 gs_app_is_updatable		(GsApp		*app);
 G_END_DECLS
 
 #endif /* __GS_APP_H */
