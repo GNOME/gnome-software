@@ -2792,12 +2792,10 @@ gs_app_is_installed (GsApp *app)
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
-	state = gs_app_get_state (app);
-
-	return (state == AS_APP_STATE_INSTALLED) ||
-	       (state == AS_APP_STATE_UPDATABLE) ||
-	       (state == AS_APP_STATE_UPDATABLE_LIVE) ||
-	       (state == AS_APP_STATE_REMOVING);
+	return (app->state == AS_APP_STATE_INSTALLED) ||
+	       (app->state == AS_APP_STATE_UPDATABLE) ||
+	       (app->state == AS_APP_STATE_UPDATABLE_LIVE) ||
+	       (app->state == AS_APP_STATE_REMOVING);
 }
 
 /**
