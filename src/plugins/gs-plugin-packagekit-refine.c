@@ -252,9 +252,17 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 		sources = gs_app_get_sources (app);
 		for (j = 0; j < sources->len; j++) {
 			pkgname = g_ptr_array_index (sources, j);
+			if (pkgname == NULL || pkgname[0] == '\0') {
+				g_warning ("invalid pkgname '%s' for %s",
+					   pkgname,
+					   gs_app_get_unique_id (app));
+				continue;
+			}
 			g_ptr_array_add (package_ids, g_strdup (pkgname));
 		}
 	}
+	if (package_ids->len == 0)
+		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
 	data.app = NULL;
