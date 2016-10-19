@@ -356,7 +356,7 @@ libgs_plugin_fwupd_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 libgs_plugin_packagekit_history_la_SOURCES = gs-plugin-packagekit-history.c
-libgs_plugin_packagekit_history_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_packagekit_history_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_history_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_history_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
@@ -382,7 +382,7 @@ libgs_plugin_packagekit_origin_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_origin_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_proxy_la_SOURCES = gs-plugin-packagekit-proxy.c
-libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
