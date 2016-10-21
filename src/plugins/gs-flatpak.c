@@ -951,6 +951,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_size_download (app, 0);
 		gs_app_list_add (list, app);
 	}
 
