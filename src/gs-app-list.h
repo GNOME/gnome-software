@@ -35,6 +35,8 @@ G_DECLARE_FINAL_TYPE (GsAppList, gs_app_list, GS, APP_LIST, GObject)
 GsAppList	*gs_app_list_new		(void);
 void		 gs_app_list_add		(GsAppList	*list,
 						 GsApp		*app);
+void		 gs_app_list_add_list		(GsAppList	*list,
+						 GsAppList	*donor);
 GsApp		*gs_app_list_index		(GsAppList	*list,
 						 guint		 idx);
 GsApp		*gs_app_list_lookup		(GsAppList	*list,

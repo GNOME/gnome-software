@@ -276,6 +276,21 @@ gs_plugin_func (void)
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 2);
 	g_object_unref (list);
+
+	/* add a list to a list */
+	list = gs_app_list_new ();
+	list_dup = gs_app_list_new ();
+	app = gs_app_new ("a");
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	app = gs_app_new ("b");
+	gs_app_list_add (list_dup, app);
+	g_object_unref (app);
+	gs_app_list_add_list (list, list_dup);
+	g_assert_cmpint (gs_app_list_length (list), ==, 2);
+	g_assert_cmpint (gs_app_list_length (list_dup), ==, 1);
+	g_object_unref (list);
+	g_object_unref (list_dup);
 }
 
 static void

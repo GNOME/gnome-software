@@ -146,6 +146,32 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 }
 
 /**
+ * gs_app_list_add_list:
+ * @list: A #GsAppList
+ * @donor: Another #GsAppList
+ *
+ * Adds all the applications in @donor to @list.
+ *
+ * Since: 3.24
+ **/
+void
+gs_app_list_add_list (GsAppList *list, GsAppList *donor)
+{
+	guint i;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+
+	g_return_if_fail (GS_IS_APP_LIST (list));
+	g_return_if_fail (GS_IS_APP_LIST (donor));
+	g_return_if_fail (list != donor);
+
+	/* add each app */
+	for (i = 0; i < donor->array->len; i++) {
+		GsApp *app = gs_app_list_index (donor, i);
+		gs_app_list_add_safe (list, app);
+	}
+}
+
+/**
  * gs_app_list_index:
  * @list: A #GsAppList
  * @idx: An index into the list
