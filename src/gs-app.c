@@ -2790,10 +2790,7 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
 gboolean
 gs_app_is_installed (GsApp *app)
 {
-	AsAppState state;
-
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-
 	return (app->state == AS_APP_STATE_INSTALLED) ||
 	       (app->state == AS_APP_STATE_UPDATABLE) ||
 	       (app->state == AS_APP_STATE_UPDATABLE_LIVE) ||
@@ -2813,10 +2810,7 @@ gs_app_is_installed (GsApp *app)
 gboolean
 gs_app_is_updatable (GsApp *app)
 {
-	AsAppState state;
-
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-
 	return (app->state == AS_APP_STATE_UPDATABLE) ||
 	       (app->state == AS_APP_STATE_UPDATABLE_LIVE);
 }

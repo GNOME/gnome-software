@@ -891,7 +891,6 @@ gs_appstream_store_add_category_apps (GsPlugin *plugin,
 				      GCancellable *cancellable,
 				      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *array;
 	GPtrArray *desktop_groups;
 	guint i;

@@ -46,7 +46,6 @@ gs_flatpak_symlinks_cleanup_kind (const gchar *cache_dir,
 		return FALSE;
 	}
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
-		gchar *str;
 		g_autofree gchar *fn = NULL;
 		g_autofree gchar *origin = NULL;
 		g_autofree gchar *prefix_colon = g_strdup_printf ("%s:", prefix);

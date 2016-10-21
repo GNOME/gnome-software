@@ -1255,7 +1255,6 @@ static gboolean
 gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 {
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const GError *error = gs_plugin_event_get_error (event);
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -1370,7 +1369,6 @@ gs_shell_rescan_events (GsShell *shell)
 	GsPluginEvent *event;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
-	guint i;
 
 	/* find the first active event and show it */
 	event = gs_plugin_loader_get_event_default (priv->plugin_loader);
