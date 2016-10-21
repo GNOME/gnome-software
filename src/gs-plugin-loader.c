@@ -640,8 +640,6 @@ out:
 	return ret;
 }
 
-static void gs_plugin_loader_add_os_update_item (GsAppList *list);
-
 static GsAppList *
 gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      const gchar *function_name,
@@ -722,19 +720,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 					   error);
 	if (!ret)
 		return NULL;
-
-	/* coalesce all packages down into one os-update */
-	if (g_strcmp0 (function_name, "gs_plugin_add_updates") == 0) {
-		gs_plugin_loader_add_os_update_item (list);
-		ret = gs_plugin_loader_run_refine (plugin_loader,
-						   function_name,
-						   list,
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						   cancellable,
-						   error);
-		if (!ret)
-			return NULL;
-	}
 
 	return g_steal_pointer (&list);
 }
@@ -1149,6 +1134,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GError *error = NULL;
+	gboolean ret;
 
 	/* do things that would block */
 	if ((state->flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0)
@@ -1160,6 +1146,19 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	/* add OS Update item if required */
+	gs_plugin_loader_add_os_update_item (state->list);
+	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   "gs_plugin_add_updates_*",
+					   state->list,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					   cancellable,
+					   &error);
+	if (!ret) {
 		g_task_return_error (task, error);
 		return;
 	}
