@@ -917,13 +917,6 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
-	/* manually drop the cache */
-	if (0&&!flatpak_installation_drop_caches (self->installation,
-						  cancellable,
-						  error)) {
-		return FALSE;
-	}
-
 	/* get all the installed apps (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable,
