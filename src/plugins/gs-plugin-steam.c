@@ -80,7 +80,8 @@ gs_plugin_steam_token_kind_to_str (guint8 data)
 static guint32
 gs_plugin_steam_consume_uint32 (guint8 *data, gsize data_len, guint *idx)
 {
-	guint32 tmp = *((guint32 *) &data[*idx + 1]);
+	guint32 tmp;
+	memcpy (&tmp, &data[*idx + 1], 4);
 	*idx += 4;
 	return tmp;
 }
