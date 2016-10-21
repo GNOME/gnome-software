@@ -450,12 +450,16 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 				  "flatpak::refresh-appstream{%s}",
 				  remote_name);
 	g_assert (ptask != NULL);
-	return flatpak_installation_update_appstream_sync (self->installation,
-							   remote_name,
-							   NULL, /* arch */
-							   NULL, /* out_changed */
-							   cancellable,
-							   error);
+	if (!flatpak_installation_update_appstream_sync (self->installation,
+							 remote_name,
+							 NULL,
+							 NULL,
+							 cancellable,
+							 error)) {
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 static gboolean
@@ -521,11 +525,8 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 							   &error_local);
 		if (!ret) {
 			if (g_error_matches (error_local,
-					     G_IO_ERROR,
-					     G_IO_ERROR_FAILED) ||
-			    g_error_matches (error_local,
-					     G_IO_ERROR,
-					     G_IO_ERROR_NOT_FOUND)) {
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED)) {
 				g_debug ("Failed to get AppStream metadata: %s",
 					 error_local->message);
 				/* don't try to fetch this again until refresh() */
@@ -2406,33 +2407,6 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 }
 
 static gboolean
-gs_flatpak_update_appstream_for_remote (GsFlatpak *self,
-					const gchar *remote_name,
-					GCancellable *cancellable,
-					GError **error)
-{
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* search categories for the search term */
-	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "flatpak::update-appstream{%s}",
-				  remote_name);
-	g_assert (ptask != NULL);
-
-	/* get the new appstream data */
-	if (!flatpak_installation_update_appstream_sync (self->installation,
-							 remote_name,
-							 NULL,
-							 NULL,
-							 cancellable,
-							 error)) {
-		gs_plugin_flatpak_error_convert (error);
-		return FALSE;
-	}
-	return TRUE;
-}
-
-static gboolean
 gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			    GsAppList *list,
 			    GFile *file,
@@ -2513,9 +2487,8 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	gs_app_set_origin_ui (app, origin_title);
 
 	/* get the new appstream data */
-	if (!gs_flatpak_update_appstream_for_remote (self, remote_name,
-						     cancellable, error)) {
-		gs_plugin_flatpak_error_convert (error);
+	if (!gs_flatpak_refresh_appstream_remote (self, remote_name,
+						  cancellable, error)) {
 		return FALSE;
 	}
 

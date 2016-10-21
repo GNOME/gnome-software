@@ -630,6 +630,7 @@ gs_utils_error_convert_gio (GError **perror)
 	switch (error->code) {
 	case G_IO_ERROR_FAILED:
 	case G_IO_ERROR_TIMED_OUT:
+	case G_IO_ERROR_NOT_FOUND:
 		error->code = GS_PLUGIN_ERROR_FAILED;
 		break;
 	case G_IO_ERROR_NOT_SUPPORTED:
