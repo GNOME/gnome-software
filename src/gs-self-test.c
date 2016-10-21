@@ -911,7 +911,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	/* check the URL was unmangled */
 	remote_url = g_key_file_get_string (kf, group_name, "url", &error);
 	g_assert_no_error (error);
-	g_assert_cmpstr (remote_url, ==, "http://foo.bar");
+	g_assert_cmpstr (remote_url, ==, "http://foo.bar/apps");
 
 	/* try again, check state is correct */
 	app2 = gs_plugin_loader_file_to_app (plugin_loader,
