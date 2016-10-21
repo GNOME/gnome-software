@@ -958,6 +958,58 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 	return TRUE;
 }
 
+gboolean
+gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
+				GCancellable *cancellable,
+				GError **error)
+{
+	guint i;
+	g_autoptr(GPtrArray) xrefs = NULL;
+
+	/* get all the updatable apps and runtimes (no network I/O) */
+	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
+								     cancellable,
+								     error);
+	if (xrefs == NULL) {
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+	for (i = 0; i < xrefs->len; i++) {
+		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+		guint64 download_size = 0;
+		g_autoptr(GsApp) app = NULL;
+		g_autoptr(GError) error_local = NULL;
+
+		/* we have an update to show */
+		g_debug ("%s has update", flatpak_ref_get_name (FLATPAK_REF (xref)));
+		app = gs_flatpak_create_installed (self, xref, &error_local);
+		if (app == NULL) {
+			g_warning ("failed to add flatpak: %s", error_local->message);
+			continue;
+		}
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+
+		/* get the current download size */
+		if (!flatpak_installation_fetch_remote_size_sync (self->installation,
+								  gs_app_get_origin (app),
+								  FLATPAK_REF (xref),
+								  &download_size,
+								  NULL,
+								  cancellable,
+								  &error_local)) {
+			g_warning ("failed to get download size: %s",
+				   error_local->message);
+			gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+		} else {
+			gs_app_set_size_download (app, download_size);
+		}
+
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
 static void
 gs_flatpak_progress_cb (const gchar *status,
 			guint progress,

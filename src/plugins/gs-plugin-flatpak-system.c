@@ -111,6 +111,16 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_add_updates_pending (GsPlugin *plugin,
+			       GsAppList *list,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_add_updates_pending (priv->flatpak, list, cancellable, error);
+}
+
+gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
 		   GsPluginRefreshFlags flags,
