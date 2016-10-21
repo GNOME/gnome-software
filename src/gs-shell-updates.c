@@ -742,6 +742,8 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 static void
 gs_shell_updates_get_new_updates (GsShellUpdates *self)
 {
+	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
+
 	/* force a check for updates and download */
 	gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_ACTION_REFRESH);
 
@@ -751,11 +753,13 @@ gs_shell_updates_get_new_updates (GsShellUpdates *self)
 	}
 	self->cancellable_refresh = g_cancellable_new ();
 
+	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE;
+	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_METADATA;
+	if (g_settings_get_boolean (self->settings, "download-updates"))
+		refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
 	gs_plugin_loader_refresh_async (self->plugin_loader,
 					10 * 60,
-					GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE |
-					GS_PLUGIN_REFRESH_FLAGS_METADATA |
-					GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
+					refresh_flags,
 					self->cancellable_refresh,
 					(GAsyncReadyCallback) gs_shell_updates_refresh_cb,
 					self);
