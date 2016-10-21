@@ -424,6 +424,8 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	if (fwupd_result_get_update_uri (res) != NULL) {
 		gs_app_set_origin_hostname (app,
 					    fwupd_result_get_update_uri (res));
+		gs_app_set_metadata (app, "fwupd::UpdateURI",
+				     fwupd_result_get_update_uri (res));
 	}
 	if (fwupd_result_get_device_description (res) != NULL) {
 		g_autofree gchar *tmp = NULL;
@@ -807,10 +809,12 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *device_id;
 	FwupdInstallFlags install_flags = 0;
+	GFile *local_file;
 	g_autofree gchar *filename = NULL;
 
 	/* not set */
-	if (gs_app_get_local_file (app) == NULL) {
+	local_file = gs_app_get_local_file (app);
+	if (local_file == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -818,7 +822,15 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 			     filename);
 		return FALSE;
 	}
-	filename = g_file_get_path (gs_app_get_local_file (app));
+
+	/* file does not yet exist */
+	filename = g_file_get_path (local_file);
+	if (!g_file_query_exists (local_file, cancellable)) {
+		const gchar *uri = gs_app_get_metadata_item (app, "fwupd::UpdateURI");
+		if (!gs_plugin_download_file (plugin, app, uri, filename,
+					      cancellable, error))
+			return FALSE;
+	}
 
 	/* limit to single device? */
 	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
