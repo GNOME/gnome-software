@@ -1238,25 +1238,52 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 					gpointer task_data,
 					GCancellable *cancellable)
 {
-	const gchar *method_name = "gs_plugin_add_updates";
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GError *error = NULL;
 	gboolean ret;
 
 	/* do things that would block */
-	if ((state->flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0)
-		method_name = "gs_plugin_add_updates_historical";
+	if ((state->flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0) {
+		state->list = gs_plugin_loader_run_results (plugin_loader,
+							    state->action,
+							    "gs_plugin_add_updates_historical",
+							    state->flags,
+							    cancellable,
+							    &error);
+		if (error != NULL) {
+			g_task_return_error (task, error);
+			return;
+		}
+	} else {
+		/* get downloaded updates */
+		state->list = gs_plugin_loader_run_results (plugin_loader,
+							    state->action,
+							    "gs_plugin_add_updates",
+							    state->flags,
+							    cancellable,
+							    &error);
+		if (error != NULL) {
+			g_task_return_error (task, error);
+			return;
+		}
 
-	state->list = gs_plugin_loader_run_results (plugin_loader,
-						    state->action,
-						    method_name,
-						    state->flags,
-						    cancellable,
-						    &error);
-	if (error != NULL) {
-		g_task_return_error (task, error);
-		return;
+		/* get not-yet-downloaded updates */
+		if (!g_settings_get_boolean (priv->settings, "download-updates")) {
+			g_autoptr(GsAppList) list = NULL;
+			list = gs_plugin_loader_run_results (plugin_loader,
+							     state->action,
+							     "gs_plugin_add_updates_pending",
+							     state->flags,
+							     cancellable,
+							     &error);
+			if (error != NULL) {
+				g_task_return_error (task, error);
+				return;
+			}
+			gs_app_list_add_list (state->list, list);
+		}
 	}
 
 	/* add OS Update item if required */

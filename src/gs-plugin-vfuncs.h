@@ -207,6 +207,27 @@ gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
+ * gs_plugin_add_updates_pending:
+ * @plugin: a #GsPlugin
+ * @list: a #GsAppList
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Get the list of not-yet-downloaded updates, with the write lock held.
+ *
+ * NOTE: Actually downloading the updates is normally done in
+ * gs_plugin_refresh() when called with %GS_PLUGIN_REFRESH_FLAGS_PAYLOAD.
+ *
+ * Plugins are expected to add new apps using gs_app_list_add().
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_add_updates_pending		(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
  * gs_plugin_add_distro_upgrades:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
