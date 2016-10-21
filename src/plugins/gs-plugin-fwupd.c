@@ -463,12 +463,12 @@ static gboolean
 gs_plugin_add_update_app (GsPlugin *plugin,
 			  GsAppList *list,
 			  FwupdResult *res,
+			  gboolean is_downloaded,
 			  GError **error)
 {
 	const gchar *update_hash;
 	const gchar *update_uri;
 	g_autofree gchar *basename = NULL;
-	g_autofree gchar *checksum = NULL;
 	g_autofree gchar *filename_cache = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -498,7 +498,6 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		g_warning ("fwupd: No update-version! for %s!", gs_app_get_id (app));
 		return TRUE;
 	}
-
 	if (update_hash == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -527,31 +526,33 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 						      error);
 	if (filename_cache == NULL)
 		return FALSE;
-	if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
-		gs_plugin_fwupd_add_required_location (plugin, update_uri);
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "%s does not yet exist, wait patiently",
-			     filename_cache);
-		return FALSE;
+
+	/* delete the file if the checksum does not match */
+	if (g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
+		g_autofree gchar *checksum = NULL;
+		checksum = gs_plugin_fwupd_get_file_checksum (filename_cache,
+							      G_CHECKSUM_SHA1,
+							      error);
+		if (checksum == NULL)
+			return FALSE;
+		if (g_strcmp0 (update_hash, checksum) != 0) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     "%s does not match checksum, expected %s got %s",
+				     filename_cache, update_hash, checksum);
+			g_unlink (filename_cache);
+			return FALSE;
+		}
 	}
 
-	/* does the checksum match */
-	checksum = gs_plugin_fwupd_get_file_checksum (filename_cache,
-						      G_CHECKSUM_SHA1,
-						      error);
-	if (checksum == NULL)
-		return FALSE;
-	if (g_strcmp0 (update_hash, checksum) != 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "%s does not match checksum, expected %s got %s",
-			     filename_cache, update_hash, checksum);
-		g_unlink (filename_cache);
-		return FALSE;
-	}
+	/* already downloaded, so overwrite */
+	if (g_file_test (filename_cache, G_FILE_TEST_EXISTS))
+		gs_app_set_size_download (app, 0);
+
+	/* only return things in the right state */
+	if (is_downloaded != g_file_test (filename_cache, G_FILE_TEST_EXISTS))
+		return TRUE;
 
 	/* actually add the application */
 	file = g_file_new_for_path (filename_cache);
@@ -598,11 +599,12 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
+static gboolean
+gs_plugin_fwupd_add_updates (GsPlugin *plugin,
+			     GsAppList *list,
+			     gboolean is_downloaded,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
@@ -631,6 +633,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* locked device that needs unlocking */
 		if (fwupd_result_get_device_flags (res) & FU_DEVICE_FLAG_LOCKED) {
 			g_autoptr(GsApp) app = NULL;
+			if (!is_downloaded)
+				continue;
 			app = gs_plugin_fwupd_new_app_from_results (plugin, res);
 			gs_app_set_metadata (app, "fwupd::IsLocked", "");
 			gs_app_list_add (list, app);
@@ -638,11 +642,30 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		}
 
 		/* normal device update */
-		if (!gs_plugin_add_update_app (plugin, list, res, &error_local2))
+		if (!gs_plugin_add_update_app (plugin, list, res,
+					       is_downloaded, &error_local2))
 			g_debug ("%s", error_local2->message);
 	}
 
 	return TRUE;
+}
+
+gboolean
+gs_plugin_add_updates (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	return gs_plugin_fwupd_add_updates (plugin, list, TRUE, cancellable, error);
+}
+
+gboolean
+gs_plugin_add_updates_pending (GsPlugin *plugin,
+			       GsAppList *list,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	return gs_plugin_fwupd_add_updates (plugin, list, FALSE, cancellable, error);
 }
 
 static gboolean
@@ -827,6 +850,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_app_get_metadata_item (app, "fwupd::UpdateURI");
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
