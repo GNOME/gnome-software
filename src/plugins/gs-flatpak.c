@@ -980,6 +980,14 @@ gs_flatpak_refresh (GsFlatpak *self,
 	/* give all the repos a second chance */
 	g_hash_table_remove_all (self->broken_remotes);
 
+	/* manually drop the cache */
+	if (!flatpak_installation_drop_caches (self->installation,
+					       cancellable,
+					       error)) {
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+
 	/* update AppStream metadata */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
 		if (!gs_flatpak_refresh_appstream (self, cache_age, flags,
