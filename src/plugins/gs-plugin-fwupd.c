@@ -763,11 +763,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* download the files to the cachedir */
 	for (i = 0; i < priv->to_download->len; i++) {
-		guint status_code;
 		g_autoptr(GError) error_local = NULL;
 		g_autofree gchar *basename = NULL;
 		g_autofree gchar *filename_cache = NULL;
-		g_autoptr(SoupMessage) msg = NULL;
 
 		tmp = g_ptr_array_index (priv->to_download, i);
 		basename = g_path_get_basename (tmp);
@@ -777,30 +775,19 @@ gs_plugin_refresh (GsPlugin *plugin,
 							      error);
 		if (filename_cache == NULL)
 			return FALSE;
-		g_debug ("downloading %s to %s", tmp, filename_cache);
 
-		/* set sync request */
-		msg = soup_message_new (SOUP_METHOD_GET, tmp);
-		status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
-		if (status_code != SOUP_STATUS_OK) {
+		/* download file */
+		if (!gs_plugin_download_file (plugin,
+					      NULL, /* app */
+					      tmp, /* url */
+					      filename_cache,
+					      cancellable,
+					      &error_local)) {
 			g_warning ("Failed to download %s, ignoring: %s",
-				   tmp, soup_status_get_phrase (status_code));
+				   tmp, error_local->message);
 			g_ptr_array_remove_index (priv->to_download, i--);
 			g_ptr_array_add (priv->to_ignore, g_strdup (tmp));
 			continue;
-		}
-
-		/* save binary file */
-		if (!g_file_set_contents (filename_cache,
-					  msg->response_body->data,
-					  msg->response_body->length,
-					  &error_local)) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_WRITE_FAILED,
-				     "Failed to save firmware: %s",
-				     error_local->message);
-			return FALSE;
 		}
 	}
 
