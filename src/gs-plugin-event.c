@@ -20,11 +20,11 @@
  */
 
 /**
- * SECTION:gs-event
+ * SECTION:gs-plugin-event
  * @title: GsPluginEvent
  * @include: gnome-software.h
  * @stability: Unstable
- * @short_description: Infomation about a plugin event
+ * @short_description: Information about a plugin event
  *
  * These functions provide a way for plugins to tell the UI layer about events
  * that may require displaying to the user. Plugins should not assume that a

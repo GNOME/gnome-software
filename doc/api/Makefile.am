@@ -86,6 +86,7 @@ GTKDOC_LIBS=							\
 	$(top_builddir)/src/gnome_software-gs-category.o	\
 	$(top_builddir)/src/gnome_software-gs-os-release.o	\
 	$(top_builddir)/src/gnome_software-gs-plugin.o		\
+	$(top_builddir)/src/gnome_software-gs-plugin-event.o	\
 	$(top_builddir)/src/gnome_software-gs-utils.o
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.

@@ -35,6 +35,7 @@ gnomesoftware_include_HEADERS =				\
 	gs-category.h					\
 	gs-os-release.h					\
 	gs-plugin.h					\
+	gs-plugin-event.h				\
 	gs-plugin-vfuncs.h				\
 	gs-utils.h
 
