@@ -487,7 +487,7 @@ gs_snapd_find (const gchar *macaroon, gchar **discharges,
 }
 
 JsonObject *
-gs_snapd_get_interfaces (GCancellable *cancellable, GError **error)
+gs_snapd_get_interfaces (const gchar *macaroon, gchar **discharges, GCancellable *cancellable, GError **error)
 {
 	guint status_code;
 	g_autofree gchar *reason_phrase = NULL;
@@ -498,8 +498,7 @@ gs_snapd_get_interfaces (GCancellable *cancellable, GError **error)
 	JsonObject *result;
 
 	if (!send_request ("GET", "/v2/interfaces", NULL,
-			   TRUE, NULL, NULL,
-			   TRUE, NULL, NULL,
+			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
 			   cancellable, error))

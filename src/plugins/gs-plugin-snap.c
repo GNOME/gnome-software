@@ -376,7 +376,7 @@ is_graphical (GsApp *app, GCancellable *cancellable)
 	guint i;
 	g_autoptr(GError) error = NULL;
 
-	result = gs_snapd_get_interfaces (cancellable, &error);
+	result = gs_snapd_get_interfaces (NULL, NULL, cancellable, &error);
 	if (result == NULL) {
 		g_warning ("Failed to check interfaces: %s", error->message);
 		return FALSE;
