@@ -36,6 +36,7 @@ gnomesoftware_include_HEADERS =				\
 	gs-os-release.h					\
 	gs-plugin.h					\
 	gs-plugin-event.h				\
+	gs-plugin-types.h				\
 	gs-plugin-vfuncs.h				\
 	gs-utils.h
 
@@ -203,6 +204,7 @@ gnome_software_SOURCES =				\
 	gs-plugin-event.c				\
 	gs-plugin-event.h				\
 	gs-plugin-private.h				\
+	gs-plugin-types.h				\
 	gs-plugin-vfuncs.h				\
 	gs-progress-button.c				\
 	gs-progress-button.h				\

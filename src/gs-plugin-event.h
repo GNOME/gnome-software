@@ -25,7 +25,7 @@
 #include <glib-object.h>
 
 #include "gs-app.h"
-#include "gs-plugin-private.h"
+#include "gs-plugin-types.h"
 
 G_BEGIN_DECLS
 
