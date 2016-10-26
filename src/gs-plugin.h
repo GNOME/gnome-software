@@ -242,6 +242,90 @@ typedef enum {
 	GS_PLUGIN_RULE_LAST
 } GsPluginRule;
 
+/**
+ * GsPluginAction:
+ * @GS_PLUGIN_ACTION_UNKNOWN:			Action is unknown
+ * @GS_PLUGIN_ACTION_SETUP:			Plugin setup (internal)
+ * @GS_PLUGIN_ACTION_INSTALL:			Install an application
+ * @GS_PLUGIN_ACTION_REMOVE:			Remove an application
+ * @GS_PLUGIN_ACTION_UPDATE:			Update an application
+ * @GS_PLUGIN_ACTION_SET_RATING:		Set rating on an application
+ * @GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:		Download a distro upgrade
+ * @GS_PLUGIN_ACTION_UPGRADE_TRIGGER:		Trigger a distro upgrade
+ * @GS_PLUGIN_ACTION_LAUNCH:			Launch an application
+ * @GS_PLUGIN_ACTION_UPDATE_CANCEL:		Cancel the update
+ * @GS_PLUGIN_ACTION_ADD_SHORTCUT:		Add a shortcut to an application
+ * @GS_PLUGIN_ACTION_REMOVE_SHORTCUT:		Remove a shortcut to an application
+ * @GS_PLUGIN_ACTION_REVIEW_SUBMIT:		Submit a new review
+ * @GS_PLUGIN_ACTION_REVIEW_UPVOTE:		Upvote an existing review
+ * @GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:		Downvote an existing review
+ * @GS_PLUGIN_ACTION_REVIEW_REPORT:		Report an existing review
+ * @GS_PLUGIN_ACTION_REVIEW_REMOVE:		Remove a review written by the user
+ * @GS_PLUGIN_ACTION_REVIEW_DISMISS:		Dismiss (ignore) a review when moderating
+ * @GS_PLUGIN_ACTION_GET_UPDATES:		Get the list of updates
+ * @GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:	Get the list of distro updates
+ * @GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS:	Get the list of moderatable reviews
+ * @GS_PLUGIN_ACTION_GET_SOURCES:		Get the list of sources
+ * @GS_PLUGIN_ACTION_GET_INSTALLED:		Get the list of installed applications
+ * @GS_PLUGIN_ACTION_GET_POPULAR:		Get the list of popular applications
+ * @GS_PLUGIN_ACTION_GET_FEATURED:		Get the list of featured applications
+ * @GS_PLUGIN_ACTION_SEARCH:			Get the search results for a query
+ * @GS_PLUGIN_ACTION_SEARCH_FILES:		Get the search results for a file query
+ * @GS_PLUGIN_ACTION_SEARCH_PROVIDES:		Get the search results for a provide query
+ * @GS_PLUGIN_ACTION_GET_CATEGORIES:		Get the list of categories
+ * @GS_PLUGIN_ACTION_GET_CATEGORY_APPS:		Get the apps for a specific category
+ * @GS_PLUGIN_ACTION_REFINE:			Refine the application
+ * @GS_PLUGIN_ACTION_REFRESH:			Refresh all the sources
+ * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
+ * @GS_PLUGIN_ACTION_AUTH_LOGIN:		Authentication login action
+ * @GS_PLUGIN_ACTION_AUTH_LOGOUT:		Authentication logout action
+ * @GS_PLUGIN_ACTION_AUTH_REGISTER:		Authentication register action
+ * @GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:	Authentication lost password action
+ *
+ * The plugin action.
+ **/
+typedef enum {
+	GS_PLUGIN_ACTION_UNKNOWN,
+	GS_PLUGIN_ACTION_SETUP,
+	GS_PLUGIN_ACTION_INSTALL,
+	GS_PLUGIN_ACTION_REMOVE,
+	GS_PLUGIN_ACTION_UPDATE,
+	GS_PLUGIN_ACTION_SET_RATING,
+	GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+	GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
+	GS_PLUGIN_ACTION_LAUNCH,
+	GS_PLUGIN_ACTION_UPDATE_CANCEL,
+	GS_PLUGIN_ACTION_ADD_SHORTCUT,
+	GS_PLUGIN_ACTION_REMOVE_SHORTCUT,
+	GS_PLUGIN_ACTION_REVIEW_SUBMIT,
+	GS_PLUGIN_ACTION_REVIEW_UPVOTE,
+	GS_PLUGIN_ACTION_REVIEW_DOWNVOTE,
+	GS_PLUGIN_ACTION_REVIEW_REPORT,
+	GS_PLUGIN_ACTION_REVIEW_REMOVE,
+	GS_PLUGIN_ACTION_REVIEW_DISMISS,
+	GS_PLUGIN_ACTION_GET_UPDATES,
+	GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
+	GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS,
+	GS_PLUGIN_ACTION_GET_SOURCES,
+	GS_PLUGIN_ACTION_GET_INSTALLED,
+	GS_PLUGIN_ACTION_GET_POPULAR,
+	GS_PLUGIN_ACTION_GET_FEATURED,
+	GS_PLUGIN_ACTION_SEARCH,
+	GS_PLUGIN_ACTION_SEARCH_FILES,
+	GS_PLUGIN_ACTION_SEARCH_PROVIDES,
+	GS_PLUGIN_ACTION_GET_CATEGORIES,
+	GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+	GS_PLUGIN_ACTION_REFINE,
+	GS_PLUGIN_ACTION_REFRESH,
+	GS_PLUGIN_ACTION_FILE_TO_APP,
+	GS_PLUGIN_ACTION_AUTH_LOGIN,
+	GS_PLUGIN_ACTION_AUTH_LOGOUT,
+	GS_PLUGIN_ACTION_AUTH_REGISTER,
+	GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
+	/*< private >*/
+	GS_PLUGIN_ACTION_LAST
+} GsPluginAction;
+
 /* helpers */
 #define	GS_PLUGIN_ERROR					gs_plugin_error_quark ()
 
