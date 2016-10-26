@@ -415,7 +415,7 @@ is_graphical (GsApp *app, GCancellable *cancellable)
 		if (interface == NULL)
 			continue;
 
-		if (strcmp (interface, "unity7") == 0 || strcmp (interface, "x11") == 0 || strcmp (interface, "mir") == 0)
+		if (g_strcmp0 (interface, "unity7") == 0 || g_strcmp0 (interface, "x11") == 0 || g_strcmp0 (interface, "mir") == 0)
 			return TRUE;
 	}
 
