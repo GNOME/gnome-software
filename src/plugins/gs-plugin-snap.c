@@ -408,7 +408,6 @@ is_graphical (GsApp *app, GCancellable *cancellable)
 		const gchar *interface;
 
 		// Only looks at the plugs for this snap
-		g_printerr ("~%s\n", json_object_get_string_member (plug, "snap"));
 		if (g_strcmp0 (json_object_get_string_member (plug, "snap"), gs_app_get_id (app)) != 0)
 			continue;
 
