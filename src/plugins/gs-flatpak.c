@@ -2426,6 +2426,26 @@ gs_flatpak_add_categories (GsFlatpak *self,
 						  list, cancellable, error);
 }
 
+gboolean
+gs_flatpak_add_popular (GsFlatpak *self,
+			GsAppList *list,
+			GCancellable *cancellable,
+			GError **error)
+{
+	return gs_appstream_add_popular (self->plugin, self->store, list,
+					 cancellable, error);
+}
+
+gboolean
+gs_flatpak_add_featured (GsFlatpak *self,
+			 GsAppList *list,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return gs_appstream_add_featured (self->plugin, self->store, list,
+					  cancellable, error);
+}
+
 static void
 gs_flatpak_finalize (GObject *object)
 {

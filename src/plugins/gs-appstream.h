@@ -53,6 +53,16 @@ gboolean	 gs_appstream_store_add_category_apps	(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_add_popular		(GsPlugin	*plugin,
+							 AsStore	*store,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_appstream_add_featured		(GsPlugin	*plugin,
+							 AsStore	*store,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 

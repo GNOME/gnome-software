@@ -930,3 +930,65 @@ gs_appstream_store_add_categories (GsPlugin *plugin,
 	}
 	return TRUE;
 }
+
+gboolean
+gs_appstream_add_popular (GsPlugin *plugin,
+			  AsStore *store,
+			  GsAppList *list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* find out how many packages are in each category */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-popular");
+	g_assert (ptask != NULL);
+	array = as_store_get_apps (store);
+	for (i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_id (item) == NULL)
+			continue;
+		if (!as_app_has_kudo (item, "GnomeSoftware::popular"))
+			continue;
+		app = gs_app_new (as_app_get_id (item));
+		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_list_add (list, app);
+	}
+	return TRUE;
+}
+
+gboolean
+gs_appstream_add_featured (GsPlugin *plugin,
+			   AsStore *store,
+			   GsAppList *list,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* find out how many packages are in each category */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-featured");
+	g_assert (ptask != NULL);
+	array = as_store_get_apps (store);
+	for (i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_id (item) == NULL)
+			continue;
+		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
+			continue;
+		app = gs_app_new (as_app_get_id (item));
+		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_list_add (list, app);
+	}
+	return TRUE;
+}
