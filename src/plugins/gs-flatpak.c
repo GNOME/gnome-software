@@ -278,7 +278,7 @@ static void
 gs_flatpak_rescan_installed (GsFlatpak *self, GCancellable *cancellable, GError **error)
 {
 	GPtrArray *icons;
-	gchar *fn;
+	const gchar *fn;
 	guint i;
 	g_autoptr(GFile) path = NULL;
 	g_autoptr(GDir) dir = NULL;
