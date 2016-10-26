@@ -114,6 +114,14 @@ gboolean	gs_flatpak_add_category_apps	(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_add_popular		(GsFlatpak		*self,
+						 GsAppList		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	gs_flatpak_add_featured		(GsFlatpak		*self,
+						 GsAppList		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
 
 G_END_DECLS
 

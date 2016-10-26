@@ -257,3 +257,29 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 					     cancellable,
 					     error);
 }
+
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_add_popular (priv->flatpak,
+				       list,
+				       cancellable,
+				       error);
+}
+
+gboolean
+gs_plugin_add_featured (GsPlugin *plugin,
+			GsAppList *list,
+			GCancellable *cancellable,
+			GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_flatpak_add_featured (priv->flatpak,
+					list,
+					cancellable,
+					error);
+}
