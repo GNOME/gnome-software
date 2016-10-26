@@ -90,6 +90,7 @@ enum {
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_STATUS_CHANGED,
 	SIGNAL_RELOAD,
+	SIGNAL_REPORT_EVENT,
 	SIGNAL_LAST
 };
 
@@ -1272,6 +1273,25 @@ gs_plugin_cache_invalidate (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_report_event:
+ * @plugin: a #GsPlugin
+ * @event: a #GsPluginEvent
+ *
+ * Report a non-fatal event to the UI. Plugins should not assume that a
+ * specific event is actually shown to the user as it may be ignored
+ * automatically.
+ *
+ * Since: 3.24
+ **/
+void
+gs_plugin_report_event (GsPlugin *plugin, GsPluginEvent *event)
+{
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (GS_IS_PLUGIN_EVENT (event));
+	g_signal_emit (plugin, signals[SIGNAL_REPORT_EVENT], 0, event);
+}
+
+/**
  * gs_plugin_error_to_string:
  * @error: a #GsPluginError, e.g. %GS_PLUGIN_ERROR_NO_NETWORK
  *
@@ -1469,6 +1489,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, reload),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+
+	signals [SIGNAL_REPORT_EVENT] =
+		g_signal_new ("report-event",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, report_event),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 1, GS_TYPE_PLUGIN_EVENT);
 }
 
 static void

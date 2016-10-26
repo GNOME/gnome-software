@@ -117,6 +117,8 @@ gboolean	 gs_plugin_app_launch			(GsPlugin	*plugin,
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 void		 gs_plugin_reload			(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
+void		 gs_plugin_report_event			(GsPlugin	*plugin,
+							 GsPluginEvent	*event);
 
 G_END_DECLS
 

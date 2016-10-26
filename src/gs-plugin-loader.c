@@ -3701,6 +3701,14 @@ gs_plugin_loader_remove_events (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_report_event_cb (GsPlugin *plugin,
+				  GsPluginEvent *event,
+				  GsPluginLoader *plugin_loader)
+{
+	gs_plugin_loader_add_event (plugin_loader, event);
+}
+
+static void
 gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 				    GsApp *app,
 				    GsPluginStatus status,
@@ -3808,6 +3816,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "report-event",
+			  G_CALLBACK (gs_plugin_loader_report_event_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
 	gs_plugin_set_auth_array (plugin, priv->auth_array);
