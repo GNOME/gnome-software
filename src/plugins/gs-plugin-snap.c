@@ -476,7 +476,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	if (!gs_snapd_remove (macaroon, discharges, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
