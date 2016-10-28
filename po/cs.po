@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
 "POT-Creation-Date: 2016-10-14 15:06+0000\n"
-"PO-Revision-Date: 2016-09-04 21:32+0200\n"
+"PO-Revision-Date: 2016-10-28 17:03+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: čeština <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -76,11 +76,11 @@ msgstr "Projekt GNOME"
 
 #: ../data/org.gnome.software.external-appstream.policy.in.h:1
 msgid "Install an appstream file into a system location"
-msgstr ""
+msgstr "Instalovat soubor appstream do systémového umístění"
 
 #: ../data/org.gnome.software.external-appstream.policy.in.h:2
 msgid "Installing an appstream file into a system location"
-msgstr ""
+msgstr "Instalování soubor appstream do systémového umístění"
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -117,9 +117,9 @@ msgid ""
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
 "Když je zapnuto, bude Software GNOME na pozadí automaticky aktualizovat "
-"informace, i v případě, že připojení není účtované paušální částkou (případně "
-"stahovat některá metadata, kontrolovat aktualizace atd., což se může projevit "
-"v ceně za připojení)."
+"informace, i v případě, že připojení není účtované paušální částkou "
+"(případně stahovat některá metadata, kontrolovat aktualizace atd., což se "
+"může projevit v ceně za připojení)."
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Whether it's the very first run of GNOME Software"
@@ -132,6 +132,7 @@ msgstr "Zobrazovat vedle aplikace hodnocení hvězdičkami"
 #: ../data/org.gnome.software.gschema.xml.h:9
 msgid "Filter applications based on the default branch set for the remote"
 msgstr ""
+"Filtrovat aplikace podle výchozí větve nastavené pro vzdálený protějšek"
 
 #: ../data/org.gnome.software.gschema.xml.h:10
 msgid "Non-free applications show a warning dialog before install"
@@ -255,6 +256,8 @@ msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
 msgstr ""
+"Seznam adres URL ukazujících na soubory appstream, které byly stažené do "
+"složky app-info"
 
 #: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -337,7 +340,7 @@ msgstr "Zdroje softwaru"
 #. button in the info bar
 #: ../src/gnome-software.ui.h:14
 msgid "Examine Disk"
-msgstr ""
+msgstr "Prozkoumat disk"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
@@ -994,13 +997,13 @@ msgstr "Snímek"
 #: ../src/gs-shell.c:783
 #, c-format
 msgid "Unable to download firmware updates from %s"
-msgstr ""
+msgstr "Nelze stáhnout aktualizace firmwaru z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:788
 #, c-format
 msgid "Unable to download updates from %s"
-msgstr ""
+msgstr "Nelze stáhnout aktualizace z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:795
@@ -1040,8 +1043,7 @@ msgstr "Nelze stáhnout aktualizace: ověření nebylo platné"
 #: ../src/gs-shell.c:831
 msgid ""
 "Unable to download updates: you do not have permission to install software"
-msgstr ""
-"Nelze stáhnout aktualizace: nemáte oprávnění instalovat software"
+msgstr "Nelze stáhnout aktualizace: nemáte oprávnění instalovat software"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:836
@@ -1058,13 +1060,14 @@ msgstr "Nelze nainstalovat balíček %s, protože selhalo jeho stažení z %s"
 #: ../src/gs-shell.c:881
 #, c-format
 msgid "Unable to install %s as download failed"
-msgstr ""
+msgstr "Nelze nainstalovat balíček %s, protože selhalo stažení"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:890
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
+"Nelze nainstalovat balíček %s, protože není k dispozici běhové prostředí %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:895
@@ -1075,7 +1078,8 @@ msgstr "Nelze nainstalovat balíček %s, protože není podporovaný"
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:902
 msgid "Unable to install: internet access was required but wasn’t available"
-msgstr "Nelze nainstalovat: přístup k internetu je nezbytný, ale není k dispozici"
+msgstr ""
+"Nelze nainstalovat: přístup k internetu je nezbytný, ale není k dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:908
@@ -1144,7 +1148,8 @@ msgstr "Nelze aktualizovat balíček %s, protože selhalo stažení"
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1013
 msgid "Unable to update: internet access was required but wasn’t available"
-msgstr "Nelze aktualizovat: přístup k internetu je nezbytný, ale není k dispozici"
+msgstr ""
+"Nelze aktualizovat: přístup k internetu je nezbytný, ale není k dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1020
@@ -1156,13 +1161,13 @@ msgstr "Nelze aktualizovat balíček %s: není dostatek místa na disku"
 #: ../src/gs-shell.c:1028
 #, c-format
 msgid "Unable to update %s: authentication was required"
-msgstr ""
+msgstr "Nelze aktualizovat balíček %s: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1034
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
-msgstr ""
+msgstr "Nelze aktualizovat balíček %s: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1040
@@ -1566,7 +1571,7 @@ msgstr "Licenční podmínky k tomuto softwaru nejsou známy."
 
 #: ../src/gs-shell-details.ui.h:59
 msgid "The application was rated this way because it features:"
-msgstr ""
+msgstr "Aplikace byla ohodnocena tímto způsobem, protože má:"
 
 #: ../src/gs-shell-details.ui.h:60
 msgid "No details were available for this rating."
@@ -2506,7 +2511,7 @@ msgstr "Dále jsou uvedeny podrobnosti o chybě získané od správy balíčků:
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:75
 msgid "No cartoon violence"
-msgstr ""
+msgstr "Žádné kreslené násilí"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:78
@@ -2526,7 +2531,7 @@ msgstr "Grafické násilí páchané na kreslených postavách"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:87
 msgid "No fantasy violence"
-msgstr ""
+msgstr "Žádné fantazie o násilí"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:90
@@ -2546,7 +2551,7 @@ msgstr "Grafické násilí snadno odlišitelné od reality"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:99
 msgid "No realistic violence"
-msgstr ""
+msgstr "Žádné realistické násilí"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:102
@@ -2586,7 +2591,7 @@ msgstr "Vyobrazení krveprolití a mrzačení lidí"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:123
 msgid "No sexual violence"
-msgstr ""
+msgstr "Žádné sexuální násilí"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:126
@@ -2636,7 +2641,7 @@ msgstr "Používání tabákových výrobků"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:153
 msgid "No nudity of any sort"
-msgstr ""
+msgstr "Žádná nahota jakéhokoliv typu"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:156
@@ -2671,7 +2676,7 @@ msgstr "Grafické znázornění sexuálního chování"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:174
 msgid "No profanity of any kind"
-msgstr ""
+msgstr "Žádné vulgární výrazy jakéhokoliv typu"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:177
@@ -2691,7 +2696,7 @@ msgstr "Hrubé nebo časté používání vulgárních výrazů"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:186
 msgid "No innappropriate humor"
-msgstr ""
+msgstr "Žádný nevhodný humor"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:189
@@ -2711,7 +2716,7 @@ msgstr "Humor o sexu a pro dospělé"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:198
 msgid "No discriminatory language of any kind"
-msgstr ""
+msgstr "Žádné diskriminační řeči jakéhokoliv druhu"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:201
@@ -2733,7 +2738,7 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:210
 msgid "No advertising of any kind"
-msgstr ""
+msgstr "Žádná reklama jakéhokoliv druhu"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:213
@@ -2753,7 +2758,7 @@ msgstr "Hráči jsou vybízení k nákupu konkrétního skutečného zboží"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:222
 msgid "No gambling of any kind"
-msgstr ""
+msgstr "Žádné hraní jakéhokoliv druhu"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:225
@@ -2783,7 +2788,7 @@ msgstr "Možnost prohrát skutečné peníze"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:240
 msgid "No way to chat with other players"
-msgstr ""
+msgstr "Žádný způsob, jak komunikovat s ostatními hráči"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:243
@@ -2803,7 +2808,7 @@ msgstr "Neřízená textová komunikace mezi hráči"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:252
 msgid "No way to talk with other players"
-msgstr ""
+msgstr "Žádný způsob, jako hovořit s ostatními hráči"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:255
@@ -2813,7 +2818,8 @@ msgstr "Neřízená zvuková a obrazová komunikace mezi hráči"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:258
 msgid "No sharing of social network usernames or email addresses"
-msgstr "Žádné sdílení uživatelských jmen ze sociálních sítí a e-mailových adres"
+msgstr ""
+"Žádné sdílení uživatelských jmen ze sociálních sítí a e-mailových adres"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:261
@@ -3302,4 +3308,3 @@ msgstr "Knihy"
 #: ../src/plugins/gs-desktop-common.c:356
 msgid "Utilities"
 msgstr "Nástroje"
-
