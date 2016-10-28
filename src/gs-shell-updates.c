@@ -526,7 +526,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	/* update the counter */
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
 						     "button_updates_counter"));
-	if (gs_app_list_length (list) > 0 && !gs_update_monitor_is_managed ()) {
+	if (gs_app_list_length (list) > 0 &&
+	    gs_plugin_loader_get_allow_updates (self->plugin_loader)) {
 		g_autofree gchar *text = NULL;
 		text = g_strdup_printf ("%u", gs_app_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
@@ -1280,27 +1281,15 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-on_permission_changed (GPermission *permission,
-                       GParamSpec  *pspec,
-                       gpointer     data)
+gs_shell_updates_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
+					    GParamSpec *pspec,
+					    GsShellUpdates *self)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (data);
-	if (gs_update_monitor_is_managed()) {
+	if (!gs_plugin_loader_get_allow_updates (plugin_loader)) {
 		gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_MANAGED);
 		return;
 	}
 	gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
-}
-
-static void
-gs_shell_updates_monitor_permission (GsShellUpdates *self)
-{
-        GPermission *permission;
-
-        permission = gs_update_monitor_permission_get ();
-	if (permission != NULL)
-		g_signal_connect (permission, "notify",
-				  G_CALLBACK (on_permission_changed), self);
 }
 
 static void
@@ -1333,6 +1322,9 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	g_signal_connect (self->plugin_loader, "updates-changed",
 			  G_CALLBACK (gs_shell_updates_changed_cb),
 			  self);
+	g_signal_connect_object (self->plugin_loader, "notify::allow-updates",
+				 G_CALLBACK (gs_shell_updates_allow_updates_notify_cb),
+				 self, 0);
 	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
@@ -1387,10 +1379,8 @@ gs_shell_updates_setup (GsShellUpdates *self,
 			  G_CALLBACK (gs_shell_updates_button_network_settings_cb),
 			  self);
 
-	gs_shell_updates_monitor_permission (self);
-
 	/* set initial state */
-	if (gs_update_monitor_is_managed ())
+	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader))
 		self->state = GS_SHELL_UPDATES_STATE_MANAGED;
 
 	if (self->network_monitor != NULL) {

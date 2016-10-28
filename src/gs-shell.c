@@ -299,7 +299,8 @@ gs_shell_change_mode (GsShell *shell,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
-	gtk_widget_set_visible (widget, !gs_update_monitor_is_managed() || mode == GS_SHELL_MODE_UPDATES);
+	gtk_widget_set_visible (widget, gs_plugin_loader_get_allow_updates (priv->plugin_loader) ||
+					mode == GS_SHELL_MODE_UPDATES);
 
 	priv->ignore_primary_buttons = FALSE;
 
@@ -668,27 +669,15 @@ gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-on_permission_changed (GPermission *permission,
-                       GParamSpec  *pspec,
-                       gpointer     data)
+gs_shell_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
+				    GParamSpec *pspec,
+				    GsShell *shell)
 {
-        GsShell *shell = data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
-
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-	gtk_widget_set_visible (widget, !gs_update_monitor_is_managed() || priv->mode == GS_SHELL_MODE_UPDATES);
-}
-
-static void
-gs_shell_monitor_permission (GsShell *shell)
-{
-        GPermission *permission;
-
-        permission = gs_update_monitor_permission_get ();
-	if (permission != NULL)
-		g_signal_connect (permission, "notify",
-				  G_CALLBACK (on_permission_changed), shell);
+	gtk_widget_set_visible (widget, gs_plugin_loader_get_allow_updates (plugin_loader) ||
+					priv->mode == GS_SHELL_MODE_UPDATES);
 }
 
 typedef enum {
@@ -1436,9 +1425,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect_object (priv->plugin_loader, "notify::events",
 				 G_CALLBACK (gs_shell_events_notify_cb),
 				 shell, 0);
+	g_signal_connect_object (priv->plugin_loader, "notify::allow-updates",
+				 G_CALLBACK (gs_shell_allow_updates_notify_cb),
+				 shell, 0);
 	priv->cancellable = g_object_ref (cancellable);
-
-	gs_shell_monitor_permission (shell);
 
 	/* get UI */
 	priv->builder = gtk_builder_new_from_resource ("/org/gnome/Software/gnome-software.ui");

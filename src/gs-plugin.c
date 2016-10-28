@@ -91,6 +91,7 @@ enum {
 	SIGNAL_STATUS_CHANGED,
 	SIGNAL_RELOAD,
 	SIGNAL_REPORT_EVENT,
+	SIGNAL_ALLOW_UPDATES,
 	SIGNAL_LAST
 };
 
@@ -1292,6 +1293,27 @@ gs_plugin_report_event (GsPlugin *plugin, GsPluginEvent *event)
 }
 
 /**
+ * gs_plugin_set_allow_updates:
+ * @plugin: a #GsPlugin
+ * @allow_updates: boolean
+ *
+ * This allows plugins to inhibit the showing of the updates panel.
+ * This will typically be used when the required permissions are not possible
+ * to obtain, or when a LiveUSB image is low on space.
+ *
+ * By default, the updates panel is shown so plugins do not need to call this
+ * function unless they called gs_plugin_set_allow_updates() with %FALSE.
+ *
+ * Since: 3.24
+ **/
+void
+gs_plugin_set_allow_updates (GsPlugin *plugin, gboolean allow_updates)
+{
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_signal_emit (plugin, signals[SIGNAL_ALLOW_UPDATES], 0, allow_updates);
+}
+
+/**
  * gs_plugin_error_to_string:
  * @error: a #GsPluginError, e.g. %GS_PLUGIN_ERROR_NO_NETWORK
  *
@@ -1496,6 +1518,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, report_event),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 1, GS_TYPE_PLUGIN_EVENT);
+
+	signals [SIGNAL_ALLOW_UPDATES] =
+		g_signal_new ("allow-updates",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, allow_updates),
+			      NULL, NULL, g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
 }
 
 static void

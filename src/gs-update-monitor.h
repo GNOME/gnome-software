@@ -36,8 +36,6 @@ G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GO
 GsUpdateMonitor	*gs_update_monitor_new			(GsApplication	*app);
 void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
 							 GsShell	*shell);
-GPermission	*gs_update_monitor_permission_get	(void);
-gboolean	 gs_update_monitor_is_managed		(void);
 
 G_END_DECLS
 

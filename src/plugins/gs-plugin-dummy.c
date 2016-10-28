@@ -30,10 +30,23 @@
 
 struct GsPluginData {
 	guint			 quirk_id;
+	guint			 allow_updates_id;
+	gboolean		 allow_updates_inhibit;
 	guint			 has_auth;
 	GsAuth			*auth;
 	GsApp			*cached_origin;
 };
+
+/* just flip-flop this every few seconds */
+static gboolean
+gs_plugin_dummy_allow_updates_cb (gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	gs_plugin_set_allow_updates (plugin, priv->allow_updates_inhibit);
+	priv->allow_updates_inhibit = !priv->allow_updates_inhibit;
+	return G_SOURCE_CONTINUE;
+}
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
@@ -45,6 +58,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	/* toggle this */
+	priv->allow_updates_id = g_timeout_add_seconds (10,
+		gs_plugin_dummy_allow_updates_cb, plugin);
 
 	/* set up a dummy authentication provider */
 	priv->auth = gs_auth_new (gs_plugin_get_name (plugin));

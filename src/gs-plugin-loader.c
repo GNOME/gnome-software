@@ -64,6 +64,7 @@ typedef struct
 	guint			 updates_changed_id;
 	guint			 reload_id;
 	gboolean		 online; 
+	GHashTable		*disallow_updates;	/* GsPlugin : const char *name */
 } GsPluginLoaderPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
@@ -79,6 +80,7 @@ enum {
 enum {
 	PROP_0,
 	PROP_EVENTS,
+	PROP_ALLOW_UPDATES,
 	PROP_LAST
 };
 
@@ -3563,6 +3565,26 @@ gs_plugin_loader_app_action_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+gboolean
+gs_plugin_loader_get_allow_updates (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GList) list = NULL;
+	GList *l;
+
+	/* nothing */
+	if (g_hash_table_size (priv->disallow_updates) == 0)
+		return TRUE;
+
+	/* list */
+	list = g_hash_table_get_values (priv->disallow_updates);
+	for (l = list; l != NULL; l = l->next) {
+		const gchar *reason = l->data;
+		g_debug ("managed updates inhibited by %s", reason);
+	}
+	return FALSE;
+}
+
 GsAppList *
 gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 {
@@ -3709,6 +3731,38 @@ gs_plugin_loader_report_event_cb (GsPlugin *plugin,
 }
 
 static void
+gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
+				   gboolean allow_updates,
+				   GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	gpointer exists;
+
+	/* plugin now allowing gnome-software to show updates panel */
+	exists = g_hash_table_lookup (priv->disallow_updates, plugin);
+	if (allow_updates) {
+		if (exists == NULL)
+			return;
+		g_debug ("plugin %s no longer inhibited managed updates",
+			 gs_plugin_get_name (plugin));
+		g_hash_table_remove (priv->disallow_updates, plugin);
+
+	/* plugin preventing the updates panel from being shown */
+	} else {
+		if (exists != NULL)
+			return;
+		g_debug ("plugin %s inhibited managed updates",
+			 gs_plugin_get_name (plugin));
+		g_hash_table_insert (priv->disallow_updates,
+				     (gpointer) plugin,
+				     (gpointer) gs_plugin_get_name (plugin));
+	}
+
+	/* something possibly changed, so notify display layer */
+	g_object_notify (G_OBJECT (plugin_loader), "allow-updates");
+}
+
+static void
 gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 				    GsApp *app,
 				    GsPluginStatus status,
@@ -3819,6 +3873,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "report-event",
 			  G_CALLBACK (gs_plugin_loader_report_event_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "allow-updates",
+			  G_CALLBACK (gs_plugin_loader_allow_updates_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
 	gs_plugin_set_auth_array (plugin, priv->auth_array);
@@ -4205,6 +4262,9 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 	case PROP_EVENTS:
 		g_value_set_pointer (value, priv->events_by_id);
 		break;
+	case PROP_ALLOW_UPDATES:
+		g_value_set_boolean (value, gs_plugin_loader_get_allow_updates (plugin_loader));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4257,6 +4317,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_free (priv->language);
 	g_object_unref (priv->global_cache);
 	g_hash_table_unref (priv->events_by_id);
+	g_hash_table_unref (priv->disallow_updates);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
 	g_mutex_clear (&priv->events_by_id_mutex);
@@ -4279,6 +4340,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 				     NULL,
 				     G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_EVENTS, pspec);
+
+	pspec = g_param_spec_boolean ("allow-updates", NULL, NULL,
+				      TRUE,
+				      G_PARAM_READABLE);
+	g_object_class_install_property (object_class, PROP_ALLOW_UPDATES, pspec);
 
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
@@ -4307,6 +4373,28 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 }
 
 static void
+gs_plugin_loader_allow_updates_recheck (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	if (g_settings_get_boolean (priv->settings, "allow-updates")) {
+		g_hash_table_remove (priv->disallow_updates, plugin_loader);
+	} else {
+		g_hash_table_insert (priv->disallow_updates,
+				     (gpointer) plugin_loader,
+				     (gpointer) "GSettings");
+	}
+}
+
+static void
+gs_plugin_loader_settings_changed_cb (GSettings *settings,
+				      const gchar *key,
+				      GsPluginLoader *plugin_loader)
+{
+	if (g_strcmp0 (key, "allow-updates"))
+		gs_plugin_loader_allow_updates_recheck (plugin_loader);
+}
+
+static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -4323,6 +4411,8 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect (priv->settings, "changed",
+			  G_CALLBACK (gs_plugin_loader_settings_changed_cb), plugin_loader);
 	priv->events_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
 					            (GEqualFunc) as_utils_unique_id_equal,
 						    g_free,
@@ -4349,6 +4439,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		if (match != NULL)
 			*match = '\0';
 	}
+
+	/* the settings key sets the initial override */
+	priv->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
+	gs_plugin_loader_allow_updates_recheck (plugin_loader);
 
 	/* get the language from the locale */
 	priv->language = g_strdup (priv->locale);

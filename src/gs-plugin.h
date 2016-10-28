@@ -51,7 +51,9 @@ struct _GsPluginClass
 	void			(*reload)		(GsPlugin	*plugin);
 	void			(*report_event)		(GsPlugin	*plugin,
 							 GsPluginEvent	*event);
-	gpointer		 padding[27];
+	void			(*allow_updates)	(GsPlugin	*plugin,
+							 gboolean	 allow_updates);
+	gpointer		 padding[26];
 };
 
 typedef struct	GsPluginData	GsPluginData;
@@ -119,6 +121,8 @@ void		 gs_plugin_reload			(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 void		 gs_plugin_report_event			(GsPlugin	*plugin,
 							 GsPluginEvent	*event);
+void		 gs_plugin_set_allow_updates		(GsPlugin	*plugin,
+							 gboolean	 allow_updates);
 
 G_END_DECLS
 

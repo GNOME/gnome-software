@@ -757,30 +757,4 @@ gs_update_monitor_new (GsApplication *application)
 	return monitor;
 }
 
-GPermission *
-gs_update_monitor_permission_get (void)
-{
-	static GPermission *permission = NULL;
-#ifdef HAVE_PACKAGEKIT
-	if (permission == NULL)
-		permission = gs_utils_get_permission ("org.freedesktop.packagekit.trigger-offline-update");
-#endif
-	return permission;
-}
-
-gboolean
-gs_update_monitor_is_managed (void)
-{
-	GPermission *permission;
-	gboolean managed;
-
-	permission = gs_update_monitor_permission_get ();
-	if (permission == NULL)
-		return FALSE;
-	managed = !g_permission_get_allowed (permission) &&
-                  !g_permission_get_can_acquire (permission);
-
-	return managed;
-}
-
 /* vim: set noexpandtab: */

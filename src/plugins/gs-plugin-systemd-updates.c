@@ -36,6 +36,7 @@
 
 struct GsPluginData {
 	GFileMonitor		*monitor;
+	GPermission		*permission;
 };
 
 void
@@ -50,6 +51,17 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (priv->monitor != NULL)
 		g_object_unref (priv->monitor);
+}
+
+static void
+gs_plugin_systemd_updates_permission_cb (GPermission *permission,
+					 GParamSpec *pspec,
+					 gpointer data)
+{
+	GsPlugin *plugin = GS_PLUGIN (data);
+	gboolean ret = g_permission_get_allowed (permission) ||
+			g_permission_get_can_acquire (permission);
+	gs_plugin_set_allow_updates (plugin, ret);
 }
 
 static void
@@ -76,6 +88,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_signal_connect (priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
 			  plugin);
+
+	/* check if we have permission to trigger the update */
+	priv->permission = gs_utils_get_permission (
+		"org.freedesktop.packagekit.trigger-offline-update");
+	if (priv->permission != NULL) {
+		g_signal_connect (priv->permission, "notify",
+				  G_CALLBACK (gs_plugin_systemd_updates_permission_cb),
+				  plugin);
+	}
 	return TRUE;
 }
 
