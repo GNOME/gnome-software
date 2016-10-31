@@ -262,6 +262,17 @@ gs_plugin_func (void)
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 2);
 	g_object_unref (list);
+
+	/* remove apps from the list */
+	list = gs_app_list_new ();
+	app = gs_app_new ("a");
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	app = gs_app_new ("a");
+	gs_app_list_remove (list, app);
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list), ==, 0);
+	g_object_unref (list);
 }
 
 static void
