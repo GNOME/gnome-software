@@ -320,7 +320,8 @@ refresh_cache_finished_cb (GObject *object,
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}
-	get_updates (monitor);
+	if (gs_plugin_loader_get_allow_updates (monitor->plugin_loader))
+		get_updates (monitor);
 }
 
 typedef enum {
@@ -403,7 +404,8 @@ check_updates (GsUpdateMonitor *monitor)
 	g_settings_set (monitor->settings, "check-timestamp", "x",
 			g_date_time_to_unix (now_refreshed));
 
-	if (g_settings_get_boolean (monitor->settings, "download-updates")) {
+	if (gs_plugin_loader_get_allow_updates (monitor->plugin_loader) &&
+	    g_settings_get_boolean (monitor->settings, "download-updates")) {
 		g_debug ("Refreshing for metadata and payload");
 		refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
 	} else {
@@ -440,19 +442,57 @@ check_thrice_daily_cb (gpointer data)
 	return G_SOURCE_CONTINUE;
 }
 
+static void
+stop_upgrades_check (GsUpdateMonitor *monitor)
+{
+	if (monitor->check_daily_id == 0)
+		return;
+
+	g_source_remove (monitor->check_daily_id);
+	monitor->check_daily_id = 0;
+}
+
+static void
+restart_upgrades_check (GsUpdateMonitor *monitor)
+{
+	stop_upgrades_check (monitor);
+	get_upgrades (monitor);
+
+	monitor->check_daily_id = g_timeout_add_seconds (3 * 86400,
+							 check_thrice_daily_cb,
+							 monitor);
+}
+
+static void
+stop_updates_check (GsUpdateMonitor *monitor)
+{
+	if (monitor->check_hourly_id == 0)
+		return;
+
+	g_source_remove (monitor->check_hourly_id);
+	monitor->check_hourly_id = 0;
+}
+
+static void
+restart_updates_check (GsUpdateMonitor *monitor)
+{
+	stop_updates_check (monitor);
+	check_updates (monitor);
+
+	monitor->check_hourly_id = g_timeout_add_seconds (3600, check_hourly_cb,
+							  monitor);
+}
+
 static gboolean
 check_updates_on_startup_cb (gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
 
 	g_debug ("First hourly updates check");
-	check_updates (monitor);
-	get_upgrades (monitor);
+	restart_updates_check (monitor);
 
-	monitor->check_hourly_id =
-		g_timeout_add_seconds (3600, check_hourly_cb, monitor);
-	monitor->check_daily_id =
-		g_timeout_add_seconds (3 * 86400, check_thrice_daily_cb, monitor);
+	if (gs_plugin_loader_get_allow_updates (monitor->plugin_loader))
+		restart_upgrades_check (monitor);
 
 	monitor->check_startup_id = 0;
 	return G_SOURCE_REMOVE;
@@ -637,6 +677,21 @@ gs_update_monitor_show_error (GsUpdateMonitor *monitor, GsShell *shell)
 }
 
 static void
+allow_updates_notify_cb (GsPluginLoader *plugin_loader,
+			 GParamSpec *pspec,
+			 GsUpdateMonitor *monitor)
+{
+	if (gs_plugin_loader_get_allow_updates (plugin_loader)) {
+		/* We restart the updates check here to avoid the user
+		 * pontentially waiting for the hourly check */
+		restart_updates_check (monitor);
+		restart_upgrades_check (monitor);
+	} else {
+		stop_upgrades_check (monitor);
+	}
+}
+
+static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GError) error = NULL;
@@ -673,6 +728,11 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	} else {
 		g_warning ("failed to connect to upower: %s", error->message);
 	}
+
+	g_signal_connect_object (monitor->plugin_loader,
+				 "notify::allow-updates",
+				 G_CALLBACK (allow_updates_notify_cb),
+				 monitor, 0);
 }
 
 static void
@@ -684,14 +744,10 @@ gs_update_monitor_dispose (GObject *object)
 		g_cancellable_cancel (monitor->cancellable);
 		g_clear_object (&monitor->cancellable);
 	}
-	if (monitor->check_hourly_id != 0) {
-		g_source_remove (monitor->check_hourly_id);
-		monitor->check_hourly_id = 0;
-	}
-	if (monitor->check_daily_id != 0) {
-		g_source_remove (monitor->check_daily_id);
-		monitor->check_daily_id = 0;
-	}
+
+	stop_updates_check (monitor);
+	stop_upgrades_check (monitor);
+
 	if (monitor->check_startup_id != 0) {
 		g_source_remove (monitor->check_startup_id);
 		monitor->check_startup_id = 0;
