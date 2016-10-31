@@ -534,19 +534,8 @@ gs_app_set_id (GsApp *app, const gchar *id)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-
-	/* check for old-style prefix */
-	if (id != NULL && g_strstr_len (id, -1, ":") != NULL) {
-		g_warning ("Invalid ID of %s -- use "
-			   "gs_app_set_unique_id() and use the actual "
-			   "desktop-style ID here instead!", id);
-		return;
-	}
-
 	g_free (app->id);
 	app->id = g_strdup (id);
-
-	/* no longer valid */
 	app->unique_id_valid = FALSE;
 }
 
