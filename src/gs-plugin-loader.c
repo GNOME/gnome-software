@@ -4390,7 +4390,7 @@ gs_plugin_loader_settings_changed_cb (GSettings *settings,
 				      const gchar *key,
 				      GsPluginLoader *plugin_loader)
 {
-	if (g_strcmp0 (key, "allow-updates"))
+	if (g_strcmp0 (key, "allow-updates") == 0)
 		gs_plugin_loader_allow_updates_recheck (plugin_loader);
 }
 
