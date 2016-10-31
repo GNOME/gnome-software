@@ -47,6 +47,7 @@
 #include <gio/gdesktopappinfo.h>
 #include <gdk/gdk.h>
 
+#include "gs-app-list-private.h"
 #include "gs-os-release.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin.h"
@@ -1205,6 +1206,38 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 	if (app == NULL)
 		return NULL;
 	return g_object_ref (app);
+}
+
+/**
+ * gs_plugin_cache_remove:
+ * @plugin: a #GsPlugin
+ * @key: a key which matches
+ *
+ * Removes an application from the per-plugin cache.
+ *
+ * Since: 3.24
+ **/
+void
+gs_plugin_cache_remove (GsPlugin *plugin, const gchar *key)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (key != NULL);
+
+	/* global, so using internal unique_id */
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
+		GsApp *app_tmp;
+		if (!as_utils_unique_id_valid (key)) {
+			g_critical ("key %s is not a unique_id", key);
+			return;
+		}
+		app_tmp = gs_app_list_lookup (priv->global_cache, key);
+		if (app_tmp != NULL)
+			gs_app_list_remove (priv->global_cache, app_tmp);
+		return;
+	}
+	g_hash_table_remove (priv->cache, key);
 }
 
 /**
