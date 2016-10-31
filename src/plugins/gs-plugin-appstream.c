@@ -82,7 +82,7 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 		if (item == NULL) {
 			item = g_hash_table_lookup (app_hash, key);
 			app = gs_plugin_cache_lookup (plugin,
-						      as_app_get_id (item));
+						      as_app_get_unique_id (item));
 			if (app != NULL)
 				g_debug ("added GsApp %s", gs_app_get_id (app));
 			cnt++;
@@ -97,7 +97,7 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 		if (item == NULL) {
 			item = g_hash_table_lookup (priv->app_hash_old, key);
 			app = gs_plugin_cache_lookup (plugin,
-						      as_app_get_id (item));
+						      as_app_get_unique_id (item));
 			if (app != NULL)
 				g_debug ("removed GsApp %s", gs_app_get_id (app));
 			cnt++;
