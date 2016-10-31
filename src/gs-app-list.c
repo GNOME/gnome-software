@@ -145,6 +145,35 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 }
 
 /**
+ * gs_app_list_remove:
+ * @list: A #GsAppList
+ * @app: A #GsApp
+ *
+ * Removes an application from the list. If the application does not exist the
+ * request is ignored.
+ *
+ * Since: 3.24
+ **/
+void
+gs_app_list_remove (GsAppList *list, GsApp *app)
+{
+	AsApp *app_tmp;
+	const gchar *unique_id;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+
+	g_return_if_fail (GS_IS_APP_LIST (list));
+	g_return_if_fail (GS_IS_APP (app));
+
+	/* remove, or ignore if not found */
+	unique_id = gs_app_get_unique_id (app);
+	app_tmp = g_hash_table_lookup (list->hash_by_id, unique_id);
+	if (app_tmp == NULL)
+		return;
+	g_ptr_array_remove (list->array, app_tmp);
+	g_hash_table_remove (list->hash_by_id, unique_id);
+}
+
+/**
  * gs_app_list_add_list:
  * @list: A #GsAppList
  * @donor: Another #GsAppList
