@@ -132,6 +132,15 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 		gs_plugin_reload (plugin);
 }
 
+static void
+gs_plugin_appstream_store_app_removed_cb (AsStore *store,
+					  AsApp *app,
+					  GsPlugin *plugin)
+{
+	g_debug ("AppStream app was removed, doing delete from global cache");
+	gs_plugin_cache_remove (plugin, as_app_get_unique_id (app));
+}
+
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -265,6 +274,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* watch for changes */
 	g_signal_connect (priv->store, "changed",
 			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
+			  plugin);
+	g_signal_connect (priv->store, "app-removed",
+			  G_CALLBACK (gs_plugin_appstream_store_app_removed_cb),
 			  plugin);
 
 	/* add search terms for apps not in the main source */
