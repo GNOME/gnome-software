@@ -77,6 +77,24 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
+	g_autoptr(GPermission) permission = NULL;
+
+	/* if we can't update the AppStream database system-wide don't even
+	 * pull the data as we can't do anything with it */
+	permission = gs_utils_get_permission (action_id);
+	if (permission != NULL) {
+		gboolean ret = g_permission_get_allowed (permission) ||
+				g_permission_get_can_acquire (permission);
+		if (!ret) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no way to update using %s", action_id);
+			return FALSE;
+		}
+	}
+
 	return gs_flatpak_setup (priv->flatpak, cancellable, error);
 }
 
