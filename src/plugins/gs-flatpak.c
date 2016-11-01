@@ -156,10 +156,17 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autofree gchar *appstream_fn = NULL;
 	g_autofree gchar *default_branch = NULL;
 	g_autofree gchar *only_app_id = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) app_filtered = NULL;
+
+	/* profile */
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "flatpak::add-apps-from-remote{%s}",
+				  flatpak_remote_get_name (xremote));
+	g_assert (ptask != NULL);
 
 	/* get the AppStream data location */
 	appstream_dir = flatpak_remote_get_appstream_dir (xremote, NULL);
@@ -246,16 +253,24 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 }
 
 static void
-gs_flatpak_rescan_installed (GsFlatpak *self, GCancellable *cancellable, GError **error)
+gs_flatpak_rescan_installed (GsFlatpak *self,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	GPtrArray *icons;
 	const gchar *fn;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GFile) path = NULL;
 	g_autoptr(GDir) dir = NULL;
 	g_autofree gchar *path_str = NULL;
 	g_autofree gchar *path_exports = NULL;
 	g_autofree gchar *path_apps = NULL;
+
+	/* profile */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
+					  "flatpak::rescan-installed");
+	g_assert (ptask != NULL);
 
 	/* add all installed desktop files */
 	path = flatpak_installation_get_path (self->installation);
