@@ -44,7 +44,6 @@ typedef struct
 	gchar			*location;
 	gchar			*locale;
 	gchar			*language;
-	GsPluginStatus		 status_last;
 	GsAppList		*global_cache;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
@@ -3772,11 +3771,8 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 
 	/* nothing specific */
 	if (gs_app_get_id (app) == NULL) {
-		if (status == priv->status_last)
-			return;
 		g_debug ("emitting global %s",
 			 gs_plugin_status_to_string (status));
-		priv->status_last = status;
 		g_signal_emit (plugin_loader,
 			       signals[SIGNAL_STATUS_CHANGED],
 			       0, app, status);
@@ -4406,7 +4402,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->scale = 1;
 	priv->global_cache = gs_app_list_new ();
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	priv->status_last = GS_PLUGIN_STATUS_LAST;
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
