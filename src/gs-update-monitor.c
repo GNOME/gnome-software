@@ -728,11 +728,6 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	} else {
 		g_warning ("failed to connect to upower: %s", error->message);
 	}
-
-	g_signal_connect_object (monitor->plugin_loader,
-				 "notify::allow-updates",
-				 G_CALLBACK (allow_updates_notify_cb),
-				 monitor, 0);
 }
 
 static void
@@ -809,6 +804,8 @@ gs_update_monitor_new (GsApplication *application)
 	monitor->plugin_loader = gs_application_get_plugin_loader (application);
 	g_signal_connect (monitor->plugin_loader, "updates-changed",
 			  G_CALLBACK (updates_changed_cb), monitor);
+	g_signal_connect (monitor->plugin_loader, "notify::allow-updates",
+			  G_CALLBACK (allow_updates_notify_cb), monitor);
 
 	return monitor;
 }
