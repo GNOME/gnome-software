@@ -341,6 +341,20 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 }
 
 static gboolean
+gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
+				     const gchar *remote_name,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	return flatpak_installation_update_appstream_sync (self->installation,
+							   remote_name,
+							   NULL, /* arch */
+							   NULL, /* out_changed */
+							   cancellable,
+							   error);
+}
+
+static gboolean
 gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			      GsPluginRefreshFlags flags,
 			      GCancellable *cancellable, GError **error)
@@ -350,7 +364,9 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
-	xremotes = flatpak_installation_list_remotes (self->installation, cancellable,
+	/* get remotes */
+	xremotes = flatpak_installation_list_remotes (self->installation,
+						      cancellable,
 						      error);
 	if (xremotes == NULL)
 		return FALSE;
@@ -387,12 +403,10 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		/* download new data */
 		g_debug ("%s is %u seconds old, so downloading new data",
 			 remote_name, tmp);
-		ret = flatpak_installation_update_appstream_sync (self->installation,
-								  remote_name,
-								  NULL, /* arch */
-								  NULL, /* out_changed */
-								  cancellable,
-								  &error_local);
+		ret = gs_flatpak_refresh_appstream_remote (self,
+							   remote_name,
+							   cancellable,
+							   &error_local);
 		if (!ret) {
 			if (g_error_matches (error_local,
 					     G_IO_ERROR,
