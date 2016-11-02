@@ -133,6 +133,14 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 }
 
 static void
+gs_plugin_appstream_store_app_added_cb (AsStore *store,
+					AsApp *app,
+					GsPlugin *plugin)
+{
+	gs_appstream_add_extra_info (plugin, app);
+}
+
+static void
 gs_plugin_appstream_store_app_removed_cb (AsStore *store,
 					  AsApp *app,
 					  GsPlugin *plugin)
@@ -146,6 +154,12 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->store = as_store_new ();
+	g_signal_connect (priv->store, "app-added",
+			  G_CALLBACK (gs_plugin_appstream_store_app_added_cb),
+			  plugin);
+	g_signal_connect (priv->store, "app-removed",
+			  G_CALLBACK (gs_plugin_appstream_store_app_removed_cb),
+			  plugin);
 	as_store_set_add_flags (priv->store,
 				AS_STORE_ADD_FLAG_USE_UNIQUE_ID |
 				AS_STORE_ADD_FLAG_ONLY_NATIVE_LANGS |
@@ -227,7 +241,6 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	AsApp *app;
 	GPtrArray *items;
 	gboolean ret;
 	const gchar *tmp;
@@ -282,9 +295,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_signal_connect (priv->store, "changed",
 			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
 			  plugin);
-	g_signal_connect (priv->store, "app-removed",
-			  G_CALLBACK (gs_plugin_appstream_store_app_removed_cb),
-			  plugin);
 
 	/* ensure the token cache */
 	as_store_load_search_cache (priv->store);
@@ -292,7 +302,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* add search terms for apps not in the main source */
 	origins = gs_plugin_appstream_get_origins_hash (items);
 	for (i = 0; i < items->len; i++) {
-		app = g_ptr_array_index (items, i);
+		AsApp *app = g_ptr_array_index (items, i);
 		tmp = as_app_get_origin (app);
 		if (tmp == NULL || tmp[0] == '\0')
 			continue;
@@ -301,51 +311,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			g_debug ("adding keyword '%s' to %s",
 				 tmp, as_app_get_id (app));
 			as_app_add_keyword (app, NULL, tmp);
-		}
-	}
-
-	/* add more search terms */
-	for (i = 0; i < items->len; i++) {
-		app = g_ptr_array_index (items, i);
-		switch (as_app_get_kind (app)) {
-		case AS_APP_KIND_WEB_APP:
-		case AS_APP_KIND_INPUT_METHOD:
-			tmp = as_app_kind_to_string (as_app_get_kind (app));
-			g_debug ("adding keyword '%s' to %s",
-				 tmp, as_app_get_unique_id (app));
-			as_app_add_keyword (app, NULL, tmp);
-			break;
-		default:
-			break;
-		}
-	}
-
-	/* fix up these */
-	for (i = 0; i < items->len; i++) {
-		app = g_ptr_array_index (items, i);
-		if (as_app_get_kind (app) == AS_APP_KIND_LOCALIZATION &&
-		    g_str_has_prefix (as_app_get_id (app),
-				      "org.fedoraproject.LangPack-")) {
-			g_autoptr(AsIcon) icon = NULL;
-
-			/* add icon */
-			icon = as_icon_new ();
-			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-			as_icon_set_name (icon, "accessories-dictionary-symbolic");
-			as_app_add_icon (app, icon);
-
-			/* add categories */
-			as_app_add_category (app, "Addons");
-			as_app_add_category (app, "Localization");
-		}
-	}
-
-	/* fix up drivers with our nonstandard groups */
-	for (i = 0; i < items->len; i++) {
-		app = g_ptr_array_index (items, i);
-		if (as_app_get_kind (app) == AS_APP_KIND_DRIVER) {
-			as_app_add_category (app, "Addons");
-			as_app_add_category (app, "Drivers");
 		}
 	}
 

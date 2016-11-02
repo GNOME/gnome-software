@@ -63,6 +63,8 @@ gboolean	 gs_appstream_add_featured		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+void		 gs_appstream_add_extra_info		(GsPlugin	*plugin,
+							 AsApp		*app);
 
 G_END_DECLS
 

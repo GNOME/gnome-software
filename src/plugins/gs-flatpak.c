@@ -2637,6 +2637,12 @@ gs_flatpak_add_featured (GsFlatpak *self,
 }
 
 static void
+gs_flatpak_store_app_added_cb (AsStore *store, AsApp *app, GsFlatpak *self)
+{
+	gs_appstream_add_extra_info (self->plugin, app);
+}
+
+static void
 gs_flatpak_store_app_removed_cb (AsStore *store, AsApp *app, GsFlatpak *self)
 {
 	g_debug ("AppStream app was removed, doing delete from global cache");
@@ -2670,6 +2676,9 @@ gs_flatpak_init (GsFlatpak *self)
 	self->broken_remotes = g_hash_table_new_full (g_str_hash, g_str_equal,
 						      g_free, NULL);
 	self->store = as_store_new ();
+	g_signal_connect (self->store, "app-added",
+			  G_CALLBACK (gs_flatpak_store_app_added_cb),
+			  self);
 	g_signal_connect (self->store, "app-removed",
 			  G_CALLBACK (gs_flatpak_store_app_removed_cb),
 			  self);
