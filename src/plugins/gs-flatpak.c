@@ -1017,18 +1017,20 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 
 		/* get the current download size */
-		if (!flatpak_installation_fetch_remote_size_sync (self->installation,
-								  gs_app_get_origin (app),
-								  FLATPAK_REF (xref),
-								  &download_size,
-								  NULL,
-								  cancellable,
-								  &error_local)) {
-			g_warning ("failed to get download size: %s",
-				   error_local->message);
-			gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-		} else {
-			gs_app_set_size_download (app, download_size);
+		if (gs_app_get_size_download (app) == 0) {
+			if (!flatpak_installation_fetch_remote_size_sync (self->installation,
+									  gs_app_get_origin (app),
+									  FLATPAK_REF (xref),
+									  &download_size,
+									  NULL,
+									  cancellable,
+									  &error_local)) {
+				g_warning ("failed to get download size: %s",
+					   error_local->message);
+				gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+			} else {
+				gs_app_set_size_download (app, download_size);
+			}
 		}
 
 		gs_app_list_add (list, app);
