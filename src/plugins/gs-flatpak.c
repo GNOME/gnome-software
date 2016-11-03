@@ -230,6 +230,13 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	as_store_set_add_flags (store,
 				AS_STORE_ADD_FLAG_USE_UNIQUE_ID |
 				AS_STORE_ADD_FLAG_ONLY_NATIVE_LANGS);
+	as_store_set_search_match (store,
+				   AS_APP_SEARCH_MATCH_MIMETYPE |
+				   AS_APP_SEARCH_MATCH_PKGNAME |
+				   AS_APP_SEARCH_MATCH_COMMENT |
+				   AS_APP_SEARCH_MATCH_NAME |
+				   AS_APP_SEARCH_MATCH_KEYWORD |
+				   AS_APP_SEARCH_MATCH_ID);
 	if (!as_store_from_file (store, file, NULL, cancellable, error)) {
 		gs_utils_error_convert_appstream (error);
 		return FALSE;
