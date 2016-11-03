@@ -183,7 +183,9 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	}
 	file = g_file_new_for_path (appstream_fn);
 	store = as_store_new ();
-	as_store_set_add_flags (store, AS_STORE_ADD_FLAG_USE_UNIQUE_ID);
+	as_store_set_add_flags (store,
+				AS_STORE_ADD_FLAG_USE_UNIQUE_ID |
+				AS_STORE_ADD_FLAG_ONLY_NATIVE_LANGS);
 	if (!as_store_from_file (store, file, NULL, cancellable, error)) {
 		return FALSE;
 	}

@@ -148,6 +148,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->store = as_store_new ();
 	as_store_set_add_flags (priv->store,
 				AS_STORE_ADD_FLAG_USE_UNIQUE_ID |
+				AS_STORE_ADD_FLAG_ONLY_NATIVE_LANGS |
 				AS_STORE_ADD_FLAG_USE_MERGE_HEURISTIC);
 	as_store_set_watch_flags (priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
