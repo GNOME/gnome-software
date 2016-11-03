@@ -153,6 +153,13 @@ gs_plugin_initialize (GsPlugin *plugin)
 	as_store_set_watch_flags (priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
 				  AS_STORE_WATCH_FLAG_REMOVED);
+	as_store_set_search_match (priv->store,
+				   AS_APP_SEARCH_MATCH_MIMETYPE |
+				   AS_APP_SEARCH_MATCH_PKGNAME |
+				   AS_APP_SEARCH_MATCH_COMMENT |
+				   AS_APP_SEARCH_MATCH_NAME |
+				   AS_APP_SEARCH_MATCH_KEYWORD |
+				   AS_APP_SEARCH_MATCH_ID);
 
 	/* set plugin flags */
 	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
