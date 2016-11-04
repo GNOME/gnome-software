@@ -773,6 +773,20 @@ gs_utils_error_convert_appstream (GError **perror)
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
 		}
+	} else if (error->domain == G_FILE_ERROR) {
+		switch (error->code) {
+		case G_FILE_ERROR_EXIST:
+		case G_FILE_ERROR_ACCES:
+		case G_FILE_ERROR_PERM:
+			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
+			break;
+		case G_FILE_ERROR_NOSPC:
+			error->code = GS_PLUGIN_ERROR_NO_SPACE;
+			break;
+		default:
+			error->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
 	} else {
 		g_warning ("can't reliably fixup error from domain %s",
 			   g_quark_to_string (error->domain));
