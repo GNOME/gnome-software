@@ -463,14 +463,20 @@ gs_plugin_odrs_json_post (SoupSession *session,
 }
 
 static gboolean
-gs_plugin_refine_ratings (GsPlugin *plugin,
-			  GsApp *app,
-			  GCancellable *cancellable,
-			  GError **error)
+gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
+			       GsApp *app,
+			       GCancellable *cancellable,
+			       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GArray *review_ratings;
 	gint rating;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* profile */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "odrs::refine-ratings");
+	g_assert (ptask != NULL);
 
 	/* get ratings */
 	review_ratings = g_hash_table_lookup (priv->ratings,
@@ -594,15 +600,21 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 }
 
 static gboolean
-gs_plugin_refine_reviews (GsPlugin *plugin,
-			  GsApp *app,
-			  GCancellable *cancellable,
-			  GError **error)
+gs_plugin_odrs_refine_reviews (GsPlugin *plugin,
+			       GsApp *app,
+			       GCancellable *cancellable,
+			       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsReview *review;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
+
+	/* profile */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "odrs::refine-reviews");
+	g_assert (ptask != NULL);
 
 	/* get from server */
 	reviews = gs_plugin_odrs_fetch_for_app (plugin, app, error);
@@ -649,8 +661,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
 		if (gs_app_get_reviews(app)->len > 0)
 			return TRUE;
-		if (!gs_plugin_refine_reviews (plugin, app,
-					       cancellable, error))
+		if (!gs_plugin_odrs_refine_reviews (plugin, app,
+						    cancellable, error))
 			return FALSE;
 	}
 
@@ -659,8 +671,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) {
 		if (gs_app_get_review_ratings(app) != NULL)
 			return TRUE;
-		if (!gs_plugin_refine_ratings (plugin, app,
-					       cancellable, error))
+		if (!gs_plugin_odrs_refine_ratings (plugin, app,
+						    cancellable, error))
 			return FALSE;
 	}
 
