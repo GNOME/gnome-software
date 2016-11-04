@@ -47,6 +47,7 @@ main (int argc, char **argv)
 	textdomain (GETTEXT_PACKAGE);
 
 	profile = as_profile_new ();
+	as_profile_set_duration_min (profile, 1);
 	ptask = as_profile_start_literal (profile, "GsMain");
 	g_assert (ptask != NULL);
 
