@@ -200,6 +200,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GSettings) settings = NULL;
+	g_autoptr(GPtrArray) app_filtered = NULL;
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
@@ -260,6 +261,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 	/* get all the apps and fix them up */
 	apps = as_store_get_apps (store);
+	app_filtered = g_ptr_array_new ();
 	for (i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 
@@ -286,10 +288,11 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));
 		as_app_add_keyword (app, NULL, "flatpak");
 		g_debug ("adding %s", as_app_get_unique_id (app));
+		g_ptr_array_add (app_filtered, app);
 	}
 
 	/* add them to the main store */
-	as_store_add_apps (self->store, apps);
+	as_store_add_apps (self->store, app_filtered);
 	return TRUE;
 }
 
