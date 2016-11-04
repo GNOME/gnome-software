@@ -313,6 +313,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					 cancellable,
 					 error);
 	if (retval == NULL) {
+		gs_utils_error_convert_gdbus (error);
 		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
