@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
 "POT-Creation-Date: 2016-10-14 15:06+0000\n"
-"PO-Revision-Date: 2016-11-05 22:19+0100\n"
+"PO-Revision-Date: 2016-11-06 22:09+0100\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <fur@li.org>\n"
 "Language: fur\n"
@@ -105,10 +105,10 @@ msgstr ""
 "secont plan e al domande al utent di instalâju cuant che a son pronts."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
-#, fuzzy
-#| msgid "Whether to automatically download updates"
 msgid "Whether to automatically refresh when on a metered connection"
-msgstr "Indiche se discjariâ in automatic i inzornaments"
+msgstr ""
+"Indiche se tignî inzornât in automatic cuant che si è suntune conession a "
+"consum"
 
 #: ../data/org.gnome.software.gschema.xml.h:6
 msgid ""
@@ -116,6 +116,10 @@ msgid ""
 "when using a metered connection (eventually downloading some metadata, "
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
+"Se abilitât, GNOME Software si tignarà inzornât in automatic par daûr ancje "
+"se si dopre une conession a consum (finint duncje par discjariâ cualchi meta-"
+"dât, controlâ la presince di inzornaments e vie indenant, chest al pues "
+"duncje puartâ a spesis pal utent)."
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Whether it's the very first run of GNOME Software"
@@ -354,8 +358,6 @@ msgstr "Impostazions di rêt"
 
 #. button in the info bar
 #: ../src/gnome-software.ui.h:18
-#, fuzzy
-#| msgid "More information"
 msgid "More Information"
 msgstr "Plui informazions"
 
@@ -493,10 +495,8 @@ msgstr "Instale"
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
 #: ../src/gs-app-row.c:200
-#, fuzzy
-#| msgid "_Update"
 msgid "Update"
-msgstr "_Inzorne"
+msgstr "Inzorne"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
@@ -1005,60 +1005,53 @@ msgstr "Cature"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:783
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to download firmware updates from %s"
-msgstr "Impussibil discjariâ i inzornaments firmware di %s"
+msgstr "Impussibil discjariâ di %s i inzornaments firmware"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:788
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to download updates from %s"
-msgstr "Impussibil discjariâ i inzornaments di %s"
+msgstr "Impussibil discjariâ di %s i inzornaments"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:795
-#, fuzzy
-#| msgid "Whether to automatically download updates"
 msgid "Unable to download updates"
-msgstr "Indiche se discjariâ in automatic i inzornaments"
+msgstr "Impussibil discjariâ i inzornaments"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:800
-#, fuzzy
-#| msgid "Internet access was required but wasn’t available."
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
-msgstr "L'acès a internet al jere necessari ma nol jere disponibil."
+msgstr ""
+"Impussibil discjariâ i inzornaments: al coventave l'acès a internet ma nol "
+"jere disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:808
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to download updates from %s: not enough disk space"
-msgstr "Impussibil discjariâ i inzornaments di %s: no vonde spazi sul disc"
+msgstr ""
+"Impussibil discjariâ di %s i inzornaments: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:813
-#, fuzzy
-#| msgid "There wasn’t enough disk space."
 msgid "Unable to download updates: not enough disk space"
-msgstr "Nol jere vonde spazi sul disc."
+msgstr "Impussibil discjariâ i inzornaments: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:821
-#, fuzzy
 msgid "Unable to download updates: authentication was required"
-msgstr ""
-"Impussibil discjariâ i inzornaments: la autenticazion e jere necessarie"
+msgstr "Impussibil discjariâ i inzornaments: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:826
-#, fuzzy
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Impussibil discjariâ i inzornaments: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:831
-#, fuzzy
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -1066,20 +1059,18 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:836
-#, fuzzy
-#| msgid "Go online to check for updates"
 msgid "Unable to get list of updates"
-msgstr "Va in rêt par controlâ i inzornaments"
+msgstr "Impussibil otignî la liste dai inzornaments"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:876
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Impussibil instalâ %s par vie che no si è rivâts a discjariâ di %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:881
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Impussibil instalâ %s par vie che no si è rivâts a discjariâ"
 
@@ -1091,46 +1082,42 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:895
-#, fuzzy, c-format
-#| msgid "The file is not supported."
+#, c-format
 msgid "Unable to install %s as not supported"
-msgstr "Il file nol è supuartât."
+msgstr "Impussibil instalâ %s par vie che nol è supuartât"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:902
-#, fuzzy
-#| msgid "Internet access was required but wasn’t available."
 msgid "Unable to install: internet access was required but wasn’t available"
-msgstr "L'acès a internet al jere necessari ma nol jere disponibil."
+msgstr ""
+"Impussibil instalâ: al coventave l'acès a internet ma nol jere disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:908
-#, fuzzy
 msgid "Unable to install: the application has an invalid format"
 msgstr "Impussibil instalâ: la aplicazion e à un formât no valit"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:912
-#, fuzzy, c-format
-#| msgid "There wasn’t enough disk space."
+#, c-format
 msgid "Unable to install %s: not enough disk space"
-msgstr "Nol jere vonde spazi sul disc."
+msgstr "Impussibil instalâ %s: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:920
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to install %s: authentication was required"
-msgstr "Impussibil instalâ %s: la autenticazion e jere necessarie"
+msgstr "Impussibil instalâ %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:926
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Impussibil instalâ %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:932
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Impussibil instalâ %s: no si à i permès par instalâ software"
 
@@ -1147,17 +1134,15 @@ msgstr "Nol è pussibil instalâ software fintant che chest nol è stât risolt.
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:956
-#, fuzzy, c-format
-#| msgid "More information"
+#, c-format
 msgid "For more information, visit %s."
-msgstr "Plui informazions"
+msgstr "Par vê plui informazions, visite %s."
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:963
-#, fuzzy, c-format
-#| msgid "Enable and Install"
+#, c-format
 msgid "Unable to install %s"
-msgstr "Abilite e instale"
+msgstr "Impussibil instalâ %s"
 
 # from -> avendo?
 #. TRANSLATORS: failure text for the in-app notification
@@ -1168,48 +1153,45 @@ msgstr "Impussibil inzornâ %s vent %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1007
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Impussibil inzornâ %s par vie che no si è rivâts a discjariâ"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1013
-#, fuzzy
-#| msgid "Internet access was required but wasn’t available."
 msgid "Unable to update: internet access was required but wasn’t available"
-msgstr "L'acès a internet al jere necessari ma nol jere disponibil."
+msgstr ""
+"Impussibil inzornâ: al coventave l'acès a internet ma nol jere disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1020
-#, fuzzy, c-format
-#| msgid "There wasn’t enough disk space."
+#, c-format
 msgid "Unable to update %s: not enough disk space"
-msgstr "Nol jere vonde spazi sul disc."
+msgstr "Impussibil inzornâ %s: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1028
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to update %s: authentication was required"
-msgstr "Impussibil inzornâ %s: la autenticazion e jere necessarie"
+msgstr "Impussibil inzornâ %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1034
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Impussibil inzornâ %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1040
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Impussibil inzornâ %s: no si à i permès par inzornâ software"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1047
-#, fuzzy, c-format
-#| msgid "Failed To Update"
+#, c-format
 msgid "Unable to update %s"
-msgstr "Inzornament falît"
+msgstr "Impussibil inzornâ %s"
 
 # from -> avendo?
 #. TRANSLATORS: failure text for the in-app notification
@@ -1220,98 +1202,90 @@ msgstr "Impussibil avanzâ %s vent %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1090
-#, fuzzy, c-format
-#| msgid "Upgrade to %s failed."
+#, c-format
 msgid "Unable to upgrade to %s as download failed"
-msgstr "Avanzament a %s falît."
+msgstr "Impussibil avanzâ a %s par vie che no si è rivâts a discjariâ"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1097
-#, fuzzy
-#| msgid "Internet access was required but wasn’t available."
 msgid "Unable to upgrade: internet access was required but wasn’t available"
-msgstr "L'acès a internet al jere necessari ma nol jere disponibil."
+msgstr ""
+"Impussibil avanzâ: al coventave l'acès a internet ma nol jere disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1104
-#, fuzzy, c-format
-#| msgid "There wasn’t enough disk space."
+#, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
-msgstr "Nol jere vonde spazi sul disc."
+msgstr "Impussibil avanzâ a %s: nol jere vonde spazi sul disc"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1112
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to upgrade to %s: authentication was required"
-msgstr "Impussibil avanzâ a %s: la autenticazion e jere necessarie"
+msgstr "Impussibil avanzâ a %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1118
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Impussibil avanzâ a %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1124
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Impussibil avanzâ a %s: no si à i permès par avanzâ"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1130
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Impussibil avanzâ a %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1167
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove %s: authentication was required"
-msgstr "Impussibil gjavâ %s: la autenticazion e jere necessarie"
+msgstr "Impussibil gjavâ %s: e coventave la autenticazion"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1172
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Impussibil gjavâ %s: la autenticazion no jere valide"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1177
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Impussibil gjavâ %s: no si à i permès par gjavâ software"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1183
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to remove %s"
 msgstr "Impussibil gjavâ %s"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1222
-#, fuzzy, c-format
-#| msgid "%s is now installed"
+#, c-format
 msgid "Unable to launch %s: %s is not installed"
-msgstr "%s al è cumò instalât"
+msgstr "Impussibil inviâ %s: %s nol è instalât"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1229 ../src/gs-shell.c:1270 ../src/gs-shell.c:1306
-#, fuzzy
-#| msgid ""
-#| "There wasn’t enough disk space. Please free up some space and try again."
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
-"Nol jere vonde spazi libar sul disc. Liberâ un tic di spazi e torne prove."
+"No'nd è vonde spazi libar sul disc — libere un tic di spazi e torne prove."
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1265
-#, fuzzy
 msgid "Failed to install file: authentication failed"
 msgstr "No si è rivâts a instalâ il file: autenticazion falide"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: ../src/gs-shell.c:1300
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to contact %s"
 msgstr "Impussibil contatâ %s"
 
@@ -1614,15 +1588,12 @@ msgstr "I tiermins di licence di chest software no son cognossûts."
 
 # proviôt o e je caraterizade?
 #: ../src/gs-shell-details.ui.h:59
-#, fuzzy
 msgid "The application was rated this way because it features:"
-msgstr "La aplicazion e je stade valutade cussì parcè che e proviôt:"
+msgstr "La aplicazion e je stade valutade cussì par vie che e proviôt:"
 
 #: ../src/gs-shell-details.ui.h:60
-#, fuzzy
-#| msgid "No addon codecs are available for the %s format."
 msgid "No details were available for this rating."
-msgstr "Nol è disponibil nissun codec pal formât %s."
+msgstr "Nissun detai al jere disponibil par cheste valutazion."
 
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:145
@@ -2017,17 +1988,13 @@ msgstr "Ultin control: %s"
 
 #. TRANSLATORS: all updates will be installed
 #: ../src/gs-shell-updates.c:519
-#, fuzzy
-#| msgid "Updates panel"
 msgid "U_pdate All"
-msgstr "Panel inzornaments"
+msgstr "I_nzorne dut"
 
 #. TRANSLATORS: this is an offline update
 #: ../src/gs-shell-updates.c:523
-#, fuzzy
-#| msgid "Restart & Install"
 msgid "_Restart & Update"
-msgstr "Torne invie e instale"
+msgstr "To_rne invie e inzorne"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: ../src/gs-shell-updates.c:849
@@ -2468,10 +2435,8 @@ msgstr "_Discjarie"
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
 #: ../src/gs-common.c:138
-#, fuzzy
-#| msgid "Updates have been installed"
 msgid "OS updates are now installed"
-msgstr "I inzornaments a son stâts instalâts."
+msgstr "I inzornaments dal SO cumò a son instalâts"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -2612,10 +2577,8 @@ msgstr "Grafiche di violence che e cjape dentri personaçs realistics"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:111
-#, fuzzy
-#| msgid "Realistic bloodshed"
 msgid "No bloodshed"
-msgstr "Maçaments realistics"
+msgstr "Nissun maçament"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:114
@@ -2644,10 +2607,8 @@ msgstr "Stupri o altris compuartaments sessuâi violents"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:129
-#, fuzzy
-#| msgid "References to alcoholic beverages"
 msgid "No references to alcohol"
-msgstr "Riferiments a bevandis alcolichis"
+msgstr "Nissun riferiment a bevandis alcolichis"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:132
@@ -2661,10 +2622,8 @@ msgstr "Ûs di bevandis alcolichis"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:138
-#, fuzzy
-#| msgid "References to illicit drugs"
 msgid "No references to illicit drugs"
-msgstr "Riferiments a droghis ilecitis"
+msgstr "Nissun riferiment a droghis ilecitis"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:141
@@ -2703,10 +2662,8 @@ msgstr "Crotarie sprolungjade"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:162
-#, fuzzy
-#| msgid "Sexual references or depictions"
 msgid "No references or depictions of sexual nature"
-msgstr "Riferiments o figuris sessuâi"
+msgstr "Nissun riferiment o figure di nature sessuâl"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:165
@@ -2826,7 +2783,6 @@ msgstr "Zûc di azart che al dopre bêçs vêrs"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:234
-#, fuzzy
 msgid "No ability to spend money"
 msgstr "Nissune pussibilitât di spindi bêçs"
 
@@ -2867,10 +2823,8 @@ msgstr "Funzionalitât di chat video o audio tra zuiadôrs no controllade"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:258
-#, fuzzy
-#| msgid "Sharing social network usernames or email addresses"
 msgid "No sharing of social network usernames or email addresses"
-msgstr "Condivision di nons utent di social network o direzions e-mail"
+msgstr "Nissune condivision di nons utent di social network o direzions e-mail"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:261
@@ -2879,10 +2833,8 @@ msgstr "Condivision di nons utent di social network o direzions e-mail"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:264
-#, fuzzy
-#| msgid "Sharing user information with 3rd parties"
 msgid "No sharing of user information with 3rd parties"
-msgstr "Condivît lis informazions dal utent cun tiercis parts"
+msgstr "Nissune condivision di informazions dal utent cun tiercis parts"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:267
@@ -2891,10 +2843,8 @@ msgstr "Condivît lis informazions dal utent cun tiercis parts"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:270
-#, fuzzy
-#| msgid "Sharing physical location to other users"
 msgid "No sharing of physical location to other users"
-msgstr "Condivision posizion fisiche cun altris utents"
+msgstr "Nissune condivision di posizion fisiche cun altris utents"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:273
