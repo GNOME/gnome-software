@@ -3767,8 +3767,6 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 				    GsPluginStatus status,
 				    GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-
 	/* nothing specific */
 	if (gs_app_get_id (app) == NULL) {
 		g_debug ("emitting global %s",
