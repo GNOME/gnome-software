@@ -2794,7 +2794,7 @@ gs_app_is_installed (GsApp *app)
  *
  * Returns: %TRUE if the app is updatable, %FALSE otherwise.
  *
- * Since: 3.24
+ * Since: 3.22
  **/
 gboolean
 gs_app_is_updatable (GsApp *app)

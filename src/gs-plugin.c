@@ -1217,7 +1217,7 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
  *
  * Removes an application from the per-plugin cache.
  *
- * Since: 3.24
+ * Since: 3.22
  **/
 void
 gs_plugin_cache_remove (GsPlugin *plugin, const gchar *key)
