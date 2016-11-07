@@ -303,12 +303,25 @@ parse_review_entries (GsPlugin *plugin, JsonParser *parser, GError **error)
 
 static void
 sign_message (SoupMessage *message, OAuthMethod method,
-	      const gchar *consumer_key, const gchar *consumer_secret,
-	      const gchar *token_key, const gchar *token_secret)
+	      GsAuth *auth)
 {
 	g_autofree gchar *url = NULL, *oauth_authorization_parameters = NULL, *authorization_text = NULL;
 	gchar **url_parameters = NULL;
 	int url_parameters_length;
+	const gchar *consumer_key;
+	const gchar *consumer_secret;
+	const gchar *token_key;
+	const gchar *token_secret;
+
+	if (auth == NULL)
+		return;
+
+	consumer_key = gs_auth_get_metadata_item (auth, "consumer-key");
+	consumer_secret = gs_auth_get_metadata_item (auth, "consumer-secret");
+	token_key = gs_auth_get_metadata_item (auth, "token-key");
+	token_secret = gs_auth_get_metadata_item (auth, "token-secret");
+	if (consumer_key == NULL || consumer_secret == NULL || token_key == NULL || token_secret == NULL)
+		return;
 
 	url = soup_uri_to_string (soup_message_get_uri (message), FALSE);
 
@@ -335,24 +348,8 @@ send_review_request (GsPlugin *plugin,
 		     JsonParser **result,
 		     GCancellable *cancellable, GError **error)
 {
-	g_autofree gchar *consumer_key = NULL;
-	g_autofree gchar *consumer_secret = NULL;
-	g_autofree gchar *token_key = NULL;
-	g_autofree gchar *token_secret = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
-
-	if (do_sign) {
-		GsAuth *auth = gs_plugin_get_auth_by_id (plugin, "ubuntuone");
-		if (auth != NULL) {
-			consumer_key = g_strdup (gs_auth_get_metadata_item (auth, "consumer-key"));
-			consumer_secret = g_strdup (gs_auth_get_metadata_item (auth, "consumer-secret"));
-			token_key = g_strdup (gs_auth_get_metadata_item (auth, "token-key"));
-			token_secret = g_strdup (gs_auth_get_metadata_item (auth, "token-secret"));
-		}
-		else
-			g_warning ("No UbuntuOne authentication provider");
-	}
 
 	uri = g_strdup_printf ("%s%s",
 			       UBUNTU_REVIEWS_SERVER, path);
@@ -369,11 +366,10 @@ send_review_request (GsPlugin *plugin,
 		soup_message_set_request (msg, "application/json", SOUP_MEMORY_TAKE, data, length);
 	}
 
-	if (consumer_key != NULL && consumer_secret != NULL && token_key != NULL && token_secret != NULL)
+	if (do_sign)
 		sign_message (msg,
 			      OA_PLAINTEXT,
-			      consumer_key, consumer_secret,
-			      token_key, token_secret);
+			      gs_plugin_get_auth_by_id (plugin, "ubuntuone"));
 
 	*status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 
