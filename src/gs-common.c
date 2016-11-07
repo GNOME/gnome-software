@@ -268,7 +268,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog), "%s", body->str);
 	/* TRANSLATORS: this is button text to not ask about non-free content again */
-	if (0) gtk_dialog_add_button (GTK_DIALOG (dialog), _("Don't Warn Again"), GTK_RESPONSE_YES);
+	if (0) gtk_dialog_add_button (GTK_DIALOG (dialog), _("Don’t Warn Again"), GTK_RESPONSE_YES);
 	if (already_enabled) {
 		gtk_dialog_add_button (GTK_DIALOG (dialog),
 				       /* TRANSLATORS: button text */

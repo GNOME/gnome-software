@@ -225,7 +225,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Gambling on random events using tokens or credits") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
-	_("Gambling using \"play\" money") },
+	_("Gambling using “play” money") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
 	_("Gambling using real money") },

@@ -99,11 +99,11 @@ gs_review_dialog_update_review_comment (GsReviewDialog *dialog)
 	} else if (perc == 40) {
 		/* TRANSLATORS: lighthearted star rating description;
 		 *		Not a great application */
-		msg = _("Don't like it");
+		msg = _("Don’t like it");
 	} else if (perc == 60) {
 		/* TRANSLATORS: lighthearted star rating description;
 		 *		A fairly-good application */
-		msg = _("It's OK");
+		msg = _("It’s OK");
 	} else if (perc == 80) {
 		/* TRANSLATORS: lighthearted star rating description;
 		 *		A good application */
