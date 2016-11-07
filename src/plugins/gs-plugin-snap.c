@@ -435,7 +435,6 @@ gs_plugin_launch (GsPlugin *plugin,
 	GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
 	g_autoptr(GAppInfo) info = NULL;
 
-
 	/* We can only launch apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
