@@ -301,27 +301,6 @@ parse_review_entries (GsPlugin *plugin, JsonParser *parser, GError **error)
 	return TRUE;
 }
 
-static gboolean
-get_ubuntuone_token (GsPlugin *plugin,
-		     gchar **consumer_key, gchar **consumer_secret,
-		     gchar **token_key, gchar **token_secret,
-		     GCancellable *cancellable, GError **error)
-{
-	GsAuth *auth = gs_plugin_get_auth_by_id (plugin, "ubuntuone");
-	if (auth == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "No UbuntuOne authentication provider");
-		return FALSE;
-	}
-	*consumer_key = g_strdup (gs_auth_get_metadata_item (auth, "consumer-key"));
-	*consumer_secret = g_strdup (gs_auth_get_metadata_item (auth, "consumer-secret"));
-	*token_key = g_strdup (gs_auth_get_metadata_item (auth, "token-key"));
-	*token_secret = g_strdup (gs_auth_get_metadata_item (auth, "token-secret"));
-	return *consumer_key != NULL && *consumer_secret != NULL && *token_key != NULL && *token_secret != NULL;
-}
-
 static void
 sign_message (SoupMessage *message, OAuthMethod method,
 	      const gchar *consumer_key, const gchar *consumer_secret,
@@ -363,15 +342,16 @@ send_review_request (GsPlugin *plugin,
 	g_autofree gchar *uri = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 
-	if (do_sign && !get_ubuntuone_token (plugin,
-					     &consumer_key, &consumer_secret,
-					     &token_key, &token_secret,
-					     cancellable, NULL)) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_AUTH_REQUIRED,
-				     "Requires authentication with @ubuntuone");
-		return FALSE;
+	if (do_sign) {
+		GsAuth *auth = gs_plugin_get_auth_by_id (plugin, "ubuntuone");
+		if (auth != NULL) {
+			consumer_key = g_strdup (gs_auth_get_metadata_item (auth, "consumer-key"));
+			consumer_secret = g_strdup (gs_auth_get_metadata_item (auth, "consumer-secret"));
+			token_key = g_strdup (gs_auth_get_metadata_item (auth, "token-key"));
+			token_secret = g_strdup (gs_auth_get_metadata_item (auth, "token-secret"));
+		}
+		else
+			g_warning ("No UbuntuOne authentication provider");
 	}
 
 	uri = g_strdup_printf ("%s%s",
@@ -389,13 +369,21 @@ send_review_request (GsPlugin *plugin,
 		soup_message_set_request (msg, "application/json", SOUP_MEMORY_TAKE, data, length);
 	}
 
-	if (do_sign)
+	if (consumer_key != NULL && consumer_secret != NULL && token_key != NULL && token_secret != NULL)
 		sign_message (msg,
 			      OA_PLAINTEXT,
 			      consumer_key, consumer_secret,
 			      token_key, token_secret);
 
 	*status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
+
+	if (*status_code == SOUP_STATUS_UNAUTHORIZED) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_AUTH_REQUIRED,
+				     "Requires authentication with @ubuntuone");
+		return FALSE;
+	}
 
 	if (result != NULL) {
 		g_autoptr(JsonParser) parser = NULL;
