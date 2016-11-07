@@ -1074,9 +1074,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* hide the kudo details for non-desktop software */
 	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_DESKTOP:
+	// Hidden on Ubuntu since don't have appropriate information
+	/*case AS_APP_KIND_DESKTOP:
 		gtk_widget_set_visible (self->grid_details_kudo, TRUE);
-		break;
+		break;*/
 	default:
 		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
 		break;
