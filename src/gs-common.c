@@ -150,14 +150,16 @@ gs_app_notify_installed (GsApp *app)
 	}
 	n = g_notification_new (summary);
 	g_notification_set_body (n, body);
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
-		/* TRANSLATORS: this is button that opens the newly installed application */
-		g_notification_add_button_with_target (n, _("Launch"),
-						       "app.launch", "s",
-						       gs_app_get_id (app));
+	if (!gs_utils_is_current_desktop ("Unity")) {
+		if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
+			/* TRANSLATORS: this is button that opens the newly installed application */
+			g_notification_add_button_with_target (n, _("Launch"),
+							       "app.launch", "s",
+							       gs_app_get_id (app));
+		}
+		g_notification_set_default_action_and_target (n, "app.details", "(ss)",
+							      gs_app_get_unique_id (app), "");
 	}
-	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
-						       gs_app_get_unique_id (app), "");
 	g_application_send_notification (g_application_get_default (), "installed", n);
 }
 

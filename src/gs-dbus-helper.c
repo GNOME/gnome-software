@@ -331,9 +331,11 @@ notify_search_resources (GsShellExtrasMode   mode,
 	n = g_notification_new (title);
 	g_notification_set_body (n, body);
 	/* TRANSLATORS: this is a button that launches gnome-software */
-	g_notification_add_button_with_target (n, _("Find in Software"), "app.install-resources", "(s^ass)", mode_string, resources, "");
-	g_notification_set_default_action_and_target (n, "app.install-resources", "(s^ass)", mode_string, resources, "");
-	g_application_send_notification (g_application_get_default (), "install-resources", n);
+	if (!gs_utils_is_current_desktop ("Unity")) {
+		g_notification_add_button_with_target (n, _("Find in Software"), "app.install-resources", "(s^ass)", mode_string, resources, "");
+		g_notification_set_default_action_and_target (n, "app.install-resources", "(s^ass)", mode_string, resources, "");
+		g_application_send_notification (g_application_get_default (), "install-resources", n);
+	}
 }
 
 static void
