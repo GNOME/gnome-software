@@ -42,6 +42,7 @@ struct _GsUpdateDialog
 	GQueue		*back_entry_stack;
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
+	GsApp		*app;
 	GtkWidget	*box_header;
 	GtkWidget	*button_back;
 	GtkWidget	*image_icon;
@@ -87,11 +88,32 @@ back_entry_free (BackEntry *entry)
 }
 
 static void
+refine_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, GsUpdateDialog *dialog)
+{
+	const gchar *update_details;
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error))
+		g_warning ("Failed to get changelog information: %s", error->message);
+
+	update_details = gs_app_get_update_details (dialog->app);
+	if (update_details == NULL) {
+		/* TRANSLATORS: this is where the packager did not write
+		 * a description for the update */
+		update_details = _("No update description available.");
+	}
+
+	gtk_label_set_label (GTK_LABEL (dialog->label_details), update_details);
+}
+
+static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
 	AsAppKind kind;
 	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
+
+	g_set_object (&dialog->app, app);
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
@@ -116,9 +138,16 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gtk_widget_set_visible (dialog->box_header, kind == AS_APP_KIND_DESKTOP);
 	update_details = gs_app_get_update_details (app);
 	if (update_details == NULL) {
-		/* TRANSLATORS: this is where the packager did not write
-		 * a description for the update */
-		update_details = _("No update description available.");
+		/* TRANSLATORS: this is displayed while the changelog is being downloaded */
+		update_details = _("Downloading change information…");
+
+		gs_plugin_loader_app_refine_async (dialog->plugin_loader,
+						   app,
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_CHANGELOG,
+						   GS_PLUGIN_FAILURE_FLAGS_NONE,
+						   dialog->cancellable,
+						   (GAsyncReadyCallback) refine_cb,
+						   dialog);
 	}
 	gtk_label_set_label (GTK_LABEL (dialog->label_details), update_details);
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
@@ -459,6 +488,7 @@ gs_update_dialog_dispose (GObject *object)
 	}
 
 	g_clear_object (&dialog->plugin_loader);
+	g_clear_object (&dialog->app);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->dispose (object);
 }
