@@ -333,7 +333,9 @@ gs_shell_change_mode (GsShell *shell,
 
 	/* show the back button if needed */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-	gtk_widget_set_visible (widget, !g_queue_is_empty (priv->back_entry_stack));
+	gtk_widget_set_visible (widget,
+				mode != GS_SHELL_MODE_SEARCH &&
+				!g_queue_is_empty (priv->back_entry_stack));
 
 	gs_page_switch_to (new_page, scroll_up);
 
