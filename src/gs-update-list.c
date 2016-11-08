@@ -45,8 +45,6 @@ static guint signals [SIGNAL_LAST] = { 0 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
 
-#define GET_PRIV(o)	gs_update_list_get_instance_private(o)
-
 static void
 gs_update_list_button_clicked_cb (GsAppRow *app_row,
 				  GsUpdateList *update_list)
@@ -59,7 +57,7 @@ void
 gs_update_list_add_app (GsUpdateList *update_list,
 			GsApp	*app)
 {
-	GsUpdateListPrivate *priv = GET_PRIV (update_list);
+	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 	GtkWidget *app_row;
 
 	app_row = gs_app_row_new (app);
@@ -194,7 +192,7 @@ static void
 gs_update_list_dispose (GObject *object)
 {
 	GsUpdateList *update_list = GS_UPDATE_LIST (object);
-	GsUpdateListPrivate *priv = GET_PRIV (update_list);
+	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 
 	g_clear_object (&priv->sizegroup_image);
 	g_clear_object (&priv->sizegroup_name);
@@ -205,7 +203,7 @@ gs_update_list_dispose (GObject *object)
 static void
 gs_update_list_init (GsUpdateList *update_list)
 {
-	GsUpdateListPrivate *priv = GET_PRIV (update_list);
+	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
