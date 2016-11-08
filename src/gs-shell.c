@@ -946,6 +946,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 				/* TRANSLATORS: failure text for the in-app notification */
 				msg = g_strdup_printf (_("For more information, visit %s."),
 							url);
+				g_string_append_printf (str, " %s", msg);
 			}
 		}
 		break;
