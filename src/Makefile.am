@@ -106,7 +106,7 @@ autostart_DATA = gnome-software-service.desktop
 gnome-software-service.desktop: gnome-software-service.desktop.in Makefile
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
 
-noinst_PROGRAMS =					\
+libexec_PROGRAMS =					\
 	gnome-software-cmd
 
 gnome_software_cmd_SOURCES =				\
