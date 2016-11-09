@@ -215,6 +215,9 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		return;
 
 	if (msg->status_code != SOUP_STATUS_OK) {
+                g_warning ("Result of screenshot downloading attempt with "
+			   "status code '%u': %s", msg->status_code,
+			   msg->reason_phrase);
 		/* TRANSLATORS: this is when we try to download a screenshot and
 		 * we get back 404 */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
