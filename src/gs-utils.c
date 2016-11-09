@@ -103,6 +103,24 @@ gs_utils_get_file_age (GFile *file)
 	return (guint) (now - mtime);
 }
 
+static gchar *
+gs_utils_filename_array_return_newest (GPtrArray *array)
+{
+	const gchar *filename_best = NULL;
+	guint age_lowest = G_MAXUINT;
+	guint i;
+	for (i = 0; i < array->len; i++) {
+		const gchar *fn = g_ptr_array_index (array, i);
+		g_autoptr(GFile) file = file = g_file_new_for_path (fn);
+		guint age_tmp = gs_utils_get_file_age (file);
+		if (age_tmp < age_lowest) {
+			age_lowest = age_tmp;
+			filename_best = fn;
+		}
+	}
+	return g_strdup (filename_best);
+}
+
 /**
  * gs_utils_get_cache_filename:
  * @kind: A cache kind, e.g. "firmware" or "screenshots/123x456"
@@ -113,6 +131,9 @@ gs_utils_get_file_age (GFile *file)
  * Returns a filename that points into the cache.
  * This may be per-system or per-user, the latter being more likely
  * when %GS_UTILS_CACHE_FLAG_WRITEABLE is specified in @flags.
+ *
+ * If there is more than one match, the file that has been modified last is
+ * returned.
  *
  * Returns: The full path and filename, which may or may not exist, or %NULL
  **/
@@ -126,6 +147,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 	g_autofree gchar *vername = NULL;
 	g_auto(GStrv) version = g_strsplit (VERSION, ".", 3);
 	g_autoptr(GFile) cachedir_file = NULL;
+	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
 
 	/* not writable, so try the system cache first */
 	if ((flags & GS_UTILS_CACHE_FLAG_WRITEABLE) == 0) {
@@ -136,8 +158,10 @@ gs_utils_get_cache_filename (const gchar *kind,
 		                            kind,
 					    basename,
 					    NULL);
-		if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
-			return g_steal_pointer (&cachefn);
+		if (g_file_test (cachefn, G_FILE_TEST_EXISTS)) {
+			g_ptr_array_add (candidates,
+					 g_steal_pointer (&cachefn));
+		}
 	}
 
 	/* not writable, so try the system cache first */
@@ -149,8 +173,10 @@ gs_utils_get_cache_filename (const gchar *kind,
 					    kind,
 					    basename,
 					    NULL);
-		if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
-			return g_steal_pointer (&cachefn);
+		if (g_file_test (cachefn, G_FILE_TEST_EXISTS)) {
+			g_ptr_array_add (candidates,
+					 g_steal_pointer (&cachefn));
+		}
 	}
 
 	/* create the cachedir in a per-release location, creating
@@ -165,7 +191,14 @@ gs_utils_get_cache_filename (const gchar *kind,
 	if (!g_file_query_exists (cachedir_file, NULL) &&
 	    !g_file_make_directory_with_parents (cachedir_file, NULL, error))
 		return NULL;
-	return g_build_filename (cachedir, basename, NULL);
+	g_ptr_array_add (candidates, g_build_filename (cachedir, basename, NULL));
+
+	/* common case: we only have one option */
+	if (candidates->len == 1)
+		return g_strdup (g_ptr_array_index (candidates, 0));
+
+	/* return the newest (i.e. one with least age) */
+	return gs_utils_filename_array_return_newest (candidates);
 }
 
 /**
