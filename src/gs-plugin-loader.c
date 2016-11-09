@@ -746,9 +746,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GsAppList) list = NULL;
-	GsPluginResultsFunc plugin_func = NULL;
 	GsPlugin *plugin;
-	gboolean exists;
 	gboolean ret = TRUE;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
@@ -765,6 +763,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	/* run each plugin */
 	list = gs_app_list_new ();
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginResultsFunc plugin_func = NULL;
 		g_autoptr(GError) error_local = NULL;
 		g_autoptr(AsProfileTask) ptask2 = NULL;
 
@@ -777,10 +776,10 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		}
 
 		/* get symbol */
-		exists = g_module_symbol (gs_plugin_get_module (plugin),
-					  function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 
 		/* run function */
@@ -1092,16 +1091,15 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	GsPluginActionFunc plugin_func = NULL;
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
 	gboolean anything_ran = FALSE;
-	gboolean exists;
 	gboolean ret;
 	guint i;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginActionFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 		g_autoptr(GError) error_local = NULL;
 
@@ -1112,10 +1110,10 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
-		exists = g_module_symbol (gs_plugin_get_module (plugin),
-					  function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -2004,7 +2002,6 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPlugin *plugin;
-	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
 	g_auto(GStrv) values = NULL;
 
@@ -2018,18 +2015,18 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 		return;
 	}
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginSearchFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 		g_autoptr(GError) error_local = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -2190,13 +2187,12 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -2358,13 +2354,12 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -2567,13 +2562,12 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -2707,13 +2701,12 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -3028,14 +3021,13 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
-	GsPluginReviewFunc plugin_func = NULL;
 	gboolean anything_ran = FALSE;
-	gboolean exists;
 	gboolean ret;
 	guint i;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginReviewFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 		g_autoptr(GError) error_local = NULL;
 
@@ -3047,10 +3039,10 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 		}
 
-		exists = g_module_symbol (gs_plugin_get_module (plugin),
-					  state->function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 state->function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -3434,13 +3426,12 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
-	GsPluginAuthFunc plugin_func = NULL;
-	gboolean exists;
 	gboolean ret;
 	guint i;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginAuthFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 		g_autoptr(GError) error_local = NULL;
 
@@ -3452,10 +3443,10 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 		}
 
-		exists = g_module_symbol (gs_plugin_get_module (plugin),
-					  state->function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 state->function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -3607,18 +3598,18 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret;
-	GsPluginFunc plugin_func = NULL;
 	GsPlugin *plugin;
 	guint i;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -4189,10 +4180,10 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask2 = as_profile_start (priv->profile,
 					   "GsPlugin::%s(%s)",
@@ -4546,7 +4537,6 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 	gboolean anything_ran = FALSE;
 	gboolean ret;
 	guint i;
-	gboolean exists;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
@@ -4561,10 +4551,10 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 			return FALSE;
 		}
 
-		exists = g_module_symbol (gs_plugin_get_module (plugin),
-					  function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -4729,13 +4719,12 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -4906,24 +4895,22 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 	gboolean ret = TRUE;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPlugin *plugin;
-	GsPluginUpdateFunc plugin_func = NULL;
-	GsPluginActionFunc plugin_app_func = NULL;
 	guint i;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginUpdateFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
 		g_autoptr(GError) error_local = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-		                       function_name,
-		                       (gpointer *) &plugin_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_func);
+		if (plugin_func == NULL)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
@@ -4958,18 +4945,18 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 	/* run each plugin, per-app version */
 	function_name = "gs_plugin_update_app";
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginActionFunc plugin_app_func = NULL;
 		guint j;
 
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_task_return_error_if_cancelled (task);
-		if (ret)
+		if (g_task_return_error_if_cancelled (task))
 			return;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-		                       function_name,
-		                       (gpointer *) &plugin_app_func);
-		if (!ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &plugin_app_func);
+		if (plugin_app_func == NULL)
 			continue;
 
 		/* for each app */
@@ -5068,18 +5055,17 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 				       const gchar *function_name)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret;
-	gpointer dummy;
 	guint i;
 
 	for (i = 0; i < priv->plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		gpointer dummy = NULL;
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_module_symbol (gs_plugin_get_module (plugin),
-				       function_name,
-				       (gpointer *) &dummy);
-		if (ret)
+		g_module_symbol (gs_plugin_get_module (plugin),
+				 function_name,
+				 (gpointer *) &dummy);
+		if (dummy != NULL)
 			return TRUE;
 	}
 	return FALSE;
