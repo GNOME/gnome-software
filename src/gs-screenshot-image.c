@@ -54,6 +54,7 @@ struct _GsScreenshotImage
 	guint		 width;
 	guint		 height;
 	guint		 scale;
+	gboolean	 showing_image;
 };
 
 G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
@@ -77,6 +78,7 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 		gtk_widget_hide (ssimg->label_error);
 	else
 		gtk_widget_show (ssimg->label_error);
+	ssimg->showing_image = FALSE;
 }
 
 static GdkPixbuf *
@@ -170,6 +172,7 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	}
 
 	gtk_widget_show (GTK_WIDGET (ssimg));
+	ssimg->showing_image = TRUE;
 }
 
 static void
@@ -300,6 +303,10 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		return;
 	}
 	if (msg->status_code != SOUP_STATUS_OK) {
+		/* if we're already showing an image, then don't set the error
+		 * as having an image (even if outdated) is better */
+		if (ssimg->showing_image)
+			return;
 		/* TRANSLATORS: this is when we try to download a screenshot and
 		 * we get back 404 */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
@@ -356,6 +363,11 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	if (ssimg->screenshot)
 		g_object_unref (ssimg->screenshot);
 	ssimg->screenshot = g_object_ref (screenshot);
+
+	/* we reset this flag here too because it referred to the previous
+	 * screenshot, and thus avoids potentially assuming that the new
+	 * screenshot is shown when it is the previous one instead */
+	ssimg->showing_image = FALSE;
 }
 
 void
@@ -497,8 +509,10 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		}
 	}
 
-	/* can we load a blurred smaller version of this straight away */
-	if (ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
+	/* if we're not showing a full-size image, we try loading a blurred
+	 * smaller version of it straight away */
+	if (!ssimg->showing_image &&
+	    ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
 	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
 		const gchar *url_thumb;
 		g_autofree gchar *basename_thumb = NULL;
@@ -593,6 +607,7 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 
 	ssimg->use_desktop_background = TRUE;
 	ssimg->settings = g_settings_new ("org.gnome.software");
+	ssimg->showing_image = FALSE;
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
