@@ -310,7 +310,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		/* TRANSLATORS: this is when we try to download a screenshot and
 		 * we get back 404 */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
-		gtk_widget_hide (GTK_WIDGET (ssimg));
 		return;
 	}
 
