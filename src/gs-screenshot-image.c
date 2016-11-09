@@ -215,6 +215,11 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	if (msg->status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
 		return;
 
+	if (msg->status_code == SOUP_STATUS_NOT_MODIFIED) {
+		g_debug ("screenshot has not been modified");
+		as_screenshot_show_image (ssimg);
+		return;
+	}
 	if (msg->status_code != SOUP_STATUS_OK) {
 		/* TRANSLATORS: this is when we try to download a screenshot and
 		 * we get back 404 */
@@ -312,6 +317,29 @@ gs_screenshot_get_cachefn_for_url (const gchar *url)
 	checksum = g_compute_checksum_for_string (G_CHECKSUM_SHA256, url, -1);
 	basename = g_path_get_basename (url);
 	return g_strdup_printf ("%s-%s", checksum, basename);
+}
+
+static void
+gs_screenshot_soup_msg_set_modified_request (SoupMessage *msg, GFile *file)
+{
+	GTimeVal time_val;
+	g_autoptr(GDateTime) date_time = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+	g_autofree gchar *mod_date = NULL;
+
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_TIME_MODIFIED,
+				  G_FILE_QUERY_INFO_NONE,
+				  NULL,
+				  NULL);
+	if (info == NULL)
+		return;
+	g_file_info_get_modification_time (info, &time_val);
+	date_time = g_date_time_new_from_timeval_local (&time_val);
+	mod_date = g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
+	soup_message_headers_append (msg->request_headers,
+				     "If-Modified-Since",
+				     mod_date);
 }
 
 void
@@ -452,6 +480,13 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		/* TRANSLATORS: this is when networking is not available */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not available"));
 		return;
+	}
+
+	/* not all servers support If-Modified-Since, but worst case we just
+	 * re-download the entire file again every 30 days */
+	if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
+		g_autoptr(GFile) file = g_file_new_for_path (ssimg->filename);
+		gs_screenshot_soup_msg_set_modified_request (ssimg->message, file);
 	}
 
 	/* send async */
