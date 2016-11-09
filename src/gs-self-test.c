@@ -806,7 +806,7 @@ gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "This is the first paragraph in the example "
-			 "package spec file.  This is the second paragraph.");
+			 "package spec file.\n\nThis is the second paragraph.");
 }
 
 static void

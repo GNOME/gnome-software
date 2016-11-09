@@ -76,39 +76,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	}
 }
 
-/*
- * gs_plugin_packagekit_refresh_set_text:
- *
- * The cases we have to deal with:
- *  - Single line text, so all to summary
- *  - Single line long text, so all to description
- *  - Multiple line text, so first line to summary and the rest to description
- */
-static void
-gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
-{
-	gchar *nl;
-	g_autofree gchar *tmp = NULL;
-
-	if (text == NULL || text[0] == '\0')
-		return;
-
-	/* look for newline */
-	tmp = g_strdup (text);
-	nl = g_strstr_len (tmp, -1, "\n");
-	if (nl == NULL) {
-		if (strlen (text) < 40) {
-			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, text);
-			return;
-		}
-		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, text);
-		return;
-	}
-	*nl = '\0';
-	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tmp);
-	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, nl + 1);
-}
-
 static gboolean
 gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					   GsApp *app,
@@ -253,8 +220,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_origin (app, basename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 	gs_app_add_source_id (app, package_id);
-	gs_plugin_packagekit_refresh_set_text (app,
-					       pk_details_get_description (item));
+	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
+				pk_details_get_description (item));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size_installed (app, pk_details_get_size (item));
 	gs_app_set_size_download (app, 0);
