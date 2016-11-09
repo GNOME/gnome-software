@@ -199,6 +199,85 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 	}
 }
 
+static gboolean
+gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
+					 GdkPixbuf *pixbuf,
+					 GError **error)
+{
+	g_autoptr(AsImage) im = NULL;
+	gboolean ret;
+	const GPtrArray *images;
+	g_autoptr(GError) local_error = NULL;
+	g_autofree char *filename = NULL;
+	g_autofree char *size_dir = NULL;
+	g_autofree char *cache_kind = NULL;
+	g_autofree char *basename = NULL;
+	guint width = ssimg->width;
+	guint height = ssimg->height;
+
+	/* save to file, using the same code as the AppStream builder
+	 * so the preview looks the same */
+	im = as_image_new ();
+	as_image_set_pixbuf (im, pixbuf);
+	ret = as_image_save_filename (im, ssimg->filename,
+				      ssimg->width * ssimg->scale,
+				      ssimg->height * ssimg->scale,
+				      AS_IMAGE_SAVE_FLAG_PAD_16_9,
+				      error);
+
+	if (!ret)
+		return FALSE;
+
+	if (ssimg->screenshot == NULL)
+		return TRUE;
+
+	images = as_screenshot_get_images (ssimg->screenshot);
+	if (images->len > 1)
+		return TRUE;
+
+	if (width == AS_IMAGE_THUMBNAIL_WIDTH &&
+	    height == AS_IMAGE_THUMBNAIL_HEIGHT) {
+		width = AS_IMAGE_NORMAL_WIDTH;
+		height = AS_IMAGE_NORMAL_HEIGHT;
+	} else {
+		width = AS_IMAGE_THUMBNAIL_WIDTH;
+		height = AS_IMAGE_THUMBNAIL_HEIGHT;
+	}
+
+	width *= ssimg->scale;
+	height *= ssimg->scale;
+	basename = g_path_get_basename (ssimg->filename);
+	size_dir = g_strdup_printf ("%ux%u", width, height);
+	cache_kind = g_build_filename ("screenshots", size_dir, NULL);
+	filename = gs_utils_get_cache_filename (cache_kind, basename,
+						GS_UTILS_CACHE_FLAG_WRITEABLE,
+						&local_error);
+
+        if (filename == NULL) {
+		/* if we cannot get a cache filename, warn about that but do not
+		 * set a user's visible error because this is a complementary
+		 * operation */
+                g_warning ("Failed to get cache filename for counterpart "
+                           "screenshot '%s' in folder '%s': %s", basename,
+                           cache_kind, local_error->message);
+                return TRUE;
+        }
+
+	ret = as_image_save_filename (im, filename, width, height,
+				      AS_IMAGE_SAVE_FLAG_PAD_16_9,
+				      &local_error);
+
+	if (!ret) {
+		/* if we cannot save this screenshot, warn about that but do not
+		 * set a user's visible error because this is a complementary
+		 * operation */
+                g_warning ("Failed to save screenshot '%s': %s", filename,
+                           local_error->message);
+        }
+
+	return TRUE;
+}
+
 static void
 gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
@@ -255,19 +334,10 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 			gs_screenshot_image_set_error (ssimg, error->message);
 			return;
 		}
-	} else {
-		/* save to file, using the same code as the AppStream builder
-		 * so the preview looks the same */
-		im = as_image_new ();
-		as_image_set_pixbuf (im, pixbuf);
-		ret = as_image_save_filename (im, ssimg->filename,
-					      ssimg->width * ssimg->scale,
-					      ssimg->height * ssimg->scale,
-					      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
-		if (!ret) {
-			gs_screenshot_image_set_error (ssimg, error->message);
-			return;
-		}
+	} else if (!gs_screenshot_image_save_downloaded_img (ssimg, pixbuf,
+							     &error)) {
+		gs_screenshot_image_set_error (ssimg, error->message);
+		return;
 	}
 
 	/* got image, so show */
