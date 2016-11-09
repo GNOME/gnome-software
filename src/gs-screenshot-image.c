@@ -45,6 +45,7 @@ struct _GsScreenshotImage
 	GtkWidget	*image1;
 	GtkWidget	*image2;
 	GtkWidget	*label_error;
+	GSettings	*settings;
 	SoupSession	*session;
 	SoupMessage	*message;
 	gchar		*filename;
@@ -379,10 +380,23 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		return;
 	}
 
-	/* does local file already exist */
+	/* does local file already exist and has recently been downloaded */
 	if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
+		guint64 age_max;
+		g_autoptr(GFile) file = NULL;
+
+		/* show the image we have in cache while we're checking for the
+		 * new screenshot (which probably won't have changed) */
 		as_screenshot_show_image (ssimg);
-		return;
+
+		/* verify the cache age against the maximum allowed */
+		age_max = g_settings_get_uint (ssimg->settings,
+					       "screenshot-cache-age-maximum");
+		file = g_file_new_for_path (ssimg->filename);
+		if (age_max > 0 && gs_utils_get_file_age (file) < age_max) {
+			g_debug ("image new enough, not re-requesting from server");
+			return;
+		}
 	}
 
 	/* can we load a blurred smaller version of this straight away */
@@ -460,6 +474,7 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 	}
 	g_clear_object (&ssimg->screenshot);
 	g_clear_object (&ssimg->session);
+	g_clear_object (&ssimg->settings);
 
 	g_clear_pointer (&ssimg->filename, g_free);
 
@@ -472,6 +487,7 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	AtkObject *accessible;
 
 	ssimg->use_desktop_background = TRUE;
+	ssimg->settings = g_settings_new ("org.gnome.software");
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
