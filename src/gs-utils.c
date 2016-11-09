@@ -727,6 +727,7 @@ gs_utils_error_convert_json_glib (GError **perror)
 	switch (error->code) {
 	case JSON_PARSER_ERROR_UNKNOWN:
 		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
 	default:
 		error->code = GS_PLUGIN_ERROR_INVALID_FORMAT;
 		break;
