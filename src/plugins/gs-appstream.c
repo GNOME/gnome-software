@@ -125,6 +125,17 @@ gs_appstream_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	GPtrArray *addons;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* we only care about addons to desktop apps */
+	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
+		return;
+
+	/* search categories for the search term */
+	ptask = as_profile_start (gs_plugin_get_profile (plugin),
+				  "appstream::refine-addons{%s}",
+				  gs_app_get_unique_id (app));
+	g_assert (ptask != NULL);
 
 	addons = as_app_get_addons (item);
 	if (addons == NULL)
@@ -512,6 +523,13 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	const gchar *current_desktop;
 	const gchar *tmp;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* search categories for the search term */
+	ptask = as_profile_start (gs_plugin_get_profile (plugin),
+				  "appstream::refine-app{%s}",
+				  gs_app_get_unique_id (app));
+	g_assert (ptask != NULL);
 
 	/* set the kind to be more precise */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
