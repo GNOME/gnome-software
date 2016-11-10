@@ -321,6 +321,19 @@ get_upgrade_css_background (guint version)
 	return g_strdup_printf ("#151E65");
 }
 
+static gint
+sort_distros_cb (gconstpointer a, gconstpointer b)
+{
+	DistroInfo *distro_a = *((DistroInfo **) a);
+	DistroInfo *distro_b = *((DistroInfo **) b);
+
+	if (distro_a->version > distro_b->version)
+		return 1;
+	if (distro_a->version < distro_b->version)
+		return -1;
+	return 0;
+}
+
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,
@@ -352,6 +365,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	distros = parse_pkgdb_collections_data (data, (gssize) len, error);
 	if (distros == NULL)
 		return FALSE;
+	g_ptr_array_sort (distros, sort_distros_cb);
 	for (i = 0; i < distros->len; i++) {
 		DistroInfo *distro_info = g_ptr_array_index (distros, i);
 		g_autofree gchar *app_id = NULL;
@@ -367,8 +381,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		if (g_strcmp0 (distro_info->name, priv->os_name) != 0)
 			continue;
 
-		/* only interested in newer versions */
-		if (distro_info->version <= priv->os_version)
+		/* only interested in newer versions, but not more than N+2 */
+		if (distro_info->version <= priv->os_version ||
+		    distro_info->version > priv->os_version + 2)
 			continue;
 
 		/* only interested in non-devel distros */
