@@ -345,6 +345,13 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *unique_id;
 	AsApp *item;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* search categories for the search term */
+	ptask = as_profile_start (gs_plugin_get_profile (plugin),
+				  "appstream::refine-from-id{%s}",
+				  gs_app_get_unique_id (app));
+	g_assert (ptask != NULL);
 
 	/* unfound */
 	*found = FALSE;
@@ -391,6 +398,12 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	GPtrArray *sources;
 	const gchar *pkgname;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* search categories for the search term */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::refine-from-pkgname");
+	g_assert (ptask != NULL);
 
 	/* find anything that matches the ID */
 	sources = gs_app_get_sources (app);
