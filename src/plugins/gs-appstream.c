@@ -120,8 +120,11 @@ gs_refine_item_icon (GsPlugin *plugin, GsApp *app, AsApp *item)
 		gs_app_add_icon (app, icon);
 }
 
-static void
-gs_appstream_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
+static gboolean
+gs_appstream_refine_add_addons (GsPlugin *plugin,
+				GsApp *app,
+				AsApp *item,
+				GError **error)
 {
 	GPtrArray *addons;
 	guint i;
@@ -129,7 +132,7 @@ gs_appstream_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 
 	/* we only care about addons to desktop apps */
 	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
-		return;
+		return TRUE;
 
 	/* search categories for the search term */
 	ptask = as_profile_start (gs_plugin_get_profile (plugin),
@@ -139,22 +142,22 @@ gs_appstream_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 
 	addons = as_app_get_addons (item);
 	if (addons == NULL)
-		return;
+		return TRUE;
 
 	for (i = 0; i < addons->len; i++) {
 		AsApp *as_addon = g_ptr_array_index (addons, i);
-		g_autoptr(GError) error = NULL;
 		g_autoptr(GsApp) addon = NULL;
 
-		addon = gs_app_new (as_app_get_id (as_addon));
+		addon = gs_appstream_create_app (plugin, as_addon, error);
+		if (addon == NULL)
+			return FALSE;
 
 		/* add all the data we can */
-		if (!gs_appstream_refine_app (plugin, addon, as_addon, &error)) {
-			g_warning ("failed to refine addon: %s", error->message);
-			continue;
-		}
+		if (!gs_appstream_refine_app (plugin, addon, as_addon, error))
+			return FALSE;
 		gs_app_add_addon (app, addon);
 	}
+	return TRUE;
 }
 
 static void
@@ -675,7 +678,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_sources (app, pkgnames);
 
 	/* set addons */
-	gs_appstream_refine_add_addons (plugin, app, item);
+	if (!gs_appstream_refine_add_addons (plugin, app, item, error))
+		return FALSE;
 
 	/* set screenshots */
 	gs_appstream_refine_add_screenshots (app, item);
