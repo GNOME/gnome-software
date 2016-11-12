@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-11-07 20:01+0000\n"
-"PO-Revision-Date: 2016-11-08 12:13+0100\n"
+"POT-Creation-Date: 2016-11-10 13:58+0000\n"
+"PO-Revision-Date: 2016-11-12 11:58+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: čeština <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -196,74 +196,91 @@ msgid "The last update timestamp"
 msgstr "Datum a čas poslední aktualizace"
 
 #: ../data/org.gnome.software.gschema.xml.h:22
+msgid "The age in seconds to verify the upstream screenshot is still valid"
+msgstr ""
+"Doba v sekundách, po které se má ověřit, jestli je snímek obrazovky z "
+"hlavního zdroje stále platný"
+
+#: ../data/org.gnome.software.gschema.xml.h:23
+msgid ""
+"Choosing a larger value will mean less round-trips to the remote server but "
+"updates to the screenshots may take longer to show to the user. A value of 0 "
+"means to never check the server if the image already exists in the cache."
+msgstr ""
+"Čím větší hodnotu zvolíte, tím méně návštěv vzdáleného serveru se provede, "
+"ale může trvat déle, než se uživateli zobrazí aktuálnější snímek. Hodnota 0 "
+"znamená, že se kontroly na serveru nemají provádět vůbec, pokud je již "
+"snímek v mezipaměti."
+
+#: ../data/org.gnome.software.gschema.xml.h:24
 msgid "The server to use for application reviews"
 msgstr "Server, který se má používat pro recenze aktualizací"
 
-#: ../data/org.gnome.software.gschema.xml.h:23
+#: ../data/org.gnome.software.gschema.xml.h:25
 msgid "The minimum karma score for reviews"
 msgstr "Minimální karma pro recenze"
 
-#: ../data/org.gnome.software.gschema.xml.h:24
+#: ../data/org.gnome.software.gschema.xml.h:26
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Recenze s karmou nižší než toto číslo nebudou zobrazovány."
 
-#: ../data/org.gnome.software.gschema.xml.h:25
+#: ../data/org.gnome.software.gschema.xml.h:27
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
 "Seznam oficiálních zdrojů, které by neměly být považovány za třetí stranu"
 
-#: ../data/org.gnome.software.gschema.xml.h:26
+#: ../data/org.gnome.software.gschema.xml.h:28
 msgid "A list of official sources that should be considered free software"
 msgstr ""
 "Seznam oficiálních zdrojů, které by měly být považovány za svobodný software"
 
-#: ../data/org.gnome.software.gschema.xml.h:27
+#: ../data/org.gnome.software.gschema.xml.h:29
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "Adresa URL licence, která se má použít, když má aplikace považována za "
 "svobodný software"
 
-#: ../data/org.gnome.software.gschema.xml.h:28
+#: ../data/org.gnome.software.gschema.xml.h:30
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Kde je to možné, instalovat všem uživatelům v systému přibalené aplikace"
 
-#: ../data/org.gnome.software.gschema.xml.h:29
+#: ../data/org.gnome.software.gschema.xml.h:31
 msgid "Show the folder management UI"
 msgstr "Zobrazovat uživatelské rozhraní pro správu složek"
 
-#: ../data/org.gnome.software.gschema.xml.h:30
+#: ../data/org.gnome.software.gschema.xml.h:32
 msgid "Allow access to the Software Sources dialog"
 msgstr "Umožnit přístup k dialogovému oknu se zdroji softwaru"
 
-#: ../data/org.gnome.software.gschema.xml.h:31
+#: ../data/org.gnome.software.gschema.xml.h:33
 msgid "Offer upgrades for pre-releases"
 msgstr "Nabízet povýšení na předběžná vydání"
 
-#: ../data/org.gnome.software.gschema.xml.h:32
+#: ../data/org.gnome.software.gschema.xml.h:34
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Zobrazovat v rozhraní prvky, které informují uživatele, že aplikace není "
 "svobodná"
 
-#: ../data/org.gnome.software.gschema.xml.h:33
+#: ../data/org.gnome.software.gschema.xml.h:35
 msgid "Show the prompt to install nonfree software sources"
 msgstr "Zobrazovat dotaz na instalaci zdrojů nesvobodného softwaru"
 
-#: ../data/org.gnome.software.gschema.xml.h:34
+#: ../data/org.gnome.software.gschema.xml.h:36
 msgid "Show non-free software in search results"
 msgstr "Zobrazovat nesvobodný software ve výsledcích hledání"
 
-#: ../data/org.gnome.software.gschema.xml.h:35
+#: ../data/org.gnome.software.gschema.xml.h:37
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "Adresa URI, která vysvětluje nesvobodný a komerční software"
 
-#: ../data/org.gnome.software.gschema.xml.h:36
+#: ../data/org.gnome.software.gschema.xml.h:38
 msgid "A list of non-free sources that can be optionally enabled"
 msgstr "Seznam nesvobodných zdrojů, které mohou být volitelně povoleny"
 
-#: ../data/org.gnome.software.gschema.xml.h:37
+#: ../data/org.gnome.software.gschema.xml.h:39
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -764,24 +781,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1214
+#: ../src/gs-plugin-loader.c:1212
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1219
+#: ../src/gs-plugin-loader.c:1217
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahrnuje zdokonalení výkonu, stability a bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1957 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1955 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1960
+#: ../src/gs-plugin-loader.c:1958
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -969,61 +986,61 @@ msgstr "Odebrat…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:220
+#: ../src/gs-screenshot-image.c:315
 msgid "Screenshot not found"
 msgstr "Snímek nebyl nalezen"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:236
+#: ../src/gs-screenshot-image.c:330
 msgid "Failed to load image"
 msgstr "Selhalo načtení obrázku"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:350
+#: ../src/gs-screenshot-image.c:463
 msgid "Screenshot size not found"
 msgstr "Velikost snímku nebyla nalezena"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:378
+#: ../src/gs-screenshot-image.c:491
 msgid "Could not create cache"
 msgstr "Nelze vytvoři mezipaměť"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:424
+#: ../src/gs-screenshot-image.c:552
 msgid "Screenshot not valid"
 msgstr "Snímek není platný"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:439
+#: ../src/gs-screenshot-image.c:567
 msgid "Screenshot not available"
 msgstr "Snímek není k dispozici"
 
-#: ../src/gs-screenshot-image.c:482
+#: ../src/gs-screenshot-image.c:620
 msgid "Screenshot"
 msgstr "Snímek"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:772
+#: ../src/gs-shell.c:774
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nelze stáhnout aktualizace firmwaru z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:777
+#: ../src/gs-shell.c:779
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nelze stáhnout aktualizace z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:784
+#: ../src/gs-shell.c:786
 msgid "Unable to download updates"
 msgstr "Nelze stáhnout aktualizace"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:789
+#: ../src/gs-shell.c:791
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -1031,258 +1048,258 @@ msgstr ""
 "dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:797
+#: ../src/gs-shell.c:799
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Nelze stáhnout aktualizace z %s: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:802
+#: ../src/gs-shell.c:804
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nelze stáhnout aktualizace: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:810
+#: ../src/gs-shell.c:812
 msgid "Unable to download updates: authentication was required"
 msgstr "Nelze stáhnout aktualizace: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:815
+#: ../src/gs-shell.c:817
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nelze stáhnout aktualizace: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:820
+#: ../src/gs-shell.c:822
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "Nelze stáhnout aktualizace: nemáte oprávnění instalovat software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:825
+#: ../src/gs-shell.c:827
 msgid "Unable to get list of updates"
 msgstr "Nelze získat seznam aktualizací"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:865
+#: ../src/gs-shell.c:867
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nelze nainstalovat balíček %s, protože selhalo jeho stažení z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:870
+#: ../src/gs-shell.c:872
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nelze nainstalovat balíček %s, protože selhalo stažení"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:879
+#: ../src/gs-shell.c:881
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
 "Nelze nainstalovat balíček %s, protože není k dispozici běhové prostředí %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:884
+#: ../src/gs-shell.c:886
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nelze nainstalovat balíček %s, protože není podporovaný"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:891
+#: ../src/gs-shell.c:893
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Nelze nainstalovat: přístup k internetu je nezbytný, ale není k dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:897
+#: ../src/gs-shell.c:899
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nelez nainstalovat: aplikace má neplatný formát"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:901
+#: ../src/gs-shell.c:903
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nelze nainstalovat balíček %s: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:909
+#: ../src/gs-shell.c:911
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nelze nainstalovat balíček %s: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:915
+#: ../src/gs-shell.c:917
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nelze nainstalovat balíček %s: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:921
+#: ../src/gs-shell.c:923
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nelze nainstalovat balíček %s: nemáte oprávnění k instalaci softwaru"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:932
+#: ../src/gs-shell.c:934
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "Váš účet %s byl zablokován."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:936
+#: ../src/gs-shell.c:938
 msgid "It is not possible to install software until this has been resolved."
 msgstr "Dokud se to nevyřeší, není možné instalovat software."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:945
+#: ../src/gs-shell.c:947
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Pro další informace navštivte %s."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:952
+#: ../src/gs-shell.c:955
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nelze nainstalovat balíček %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:991
+#: ../src/gs-shell.c:994
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "Nelze aktualizovat balíček %s z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:996
+#: ../src/gs-shell.c:999
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nelze aktualizovat balíček %s, protože selhalo stažení"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1002
+#: ../src/gs-shell.c:1005
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nelze aktualizovat: přístup k internetu je nezbytný, ale není k dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1009
+#: ../src/gs-shell.c:1012
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nelze aktualizovat balíček %s: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1017
+#: ../src/gs-shell.c:1020
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nelze aktualizovat balíček %s: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1023
+#: ../src/gs-shell.c:1026
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nelze aktualizovat balíček %s: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1029
+#: ../src/gs-shell.c:1032
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Nelze aktualizovat balíček %s: nemáte oprávnění k aktualizaci softwaru"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1036
+#: ../src/gs-shell.c:1039
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nelze aktualizovat balíček %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1075
+#: ../src/gs-shell.c:1078
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nelze povýšit na %s z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1079
+#: ../src/gs-shell.c:1082
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nelze povýšit na %s, protože selhalo stažení"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1086
+#: ../src/gs-shell.c:1089
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr "Nelze povýšit: přístup k internetu je nezbytný, ale není k dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1093
+#: ../src/gs-shell.c:1096
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nelze povýšit na %s: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1101
+#: ../src/gs-shell.c:1104
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nelze povýšit na %s: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1107
+#: ../src/gs-shell.c:1110
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nelze povýšit na %s: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1113
+#: ../src/gs-shell.c:1116
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nelze povýšit na %s: nemáte oprávnění k povyšování"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1119
+#: ../src/gs-shell.c:1122
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nelze povýšit na %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1156
+#: ../src/gs-shell.c:1159
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nelze odstranit balíček %s: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1161
+#: ../src/gs-shell.c:1164
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nelze odstranit balíček %s: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1166
+#: ../src/gs-shell.c:1169
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nelze odstranit balíček %s: nemáte oprávnění k odstranění softwaru"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1172
+#: ../src/gs-shell.c:1175
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nelez odstranit balíček %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1211
+#: ../src/gs-shell.c:1214
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nelze spustit aplikaci %s: balíček %s není nainstalovaný"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1218 ../src/gs-shell.c:1258 ../src/gs-shell.c:1294
+#: ../src/gs-shell.c:1221 ../src/gs-shell.c:1261 ../src/gs-shell.c:1297
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Nebyl dostatek místa na disku – uvolněte nějaké místo a pak to zkuste znovu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1253
+#: ../src/gs-shell.c:1256
 msgid "Failed to install file: authentication failed"
 msgstr "Selhala instalace souboru: selhalo ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1288
+#: ../src/gs-shell.c:1291
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nelze kontaktovat %s"
@@ -1528,7 +1545,7 @@ msgstr "uzavřená"
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
 #: ../src/gs-shell-details.ui.h:44 ../src/gs-shell-installed.c:441
-#: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:344
+#: ../src/gs-update-list.c:126 ../src/plugins/gs-desktop-common.c:344
 msgid "Add-ons"
 msgstr "Doplňky"
 
@@ -3320,4 +3337,3 @@ msgstr "Knihy"
 #: ../src/plugins/gs-desktop-common.c:356
 msgid "Utilities"
 msgstr "Nástroje"
-
