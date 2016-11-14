@@ -554,6 +554,7 @@ gs_shell_updates_get_upgrades_cb (GObject *source_object,
 		}
 	} else if (gs_app_list_length (list) == 0) {
 		g_debug ("updates-shell: no upgrades to show");
+		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
 		g_debug ("got upgrade %s", gs_app_get_id (app));
