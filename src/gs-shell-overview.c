@@ -139,6 +139,10 @@ gs_shell_overview_decrement_action_cnt (GsShellOverview *self)
 	/* all done */
 	priv->cache_valid = TRUE;
 	g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
+	priv->loading_categories = FALSE;
+	priv->loading_featured = FALSE;
+	priv->loading_popular = FALSE;
+	priv->loading_popular_rotating = FALSE;
 
 	/* seems a good place */
 	gs_shell_profile_dump (priv->shell);
@@ -184,7 +188,6 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	priv->loading_popular = FALSE;
 	gs_shell_overview_decrement_action_cnt (self);
 }
 
@@ -291,7 +294,6 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 
 out:
 	load_data_free (load_data);
-	priv->loading_popular_rotating = FALSE;
 	gs_shell_overview_decrement_action_cnt (self);
 }
 
@@ -341,7 +343,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	priv->loading_featured = FALSE;
 	gs_shell_overview_decrement_action_cnt (self);
 }
 
@@ -414,7 +415,6 @@ out:
 		priv->empty = FALSE;
 	gtk_widget_set_visible (priv->category_heading, added_cnt > 0);
 
-	priv->loading_categories = FALSE;
 	gs_shell_overview_decrement_action_cnt (self);
 }
 
