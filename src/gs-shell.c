@@ -770,12 +770,14 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
 			if (gs_app_get_bundle_kind (origin) == AS_BUNDLE_KIND_CABINET) {
-				/* TRANSLATORS: failure text for the in-app notification */
+				/* TRANSLATORS: failure text for the in-app notification,
+				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
 				g_string_append_printf (str, _("Unable to download "
 							       "firmware updates from %s"),
 							str_origin);
 			} else {
-				/* TRANSLATORS: failure text for the in-app notification */
+				/* TRANSLATORS: failure text for the in-app notification,
+				 * where the %s is the source (e.g. "alt.fedoraproject.org") */
 				g_string_append_printf (str, _("Unable to download updates from %s"),
 							str_origin);
 				if (gs_app_get_management_plugin (origin) != NULL)
@@ -795,7 +797,8 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_NO_SPACE:
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the source (e.g. "alt.fedoraproject.org") */
 			g_string_append_printf (str, _("Unable to download updates "
 					         "from %s: not enough disk space"),
 					       str_origin);
@@ -863,12 +866,15 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the application name (e.g. "GIMP") and
+			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"  */
 			g_string_append_printf (str, _("Unable to install %s as "
 						       "download failed from %s"),
 					       str_app, str_origin);
 		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to install %s "
 						       "as download failed"),
 						str_app);
@@ -877,12 +883,16 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the application name (e.g. "GIMP")
+			 * and the second %s is the name of the runtime, e.g.
+			 * "GNOME SDK [flatpak.gnome.org]" */
 			g_string_append_printf (str, _("Unable to install %s as "
 						       "runtime %s not available"),
 					       str_app, str_origin);
 		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to install %s "
 						       "as not supported"),
 						str_app);
@@ -899,7 +909,8 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("Unable to install: the application has an invalid format"));
 		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "not enough disk space"),
 					str_app);
@@ -913,13 +924,15 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "authentication was invalid"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "you do not have permission to "
 					       "install software"),
@@ -930,7 +943,9 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		if (origin != NULL) {
 			const gchar *url_homepage;
 
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * the %s is the name of the authentication service,
+			 * e.g. "Ubuntu One" */
 			g_string_append_printf (str, _("Your %s account has been suspended."),
 						gs_app_get_name (origin));
 			g_string_append (str, " ");
@@ -943,7 +958,9 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 				url = g_strdup_printf ("<a href=\"%s\">%s</a>",
 						       url_homepage,
 						       url_homepage);
-				/* TRANSLATORS: failure text for the in-app notification */
+				/* TRANSLATORS: failure text for the in-app notification,
+				 * where the %s is the clickable link (e.g.
+				 * "http://example.com/what-did-i-do-wrong/") */
 				msg = g_strdup_printf (_("For more information, visit %s."),
 							url);
 				g_string_append_printf (str, " %s", msg);
@@ -951,7 +968,8 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		}
 		break;
 	default:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s"), str_app);
 		break;
 	}
@@ -990,12 +1008,16 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the app name (e.g. "GIMP") and
+			 * the second %s is the origin, e.g. "Fedora" or
+			 * "Fedora Project [fedoraproject.org]" */
 			g_string_append_printf (str, _("Unable to update %s from %s"),
 					       str_app, str_origin);
 			buttons = TRUE;
 		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s as download failed"),
 						str_app);
 		}
@@ -1008,7 +1030,8 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
 		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s: "
 					       "not enough disk space"),
 					str_app);
@@ -1016,26 +1039,30 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
 	case GS_PLUGIN_ERROR_PIN_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s: "
 					       "authentication was required"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s: "
 					       "authentication was invalid"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s: "
 					       "you do not have permission to "
 					       "update software"),
 					str_app);
 		break;
 	default:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s"), str_app);
 		break;
 	}
@@ -1074,11 +1101,14 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the distro name (e.g. "Fedora 25") and
+			 * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]" */
 			g_string_append_printf (str, _("Unable to upgrade to %s from %s"),
 					       str_app, str_origin);
 		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the app name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to upgrade to %s "
 						       "as download failed"),
 						str_app);
@@ -1092,7 +1122,8 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
 		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
 					       "not enough disk space"),
 					str_app);
@@ -1100,25 +1131,29 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
 	case GS_PLUGIN_ERROR_PIN_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
 					       "authentication was required"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
 					       "authentication was invalid"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
 					       "you do not have permission to upgrade"),
 					str_app);
 		break;
 	default:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s"), str_app);
 		break;
 	}
@@ -1155,23 +1190,27 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
 	case GS_PLUGIN_ERROR_PIN_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: authentication was required"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: authentication was invalid"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: you do not have"
 					       " permission to remove software"),
 					str_app);
 		break;
 	default:
-		/* TRANSLATORS: failure text for the in-app notification */
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s"), str_app);
 		break;
 	}
@@ -1210,7 +1249,10 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 		if (app != NULL && origin != NULL) {
 			str_app = gs_shell_get_title_from_app (app);
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the first %s is the application name (e.g. "GIMP")
+			 * and the second %s is the name of the runtime, e.g.
+			 * "GNOME SDK [flatpak.gnome.org]" */
 			g_string_append_printf (str, _("Unable to launch %s: %s is not installed"),
 					        str_app,
 					        str_origin);
@@ -1287,7 +1329,9 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
 		if (origin != NULL) {
 			str_origin = gs_shell_get_title_from_origin (origin);
-			/* TRANSLATORS: failure text for the in-app notification */
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * the %s is the origin, e.g. "Fedora" or
+			 * "Fedora Project [fedoraproject.org]" */
 			g_string_append_printf (str, _("Unable to contact %s"),
 					        str_origin);
 		}
