@@ -1445,6 +1445,16 @@ gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
 	gs_plugin_loader_file_to_app_async (self->plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
 					    self->cancellable,
 					    gs_shell_details_file_to_app_cb,
