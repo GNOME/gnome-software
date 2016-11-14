@@ -31,7 +31,6 @@
 /*
  * Things we want from the API:
  *
- *  - Screenshots
  *  - Size on disk/download
  *  - Existing review data for each extension?
  *  - A local icon for an installed shell extension
@@ -469,6 +468,20 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 		}
 		as_app_set_description (app, NULL, desc);
 	}
+	tmp = json_object_get_string_member (json_app, "screenshot");
+	if (tmp != NULL) {
+		g_autoptr(AsScreenshot) ss = NULL;
+		g_autoptr(AsImage) im = NULL;
+		g_autofree gchar *uri = NULL;
+		uri = g_build_path ("/", SHELL_EXTENSIONS_API_URI, tmp, NULL);
+		im = as_image_new ();
+		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
+		as_image_set_url (im, uri);
+		ss = as_screenshot_new ();
+		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
+		as_screenshot_add_image (ss, im);
+		as_app_add_screenshot (app, ss);
+	}
 	tmp = json_object_get_string_member (json_app, "name");
 	if (tmp != NULL)
 		as_app_set_name (app, NULL, tmp);
@@ -504,25 +517,6 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 							       json_ver_map,
 							       error))
 			return NULL;
-	}
-
-	/* add a screenshot, which curiously isn't in the json */
-	pk = json_object_get_int_member (json_app, "pk");
-	if (1) {
-		g_autoptr(AsScreenshot) ss = NULL;
-		g_autoptr(AsImage) im = NULL;
-		g_autofree gchar *uri = NULL;
-		uri = g_strdup_printf ("%s/static/extension-data/"
-				       "screenshots/"
-				       "screenshot_%" G_GINT64_FORMAT ".png",
-				       SHELL_EXTENSIONS_API_URI, pk);
-		im = as_image_new ();
-		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
-		as_image_set_url (im, uri);
-		ss = as_screenshot_new ();
-		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
-		as_screenshot_add_image (ss, im);
-		as_app_add_screenshot (app, ss);
 	}
 
 	/* required to match categories in gnome-software */
