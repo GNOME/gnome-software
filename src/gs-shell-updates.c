@@ -340,8 +340,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "failed");
 		break;
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates),
+						  "spinner");
+		break;
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
 		if (self->result_flags != GS_SHELL_UPDATES_FLAG_NONE) {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "view");
 		} else {
