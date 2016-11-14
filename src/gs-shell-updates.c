@@ -302,11 +302,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	/* headerbar refresh icon */
 	switch (self->state) {
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "media-playback-stop-symbolic", GTK_ICON_SIZE_MENU);
 		gtk_widget_show (self->button_refresh);
 		break;
-	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 	case GS_SHELL_UPDATES_STATE_STARTUP:
 	case GS_SHELL_UPDATES_STATE_MANAGED:
 		gtk_widget_hide (self->button_refresh);
