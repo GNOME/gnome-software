@@ -36,15 +36,15 @@
 
 struct GsPluginData {
 	GsFlatpak		*flatpak;
-	GSettings		*settings;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+
 	priv->flatpak = gs_flatpak_new (plugin, AS_APP_SCOPE_USER);
-	priv->settings = g_settings_new ("org.gnome.software");
 
 	/* set plugin flags */
 	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
@@ -54,14 +54,18 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* prioritize over packages */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
+
+	/* prefer user-specific handling of local files */
+	if (!g_settings_get_boolean (settings, "install-bundles-system-wide"))
+		gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "flatpak-system");
 }
+
 
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_clear_object (&priv->flatpak);
-	g_clear_object (&priv->settings);
 }
 
 void
@@ -207,11 +211,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	/* only handle when installing bundles user-wide */
-	if (g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR") == NULL &&
-	    g_settings_get_boolean (priv->settings,
-				    "install-bundles-system-wide")) {
-		g_debug ("not handling bundle as per-system specified");
+	/* only handle when nothing yet has added this */
+	if (gs_app_list_length (list) > 0) {
+		g_debug ("not handling bundle as already added");
 		return TRUE;
 	}
 
