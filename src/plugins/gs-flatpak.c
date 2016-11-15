@@ -1182,6 +1182,10 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 	if (gs_app_get_origin_hostname (app) != NULL)
 		return TRUE;
 
+	/* no origin */
+	if (gs_app_get_origin (app) == NULL)
+		return TRUE;
+
 	/* get the remote  */
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   gs_app_get_origin (app),
@@ -1654,6 +1658,16 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 	} else {
 		g_autoptr(FlatpakRef) xref = NULL;
 
+		/* no origin */
+		if (gs_app_get_origin (app) == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no origin set for %s",
+				     gs_app_get_unique_id (app));
+			return FALSE;
+		}
+
 		/* fetch from the server */
 		xref = gs_flatpak_create_fake_ref (app, error);
 		if (xref == NULL)
@@ -1772,6 +1786,16 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	} else {
 		g_autoptr(FlatpakRef) xref = NULL;
 		g_autoptr(GError) error_local = NULL;
+
+		/* no origin */
+		if (gs_app_get_origin (app) == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no origin set for %s",
+				     gs_app_get_unique_id (app));
+			return FALSE;
+		}
 		xref = gs_flatpak_create_fake_ref (app, error);
 		if (xref == NULL)
 			return FALSE;
@@ -2176,6 +2200,15 @@ gs_flatpak_app_install (GsFlatpak *self,
 							    app,
 							    cancellable, error);
 	} else {
+		/* no origin */
+		if (gs_app_get_origin (app) == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no origin set for %s",
+				     gs_app_get_unique_id (app));
+			return FALSE;
+		}
 		g_debug ("installing %s", gs_app_get_id (app));
 		xref = flatpak_installation_install (self->installation,
 						     gs_app_get_origin (app),
