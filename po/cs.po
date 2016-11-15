@@ -10,10 +10,10 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-11-10 13:58+0000\n"
-"PO-Revision-Date: 2016-11-12 11:58+0100\n"
+"POT-Creation-Date: 2016-11-15 13:21+0000\n"
+"PO-Revision-Date: 2016-11-15 15:02+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
-"Language-Team: čeština <gnome-cs-list@gnome.org>\n"
+"Language-Team: čeština <gnome-cs-list@gnome.org>>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -374,7 +374,7 @@ msgstr "Prozkoumat disk"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gnome-software.ui.h:16 ../src/gs-shell-updates.c:886
+#: ../src/gnome-software.ui.h:16 ../src/gs-shell-updates.c:890
 msgid "Network Settings"
 msgstr "Nastavení sítě"
 
@@ -1022,284 +1022,352 @@ msgstr "Snímek není k dispozici"
 msgid "Screenshot"
 msgstr "Snímek"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:774
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the first %s is a possibly multi-word localised distro
+#. * e.g. 'Fedora Project" and the second %s is the truncated
+#. * hostname, e.g. 'alt.fedoraproject.org'
+#: ../src/gs-shell.c:738
+#, c-format
+msgid "“%s” [%s]"
+msgstr "„%s“ [%s]"
+
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the %s is a possibly multi-word localised distro
+#. * e.g. 'Fedora Project"
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the %s is the truncated hostname, e.g.
+#. * 'alt.fedoraproject.org'
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the %s is a multi-word localised app name
+#. * e.g. 'Getting things GNOME!"
+#: ../src/gs-shell.c:745 ../src/gs-shell.c:751 ../src/gs-shell.c:767
+#: ../src/gs-shell.c:771
+#, c-format
+msgid "“%s”"
+msgstr "„%s“"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the source (e.g. "alt.fedoraproject.org")
+#: ../src/gs-shell.c:791
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nelze stáhnout aktualizace firmwaru z %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:779
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the source (e.g. "alt.fedoraproject.org")
+#: ../src/gs-shell.c:797
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nelze stáhnout aktualizace z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:786
+#: ../src/gs-shell.c:804
 msgid "Unable to download updates"
 msgstr "Nelze stáhnout aktualizace"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:791
+#: ../src/gs-shell.c:809
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
 "Nelze stáhout aktualizace: přístup k internetu je nezbytný, ale není k "
 "dispozici"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:799
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the source (e.g. "alt.fedoraproject.org")
+#: ../src/gs-shell.c:818
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Nelze stáhnout aktualizace z %s: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:804
+#: ../src/gs-shell.c:823
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nelze stáhnout aktualizace: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:812
+#: ../src/gs-shell.c:831
 msgid "Unable to download updates: authentication was required"
 msgstr "Nelze stáhnout aktualizace: je vyžadováno ověření"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:817
+#: ../src/gs-shell.c:836
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nelze stáhnout aktualizace: ověření nebylo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:822
+#: ../src/gs-shell.c:841
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "Nelze stáhnout aktualizace: nemáte oprávnění instalovat software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:827
+#: ../src/gs-shell.c:846
 msgid "Unable to get list of updates"
 msgstr "Nelze získat seznam aktualizací"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:867
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the application name (e.g. "GIMP") and
+#. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
+#: ../src/gs-shell.c:888
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nelze nainstalovat balíček %s, protože selhalo jeho stažení z %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:872
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:894
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nelze nainstalovat balíček %s, protože selhalo stažení"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:881
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the application name (e.g. "GIMP")
+#. * and the second %s is the name of the runtime, e.g.
+#. * "GNOME SDK [flatpak.gnome.org]"
+#: ../src/gs-shell.c:906
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
 "Nelze nainstalovat balíček %s, protože není k dispozici běhové prostředí %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:886
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:912
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nelze nainstalovat balíček %s, protože není podporovaný"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:893
+#: ../src/gs-shell.c:919
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Nelze nainstalovat: přístup k internetu je nezbytný, ale není k dispozici"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:899
+#: ../src/gs-shell.c:925
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nelez nainstalovat: aplikace má neplatný formát"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:903
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:930
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nelze nainstalovat balíček %s: není dostatek místa na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:911
+#: ../src/gs-shell.c:938
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nelze nainstalovat balíček %s: je vyžadováno ověření"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:917
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:945
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nelze nainstalovat balíček %s: ověření nebylo platné"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:923
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:952
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nelze nainstalovat balíček %s: nemáte oprávnění k instalaci softwaru"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:934
+#. TRANSLATORS: failure text for the in-app notification,
+#. * the %s is the name of the authentication service,
+#. * e.g. "Ubuntu One"
+#: ../src/gs-shell.c:965
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "Váš účet %s byl zablokován."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:938
+#: ../src/gs-shell.c:969
 msgid "It is not possible to install software until this has been resolved."
 msgstr "Dokud se to nevyřeší, není možné instalovat software."
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:947
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the clickable link (e.g.
+#. * "http://example.com/what-did-i-do-wrong/")
+#: ../src/gs-shell.c:980
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Pro další informace navštivte %s."
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:955
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:989
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nelze nainstalovat balíček %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:994
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the app name (e.g. "GIMP") and
+#. * the second %s is the origin, e.g. "Fedora" or
+#. * "Fedora Project [fedoraproject.org]"
+#: ../src/gs-shell.c:1031
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "Nelze aktualizovat balíček %s z %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:999
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1037
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nelze aktualizovat balíček %s, protože selhalo stažení"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1005
+#: ../src/gs-shell.c:1043
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nelze aktualizovat: přístup k internetu je nezbytný, ale není k dispozici"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1012
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1051
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nelze aktualizovat balíček %s: není dostatek místa na disku"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1020
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1060
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nelze aktualizovat balíček %s: je vyžadováno ověření"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1026
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1067
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nelze aktualizovat balíček %s: ověření nebylo platné"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1032
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1074
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Nelze aktualizovat balíček %s: nemáte oprávnění k aktualizaci softwaru"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1039
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1082
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nelze aktualizovat balíček %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1078
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the distro name (e.g. "Fedora 25") and
+#. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
+#: ../src/gs-shell.c:1123
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nelze povýšit na %s z %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1082
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the app name (e.g. "GIMP")
+#: ../src/gs-shell.c:1128
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nelze povýšit na %s, protože selhalo stažení"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1089
+#: ../src/gs-shell.c:1135
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr "Nelze povýšit: přístup k internetu je nezbytný, ale není k dispozici"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1096
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: ../src/gs-shell.c:1143
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nelze povýšit na %s: není dostatek místa na disku"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1104
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: ../src/gs-shell.c:1152
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nelze povýšit na %s: je vyžadováno ověření"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1110
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: ../src/gs-shell.c:1159
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nelze povýšit na %s: ověření nebylo platné"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1116
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: ../src/gs-shell.c:1166
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nelze povýšit na %s: nemáte oprávnění k povyšování"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1122
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: ../src/gs-shell.c:1173
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nelze povýšit na %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1159
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1211
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nelze odstranit balíček %s: je vyžadováno ověření"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1164
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1217
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nelze odstranit balíček %s: ověření nebylo platné"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1169
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1223
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nelze odstranit balíček %s: nemáte oprávnění k odstranění softwaru"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1175
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: ../src/gs-shell.c:1230
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nelez odstranit balíček %s"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1214
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the application name (e.g. "GIMP")
+#. * and the second %s is the name of the runtime, e.g.
+#. * "GNOME SDK [flatpak.gnome.org]"
+#: ../src/gs-shell.c:1272
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nelze spustit aplikaci %s: balíček %s není nainstalovaný"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1221 ../src/gs-shell.c:1261 ../src/gs-shell.c:1297
+#: ../src/gs-shell.c:1279 ../src/gs-shell.c:1319 ../src/gs-shell.c:1357
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Nebyl dostatek místa na disku – uvolněte nějaké místo a pak to zkuste znovu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1256
+#: ../src/gs-shell.c:1314
 msgid "Failed to install file: authentication failed"
 msgstr "Selhala instalace souboru: selhalo ověření"
 
-#. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1291
+#. TRANSLATORS: failure text for the in-app notification,
+#. * the %s is the origin, e.g. "Fedora" or
+#. * "Fedora Project [fedoraproject.org]"
+#: ../src/gs-shell.c:1351
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nelze kontaktovat %s"
@@ -1382,24 +1450,24 @@ msgid "Could not find “%s”"
 msgstr "Nelze najít „%s“"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1868
+#: ../src/gs-shell-details.c:1878
 msgid "Public domain"
 msgstr "Volné dílo"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1884 ../src/gs-shell-details.ui.h:52
+#: ../src/gs-shell-details.c:1894 ../src/gs-shell-details.ui.h:52
 msgid "Free Software"
 msgstr "Svobodný software"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1939
+#: ../src/gs-shell-details.c:1949
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Uživatelé jsou vázání následující licencí:"
 msgstr[1] "Uživatelé jsou vázání následujícími licencemi:"
 msgstr[2] "Uživatelé jsou vázání následujícími licencemi:"
 
-#: ../src/gs-shell-details.c:1955 ../src/gs-shell-details.ui.h:56
+#: ../src/gs-shell-details.c:1965 ../src/gs-shell-details.ui.h:56
 msgid "More information"
 msgstr "Podrobné informace"
 
@@ -1837,7 +1905,7 @@ msgid "There are no reviews to moderate"
 msgstr "Nejsou k dispozici žádné recenze k moderování"
 
 #. add button
-#: ../src/gs-shell-overview.c:260
+#: ../src/gs-shell-overview.c:263
 msgid "More…"
 msgstr "Více…"
 
@@ -1998,29 +2066,29 @@ msgid "(This could take a while)"
 msgstr "(může to chvilku trvat)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:427
+#: ../src/gs-shell-updates.c:430
 #, c-format
 msgid "Last checked: %s"
 msgstr "Poslední kontrola: %s"
 
 #. TRANSLATORS: all updates will be installed
-#: ../src/gs-shell-updates.c:519
+#: ../src/gs-shell-updates.c:522
 msgid "U_pdate All"
 msgstr "Ak_tualizovat vše"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:523
+#: ../src/gs-shell-updates.c:526
 msgid "_Restart & Update"
 msgstr "_Restartovat a aktualizovat"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:854
+#: ../src/gs-shell-updates.c:858
 msgid "Charges may apply"
 msgstr "Možné zpoplatnění"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:858
+#: ../src/gs-shell-updates.c:862
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -2030,46 +2098,46 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:862
+#: ../src/gs-shell-updates.c:866
 msgid "Check Anyway"
 msgstr "Přesto zkontrolovat"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:878
+#: ../src/gs-shell-updates.c:882
 msgid "No Network"
 msgstr "Žádné připojení k síti"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:882
+#: ../src/gs-shell-updates.c:886
 msgid "Internet access is required to check for updates."
 msgstr "Přístup k internetu je nezbytný pro kontrolu aktualizací."
 
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:976
+#: ../src/gs-shell-updates.c:980
 msgid "Updates have been installed"
 msgstr "Aktualizace byly nainstalovány"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:978
+#: ../src/gs-shell-updates.c:982
 msgid "A restart is required for them to take effect."
 msgstr "Aby se projevily, je zapotřebí provést restart."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:980 ../src/gs-update-monitor.c:103
+#: ../src/gs-shell-updates.c:984 ../src/gs-update-monitor.c:103
 msgid "Not Now"
 msgstr "Nyní ne"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:982
+#: ../src/gs-shell-updates.c:986
 msgid "Restart"
 msgstr "Restartovat"
 
-#: ../src/gs-shell-updates.c:1351
+#: ../src/gs-shell-updates.c:1355
 msgid "Restart & _Install"
 msgstr "Restartovat a _instalovat"
 
-#: ../src/gs-shell-updates.c:1369
+#: ../src/gs-shell-updates.c:1373
 msgid "Check for updates"
 msgstr "Zkontrolovat aktualizace"
 
