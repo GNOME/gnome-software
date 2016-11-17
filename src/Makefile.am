@@ -412,6 +412,13 @@ clean-local:
 	rm -f *.1
 	rm -f manpage.*
 
+massif:
+	make && \
+	valgrind --massif-out-file=massif.out --threshold=0.1 --tool=massif \
+		./gnome-software-cmd search gimp --refine-flags=icon --show-results && \
+	ms_print massif.out > massif.txt && \
+	head -n 30 massif.txt
+
 CLEANFILES =						\
 	$(BUILT_SOURCES)				\
 	gnome-software.1				\
