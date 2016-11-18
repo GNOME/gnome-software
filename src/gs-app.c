@@ -2939,6 +2939,36 @@ gs_app_add_category (GsApp *app, const gchar *category)
 }
 
 /**
+ * gs_app_remove_category:
+ * @app: a #GsApp
+ * @category: a category ID, e.g. "AudioVideo"
+ *
+ * Removes an category ID from an application, it exists.
+ *
+ * Returns: %TRUE for success
+ *
+ * Since: 3.24
+ **/
+gboolean
+gs_app_remove_category (GsApp *app, const gchar *category)
+{
+	const gchar *tmp;
+	guint i;
+
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	for (i = 0; i < app->categories->len; i++) {
+		tmp = g_ptr_array_index (app->categories, i);
+		if (g_strcmp0 (tmp, category) != 0)
+			continue;
+		g_ptr_array_remove_index_fast (app->categories, i);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/**
  * gs_app_get_key_colors:
  * @app: a #GsApp
  *
