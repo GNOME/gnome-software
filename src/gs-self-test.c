@@ -1017,7 +1017,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak-user");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_app_set_url (app_source, AS_URL_KIND_HOMEPAGE, testdir_repourl);
+	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
 					   GS_PLUGIN_ACTION_INSTALL,
 					   NULL,
