@@ -228,6 +228,46 @@ _as_app_quirk_to_string (AsAppQuirk quirk)
 	return g_string_free (str, FALSE);
 }
 
+static gchar *
+gs_app_kudos_to_string (guint64 kudos)
+{
+	g_autoptr(GPtrArray) array = g_ptr_array_new ();
+	if ((kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
+		g_ptr_array_add (array, "my-language");
+	if ((kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
+		g_ptr_array_add (array, "recent-release");
+	if ((kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
+		g_ptr_array_add (array, "featured-recommended");
+	if ((kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
+		g_ptr_array_add (array, "modern-toolkit");
+	if ((kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
+		g_ptr_array_add (array, "search-provider");
+	if ((kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
+		g_ptr_array_add (array, "installs-user-docs");
+	if ((kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
+		g_ptr_array_add (array, "uses-notifications");
+	if ((kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
+		g_ptr_array_add (array, "uses-app-menu");
+	if ((kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
+		g_ptr_array_add (array, "has-keywords");
+	if ((kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
+		g_ptr_array_add (array, "has-screenshots");
+	if ((kudos & GS_APP_KUDO_POPULAR) > 0)
+		g_ptr_array_add (array, "popular");
+	if ((kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
+		g_ptr_array_add (array, "perfect-screenshots");
+	if ((kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
+		g_ptr_array_add (array, "high-contrast");
+	if ((kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
+		g_ptr_array_add (array, "hi-dpi-icon");
+	if ((kudos & GS_APP_KUDO_SANDBOXED) > 0)
+		g_ptr_array_add (array, "sandboxed");
+	if ((kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
+		g_ptr_array_add (array, "sandboxed-secure");
+	g_ptr_array_add (array, NULL);
+	return g_strjoinv ("|", (gchar **) array->pdata);
+}
+
 /**
  * gs_app_to_string:
  * @app: a #GsApp
@@ -275,38 +315,11 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "bundle-kind",
 				as_bundle_kind_to_string (app->bundle_kind));
 	}
-	if ((app->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
-		gs_app_kv_lpad (str, "kudo", "my-language");
-	if ((app->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
-		gs_app_kv_lpad (str, "kudo", "recent-release");
-	if ((app->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
-		gs_app_kv_lpad (str, "kudo", "featured-recommended");
-	if ((app->kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
-		gs_app_kv_lpad (str, "kudo", "modern-toolkit");
-	if ((app->kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
-		gs_app_kv_lpad (str, "kudo", "search-provider");
-	if ((app->kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
-		gs_app_kv_lpad (str, "kudo", "installs-user-docs");
-	if ((app->kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
-		gs_app_kv_lpad (str, "kudo", "uses-notifications");
-	if ((app->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
-		gs_app_kv_lpad (str, "kudo", "uses-app-menu");
-	if ((app->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
-		gs_app_kv_lpad (str, "kudo", "has-keywords");
-	if ((app->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
-		gs_app_kv_lpad (str, "kudo", "has-screenshots");
-	if ((app->kudos & GS_APP_KUDO_POPULAR) > 0)
-		gs_app_kv_lpad (str, "kudo", "popular");
-	if ((app->kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
-		gs_app_kv_lpad (str, "kudo", "perfect-screenshots");
-	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
-		gs_app_kv_lpad (str, "kudo", "high-contrast");
-	if ((app->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
-		gs_app_kv_lpad (str, "kudo", "hi-dpi-icon");
-	if ((app->kudos & GS_APP_KUDO_SANDBOXED) > 0)
-		gs_app_kv_lpad (str, "kudo", "sandboxed");
-	if ((app->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
-		gs_app_kv_lpad (str, "kudo", "sandboxed-secure");
+	if (app->kudos > 0) {
+		g_autofree gchar *kudo_str = NULL;
+		kudo_str = gs_app_kudos_to_string (app->kudos);
+		gs_app_kv_lpad (str, "kudos", kudo_str);
+	}
 	gs_app_kv_printf (str, "kudo-percentage", "%u",
 			  gs_app_get_kudos_percentage (app));
 	if (app->name != NULL)
