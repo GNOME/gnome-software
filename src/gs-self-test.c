@@ -1075,6 +1075,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 	g_assert_cmpint ((gint64) gs_app_get_kudos (app), ==,
 			 GS_APP_KUDO_HAS_KEYWORDS |
+			 GS_APP_KUDO_HI_DPI_ICON |
 			 GS_APP_KUDO_SANDBOXED_SECURE |
 			 GS_APP_KUDO_SANDBOXED);
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "");
