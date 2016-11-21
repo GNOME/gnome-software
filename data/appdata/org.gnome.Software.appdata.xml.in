@@ -46,6 +46,33 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2016-11-21" version="3.23.2">
+      <description>
+        <p>
+          This is an unstable release in the 3.23 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add a setting for downloading updates on metered connections</li>
+          <li>Add content rating interface for games</li>
+          <li>Add support for pending updates that are applied on demand</li>
+          <li>Add support for the flatpak DefaultBranch feature</li>
+          <li>Allow showing an application review without a display name</li>
+          <li>Convert the modal failure dialogs to in-app notifications</li>
+          <li>Switch to using the ODRS server hosted by GNOME</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Always get the newest screenshot for GNOME Shell extensions</li>
+          <li>Avoid redownloading the same screenshots for different images</li>
+          <li>Don't download updates when low on power</li>
+          <li>Fix the growth in memory usage for every search request</li>
+          <li>Never show a 'back' button when showing search results</li>
+          <li>Show the search bar when the user does ctrl+f</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2016-11-07" version="3.22.2">
       <description>
         <p>This stable release fixes the following bugs:</p>
