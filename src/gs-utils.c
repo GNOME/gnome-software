@@ -111,7 +111,7 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
 	guint i;
 	for (i = 0; i < array->len; i++) {
 		const gchar *fn = g_ptr_array_index (array, i);
-		g_autoptr(GFile) file = file = g_file_new_for_path (fn);
+		g_autoptr(GFile) file = g_file_new_for_path (fn);
 		guint age_tmp = gs_utils_get_file_age (file);
 		if (age_tmp < age_lowest) {
 			age_lowest = age_tmp;
