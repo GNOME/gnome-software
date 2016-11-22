@@ -12,6 +12,7 @@ AM_CPPFLAGS =						\
 	$(POLKIT_CFLAGS)				\
 	$(JSON_GLIB_CFLAGS)				\
 	$(LIBSECRET_CFLAGS)				\
+	$(PIE_CFLAGS)					\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DLIBDIR=\"$(libdir)\"				\
@@ -136,6 +137,10 @@ gnome_software_cmd_LDADD =				\
 
 gnome_software_cmd_CFLAGS =				\
 	$(WARN_CFLAGS)
+
+gnome_software_cmd_LDFLAGS =				\
+	$(PIE_LDFLAGS)					\
+	$(RELRO_LDFLAGS)
 
 bin_PROGRAMS =						\
 	gnome-software
@@ -298,6 +303,10 @@ gnome_software_LDADD =					\
 gnome_software_CFLAGS =					\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	$(WARN_CFLAGS)
+
+gnome_software_LDFLAGS =				\
+	$(PIE_LDFLAGS)					\
+	$(RELRO_LDFLAGS)
 
 packagekit_built_sources = gs-packagekit-generated.c gs-packagekit-generated.h
 $(packagekit_built_sources): Makefile.am org.freedesktop.PackageKit.xml

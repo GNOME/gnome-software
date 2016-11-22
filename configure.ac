@@ -97,6 +97,20 @@ AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 LT_LIB_M
 AC_SUBST(LIBM)
 
+# check for PIE (position independent executable) support
+if test x$with_pic != xno; then
+	AX_CHECK_COMPILE_FLAG([-fPIE],
+			      [AX_CHECK_LINK_FLAG([-fPIE -pie],
+						  [PIE_CFLAGS="-fPIE" PIE_LDFLAGS="-pie"])])
+	AC_SUBST(PIE_CFLAGS)
+	AC_SUBST(PIE_LDFLAGS)
+fi
+
+# check for full RELRO (relocation read-only) support
+AX_CHECK_LINK_FLAG([-Wl,-z,relro,-z,now],
+		   [RELRO_LDFLAGS="-Wl,-z,relro,-z,now"])
+AC_SUBST([RELRO_LDFLAGS])
+
 AC_ARG_ENABLE(man,
               [AS_HELP_STRING([--enable-man],
                               [generate man pages [default=auto]])],,

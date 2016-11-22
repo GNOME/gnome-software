@@ -18,6 +18,7 @@ AM_CPPFLAGS =						\
 	$(RPM_CFLAGS)					\
 	$(OAUTH_CFLAGS)					\
 	$(SNAP_CFLAGS)					\
+	$(PIE_CFLAGS)					\
 	-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE	\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
