@@ -926,6 +926,7 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 						 xremote,
 						 cancellable,
 						 error)) {
+		gs_plugin_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -2049,6 +2050,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 						 gs_app_get_id (app),
 						 cancellable,
 						 error)) {
+		gs_plugin_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -2090,6 +2092,7 @@ gs_flatpak_app_remove (GsFlatpak *self,
 					     gs_app_get_flatpak_branch (app),
 					     gs_flatpak_progress_cb, app,
 					     cancellable, error)) {
+		gs_plugin_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
