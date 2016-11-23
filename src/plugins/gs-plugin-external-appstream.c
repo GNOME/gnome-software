@@ -161,14 +161,27 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* write the download contents into a temporary file that will be
-	 * copied into the system */
-	tmp_file_tmpl = g_strdup_printf ("XXXXXX_%s", file_name);
-	tmp_file = g_file_new_tmp (tmp_file_tmpl, &iostream, error);
-	if (tmp_file == NULL)
+	/* write the download contents into a file that will be copied into
+	 * the system */
+	tmp_file_path = gs_utils_get_cache_filename ("external-appstream",
+						     file_name,
+						     GS_UTILS_CACHE_FLAG_WRITEABLE,
+						     error);
+	if (tmp_file_path == NULL)
 		return FALSE;
 
-	tmp_file_path = g_file_get_path (tmp_file);
+	tmp_file = g_file_new_for_path (tmp_file_path);
+
+	/* ensure the file doesn't exist */
+	if (g_file_query_exists (tmp_file, cancellable) &&
+	    !g_file_delete (tmp_file, cancellable, error))
+		return FALSE;
+
+	iostream = g_file_create_readwrite (tmp_file, G_FILE_CREATE_NONE,
+					    cancellable, error);
+
+	if (iostream == NULL)
+		return FALSE;
 
 	g_debug ("Downloaded appstream file %s", tmp_file_path);
 
@@ -182,20 +195,20 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 	/* close the file */
 	g_output_stream_close (outstream, cancellable, NULL);
 
-	if (!file_written) {
-		/* clean up the temporary file if we could not write */
-		g_file_delete (tmp_file, NULL, NULL);
-		return FALSE;
+	/* install file systemwide */
+	if (file_written) {
+		if (gs_plugin_external_appstream_install (tmp_file_path,
+							  cancellable,
+							  error)) {
+			g_debug ("Installed appstream file %s", tmp_file_path);
+		} else {
+			file_written = FALSE;
+		}
 	}
 
-	/* install file systemwide */
-	if (!gs_plugin_external_appstream_install (tmp_file_path,
-						   cancellable,
-						   error))
-		return FALSE;
-	g_debug ("Installed appstream file %s", tmp_file_path);
-
-	return TRUE;
+	/* clean up the temporary file */
+	g_file_delete (tmp_file, cancellable, NULL);
+	return file_written;
 }
 
 gboolean
