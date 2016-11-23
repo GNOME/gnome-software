@@ -196,8 +196,10 @@ gs_page_app_installed_cb (GObject *source,
 	    !gs_shell_is_active (priv->shell))
 		gs_app_notify_installed (helper->app);
 
-	if (GS_PAGE_GET_CLASS (page)->app_installed != NULL)
+	if (gs_app_is_installed (helper->app) &&
+	    GS_PAGE_GET_CLASS (page)->app_installed != NULL) {
 		GS_PAGE_GET_CLASS (page)->app_installed (page, helper->app);
+	}
 }
 
 static void
@@ -265,8 +267,10 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 
-	if (GS_PAGE_GET_CLASS (page)->app_removed != NULL)
+	if (!gs_app_is_installed (helper->app) &&
+	    GS_PAGE_GET_CLASS (page)->app_removed != NULL) {
 		GS_PAGE_GET_CLASS (page)->app_removed (page, helper->app);
+	}
 }
 
 GtkWidget *
