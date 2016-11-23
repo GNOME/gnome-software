@@ -435,8 +435,8 @@ AM_CONDITIONAL(HAVE_SNAP, test "$have_snap" != no)
 # External appstream
 AC_ARG_ENABLE(external-appstream,
               [AS_HELP_STRING([--enable-external-appstream],
-                              [enable External Appstream support [default=yes]])],,
-              enable_external_appstream=yes)
+                              [enable External Appstream support [default=no]])],,
+              enable_external_appstream=no)
 AM_CONDITIONAL(HAVE_EXTERNAL_APPSTREAM, test "x$enable_external_appstream" = "xyes")
 
 GLIB_TESTS
