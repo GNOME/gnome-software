@@ -23,6 +23,8 @@ dnl ---------------------------------------------------------------------------
 dnl - Extra verbose warning switches
 dnl ---------------------------------------------------------------------------
 WARN_CFLAGS_EXTRA="
+	-D_FORTIFY_SOURCE=2
+	-fstack-protector-strong
 	-Waggregate-return
 	-Warray-bounds
 	-Wcast-align
