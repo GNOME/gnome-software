@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-11-15 13:21+0000\n"
-"PO-Revision-Date: 2016-11-20 21:59+0100\n"
+"POT-Creation-Date: 2016-11-23 14:21+0000\n"
+"PO-Revision-Date: 2016-11-23 16:50+0100\n"
 "Last-Translator: Meskó Balázs <meskobalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope at googlegroups dot com>\n"
 "Language: hu\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.8\n"
+"X-Generator: Poedit 1.8.11\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -339,7 +339,7 @@ msgstr "Kijelölés törlése"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:338
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:341
 #: ../src/gs-shell.c:290 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Szoftverek"
@@ -477,7 +477,7 @@ msgstr "Helyi fájlforrások előnyben részesítése az alkalmazáshoz"
 msgid "Show version number"
 msgstr "Verziószám megjelenítése"
 
-#: ../src/gs-application.c:331
+#: ../src/gs-application.c:334
 msgid "translator-credits"
 msgstr ""
 "Kelemen Gábor <kelemeng at gnome dot hu>\n"
@@ -485,12 +485,12 @@ msgstr ""
 "Meskó Balázs <meskobalazs at gmail dot com>"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:335
+#: ../src/gs-application.c:338
 msgid "About Software"
 msgstr "A Szoftverek névjegye"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:341
+#: ../src/gs-application.c:344
 msgid "A nice way to manage the software on your system."
 msgstr "A rendszerén található szoftverek kezelése elegánsan."
 
@@ -517,7 +517,7 @@ msgstr "Mégse"
 #. * allows the application to be easily installed
 #. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:193 ../src/gs-page.c:352 ../src/gs-common.c:275
+#: ../src/gs-app-row.c:193 ../src/gs-page.c:356 ../src/gs-common.c:275
 msgid "Install"
 msgstr "Telepítés"
 
@@ -530,7 +530,7 @@ msgstr "Frissítés"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:500
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:504
 msgid "Remove"
 msgstr "Eltávolítás"
 
@@ -750,20 +750,20 @@ msgstr "Előzmények"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:343
+#: ../src/gs-page.c:347
 #, c-format
 msgid "Prepare %s"
 msgstr "%s előkészítése"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * source name, e.g. 'GNOME Nightly'
-#: ../src/gs-page.c:469
+#: ../src/gs-page.c:473
 #, c-format
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Biztosan el szeretné távolítani a(z) %s forrást?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:473
+#: ../src/gs-page.c:477
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -774,13 +774,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:481
+#: ../src/gs-page.c:485
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Biztos, hogy el akarja távolítani a következőt: „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:484
+#: ../src/gs-page.c:488
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s eltávolításra kerül, és telepíteni kell a jövőbeli használatához."
@@ -3415,6 +3415,35 @@ msgstr "Hivatkozás"
 #: ../src/plugins/gs-desktop-common.c:356
 msgid "Utilities"
 msgstr "Segédprogramok"
+
+#. TRANSLATORS: tool that is used when copying profiles system-wide
+#: ../src/plugins/gs-install-appstream.c:118
+msgid "GNOME Software AppStream system-wide installer"
+msgstr "GNOME Szoftverek – AppStream rendszerszintű telepítő"
+
+#: ../src/plugins/gs-install-appstream.c:120
+msgid "Failed to parse command line arguments"
+msgstr "A parancssori argumentumok feldolgozása meghiúsult"
+
+#. TRANSLATORS: user did not specify a valid filename
+#: ../src/plugins/gs-install-appstream.c:127
+msgid "You need to specify exactly one filename"
+msgstr "Pontosan egy fájlnevet kell megadnia"
+
+#. TRANSLATORS: only able to install files as root
+#: ../src/plugins/gs-install-appstream.c:134
+msgid "This program can only be used by the root user"
+msgstr "Ezt a programot csak a root felhasználó használhatja"
+
+#. TRANSLATORS: error details
+#: ../src/plugins/gs-install-appstream.c:142
+msgid "Failed to validate content type"
+msgstr "A tartalomtípus érvényesítése meghiúsult"
+
+#. TRANSLATORS: error details
+#: ../src/plugins/gs-install-appstream.c:149
+msgid "Failed to copy"
+msgstr "A másolás meghiúsult"
 
 #~ msgid "Sorry, this did not work"
 #~ msgstr "Elnézést, ez nem sikerült"
