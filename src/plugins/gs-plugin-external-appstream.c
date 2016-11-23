@@ -62,14 +62,13 @@ gs_plugin_external_appstream_check (const gchar *appstream_path,
 
 static gboolean
 gs_plugin_external_appstream_install (const gchar *appstream_file,
-				      const gchar *target_file_name,
 				      GCancellable *cancellable,
 				      GError **error)
 {
 	g_autoptr(GSubprocess) subprocess = NULL;
 	const gchar *argv[] = { "pkexec",
 				LIBEXECDIR "/gnome-software-install-appstream",
-				appstream_file, target_file_name, NULL};
+				appstream_file, NULL};
 	g_debug ("Installing the appstream file %s in the system",
 		 appstream_file);
 	subprocess = g_subprocess_newv (argv,
@@ -163,7 +162,7 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 	}
 
 	/* write the download contents into a temporary file that will be
-	 * moved into the system */
+	 * copied into the system */
 	tmp_file_tmpl = g_strdup_printf ("XXXXXX_%s", file_name);
 	tmp_file = g_file_new_tmp (tmp_file_tmpl, &iostream, error);
 	if (tmp_file == NULL)
@@ -191,11 +190,10 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 
 	/* install file systemwide */
 	if (!gs_plugin_external_appstream_install (tmp_file_path,
-						   file_name,
 						   cancellable,
 						   error))
 		return FALSE;
-	g_debug ("Installed appstream file %s as %s", tmp_file_path, file_name);
+	g_debug ("Installed appstream file %s", tmp_file_path);
 
 	return TRUE;
 }
