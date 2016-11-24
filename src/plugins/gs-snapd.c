@@ -74,21 +74,25 @@ open_snapd_socket (GCancellable *cancellable, GError **error)
 
 static gboolean
 read_from_snapd (GSocket *socket,
-		 gchar *buffer, gsize buffer_length,
+		 GByteArray *buffer,
 		 gsize *read_offset,
+		 gsize size,
 		 GCancellable *cancellable,
 		 GError **error)
 {
 	gssize n_read;
+
+	if (*read_offset + size > buffer->len)
+		g_byte_array_set_size (buffer, *read_offset + size + 1);
 	n_read = g_socket_receive (socket,
-				   buffer + *read_offset,
-				   buffer_length - *read_offset,
+				   buffer->data + *read_offset,
+				   size,
 				   cancellable,
 				   error);
 	if (n_read < 0)
 		return FALSE;
 	*read_offset += (gsize) n_read;
-	buffer[*read_offset] = '\0';
+	buffer->data[*read_offset] = '\0';
 
 	return TRUE;
 }
@@ -110,11 +114,12 @@ send_request (const gchar  *method,
 	g_autoptr (GSocket) socket = NULL;
 	g_autoptr (GString) request = NULL;
 	gssize n_written;
-	gsize max_data_length = 65535, data_length = 0, header_length;
-	gchar data[max_data_length + 1], *body = NULL;
+	g_autoptr (GByteArray) buffer = NULL;
+	gsize data_length = 0, header_length;
+	gchar *body = NULL;
 	g_autoptr (SoupMessageHeaders) headers = NULL;
 	gsize chunk_length = 0, n_required;
-	gchar *chunk_start = NULL;
+	guint8 *chunk_start = NULL;
 	guint code;
 
 	// NOTE: Would love to use libsoup but it doesn't support unix sockets
@@ -149,17 +154,18 @@ send_request (const gchar  *method,
 		return FALSE;
 
 	/* read HTTP headers */
-	while (data_length < max_data_length && !body) {
+	buffer = g_byte_array_new ();
+	while (body == NULL) {
 		if (!read_from_snapd (socket,
-				      data,
-				      max_data_length,
+				      buffer,
 				      &data_length,
+				      1024,
 				      cancellable,
 				      error))
 			return FALSE;
-		body = strstr (data, "\r\n\r\n");
+		body = strstr (buffer->data, "\r\n\r\n");
 	}
-	if (!body) {
+	if (body == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_INVALID_FORMAT,
@@ -169,11 +175,11 @@ send_request (const gchar  *method,
 
 	/* body starts after header divider */
 	body += 4;
-	header_length = (gsize) (body - data);
+	header_length = (gsize) ((guint8 *) body - buffer->data);
 
 	/* parse headers */
 	headers = soup_message_headers_new (SOUP_MESSAGE_HEADERS_RESPONSE);
-	if (!soup_headers_parse_response (data, (gint) header_length, headers,
+	if (!soup_headers_parse_response (buffer->data, (gint) header_length, headers,
 					  NULL, &code, reason_phrase)) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
@@ -190,16 +196,10 @@ send_request (const gchar  *method,
 	case SOUP_ENCODING_EOF:
 		while (TRUE) {
 			gsize n_read = data_length;
-			if (n_read == max_data_length) {
-				g_set_error_literal (error,
-						     GS_PLUGIN_ERROR,
-						     GS_PLUGIN_ERROR_INVALID_FORMAT,
-						     "Out of space reading snapd response");
-				return FALSE;
-			}
-			if (!read_from_snapd (socket, data,
-					      max_data_length - data_length,
+			if (!read_from_snapd (socket,
+					      buffer,
 					      &data_length,
+					      1024,
 					      cancellable,
 					      error))
 				return FALSE;
@@ -210,14 +210,14 @@ send_request (const gchar  *method,
 		break;
 	case SOUP_ENCODING_CHUNKED:
 		// FIXME: support multiple chunks
-		while (data_length < max_data_length) {
+		while (TRUE) {
 			chunk_start = strstr (body, "\r\n");
 			if (chunk_start)
 				break;
 			if (!read_from_snapd (socket,
-					      data,
-					      max_data_length,
+					      buffer,
 					      &data_length,
+					      1024,
 					      cancellable,
 					      error))
 				return FALSE;
@@ -234,22 +234,12 @@ send_request (const gchar  *method,
 		chunk_start += 2;
 
 		/* check if enough space to read chunk */
-		n_required = (chunk_start - data) + chunk_length;
-		if (n_required > max_data_length) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "Not enough space for snapd response, "
-				     "require %" G_GSIZE_FORMAT " octets, "
-				     "have %" G_GSIZE_FORMAT,
-				     n_required, max_data_length);
-			return FALSE;
-		}
-
+		n_required = (chunk_start - buffer->data) + chunk_length;
 		while (data_length < n_required)
-			if (!read_from_snapd (socket, data,
-					      n_required - data_length,
+			if (!read_from_snapd (socket,
+					      buffer,
 					      &data_length,
+					      n_required - data_length,
 					      cancellable,
 					      error))
 				return FALSE;
@@ -258,23 +248,11 @@ send_request (const gchar  *method,
 		chunk_length = soup_message_headers_get_content_length (headers);
 		chunk_start = body;
 		n_required = header_length + chunk_length;
-
-		/* check if enough space available */
-		if (n_required > max_data_length) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "Not enough space for snapd response, "
-				     "require %" G_GSIZE_FORMAT " octets, "
-				     "have %" G_GSIZE_FORMAT,
-				     n_required, max_data_length);
-			return FALSE;
-		}
-
 		while (data_length < n_required) {
-			if (!read_from_snapd (socket, data,
-					      n_required - data_length,
+			if (!read_from_snapd (socket,
+					      buffer,
 					      &data_length,
+					      n_required - data_length,
 					      cancellable,
 					      error))
 				return FALSE;
