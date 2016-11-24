@@ -155,6 +155,7 @@ typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 
 /* async state */
 typedef struct {
+	GsPluginLoader			*plugin_loader;
 	const gchar			*function_name;
 	GsAppList			*list;
 	GPtrArray			*catlist;
@@ -170,9 +171,18 @@ typedef struct {
 	GsPluginAction			 action;
 } GsPluginLoaderAsyncState;
 
+static GsPluginLoaderAsyncState *
+gs_plugin_loader_async_state_new (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderAsyncState *state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	return state;
+}
+
 static void
 gs_plugin_loader_async_state_free (GsPluginLoaderAsyncState *state)
 {
+	g_object_unref (state->plugin_loader);
 	if (state->category != NULL)
 		g_object_unref (state->category);
 	if (state->app != NULL)
@@ -1350,7 +1360,7 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_UPDATES;
 
@@ -1430,7 +1440,7 @@ gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
 
@@ -1510,7 +1520,7 @@ gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
 
@@ -1593,7 +1603,7 @@ gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_SOURCES;
 
@@ -1689,7 +1699,7 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_INSTALLED;
 
@@ -1788,7 +1798,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_POPULAR;
 
@@ -1901,7 +1911,7 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_FEATURED;
 
@@ -2128,7 +2138,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
@@ -2295,7 +2305,7 @@ gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
@@ -2462,7 +2472,7 @@ gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
@@ -2647,7 +2657,7 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->catlist = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	state->action = GS_PLUGIN_ACTION_GET_CATEGORIES;
@@ -2805,7 +2815,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->category = g_object_ref (category);
@@ -2891,7 +2901,7 @@ gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->app = g_object_ref (app);
 	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_REFINE;
@@ -3306,7 +3316,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->app = g_object_ref (app);
 	state->action = action;
 
@@ -3366,7 +3376,7 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->app = g_object_ref (app);
 	state->review = g_object_ref (review);
 	state->action = action;
@@ -3493,7 +3503,7 @@ gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->auth = g_object_ref (auth);
 	state->action = action;
 
@@ -4654,7 +4664,7 @@ gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refresh_flags = refresh_flags;
 	state->cache_age = cache_age;
 	state->action = GS_PLUGIN_ACTION_REFRESH;
@@ -4853,7 +4863,7 @@ gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->file = g_object_ref (file);
@@ -5025,7 +5035,7 @@ gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state = gs_plugin_loader_async_state_new (plugin_loader);
 	state->list = gs_app_list_copy (apps);
 	state->action = GS_PLUGIN_ACTION_UPDATE;
 
