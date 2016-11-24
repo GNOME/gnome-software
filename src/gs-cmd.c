@@ -276,6 +276,7 @@ main (int argc, char **argv)
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      plugin_whitelist,
 				      plugin_blacklist,
+				      NULL,
 				      &error);
 	if (!ret) {
 		g_print ("Failed to setup plugins: %s\n", error->message);

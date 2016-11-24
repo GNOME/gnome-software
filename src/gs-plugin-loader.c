@@ -3949,6 +3949,7 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
  * @plugin_loader: a #GsPluginLoader
  * @whitelist: list of plugin names, or %NULL
  * @blacklist: list of plugin names, or %NULL
+ * @cancellable: A #GCancellable, or %NULL
  * @error: A #GError, or %NULL
  *
  * Sets up the plugin loader ready for use.
@@ -3959,6 +3960,7 @@ gboolean
 gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			gchar **whitelist,
 			gchar **blacklist,
+			GCancellable *cancellable,
 			GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -4191,7 +4193,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 					   function_name);
 		g_assert (ptask2 != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
-		ret = plugin_func (plugin, NULL, &error_local);
+		ret = plugin_func (plugin, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			/* badly behaved plugin */
