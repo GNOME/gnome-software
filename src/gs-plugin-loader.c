@@ -122,23 +122,23 @@ typedef gboolean	 (*GsPluginAuthFunc)		(GsPlugin	*plugin,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GsAppList	*list,
-							 GsPluginRefineFlags flags,
+							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
 							 GsApp		*app,
-							 GsPluginRefineFlags flags,
+							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsAppList	*list,
-							 GsPluginRefineFlags flags,
+							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
 							 guint		 cache_age,
-							 GsPluginRefreshFlags flags,
+							 GsPluginRefreshFlags refresh_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginFileToAppFunc)	(GsPlugin	*plugin,
@@ -158,7 +158,8 @@ typedef struct {
 	const gchar			*function_name;
 	GsAppList			*list;
 	GPtrArray			*catlist;
-	GsPluginRefineFlags		 flags;
+	GsPluginRefineFlags		 refine_flags;
+	GsPluginRefreshFlags		 refresh_flags;
 	gchar				*value;
 	GFile				*file;
 	guint				 cache_age;
@@ -387,7 +388,7 @@ gs_plugin_loader_run_refine_wildcard (GsPluginLoader *plugin_loader,
 				      GsPlugin *plugin,
 				      GsApp *app,
 				      GsAppList *list,
-				      GsPluginRefineFlags flags,
+				      GsPluginRefineFlags refine_flags,
 				      GCancellable *cancellable)
 {
 	GsPluginRefineWildcardFunc plugin_func = NULL;
@@ -403,7 +404,7 @@ gs_plugin_loader_run_refine_wildcard (GsPluginLoader *plugin_loader,
 		return;
 
 	gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-	ret = plugin_func (plugin, app, list, flags,
+	ret = plugin_func (plugin, app, list, refine_flags,
 			   cancellable, &error_local);
 	gs_plugin_loader_action_stop (plugin_loader, plugin);
 	if (!ret) {
@@ -431,7 +432,7 @@ gs_plugin_loader_run_refine_app (GsPluginLoader *plugin_loader,
 				GsPlugin *plugin,
 				GsApp *app,
 				GsAppList *list,
-				GsPluginRefineFlags flags,
+				GsPluginRefineFlags refine_flags,
 				GCancellable *cancellable)
 {
 	GsPluginRefineAppFunc plugin_func = NULL;
@@ -446,7 +447,7 @@ gs_plugin_loader_run_refine_app (GsPluginLoader *plugin_loader,
 		return;
 
 	gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-	ret = plugin_func (plugin, app, flags,
+	ret = plugin_func (plugin, app, refine_flags,
 				     cancellable, &error_local);
 	gs_plugin_loader_action_stop (plugin_loader, plugin);
 	if (!ret) {
@@ -474,7 +475,7 @@ static gboolean
 gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 				      const gchar *function_name_parent,
 				      GsAppList *list,
-				      GsPluginRefineFlags flags,
+				      GsPluginRefineFlags refine_flags,
 				      GCancellable *cancellable,
 				      GError **error)
 {
@@ -489,10 +490,10 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	gboolean ret = TRUE;
 
 	/* this implies the other */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
-		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
-		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
+		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
+		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
 
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
@@ -532,7 +533,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 			gboolean ret_local;
 
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-			ret_local = plugin_func (plugin, list, flags,
+			ret_local = plugin_func (plugin, list, refine_flags,
 			                         cancellable, &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret_local) {
@@ -562,7 +563,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 								 plugin,
 								 app,
 								 list,
-								 flags,
+								 refine_flags,
 								 cancellable);
 				continue;
 			}
@@ -570,14 +571,14 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 							      plugin,
 							      app,
 							      list,
-							      flags,
+							      refine_flags,
 							      cancellable);
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
 	/* ensure these are sorted by score */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) > 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) > 0) {
 		GPtrArray *reviews;
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
@@ -588,12 +589,12 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	}
 
 	/* refine addons one layer deep */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) > 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) > 0) {
 		g_autoptr(GsAppList) addons_list = NULL;
 
-		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS;
-		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS;
-		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS;
+		refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS;
+		refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS;
+		refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS;
 		addons_list = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
@@ -610,7 +611,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
 								    function_name_parent,
 								    addons_list,
-								    flags,
+								    refine_flags,
 								    cancellable,
 								    error);
 			if (!ret)
@@ -619,7 +620,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	}
 
 	/* also do runtime */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
 		g_autoptr(GsAppList) list2 = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *runtime;
@@ -632,7 +633,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
 								    function_name_parent,
 								    list2,
-								    flags,
+								    refine_flags,
 								    cancellable,
 								    error);
 			if (!ret)
@@ -641,10 +642,10 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	}
 
 	/* also do related packages one layer deep */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
+	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
 		g_autoptr(GsAppList) related_list = NULL;
 
-		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
+		refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
 		related_list = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
@@ -661,7 +662,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
 								    function_name_parent,
 								    related_list,
-								    flags,
+								    refine_flags,
 								    cancellable,
 								    error);
 			if (!ret)
@@ -677,7 +678,7 @@ static gboolean
 gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     const gchar *function_name_parent,
 			     GsAppList *list,
-			     GsPluginRefineFlags flags,
+			     GsPluginRefineFlags refine_flags,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -701,7 +702,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	ret = gs_plugin_loader_run_refine_internal (plugin_loader,
 						    function_name_parent,
 						    list,
-						    flags,
+						    refine_flags,
 						    cancellable,
 						    error);
 	if (!ret)
@@ -720,7 +721,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		ret = gs_plugin_loader_run_refine_internal (plugin_loader,
 							    function_name_parent,
 							    list,
-							    flags,
+							    refine_flags,
 							    cancellable,
 							    error);
 		if (!ret)
@@ -740,7 +741,7 @@ static GsAppList *
 gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      GsPluginAction action,
 			      const gchar *function_name,
-			      GsPluginRefineFlags flags,
+			      GsPluginRefineFlags refine_flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -817,7 +818,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   list,
-					   flags,
+					   refine_flags,
 					   cancellable,
 					   error);
 	if (!ret)
@@ -949,7 +950,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted packages in the application view */
-	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) == 0) &&
+	if (((state->refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) == 0) &&
 	    (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)) {
 //		g_debug ("app invalid as only a %s: %s",
 //			 as_app_kind_to_string (gs_app_get_kind (app)),
@@ -1244,11 +1245,11 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	gboolean ret;
 
 	/* do things that would block */
-	if ((state->flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0) {
+	if ((state->refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0) {
 		state->list = gs_plugin_loader_run_results (plugin_loader,
 							    state->action,
 							    "gs_plugin_add_updates_historical",
-							    state->flags,
+							    state->refine_flags,
 							    cancellable,
 							    &error);
 		if (error != NULL) {
@@ -1260,7 +1261,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 		state->list = gs_plugin_loader_run_results (plugin_loader,
 							    state->action,
 							    "gs_plugin_add_updates",
-							    state->flags,
+							    state->refine_flags,
 							    cancellable,
 							    &error);
 		if (error != NULL) {
@@ -1274,7 +1275,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 			list = gs_plugin_loader_run_results (plugin_loader,
 							     state->action,
 							     "gs_plugin_add_updates_pending",
-							     state->flags,
+							     state->refine_flags,
 							     cancellable,
 							     &error);
 			if (error != NULL) {
@@ -1337,7 +1338,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
-				    GsPluginRefineFlags flags,
+				    GsPluginRefineFlags refine_flags,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -1350,7 +1351,7 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_UPDATES;
 
 	/* run in a thread */
@@ -1393,7 +1394,7 @@ gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    state->action,
 						    "gs_plugin_add_distro_upgrades",
-						    state->flags,
+						    state->refine_flags,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
@@ -1417,7 +1418,7 @@ gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
-					    GsPluginRefineFlags flags,
+					    GsPluginRefineFlags refine_flags,
 					    GCancellable *cancellable,
 					    GAsyncReadyCallback callback,
 					    gpointer user_data)
@@ -1430,7 +1431,7 @@ gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
 
 	/* run in a thread */
@@ -1473,7 +1474,7 @@ gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    state->action,
 						    "gs_plugin_add_unvoted_reviews",
-						    state->flags,
+						    state->refine_flags,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
@@ -1497,7 +1498,7 @@ gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
-					    GsPluginRefineFlags flags,
+					    GsPluginRefineFlags refine_flags,
 					    GCancellable *cancellable,
 					    GAsyncReadyCallback callback,
 					    gpointer user_data)
@@ -1510,7 +1511,7 @@ gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
 
 	/* run in a thread */
@@ -1553,7 +1554,7 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    state->action,
 						    "gs_plugin_add_sources",
-						    state->flags,
+						    state->refine_flags,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
@@ -1580,7 +1581,7 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
-				    GsPluginRefineFlags flags,
+				    GsPluginRefineFlags refine_flags,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -1593,7 +1594,7 @@ gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_SOURCES;
 
 	/* run in a thread */
@@ -1637,7 +1638,7 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    state->action,
 						    "gs_plugin_add_installed",
-						    state->flags,
+						    state->refine_flags,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
@@ -1676,7 +1677,7 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
-				      GsPluginRefineFlags flags,
+				      GsPluginRefineFlags refine_flags,
 				      GCancellable *cancellable,
 				      GAsyncReadyCallback callback,
 				      gpointer user_data)
@@ -1689,7 +1690,7 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_INSTALLED;
 
 	/* run in a thread */
@@ -1751,7 +1752,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 		state->list = gs_plugin_loader_run_results (plugin_loader,
 							    state->action,
 							    "gs_plugin_add_popular",
-							    state->flags,
+							    state->refine_flags,
 							    cancellable,
 							    &error);
 		if (error != NULL) {
@@ -1775,7 +1776,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 
 void
 gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
-				    GsPluginRefineFlags flags,
+				    GsPluginRefineFlags refine_flags,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -1788,7 +1789,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_POPULAR;
 
 	/* run in a thread */
@@ -1841,7 +1842,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    state->action,
 						    "gs_plugin_add_featured",
-						    state->flags,
+						    state->refine_flags,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
@@ -1888,7 +1889,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
-				     GsPluginRefineFlags flags,
+				     GsPluginRefineFlags refine_flags,
 				     GCancellable *cancellable,
 				     GAsyncReadyCallback callback,
 				     gpointer user_data)
@@ -1901,7 +1902,7 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_GET_FEATURED;
 
 	/* run in a thread */
@@ -2058,7 +2059,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
-					   state->flags,
+					   state->refine_flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -2115,7 +2116,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 void
 gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 			       const gchar *value,
-			       GsPluginRefineFlags flags,
+			       GsPluginRefineFlags refine_flags,
 			       GCancellable *cancellable,
 			       GAsyncReadyCallback callback,
 			       gpointer user_data)
@@ -2128,7 +2129,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
 	state->action = GS_PLUGIN_ACTION_SEARCH;
@@ -2224,7 +2225,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
-					   state->flags,
+					   state->refine_flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -2282,7 +2283,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 void
 gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
                                      const gchar *value,
-                                     GsPluginRefineFlags flags,
+                                     GsPluginRefineFlags refine_flags,
                                      GCancellable *cancellable,
                                      GAsyncReadyCallback callback,
                                      gpointer user_data)
@@ -2295,7 +2296,7 @@ gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
 	state->action = GS_PLUGIN_ACTION_SEARCH_FILES;
@@ -2391,7 +2392,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
-					   state->flags,
+					   state->refine_flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -2449,7 +2450,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 void
 gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
                                              const gchar *value,
-                                             GsPluginRefineFlags flags,
+                                             GsPluginRefineFlags refine_flags,
                                              GCancellable *cancellable,
                                              GAsyncReadyCallback callback,
                                              gpointer user_data)
@@ -2462,7 +2463,7 @@ gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->value = g_strdup (value);
 	state->action = GS_PLUGIN_ACTION_SEARCH_PROVIDES;
@@ -2634,7 +2635,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
  **/
 void
 gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
-				       GsPluginRefineFlags flags,
+				       GsPluginRefineFlags refine_flags,
 				       GCancellable *cancellable,
 				       GAsyncReadyCallback callback,
 				       gpointer user_data)
@@ -2647,7 +2648,7 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->catlist = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	state->action = GS_PLUGIN_ACTION_GET_CATEGORIES;
 
@@ -2743,7 +2744,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
-					   state->flags,
+					   state->refine_flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -2792,7 +2793,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 void
 gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 					  GsCategory *category,
-					  GsPluginRefineFlags flags,
+					  GsPluginRefineFlags refine_flags,
 					  GCancellable *cancellable,
 					  GAsyncReadyCallback callback,
 					  gpointer user_data)
@@ -2805,7 +2806,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->category = g_object_ref (category);
 	state->action = GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
@@ -2854,7 +2855,7 @@ gs_plugin_loader_app_refine_thread_cb (GTask *task,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   NULL,
 					   list,
-					   state->flags,
+					   state->refine_flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -2877,7 +2878,7 @@ out:
 void
 gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 				   GsApp *app,
-				   GsPluginRefineFlags flags,
+				   GsPluginRefineFlags refine_flags,
 				   GCancellable *cancellable,
 				   GAsyncReadyCallback callback,
 				   gpointer user_data)
@@ -2892,12 +2893,12 @@ gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->app = g_object_ref (app);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->action = GS_PLUGIN_ACTION_REFINE;
 
 	/* enforce this */
-	if (state->flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
-		state->flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
+	if (state->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
+		state->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4528,7 +4529,7 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 static gboolean
 gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 			      guint cache_age,
-			      GsPluginRefreshFlags flags,
+			      GsPluginRefreshFlags refresh_flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -4564,7 +4565,7 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 					  function_name);
 		g_assert (ptask != NULL);
 		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
-		ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
+		ret = plugin_func (plugin, cache_age, refresh_flags, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			/* badly behaved plugin */
@@ -4574,7 +4575,7 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 					    function_name);
 				continue;
 			}
-			if (flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) {
+			if (refresh_flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) {
 				g_propagate_error (error, error_local);
 				error_local = NULL;
 				return FALSE;
@@ -4619,7 +4620,7 @@ gs_plugin_loader_refresh_thread_cb (GTask *task,
 
 	ret = gs_plugin_loader_run_refresh (plugin_loader,
 					    state->cache_age,
-					    state->flags,
+					    state->refresh_flags,
 					    cancellable,
 					    &error);
 	if (!ret) {
@@ -4641,7 +4642,7 @@ gs_plugin_loader_refresh_thread_cb (GTask *task,
 void
 gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 				guint cache_age,
-				GsPluginRefreshFlags flags,
+				GsPluginRefreshFlags refresh_flags,
 				GCancellable *cancellable,
 				GAsyncReadyCallback callback,
 				gpointer user_data)
@@ -4654,7 +4655,7 @@ gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refresh_flags = refresh_flags;
 	state->cache_age = cache_age;
 	state->action = GS_PLUGIN_ACTION_REFRESH;
 
@@ -4770,7 +4771,7 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
-					   state->flags,
+					   state->refine_flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -4840,7 +4841,7 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 void
 gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
 				    GFile *file,
-				    GsPluginRefineFlags flags,
+				    GsPluginRefineFlags refine_flags,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -4853,7 +4854,7 @@ gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
 
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->flags = flags;
+	state->refine_flags = refine_flags;
 	state->list = gs_app_list_new ();
 	state->file = g_object_ref (file);
 	state->action = GS_PLUGIN_ACTION_FILE_TO_APP;
