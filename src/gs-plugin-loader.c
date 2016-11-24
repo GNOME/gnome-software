@@ -221,11 +221,9 @@ gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsPlugin *plugin;
-	guint i;
 
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		if (g_strcmp0 (gs_plugin_get_name (plugin), plugin_name) == 0)
 			return plugin;
 	}
@@ -3921,13 +3919,11 @@ void
 gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, guint scale)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsPlugin *plugin;
-	guint i;
 
 	/* save globally, and update each plugin */
 	priv->scale = scale;
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		gs_plugin_set_scale (plugin, scale);
 	}
 }
@@ -4829,7 +4825,7 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
 
 	/* check the apps have an icon set */
-	for (j = 0; j < gs_app_list_length (job->list); j++) {
+	for (guint j = 0; j < gs_app_list_length (job->list); j++) {
 		GsApp *app = gs_app_list_index (job->list, j);
 		if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
 		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
