@@ -136,6 +136,7 @@ execute_search (GsShellSearchProvider  *self,
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       string,
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				       GS_PLUGIN_FAILURE_FLAGS_NONE,
 				       self->cancellable,
 				       search_done_cb,
 				       pending_search);

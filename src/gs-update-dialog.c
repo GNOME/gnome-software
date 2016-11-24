@@ -246,6 +246,7 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 
 	gs_plugin_loader_get_updates_async (dialog->plugin_loader,
 	                                    refine_flags,
+	                                    GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                    dialog->cancellable,
 	                                    (GAsyncReadyCallback) get_installed_updates_cb,
 	                                    dialog);

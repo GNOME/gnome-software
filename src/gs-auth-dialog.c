@@ -172,6 +172,7 @@ gs_auth_dialog_continue_cb (GtkWidget *widget, GsAuthDialog *dialog)
 	gs_plugin_loader_auth_action_async (dialog->plugin_loader,
 					    dialog->auth,
 					    action,
+					    GS_PLUGIN_FAILURE_FLAGS_NONE,
 					    dialog->cancellable,
 					    gs_auth_dialog_authenticate_cb,
 					    dialog);

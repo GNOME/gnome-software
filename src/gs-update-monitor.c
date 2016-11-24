@@ -288,6 +288,7 @@ get_updates (GsUpdateMonitor *monitor)
 	gs_plugin_loader_get_updates_async (monitor->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
+					    GS_PLUGIN_FAILURE_FLAGS_NONE,
 					    monitor->cancellable,
 					    get_updates_finished_cb,
 					    monitor);
@@ -302,6 +303,7 @@ get_upgrades (GsUpdateMonitor *monitor)
 	g_debug ("Getting upgrades");
 	gs_plugin_loader_get_distro_upgrades_async (monitor->plugin_loader,
 						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						    GS_PLUGIN_FAILURE_FLAGS_NONE,
 						    monitor->cancellable,
 						    get_upgrades_finished_cb,
 						    monitor);
@@ -415,6 +417,7 @@ check_updates (GsUpdateMonitor *monitor)
 	gs_plugin_loader_refresh_async (monitor->plugin_loader,
 					60 * 60 * 24,
 					refresh_flags,
+					GS_PLUGIN_FAILURE_FLAGS_NONE,
 					monitor->cancellable,
 					refresh_cache_finished_cb,
 					monitor);
@@ -605,6 +608,7 @@ cleanup_notifications_cb (gpointer user_data)
 	g_debug ("getting historical updates for fresh session");
 	gs_plugin_loader_get_updates_async (monitor->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_USE_HISTORY,
+					    GS_PLUGIN_FAILURE_FLAGS_NONE,
 					    monitor->cancellable,
 					    get_updates_historical_cb,
 					    monitor);

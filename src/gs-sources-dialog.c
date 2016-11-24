@@ -203,6 +203,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
 								   GS_PLUGIN_ACTION_INSTALL,
+								   GS_PLUGIN_FAILURE_FLAGS_NONE,
 								   dialog->cancellable,
 								   source_modified_cb,
 								   dialog);
@@ -212,6 +213,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
 								   GS_PLUGIN_ACTION_REMOVE,
+								   GS_PLUGIN_FAILURE_FLAGS_NONE,
 								   dialog->cancellable,
 								   source_modified_cb,
 								   dialog);
@@ -365,6 +367,7 @@ reload_sources (GsSourcesDialog *dialog)
 	gs_plugin_loader_get_sources_async (dialog->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED,
+					    GS_PLUGIN_FAILURE_FLAGS_NONE,
 					    dialog->cancellable,
 					    (GAsyncReadyCallback) get_sources_cb,
 					    dialog);
@@ -512,6 +515,7 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 	gs_plugin_loader_app_action_async (dialog->plugin_loader,
 					   app,
 					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   dialog->cancellable,
 					   app_removed_cb,
 					   dialog);

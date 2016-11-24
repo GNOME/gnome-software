@@ -91,6 +91,7 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 	                                   GS_PLUGIN_ACTION_INSTALL,
+	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -118,6 +119,7 @@ gs_page_remove_authenticate_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 	                                   GS_PLUGIN_ACTION_REMOVE,
+	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
@@ -291,6 +293,7 @@ gs_page_install_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   helper->action,
+	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                   helper->cancellable,
 	                                   gs_page_app_installed_cb,
 	                                   helper);
@@ -315,6 +318,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 					   GS_PLUGIN_ACTION_UPDATE,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -410,6 +414,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 					   helper->action,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   helper->cancellable,
 					   gs_page_app_installed_cb,
 					   helper);
@@ -434,6 +439,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   helper->app,
 					   helper->action,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   helper->cancellable,
 					   gs_page_app_removed_cb,
 					   helper);
@@ -459,6 +465,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 		                                   app,
 		                                   GS_PLUGIN_ACTION_REMOVE,
+		                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 		                                   helper->cancellable,
 		                                   gs_page_app_removed_cb,
 		                                   helper);
@@ -529,6 +536,7 @@ gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_ACTION_LAUNCH,
+	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                   cancellable,
 	                                   gs_page_app_launched_cb,
 	                                   NULL);
@@ -554,6 +562,7 @@ gs_page_shortcut_add (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_ACTION_ADD_SHORTCUT,
+	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                   cancellable,
 	                                   gs_page_app_shortcut_added_cb,
 	                                   NULL);
@@ -579,6 +588,7 @@ gs_page_shortcut_remove (GsPage *page, GsApp *app, GCancellable *cancellable)
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_ACTION_REMOVE_SHORTCUT,
+	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                   cancellable,
 	                                   gs_page_app_shortcut_removed_cb,
 	                                   NULL);

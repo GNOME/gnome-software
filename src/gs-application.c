@@ -177,6 +177,7 @@ gs_application_initialize_plugins (GsApplication *app)
 	if (!gs_plugin_loader_setup (app->plugin_loader,
 				     plugin_whitelist,
 				     plugin_blacklist,
+				     GS_PLUGIN_FAILURE_FLAGS_NONE,
 				     NULL,
 				     &error)) {
 		g_warning ("Failed to setup plugins: %s", error->message);
@@ -399,6 +400,7 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	gs_plugin_loader_app_action_async (app->plugin_loader,
 					   NULL, /* everything! */
 					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
 					   app->cancellable,
 					   cancel_trigger_failed_cb,
 					   app);
@@ -474,6 +476,7 @@ reboot_and_install (GSimpleAction *action,
 	gs_application_initialize_plugins (app);
 	gs_plugin_loader_update_async (app->plugin_loader,
 				       NULL,
+				       GS_PLUGIN_FAILURE_FLAGS_NONE,
 				       app->cancellable,
 				       (GAsyncReadyCallback) offline_update_cb,
 				       app);

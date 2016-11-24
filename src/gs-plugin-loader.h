@@ -54,6 +54,7 @@ typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_get_installed_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -62,6 +63,7 @@ GsAppList	*gs_plugin_loader_get_installed_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_updates_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -70,6 +72,7 @@ GsAppList	*gs_plugin_loader_get_updates_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -78,6 +81,7 @@ GsAppList	*gs_plugin_loader_get_distro_upgrades_finish (GsPluginLoader	*plugin_l
 							 GError		**error);
 void		 gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -86,6 +90,7 @@ GsAppList	*gs_plugin_loader_get_unvoted_reviews_finish (GsPluginLoader	*plugin_l
 							 GError		**error);
 void		 gs_plugin_loader_get_sources_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -94,6 +99,7 @@ GsAppList	*gs_plugin_loader_get_sources_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_popular_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -102,6 +108,7 @@ GsAppList	*gs_plugin_loader_get_popular_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_featured_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -110,6 +117,7 @@ GsAppList	*gs_plugin_loader_get_featured_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_categories_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -119,6 +127,7 @@ GPtrArray	*gs_plugin_loader_get_categories_finish	(GsPluginLoader	*plugin_loader
 void		 gs_plugin_loader_get_category_apps_async (GsPluginLoader	*plugin_loader,
 							 GsCategory	*category,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -128,6 +137,7 @@ GsAppList	*gs_plugin_loader_get_category_apps_finish (GsPluginLoader	*plugin_loa
 void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -137,6 +147,7 @@ GsAppList	*gs_plugin_loader_search_finish		(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_search_files_async	(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -146,6 +157,7 @@ GsAppList	*gs_plugin_loader_search_files_finish	(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_search_what_provides_async (GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -155,6 +167,7 @@ GsAppList	*gs_plugin_loader_search_what_provides_finish (GsPluginLoader	*plugin_
 void		 gs_plugin_loader_file_to_app_async	(GsPluginLoader	*plugin_loader,
 							 GFile		*file,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -163,6 +176,7 @@ GsApp		*gs_plugin_loader_file_to_app_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_update_async		(GsPluginLoader	*plugin_loader,
 							 GsAppList	*apps,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -172,6 +186,7 @@ gboolean	 gs_plugin_loader_update_finish		(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 gchar		**whitelist,
 							 gchar		**blacklist,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);
@@ -187,6 +202,7 @@ void		 gs_plugin_loader_set_scale		(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_app_refine_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -196,6 +212,7 @@ gboolean	 gs_plugin_loader_app_refine_finish	(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_app_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginAction	 a,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -209,6 +226,7 @@ void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GsPluginAction	 action,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -218,6 +236,7 @@ gboolean	 gs_plugin_loader_auth_action_finish	(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_auth_action_async	(GsPluginLoader	*plugin_loader,
 							 GsAuth		*auth,
 							 GsPluginAction	 action,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -227,6 +246,7 @@ gboolean	 gs_plugin_loader_refresh_finish	(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_refresh_async		(GsPluginLoader	*plugin_loader,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags refresh_flags,
+							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);

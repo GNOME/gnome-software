@@ -300,6 +300,18 @@ typedef enum {
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;
 
+/**
+ * GsPluginFailureFlags:
+ * @GS_PLUGIN_FAILURE_FLAGS_NONE:		No flags set
+ *
+ * The failure flags for the plugin action.
+ **/
+typedef enum {
+	GS_PLUGIN_FAILURE_FLAGS_NONE			= 0,
+	/*< private >*/
+	GS_PLUGIN_FAILURE_FLAGS_LAST
+} GsPluginFailureFlags;
+
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_TYPES_H */
