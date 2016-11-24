@@ -105,7 +105,7 @@ gs_shell_loading_load (GsShellLoading *self)
 	 * spin up the plugins enough as to prime caches */
 	gs_plugin_loader_refresh_async (priv->plugin_loader, G_MAXUINT,
 					GS_PLUGIN_REFRESH_FLAGS_METADATA,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
+					GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					priv->cancellable,
 					gs_shell_loading_refresh_cb,
 					self);

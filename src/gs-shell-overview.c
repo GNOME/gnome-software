@@ -492,7 +492,7 @@ gs_shell_overview_load (GsShellOverview *self)
 		priv->loading_featured = TRUE;
 		gs_plugin_loader_get_featured_async (priv->plugin_loader,
 						     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						     GS_PLUGIN_FAILURE_FLAGS_NONE,
+						     GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						     priv->cancellable,
 						     gs_shell_overview_get_featured_cb,
 						     self);
@@ -504,7 +504,7 @@ gs_shell_overview_load (GsShellOverview *self)
 		gs_plugin_loader_get_popular_async (priv->plugin_loader,
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						    GS_PLUGIN_FAILURE_FLAGS_NONE,
+						    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						    priv->cancellable,
 						    gs_shell_overview_get_popular_cb,
 						    self);
@@ -540,7 +540,7 @@ gs_shell_overview_load (GsShellOverview *self)
 								  featured_category,
 								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-								  GS_PLUGIN_FAILURE_FLAGS_NONE,
+								  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 								  priv->cancellable,
 								  gs_shell_overview_get_category_apps_cb,
 								  load_data);
@@ -553,7 +553,7 @@ gs_shell_overview_load (GsShellOverview *self)
 		priv->loading_categories = TRUE;
 		gs_plugin_loader_get_categories_async (priv->plugin_loader,
 						       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						       GS_PLUGIN_FAILURE_FLAGS_NONE,
+						       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						       priv->cancellable,
 						       gs_shell_overview_get_categories_cb,
 						       self);
@@ -695,7 +695,7 @@ g_shell_overview_rescan_proprietary_sources (GsShellOverview *self)
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	gs_plugin_loader_get_sources_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    priv->cancellable,
 					    (GAsyncReadyCallback) g_shell_overview_get_sources_cb,
 					    self);

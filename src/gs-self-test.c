@@ -390,7 +390,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_INSTALL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -401,7 +401,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 	 * but dummy::refine() sets it */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_REMOVE,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -432,7 +432,7 @@ gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_UPDATE,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -478,7 +478,7 @@ gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -502,7 +502,7 @@ gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("zeus.desktop");
 	ret = gs_plugin_loader_app_refine (plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -534,7 +534,7 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 	/* get the updates list */
 	list = gs_plugin_loader_get_updates (plugin_loader,
 					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					     GS_PLUGIN_FAILURE_FLAGS_NONE,
+					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
 	g_assert_no_error (error);
@@ -570,7 +570,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	/* get the updates list */
 	list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
 						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						     GS_PLUGIN_FAILURE_FLAGS_NONE,
+						     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						     NULL,
 						     &error);
 	g_assert_no_error (error);
@@ -590,7 +590,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_app_action (plugin_loader,
 					   app,
 					   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -601,7 +601,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_app_action (plugin_loader,
 					   app,
 					   GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -628,7 +628,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
-					       GS_PLUGIN_FAILURE_FLAGS_NONE,
+					       GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					       NULL,
 					       &error);
 	g_assert_no_error (error);
@@ -687,7 +687,7 @@ gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
 	list = gs_plugin_loader_search (plugin_loader,
 					"spell",
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
 	g_assert_no_error (error);
@@ -712,7 +712,7 @@ gs_plugin_loader_modalias_func (GsPluginLoader *plugin_loader)
 	list = gs_plugin_loader_search (plugin_loader,
 					"colorhug2",
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
 	g_assert_no_error (error);
@@ -743,7 +743,7 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
 	ret = gs_plugin_loader_app_refine (plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -771,7 +771,7 @@ gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
 	app = gs_plugin_loader_file_to_app (plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
 	g_assert_no_error (error);
@@ -807,7 +807,7 @@ gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
 	app = gs_plugin_loader_file_to_app (plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
 	g_assert_no_error (error);
@@ -842,7 +842,7 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 	app = gs_plugin_loader_file_to_app (plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
 	g_assert_no_error (error);
@@ -879,7 +879,7 @@ gs_plugin_loader_repos_func (GsPluginLoader *plugin_loader)
 	gs_app_set_origin (app, "utopia");
 	ret = gs_plugin_loader_app_refine (plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -913,7 +913,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	app = gs_plugin_loader_file_to_app (plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
 	g_assert_no_error (error);
@@ -934,7 +934,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	/* now install the remote */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_INSTALL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -962,7 +962,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	app2 = gs_plugin_loader_file_to_app (plugin_loader,
 					     file,
 					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					     GS_PLUGIN_FAILURE_FLAGS_NONE,
+					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
 	g_assert_no_error (error);
@@ -972,7 +972,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	/* remove it */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_REMOVE,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -1041,7 +1041,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
 					   GS_PLUGIN_ACTION_INSTALL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -1059,7 +1059,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	/* check the source now exists */
 	sources = gs_plugin_loader_get_sources (plugin_loader,
 						GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						GS_PLUGIN_FAILURE_FLAGS_NONE,
+						GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						NULL,
 						&error);
 	g_assert_no_error (error);
@@ -1073,7 +1073,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_refresh (plugin_loader,
 					G_MAXUINT,
 					GS_PLUGIN_REFRESH_FLAGS_METADATA,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
 	g_assert_no_error (error);
@@ -1085,7 +1085,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
 	g_assert_no_error (error);
@@ -1107,7 +1107,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	/* install, also installing runtime */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_INSTALL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -1155,7 +1155,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	/* remove the application */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_REMOVE,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -1177,7 +1177,7 @@ gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
 	/* ensure we get the same results back from calling the methods twice */
 	list1 = gs_plugin_loader_get_distro_upgrades (plugin_loader,
 						      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						      GS_PLUGIN_FAILURE_FLAGS_NONE,
+						      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						      NULL,
 						      &error);
 	g_assert_no_error (error);
@@ -1187,7 +1187,7 @@ gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
 
 	list2 = gs_plugin_loader_get_distro_upgrades (plugin_loader,
 						      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						      GS_PLUGIN_FAILURE_FLAGS_NONE,
+						      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						      NULL,
 						      &error);
 	g_assert_no_error (error);
@@ -1218,7 +1218,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	/* do an action that returns a URL */
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
 					    GS_PLUGIN_ACTION_AUTH_REGISTER,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
 	g_assert (!ret);
@@ -1230,7 +1230,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	review = as_review_new ();
 	ret = gs_plugin_loader_review_action (plugin_loader, app, review,
 					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED);
 	g_assert (!ret);
@@ -1239,7 +1239,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	/* pretend to auth with no credentials */
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
 					    GS_PLUGIN_ACTION_AUTH_LOGIN,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
 	g_assert (!ret);
@@ -1251,7 +1251,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	gs_auth_set_password (auth, "dummy");
 	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
 					    GS_PLUGIN_ACTION_AUTH_LOGIN,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -1261,7 +1261,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	review2 = as_review_new ();
 	ret = gs_plugin_loader_review_action (plugin_loader, app, review2,
 					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -1314,7 +1314,7 @@ gs_plugin_loader_wildcard_func (GsPluginLoader *plugin_loader)
 
 	list = gs_plugin_loader_get_popular (plugin_loader,
 					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					     GS_PLUGIN_FAILURE_FLAGS_NONE,
+					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
 	g_assert_no_error (error);

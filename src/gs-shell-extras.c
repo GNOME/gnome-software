@@ -694,7 +694,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                     GS_PLUGIN_FAILURE_FLAGS_NONE,
+			                                     GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 			                                     self->search_cancellable,
 			                                     search_files_cb,
 			                                     search_data);
@@ -707,7 +707,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                    GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                    GS_PLUGIN_FAILURE_FLAGS_NONE,
+			                                    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 			                                    self->search_cancellable,
 			                                    file_to_app_cb,
 			                                    search_data);
@@ -724,7 +724,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                             GS_PLUGIN_FAILURE_FLAGS_NONE,
+			                                             GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 			                                             self->search_cancellable,
 			                                             get_search_what_provides_cb,
 			                                             search_data);

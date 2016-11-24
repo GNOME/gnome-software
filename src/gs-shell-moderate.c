@@ -75,8 +75,8 @@ gs_shell_moderate_review_clicked_cb (GsReviewRow *row,
 					      app,
 					      gs_review_row_get_review (row),
 					      action,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE |
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					      self->cancellable,
 					      gs_shell_moderate_app_set_review_cb,
 					      self);
@@ -190,7 +190,7 @@ gs_shell_moderate_load (GsShellModerate *self)
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
-						    GS_PLUGIN_FAILURE_FLAGS_NONE,
+						    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						    self->cancellable,
 						    gs_shell_moderate_get_unvoted_reviews_cb,
 						    self);

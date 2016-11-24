@@ -607,7 +607,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 	self->action_cnt++;
 	gs_plugin_loader_get_updates_async (self->plugin_loader,
 					    refine_flags,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    self);
@@ -617,7 +617,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 		gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
 							    refine_flags,
-							    GS_PLUGIN_FAILURE_FLAGS_NONE,
+							    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 							    self->cancellable,
 							    gs_shell_updates_get_upgrades_cb,
 							    self);
@@ -767,7 +767,7 @@ gs_shell_updates_get_new_updates (GsShellUpdates *self)
 	gs_plugin_loader_refresh_async (self->plugin_loader,
 					10 * 60,
 					refresh_flags,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
+					GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					self->cancellable_refresh,
 					(GAsyncReadyCallback) gs_shell_updates_refresh_cb,
 					self);
@@ -940,7 +940,7 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   gs_app_list_index (apps, 0),
 					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,
 					   self);
@@ -1006,7 +1006,7 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_update_async (self->plugin_loader,
 				       apps,
-				       GS_PLUGIN_FAILURE_FLAGS_NONE,
+				       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 				       self->cancellable,
 				       (GAsyncReadyCallback) gs_shell_updates_perform_update_cb,
 				       self);
@@ -1069,7 +1069,7 @@ gs_shell_updates_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   app,
 					   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable_upgrade_download,
 					   upgrade_download_finished_cb,
 					   helper);
@@ -1105,7 +1105,7 @@ upgrade_reboot_failed_cb (GObject *source,
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   app,
 					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,
 					   self);
@@ -1153,7 +1153,7 @@ trigger_upgrade (GsShellUpdates *self)
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 	                                   upgrade,
 	                                   GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
-	                                   GS_PLUGIN_FAILURE_FLAGS_NONE,
+	                                   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 	                                   self->cancellable,
 	                                   upgrade_trigger_finished_cb,
 	                                   self);

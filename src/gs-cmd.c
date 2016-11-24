@@ -292,7 +292,7 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			list = gs_plugin_loader_get_installed (plugin_loader,
 							       refine_flags,
-							       GS_PLUGIN_FAILURE_FLAGS_NONE,
+							       GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							       NULL,
 							       &error);
 			if (list == NULL) {
@@ -307,7 +307,7 @@ main (int argc, char **argv)
 			list = gs_plugin_loader_search (plugin_loader,
 							argv[2],
 							refine_flags,
-							GS_PLUGIN_FAILURE_FLAGS_NONE,
+							GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							NULL,
 							&error);
 			if (list == NULL) {
@@ -321,7 +321,7 @@ main (int argc, char **argv)
 		ret = gs_plugin_loader_app_action (plugin_loader,
 						   app,
 						   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-						   GS_PLUGIN_FAILURE_FLAGS_NONE,
+						   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						   NULL,
 						   &error);
 		if (ret)
@@ -332,7 +332,7 @@ main (int argc, char **argv)
 			ret = gs_plugin_loader_app_refine (plugin_loader,
 							   app,
 							   refine_flags,
-							   GS_PLUGIN_FAILURE_FLAGS_NONE,
+							   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							   NULL,
 							   &error);
 			if (!ret)
@@ -345,7 +345,7 @@ main (int argc, char **argv)
 			ret = gs_plugin_loader_app_action (plugin_loader,
 							   app,
 							   GS_PLUGIN_ACTION_LAUNCH,
-							   GS_PLUGIN_FAILURE_FLAGS_NONE,
+							   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							   NULL,
 							   &error);
 			if (!ret)
@@ -356,7 +356,7 @@ main (int argc, char **argv)
 		app = gs_plugin_loader_file_to_app (plugin_loader,
 						    file,
 						    refine_flags,
-						    GS_PLUGIN_FAILURE_FLAGS_NONE,
+						    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						    NULL,
 						    &error);
 		if (app == NULL) {
@@ -371,7 +371,7 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			list = gs_plugin_loader_get_updates (plugin_loader,
 							     refine_flags,
-							     GS_PLUGIN_FAILURE_FLAGS_NONE,
+							     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							     NULL,
 							     &error);
 			if (list == NULL) {
@@ -385,7 +385,7 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
 								     refine_flags,
-								     GS_PLUGIN_FAILURE_FLAGS_NONE,
+								     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 								     NULL,
 								     &error);
 			if (list == NULL) {
@@ -396,7 +396,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "sources") == 0) {
 		list = gs_plugin_loader_get_sources (plugin_loader,
 						     refine_flags,
-						     GS_PLUGIN_FAILURE_FLAGS_NONE,
+						     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						     NULL,
 						     &error);
 		if (list == NULL)
@@ -407,7 +407,7 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			list = gs_plugin_loader_get_popular (plugin_loader,
 							     refine_flags,
-							     GS_PLUGIN_FAILURE_FLAGS_NONE,
+							     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							     NULL,
 							     &error);
 			if (list == NULL) {
@@ -421,7 +421,7 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			list = gs_plugin_loader_get_featured (plugin_loader,
 							      refine_flags,
-							      GS_PLUGIN_FAILURE_FLAGS_NONE,
+							      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							      NULL,
 							      &error);
 			if (list == NULL) {
@@ -435,7 +435,7 @@ main (int argc, char **argv)
 				g_ptr_array_unref (categories);
 			categories = gs_plugin_loader_get_categories (plugin_loader,
 								      refine_flags,
-								      GS_PLUGIN_FAILURE_FLAGS_NONE,
+								      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 								      NULL,
 								      &error);
 			if (categories == NULL) {
@@ -461,7 +461,7 @@ main (int argc, char **argv)
 			list = gs_plugin_loader_get_category_apps (plugin_loader,
 								   category,
 								   refine_flags,
-								   GS_PLUGIN_FAILURE_FLAGS_NONE,
+								   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 								   NULL,
 								   &error);
 			if (list == NULL) {
@@ -474,7 +474,7 @@ main (int argc, char **argv)
 		refresh_flags = gs_cmd_refresh_flag_from_string (argv[2]);
 		ret = gs_plugin_loader_refresh (plugin_loader, cache_age,
 						refresh_flags,
-						GS_PLUGIN_FAILURE_FLAGS_NONE,
+						GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						NULL, &error);
 	} else {
 		ret = FALSE;

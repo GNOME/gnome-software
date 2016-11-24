@@ -203,7 +203,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
 								   GS_PLUGIN_ACTION_INSTALL,
-								   GS_PLUGIN_FAILURE_FLAGS_NONE,
+								   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 								   dialog->cancellable,
 								   source_modified_cb,
 								   dialog);
@@ -213,7 +213,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 				gs_plugin_loader_app_action_async (dialog->plugin_loader,
 								   app,
 								   GS_PLUGIN_ACTION_REMOVE,
-								   GS_PLUGIN_FAILURE_FLAGS_NONE,
+								   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 								   dialog->cancellable,
 								   source_modified_cb,
 								   dialog);

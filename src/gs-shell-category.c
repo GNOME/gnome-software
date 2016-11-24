@@ -150,7 +150,7 @@ gs_shell_category_reload (GsPage *page)
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-						  GS_PLUGIN_FAILURE_FLAGS_NONE,
+						  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						  self->cancellable,
 						  gs_shell_category_get_apps_cb,
 						  self);

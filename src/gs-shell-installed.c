@@ -248,7 +248,7 @@ gs_shell_installed_load (GsShellInstalled *self)
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					      self->cancellable,
 					      gs_shell_installed_get_installed_cb,
 					      self);

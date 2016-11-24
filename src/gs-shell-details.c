@@ -1104,7 +1104,8 @@ gs_shell_details_authenticate_cb (GtkDialog *dialog,
 					      helper->app,
 					      helper->review,
 					      helper->action,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      helper->self->cancellable,
 					      gs_shell_details_app_set_review_cb,
 					      helper);
@@ -1161,7 +1162,8 @@ gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
 					      helper->app,
 					      helper->review,
 					      helper->action,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      self->cancellable,
 					      gs_shell_details_app_set_review_cb,
 					      helper);
@@ -1310,7 +1312,7 @@ gs_shell_details_app_refine2 (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
 					   gs_shell_details_app_refine2_cb,
 					   self);
@@ -1502,7 +1504,7 @@ gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    self->cancellable,
 					    gs_shell_details_file_to_app_cb,
 					    self);
@@ -1525,7 +1527,7 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
 					   gs_shell_details_app_refine_cb,
 					   self);
@@ -1736,7 +1738,8 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 					      helper->app,
 					      helper->review,
 					      helper->action,
-					      GS_PLUGIN_FAILURE_FLAGS_NONE,
+					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      self->cancellable,
 					      gs_shell_details_app_set_review_cb,
 					      helper);
