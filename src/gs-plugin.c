@@ -325,20 +325,29 @@ gs_plugin_action_stop (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_module:
+ * gs_plugin_get_symbol (skip):
  * @plugin: a #GsPlugin
  *
- * Gets the external module that backs the plugin.
+ * Gets the symbol from the module that backs the plugin. If the plugin is not
+ * enabled then no symbol is returned.
  *
- * Returns: the #GModule, or %NULL
+ * Returns: the pointer to the symbol, or %NULL
  *
  * Since: 3.22
  **/
-GModule *
-gs_plugin_get_module (GsPlugin *plugin)
+gpointer
+gs_plugin_get_symbol (GsPlugin *plugin, const gchar *function_name)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->module;
+	gpointer func = NULL;
+
+	/* disabled plugins shouldn't be checked */
+	if (!priv->enabled)
+		return NULL;
+
+	/* look up the symbol */
+	g_module_symbol (priv->module, function_name, &func);
+	return func;
 }
 
 /**

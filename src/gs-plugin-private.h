@@ -64,7 +64,8 @@ void		 gs_plugin_set_running_other		(GsPlugin	*plugin,
 							 gboolean	 running_other);
 GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 							 GsPluginRule	 rule);
-GModule		*gs_plugin_get_module			(GsPlugin	*plugin);
+gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
+							 const gchar	*function_name);
 
 G_END_DECLS
 

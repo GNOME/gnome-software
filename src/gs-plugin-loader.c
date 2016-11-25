@@ -408,11 +408,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 	for (i = 0; i < priv->plugins->len; i++) {
 		GsPluginAdoptAppFunc adopt_app_func = NULL;
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (!gs_plugin_get_enabled (plugin))
-			continue;
-		g_module_symbol (gs_plugin_get_module (plugin),
-				 "gs_plugin_adopt_app",
-				 (gpointer *) &adopt_app_func);
+		adopt_app_func = gs_plugin_get_symbol (plugin, "gs_plugin_adopt_app");
 		if (adopt_app_func == NULL)
 			continue;
 		for (j = 0; j < gs_app_list_length (list); j++) {
@@ -467,12 +463,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderJob *job,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	/* no point */
-	if (!gs_plugin_get_enabled (plugin))
-		return TRUE;
-
 	/* load the possible symbol */
-	g_module_symbol (gs_plugin_get_module (plugin), job->function_name, &func);
+	func = gs_plugin_get_symbol (plugin, job->function_name);
 	if (func == NULL)
 		return TRUE;
 
@@ -4344,13 +4336,9 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 		guint j;
 
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (!gs_plugin_get_enabled (plugin))
-			continue;
 		if (g_task_return_error_if_cancelled (task))
 			return;
-		g_module_symbol (gs_plugin_get_module (plugin),
-				 job->function_name,
-				 (gpointer *) &plugin_app_func);
+		plugin_app_func = gs_plugin_get_symbol (plugin, job->function_name);
 		if (plugin_app_func == NULL)
 			continue;
 
@@ -4443,17 +4431,9 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 				       const gchar *function_name)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	guint i;
-
-	for (i = 0; i < priv->plugins->len; i++) {
+	for (guint i = 0; i < priv->plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		gpointer dummy = NULL;
-		if (!gs_plugin_get_enabled (plugin))
-			continue;
-		g_module_symbol (gs_plugin_get_module (plugin),
-				 function_name,
-				 (gpointer *) &dummy);
-		if (dummy != NULL)
+		if (gs_plugin_get_symbol (plugin, function_name) != NULL)
 			return TRUE;
 	}
 	return FALSE;
