@@ -431,7 +431,6 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	AsApp *app;
 	JsonObject *json_ver_map;
 	const gchar *tmp;
-	gint64 pk;
 
 	app = as_app_new ();
 	as_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
