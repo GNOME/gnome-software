@@ -49,12 +49,9 @@ typedef struct
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
 	GtkWidget	*label_installed;
-	GtkWidget	*box_sandboxed;
-	GtkWidget	*image_sandboxed;
 	gboolean	 colorful;
 	gboolean	 show_folders;
 	gboolean	 show_buttons;
-	gboolean	 show_sandbox;
 	gboolean	 show_source;
 	gboolean	 show_codec;
 	gboolean	 show_update;
@@ -342,25 +339,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->label_origin, tmp != NULL);
 	} else {
 		gtk_widget_set_visible (priv->label_origin, FALSE);
-	}
-
-	/* sandboxed */
-	if (priv->show_sandbox) {
-		if (gs_app_get_kudos (priv->app) & GS_APP_KUDO_SANDBOXED_SECURE) {
-			gtk_widget_set_visible (priv->box_sandboxed, TRUE);
-			gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_sandboxed),
-						      "security-high-symbolic",
-						      GTK_ICON_SIZE_SMALL_TOOLBAR);
-		} else if (gs_app_get_kudos (priv->app) & GS_APP_KUDO_SANDBOXED) {
-			gtk_widget_set_visible (priv->box_sandboxed, TRUE);
-			gtk_image_set_from_icon_name (GTK_IMAGE (priv->image_sandboxed),
-						      "security-medium-symbolic",
-						      GTK_ICON_SIZE_SMALL_TOOLBAR);
-		} else {
-			gtk_widget_set_visible (priv->box_sandboxed, FALSE);
-		}
-	} else {
-		gtk_widget_set_visible (priv->box_sandboxed, FALSE);
 	}
 
 	/* installed tag */
@@ -678,8 +656,6 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, box_sandboxed);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, image_sandboxed);
 }
 
 static void
@@ -750,15 +726,6 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_buttons = show_buttons;
-	gs_app_row_refresh (app_row);
-}
-
-void
-gs_app_row_set_show_sandbox (GsAppRow *app_row, gboolean show_sandbox)
-{
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	priv->show_sandbox = show_sandbox;
 	gs_app_row_refresh (app_row);
 }
 

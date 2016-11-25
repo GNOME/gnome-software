@@ -134,7 +134,6 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		app_row = gs_app_row_new (app);
-		gs_app_row_set_show_sandbox (GS_APP_ROW (app_row), TRUE);
 		if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
 		    gs_utils_list_has_app_fuzzy (list, app))
 			gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
