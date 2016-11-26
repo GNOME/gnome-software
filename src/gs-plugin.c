@@ -141,20 +141,9 @@ gs_plugin_status_to_string (GsPluginStatus status)
 GsPlugin *
 gs_plugin_create (const gchar *filename, GError **error)
 {
-	GModule *module;
 	GsPlugin *plugin = NULL;
 	GsPluginPrivate *priv;
 	g_autofree gchar *basename = NULL;
-
-	module = g_module_open (filename, 0);
-	if (module == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to open plugin %s: %s",
-			     filename, g_module_error ());
-		return NULL;
-	}
 
 	/* get the plugin name from the basename */
 	basename = g_path_get_basename (filename);
@@ -171,8 +160,16 @@ gs_plugin_create (const gchar *filename, GError **error)
 	/* create new plugin */
 	plugin = gs_plugin_new ();
 	priv = gs_plugin_get_instance_private (plugin);
-	priv->module = module;
 	priv->name = g_strdup (basename + 13);
+	priv->module = g_module_open (filename, 0);
+	if (priv->module == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to open plugin %s: %s",
+			     filename, g_module_error ());
+		return NULL;
+	}
 	return plugin;
 }
 
