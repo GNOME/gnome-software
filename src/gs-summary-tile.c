@@ -59,13 +59,11 @@ app_state_changed_idle (gpointer user_data)
 {
 	GsSummaryTile *tile = GS_SUMMARY_TILE (user_data);
 	AtkObject *accessible;
-	GtkWidget *label;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
-	label = gtk_bin_get_child (GTK_BIN (tile->eventbox));
 	switch (gs_app_get_state (tile->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
@@ -73,25 +71,16 @@ app_state_changed_idle (gpointer user_data)
 		installed = TRUE;
 		name = g_strdup_printf (_("%s (Installed)"),
 					gs_app_get_name (tile->app));
-		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user the application is installed */
-		gtk_label_set_label (GTK_LABEL (label), _("Installed"));
 		break;
 	case AS_APP_STATE_INSTALLING:
 		installed = TRUE;
 		name = g_strdup_printf (_("%s (Installing)"),
 					gs_app_get_name (tile->app));
-		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user the application is being installed */
-		gtk_label_set_label (GTK_LABEL (label), _("Installing"));
 		break;
 	case AS_APP_STATE_REMOVING:
 		installed = TRUE;
 		name = g_strdup_printf (_("%s (Removing)"),
 					gs_app_get_name (tile->app));
-		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user the application is being removed */
-		gtk_label_set_label (GTK_LABEL (label), _("Removing"));
 		break;
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 	case AS_APP_STATE_AVAILABLE:
