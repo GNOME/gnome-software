@@ -1717,6 +1717,8 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	save_back_entry (shell);
 	gs_shell_extras_search (priv->shell_extras, mode, resources);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, TRUE);
 	gs_shell_activate (shell);
