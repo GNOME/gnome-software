@@ -32,7 +32,12 @@
 #include <libsoup/soup.h>
 
 #ifdef GDK_WINDOWING_X11
-#include <gtk/gtkx.h>
+#include <gdk/gdkx.h>
+#endif
+#ifdef GDK_WINDOWING_WAYLAND
+#if GTK_CHECK_VERSION(3,22,4)
+#include <gdk/gdkwayland.h>
+#endif
 #endif
 
 #ifdef HAVE_PACKAGEKIT
@@ -674,23 +679,29 @@ install_resources_activated (GSimpleAction *action,
                              gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-#ifdef GDK_WINDOWING_X11
 	GdkDisplay *display;
-#endif
 	const gchar *mode;
 	const gchar *startup_id;
 	g_autofree gchar **resources = NULL;
 
 	g_variant_get (parameter, "(&s^a&s&s)", &mode, &resources, &startup_id);
 
-#ifdef GDK_WINDOWING_X11
 	display = gdk_display_get_default ();
-
+#ifdef GDK_WINDOWING_X11
 	if (GDK_IS_X11_DISPLAY (display)) {
 		if (startup_id != NULL && startup_id[0] != '\0')
 			gdk_x11_display_set_startup_notification_id (display,
 			                                             startup_id);
 	}
+#endif
+#ifdef GDK_WINDOWING_WAYLAND
+#if GTK_CHECK_VERSION(3,22,4)
+	if (GDK_IS_WAYLAND_DISPLAY (display)) {
+		if (startup_id != NULL && startup_id[0] != '\0')
+			gdk_wayland_display_set_startup_notification_id (display,
+			                                                 startup_id);
+	}
+#endif
 #endif
 
 	initialize_ui_and_present_window (app);
