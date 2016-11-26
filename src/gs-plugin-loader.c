@@ -3640,7 +3640,6 @@ static void
 gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret;
 	GsPlugin *plugin;
 	guint i;
 
