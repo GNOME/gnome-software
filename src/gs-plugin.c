@@ -66,6 +66,7 @@ typedef struct
 	SoupSession		*soup_session;
 	GsAppList		*global_cache;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
+	GHashTable		*vfuncs;		/* string:pointer */
 	gboolean		 enabled;
 	gchar			*locale;		/* allow-none */
 	gchar			*language;		/* allow-none */
@@ -203,6 +204,7 @@ gs_plugin_finalize (GObject *object)
 	if (priv->global_cache != NULL)
 		g_object_unref (priv->global_cache);
 	g_hash_table_unref (priv->cache);
+	g_hash_table_unref (priv->vfuncs);
 	g_mutex_clear (&priv->cache_mutex);
 	g_mutex_clear (&priv->timer_mutex);
 	if (priv->module != NULL)
@@ -345,8 +347,14 @@ gs_plugin_get_symbol (GsPlugin *plugin, const gchar *function_name)
 	if (!priv->enabled)
 		return NULL;
 
-	/* look up the symbol */
+	/* look up the symbol from the cache */
+	if (g_hash_table_lookup_extended (priv->vfuncs, function_name, NULL, &func))
+		return func;
+
+	/* look up the symbol using the elf headers */
 	g_module_symbol (priv->module, function_name, &func);
+	g_hash_table_insert (priv->vfuncs, g_strdup (function_name), func);
+
 	return func;
 }
 
@@ -1585,6 +1593,8 @@ gs_plugin_init (GsPlugin *plugin)
 					     (GEqualFunc) as_utils_unique_id_equal,
 					     g_free,
 					     (GDestroyNotify) g_object_unref);
+	priv->vfuncs = g_hash_table_new_full (g_str_hash, g_str_equal,
+					      g_free, NULL);
 	g_mutex_init (&priv->cache_mutex);
 	g_mutex_init (&priv->timer_mutex);
 	g_rw_lock_init (&priv->rwlock);
