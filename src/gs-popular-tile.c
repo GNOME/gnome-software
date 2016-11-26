@@ -70,9 +70,6 @@ app_state_changed_idle (gpointer user_data)
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (tile->app),
 					_("Installed"));
-		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user the application is installed */
-		gtk_label_set_label (GTK_LABEL (label), _("Installed"));
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	default:
