@@ -293,7 +293,7 @@ gs_application_initialize_ui (GsApplication *app)
 }
 
 static void
-initialize_ui_and_present_window (GsApplication *app)
+initialize_ui_and_present_window (GsApplication *app, const gchar *startup_id)
 {
 	GList *windows;
 	GtkWindow *window;
@@ -302,6 +302,9 @@ initialize_ui_and_present_window (GsApplication *app)
 	windows = gtk_application_get_windows (GTK_APPLICATION (app));
 	if (windows) {
 		window = windows->data;
+
+		if (startup_id != NULL)
+			gtk_window_set_startup_id (window, startup_id);
 		gtk_window_present (window);
 	}
 }
@@ -519,7 +522,7 @@ set_mode_activated (GSimpleAction *action,
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *mode;
 
-	initialize_ui_and_present_window (app);
+	initialize_ui_and_present_window (app, NULL);
 
 	mode = g_variant_get_string (parameter, NULL);
 	if (g_strcmp0 (mode, "updates") == 0) {
@@ -546,7 +549,7 @@ search_activated (GSimpleAction *action,
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *search;
 
-	initialize_ui_and_present_window (app);
+	initialize_ui_and_present_window (app, NULL);
 
 	search = g_variant_get_string (parameter, NULL);
 	gs_shell_show_search (app->shell, search);
@@ -561,7 +564,7 @@ details_activated (GSimpleAction *action,
 	const gchar *id;
 	const gchar *search;
 
-	initialize_ui_and_present_window (app);
+	initialize_ui_and_present_window (app, NULL);
 
 	g_variant_get (parameter, "(&s&s)", &id, &search);
 	if (search != NULL && search[0] != '\0')
@@ -586,7 +589,7 @@ details_pkg_activated (GSimpleAction *action,
 	GsApplication *app = GS_APPLICATION (data);
 	g_autoptr (GsApp) a = NULL;
 
-	initialize_ui_and_present_window (app);
+	initialize_ui_and_present_window (app, NULL);
 
 	a = gs_app_new (NULL);
 	gs_app_add_source (a, g_variant_get_string (parameter, NULL));
@@ -639,7 +642,7 @@ show_offline_updates_error (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 
-	initialize_ui_and_present_window (app);
+	initialize_ui_and_present_window (app, NULL);
 
 	gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
 	gs_update_monitor_show_error (app->update_monitor, app->shell);
@@ -676,7 +679,7 @@ install_resources_activated (GSimpleAction *action,
 #endif
 #endif
 
-	initialize_ui_and_present_window (app);
+	initialize_ui_and_present_window (app, startup_id);
 
 	gs_shell_show_extras_search (app->shell, mode, resources);
 }
