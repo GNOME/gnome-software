@@ -327,10 +327,10 @@ static const GsDesktopData msdata[] = {
 				"folder-music-symbolic", "#215d9c", 100 },
 	/* TRANSLATORS: this is the menu spec main category for Development */
 	{ "developer-tools",	map_developertools,	N_("Developer Tools"),
-				"applications-engineering-symbolic", "#297bcc", 40 },
+				"applications-engineering-symbolic", "#d3d7c7", 40 },
 	/* TRANSLATORS: this is the menu spec main category for Education */
 	{ "education",		map_education,		N_("Education"),
-				"system-help-symbolic", "#29cc5d", 30 },
+				"system-help-symbolic", "#d3d7c7", 30 },
 	/* TRANSLATORS: this is the menu spec main category for Game */
 	{ "games",		map_games,		N_("Games"),
 				"applications-games-symbolic", "#c4a000", 70 },
@@ -345,16 +345,16 @@ static const GsDesktopData msdata[] = {
 				"application-x-addon-symbolic", "#4e9a06", 50 },
 	/* TRANSLATORS: this is the menu spec main category for Science */
 	{ "science",		map_science,		N_("Science"),
-				"applications-science-symbolic", "#9c29ca", 20 },
+				"applications-science-symbolic", "#d3d7c7", 20 },
 	/* TRANSLATORS: this is the menu spec main category for Communication */
 	{ "communication",	map_communication,	N_("Communication & News"),
 				"user-available-symbolic", "#729fcf", 90 },
 	/* TRANSLATORS: this is the menu spec main category for Reference */
 	{ "reference",		map_reference,		N_("Reference"),
-				"view-dual-symbolic", "#ac5500", 0 },
+				"view-dual-symbolic", "#d3d7c7", 0 },
 	/* TRANSLATORS: this is the menu spec main category for Utilities */
 	{ "utilities",		map_utilities,		N_("Utilities"),
-				"applications-utilities-symbolic", "#2944cc", 10 },
+				"applications-utilities-symbolic", "#d3d7c7", 10 },
 	{ NULL }
 };
 

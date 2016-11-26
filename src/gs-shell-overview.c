@@ -391,9 +391,9 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), self);
+		gs_category_tile_set_colorful (GS_CATEGORY_TILE (tile), TRUE);
 		if (added_cnt < MAX_CATS_PER_SECTION) {
 			flowbox = GTK_FLOW_BOX (priv->flowbox_categories);
-			gs_category_tile_set_colorful (GS_CATEGORY_TILE (tile), TRUE);
 		} else {
 			flowbox = GTK_FLOW_BOX (priv->flowbox_categories2);
 		}
