@@ -49,12 +49,14 @@ typedef struct
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
 	GtkWidget	*label_installed;
+	GtkWidget	*label_app_size;
 	gboolean	 colorful;
 	gboolean	 show_folders;
 	gboolean	 show_buttons;
 	gboolean	 show_source;
 	gboolean	 show_codec;
 	gboolean	 show_update;
+	gboolean	 show_installed_size;
 	gboolean	 selectable;
 	guint		 pending_refresh_id;
 	GSettings	*settings;
@@ -288,6 +290,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GString *str = NULL;
 	const gchar *tmp;
 	gboolean missing_search_result;
+	guint64 installed_size;
 
 	if (priv->app == NULL)
 		return;
@@ -463,6 +466,17 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_widget_set_visible (priv->checkbox, TRUE);
 	} else {
 		gtk_widget_set_visible (priv->checkbox, FALSE);
+	}
+
+	installed_size = gs_app_get_size_installed (priv->app);
+	if (priv->show_installed_size &&
+	    installed_size != GS_APP_SIZE_UNKNOWABLE && installed_size != 0) {
+		g_autofree gchar *size = NULL;
+		size = g_format_size (installed_size);
+		gtk_label_set_label (GTK_LABEL (priv->label_app_size), size);
+		gtk_widget_show (priv->label_app_size);
+	} else {
+		gtk_widget_hide (priv->label_app_size);
 	}
 }
 
@@ -656,6 +670,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_app_size);
 }
 
 static void
@@ -744,6 +759,14 @@ gs_app_row_set_show_codec (GsAppRow *app_row, gboolean show_codec)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_codec = show_codec;
+	gs_app_row_refresh (app_row);
+}
+
+void
+gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+	priv->show_installed_size = show_size;
 	gs_app_row_refresh (app_row);
 }
 

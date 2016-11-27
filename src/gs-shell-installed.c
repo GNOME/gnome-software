@@ -159,6 +159,13 @@ gs_shell_installed_notify_state_changed_cb (GsApp *app,
 
 static void selection_changed (GsShellInstalled *self);
 
+static gboolean
+should_show_installed_size (GsShellInstalled *self)
+{
+	return g_settings_get_boolean (self->settings,
+				       "installed-page-show-size");
+}
+
 static void
 gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 {
@@ -182,6 +189,9 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
 				    self->sizegroup_name);
+
+	gs_app_row_set_show_installed_size (GS_APP_ROW (app_row),
+					    should_show_installed_size (self));
 
 	gs_app_row_set_selectable (GS_APP_ROW (app_row),
 				   self->selection_mode);
@@ -229,6 +239,8 @@ out:
 static void
 gs_shell_installed_load (GsShellInstalled *self)
 {
+	GsPluginRefineFlags flags;
+
 	if (self->waiting)
 		return;
 	self->waiting = TRUE;
@@ -236,18 +248,23 @@ gs_shell_installed_load (GsShellInstalled *self)
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
 
+	flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+		GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING;
+
+	if (should_show_installed_size (self))
+		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
+
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (self->plugin_loader,
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+					      flags,
 					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					      self->cancellable,
 					      gs_shell_installed_get_installed_cb,

@@ -242,53 +242,79 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="button_box">
+          <object class="GtkBox" id="vertical_box">
             <property name="visible">True</property>
-            <property name="orientation">horizontal</property>
-            <property name="halign">end</property>
+            <property name="orientation">vertical</property>
+            <property name="halign">center</property>
             <property name="valign">center</property>
+	    <property name="margin-right">24</property>
             <child>
-              <object class="GsProgressButton" id="button">
-                <property name="margin_end">24</property>
-                <property name="width_request">100</property>
-                <property name="halign">end</property>
+              <object class="GtkBox" id="button_box">
+		<property name="visible">True</property>
+		<property name="orientation">horizontal</property>
+		<property name="halign">end</property>
+		<property name="valign">center</property>
+		<child>
+		  <object class="GsProgressButton" id="button">
+                    <property name="width_request">100</property>
+                    <property name="halign">end</property>
+		  </object>
+		  <packing>
+                    <property name="pack_type">end</property>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+		  </packing>
+		</child>
+		<child>
+		  <object class="GtkSpinner" id="spinner">
+                    <property name="margin_start">12</property>
+                    <property name="margin_end">12</property>
+                    <property name="halign">end</property>
+		  </object>
+		  <packing>
+                    <property name="pack_type">end</property>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+		  </packing>
+		</child>
+		<child>
+		  <object class="GtkLabel" id="label">
+                    <property name="margin_start">12</property>
+                    <property name="margin_end">12</property>
+                    <property name="halign">end</property>
+		  </object>
+		  <packing>
+                    <property name="pack_type">end</property>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+		  </packing>
+		</child>
               </object>
               <packing>
-                <property name="pack_type">end</property>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+		<property name="pack_type">start</property>
+		<property name="expand">False</property>
+		<property name="fill">False</property>
               </packing>
             </child>
-            <child>
-              <object class="GtkSpinner" id="spinner">
-                <property name="margin_start">12</property>
-                <property name="margin_end">12</property>
-                <property name="halign">end</property>
+	    <child>
+	      <object class="GtkLabel" id="label_app_size">
+                <property name="visible">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+		<property name="label">150 MB</property>
+		<property name="margin-top">6</property>
+                <style>
+		  <class name="app-row-app-size"/>
+                  <class name="dim-label"/>
+                </style>
               </object>
-              <packing>
-                <property name="pack_type">end</property>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+	      <packing>
+		<property name="pack_type">end</property>
+		<property name="expand">True</property>
+		<property name="fill">True</property>
               </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="label">
-                <property name="margin_start">12</property>
-                <property name="margin_end">12</property>
-                <property name="halign">end</property>
-              </object>
-              <packing>
-                <property name="pack_type">end</property>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-          </packing>
+	    </child>
+	  </object>
         </child>
       </object>
     </child>
