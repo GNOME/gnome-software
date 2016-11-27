@@ -210,68 +210,89 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkRevealer" id="categories_expander">
+                          <object class="GtkBox" id="categories_expander_box">
                             <property name="visible">True</property>
-                            <property name="transition-type">slide-up</property>
-                            <property name="reveal-child">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="vexpand">False</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="margin_start">24</property>
+                            <property name="margin_end">24</property>
+                            <property name="margin-bottom">12</property>
                             <child>
-                              <object class="GtkBox" id="categories_expander_box">
+                              <object class="GtkSeparator" id="categories_expander_lsep">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="vexpand">False</property>
                                 <property name="orientation">horizontal</property>
-                                <property name="margin_start">24</property>
-                                <property name="margin_end">24</property>
-                                <property name="margin-bottom">12</property>
+                                <property name="expand">True</property>
+                                <property name="valign">center</property>
+                              </object>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="categories_expander_button_down">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="margin-start">9</property>
+                                <property name="margin-end">9</property>
+                                <property name="valign">center</property>
+                                <property name="relief">none</property>
+                                <style>
+                                  <class name="round-button"/>
+                                </style>
                                 <child>
-                                  <object class="GtkSeparator" id="categories_expander_lsep">
+                                  <object class="GtkImage" id="categories_expander_image_down">
                                     <property name="visible">True</property>
-                                    <property name="orientation">horizontal</property>
-                                    <property name="expand">True</property>
-                                    <property name="valign">center</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">pan-down-symbolic</property>
+                                    <property name="icon_size">1</property>
                                   </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkButton" id="categories_expander_button">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="margin-start">9</property>
-                                    <property name="margin-end">9</property>
-                                    <property name="valign">center</property>
-                                    <style>
-                                      <class name="round-button"/>
-                                    </style>
-                                    <child>
-                                      <object class="GtkImage" id="categories_expander_image">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">False</property>
-                                        <property name="icon_name">view-more-symbolic</property>
-                                        <property name="icon_size">1</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSeparator" id="categories_expander_rsep">
-                                    <property name="visible">True</property>
-                                    <property name="orientation">horizontal</property>
-                                    <property name="expand">True</property>
-                                    <property name="valign">center</property>
-                                  </object>
-                                  <packing>
-                                    <property name="position">2</property>
-                                  </packing>
                                 </child>
                               </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="categories_expander_button_up">
+                                <property name="visible">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="margin-start">9</property>
+                                <property name="margin-end">9</property>
+                                <property name="valign">center</property>
+                                <property name="relief">none</property>
+                                <style>
+                                  <class name="round-button"/>
+                                </style>
+                                <child>
+                                  <object class="GtkImage" id="categories_expander_image_up">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">pan-up-symbolic</property>
+                                    <property name="icon_size">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="categories_expander_rsep">
+                                <property name="visible">True</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="expand">True</property>
+                                <property name="valign">center</property>
+                              </object>
+                              <packing>
+                                <property name="position">3</property>
+                              </packing>
                             </child>
                           </object>
                           <packing>

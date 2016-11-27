@@ -66,8 +66,9 @@ typedef struct
 	GtkWidget		*popular_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
-	GtkWidget		*categories_expander_button;
-	GtkWidget		*categories_expander;
+	GtkWidget		*categories_expander_button_down;
+	GtkWidget		*categories_expander_button_up;
+	GtkWidget		*categories_expander_box;
 	GtkWidget		*categories_more;
 } GsShellOverviewPrivate;
 
@@ -408,7 +409,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	}
 
 	/* show the expander if we have too many children */
-	gtk_widget_set_visible (priv->categories_expander,
+	gtk_widget_set_visible (priv->categories_expander_box,
 				added_cnt > MAX_CATS_PER_SECTION);
 out:
 	if (added_cnt > 0)
@@ -589,9 +590,7 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 	gtk_widget_show (widget);
 
 	/* hide the expander */
-	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_expander), 0);
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 0);
-	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_expander), TRUE);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), FALSE);
 
 	if (scroll_up) {
@@ -607,13 +606,33 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 }
 
 static void
-gs_shell_overview_categories_expander_cb (GtkButton *button, GsShellOverview *self)
+categories_more_revealer_changed_cb (GtkRevealer *revealer,
+				     GParamSpec *pspec,
+				     GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
-	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_expander), 250);
+	gboolean child_revealed = gtk_revealer_get_child_revealed (revealer);
+
+	gtk_widget_set_visible (priv->categories_expander_button_up,
+				child_revealed);
+	gtk_widget_set_visible (priv->categories_expander_button_down,
+				!child_revealed);
+}
+
+static void
+gs_shell_overview_categories_expander_down_cb (GtkButton *button, GsShellOverview *self)
+{
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
-	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_expander), FALSE);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), TRUE);
+}
+
+static void
+gs_shell_overview_categories_expander_up_cb (GtkButton *button, GsShellOverview *self)
+{
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), FALSE);
 }
 
 static void
@@ -783,8 +802,10 @@ gs_shell_overview_setup (GsShellOverview *self,
 	}
 
 	/* handle category expander */
-	g_signal_connect (priv->categories_expander_button, "clicked",
-			  G_CALLBACK (gs_shell_overview_categories_expander_cb), self);
+	g_signal_connect (priv->categories_expander_button_down, "clicked",
+			  G_CALLBACK (gs_shell_overview_categories_expander_down_cb), self);
+	g_signal_connect (priv->categories_expander_button_up, "clicked",
+			  G_CALLBACK (gs_shell_overview_categories_expander_up_cb), self);
 
 	/* search button */
 	search_bar = GTK_SEARCH_BAR (gtk_builder_get_object (priv->builder,
@@ -820,6 +841,10 @@ gs_shell_overview_init (GsShellOverview *self)
 	priv->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (priv->settings, "changed",
 			  G_CALLBACK (settings_changed_cb),
+			  self);
+	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
+	g_signal_connect (priv->categories_more, "notify::child-revealed",
+			  G_CALLBACK (categories_more_revealer_changed_cb),
 			  self);
 }
 
@@ -883,8 +908,9 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button_down);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button_up);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_more);
 }
 
