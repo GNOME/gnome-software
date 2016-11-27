@@ -1275,6 +1275,8 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
 		gtk_widget_set_visible (row, i < SHOW_NR_REVIEWS_INITIAL);
+		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
+						     gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
 
 	/* only show the button if there are more to show */
@@ -1283,6 +1285,8 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 
 	/* show the button only if the user never reviewed */
 	gtk_widget_set_visible (self->button_review, show_review_button);
+	gtk_widget_set_sensitive (self->button_review,
+				  gs_plugin_loader_get_network_available (self->plugin_loader));
 }
 
 static void
@@ -1984,6 +1988,14 @@ gs_shell_details_license_unknown_cb (GtkWidget *widget, GsShellDetails *self)
 	gtk_widget_show (self->popover_license_unknown);
 }
 
+static void
+gs_shell_details_network_available_notify_cb (GsPluginLoader *plugin_loader,
+					      GParamSpec *pspec,
+					      GsShellDetails *self)
+{
+	gs_shell_details_refresh_reviews (self);
+}
+
 void
 gs_shell_details_setup (GsShellDetails *self,
 			GsShell	*shell,
@@ -2008,6 +2020,11 @@ gs_shell_details_setup (GsShellDetails *self,
 	g_signal_connect (self->button_review, "clicked",
 			  G_CALLBACK (gs_shell_details_write_review_cb),
 			  self);
+
+	/* hide some UI when offline */
+	g_signal_connect_object (self->plugin_loader, "notify::network-available",
+				 G_CALLBACK (gs_shell_details_network_available_notify_cb),
+				 self, 0);
 
 	/* setup details */
 	g_signal_connect (self->button_install, "clicked",

@@ -32,6 +32,7 @@ typedef struct
 	GtkListBoxRow	 parent_instance;
 
 	AsReview	*review;
+	gboolean	 network_available;
 	guint64		 actions;
 	GtkWidget	*stars;
 	GtkWidget	*summary_label;
@@ -60,6 +61,7 @@ gs_review_row_refresh (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 	const gchar *reviewer;
+	guint64 actions = 0;
 	GDateTime *date;
 	g_autofree gchar *text = NULL;
 
@@ -87,23 +89,33 @@ gs_review_row_refresh (GsReviewRow *row)
 		priv->actions = 0;
 
 	/* set actions up */
-	if ((priv->actions & (1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
-			      1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
-			      1 << GS_PLUGIN_ACTION_REVIEW_DISMISS)) == 0) {
+	if (priv->network_available)
+		actions = priv->actions;
+	if ((actions & (1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
+			1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
+			1 << GS_PLUGIN_ACTION_REVIEW_DISMISS)) == 0) {
 		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->box_voting, TRUE);
 		gtk_widget_set_visible (priv->button_yes,
-					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE);
+					actions & 1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE);
 		gtk_widget_set_visible (priv->button_no,
-					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE);
+					actions & 1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE);
 		gtk_widget_set_visible (priv->button_dismiss,
-					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_DISMISS);
+					actions & 1 << GS_PLUGIN_ACTION_REVIEW_DISMISS);
 	}
 	gtk_widget_set_visible (priv->button_remove,
-				priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE);
+				actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE);
 	gtk_widget_set_visible (priv->button_report,
-				priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+				actions & 1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+}
+
+void
+gs_review_row_set_network_available (GsReviewRow *review_row, gboolean network_available)
+{
+	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (review_row);
+	priv->network_available = network_available;
+	gs_review_row_refresh (review_row);
 }
 
 static gboolean
@@ -128,6 +140,8 @@ gs_review_row_notify_props_changed_cb (GsApp *app,
 static void
 gs_review_row_init (GsReviewRow *row)
 {
+	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
+	priv->network_available = TRUE;
 	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (row));
 }

@@ -43,6 +43,8 @@ GtkWidget	*gs_review_row_new		(AsReview	*review);
 AsReview	*gs_review_row_get_review	(GsReviewRow	*review_row);
 void		 gs_review_row_set_actions	(GsReviewRow	*review_row,
 						 guint64	 actions);
+void		 gs_review_row_set_network_available	(GsReviewRow	*review_row,
+							 gboolean	 network_available);
 
 G_END_DECLS
 
