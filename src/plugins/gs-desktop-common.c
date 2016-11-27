@@ -64,28 +64,42 @@ static const GsDesktopMap map_developertools[] = {
 	{ NULL }
 };
 
-/* Education */
-static const GsDesktopMap map_education[] = {
-	{ "all",		NC_("Menu of Education", "All"),
+/* Education & Science */
+static const GsDesktopMap map_education_science[] = {
+	{ "all",		NC_("Menu of Education and Science", "All"),
 					{ "Education",
+					  "Science",
 					  NULL } },
-	{ "featured",		NC_("Menu of Education", "Featured"),
+	{ "featured",		NC_("Menu of Education and Science", "Featured"),
 					{ "Education::Featured",
+					  "Science::Featured",
 					  NULL} },
-	{ "astronomy",		NC_("Menu of Education", "Astronomy"),
+	{ "artificial-intelligence", NC_("Menu of Education and Science", "Artificial Intelligence"),
+					{ "Science::ArtificialIntelligence",
+					  NULL} },
+	{ "astronomy",		NC_("Menu of Education and Science", "Astronomy"),
 					{ "Education::Astronomy",
+					  "Science::Astronomy",
 					  NULL} },
-	{ "chemistry",		NC_("Menu of Education", "Chemistry"),
+	{ "chemistry",		NC_("Menu of Education and Science", "Chemistry"),
 					{ "Education::Chemistry",
+					  "Science::Chemistry",
 					  NULL} },
-	{ "languages",		NC_("Menu of Education", "Languages"),
+	{ "languages",		NC_("Menu of Education and Science", "Languages"),
 					{ "Education::Languages",
 					  "Education::Literature",
 					  NULL} },
-	{ "math",		NC_("Menu of Education", "Math"),
+	{ "math",		NC_("Menu of Education and Science", "Math"),
 					{ "Education::Math",
 					  "Education::NumericalAnalysis",
+					  "Science::Math",
+					  "Science::Physics",
+					  "Science::NumericalAnalysis",
 					  NULL} },
+	{ "robotics",		NC_("Menu of Education and Science", "Robotics"),
+					{ "Science::Robotics",
+					  NULL} },
+
 	{ NULL }
 };
 
@@ -215,34 +229,6 @@ static const GsDesktopMap map_addons[] = {
 	{ NULL }
 };
 
-/* Science */
-static const GsDesktopMap map_science[] = {
-	{ "all",		NC_("Menu of Science", "All"),
-					{ "Science",
-					  NULL } },
-	{ "featured",		NC_("Menu of Science", "Featured"),
-					{ "Science::Featured",
-					  NULL} },
-	{ "artificial-intelligence", NC_("Menu of Science", "Artificial Intelligence"),
-					{ "Science::ArtificialIntelligence",
-					  NULL} },
-	{ "astronomy",		NC_("Menu of Science", "Astronomy"),
-					{ "Science::Astronomy",
-					  NULL} },
-	{ "chemistry",		NC_("Menu of Science", "Chemistry"),
-					{ "Science::Chemistry",
-					  NULL} },
-	{ "math",		NC_("Menu of Science", "Math"),
-					{ "Science::Math",
-					  "Science::Physics",
-					  "Science::NumericalAnalysis",
-					  NULL} },
-	{ "robotics",		NC_("Menu of Science", "Robotics"),
-					{ "Science::Robotics",
-					  NULL} },
-	{ NULL }
-};
-
 /* Communication */
 static const GsDesktopMap map_communication[] = {
 	{ "all",		NC_("Menu of Communication", "All"),
@@ -328,8 +314,8 @@ static const GsDesktopData msdata[] = {
 	/* TRANSLATORS: this is the menu spec main category for Development */
 	{ "developer-tools",	map_developertools,	N_("Developer Tools"),
 				"applications-engineering-symbolic", "#d3d7c7", 40 },
-	/* TRANSLATORS: this is the menu spec main category for Education */
-	{ "education",		map_education,		N_("Education"),
+	/* TRANSLATORS: this is the menu spec main category for Education & Science */
+	{ "education-science",		map_education_science,	N_("Education & Science"),
 				"system-help-symbolic", "#d3d7c7", 30 },
 	/* TRANSLATORS: this is the menu spec main category for Game */
 	{ "games",		map_games,		N_("Games"),
@@ -343,9 +329,6 @@ static const GsDesktopData msdata[] = {
 	/* TRANSLATORS: this is the menu spec main category for Add-ons */
 	{ "addons",		map_addons,		N_("Add-ons"),
 				"application-x-addon-symbolic", "#4e9a06", 50 },
-	/* TRANSLATORS: this is the menu spec main category for Science */
-	{ "science",		map_science,		N_("Science"),
-				"applications-science-symbolic", "#d3d7c7", 20 },
 	/* TRANSLATORS: this is the menu spec main category for Communication */
 	{ "communication",	map_communication,	N_("Communication & News"),
 				"user-available-symbolic", "#729fcf", 90 },
