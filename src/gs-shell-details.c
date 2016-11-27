@@ -1256,10 +1256,6 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		}
 	}
 
-	/* only show the button if there are more to show */
-	gtk_widget_set_visible (self->button_more_reviews,
-				n_reviews > SHOW_NR_REVIEWS_INITIAL);
-
 	/* add all the reviews */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_reviews));
 	reviews = gs_app_get_reviews (self->app);
@@ -1280,6 +1276,10 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
 		gtk_widget_set_visible (row, i < SHOW_NR_REVIEWS_INITIAL);
 	}
+
+	/* only show the button if there are more to show */
+	gtk_widget_set_visible (self->button_more_reviews,
+				reviews->len > SHOW_NR_REVIEWS_INITIAL);
 
 	/* show the button only if the user never reviewed */
 	gtk_widget_set_visible (self->button_review, show_review_button);
