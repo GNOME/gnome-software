@@ -53,13 +53,11 @@ app_state_changed_idle (gpointer user_data)
 {
 	GsPopularTile *tile = GS_POPULAR_TILE (user_data);
 	AtkObject *accessible;
-	GtkWidget *label;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
-	label = gtk_bin_get_child (GTK_BIN (tile->eventbox));
 	switch (gs_app_get_state (tile->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_INSTALLING:
