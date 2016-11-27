@@ -62,9 +62,13 @@ typedef struct
 
 	guint			 updates_changed_id;
 	guint			 reload_id;
-	gboolean		 online; 
 	GHashTable		*disallow_updates;	/* GsPlugin : const char *name */
+
+	GNetworkMonitor		*network_monitor;
+	gulong			 network_changed_handler;
 } GsPluginLoaderPrivate;
+
+static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
@@ -80,6 +84,7 @@ enum {
 	PROP_0,
 	PROP_EVENTS,
 	PROP_ALLOW_UPDATES,
+	PROP_NETWORK_AVAILABLE,
 	PROP_LAST
 };
 
@@ -2904,7 +2909,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	}
 
 	if (action == GS_PLUGIN_ACTION_INSTALL &&
-	    !priv->online) {
+	    !gs_plugin_loader_get_network_available (plugin_loader)) {
 		add_app_to_install_queue (plugin_loader, app);
 		task = g_task_new (plugin_loader, cancellable, callback, user_data);
 		g_task_return_boolean (task, TRUE);
@@ -3774,6 +3779,9 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 	case PROP_ALLOW_UPDATES:
 		g_value_set_boolean (value, gs_plugin_loader_get_allow_updates (plugin_loader));
 		break;
+	case PROP_NETWORK_AVAILABLE:
+		g_value_set_boolean (value, gs_plugin_loader_get_network_available (plugin_loader));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -3812,6 +3820,12 @@ gs_plugin_loader_dispose (GObject *object)
 		g_source_remove (priv->updates_changed_id);
 		priv->updates_changed_id = 0;
 	}
+	if (priv->network_changed_handler != 0) {
+		g_signal_handler_disconnect (priv->network_monitor,
+					     priv->network_changed_handler);
+		priv->network_changed_handler = 0;
+	}
+	g_clear_object (&priv->network_monitor);
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
@@ -3861,6 +3875,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 				      TRUE,
 				      G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_ALLOW_UPDATES, pspec);
+
+	pspec = g_param_spec_boolean ("network-available", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READABLE);
+	g_object_class_install_property (object_class, PROP_NETWORK_AVAILABLE, pspec);
 
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
@@ -3968,6 +3987,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	g_mutex_init (&priv->pending_apps_mutex);
 	g_mutex_init (&priv->events_by_id_mutex);
 
+	/* monitor the network as the many UI operations need the network */
+	gs_plugin_loader_monitor_network (plugin_loader);
+
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
 	if (tmp == NULL) {
@@ -4014,43 +4036,82 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 	}
 }
 
-void
-gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
-				     gboolean online)
+gboolean
+gs_plugin_loader_get_network_available (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsApp *app;
-	guint i;
-	g_autoptr(GsAppList) queue = NULL;
-
-	if (priv->online == online)
-		return;
-
-	g_debug ("network status change: %s", online ? "online" : "offline");
-
-	priv->online = online;
-
-	if (!online)
-		return;
-
-	g_mutex_lock (&priv->pending_apps_mutex);
-	queue = gs_app_list_new ();
-	for (i = 0; i < priv->pending_apps->len; i++) {
-		app = g_ptr_array_index (priv->pending_apps, i);
-		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
-			gs_app_list_add (queue, app);
+	if (priv->network_monitor == NULL) {
+		g_debug ("no network monitor, so returning network-available=TRUE");
+		return TRUE;
 	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
-	for (i = 0; i < gs_app_list_length (queue); i++) {
-		app = gs_app_list_index (queue, i);
-		gs_plugin_loader_app_action_async (plugin_loader,
-						   app,
-						   GS_PLUGIN_ACTION_INSTALL,
-						   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-						   NULL,
-						   gs_plugin_loader_app_installed_cb,
-						   g_object_ref (app));
+	return g_network_monitor_get_network_available (priv->network_monitor);
+}
+
+gboolean
+gs_plugin_loader_get_network_metered (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	if (priv->network_monitor == NULL) {
+		g_debug ("no network monitor, so returning network-metered=FALSE");
+		return FALSE;
 	}
+	return g_network_monitor_get_network_metered (priv->network_monitor);
+}
+
+static void
+gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
+				     gboolean available,
+				     GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+
+	g_debug ("network status change: %s [%s]",
+		 available ? "online" : "offline",
+		 g_network_monitor_get_network_metered (priv->network_monitor) ? "metered" : "metered");
+
+	g_object_notify (G_OBJECT (plugin_loader), "network-available");
+
+	if (available) {
+		g_autoptr(GsAppList) queue = NULL;
+		g_mutex_lock (&priv->pending_apps_mutex);
+		queue = gs_app_list_new ();
+		for (guint i = 0; i < priv->pending_apps->len; i++) {
+			GsApp *app = g_ptr_array_index (priv->pending_apps, i);
+			if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
+				gs_app_list_add (queue, app);
+		}
+		g_mutex_unlock (&priv->pending_apps_mutex);
+		for (guint i = 0; i < gs_app_list_length (queue); i++) {
+			GsApp *app = gs_app_list_index (queue, i);
+			gs_plugin_loader_app_action_async (plugin_loader,
+							   app,
+							   GS_PLUGIN_ACTION_INSTALL,
+							   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+							   NULL,
+							   gs_plugin_loader_app_installed_cb,
+							   g_object_ref (app));
+		}
+	}
+}
+
+static void
+gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GNetworkMonitor *network_monitor;
+
+	network_monitor = g_network_monitor_get_default ();
+	if (network_monitor == NULL || priv->network_changed_handler != 0)
+		return;
+	priv->network_monitor = g_object_ref (network_monitor);
+
+	priv->network_changed_handler =
+		g_signal_connect (priv->network_monitor, "network-changed",
+				  G_CALLBACK (gs_plugin_loader_network_changed_cb), plugin_loader);
+
+	gs_plugin_loader_network_changed_cb (priv->network_monitor,
+			    g_network_monitor_get_network_available (priv->network_monitor),
+			    plugin_loader);
 }
 
 /******************************************************************************/

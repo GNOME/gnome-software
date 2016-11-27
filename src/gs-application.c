@@ -69,8 +69,6 @@ struct _GsApplication {
 	GsDbusHelper	*dbus_helper;
 #endif
 	GsShellSearchProvider *search_provider;
-	GNetworkMonitor *network_monitor;
-	gulong		 network_changed_handler;
 	GSettings       *settings;
 };
 
@@ -125,34 +123,6 @@ gs_application_init (GsApplication *application)
 	};
 
 	g_application_add_main_option_entries (G_APPLICATION (application), options);
-
-	application->network_changed_handler = 0;
-}
-
-static void
-network_changed_cb (GNetworkMonitor *monitor,
-		    gboolean available,
-		    GsApplication *app)
-{
-	gs_plugin_loader_set_network_status (app->plugin_loader, available);
-}
-
-static void
-gs_application_monitor_network (GsApplication *app)
-{
-	GNetworkMonitor *network_monitor;
-
-	network_monitor = g_network_monitor_get_default ();
-	if (network_monitor == NULL || app->network_changed_handler != 0)
-		return;
-	app->network_monitor = g_object_ref (network_monitor);
-
-	app->network_changed_handler = g_signal_connect (app->network_monitor, "network-changed",
-							 G_CALLBACK (network_changed_cb), app);
-
-	network_changed_cb (app->network_monitor,
-			    g_network_monitor_get_network_available (app->network_monitor),
-			    app);
 }
 
 static void
@@ -287,9 +257,6 @@ gs_application_initialize_ui (GsApplication *app)
 
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
 	gtk_application_add_window (GTK_APPLICATION (app), gs_shell_get_window (app->shell));
-
-	/* monitor the network as the many UI operations need the network */
-	gs_application_monitor_network (app);
 }
 
 static void
@@ -793,11 +760,6 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
-	if (app->network_changed_handler != 0) {
-		g_signal_handler_disconnect (app->network_monitor, app->network_changed_handler);
-		app->network_changed_handler = 0;
-	}
-	g_clear_object (&app->network_monitor);
 #ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
 #endif

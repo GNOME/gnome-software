@@ -1473,7 +1473,6 @@ main (int argc, char **argv)
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new ();
-	gs_plugin_loader_set_network_status (plugin_loader, TRUE);
 	g_signal_connect (plugin_loader, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
 	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");

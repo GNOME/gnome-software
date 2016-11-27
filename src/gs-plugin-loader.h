@@ -252,8 +252,8 @@ void		 gs_plugin_loader_refresh_async		(GsPluginLoader	*plugin_loader,
 							 gpointer	 user_data);
 GsAppList	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_allow_updates	(GsPluginLoader	*plugin_loader);
-void		 gs_plugin_loader_set_network_status    (GsPluginLoader *plugin_loader,
-							 gboolean        online);
+gboolean	 gs_plugin_loader_get_network_available	(GsPluginLoader *plugin_loader);
+gboolean	 gs_plugin_loader_get_network_metered	(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_func);
 

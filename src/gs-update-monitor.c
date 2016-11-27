@@ -45,7 +45,6 @@ struct _GsUpdateMonitor {
 	guint		 check_startup_id;		/* 60s after startup */
 	guint		 check_hourly_id;		/* and then every hour */
 	guint		 check_daily_id;		/* every 3rd day */
-	GNetworkMonitor	*network_monitor;		/* network type detection */
 	guint		 notification_blocked_id;	/* rate limit notifications */
 };
 
@@ -345,19 +344,15 @@ check_updates (GsUpdateMonitor *monitor)
 	g_autoptr(GDateTime) now_refreshed = NULL;
 	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_METADATA;
 
-	/* we don't know the network state */
-	if (monitor->network_monitor == NULL)
-		return;
-
 	/* never check for updates when offline */
-	if (!g_network_monitor_get_network_available (monitor->network_monitor))
+	if (!gs_plugin_loader_get_network_available (monitor->plugin_loader))
 		return;
 
 	refresh_on_metered = g_settings_get_boolean (monitor->settings,
 						     "refresh-when-metered");
 
 	if (!refresh_on_metered &&
-	    g_network_monitor_get_network_metered (monitor->network_monitor))
+	    gs_plugin_loader_get_network_metered (monitor->plugin_loader))
 		return;
 
 	/* never refresh when the battery is low */
@@ -511,9 +506,9 @@ check_updates_upower_changed_cb (GDBusProxy *proxy,
 }
 
 static void
-notify_network_state_cb (GNetworkMonitor *network_monitor,
-			 gboolean active,
-			 GsUpdateMonitor *monitor)
+network_available_notify_cb (GsPluginLoader *plugin_loader,
+			     GParamSpec *pspec,
+			     GsUpdateMonitor *monitor)
 {
 	check_updates (monitor);
 }
@@ -710,11 +705,6 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 		g_timeout_add_seconds (60, check_updates_on_startup_cb, monitor);
 
 	monitor->cancellable = g_cancellable_new ();
-	monitor->network_monitor = g_network_monitor_get_default ();
-	if (monitor->network_monitor != NULL) {
-		g_signal_connect (monitor->network_monitor, "network-changed",
-				  G_CALLBACK (notify_network_state_cb), monitor);
-	}
 
 	/* connect to UPower to get the system power state */
 	monitor->proxy_upower = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
@@ -759,16 +749,13 @@ gs_update_monitor_dispose (GObject *object)
 		g_source_remove (monitor->cleanup_notifications_id);
 		monitor->cleanup_notifications_id = 0;
 	}
-	if (monitor->network_monitor != NULL) {
-		g_signal_handlers_disconnect_by_func (monitor->network_monitor,
-						      notify_network_state_cb,
-						      monitor);
-		monitor->network_monitor = NULL;
-	}
 	if (monitor->plugin_loader != NULL) {
 		g_signal_handlers_disconnect_by_func (monitor->plugin_loader,
 		                                      updates_changed_cb,
 		                                      monitor);
+		g_signal_handlers_disconnect_by_func (monitor->plugin_loader,
+						      network_available_notify_cb,
+						      monitor);
 		monitor->plugin_loader = NULL;
 	}
 	g_clear_object (&monitor->settings);
@@ -810,6 +797,8 @@ gs_update_monitor_new (GsApplication *application)
 			  G_CALLBACK (updates_changed_cb), monitor);
 	g_signal_connect (monitor->plugin_loader, "notify::allow-updates",
 			  G_CALLBACK (allow_updates_notify_cb), monitor);
+	g_signal_connect (monitor->plugin_loader, "notify::network-available",
+			  G_CALLBACK (network_available_notify_cb), monitor);
 
 	return monitor;
 }

@@ -78,8 +78,6 @@ struct _GsShellUpdates
 	gboolean		 all_updates_are_live;
 	gboolean		 any_require_reboot;
 	GsShell			*shell;
-	GNetworkMonitor		*network_monitor;
-	gulong			 network_changed_handler;
 	GsPluginStatus		 last_status;
 	GsShellUpdatesState	 state;
 	GsShellUpdatesFlags	 result_flags;
@@ -319,8 +317,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		if (self->result_flags != GS_SHELL_UPDATES_FLAG_NONE) {
 			gtk_widget_show (self->button_refresh);
 		} else {
-			if (self->network_monitor != NULL &&
-			    g_network_monitor_get_network_metered (self->network_monitor) &&
+			if (gs_plugin_loader_get_network_metered (self->plugin_loader) &&
 			    !self->has_agreed_to_mobile_data)
 				allow_mobile_refresh = FALSE;
 			gtk_widget_set_visible (self->button_refresh, allow_mobile_refresh);
@@ -360,21 +357,15 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 			break;
 		}
 
-		/* we just don't know */
-		if (self->network_monitor == NULL) {
-			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
-			break;
-		}
-
 		/* check we have a "free" network connection */
-		if (g_network_monitor_get_network_available (self->network_monitor) &&
-			   !g_network_monitor_get_network_metered (self->network_monitor)) {
+		if (gs_plugin_loader_get_network_available (self->plugin_loader) &&
+		    !gs_plugin_loader_get_network_metered (self->plugin_loader)) {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
 			break;
 		}
 
 		/* expensive network connection */
-		if (g_network_monitor_get_network_metered (self->network_monitor)) {
+		if (gs_plugin_loader_get_network_metered (self->plugin_loader)) {
 			if (self->has_agreed_to_mobile_data) {
 				gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
 			} else {
@@ -465,10 +456,11 @@ gs_shell_updates_decrement_refresh_count (GsShellUpdates *self)
 	gs_shell_profile_dump (self->shell);
 }
 
+
 static void
-gs_shell_updates_notify_network_state_cb (GNetworkMonitor *network_monitor,
-					  gboolean available,
-					  GsShellUpdates *self)
+gs_shell_updates_network_available_notify_cb (GsPluginLoader *plugin_loader,
+					      GParamSpec *pspec,
+					      GsShellUpdates *self)
 {
 	gs_shell_updates_update_ui_state (self);
 }
@@ -834,19 +826,13 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		return;
 	}
 
-	/* we don't know the network state */
-	if (self->network_monitor == NULL) {
-		gs_shell_updates_get_new_updates (self);
-		return;
-	}
-
 	/* check we have a "free" network connection */
-	if (g_network_monitor_get_network_available (self->network_monitor) &&
-	    !g_network_monitor_get_network_metered (self->network_monitor)) {
+	if (gs_plugin_loader_get_network_available (self->plugin_loader) &&
+	    !gs_plugin_loader_get_network_metered (self->plugin_loader)) {
 		gs_shell_updates_get_new_updates (self);
 
 	/* expensive network connection */
-	} else if (g_network_monitor_get_network_metered (self->network_monitor)) {
+	} else if (gs_plugin_loader_get_network_metered (self->plugin_loader)) {
 		if (self->has_agreed_to_mobile_data) {
 			gs_shell_updates_get_new_updates (self);
 			return;
@@ -1337,6 +1323,9 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	g_signal_connect_object (self->plugin_loader, "notify::allow-updates",
 				 G_CALLBACK (gs_shell_updates_allow_updates_notify_cb),
 				 self, 0);
+	g_signal_connect_object (self->plugin_loader, "notify::network-available",
+				 G_CALLBACK (gs_shell_updates_network_available_notify_cb),
+				 self, 0);
 	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
@@ -1395,12 +1384,6 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader))
 		self->state = GS_SHELL_UPDATES_STATE_MANAGED;
 
-	if (self->network_monitor != NULL) {
-		self->network_changed_handler = g_signal_connect (self->network_monitor, "network-changed",
-						G_CALLBACK (gs_shell_updates_notify_network_state_cb),
-						self);
-	}
-
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),
 	               shell,
@@ -1413,10 +1396,6 @@ gs_shell_updates_dispose (GObject *object)
 {
 	GsShellUpdates *self = GS_SHELL_UPDATES (object);
 
-	if (self->network_changed_handler != 0) {
-		g_signal_handler_disconnect (self->network_monitor, self->network_changed_handler);
-		self->network_changed_handler = 0;
-	}
 	if (self->cancellable_refresh != NULL) {
 		g_cancellable_cancel (self->cancellable_refresh);
 		g_clear_object (&self->cancellable_refresh);
@@ -1465,7 +1444,6 @@ gs_shell_updates_init (GsShellUpdates *self)
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->network_monitor = g_network_monitor_get_default ();
 	self->state = GS_SHELL_UPDATES_STATE_STARTUP;
 	self->settings = g_settings_new ("org.gnome.software");
 	self->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
