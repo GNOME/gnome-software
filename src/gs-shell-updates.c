@@ -324,6 +324,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		}
 		break;
 	}
+	gtk_widget_set_sensitive (self->button_refresh,
+				  gs_plugin_loader_get_network_available (self->plugin_loader));
 
 	/* headerbar update button */
 	gtk_widget_set_visible (self->button_update_all,
