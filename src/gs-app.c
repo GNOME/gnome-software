@@ -150,6 +150,18 @@ gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 	g_string_append_printf (str, " %s\n", value);
 }
 
+static void
+gs_app_kv_size (GString *str, const gchar *key, guint64 value)
+{
+	g_autofree gchar *tmp = NULL;
+	if (value == GS_APP_SIZE_UNKNOWABLE) {
+		gs_app_kv_lpad (str, key, "unknowable");
+		return;
+	}
+	tmp = g_format_size (value);
+	gs_app_kv_lpad (str, key, tmp);
+}
+
 G_GNUC_PRINTF (3, 4)
 static void
 gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
@@ -439,16 +451,10 @@ gs_app_to_string (GsApp *app)
 				  G_GUINT64_FORMAT "",
 				  app->install_date);
 	}
-	if (app->size_installed != 0) {
-		gs_app_kv_printf (str, "size-installed",
-				  "%" G_GUINT64_FORMAT "k",
-				  app->size_installed / 1024);
-	}
-	if (app->size_download != 0) {
-		gs_app_kv_printf (str, "size-download",
-				  "%" G_GUINT64_FORMAT "k",
-				  app->size_download / 1024);
-	}
+	if (app->size_installed != 0)
+		gs_app_kv_size (str, "size-installed", app->size_installed);
+	if (app->size_download != 0)
+		gs_app_kv_size (str, "size-download", app->size_download);
 	if (app->related->len > 0)
 		gs_app_kv_printf (str, "related", "%u", app->related->len);
 	if (app->history->len > 0)
