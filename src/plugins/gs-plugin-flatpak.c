@@ -52,7 +52,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* old names */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "flatpak-system");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "flatpak-session");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "flatpak-user");
 
 	/* set plugin flags */
 	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
