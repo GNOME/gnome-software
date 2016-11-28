@@ -563,6 +563,10 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	gs_app_set_local_file (app, file);
 	gs_app_list_add (list, app);
 
+	/* schedule for download */
+	if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS))
+		gs_plugin_fwupd_add_required_location (plugin, update_uri);
+
 	return TRUE;
 }
 
