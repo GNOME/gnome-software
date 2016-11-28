@@ -45,7 +45,8 @@ G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
 #define	gs_app_set_flatpak_file_type(app,val)	gs_app_set_metadata(app,"flatpak::file-type",val)
 
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
-						 AsAppScope		 scope);
+						 FlatpakInstallation	*installation);
+AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,
 						 GCancellable		*cancellable,
 						 GError			**error);
