@@ -43,7 +43,8 @@ G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
 #define	gs_app_set_flatpak_commit(app,val)	gs_app_set_metadata(app,"flatpak::commit",val)
 
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
-						 AsAppScope		 scope);
+						 FlatpakInstallation	*installation);
+AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,
 						 GCancellable		*cancellable,
 						 GError			**error);
@@ -122,6 +123,7 @@ gboolean	gs_flatpak_add_featured		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
+void		gs_plugin_flatpak_error_convert	(GError			**perror);
 
 G_END_DECLS
 

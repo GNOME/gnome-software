@@ -903,7 +903,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 
 	/* no flatpak, abort */
-	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak-user"))
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
 		return;
 
 	/* load local file */
@@ -921,7 +921,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_SOURCE);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "example");
-	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "flatpak-user");
+	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "flatpak");
 	g_assert_cmpstr (gs_app_get_origin_hostname(app), ==, "foo.bar");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://foo.bar");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "foo-bar");
@@ -1004,7 +1004,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources = NULL;
 
 	/* no flatpak, abort */
-	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak-user"))
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
 		return;
 
 	/* no files to use */
@@ -1036,7 +1036,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
-	gs_app_set_management_plugin (app_source, "flatpak-user");
+	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
 	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
@@ -1337,7 +1337,7 @@ main (int argc, char **argv)
 		"dpkg",
 		"dummy",
 		"epiphany",
-		"flatpak-user",
+		"flatpak",
 		"fwupd",
 		"hardcoded-blacklist",
 		"desktop-categories",
@@ -1447,7 +1447,7 @@ main (int argc, char **argv)
 		"      <keyword>Bingo</keyword>\n"
 		"    </keywords>\n"
 		"    <metadata>\n"
-		"      <value key=\"GnomeSoftware::Plugin\">flatpak-user</value>\n"
+		"      <value key=\"GnomeSoftware::Plugin\">flatpak</value>\n"
 		"    </metadata>\n"
 		"    <project_license>GPL-2.0+</project_license>\n"
 		"    <url type=\"homepage\">http://127.0.0.1/</url>\n"

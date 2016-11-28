@@ -59,7 +59,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			      GsPluginRefreshFlags flags,
 			      GCancellable *cancellable, GError **error);
 
-static void
+void
 gs_plugin_flatpak_error_convert (GError **perror)
 {
 	GError *error = perror != NULL ? *perror : NULL;
@@ -410,8 +410,11 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 gboolean
 gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 {
-	const gchar *destdir;
 	g_autoptr(AsProfileTask) ptask = NULL;
+
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
+					  "flatpak::setup");
+	g_assert (ptask != NULL);
 
 	/* load just the wildcards */
 	if (!as_store_load (self->store,
@@ -424,31 +427,6 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 		return FALSE;
 	}
 
-	/* we use a permissions helper to elevate privs */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::setup");
-	g_assert (ptask != NULL);
-	destdir = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
-	if (destdir != NULL) {
-		g_autofree gchar *full_path = g_build_filename (destdir,
-								"flatpak",
-								NULL);
-		g_autoptr(GFile) file = g_file_new_for_path (full_path);
-		g_debug ("using custom flatpak path %s", full_path);
-		self->installation = flatpak_installation_new_for_path (file, TRUE,
-									cancellable,
-									error);
-	} else if (self->scope == AS_APP_SCOPE_SYSTEM) {
-		self->installation = flatpak_installation_new_system (cancellable,
-								      error);
-	} else if (self->scope == AS_APP_SCOPE_USER) {
-		self->installation = flatpak_installation_new_user (cancellable,
-								    error);
-	}
-	if (self->installation == NULL) {
-		gs_plugin_flatpak_error_convert (error);
-		return FALSE;
-	}
 
 	/* watch for changes */
 	self->monitor = flatpak_installation_create_monitor (self->installation,
@@ -2746,6 +2724,12 @@ gs_flatpak_store_app_removed_cb (AsStore *store, AsApp *app, GsFlatpak *self)
 	gs_plugin_cache_remove (self->plugin, as_app_get_unique_id (app));
 }
 
+AsAppScope
+gs_flatpak_get_scope (GsFlatpak *self)
+{
+	return self->scope;
+}
+
 static void
 gs_flatpak_finalize (GObject *object)
 {
@@ -2784,11 +2768,13 @@ gs_flatpak_init (GsFlatpak *self)
 }
 
 GsFlatpak *
-gs_flatpak_new (GsPlugin *plugin, AsAppScope scope)
+gs_flatpak_new (GsPlugin *plugin, FlatpakInstallation *installation)
 {
 	GsFlatpak *self;
 	self = g_object_new (GS_TYPE_FLATPAK, NULL);
-	self->scope = scope;
+	self->installation = g_object_ref (installation);
+	self->scope = flatpak_installation_get_is_user (installation)
+				? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM;
 	self->plugin = g_object_ref (plugin);
 	return GS_FLATPAK (self);
 }
