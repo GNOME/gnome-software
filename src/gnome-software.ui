@@ -241,6 +241,32 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="GtkToggleButton" id="search_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="search_button_accessible">
+                    <property name="accessible-name" translatable="yes">Search</property>
+                  </object>
+                </child>
+                <style>
+                  <class name="image-button"/>
+                </style>
+                <child>
+                  <object class="GtkImage" id="search_image">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">edit-find-symbolic</property>
+                    <property name="icon_size">1</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="pack-type">end</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>

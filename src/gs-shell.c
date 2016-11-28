@@ -278,6 +278,10 @@ gs_shell_change_mode (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
 	gtk_widget_hide (widget);
 
+	/* only show the search button in overview and search pages */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
+	gtk_widget_set_visible (widget, mode == GS_SHELL_MODE_OVERVIEW ||
+					mode == GS_SHELL_MODE_SEARCH);
 	/* hide unless we're going to search */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget),
@@ -586,6 +590,32 @@ search_changed_handler (GObject *entry, GsShell *shell)
 			gs_page_switch_to (GS_PAGE (priv->shell_search), TRUE);
 		}
 	}
+}
+
+static void
+search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *search_bar;
+
+	search_bar = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (search_bar),
+	                                gtk_toggle_button_get_active (toggle_button));
+
+	/* switch back to overview */
+	if (!gtk_toggle_button_get_active (toggle_button))
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+}
+
+static void
+search_mode_enabled_cb (GtkSearchBar *search_bar, GParamSpec *pspec, GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *search_button;
+
+	search_button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (search_button),
+	                              gtk_search_bar_get_search_mode (search_bar));
 }
 
 static gboolean
@@ -1523,6 +1553,17 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* mouse hardware back button */
 	g_signal_connect_after (priv->main_window, "button_press_event",
 				G_CALLBACK (window_button_press_event), shell);
+
+	/* show the search bar when clicking on the search button */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
+	g_signal_connect (widget, "clicked",
+	                  G_CALLBACK (search_button_clicked_cb),
+	                  shell);
+	/* set the search button enabled when search bar appears */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	g_signal_connect (widget, "notify::search-mode-enabled",
+	                  G_CALLBACK (search_mode_enabled_cb),
+	                  shell);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
