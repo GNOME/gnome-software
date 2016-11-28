@@ -485,7 +485,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	}
 
 	/* the size is the size of all sources */
-	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+	if (gs_app_is_installed (app)) {
 		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 		if (size > 0 && gs_app_get_size_installed (app) == 0)
 			gs_app_set_size_installed (app, size);
