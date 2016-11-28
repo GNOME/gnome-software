@@ -190,9 +190,10 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 				    self->sizegroup_image,
 				    self->sizegroup_name);
 
-	gs_app_row_set_show_installed_size (GS_APP_ROW (app_row),
-					    should_show_installed_size (self));
-
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY)) {
+		gs_app_row_set_show_installed_size (GS_APP_ROW (app_row),
+						    should_show_installed_size (self));
+	}
 	gs_app_row_set_selectable (GS_APP_ROW (app_row),
 				   self->selection_mode);
 
