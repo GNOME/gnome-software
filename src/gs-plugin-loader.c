@@ -1221,7 +1221,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GError *error = NULL;
-	gboolean ret;
 
 	/* do things that would block */
 	if ((job->refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0) {
@@ -2666,7 +2665,6 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 	GsPluginLoaderJob *job = (GsPluginLoaderJob *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret;
 	guint i;
 
 	/* run each plugin */
@@ -2869,7 +2867,6 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 				   GAsyncReadyCallback callback,
 				   gpointer user_data)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginLoaderJob *job;
 	g_autoptr(GTask) task = NULL;
 
@@ -3027,7 +3024,6 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 	GsPluginLoaderJob *job = (GsPluginLoaderJob *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret;
 
 	/* run each plugin */
 	for (guint i = 0; i < priv->plugins->len; i++) {
@@ -4114,7 +4110,6 @@ gs_plugin_loader_refresh_thread_cb (GTask *task,
 	GsPluginLoaderJob *job = (GsPluginLoaderJob *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret;
 
 	/* run each plugin */
 	for (guint i = 0; i < priv->plugins->len; i++) {
