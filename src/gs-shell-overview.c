@@ -51,7 +51,6 @@ typedef struct
 	gboolean		 loading_categories;
 	gboolean		 empty;
 	gchar			*category_of_day;
-	GtkWidget		*search_button;
 	GHashTable		*category_hash;		/* id : GsCategory */
 	GSettings		*settings;
 
@@ -574,7 +573,8 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 	}
 
 	/* we hid the search bar */
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->search_button), FALSE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), FALSE);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
@@ -737,7 +737,6 @@ gs_shell_overview_setup (GsShellOverview *self,
 			 GCancellable *cancellable)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
-	GtkSearchBar *search_bar;
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
@@ -775,12 +774,6 @@ gs_shell_overview_setup (GsShellOverview *self,
 	/* handle category expander */
 	g_signal_connect (priv->categories_expander_button, "clicked",
 			  G_CALLBACK (gs_shell_overview_categories_expander_cb), self);
-
-	/* search button */
-	search_bar = GTK_SEARCH_BAR (gtk_builder_get_object (priv->builder,
-							     "search_bar"));
-	priv->search_button = gs_search_button_new (search_bar);
-	gs_page_set_header_end_widget (GS_PAGE (self), priv->search_button);
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),
