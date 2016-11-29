@@ -4051,7 +4051,7 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 
 	g_debug ("network status change: %s [%s]",
 		 available ? "online" : "offline",
-		 g_network_monitor_get_network_metered (priv->network_monitor) ? "metered" : "metered");
+		 g_network_monitor_get_network_metered (priv->network_monitor) ? "metered" : "unmetered");
 
 	g_object_notify (G_OBJECT (plugin_loader), "network-available");
 
