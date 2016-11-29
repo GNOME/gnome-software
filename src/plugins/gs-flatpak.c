@@ -149,6 +149,10 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GError) error_md = NULL;
 
+	/* don't refresh when it's us ourselves doing the change */
+	if (gs_plugin_has_flags (self->plugin, GS_PLUGIN_FLAGS_RUNNING_SELF))
+		return;
+
 	/* manually drop the cache */
 	if (!flatpak_installation_drop_caches (self->installation,
 					       NULL, &error)) {
