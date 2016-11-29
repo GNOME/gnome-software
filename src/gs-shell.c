@@ -25,8 +25,6 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#include "gd-notification.h"
-
 #include "gs-common.h"
 #include "gs-shell.h"
 #include "gs-shell-details.h"
@@ -731,7 +729,7 @@ gs_shell_show_event_app_notify (GsShell *shell,
 
 	/* set visible */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
-	gtk_widget_set_visible (widget, TRUE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), TRUE);
 
 	/* sources button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_sources"));
@@ -1472,7 +1470,7 @@ gs_shell_rescan_events (GsShell *shell)
 	/* nothing to show */
 	g_debug ("no events to show");
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
-	gtk_widget_set_visible (widget, FALSE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 }
 
 static void
@@ -1484,7 +1482,7 @@ gs_shell_events_notify_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_shell_plugin_event_dismissed_cb (GdNotification *notification, GsShell *shell)
+gs_shell_plugin_event_dismissed_cb (GtkButton *button, GsShell *shell)
 {
 	GPtrArray *events;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
@@ -1589,8 +1587,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
 
 	/* set up in-app notification controls */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
-	g_signal_connect (widget, "dismissed",
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_dismiss"));
+	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_plugin_event_dismissed_cb), shell);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_sources"));
 	g_signal_connect (widget, "clicked",

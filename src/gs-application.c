@@ -40,8 +40,6 @@
 #endif
 #endif
 
-#include "gd-notification.h"
-
 #ifdef HAVE_PACKAGEKIT
 #include "gs-dbus-helper.h"
 #endif
@@ -231,9 +229,6 @@ gs_application_initialize_ui (GsApplication *app)
 		return;
 
 	initialized = TRUE;
-
-	/* register ahead of loading the .ui file */
-	gd_notification_get_type ();
 
 	/* get CSS */
 	app->provider = gtk_css_provider_new ();

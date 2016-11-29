@@ -307,15 +307,18 @@
             <property name="halign">fill</property>
             <property name="valign">fill</property>
             <child type="overlay">
-              <object class="GdNotification" id="notification_event">
-                <property name="app_paintable">True</property>
-                <property name="can_focus">False</property>
-                <property name="show_close_button">True</property>
+              <object class="GtkRevealer" id="notification_event">
+                <property name="visible">True</property>
+                <property name="halign">GTK_ALIGN_CENTER</property>
+                <property name="valign">GTK_ALIGN_START</property>
                 <child>
                   <object class="GtkBox">
                     <property name="orientation">horizontal</property>
-                    <property name="spacing">24</property>
+                    <property name="spacing">6</property>
                     <property name="visible">True</property>
+                    <style>
+                      <class name="app-notification"/>
+                    </style>
                     <child>
                       <object class="GtkLabel" id="label_events">
                         <property name="visible">True</property>
@@ -324,6 +327,9 @@
                         <property name="label">Some Title</property>
                         <property name="wrap">True</property>
                         <property name="wrap_mode">word-char</property>
+                        <property name="max_width_chars">60</property>
+                        <property name="margin_start">9</property>
+                        <property name="margin_end">9</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>
                         </attributes>
@@ -387,6 +393,21 @@
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                       </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button_events_dismiss">
+                        <property name="visible">True</property>
+                        <property name="valign">GTK_ALIGN_CENTER</property>
+                        <style>
+                          <class name="flat"/>
+                        </style>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="visible">True</property>
+                            <property name="icon_name">window-close-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
                     </child>
                   </object>
                 </child>

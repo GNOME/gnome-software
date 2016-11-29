@@ -147,8 +147,6 @@ bin_PROGRAMS =						\
 
 gnome_software_SOURCES =				\
 	gnome-software.h				\
-	gd-notification.c				\
-	gd-notification.h				\
 	gs-utils.c					\
 	gs-utils.h					\
 	gs-app.c					\
