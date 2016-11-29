@@ -770,7 +770,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	/* this state change was unexpected */
 	if (!state_change_ok) {
 		g_warning ("State change on %s from %s to %s is not OK",
-			   app->id,
+			   gs_app_get_unique_id (app),
 			   as_app_state_to_string (app->state),
 			   as_app_state_to_string (state));
 		return FALSE;
@@ -792,7 +792,8 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	default:
 		if (app->state_recover != state) {
 			g_debug ("%s non-transient state now %s",
-				 app->id, as_app_state_to_string (state));
+				 gs_app_get_unique_id (app),
+				 as_app_state_to_string (state));
 			app->state_recover = state;
 		}
 
