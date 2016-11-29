@@ -474,19 +474,21 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderJob *job,
 		return TRUE;
 
 	/* profile */
-	if (job->function_name_parent == NULL) {
-		ptask = as_profile_start (priv->profile,
-					  "GsPlugin::%s(%s)",
-					  gs_plugin_get_name (plugin),
-					  job->function_name);
-	} else {
-		ptask = as_profile_start (priv->profile,
-					  "GsPlugin::%s(%s;%s)",
-					  gs_plugin_get_name (plugin),
-					  job->function_name_parent,
-					  job->function_name);
+	if (g_strcmp0 (job->function_name, "gs_plugin_refine_app") != 0) {
+		if (job->function_name_parent == NULL) {
+			ptask = as_profile_start (priv->profile,
+						  "GsPlugin::%s(%s)",
+						  gs_plugin_get_name (plugin),
+						  job->function_name);
+		} else {
+			ptask = as_profile_start (priv->profile,
+						  "GsPlugin::%s(%s;%s)",
+						  gs_plugin_get_name (plugin),
+						  job->function_name_parent,
+						  job->function_name);
+		}
+		g_assert (ptask != NULL);
 	}
-	g_assert (ptask != NULL);
 
 	/* fallback if unset */
 	if (app == NULL)
