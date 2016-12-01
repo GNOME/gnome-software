@@ -275,6 +275,35 @@ gs_plugin_func (void)
 	g_object_unref (list);
 }
 
+static gpointer
+gs_app_thread_cb (gpointer data)
+{
+	GsApp *app = GS_APP (data);
+	for (guint i = 0; i < 10000; i++) {
+		g_assert_cmpstr (gs_app_get_unique_id (app), !=, NULL);
+		gs_app_set_branch (app, "master");
+		g_assert_cmpstr (gs_app_get_unique_id (app), !=, NULL);
+		gs_app_set_branch (app, "stable");
+	}
+	return NULL;
+}
+
+static void
+gs_app_thread_func (void)
+{
+	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
+	g_autoptr(GThread) thread1 = NULL;
+	g_autoptr(GThread) thread2 = NULL;
+
+	/* try really hard to cause a threading problem */
+	g_setenv ("G_MESSAGES_DEBUG", "", TRUE);
+	thread1 = g_thread_new ("thread1", gs_app_thread_cb, app);
+	thread2 = g_thread_new ("thread2", gs_app_thread_cb, app);
+	g_thread_join (thread1);
+	g_thread_join (thread2);
+	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+}
+
 static void
 gs_app_unique_id_func (void)
 {
@@ -1378,6 +1407,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/app{unique-id}", gs_app_unique_id_func);
+	g_test_add_func ("/gnome-software/app{thread}", gs_app_thread_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/plugin{error}", gs_plugin_error_func);
 	g_test_add_func ("/gnome-software/plugin{global-cache}", gs_plugin_global_cache_func);

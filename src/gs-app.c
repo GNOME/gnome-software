@@ -58,6 +58,7 @@ struct _GsApp
 {
 	GObject			 parent_instance;
 
+	GMutex			 mutex;
 	gchar			*id;
 	gchar			*unique_id;
 	gboolean		 unique_id_valid;
@@ -529,6 +530,7 @@ gs_app_get_id (GsApp *app)
 void
 gs_app_set_id (GsApp *app, const gchar *id)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* check for old-style prefix */
@@ -960,6 +962,7 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 const gchar *
 gs_app_get_unique_id (GsApp *app)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* invalid */
@@ -993,6 +996,7 @@ gs_app_get_unique_id (GsApp *app)
 void
 gs_app_set_unique_id (GsApp *app, const gchar *unique_id)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* check for sanity */
@@ -1034,6 +1038,7 @@ gs_app_get_name (GsApp *app)
 void
 gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
@@ -1074,6 +1079,7 @@ gs_app_get_branch (GsApp *app)
 void
 gs_app_set_branch (GsApp *app, const gchar *branch)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->branch);
 	app->branch = g_strdup (branch);
@@ -1159,6 +1165,7 @@ gs_app_get_sources (GsApp *app)
 void
 gs_app_set_sources (GsApp *app, GPtrArray *sources)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (app->sources != NULL)
 		g_ptr_array_unref (app->sources);
@@ -1212,6 +1219,7 @@ gs_app_get_source_ids (GsApp *app)
 void
 gs_app_clear_source_ids (GsApp *app)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_ptr_array_set_size (app->source_ids, 0);
 }
@@ -1229,6 +1237,7 @@ gs_app_clear_source_ids (GsApp *app)
 void
 gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (app->source_ids != NULL)
 		g_ptr_array_unref (app->source_ids);
@@ -1292,6 +1301,7 @@ gs_app_get_project_group (GsApp *app)
 void
 gs_app_set_project_group (GsApp *app, const gchar *project_group)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->project_group);
 	app->project_group = g_strdup (project_group);
@@ -1344,6 +1354,7 @@ gs_app_get_icons (GsApp *app)
 void
 gs_app_add_icon (GsApp *app, AsIcon *icon)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (icon == NULL) {
 		g_ptr_array_set_size (app->icons, 0);
@@ -1383,6 +1394,7 @@ gs_app_get_local_file (GsApp *app)
 void
 gs_app_set_local_file (GsApp *app, GFile *local_file)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->local_file, local_file);
 }
@@ -1416,6 +1428,7 @@ gs_app_get_runtime (GsApp *app)
 void
 gs_app_set_runtime (GsApp *app, GsApp *runtime)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->runtime, runtime);
 }
@@ -1432,6 +1445,7 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 void
 gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->pixbuf, pixbuf);
 }
@@ -1591,6 +1605,7 @@ gs_app_get_version_ui (GsApp *app)
 void
 gs_app_set_version (GsApp *app, const gchar *version)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->version);
 	app->version = g_strdup (version);
@@ -1628,6 +1643,7 @@ gs_app_get_summary (GsApp *app)
 void
 gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
@@ -1669,6 +1685,7 @@ gs_app_get_description (GsApp *app)
 void
 gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *description)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
@@ -1711,6 +1728,7 @@ gs_app_get_url (GsApp *app, AsUrlKind kind)
 void
 gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_hash_table_insert (app->urls,
 			     g_strdup (as_url_kind_to_string (kind)),
@@ -1781,6 +1799,7 @@ gs_app_get_license_token_is_nonfree (const gchar *token)
 void
 gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	guint i;
 	g_auto(GStrv) tokens = NULL;
 
@@ -1841,6 +1860,7 @@ gs_app_get_summary_missing (GsApp *app)
 void
 gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->summary_missing);
 	app->summary_missing = g_strdup (summary_missing);
@@ -1878,6 +1898,7 @@ gs_app_get_menu_path (GsApp *app)
 void
 gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_strfreev (app->menu_path);
 	app->menu_path = g_strdupv (menu_path);
@@ -1912,6 +1933,7 @@ gs_app_get_origin (GsApp *app)
 void
 gs_app_set_origin (GsApp *app, const gchar *origin)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (origin == app->origin)
 		return;
@@ -1962,6 +1984,7 @@ gs_app_get_origin_ui (GsApp *app)
 void
 gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (origin_ui == app->origin_ui)
 		return;
@@ -2004,6 +2027,7 @@ gs_app_get_origin_hostname (GsApp *app)
 void
 gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_autoptr(SoupURI) uri = NULL;
 	guint i;
 	const gchar *prefixes[] = { "download.", "mirrors.", NULL };
@@ -2124,6 +2148,7 @@ gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 void
 gs_app_set_update_version (GsApp *app, const gchar *update_version)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	gs_app_set_update_version_internal (app, update_version);
 	gs_app_queue_notify (app, "version");
@@ -2158,6 +2183,7 @@ gs_app_get_update_details (GsApp *app)
 void
 gs_app_set_update_details (GsApp *app, const gchar *update_details)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->update_details);
 	app->update_details = g_strdup (update_details);
@@ -2235,6 +2261,7 @@ gs_app_get_management_plugin (GsApp *app)
 void
 gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* plugins cannot adopt wildcard packages */
@@ -2327,6 +2354,7 @@ gs_app_get_review_ratings (GsApp *app)
 void
 gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (app->review_ratings != NULL)
 		g_array_unref (app->review_ratings);
@@ -2550,6 +2578,7 @@ gs_app_get_metadata_item (GsApp *app, const gchar *key)
 void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	const gchar *found;
 	GString *str;
 
@@ -2836,6 +2865,7 @@ gs_app_has_category (GsApp *app, const gchar *category)
 void
 gs_app_set_categories (GsApp *app, GPtrArray *categories)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (categories != NULL);
 	if (app->categories != NULL)
@@ -2891,6 +2921,7 @@ gs_app_get_key_colors (GsApp *app)
 void
 gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_colors != NULL);
 	if (app->key_colors != NULL)
@@ -2944,6 +2975,7 @@ gs_app_get_keywords (GsApp *app)
 void
 gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (keywords != NULL);
 	if (app->keywords != NULL)
@@ -3379,6 +3411,7 @@ gs_app_finalize (GObject *object)
 {
 	GsApp *app = GS_APP (object);
 
+	g_mutex_clear (&app->mutex);
 	g_free (app->id);
 	g_free (app->unique_id);
 	g_free (app->branch);
@@ -3551,6 +3584,7 @@ gs_app_init (GsApp *app)
 	                                    g_str_equal,
 	                                    g_free,
 	                                    g_free);
+	g_mutex_init (&app->mutex);
 }
 
 /**
