@@ -785,11 +785,6 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	const gchar *branch;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 
-	/* only process this source if was created for this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (self->plugin)) != 0)
-		return TRUE;
-
 	/* does the remote already exist and is disabled */
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   gs_app_get_id (app),
@@ -1693,11 +1688,6 @@ gs_flatpak_refine_app (GsFlatpak *self,
 {
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (self->plugin)) != 0)
-		return TRUE;
-
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
 				  "flatpak::refine{%s}",
@@ -1826,11 +1816,6 @@ gs_flatpak_launch (GsFlatpak *self,
 	GsApp *runtime;
 	const gchar *branch = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (self->plugin)) != 0)
-		return TRUE;
-
 	branch = gs_app_get_flatpak_branch (app);
 	if (branch == NULL)
 		branch = "master";
@@ -1901,11 +1886,6 @@ gs_flatpak_app_remove (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (self->plugin)) != 0)
-		return TRUE;
-
 	/* refine to get basics */
 	if (!gs_flatpak_refine_app (self, app,
 				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
@@ -1951,11 +1931,6 @@ gs_flatpak_app_install (GsFlatpak *self,
 			GError **error)
 {
 	g_autoptr(FlatpakInstalledRef) xref = NULL;
-
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (self->plugin)) != 0)
-		return TRUE;
 
 	/* ensure we have metadata and state */
 	if (!gs_flatpak_refine_app (self, app, 0, cancellable,
@@ -2079,11 +2054,6 @@ gs_flatpak_update_app (GsFlatpak *self,
 		       GError **error)
 {
 	g_autoptr(FlatpakInstalledRef) xref = NULL;
-
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (self->plugin)) != 0)
-		return TRUE;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);

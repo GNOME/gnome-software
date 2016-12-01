@@ -244,6 +244,13 @@ static GsFlatpak *
 gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0) {
+		return NULL;
+	}
+
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 
