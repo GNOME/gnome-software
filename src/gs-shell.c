@@ -85,6 +85,7 @@ typedef struct
 	gulong			 search_changed_id;
 	gchar			*events_info_uri;
 	gboolean		 profile_mode;
+	gboolean		 in_mode_change;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -276,6 +277,7 @@ gs_shell_change_mode (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
 	gtk_widget_hide (widget);
 
+	priv->in_mode_change = TRUE;
 	/* only show the search button in overview and search pages */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
 	gtk_widget_set_visible (widget, mode == GS_SHELL_MODE_OVERVIEW ||
@@ -284,6 +286,7 @@ gs_shell_change_mode (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget),
 					mode == GS_SHELL_MODE_SEARCH);
+	priv->in_mode_change = FALSE;
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
@@ -364,7 +367,9 @@ gs_shell_change_mode (GsShell *shell,
 				mode != GS_SHELL_MODE_SEARCH &&
 				!g_queue_is_empty (priv->back_entry_stack));
 
+	priv->in_mode_change = TRUE;
 	gs_page_switch_to (new_page, scroll_up);
+	priv->in_mode_change = FALSE;
 
 	/* update header bar widgets */
 	widget = gs_page_get_header_start_widget (new_page);
@@ -599,6 +604,9 @@ search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 	search_bar = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (search_bar),
 	                                gtk_toggle_button_get_active (toggle_button));
+
+	if (priv->in_mode_change)
+		return;
 
 	/* switch back to overview */
 	if (!gtk_toggle_button_get_active (toggle_button))
