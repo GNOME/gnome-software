@@ -628,9 +628,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	if (as_app_get_origin (item) != NULL &&
 	    gs_app_get_origin (app) == NULL ) {
 		tmp = as_app_get_unique_id (item);
-		if (g_str_has_prefix (tmp, "user/flatpak/") ||
-		    g_str_has_prefix (tmp, "system/flatpak/"))
-			gs_app_set_origin (app, as_app_get_origin (item));
+		if (tmp != NULL) {
+			if (g_str_has_prefix (tmp, "user/flatpak/") ||
+			    g_str_has_prefix (tmp, "system/flatpak/"))
+				gs_app_set_origin (app, as_app_get_origin (item));
+		}
 	}
 
 	/* set description */
