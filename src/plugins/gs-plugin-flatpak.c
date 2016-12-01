@@ -240,6 +240,23 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return TRUE;
 }
 
+static GsFlatpak *
+gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+
+		/* check scope */
+		if (!_as_app_scope_is_compatible (gs_flatpak_get_scope (flatpak),
+						  gs_app_get_scope (app))) {
+			continue;
+		}
+		return flatpak;
+	}
+	return NULL;
+}
+
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -247,15 +264,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_refine_app (flatpak, app, flags,
-					    cancellable, error)) {
-			return FALSE;
-		}
-	}
-	return TRUE;
+	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_refine_app (flatpak, app, flags, cancellable, error);
 }
 
 gboolean
@@ -283,13 +295,10 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_launch (flatpak, app, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
+	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_launch (flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -298,13 +307,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_app_remove (flatpak, app, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
+	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_app_remove (flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -313,13 +319,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_app_install (flatpak, app, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
+	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_app_install (flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -328,13 +331,10 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_update_app (flatpak, app, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
+	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_update_app (flatpak, app, cancellable, error);
 }
 
 gboolean
