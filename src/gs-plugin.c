@@ -1075,6 +1075,10 @@ gs_plugin_download_data (GsPlugin *plugin,
 	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+	g_return_val_if_fail (uri != NULL, NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
 	g_debug ("downloading %s from plugin %s", uri, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
@@ -1132,6 +1136,11 @@ gs_plugin_download_file (GsPlugin *plugin,
 	guint status_code;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (uri != NULL, FALSE);
+	g_return_val_if_fail (filename != NULL, FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
 	g_debug ("downloading %s to %s from plugin %s", uri, filename, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
