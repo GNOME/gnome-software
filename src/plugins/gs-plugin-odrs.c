@@ -167,6 +167,8 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 					  "odrs.json",
 					  GS_UTILS_CACHE_FLAG_WRITEABLE,
 					  error);
+	if (fn == NULL)
+		return FALSE;
 	if (cache_age > 0) {
 		guint tmp;
 		g_autoptr(GFile) file = NULL;
