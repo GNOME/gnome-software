@@ -75,6 +75,16 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
 }
 
+static gboolean
+_as_app_scope_is_compatible (AsAppScope scope1, AsAppScope scope2)
+{
+	if (scope1 == AS_APP_SCOPE_UNKNOWN)
+		return TRUE;
+	if (scope2 == AS_APP_SCOPE_UNKNOWN)
+		return TRUE;
+	return scope1 == scope2;
+}
+
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -367,8 +377,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* run any objects with the corrext scope */
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (scope != AS_APP_SCOPE_UNKNOWN &&
-		    scope != gs_flatpak_get_scope (flatpak)) {
+		if (!_as_app_scope_is_compatible (scope, gs_flatpak_get_scope (flatpak))) {
 			g_debug ("not handling bundle as scope incorrect");
 			continue;
 		}
