@@ -480,10 +480,11 @@ gs_shell_plugin_events_more_info_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
+gs_shell_go_back (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	BackEntry *entry;
+	GtkWidget *widget;
 
 	g_return_if_fail (!g_queue_is_empty (priv->back_entry_stack));
 
@@ -531,6 +532,12 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 		gtk_widget_grab_focus (entry->focus);
 
 	free_back_entry (entry);
+}
+
+static void
+gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
+{
+	gs_shell_go_back (shell);
 }
 
 static void
@@ -608,9 +615,10 @@ search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 	if (priv->in_mode_change)
 		return;
 
-	/* switch back to overview */
-	if (!gtk_toggle_button_get_active (toggle_button))
-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+	/* go back when exiting the search view */
+	if (priv->mode == GS_SHELL_MODE_SEARCH &&
+	    !gtk_toggle_button_get_active (toggle_button))
+		gs_shell_go_back (shell);
 }
 
 static void
