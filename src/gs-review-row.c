@@ -61,7 +61,6 @@ gs_review_row_refresh (GsReviewRow *row)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 	const gchar *reviewer;
-	guint64 actions = 0;
 	GDateTime *date;
 	g_autofree gchar *text = NULL;
 
@@ -89,25 +88,36 @@ gs_review_row_refresh (GsReviewRow *row)
 		priv->actions = 0;
 
 	/* set actions up */
-	if (priv->network_available)
-		actions = priv->actions;
-	if ((actions & (1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
+	if ((priv->actions & (1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE |
 			1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE |
 			1 << GS_PLUGIN_ACTION_REVIEW_DISMISS)) == 0) {
 		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
 		gtk_widget_set_visible (priv->box_voting, TRUE);
 		gtk_widget_set_visible (priv->button_yes,
-					actions & 1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE);
+					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_UPVOTE);
 		gtk_widget_set_visible (priv->button_no,
-					actions & 1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE);
+					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_DOWNVOTE);
 		gtk_widget_set_visible (priv->button_dismiss,
-					actions & 1 << GS_PLUGIN_ACTION_REVIEW_DISMISS);
+					priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_DISMISS);
 	}
 	gtk_widget_set_visible (priv->button_remove,
-				actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE);
+				priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE);
 	gtk_widget_set_visible (priv->button_report,
-				actions & 1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+				priv->actions & 1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
+
+	/* mark insensitive if no network */
+	if (priv->network_available) {
+		gtk_widget_set_sensitive (priv->button_yes, TRUE);
+		gtk_widget_set_sensitive (priv->button_no, TRUE);
+		gtk_widget_set_sensitive (priv->button_remove, TRUE);
+		gtk_widget_set_sensitive (priv->button_report, TRUE);
+	} else {
+		gtk_widget_set_sensitive (priv->button_yes, FALSE);
+		gtk_widget_set_sensitive (priv->button_no, FALSE);
+		gtk_widget_set_sensitive (priv->button_remove, FALSE);
+		gtk_widget_set_sensitive (priv->button_report, FALSE);
+	}
 }
 
 void

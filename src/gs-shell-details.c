@@ -1285,8 +1285,15 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 
 	/* show the button only if the user never reviewed */
 	gtk_widget_set_visible (self->button_review, show_review_button);
-	gtk_widget_set_sensitive (self->button_review,
-				  gs_plugin_loader_get_network_available (self->plugin_loader));
+	if (gs_plugin_loader_get_network_available (self->plugin_loader)) {
+		gtk_widget_set_sensitive (self->button_review, TRUE);
+		gtk_widget_set_tooltip_text (self->button_review, NULL);
+	} else {
+		gtk_widget_set_sensitive (self->button_review, FALSE);
+		gtk_widget_set_tooltip_text (self->button_review,
+					     /* TRANSLATORS: we need a remote server to process */
+					     _("You need internet access to write a review"));
+	}
 }
 
 static void
