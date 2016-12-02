@@ -59,6 +59,7 @@ typedef struct
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
+	GtkWidget		*featured_heading;
 	GtkWidget		*category_heading;
 	GtkWidget		*flowbox_categories;
 	GtkWidget		*flowbox_categories2;
@@ -320,6 +321,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 		gs_app_list_randomize (list);
 	}
 
+	gtk_widget_hide (priv->featured_heading);
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s",
@@ -339,6 +341,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 			  G_CALLBACK (app_tile_clicked), self);
 
 	gtk_container_add (GTK_CONTAINER (priv->bin_featured), tile);
+	gtk_widget_show (priv->featured_heading);
 
 	priv->empty = FALSE;
 
@@ -896,6 +899,7 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
