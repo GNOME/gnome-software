@@ -2918,6 +2918,7 @@ gs_app_set_categories (GsApp *app, GPtrArray *categories)
 void
 gs_app_add_category (GsApp *app, const gchar *category)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (category != NULL);
 	if (gs_app_has_category (app, category))
