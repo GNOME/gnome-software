@@ -606,6 +606,7 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
 	gs_app_set_flatpak_kind (app, flatpak_ref_get_kind (xref));
 	gs_app_set_flatpak_name (app, flatpak_ref_get_name (xref));
 	gs_app_set_flatpak_arch (app, flatpak_ref_get_arch (xref));
