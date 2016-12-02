@@ -67,6 +67,7 @@ typedef struct
 	GsAppList		*global_cache;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	GHashTable		*vfuncs;		/* string:pointer */
+	GMutex			 vfuncs_mutex;
 	gboolean		 enabled;
 	gchar			*locale;		/* allow-none */
 	gchar			*language;		/* allow-none */
@@ -204,6 +205,7 @@ gs_plugin_finalize (GObject *object)
 	g_hash_table_unref (priv->vfuncs);
 	g_mutex_clear (&priv->cache_mutex);
 	g_mutex_clear (&priv->timer_mutex);
+	g_mutex_clear (&priv->vfuncs_mutex);
 	if (priv->module != NULL)
 		g_module_close (priv->module);
 }
@@ -339,6 +341,7 @@ gs_plugin_get_symbol (GsPlugin *plugin, const gchar *function_name)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	gpointer func = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->vfuncs_mutex);
 
 	/* disabled plugins shouldn't be checked */
 	if (!priv->enabled)
@@ -1603,6 +1606,7 @@ gs_plugin_init (GsPlugin *plugin)
 					      g_free, NULL);
 	g_mutex_init (&priv->cache_mutex);
 	g_mutex_init (&priv->timer_mutex);
+	g_mutex_init (&priv->vfuncs_mutex);
 	g_rw_lock_init (&priv->rwlock);
 }
 
