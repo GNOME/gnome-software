@@ -1801,27 +1801,27 @@ gs_shell_details_content_rating_button_cb (GtkWidget *widget, GsShellDetails *se
 	struct {
 		const gchar *ids[5];	/* ordered inside from worst to best */
 	} id_map[] = {
-		{ "violence-bloodshed",
+		{{"violence-bloodshed",
 		  "violence-realistic",
 		  "violence-fantasy",
-		  "violence-cartoon", NULL },
-		{ "violence-sexual", NULL },
-		{ "drugs-alcohol", NULL },
-		{ "drugs-narcotics", NULL },
-		{ "sex-nudity", NULL },
-		{ "sex-themes", NULL },
-		{ "language-profanity", NULL },
-		{ "language-humor", NULL },
-		{ "language-discrimination", NULL },
-		{ "money-advertising", NULL },
-		{ "money-gambling", NULL },
-		{ "money-purchasing", NULL },
-		{ "social-audio",
+		  "violence-cartoon", NULL }},
+		{{"violence-sexual", NULL }},
+		{{"drugs-alcohol", NULL }},
+		{{"drugs-narcotics", NULL }},
+		{{"sex-nudity", NULL }},
+		{{"sex-themes", NULL }},
+		{{"language-profanity", NULL }},
+		{{"language-humor", NULL }},
+		{{"language-discrimination", NULL }},
+		{{"money-advertising", NULL }},
+		{{"money-gambling", NULL }},
+		{{"money-purchasing", NULL }},
+		{{"social-audio",
 		  "social-chat",
 		  "social-contacts",
-		  "social-info", NULL },
-		{ "social-location", NULL },
-		{ NULL }
+		  "social-info", NULL }},
+		{{"social-location", NULL }},
+		{{ NULL }}
 	};
 
 	/* get the worst thing */
