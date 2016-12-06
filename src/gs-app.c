@@ -2637,6 +2637,7 @@ gs_app_add_addon (GsApp *app, GsApp *addon)
 {
 	gpointer found;
 	const gchar *id;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (addon));
@@ -2681,6 +2682,7 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 {
 	gchar *key;
 	gpointer found;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -2733,6 +2735,7 @@ gs_app_get_history (GsApp *app)
 void
 gs_app_add_history (GsApp *app, GsApp *app2)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_ptr_array_add (app->history, g_object_ref (app2));
 }
