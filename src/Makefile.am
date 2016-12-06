@@ -41,7 +41,9 @@ gnomesoftware_include_HEADERS =				\
 	gs-plugin-vfuncs.h				\
 	gs-utils.h
 
-@INTLTOOL_DESKTOP_RULE@
+%.desktop: %.desktop.in
+	$(AM_V_GEN) msgfmt --desktop -d $(top_srcdir)/po --template $< -o $@
+
 desktopdir = $(datadir)/applications
 desktop_in_files =					\
 	gnome-software-local-file.desktop.in		\

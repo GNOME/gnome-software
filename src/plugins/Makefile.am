@@ -407,7 +407,9 @@ libgs_plugin_ubuntuone_la_LDFLAGS = -module -avoid-version
 libgs_plugin_ubuntuone_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 # MetaInfo files
-@INTLTOOL_XML_RULE@
+%.metainfo.xml: %.metainfo.xml.in
+	$(AM_V_GEN) msgfmt --xml -d $(top_srcdir)/po --template $< -o $@
+
 appdatadir = $(datadir)/appdata
 appdata_DATA = $(appdata_in_files:.xml.in=.xml)
 EXTRA_DIST = $(appdata_in_files)

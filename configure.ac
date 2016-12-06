@@ -14,7 +14,6 @@ AC_PROG_CC_C99
 AC_PROG_INSTALL
 LT_INIT
 AM_PROG_CC_C_O
-IT_PROG_INTLTOOL([0.35.0])
 
 # set up gtk-doc
 GTK_DOC_CHECK([1.11],[--flavour no-tmpl])
@@ -74,12 +73,13 @@ AC_SUBST(WARN_CFLAGS)
 dnl ---------------------------------------------------------------------------
 dnl - gettext stuff
 dnl ---------------------------------------------------------------------------
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.19.7])
 GETTEXT_PACKAGE=AC_PACKAGE_NAME
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE(GETTEXT_PACKAGE, "AC_PACKAGE_NAME", [gnome-software])
 
 AM_PATH_GLIB_2_0(2.46.0, :, AC_MSG_ERROR([GLib is required]), gobject gmodule gio)
-AM_GLIB_GNU_GETTEXT
 GLIB_GSETTINGS
 
 dnl ---------------------------------------------------------------------------

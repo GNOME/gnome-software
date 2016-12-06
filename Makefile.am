@@ -22,6 +22,7 @@ MAINTAINERCLEANFILES =					\
 	compile						\
 	config.guess					\
 	config.h.*					\
+	config.rpath					\
 	config.sub					\
 	configure					\
 	depcomp						\
@@ -31,6 +32,12 @@ MAINTAINERCLEANFILES =					\
 	Makefile.in					\
 	missing						\
 	mkinstalldirs					\
+	po/*.header					\
+	po/Makevars.template				\
+	po/Rules-quot					\
+	po/*.sed					\
+	po/*.sin					\
+	po/*.po~					\
 	NEWS						\
 	test-driver
 
