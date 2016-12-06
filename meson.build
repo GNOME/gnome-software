@@ -166,8 +166,9 @@ conf.set_quoted('LIBDIR',
 conf.set_quoted('SYSCONFDIR',
                 join_paths(get_option('prefix'),
                            get_option('sysconfdir')))
-# FIXME: xxx
-conf.set_quoted('LOCALSTATEDIR', '/var')
+conf.set_quoted('LOCALSTATEDIR',
+                join_paths(get_option('prefix'),
+                           get_option('localstatedir')))
 conf.set_quoted('GS_DATA',
                 join_paths(get_option('prefix'),
                            get_option('datadir'),
