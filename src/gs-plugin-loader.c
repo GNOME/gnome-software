@@ -840,6 +840,35 @@ gs_plugin_loader_run_refine (GsPluginLoaderJob *job,
 			goto out;
 	}
 
+	/* remove any addons that have the same source as the parent app */
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
+		GsApp *app = gs_app_list_index (list, i);
+		GPtrArray *addons = gs_app_get_addons (app);
+
+		/* find any apps with the same source */
+		const gchar *pkgname_parent = gs_app_get_source_default (app);
+		if (pkgname_parent == NULL)
+			continue;
+		for (guint j = 0; j < addons->len; j++) {
+			GsApp *addon = g_ptr_array_index (addons, j);
+			if (g_strcmp0 (gs_app_get_source_default (addon),
+				       pkgname_parent) == 0) {
+				g_debug ("%s has the same pkgname of %s as %s",
+					 gs_app_get_unique_id (app),
+					 pkgname_parent,
+					 gs_app_get_unique_id (addon));
+				g_ptr_array_add (to_remove, addon);
+			}
+		}
+
+		/* remove any addons with the same source */
+		for (guint j = 0; j < to_remove->len; j++) {
+			GsApp *addon = g_ptr_array_index (to_remove, j);
+			gs_app_remove_addon (app, addon);
+		}
+	}
+
 out:
 	/* now emit all the changed signals */
 	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
