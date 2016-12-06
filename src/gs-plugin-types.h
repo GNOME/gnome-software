@@ -89,6 +89,7 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_WRITE_FAILED:		The save-to-disk failed
  * @GS_PLUGIN_ERROR_INVALID_FORMAT:		The data format is invalid
  * @GS_PLUGIN_ERROR_DELETE_FAILED:		The delete action failed
+ * @GS_PLUGIN_ERROR_RESTART_REQUIRED:		A restart is required
  *
  * The failure error types.
  **/
@@ -109,6 +110,7 @@ typedef enum {
 	GS_PLUGIN_ERROR_WRITE_FAILED,
 	GS_PLUGIN_ERROR_INVALID_FORMAT,
 	GS_PLUGIN_ERROR_DELETE_FAILED,
+	GS_PLUGIN_ERROR_RESTART_REQUIRED,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;

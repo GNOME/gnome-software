@@ -1415,6 +1415,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "invalid-format";
 	if (error == GS_PLUGIN_ERROR_DELETE_FAILED)
 		return "delete-failed";
+	if (error == GS_PLUGIN_ERROR_RESTART_REQUIRED)
+		return "restart-required";
 	return NULL;
 }
 

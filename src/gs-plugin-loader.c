@@ -48,6 +48,7 @@ typedef struct
 	AsProfile		*profile;
 	SoupSession		*soup_session;
 	GPtrArray		*auth_array;
+	GFileMonitor		*file_monitor;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -3482,6 +3483,34 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 	return 0;
 }
 
+static void
+gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
+					GFile *file,
+					GFile *other_file,
+					GFileMonitorEvent event_type,
+					GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GsApp *app;
+	g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+	g_autoptr(GError) error = NULL;
+
+	/* add app */
+	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_SETUP);
+	app = gs_app_list_lookup (priv->global_cache,
+		"system/*/*/*/org.gnome.Software.desktop/*");
+	if (app != NULL)
+		gs_plugin_event_set_app (event, app);
+
+	/* add error */
+	g_set_error_literal (&error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_RESTART_REQUIRED,
+			     "A restart is required");
+	gs_plugin_event_set_error (event, error);
+	gs_plugin_loader_add_event (plugin_loader, event);
+}
+
 /**
  * gs_plugin_loader_setup:
  * @plugin_loader: a #GsPluginLoader
@@ -3513,10 +3542,21 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint i;
 	guint j;
 	g_autoptr(GDir) dir = NULL;
+	g_autoptr(GFile) plugin_dir = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsPluginLoaderJob) job = NULL;
 
 	g_return_val_if_fail (priv->location != NULL, FALSE);
+
+	plugin_dir = g_file_new_for_path (priv->location);
+	priv->file_monitor = g_file_monitor_directory (plugin_dir,
+						       G_FILE_MONITOR_NONE,
+						       cancellable,
+						       error);
+	if (priv->file_monitor == NULL)
+		return FALSE;
+	g_signal_connect (priv->file_monitor, "changed",
+			  G_CALLBACK (gs_plugin_loader_plugin_dir_changed_cb), plugin_loader);
 
 	/* search in the plugin directory for plugins */
 	ptask = as_profile_start_literal (priv->profile, "GsPlugin::setup");
@@ -3834,6 +3874,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_free (priv->locale);
 	g_free (priv->language);
 	g_object_unref (priv->global_cache);
+	g_object_unref (priv->file_monitor);
 	g_hash_table_unref (priv->events_by_id);
 	g_hash_table_unref (priv->disallow_updates);
 
