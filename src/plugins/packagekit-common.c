@@ -179,6 +179,7 @@ gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
 				     PK_CLIENT_ERROR,
 				     pk_error_get_code (error_code),
 				     pk_error_get_details (error_code));
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
 
