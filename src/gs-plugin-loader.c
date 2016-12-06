@@ -313,9 +313,11 @@ gs_plugin_loader_create_event_from_error (GsPluginLoader *plugin_loader,
 	if (error == NULL)
 		return;
 	if (error->domain != GS_PLUGIN_ERROR) {
-		g_critical ("not GsPlugin error %s:%i",
+		g_critical ("not GsPlugin error from plugin %s %s:%i: %s",
+			    gs_plugin_get_name (plugin),
 			    g_quark_to_string (error->domain),
-			    error->code);
+			    error->code,
+			    error->message);
 		return;
 	}
 
