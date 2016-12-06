@@ -1977,8 +1977,16 @@ gs_flatpak_app_install (GsFlatpak *self,
 		}
 	}
 
-	/* use the source for local apps */
-	if (gs_app_get_local_file (app) != NULL) {
+	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") == 0) {
+		/* no local_file set */
+		if (gs_app_get_origin (app) == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no local_file set for %s",
+				     gs_app_get_unique_id (app));
+			return FALSE;
+		}
 		g_debug ("installing bundle %s", gs_app_get_unique_id (app));
 		xref = flatpak_installation_install_bundle (self->installation,
 							    gs_app_get_local_file (app),
@@ -1986,7 +1994,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 							    app,
 							    cancellable, error);
 	} else {
-		/* no origin */
+		/* no origin set */
 		if (gs_app_get_origin (app) == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
@@ -2075,6 +2083,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_plugin_create_app (self, FLATPAK_REF (xref_bundle));
+	gs_app_set_flatpak_file_type (app, "flatpak");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
@@ -2257,6 +2266,7 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 
 	/* create source */
 	app = gs_app_new (repo_id);
+	gs_app_set_flatpak_file_type (app, "flatpakrepo");
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
@@ -2349,6 +2359,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_plugin_create_app (self, FLATPAK_REF (xref));
+	gs_app_set_flatpak_file_type (app, "flatpakref");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
