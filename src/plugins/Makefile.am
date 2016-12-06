@@ -52,6 +52,8 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_icons.la				\
 	libgs_plugin_ubuntuone.la
 
+appdata_in_files =
+
 if HAVE_EXTERNAL_APPSTREAM
 plugin_LTLIBRARIES += libgs_plugin_external-appstream.la
 
@@ -183,6 +185,7 @@ libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQ
 libgs_plugin_fedora_tagger_usage_la_LDFLAGS = -module -avoid-version
 libgs_plugin_fedora_tagger_usage_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
+appdata_in_files += org.gnome.Software.Plugin.Epiphany.metainfo.xml.in
 libgs_plugin_epiphany_la_SOURCES = gs-plugin-epiphany.c
 libgs_plugin_epiphany_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
 libgs_plugin_epiphany_la_LDFLAGS = -module -avoid-version
@@ -202,6 +205,7 @@ libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_LIMBA
+appdata_in_files += org.gnome.Software.Plugin.Limba.metainfo.xml.in
 libgs_plugin_limba_la_SOURCES = gs-plugin-limba.c
 libgs_plugin_limba_la_LIBADD = $(GS_PLUGIN_LIBS) $(LIMBA_LIBS)
 libgs_plugin_limba_la_LDFLAGS = -module -avoid-version
@@ -209,6 +213,7 @@ libgs_plugin_limba_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_FLATPAK
+appdata_in_files += org.gnome.Software.Plugin.Flatpak.metainfo.xml.in
 libgs_plugin_flatpak_la_SOURCES =			\
 	gs-appstream.c					\
 	gs-appstream.h					\
@@ -230,6 +235,7 @@ libgs_plugin_ostree_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_ODRS
+appdata_in_files += org.gnome.Software.Plugin.Odrs.metainfo.xml.in
 libgs_plugin_odrs_la_SOURCES = gs-plugin-odrs.c
 libgs_plugin_odrs_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
 libgs_plugin_odrs_la_LDFLAGS = -module -avoid-version
@@ -244,6 +250,7 @@ libgs_plugin_rpm_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_STEAM
+appdata_in_files += org.gnome.Software.Plugin.Steam.metainfo.xml.in
 libgs_plugin_steam_la_SOURCES = gs-plugin-steam.c
 libgs_plugin_steam_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_steam_la_LDFLAGS = -module -avoid-version
@@ -337,6 +344,7 @@ libgs_plugin_systemd_updates_la_LDFLAGS = -module -avoid-version
 libgs_plugin_systemd_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_FIRMWARE
+appdata_in_files += org.gnome.Software.Plugin.Fwupd.metainfo.xml.in
 libgs_plugin_fwupd_la_SOURCES = gs-plugin-fwupd.c
 libgs_plugin_fwupd_la_LIBADD = $(GS_PLUGIN_LIBS) $(FWUPD_LIBS)
 libgs_plugin_fwupd_la_LDFLAGS = -module -avoid-version
@@ -375,6 +383,7 @@ libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_SNAP
+appdata_in_files += org.gnome.Software.Plugin.Snap.metainfo.xml.in
 libgs_plugin_snap_la_SOURCES =				\
 	gs-plugin-snap.c				\
 	gs-snapd.h					\
@@ -396,6 +405,13 @@ libgs_plugin_ubuntuone_la_LIBADD =			\
 	$(JSON_GLIB_LIBS)
 libgs_plugin_ubuntuone_la_LDFLAGS = -module -avoid-version
 libgs_plugin_ubuntuone_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+# MetaInfo files
+@INTLTOOL_XML_RULE@
+appdatadir = $(datadir)/appdata
+appdata_DATA = $(appdata_in_files:.xml.in=.xml)
+EXTRA_DIST = $(appdata_in_files)
+CLEANFILES = $(appdata_DATA)
 
 if ENABLE_TESTS
 check_PROGRAMS =						\
