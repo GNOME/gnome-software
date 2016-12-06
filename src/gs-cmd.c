@@ -338,6 +338,7 @@ main (int argc, char **argv)
 			if (!ret)
 				break;
 		}
+		list = gs_app_list_new ();
 		gs_app_list_add (list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "launch") == 0) {
 		app = gs_app_new (argv[2]);
