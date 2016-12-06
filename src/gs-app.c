@@ -2652,6 +2652,25 @@ gs_app_add_addon (GsApp *app, GsApp *addon)
 }
 
 /**
+ * gs_app_remove_addon:
+ * @app: a #GsApp
+ * @addon: a #GsApp
+ *
+ * Removes an addon from the list of application addons.
+ *
+ * Since: 3.22
+ **/
+void
+gs_app_remove_addon (GsApp *app, GsApp *addon)
+{
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (addon));
+	g_ptr_array_remove (app->addons, addon);
+	g_hash_table_remove (app->addons_hash, gs_app_get_id (addon));
+}
+
+/**
  * gs_app_get_related:
  * @app: a #GsApp
  *
