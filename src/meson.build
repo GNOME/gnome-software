@@ -141,7 +141,16 @@ gnome_software_sources = [
   'gs-main.c'
 ]
 
-gnome_software_dependencies = [gtk, gio_unix, libm, appstream_glib, json_glib, libsoup, libsecret, gmodule]
+gnome_software_dependencies = [
+  appstream_glib,
+  gio_unix,
+  gmodule,
+  gtk,
+  json_glib,
+  libm,
+  libsecret,
+  libsoup
+]
 
 if get_option('enable-packagekit')
   gnome_software_sources += [
@@ -303,8 +312,8 @@ install_data('org.gnome.Software-search-provider.ini',
              install_dir : 'share/gnome-shell/search-providers')
 
 if get_option('enable-man')
-    xsltproc = find_program('xsltproc')
-    custom_target('manfile',
+  xsltproc = find_program('xsltproc')
+  custom_target('manfile',
     input: 'gnome-software.xml',
     output: 'gnome-software.1',
     install: true,

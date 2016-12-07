@@ -5,13 +5,13 @@ project('gnome-software', 'c',
 )
 
 conf = configuration_data()
-conf.set('VERSION', '"@0@"'.format(meson.project_version()))
-conf.set('PACKAGE_NAME', '"@0@"'.format(meson.project_name()))
-conf.set('PACKAGE_VERSION', '"@0@"'.format(meson.project_version()))
+conf.set_quoted('VERSION', meson.project_version())
+conf.set_quoted('PACKAGE_NAME', meson.project_name())
+conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-conf.set('GS_PLUGIN_API_VERSION', '"@0@"'.format('11'))
+conf.set_quoted('GS_PLUGIN_API_VERSION', '11')
 
 # install docs
 install_data('README', install_dir : 'share/doc/gnome-software')
