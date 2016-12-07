@@ -1,3 +1,5 @@
+cargs = ['-DG_LOG_DOMAIN="GsPlugin"']
+
 plugin_dir = join_paths(get_option('libdir'), 'gs-plugins-11')
 
 plugin_libs = [
@@ -16,6 +18,7 @@ shared_module('gs_plugin_dummy',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : [appstream_glib, gtk, libsoup]
 )
 
@@ -27,6 +30,7 @@ shared_module('gs_plugin_dpkg',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -50,6 +54,7 @@ if get_option('enable-external-appstream')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [gio_unix, appstream_glib, libsoup]
   )
 endif
@@ -62,6 +67,7 @@ shared_module('gs_plugin_key-colors',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -74,6 +80,7 @@ if get_option('enable-shell-extensions')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : plugin_libs
   )
 endif
@@ -86,6 +93,7 @@ shared_module('gs_plugin_fedora-distro-upgrades',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -98,6 +106,7 @@ if get_option('enable-gudev')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, gudev ]
   )
 endif
@@ -110,6 +119,7 @@ shared_module('gs_plugin_provenance',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -121,6 +131,7 @@ shared_module('gs_plugin_provenance-license',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -132,6 +143,7 @@ shared_module('gs_plugin_fedora-tagger-usage',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -143,6 +155,7 @@ shared_module('gs_plugin_epiphany',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 metainfos += 'org.gnome.Software.Plugin.Epiphany.metainfo.xml'
@@ -155,6 +168,7 @@ shared_module('gs_plugin_icons',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -169,6 +183,7 @@ shared_module('gs_plugin_appstream',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -181,6 +196,7 @@ shared_module('gs_plugin_limba',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
   )
 endif
@@ -199,6 +215,7 @@ if get_option('enable-flatpak')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, flatpak ]
   )
   metainfos += 'org.gnome.Software.Plugin.Flatpak.metainfo.xml'
@@ -213,6 +230,7 @@ if get_option('enable-ostree')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, ostree ]
   )
 endif
@@ -226,6 +244,7 @@ if get_option('enable-odrs')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : plugin_libs
   )
   metainfos += 'org.gnome.Software.Plugin.Odrs.metainfo.xml'
@@ -240,6 +259,7 @@ if get_option('enable-rpm')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, rpm ]
   )
 endif
@@ -253,6 +273,7 @@ if get_option('enable-steam')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : plugin_libs
   )
   metainfos += 'org.gnome.Software.Plugin.Steam.metainfo.xml'
@@ -266,6 +287,7 @@ shared_module('gs_plugin_repos',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -280,6 +302,7 @@ shared_module('gs_plugin_desktop-categories',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -294,6 +317,7 @@ shared_module('gs_plugin_desktop-menu-path',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -305,6 +329,7 @@ shared_module('gs_plugin_hardcoded-blacklist',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -316,6 +341,7 @@ shared_module('gs_plugin_hardcoded-popular',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -327,6 +353,7 @@ shared_module('gs_plugin_hardcoded-featured',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 
@@ -339,6 +366,7 @@ if get_option('enable-ubuntu-reviews')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, oauth ]
   )
 endif
@@ -352,6 +380,7 @@ if get_option('enable-firmware')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, fwupd ]
   )
   metainfos += 'org.gnome.Software.Plugin.Fwupd.metainfo.xml'
@@ -369,6 +398,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -383,6 +413,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -398,6 +429,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -412,6 +444,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -426,6 +459,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -437,6 +471,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -451,6 +486,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -462,6 +498,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -476,6 +513,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ]
   )
 
@@ -487,6 +525,7 @@ if get_option('enable-packagekit')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, packagekit ])
 endif
 
@@ -502,6 +541,7 @@ if get_option('enable-snap')
     ],
     install : true,
     install_dir: plugin_dir,
+    c_args : cargs,
     dependencies : [ plugin_libs, snap ]
   )
   metainfos += 'org.gnome.Software.Plugin.Snap.metainfo.xml'
@@ -515,6 +555,7 @@ shared_module('gs_plugin_ubuntuone',
   ],
   install : true,
   install_dir: plugin_dir,
+  c_args : cargs,
   dependencies : plugin_libs
 )
 

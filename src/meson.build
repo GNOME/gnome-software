@@ -1,6 +1,6 @@
 subdir('plugins')
 
-cargs = ['-DG_LOG_DOMAIN="Gpm"']
+cargs = ['-DG_LOG_DOMAIN="Gs"']
 
 resources_src = gnome.compile_resources(
   'gs-resources',
