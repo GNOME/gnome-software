@@ -1505,7 +1505,7 @@ main (int argc, char **argv)
 	plugin_loader = gs_plugin_loader_new ();
 	g_signal_connect (plugin_loader, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
-	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
+	gs_plugin_loader_set_location (plugin_loader, LOCALPLUGINDIR);
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      (gchar**) whitelist,
 				      NULL,

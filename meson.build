@@ -153,7 +153,10 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
-conf.set_quoted('TESTDATADIR', '..')
+conf.set_quoted('TESTDATADIR', join_paths(meson.current_source_dir(), 'data'))
+conf.set_quoted('LOCALPLUGINDIR',
+                join_paths(meson.current_build_dir(),
+                           'src', 'plugins'))
 conf.set_quoted('LOCALEDIR',
                 join_paths(get_option('prefix'),
                            get_option('localedir')))

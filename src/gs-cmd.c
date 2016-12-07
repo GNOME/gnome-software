@@ -268,7 +268,8 @@ main (int argc, char **argv)
 	profile = gs_plugin_loader_get_profile (plugin_loader);
 	ptask = as_profile_start_literal (profile, "GsCmd");
 	g_assert (ptask != NULL);
-	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
+	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
+		gs_plugin_loader_set_location (plugin_loader, LOCALPLUGINDIR);
 	if (plugin_whitelist_str != NULL)
 		plugin_whitelist = g_strsplit (plugin_whitelist_str, ",", -1);
 	if (plugin_blacklist_str != NULL)

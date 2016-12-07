@@ -3485,19 +3485,8 @@ void
 gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autofree gchar *filename = NULL;
-
 	g_free (priv->location);
-
-	/* something non-default specified */
-	if (location != NULL) {
-		priv->location = g_strdup (location);
-		return;
-	}
-
-	/* use the default, but this requires a 'make install' */
-	filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
-	priv->location = g_build_filename (LIBDIR, filename, NULL);
+	priv->location = g_strdup (location);
 }
 
 static gint
@@ -3995,6 +3984,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar *match;
 	gchar **projects;
 	guint i;
+	g_autofree gchar *filename = NULL;
 
 	priv->scale = 1;
 	priv->global_cache = gs_app_list_new ();
@@ -4059,6 +4049,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	for (i = 0; projects[i] != NULL; i++)
 		g_debug ("compatible-project: %s", projects[i]);
 	priv->compatible_projects = projects;
+
+	/* use the default, but this requires a 'make install' */
+	filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
+	priv->location = g_build_filename (LIBDIR, filename, NULL);
 }
 
 /**
