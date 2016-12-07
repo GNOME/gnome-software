@@ -161,7 +161,6 @@ shared_module('gs_plugin_icons',
 shared_module('gs_plugin_appstream',
   sources : [
     'gs-appstream.c',
-    'gs-appstream.h',
     'gs-plugin-appstream.c'
   ],
   include_directories : [
@@ -190,11 +189,8 @@ if get_option('enable-flatpak')
   shared_module('gs_plugin_flatpak',
     sources : [
       'gs-appstream.c',
-      'gs-appstream.h',
       'gs-flatpak.c',
-      'gs-flatpak.h',
       'gs-flatpak-symlinks.c',
-      'gs-flatpak-symlinks.h',
       'gs-plugin-flatpak.c'
     ],
     include_directories : [
@@ -277,7 +273,6 @@ shared_module('gs_plugin_desktop-categories',
   sources : [
     'gs-plugin-desktop-categories.c',
     'gs-desktop-common.c',
-    'gs-desktop-common.h'
   ],
   include_directories : [
     include_directories('..'),
@@ -292,7 +287,6 @@ shared_module('gs_plugin_desktop-menu-path',
   sources : [
     'gs-plugin-desktop-menu-path.c',
     'gs-desktop-common.c',
-    'gs-desktop-common.h'
   ],
   include_directories : [
     include_directories('..'),
@@ -368,7 +362,6 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-systemd-updates.c',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -383,7 +376,6 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-packagekit.c',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -398,9 +390,7 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-packagekit-refine.c',
       'gs-markdown.c',
-      'gs-markdown.h',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -415,7 +405,6 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-packagekit-refresh.c',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -430,7 +419,6 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-packagekit-local.c',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -456,7 +444,6 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-packagekit-upgrade.c',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -482,7 +469,6 @@ if get_option('enable-packagekit')
     sources : [
       'gs-plugin-packagekit-origin.c',
       'packagekit-common.c',
-      'packagekit-common.h'
     ],
     include_directories : [
       include_directories('..'),
@@ -508,7 +494,6 @@ if get_option('enable-snap')
   shared_module('gs_plugin_snap',
     sources : [
       'gs-plugin-snap.c',
-      'gs-snapd.h',
       'gs-snapd.c'
     ],
     include_directories : [
