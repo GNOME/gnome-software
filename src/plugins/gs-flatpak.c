@@ -47,13 +47,6 @@ struct _GsFlatpak {
 
 G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
 
-/* we have to do this until we hard dep on 0.6.11 */
-#define _FLATPAK_CHECK_VERSION(major,minor,micro)    \
-    (FLATPAK_MAJOR_VERSION > (major) || \
-     (FLATPAK_MAJOR_VERSION == (major) && FLATPAK_MINOR_VERSION > (minor)) || \
-     (FLATPAK_MAJOR_VERSION == (major) && FLATPAK_MINOR_VERSION == (minor) && \
-      FLATPAK_MICRO_VERSION >= (micro)))
-
 static gboolean
 gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			      GsPluginRefreshFlags flags,
@@ -2339,7 +2332,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		return FALSE;
 	}
 
-#if _FLATPAK_CHECK_VERSION(0,6,10)
 	/* install the remote, but not the app */
 	ref_file_data = g_bytes_new (contents, len);
 	xref = flatpak_installation_install_ref_file (self->installation,
@@ -2349,13 +2341,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	if (xref == NULL) {
 		return FALSE;
 	}
-#else
-	g_set_error_literal (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "not new enough libflatpak to support flatpakref");
-	return FALSE;
-#endif
 
 	/* load metadata */
 	app = gs_plugin_create_app (self, FLATPAK_REF (xref));
