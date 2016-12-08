@@ -46,6 +46,19 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2016-12-08" version="3.22.4">
+      <description>
+        <p>This stable release fixes the following bugs:</p>
+        <ul>
+          <li>Add locking to GsApp to fix hard-to-debug thread related crashes</li>
+          <li>Fix various top crashers listed on Fedora's retrace server</li>
+          <li>Fix an issue that caused app addon install/removal to get triggered without user interaction</li>
+          <li>Make flatpakref installation work</li>
+          <li>Hide review buttons when there's no internet connection</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2016-12-01" version="3.22.3">
       <description>
         <p>This stable release fixes the following bugs:</p>
