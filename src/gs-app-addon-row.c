@@ -46,6 +46,12 @@ enum {
 	PROP_SELECTED
 };
 
+static void
+checkbox_toggled (GtkWidget *widget, GsAppAddonRow *row)
+{
+	g_object_notify (G_OBJECT (row), "selected");
+}
+
 /**
  * gs_app_addon_row_get_summary:
  *
@@ -110,6 +116,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	}
 
 	/* update the checkbox */
+	g_signal_handlers_block_by_func (row->checkbox, checkbox_toggled, row);
 	switch (gs_app_get_state (row->app)) {
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
@@ -138,6 +145,7 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		break;
 	}
+	g_signal_handlers_unblock_by_func (row->checkbox, checkbox_toggled, row);
 }
 
 GsApp *
@@ -242,12 +250,6 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, description_label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, label);
 	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, checkbox);
-}
-
-static void
-checkbox_toggled (GtkWidget *widget, GsAppAddonRow *row)
-{
-	g_object_notify (G_OBJECT (row), "selected");
 }
 
 static void
