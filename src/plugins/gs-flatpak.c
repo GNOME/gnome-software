@@ -408,10 +408,18 @@ gboolean
 gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 {
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GError) error_md = NULL;
 
 	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::setup");
 	g_assert (ptask != NULL);
+
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
+					   cancellable,
+					   &error_md)) {
+		g_warning ("failed to get initial available data on setup: %s",
+			   error_md->message);
+	}
 
 	/* load just the wildcards */
 	if (!as_store_load (self->store,
@@ -715,17 +723,8 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	g_autoptr(GError) error_md = NULL;
 	g_autoptr(GPtrArray) xrefs = NULL;
 	guint i;
-
-	/* if we've never ever run before, get the AppStream data */
-	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
-					   cancellable,
-					   &error_md)) {
-		g_warning ("failed to get initial available data: %s",
-			   error_md->message);
-	}
 
 	/* get apps and runtimes */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -2686,16 +2685,6 @@ gs_flatpak_search (GsFlatpak *self,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	g_autoptr(GError) error_md = NULL;
-
-	/* if we've never ever run before, get the AppStream data */
-	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
-					   cancellable,
-					   &error_md)) {
-		g_warning ("failed to get initial available data: %s",
-			   error_md->message);
-	}
-
 	return gs_appstream_store_search (self->plugin, self->store,
 					  values, list,
 					  cancellable, error);
