@@ -105,6 +105,8 @@ gs_application_init (GsApplication *application)
 		  _("Show application details (using application ID)"), _("ID") },
 		{ "details-pkg", '\0', 0, G_OPTION_ARG_STRING, NULL,
 		  _("Show application details (using package name)"), _("PKGNAME") },
+		{ "install", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  _("Install the application (using application ID)"), _("ID") },
 		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
 		  _("Open a local package file"), _("FILENAME") },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
@@ -560,6 +562,32 @@ details_pkg_activated (GSimpleAction *action,
 }
 
 static void
+install_activated (GSimpleAction *action,
+		   GVariant      *parameter,
+		   gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	const gchar *id;
+	g_autoptr (GsApp) a = NULL;
+
+	g_variant_get (parameter, "&s", &id);
+	if (!as_utils_unique_id_valid (id)) {
+		g_warning ("Need to use a valid unique-id: %s", id);
+		return;
+	}
+
+	initialize_ui_and_present_window (app, NULL);
+
+	a = gs_app_new_from_unique_id (id);
+	if (a == NULL) {
+		g_warning ("Could not create app from unique-id: %s", id);
+		return;
+	}
+
+	gs_shell_install (app->shell, a);
+}
+
+static void
 filename_activated (GSimpleAction *action,
 		    GVariant      *parameter,
 		    gpointer       data)
@@ -658,6 +686,7 @@ static GActionEntry actions[] = {
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "details-pkg", details_pkg_activated, "s", NULL, NULL },
+	{ "install", install_activated, "s", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
@@ -823,6 +852,11 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details-pkg",
 						g_variant_new_string (pkgname));
+		rc = 0;
+	} else if (g_variant_dict_lookup (options, "install", "&s", &id)) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"install",
+						g_variant_new ("s", id));
 		rc = 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
