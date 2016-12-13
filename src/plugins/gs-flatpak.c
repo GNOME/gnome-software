@@ -2518,6 +2518,11 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autofree gchar *origin_url = NULL;
 	g_autofree gchar *origin_title = NULL;
+	g_autofree gchar *ref_comment = NULL;
+	g_autofree gchar *ref_description = NULL;
+	g_autofree gchar *ref_homepage = NULL;
+	g_autofree gchar *ref_icon = NULL;
+	g_autofree gchar *ref_title = NULL;
 
 	/* get file data */
 	if (!g_file_load_contents (file,
@@ -2567,7 +2572,26 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 
-	/* FIXME: perhaps use the data from the flatpakref file as a fallback? */
+	/* use the data from the flatpakref file as a fallback */
+	ref_title = g_key_file_get_string (kf, "Flatpak Ref", "Title", NULL);
+	if (ref_title != NULL)
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, ref_title);
+	ref_comment = g_key_file_get_string (kf, "Flatpak Ref", "Comment", NULL);
+	if (ref_comment != NULL)
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, ref_comment);
+	ref_description = g_key_file_get_string (kf, "Flatpak Ref", "Description", NULL);
+	if (ref_description != NULL)
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, ref_description);
+	ref_homepage = g_key_file_get_string (kf, "Flatpak Ref", "Homepage", NULL);
+	if (ref_homepage != NULL)
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, ref_homepage);
+	ref_icon = g_key_file_get_string (kf, "Flatpak Ref", "Icon", NULL);
+	if (ref_icon != NULL) {
+		g_autoptr(AsIcon) ic = as_icon_new ();
+		as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
+		as_icon_set_url (ic, ref_icon);
+		gs_app_add_icon (app, ic);
+	}
 
 	/* set the origin data */
 	remote_name = flatpak_remote_ref_get_remote_name (xref);
