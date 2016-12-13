@@ -1182,69 +1182,6 @@ gs_plugin_loader_run_action (GsPluginLoaderJob *job,
 
 /******************************************************************************/
 
-static gboolean
-gs_plugin_loader_merge_into_os_update (GsApp *app)
-{
-	if (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)
-		return TRUE;
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
-		return TRUE;
-	return FALSE;
-}
-
-static void
-gs_plugin_loader_add_os_update_item (GsAppList *list)
-{
-	gboolean has_os_update = FALSE;
-	guint i;
-	GsApp *app_tmp;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
-	g_autoptr(GsApp) app_os = NULL;
-	g_autoptr(AsIcon) ic = NULL;
-
-	/* do we have any packages left that are not apps? */
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app_tmp = gs_app_list_index (list, i);
-		if (gs_plugin_loader_merge_into_os_update (app_tmp)) {
-			has_os_update = TRUE;
-			break;
-		}
-	}
-	if (!has_os_update)
-		return;
-
-	/* create new meta object */
-	app_os = gs_app_new ("os-update.virtual");
-	gs_app_set_management_plugin (app_os, "");
-	gs_app_set_kind (app_os, AS_APP_KIND_OS_UPDATE);
-	gs_app_set_state (app_os, AS_APP_STATE_UPDATABLE_LIVE);
-	gs_app_set_name (app_os,
-			 GS_APP_QUALITY_NORMAL,
-			 /* TRANSLATORS: this is a group of updates that are not
-			  * packages and are not shown in the main list */
-			 _("OS Updates"));
-	gs_app_set_summary (app_os,
-			    GS_APP_QUALITY_NORMAL,
-			    /* TRANSLATORS: this is a longer description of the
-			     * "OS Updates" string */
-			    _("Includes performance, stability and security improvements."));
-	gs_app_set_description (app_os,
-				GS_APP_QUALITY_NORMAL,
-				gs_app_get_summary (app_os));
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app_tmp = gs_app_list_index (list, i);
-		if (!gs_plugin_loader_merge_into_os_update (app_tmp))
-			continue;
-		gs_app_add_related (app_os, app_tmp);
-	}
-	ic = as_icon_new ();
-	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-	as_icon_set_name (ic, "software-update-available-symbolic");
-	gs_app_add_icon (app_os, ic);
-	gs_app_list_add (list, app_os);
-}
-
 static void
 gs_plugin_loader_get_updates_thread_cb (GTask *task,
 					gpointer object,
@@ -1284,15 +1221,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 			}
 			gs_app_list_add_list (job->list, list);
 		}
-	}
-
-	/* add OS Update item if required */
-	gs_plugin_loader_add_os_update_item (job->list);
-	job->function_name = "gs_plugin_add_updates_*";
-	job->refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
-	if (!gs_plugin_loader_run_refine (job, job->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
 	}
 
 	/* remove any apps that are not proper applications or OS updates */

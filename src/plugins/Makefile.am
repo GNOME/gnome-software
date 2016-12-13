@@ -41,6 +41,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_desktop-menu-path.la		\
 	libgs_plugin_dummy.la				\
 	libgs_plugin_dpkg.la				\
+	libgs_plugin_generic-updates.la			\
 	libgs_plugin_hardcoded-blacklist.la		\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-featured.la		\
@@ -132,6 +133,11 @@ libgs_plugin_dpkg_la_SOURCES = gs-plugin-dpkg.c
 libgs_plugin_dpkg_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dpkg_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dpkg_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_generic_updates_la_SOURCES = gs-plugin-generic-updates.c
+libgs_plugin_generic_updates_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_generic_updates_la_LDFLAGS = -module -avoid-version
+libgs_plugin_generic_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_EXTERNAL_APPSTREAM
 libgs_plugin_external_appstream_la_SOURCES =		\

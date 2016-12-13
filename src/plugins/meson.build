@@ -34,6 +34,18 @@ shared_module('gs_plugin_dpkg',
   dependencies : plugin_libs
 )
 
+shared_module('gs_plugin_generic-updates',
+  sources : 'gs-plugin-generic-updates.c',
+  include_directories : [
+    include_directories('..'),
+    include_directories('../..'),
+  ],
+  install : true,
+  install_dir: plugin_dir,
+  c_args : cargs,
+  dependencies : plugin_libs
+)
+
 if get_option('enable-external-appstream')
   executable(
     'gnome-software-install-appstream',

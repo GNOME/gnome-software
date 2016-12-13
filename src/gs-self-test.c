@@ -571,7 +571,8 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 
 	/* get the updates list */
 	list = gs_plugin_loader_get_updates (plugin_loader,
-					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
 					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
@@ -589,7 +590,7 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 
 	/* get the virtual non-apps OS update */
 	app = gs_app_list_index (list, 1);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update.virtual");
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.gnome.Software.OsUpdate");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
@@ -1377,6 +1378,7 @@ main (int argc, char **argv)
 		"epiphany",
 		"flatpak",
 		"fwupd",
+		"generic-updates",
 		"hardcoded-blacklist",
 		"desktop-categories",
 		"desktop-menu-path",
