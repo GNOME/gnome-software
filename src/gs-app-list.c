@@ -166,11 +166,15 @@ gs_app_list_remove (GsAppList *list, GsApp *app)
 
 	/* remove, or ignore if not found */
 	unique_id = gs_app_get_unique_id (app);
-	app_tmp = g_hash_table_lookup (list->hash_by_id, unique_id);
-	if (app_tmp == NULL)
-		return;
-	g_ptr_array_remove (list->array, app_tmp);
-	g_hash_table_remove (list->hash_by_id, unique_id);
+	if (unique_id != NULL) {
+		app_tmp = g_hash_table_lookup (list->hash_by_id, unique_id);
+		if (app_tmp == NULL)
+			return;
+		g_hash_table_remove (list->hash_by_id, unique_id);
+		g_ptr_array_remove (list->array, app_tmp);
+	} else {
+		g_ptr_array_remove (list->array, app);
+	}
 }
 
 /**
