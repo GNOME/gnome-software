@@ -201,6 +201,15 @@ gs_plugin_func (void)
 	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
 	g_object_unref (list_remove);
 
+	/* remove lazy-loaded app */
+	list_remove = gs_app_list_new ();
+	app = gs_app_new (NULL);
+	gs_app_list_add (list_remove, app);
+	gs_app_list_remove (list_remove, app);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 0);
+	g_object_unref (app);
+	g_object_unref (list_remove);
+
 	/* respect priority when deduplicating */
 	list = gs_app_list_new ();
 	app = gs_app_new ("e");
