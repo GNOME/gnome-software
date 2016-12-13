@@ -2515,6 +2515,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autoptr(GBytes) ref_file_data = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakRemote) xremote = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
 	g_autofree gchar *origin_url = NULL;
 	g_autofree gchar *origin_title = NULL;
 
@@ -2527,6 +2528,25 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 				   error)) {
 		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
+
+	/* load the file */
+	kf = g_key_file_new ();
+	if (!g_key_file_load_from_data (kf, contents, len, G_KEY_FILE_NONE, error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	/* check version */
+	if (g_key_file_has_key (kf, "Flatpak Ref", "Version", NULL)) {
+		guint64 ver = g_key_file_get_uint64 (kf, "Flatpak Ref", "Version", NULL);
+		if (ver != 1) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "unsupported version %" G_GUINT64_FORMAT, ver);
+			return FALSE;
+		}
 	}
 
 	/* install the remote, but not the app */
