@@ -56,8 +56,6 @@ void		 gs_app_list_sort		(GsAppList	*list,
 void		 gs_app_list_filter_duplicates	(GsAppList	*list,
 						 GsAppListFilterFlags flags);
 void		 gs_app_list_randomize		(GsAppList	*list);
-void		 gs_app_list_remove		(GsAppList	*list,
-						 GsApp		*app);
 void		 gs_app_list_remove_all		(GsAppList	*list);
 
 G_END_DECLS

@@ -37,6 +37,8 @@ void		 gs_app_list_add		(GsAppList	*list,
 						 GsApp		*app);
 void		 gs_app_list_add_list		(GsAppList	*list,
 						 GsAppList	*donor);
+void		 gs_app_list_remove		(GsAppList	*list,
+						 GsApp		*app);
 GsApp		*gs_app_list_index		(GsAppList	*list,
 						 guint		 idx);
 GsApp		*gs_app_list_lookup		(GsAppList	*list,
