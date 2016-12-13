@@ -2247,6 +2247,18 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 		return FALSE;
 	}
 
+	/* check version */
+	if (g_key_file_has_key (kf, "Flatpak Repo", "Version", NULL)) {
+		guint64 ver = g_key_file_get_uint64 (kf, "Flatpak Repo", "Version", NULL);
+		if (ver != 1) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "unsupported version %" G_GUINT64_FORMAT, ver);
+			return FALSE;
+		}
+	}
+
 	/* user specified a URL */
 	if (g_str_has_prefix (repo_gpgkey, "http://") ||
 	    g_str_has_prefix (repo_gpgkey, "https://")) {
