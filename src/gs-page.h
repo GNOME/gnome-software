@@ -54,9 +54,10 @@ void		 gs_page_set_header_start_widget	(GsPage		*page,
 GtkWidget	*gs_page_get_header_end_widget		(GsPage		*page);
 void		 gs_page_set_header_end_widget		(GsPage		*page,
 							 GtkWidget	*widget);
-void		 gs_page_install_app			(GsPage		*page,
-							 GsApp		*app,
-							 GCancellable	*cancellable);
+void		 gs_page_install_app			(GsPage			*page,
+							 GsApp			*app,
+							 GsShellInteraction	interaction,
+							 GCancellable		*cancellable);
 void		 gs_page_remove_app			(GsPage		*page,
 							 GsApp		*app,
 							 GCancellable	*cancellable);

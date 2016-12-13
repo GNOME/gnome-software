@@ -56,6 +56,13 @@ typedef enum {
 	GS_SHELL_MODE_LAST
 } GsShellMode;
 
+typedef enum {
+	GS_SHELL_INTERACTION_NONE	= (0u),
+	GS_SHELL_INTERACTION_NOTIFY	= (1u << 0),
+	GS_SHELL_INTERACTION_FULL	= (1u << 1) | GS_SHELL_INTERACTION_NOTIFY,
+	GS_SHELL_INTERACTION_LAST
+} GsShellInteraction;
+
 GsShell		*gs_shell_new			(void);
 void		 gs_shell_activate		(GsShell	*shell);
 void		 gs_shell_profile_dump		(GsShell	*shell);
@@ -73,8 +80,9 @@ void		 gs_shell_modal_dialog_present	(GsShell	*shell,
 						 GtkDialog	*dialog);
 GsShellMode	 gs_shell_get_mode		(GsShell	*shell);
 const gchar	*gs_shell_get_mode_string	(GsShell	*shell);
-void		 gs_shell_install		(GsShell	*shell,
-						 GsApp		*app);
+void		 gs_shell_install		(GsShell		*shell,
+						 GsApp			*app,
+						 GsShellInteraction	interaction);
 void		 gs_shell_show_installed_updates(GsShell	*shell);
 void		 gs_shell_show_sources		(GsShell	*shell);
 void		 gs_shell_show_app		(GsShell	*shell,

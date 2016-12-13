@@ -1740,13 +1740,13 @@ gs_shell_get_mode_string (GsShell *shell)
 }
 
 void
-gs_shell_install (GsShell *shell, GsApp *app)
+gs_shell_install (GsShell *shell, GsApp *app, GsShellInteraction interaction)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	save_back_entry (shell);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
 			      (gpointer) app, TRUE);
-	gs_page_install_app (GS_PAGE (priv->shell_details), app,
+	gs_page_install_app (GS_PAGE (priv->shell_details), app, interaction,
 			     priv->cancellable);
 }
 

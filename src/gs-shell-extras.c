@@ -264,7 +264,8 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 	app = gs_app_row_get_app (app_row);
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE ||
 	    gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
-		gs_page_install_app (GS_PAGE (self), app, self->search_cancellable);
+		gs_page_install_app (GS_PAGE (self), app, GS_SHELL_INTERACTION_FULL,
+				     self->search_cancellable);
 	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
 		gs_page_remove_app (GS_PAGE (self), app, self->search_cancellable);
 	else

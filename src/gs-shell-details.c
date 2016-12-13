@@ -1653,7 +1653,8 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 		return;
 	}
 
-	gs_page_install_app (GS_PAGE (self), self->app, self->cancellable);
+	gs_page_install_app (GS_PAGE (self), self->app, GS_SHELL_INTERACTION_FULL,
+			     self->cancellable);
 }
 
 static void
@@ -1673,7 +1674,8 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_addon_row_get_selected (row)) {
-			gs_page_install_app (GS_PAGE (self), addon, self->cancellable);
+			gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL,
+					     self->cancellable);
 		} else {
 			gs_page_remove_app (GS_PAGE (self), addon, self->cancellable);
 			/* make sure the addon checkboxes are synced if the

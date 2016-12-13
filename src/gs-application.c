@@ -109,6 +109,9 @@ gs_application_init (GsApplication *application)
 		  _("Install the application (using application ID)"), _("ID") },
 		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
 		  _("Open a local package file"), _("FILENAME") },
+		{ "interaction", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  _("The kind of interaction expected for this action: either "
+		    "'none', 'notify', or 'full'"), NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show verbose debugging information"), NULL },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
@@ -568,15 +571,19 @@ install_activated (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *id;
+	GsShellInteraction interaction;
 	g_autoptr (GsApp) a = NULL;
 
-	g_variant_get (parameter, "&s", &id);
+	g_variant_get (parameter, "(&su)", &id, &interaction);
 	if (!as_utils_unique_id_valid (id)) {
 		g_warning ("Need to use a valid unique-id: %s", id);
 		return;
 	}
 
-	initialize_ui_and_present_window (app, NULL);
+	if (interaction == GS_SHELL_INTERACTION_FULL)
+		initialize_ui_and_present_window (app, NULL);
+	else
+		gs_application_initialize_ui (app);
 
 	a = gs_app_new_from_unique_id (id);
 	if (a == NULL) {
@@ -584,7 +591,7 @@ install_activated (GSimpleAction *action,
 		return;
 	}
 
-	gs_shell_install (app->shell, a);
+	gs_shell_install (app->shell, a, interaction);
 }
 
 static void
@@ -686,7 +693,7 @@ static GActionEntry actions[] = {
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "details-pkg", details_pkg_activated, "s", NULL, NULL },
-	{ "install", install_activated, "s", NULL, NULL },
+	{ "install", install_activated, "(su)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
@@ -793,6 +800,16 @@ gs_application_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
 
+static GsShellInteraction
+get_page_interaction_from_string (const gchar *interaction)
+{
+	if (g_strcmp0 (interaction, "notify") == 0)
+		return GS_SHELL_INTERACTION_NOTIFY;
+	else if (g_strcmp0 (interaction, "none") == 0)
+		return GS_SHELL_INTERACTION_NONE;
+	return GS_SHELL_INTERACTION_FULL;
+}
+
 static int
 gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 {
@@ -854,9 +871,17 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 						g_variant_new_string (pkgname));
 		rc = 0;
 	} else if (g_variant_dict_lookup (options, "install", "&s", &id)) {
+		GsShellInteraction interaction = GS_SHELL_INTERACTION_FULL;
+		const gchar *str_interaction = NULL;
+
+		if (g_variant_dict_lookup (options, "interaction", "&s",
+					   &str_interaction))
+			interaction = get_page_interaction_from_string (str_interaction);
+
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"install",
-						g_variant_new ("s", id));
+						g_variant_new ("(su)", id,
+							       interaction));
 		rc = 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),

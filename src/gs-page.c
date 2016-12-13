@@ -49,6 +49,7 @@ typedef struct {
 	gulong		 notify_quirk_id;
 	GtkWidget	*button_install;
 	GsPluginAction	 action;
+	GsShellInteraction interaction;
 } GsPageHelper;
 
 static void
@@ -177,7 +178,8 @@ gs_page_app_installed_cb (GObject *source,
 	/* only show this if the window is not active */
 	if (gs_app_is_installed (helper->app) &&
 	    helper->action == GS_PLUGIN_ACTION_INSTALL &&
-	    !gs_shell_is_active (priv->shell))
+	    !gs_shell_is_active (priv->shell) &&
+	    ((helper->interaction) & GS_SHELL_INTERACTION_NOTIFY) != 0)
 		gs_app_notify_installed (helper->app);
 
 	if (gs_app_is_installed (helper->app) &&
@@ -272,7 +274,10 @@ gs_page_set_header_end_widget (GsPage *page, GtkWidget *widget)
 }
 
 void
-gs_page_install_app (GsPage *page, GsApp *app, GCancellable *cancellable)
+gs_page_install_app (GsPage *page,
+		     GsApp *app,
+		     GsShellInteraction interaction,
+		     GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
@@ -290,6 +295,7 @@ gs_page_install_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
+	helper->interaction = interaction;
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   helper->action,

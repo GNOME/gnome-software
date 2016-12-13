@@ -681,6 +681,7 @@ g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
 		if (g_settings_get_boolean (priv->settings, "show-nonfree-software")) {
 			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
 				gs_page_install_app (GS_PAGE (self), app,
+						     GS_SHELL_INTERACTION_FULL,
 						     priv->cancellable);
 			}
 		} else {
