@@ -22,7 +22,7 @@ AM_CPPFLAGS =						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
-	-DLOCALPLUGINDIR=\""$(top_builddir)/plugins/.libs"\"	\
+	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\" \
 	-DGS_DATA=\"$(pkgdatadir)\"
 
 pkgconfigdir = $(libdir)/pkgconfig
