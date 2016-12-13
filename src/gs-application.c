@@ -111,7 +111,7 @@ gs_application_init (GsApplication *application)
 		  _("Open a local package file"), _("FILENAME") },
 		{ "interaction", '\0', 0, G_OPTION_ARG_STRING, NULL,
 		  _("The kind of interaction expected for this action: either "
-		    "'none', 'notify', or 'full'"), NULL },
+		    "‘none’, ‘notify’, or ‘full’"), NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show verbose debugging information"), NULL },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
