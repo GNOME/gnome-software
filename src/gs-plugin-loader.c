@@ -69,6 +69,14 @@ typedef struct
 	gulong			 network_changed_handler;
 } GsPluginLoaderPrivate;
 
+typedef struct {
+	GsApp	*proxy;
+	GsApp	*app;
+	guint	total_apps;
+	guint	app_index;
+	gulong	progress_handler_id;
+} GsProxyUpdateHelper;
+
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
@@ -4358,6 +4366,50 @@ get_updatable_apps (GPtrArray *apps)
 }
 
 static void
+related_app_progress_notify_cb (GsApp *app,
+				GParamSpec *pspec,
+				GsProxyUpdateHelper *helper)
+{
+	GsApp *proxy = helper->proxy;
+	guint progress = gs_app_get_progress (app);
+	guint progress_fraction = progress / helper->total_apps;
+	guint progress_step = helper->app_index * (100 / helper->total_apps);
+
+	/* assign the updating app's progress to its corresponding fraction of
+	 * the proxy app's progress */
+	gs_app_set_progress (proxy, MIN (progress_step + progress_fraction, 100));
+}
+
+static GsProxyUpdateHelper *
+gs_proxy_update_helper_new (GsApp *proxy,
+			    GsApp *related_app,
+			    guint total_apps,
+			    guint app_index)
+{
+	GsProxyUpdateHelper *helper = g_slice_new0 (GsProxyUpdateHelper);
+	helper->proxy = g_object_ref (proxy);
+	helper->app = g_object_ref (related_app);
+	helper->total_apps = total_apps;
+	helper->app_index = app_index;
+	helper->progress_handler_id =
+		g_signal_connect (helper->app, "notify::progress",
+				  G_CALLBACK (related_app_progress_notify_cb),
+				  helper);
+	return helper;
+}
+
+static void
+gs_proxy_update_helper_free (GsProxyUpdateHelper *helper)
+{
+	g_signal_handler_disconnect (helper->app, helper->progress_handler_id);
+	g_object_unref (helper->app);
+	g_object_unref (helper->proxy);
+	g_slice_free (GsProxyUpdateHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsProxyUpdateHelper, gs_proxy_update_helper_free)
+
+static void
 gs_plugin_loader_update_thread_cb (GTask *task,
 				   gpointer object,
 				   gpointer task_data,
@@ -4400,10 +4452,19 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 		for (j = 0; j < gs_app_list_length (job->list); j++) {
 			GsApp *app_tmp = gs_app_list_index (job->list, j);
 			g_autoptr(GPtrArray) apps = NULL;
+			gboolean is_proxy_update =
+				gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY);
 
 			/* operate on the parent app or the related apps */
-			if (gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY)) {
+			if (is_proxy_update) {
 				apps = get_updatable_apps (gs_app_get_related (app_tmp));
+				apps = g_ptr_array_ref (gs_app_get_related (app_tmp));
+				if (apps->len > 0) {
+					/* ensure that the proxy app is updatable */
+					if (!gs_app_is_updatable (app_tmp))
+						gs_app_set_state (app_tmp, AS_APP_STATE_UPDATABLE_LIVE);
+					gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
+				}
 			} else {
 				apps = g_ptr_array_new ();
 				g_ptr_array_add (apps, app_tmp);
@@ -4412,7 +4473,16 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 				g_autoptr(GError) error_local = NULL;
 				g_autoptr(AsProfileTask) ptask = NULL;
 				GsApp *app = g_ptr_array_index (apps, k);
+				g_autoptr(GsProxyUpdateHelper) helper = NULL;
 				g_set_object (&job->app, app);
+
+				if (is_proxy_update) {
+					helper = gs_proxy_update_helper_new (app_tmp,
+									     app,
+									     apps->len,
+									     k);
+				}
+
 				ptask = as_profile_start (priv->profile,
 							  "GsPlugin::%s(%s){%s}",
 							  gs_plugin_get_name (plugin),
@@ -4424,6 +4494,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 						       cancellable,
 						       &error_local);
 				gs_plugin_loader_action_stop (plugin_loader, plugin);
+
 				if (!ret) {
 					if (!gs_plugin_error_handle_failure (job,
 									     plugin,
@@ -4434,6 +4505,8 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 					}
 				}
 			}
+			if (is_proxy_update)
+				gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
