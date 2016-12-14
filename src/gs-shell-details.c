@@ -1630,6 +1630,11 @@ static void
 gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+
+	/* hide the notification */
+	g_application_withdraw_notification (g_application_get_default (),
+					     "installed");
+
 	g_set_object (&self->cancellable, cancellable);
 	gs_page_launch_app (GS_PAGE (self), self->app, self->cancellable);
 }
