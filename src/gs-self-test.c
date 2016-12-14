@@ -580,7 +580,7 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 	g_assert (list != NULL);
 
 	/* make sure there are two entries */
-	g_assert_cmpint (gs_app_list_length (list), ==, 2);
+	g_assert_cmpint (gs_app_list_length (list), ==, 3);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
@@ -595,6 +595,13 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
+	g_assert_cmpint (gs_app_get_related(app)->len, ==, 2);
+
+	/* get the virtual non-apps OS update */
+	app = gs_app_list_index (list, 2);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "proxy.desktop");
+	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY));
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE_LIVE);
 	g_assert_cmpint (gs_app_get_related(app)->len, ==, 2);
 }
 

@@ -230,6 +230,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GError **error)
 {
 	GsApp *app;
+	GsApp *proxy;
 	g_autoptr(AsIcon) ic = NULL;
 
 	/* update UI as this might take some time */
@@ -283,6 +284,40 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_add_source_id (app, "chiron-libs;0.0.1;i386;updates-testing");
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
+	g_object_unref (app);
+
+	/* add a proxy app update */
+	proxy = gs_app_new ("proxy.desktop");
+	gs_app_set_name (proxy, GS_APP_QUALITY_NORMAL, "Proxy");
+	gs_app_set_summary (proxy, GS_APP_QUALITY_NORMAL, "A proxy app");
+	gs_app_set_update_details (proxy, "Update all related apps.");
+	gs_app_set_update_urgency (proxy, AS_URGENCY_KIND_HIGH);
+	gs_app_add_icon (proxy, ic);
+	gs_app_set_kind (proxy, AS_APP_KIND_DESKTOP);
+	gs_app_add_quirk (proxy, AS_APP_QUIRK_IS_PROXY);
+	gs_app_set_state (proxy, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_management_plugin (proxy, gs_plugin_get_name (plugin));
+	gs_app_list_add (list, proxy);
+	g_object_unref (proxy);
+
+	/* add a proxy related app */
+	app = gs_app_new ("proxy-related-app.desktop");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Related app");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_add_related (proxy, app);
+	g_object_unref (app);
+
+	/* add another proxy related app */
+	app = gs_app_new ("proxy-another-related-app.desktop");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Another Related app");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_add_related (proxy, app);
 	g_object_unref (app);
 
 	return TRUE;
@@ -406,13 +441,25 @@ gs_plugin_update_app (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* always fail */
-	g_set_error_literal (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
-			     "no network connection is available");
-	gs_utils_error_add_unique_id (error, priv->cached_origin);
-	return FALSE;
+	if (!g_str_has_prefix (gs_app_get_id (app), "proxy")) {
+		/* always fail */
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     "no network connection is available");
+		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		return FALSE;
+	}
+
+	/* simulate an update for 4 seconds */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	for (guint i = 1; i <= 4; ++i) {
+		gs_app_set_progress (app, 25 * i);
+		sleep (1);
+	}
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+	return TRUE;
 }
 
 gboolean
