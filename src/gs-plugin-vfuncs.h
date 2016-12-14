@@ -639,6 +639,10 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_INSTALLED or %AS_APP_STATE_UNKNOWN if not known.
  *
+ * If %AS_APP_QUIRK_IS_PROXY is set on the application then the actual #GsApp
+ * set in @app will be the related application of the parent. Plugins do not
+ * need to manually iterate on the related list of applications.
+ *
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,

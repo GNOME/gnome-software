@@ -4384,29 +4384,40 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 
 		/* for each app */
 		for (j = 0; j < gs_app_list_length (job->list); j++) {
-			GsApp *app = gs_app_list_index (job->list, j);
-			g_autoptr(AsProfileTask) ptask = NULL;
-			g_autoptr(GError) error_local = NULL;
+			GsApp *app_tmp = gs_app_list_index (job->list, j);
+			g_autoptr(GPtrArray) apps = NULL;
 
-			g_set_object (&job->app, app);
-			ptask = as_profile_start (priv->profile,
-						  "GsPlugin::%s(%s){%s}",
-						  gs_plugin_get_name (plugin),
-						  job->function_name,
-						  gs_app_get_id (app));
-			g_assert (ptask != NULL);
-			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-			ret = plugin_app_func (plugin, app,
-					       cancellable,
-					       &error_local);
-			gs_plugin_loader_action_stop (plugin_loader, plugin);
-			if (!ret) {
-				if (!gs_plugin_error_handle_failure (job,
-								     plugin,
-								     error_local,
-								     &error)) {
-					g_task_return_error (task, error);
-					return;
+			/* operate on the parent app or the related apps */
+			if (gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY)) {
+				apps = g_ptr_array_ref (gs_app_get_related (app_tmp));
+			} else {
+				apps = g_ptr_array_new ();
+				g_ptr_array_add (apps, app_tmp);
+			}
+			for (guint k = 0; k < apps->len; k++) {
+				g_autoptr(GError) error_local = NULL;
+				g_autoptr(AsProfileTask) ptask = NULL;
+				GsApp *app = g_ptr_array_index (apps, k);
+				g_set_object (&job->app, app);
+				ptask = as_profile_start (priv->profile,
+							  "GsPlugin::%s(%s){%s}",
+							  gs_plugin_get_name (plugin),
+							  job->function_name,
+							  gs_app_get_id (app));
+				g_assert (ptask != NULL);
+				gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
+				ret = plugin_app_func (plugin, app,
+						       cancellable,
+						       &error_local);
+				gs_plugin_loader_action_stop (plugin_loader, plugin);
+				if (!ret) {
+					if (!gs_plugin_error_handle_failure (job,
+									     plugin,
+									     error_local,
+									     &error)) {
+						g_task_return_error (task, error);
+						return;
+					}
 				}
 			}
 		}

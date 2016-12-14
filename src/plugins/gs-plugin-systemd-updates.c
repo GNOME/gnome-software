@@ -156,54 +156,31 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_systemd_updates_requires_trigger (GsApp *app)
+gboolean
+gs_plugin_update_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
 {
-	GPtrArray *related;
-	guint i;
-
-	/* look at related apps too */
-	related = gs_app_get_related (app);
-	for (i = 0; i < related->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (related, i);
-		if (gs_plugin_systemd_updates_requires_trigger (app_tmp))
-			return TRUE;
-	}
-
 	/* if we can process this online do not require a trigger */
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
-		return FALSE;
+		return TRUE;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
+
+	/* trigger offline update */
+	if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
+				 cancellable, error)) {
+		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
+	}
 
 	/* success! */
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update (GsPlugin *plugin,
-		  GsAppList *apps,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	guint i;
-
-	/* any apps to process offline */
-	for (i = 0; i < gs_app_list_length (apps); i++) {
-		GsApp *app = gs_app_list_index (apps, i);
-		if (gs_plugin_systemd_updates_requires_trigger (app)) {
-			if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
-						 cancellable, error)) {
-				gs_plugin_packagekit_error_convert (error);
-				return FALSE;
-			}
-			return TRUE;
-		}
-	}
-	return TRUE;
-}
 
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,
