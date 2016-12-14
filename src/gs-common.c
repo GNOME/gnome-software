@@ -130,18 +130,26 @@ void
 gs_app_notify_installed (GsApp *app)
 {
 	g_autofree gchar *summary = NULL;
+	const gchar *body = NULL;
 	g_autoptr(GNotification) n = NULL;
 
 	if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPDATE) {
 		/* TRANSLATORS: this is the summary of a notification that OS updates
 		 * have been successfully installed */
 		summary = g_strdup (_("OS updates are now installed"));
+		/* TRANSLATORS: this is the body of a notification that OS updates
+		 * have been successfully installed */
+		body = _("Recently installed updates are available to review");
 	} else {
 		/* TRANSLATORS: this is the summary of a notification that an application
 		 * has been successfully installed */
 		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+		/* TRANSLATORS: this is the body of a notification that an application
+		 * has been successfully installed */
+		body = _("Application is ready to be used.");
 	}
 	n = g_notification_new (summary);
+	g_notification_set_body (n, body);
 	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
 		/* TRANSLATORS: this is button that opens the newly installed application */
 		g_notification_add_button_with_target (n, _("Launch"),
