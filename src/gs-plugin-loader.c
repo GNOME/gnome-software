@@ -4343,6 +4343,20 @@ gs_plugin_loader_file_to_app_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+static GPtrArray *
+get_updatable_apps (GPtrArray *apps)
+{
+	GPtrArray *updatables = g_ptr_array_sized_new (apps->len);
+
+	for (guint i = 0; i < apps->len; ++i) {
+		GsApp *app = g_ptr_array_index (apps, i);
+		if (gs_app_is_updatable (app))
+			g_ptr_array_add (updatables, app);
+	}
+
+	return updatables;
+}
+
 static void
 gs_plugin_loader_update_thread_cb (GTask *task,
 				   gpointer object,
@@ -4389,7 +4403,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 
 			/* operate on the parent app or the related apps */
 			if (gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY)) {
-				apps = g_ptr_array_ref (gs_app_get_related (app_tmp));
+				apps = get_updatable_apps (gs_app_get_related (app_tmp));
 			} else {
 				apps = g_ptr_array_new ();
 				g_ptr_array_add (apps, app_tmp);
