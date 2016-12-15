@@ -2,13 +2,13 @@ GNOME Software Release Notes
 
 1. Write release entries:
 
-git log --format="%s" --cherry-pick --right-only GNOME_SOFTWARE_3_23_2... | grep -i -v trivial | grep -v Merge | sort | uniq
+git log --format="%s" --cherry-pick --right-only GNOME_SOFTWARE_3_23_3... | grep -i -v trivial | grep -v Merge | sort | uniq
 Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
 3. Commit changes in gnome-software git:
 
-git commit -a -m "Release version 3.23.3"
-git tag -s GNOME_SOFTWARE_3_23_3 -m "==== Version 3.23.3 ===="
+git commit -a -m "Release version 3.23.4"
+git tag -s GNOME_SOFTWARE_3_23_4 -m "==== Version 3.23.4 ===="
 <enter password>
 git push --tags
 git push
@@ -26,7 +26,7 @@ scp *.tar.xz rhughes@master.gnome.org:
 ssh rhughes@master.gnome.org
 ftpadmin install gnome-software-*.tar.xz
 
-7. Do post release version bump in configure.ac
+7. Do post release version bump in configure.ac and meson.build
 
 8. Commit trivial changes:
 
