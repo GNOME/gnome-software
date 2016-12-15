@@ -46,6 +46,33 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2016-12-15" version="3.23.3">
+      <description>
+        <p>
+          This is an unstable release in the 3.23 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add an --install and --interaction CLI options</li>
+          <li>Add the installed size of the apps in the installed view</li>
+          <li>Always set a description for each notification</li>
+          <li>Show an in-app notification when installed plugins are changed</li>
+          <li>Use a set of stars to show the different star ratings</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Add a missing error check to fix a common crash on LiveDVD media</li>
+          <li>Add thread locking in GsApp to fix some common crashes</li>
+          <li>Allow upgrading to Fedora EOL releases</li>
+          <li>Don't allow review actions when offline</li>
+          <li>Ensure we actually schedule firmware updates for download</li>
+          <li>Fix the getting of PackageKit and flatpak update details</li>
+          <li>Hide some notifications when the new app is launched or the window is closed</li>
+          <li>Hide the screenshot placeholder for input methods and langpacks</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2016-11-21" version="3.23.2">
       <description>
         <p>
