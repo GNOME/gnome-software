@@ -25,6 +25,7 @@
 #include <appstream-glib.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 #include <locale.h>
 
@@ -35,6 +36,7 @@ int
 main (int argc, char **argv)
 {
 	int status = 0;
+	g_autoptr(GDesktopAppInfo) appinfo = NULL;
 	g_autoptr(GsApplication) application = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new ();
 	g_autoptr(AsProfile) profile = NULL;
@@ -53,6 +55,8 @@ main (int argc, char **argv)
 
 	/* redirect logs */
 	application = gs_application_new ();
+	appinfo = g_desktop_app_info_new ("org.gnome.Software.desktop");
+	g_set_application_name (g_app_info_get_name (G_APP_INFO (appinfo)));
 	status = g_application_run (G_APPLICATION (application), argc, argv);
 	return status;
 }

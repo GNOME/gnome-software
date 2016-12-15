@@ -290,9 +290,9 @@ gs_shell_change_mode (GsShell *shell,
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
+
 	/* set the window title back to default */
-	/* TRANSLATORS: this is the main window title */
-	gtk_window_set_title (priv->main_window, _("Software"));
+	gtk_window_set_title (priv->main_window, g_get_application_name ());
 
 	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
