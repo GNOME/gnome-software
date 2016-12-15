@@ -4480,6 +4480,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 									     app,
 									     apps->len,
 									     k);
+					g_assert (helper != NULL);
 				}
 
 				ptask = as_profile_start (priv->profile,
