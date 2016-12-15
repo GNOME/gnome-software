@@ -382,29 +382,21 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 				 AsApp *item,
 				 GError **error)
 {
-	AsRelease *rel;
 	AsUrgencyKind urgency_best = AS_URGENCY_KIND_UNKNOWN;
 	GPtrArray *releases;
-	guint i;
 	g_autoptr(GPtrArray) updates_list = NULL;
-
-	/* not enough data to make sense */
-	if (gs_app_get_version (app) == NULL)
-		return TRUE;
 
 	/* make a list of valid updates */
 	updates_list = g_ptr_array_new ();
 	releases = as_app_get_releases (item);
-	for (i = 0; i < releases->len; i++) {
-		rel = g_ptr_array_index (releases, i);
+	for (guint i = 0; i < releases->len; i++) {
+		AsRelease *rel = g_ptr_array_index (releases, i);
 
-		/* is newer than what's installed */
-		g_debug ("installed %s update is %s [%u]",
-			 gs_app_get_version (app),
+		/* already installed */
+		g_debug ("installable update %s [%u]",
 			 as_release_get_version (rel),
 			 as_release_get_state (rel));
-		if (as_utils_vercmp (as_release_get_version (rel),
-				     gs_app_get_version (app)) <= 0)
+		if (as_release_get_state (rel) == AS_RELEASE_STATE_INSTALLED)
 			continue;
 
 		/* use the 'worst' urgency, e.g. critical over enhancement */
@@ -424,7 +416,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	/* no prefix on each release */
 	if (updates_list->len == 1) {
 		g_autofree gchar *desc = NULL;
-		rel = g_ptr_array_index (updates_list, 0);
+		AsRelease *rel = g_ptr_array_index (updates_list, 0);
 		desc = as_markup_convert (as_release_get_description (rel, NULL),
 					  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 					  error);
@@ -435,9 +427,9 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	/* get the descriptions with a version prefix */
 	} else if (updates_list->len > 1) {
 		g_autoptr(GString) update_desc = g_string_new ("");
-		for (i = 0; i < updates_list->len; i++) {
+		for (guint i = 0; i < updates_list->len; i++) {
 			g_autofree gchar *desc = NULL;
-			rel = g_ptr_array_index (updates_list, i);
+			AsRelease *rel = g_ptr_array_index (updates_list, i);
 			desc = as_markup_convert (as_release_get_description (rel, NULL),
 						  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 						  error);
@@ -457,7 +449,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 
 	/* if there is no already set update version use the newest */
 	if (gs_app_get_update_version (app) == NULL) {
-		rel = as_app_get_release_default (item);
+		AsRelease *rel = as_app_get_release_default (item);
 		if (rel != NULL)
 			gs_app_set_update_version (app, as_release_get_version (rel));
 	}
