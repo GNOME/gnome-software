@@ -4458,7 +4458,6 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 			/* operate on the parent app or the related apps */
 			if (is_proxy_update) {
 				apps = get_updatable_apps (gs_app_get_related (app_tmp));
-				apps = g_ptr_array_ref (gs_app_get_related (app_tmp));
 				if (apps->len > 0) {
 					/* ensure that the proxy app is updatable */
 					if (!gs_app_is_updatable (app_tmp))
