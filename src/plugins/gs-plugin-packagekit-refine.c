@@ -379,7 +379,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		package_id = gs_app_get_source_id_default (app);
-		package_ids[i++] = package_id;
+		package_ids[i] = package_id;
 	}
 
 	data.app = NULL;
