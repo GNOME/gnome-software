@@ -15,14 +15,13 @@
 # this should be set using "--without packagekit" when atomic
 %bcond_without packagekit
 
-Summary:   A software center for GNOME
 Name:      gnome-software
 Version:   #VERSION#
 Release:   0.#BUILD#%{?alphatag}%{?dist}
+Summary:   A software center for GNOME
 License:   GPLv2+
-Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   http://download.gnome.org/sources/gnome-software/3.21/%{name}-%{version}.tar.xz
+Source0:   https://download.gnome.org/sources/gnome-software/3.23/%{name}-%{version}.tar.xz
 
 BuildRequires: gettext
 BuildRequires: libxslt
