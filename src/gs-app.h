@@ -97,6 +97,10 @@ typedef enum {
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
 
+#if !AS_CHECK_VERSION(0,6,6)
+#define AS_APP_QUIRK_REMOVABLE_HARDWARE		(1 << 10)
+#endif
+
 GsApp		*gs_app_new			(const gchar	*id);
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
 gchar		*gs_app_to_string		(GsApp		*app);
