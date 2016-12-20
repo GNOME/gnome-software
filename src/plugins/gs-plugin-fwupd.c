@@ -80,6 +80,11 @@ gs_plugin_fwupd_error_convert (GError **perror)
 		case FWUPD_ERROR_SIGNATURE_INVALID:
 			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
 			break;
+#if FWUPD_CHECK_VERSION(0,8,0)
+		case FWUPD_ERROR_AC_POWER_REQUIRED:
+			error->code = GS_PLUGIN_ERROR_AC_POWER_REQUIRED;
+			break;
+#endif
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;

@@ -1033,6 +1033,13 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 			}
 		}
 		break;
+	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "Dell XPS 13") */
+		g_string_append_printf (str, _("Unable to install %s: "
+					       "AC power is required"),
+					str_app);
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
@@ -1126,6 +1133,13 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 					       "update software"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "Dell XPS 13") */
+		g_string_append_printf (str, _("Unable to update %s: "
+					       "AC power is required"),
+					str_app);
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
@@ -1217,6 +1231,13 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 					       "you do not have permission to upgrade"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		g_string_append_printf (str, _("Unable to upgrade to %s: "
+					       "AC power is required"),
+					str_app);
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the distro name (e.g. "Fedora 25") */
@@ -1272,6 +1293,13 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: you do not have"
 					       " permission to remove software"),
+					str_app);
+		break;
+	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to remove %s: "
+					       "AC power is required"),
 					str_app);
 		break;
 	default:
@@ -1423,6 +1451,10 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			g_string_append (str, _("This application needs to be "
 						"restarted to use new plugins."));
 		}
+		break;
+	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
+		/* TRANSLATORS: need to be connected to the AC power */
+		g_string_append (str, _("AC power is required"));
 		break;
 	default:
 		break;
