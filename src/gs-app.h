@@ -99,6 +99,7 @@ typedef enum {
 
 #if !AS_CHECK_VERSION(0,6,6)
 #define AS_APP_QUIRK_IS_PROXY			(1 << 9)
+#define AS_APP_QUIRK_REMOVABLE_HARDWARE		(1 << 10)
 #endif
 
 GsApp		*gs_app_new			(const gchar	*id);

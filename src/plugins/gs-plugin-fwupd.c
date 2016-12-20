@@ -374,6 +374,10 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	if ((flags & FU_DEVICE_FLAG_ALLOW_ONLINE) == 0)
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 
+	/* is removable */
+	if ((flags & FU_DEVICE_FLAG_INTERNAL) == 0)
+		gs_app_add_quirk (app, AS_APP_QUIRK_REMOVABLE_HARDWARE);
+
 	/* create icon */
 	icon = as_icon_new ();
 	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);

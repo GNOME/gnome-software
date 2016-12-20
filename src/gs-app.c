@@ -198,6 +198,8 @@ _as_app_quirk_flag_to_string (AsAppQuirk quirk)
 		return "needs-user-action";
 	if (quirk == AS_APP_QUIRK_IS_PROXY)
 		return "is-proxy";
+	if (quirk == AS_APP_QUIRK_REMOVABLE_HARDWARE)
+		return "removable-hardware";
 	return NULL;
 }
 
