@@ -515,6 +515,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 AsApp *item,
 			 GError **error)
 {
+	AsRequire *req;
+	g_autoptr(GError) error_local = NULL;
 	GHashTable *urls;
 	GPtrArray *pkgnames;
 	GPtrArray *kudos;
@@ -538,6 +540,21 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
 	    as_app_get_state (item) != AS_APP_STATE_UNKNOWN) {
 		gs_app_set_state (app, as_app_get_state (item));
+	}
+
+	/* is compatible */
+	req = as_app_get_require_by_value (item,
+					   AS_REQUIRE_KIND_ID,
+					   "org.gnome.Software.desktop");
+	if (req != NULL) {
+		if (!as_require_version_compare (req, PACKAGE_VERSION, &error_local)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "not for this gnome-software: %s",
+				     error_local->message);
+			return FALSE;
+		}
 	}
 
 	/* types we can never launch */
