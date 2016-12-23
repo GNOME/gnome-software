@@ -31,6 +31,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	/* need metadata */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+
+	/* set name of MetaInfo file */
+	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Steam");
 }
 
 typedef enum {

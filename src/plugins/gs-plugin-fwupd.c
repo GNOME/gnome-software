@@ -114,6 +114,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	/* set name of MetaInfo file */
+	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
 }
 
 void

@@ -63,6 +63,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* prioritize over packages */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
 
+	/* set name of MetaInfo file */
+	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Flatpak");
+
 	/* if we can't update the AppStream database system-wide don't even
 	 * pull the data as we can't do anything with it */
 	permission = gs_utils_get_permission (action_id);

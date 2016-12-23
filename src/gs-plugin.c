@@ -72,6 +72,7 @@ typedef struct
 	gchar			*locale;		/* allow-none */
 	gchar			*language;		/* allow-none */
 	gchar			*name;
+	gchar			*appstream_id;
 	guint			 scale;
 	guint			 order;
 	guint			 priority;
@@ -190,6 +191,7 @@ gs_plugin_finalize (GObject *object)
 	if (priv->timer_id > 0)
 		g_source_remove (priv->timer_id);
 	g_free (priv->name);
+	g_free (priv->appstream_id);
 	g_free (priv->data);
 	g_free (priv->locale);
 	g_free (priv->language);
@@ -407,6 +409,40 @@ gs_plugin_get_name (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	return priv->name;
+}
+
+/**
+ * gs_plugin_get_appstream_id:
+ * @plugin: a #GsPlugin
+ *
+ * Gets the plugin AppStream ID.
+ *
+ * Returns: a string, e.g. `org.gnome.Software.Plugin.Epiphany`
+ *
+ * Since: 3.24
+ **/
+const gchar *
+gs_plugin_get_appstream_id (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->appstream_id;
+}
+
+/**
+ * gs_plugin_get_appstream_id:
+ * @plugin: a #GsPlugin
+ * @appstream_id: an appstream ID, e.g. `org.gnome.Software.Plugin.Epiphany`
+ *
+ * Sets the plugin AppStream ID.
+ *
+ * Since: 3.24
+ **/
+const void
+gs_plugin_set_appstream_id (GsPlugin *plugin, const gchar *appstream_id)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_free (priv->appstream_id);
+	appstream_id = g_strdup (appstream_id);
 }
 
 /**
