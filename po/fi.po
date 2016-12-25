@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-10-09 12:55+0000\n"
-"PO-Revision-Date: 2016-10-23 13:04+0300\n"
+"POT-Creation-Date: 2016-12-20 11:49+0000\n"
+"PO-Revision-Date: 2016-12-25 21:40+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -21,15 +21,15 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
+#: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
 msgstr "Ohjelmistot"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
+#: data/appdata/org.gnome.Software.appdata.xml.in:8
 msgid "Application manager for GNOME"
 msgstr "Sovellushallinta Gnomelle"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
+#: data/appdata/org.gnome.Software.appdata.xml.in:10
 msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
@@ -37,7 +37,7 @@ msgstr ""
 "Ohjelmistot mahdollistaa uusien sovellusten löytämisen ja asennuksen sekä "
 "nykyisten sovellusten poistamisen."
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:4
+#: data/appdata/org.gnome.Software.appdata.xml.in:14
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
@@ -48,35 +48,39 @@ msgstr ""
 "kuvauksen kera. Sovellukset ovat löydettävissä eri luokkia selaamalla tai "
 "nimellä etsimällä. "
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:5
+#: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
 msgstr "Yhteenvetosivu"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:6
+#: data/appdata/org.gnome.Software.appdata.xml.in:29
 msgid "Details panel"
 msgstr "Tietosivu"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:7
+#: data/appdata/org.gnome.Software.appdata.xml.in:33
 msgid "Installed panel"
 msgstr "Asennussivu"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:8
+#: data/appdata/org.gnome.Software.appdata.xml.in:37
 msgid "Updates panel"
 msgstr "Päivityssivu"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:9
+#: data/appdata/org.gnome.Software.appdata.xml.in:41
 msgid "The update details"
 msgstr "Päivityksen tiedot"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:10
-msgid "The GNOME Project"
-msgstr "Gnome-projekti"
+#: data/org.gnome.software.external-appstream.policy.in:11
+msgid "Install an appstream file into a system location"
+msgstr "Asenna appstream-tiedosto järjestelmäsijaintiin"
 
-#: ../data/org.gnome.software.gschema.xml.h:1
+#: data/org.gnome.software.external-appstream.policy.in:12
+msgid "Installing an appstream file into a system location"
+msgstr "Asennetaan appstream-tiedosto järjestelmäsijaintiin"
+
+#: data/org.gnome.software.gschema.xml:5
 msgid "A list of compatible projects"
 msgstr "Luettelo yhteensopivista projekteista"
 
-#: ../data/org.gnome.software.gschema.xml.h:2
+#: data/org.gnome.software.gschema.xml:6
 msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
@@ -84,11 +88,24 @@ msgstr ""
 "Luettelo yhteensopivista projekteista, jotka tulisi näyttää, esim. GNOME, "
 "KDE ja XFCE."
 
-#: ../data/org.gnome.software.gschema.xml.h:3
+#: data/org.gnome.software.gschema.xml:10
+#| msgid "Whether it's the very first run of GNOME Software"
+msgid "Whether to manage updates in GNOME Software"
+msgstr "Hallitaanko päivityksiä Gnomen Ohjelmistot-sovelluksessa"
+
+#: data/org.gnome.software.gschema.xml:11
+msgid ""
+"If disabled, GNOME Software will hide the updates panel and not perform any "
+"automatic updates actions."
+msgstr ""
+"Jos poistettu käytöstä, Gnomen Ohjelmistot-sovellus piilottaa päivitykset "
+"eikä suorita automaattisia päivitystoimintoja."
+
+#: data/org.gnome.software.gschema.xml:15
 msgid "Whether to automatically download updates"
 msgstr "Ladataanko päivitykset automaattisesti"
 
-#: ../data/org.gnome.software.gschema.xml.h:4
+#: data/org.gnome.software.gschema.xml:16
 msgid ""
 "If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
@@ -96,37 +113,55 @@ msgstr ""
 "Jos käytössä, Gnomen ohjelmistokeskus lataa päivitykset automaattisesti "
 "taustalla ja ilmoittaa käyttäjälle, kun ne ovat valmiit asennettavaksi."
 
-#: ../data/org.gnome.software.gschema.xml.h:5
-msgid "Whether it's the very first run of GNOME Software"
-msgstr "Käynnistetäänkö Ohjelmistot ensimmäistä kertaa"
+#: data/org.gnome.software.gschema.xml:20
+#, fuzzy
+#| msgid "Whether to automatically download updates"
+msgid "Whether to automatically refresh when on a metered connection"
+msgstr "Ladataanko päivitykset automaattisesti"
 
-#: ../data/org.gnome.software.gschema.xml.h:6
+#: data/org.gnome.software.gschema.xml:21
+msgid ""
+"If enabled, GNOME Software automatically refreshes in the background even "
+"when using a metered connection (eventually downloading some metadata, "
+"checking for updates, etc., which may incur in costs for the user)."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:25
+#| msgid "Whether it's the very first run of GNOME Software"
+msgid "Whether it’s the very first run of GNOME Software"
+msgstr "Käynnistetäänkö Gnomen Ohjelmistot ensimmäistä kertaa"
+
+#: data/org.gnome.software.gschema.xml:29
 msgid "Show star ratings next to applications"
 msgstr "Näytä tähtiarvosanat sovellusten vieressä"
 
-#: ../data/org.gnome.software.gschema.xml.h:7
+#: data/org.gnome.software.gschema.xml:33
+msgid "Filter applications based on the default branch set for the remote"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:37
 msgid "Non-free applications show a warning dialog before install"
 msgstr "Ei-vapaat sovellukset näyttävät varoituksen ennen asennusta"
 
-#: ../data/org.gnome.software.gschema.xml.h:8
+#: data/org.gnome.software.gschema.xml:38
 msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:9
+#: data/org.gnome.software.gschema.xml:42
 msgid "A list of popular applications"
 msgstr "Luettelo suosituista sovelluksista"
 
-#: ../data/org.gnome.software.gschema.xml.h:10
+#: data/org.gnome.software.gschema.xml:43
 msgid "A list of applications to use, overriding the system defined ones."
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:11
+#: data/org.gnome.software.gschema.xml:47
 msgid "The list of extra sources that have been previously enabled"
 msgstr "Luettelo lisälähteistä, jotka on otettu aiemmin käyttöön"
 
-#: ../data/org.gnome.software.gschema.xml.h:12
+#: data/org.gnome.software.gschema.xml:48
 msgid ""
 "The list of sources that have been previously enabled when installing third-"
 "party applications."
@@ -134,458 +169,506 @@ msgstr ""
 "Luettelo lähteistä, jotka on aiemmin otettu käyttöön kolmansien osapuolien "
 "sovelluksia asennettaessa."
 
-#: ../data/org.gnome.software.gschema.xml.h:13
+#: data/org.gnome.software.gschema.xml:52
 msgid "The last update check timestamp"
 msgstr "Viimeisimmän päivitystarkistuksen aikaleima"
 
-#: ../data/org.gnome.software.gschema.xml.h:14
+#: data/org.gnome.software.gschema.xml:56
 msgid "The last upgrade notification timestamp"
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:15
+#: data/org.gnome.software.gschema.xml:60
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:16
+#: data/org.gnome.software.gschema.xml:64
 msgid "The last update timestamp"
 msgstr "Viimeisimmän päivityksen aikaleima"
 
-#: ../data/org.gnome.software.gschema.xml.h:17
+#: data/org.gnome.software.gschema.xml:68
+msgid "The age in seconds to verify the upstream screenshot is still valid"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:69
+msgid ""
+"Choosing a larger value will mean less round-trips to the remote server but "
+"updates to the screenshots may take longer to show to the user. A value of 0 "
+"means to never check the server if the image already exists in the cache."
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:78
 msgid "The server to use for application reviews"
 msgstr "Sovellusarvosteluihin käytettävä palvelin"
 
-#: ../data/org.gnome.software.gschema.xml.h:18
+#: data/org.gnome.software.gschema.xml:82
 msgid "The minimum karma score for reviews"
 msgstr "Karmapisteiden vähimmäismäärä arvosteluille"
 
-#: ../data/org.gnome.software.gschema.xml.h:19
+#: data/org.gnome.software.gschema.xml:83
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Alle tämän karman olevia arvosteluja ei näytetä."
 
-#: ../data/org.gnome.software.gschema.xml.h:20
+#: data/org.gnome.software.gschema.xml:87
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
 "Luettelo virallisista lähteistä, joita ei tule käsitellä kolmansina "
 "osapuolina"
 
-#: ../data/org.gnome.software.gschema.xml.h:21
+#: data/org.gnome.software.gschema.xml:91
 msgid "A list of official sources that should be considered free software"
 msgstr ""
 "Luettelo virallisista lähteistä, jotka tulee käsitellä vapaina ohjelmistoina"
 
-#: ../data/org.gnome.software.gschema.xml.h:22
+#: data/org.gnome.software.gschema.xml:95
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:23
+#: data/org.gnome.software.gschema.xml:99
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:24
+#: data/org.gnome.software.gschema.xml:103
 msgid "Show the folder management UI"
 msgstr "Näytä kansiohallinnan käyttöliittymä"
 
-#: ../data/org.gnome.software.gschema.xml.h:25
+#: data/org.gnome.software.gschema.xml:107
 msgid "Allow access to the Software Sources dialog"
-msgstr ""
+msgstr "Salli pääsy ohjelmistolähteiden ikkunaan"
 
-#: ../data/org.gnome.software.gschema.xml.h:26
+#: data/org.gnome.software.gschema.xml:111
 msgid "Offer upgrades for pre-releases"
 msgstr "Tarjoa esijulkaisujen versiopäivityksiä"
 
-#: ../data/org.gnome.software.gschema.xml.h:27
+#: data/org.gnome.software.gschema.xml:115
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Näytä käyttöliittymäelementtejä, joilla viestitään käyttäjälle ohjelmiston "
 "olevan ei-vapaa"
 
-#: ../data/org.gnome.software.gschema.xml.h:28
+#: data/org.gnome.software.gschema.xml:119
 msgid "Show the prompt to install nonfree software sources"
 msgstr "Näytä kehote asentaa suljettuja ohjelmistolähteitä"
 
-#: ../data/org.gnome.software.gschema.xml.h:29
+#: data/org.gnome.software.gschema.xml:123
 msgid "Show non-free software in search results"
 msgstr "Näytä suljettuja ohjelmistoja hakutuloksissa"
 
-#: ../data/org.gnome.software.gschema.xml.h:30
+#: data/org.gnome.software.gschema.xml:127
+msgid "Show the installed size for apps in the list of installed applications"
+msgstr ""
+
+#: data/org.gnome.software.gschema.xml:131
 msgid "The URI that explains nonfree and proprietary software"
 msgstr ""
 
-#: ../data/org.gnome.software.gschema.xml.h:31
+#: data/org.gnome.software.gschema.xml:135
 msgid "A list of non-free sources that can be optionally enabled"
 msgstr ""
 "Luettelo suljetuista lisäohjelmistolähteistä, jotka on mahdollista ottaa "
 "käyttöön"
 
-#: ../src/gs-app-folder-dialog.ui.h:1
+#: data/org.gnome.software.gschema.xml:139
+msgid ""
+"A list of URLs pointing to appstream files that will be downloaded into an "
+"app-info folder"
+msgstr ""
+
+#: src/gs-app-folder-dialog.ui:5
 msgid "Add to Application Folder"
 msgstr "Lisää sovelluskansioon"
 
-#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
-#: ../src/gs-removal-dialog.ui.h:2 ../src/gs-review-dialog.ui.h:3
-#: ../src/gs-shell-details.c:358 ../src/gs-shell-details.ui.h:6
-#: ../src/gs-shell-installed.c:530 ../src/gs-upgrade-banner.ui.h:5
+#: src/gs-app-folder-dialog.ui:16 src/gs-app-folder-dialog.c:322
+#: src/gs-removal-dialog.ui:33 src/gs-review-dialog.ui:23
+#: src/gs-shell-details.c:366 src/gs-shell-details.ui:330
+#: src/gs-shell-installed.c:552 src/gs-upgrade-banner.ui:133
 msgid "_Cancel"
 msgstr "_Peru"
 
-#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:327
+#: src/gs-app-folder-dialog.ui:24 src/gs-app-folder-dialog.c:327
 msgid "_Add"
 msgstr "_Lisää"
 
-#. vim: set noexpandtab:
-#. TRANSLATORS: this is the small blue label on the tile
-#. * that tells the user the application is installed
-#. vim: set noexpandtab:
-#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
-#: ../src/gs-app-row.ui.h:1 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:72 ../src/gs-popular-tile.c:75
-#: ../src/gs-summary-tile.c:78 ../src/gs-summary-tile.ui.h:1
-#: ../src/gs-popular-tile.ui.h:1
+#: src/gs-app-tile.ui:51 src/gs-app-addon-row.c:103 src/gs-app-row.ui:209
+#: src/gs-feature-tile.c:66 src/gs-popular-tile.c:70
 msgid "Installed"
 msgstr "Asennettu"
 
-#: ../src/gnome-software-local-file.desktop.in.h:1
+#: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
 msgstr "Ohjelmiston asennus"
 
-#: ../src/gnome-software-local-file.desktop.in.h:2
+#: src/gnome-software-local-file.desktop.in:4
 msgid "Install selected software on the system"
 msgstr "Asenna valitut ohjelmistot järjestelmään"
 
-#: ../src/gnome-software.ui.h:1
+#. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+#: src/gnome-software-local-file.desktop.in:10
+#| msgid "Software Install"
+msgid "system-software-install"
+msgstr "system-software-install"
+
+#: src/gnome-software.ui:10
 msgid "Select All"
 msgstr "Valitse kaikki"
 
-#: ../src/gnome-software.ui.h:2
+#: src/gnome-software.ui:16
 msgid "Select None"
 msgstr "Älä valitse mitään"
 
-#. TRANSLATORS: this is the application name
-#. set the window title back to default
-#. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:378
-#: ../src/gs-shell.c:266 ../src/org.gnome.Software.desktop.in.h:1
+#: src/gnome-software.ui:24 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Ohjelmistot"
 
-#. vim: set noexpandtab:
-#: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
-#: ../src/gs-update-dialog.ui.h:1
+#: src/gnome-software.ui:43 src/gs-sources-dialog.ui:23
+#: src/gs-update-dialog.ui:21
 msgid "Go back"
 msgstr "Takaisin"
 
 #. Translators: A label for a button to show all available software.
-#: ../src/gnome-software.ui.h:6
+#: src/gnome-software.ui:77
 msgid "_All"
 msgstr "_Kaikki"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: ../src/gnome-software.ui.h:8
+#: src/gnome-software.ui:104
 msgid "_Installed"
 msgstr "_Asennetut"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: ../src/gnome-software.ui.h:10
+#: src/gnome-software.ui:155
 msgid "_Updates"
 msgstr "_Päivitykset"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
-#: ../src/gs-shell-details.ui.h:7
+#: src/gnome-software.ui:251
+#| msgid "Search page"
+msgid "Search"
+msgstr "Etsi"
+
+#. button in the info bar
+#: src/gnome-software.ui:349 src/gs-sources-dialog.ui:6
+#: src/gs-sources-dialog.ui:46
+msgid "Software Sources"
+msgstr "Ohjelmistolähteet"
+
+#. button in the info bar
+#: src/gnome-software.ui:360
+msgid "Examine Disk"
+msgstr "Tutki levy"
+
+#. button in the info bar
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: src/gnome-software.ui:371 src/gs-shell-updates.c:881
+msgid "Network Settings"
+msgstr "Verkkoasetukset"
+
+#. button in the info bar
+#: src/gnome-software.ui:382
+#| msgid "More information"
+msgid "More Information"
+msgstr "Lisätietoja"
+
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:429 src/gs-shell-details.ui:344
 msgid "Pending"
 msgstr "Odottaa"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#. TRANSLATORS: this is the small blue label on the tile
-#. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:219
-#: ../src/gs-shell-details.c:410 ../src/gs-summary-tile.c:86
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:218 src/gs-shell-details.c:418
 msgid "Installing"
 msgstr "Asennetaan"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#. TRANSLATORS: this is the small blue label on the tile
-#. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:225
-#: ../src/gs-summary-tile.c:94
+#: src/gs-app-addon-row.c:111 src/gs-app-row.c:224
 msgid "Removing"
 msgstr "Poistetaan"
 
-#: ../src/gs-app-folder-dialog.c:311
+#: src/gs-app-folder-dialog.c:311
 msgid "Folder Name"
 msgstr "Kansion nimi"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:98
+#: src/gs-application.c:101
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Käynnistystila, joko \"updates\", \"updated\", \"installed\" tai \"overview\""
 
-#: ../src/gs-application.c:98
+#: src/gs-application.c:101
 msgid "MODE"
 msgstr "TILA"
 
-#: ../src/gs-application.c:100
+#: src/gs-application.c:103
 msgid "Search for applications"
 msgstr "Etsi sovelluksia"
 
-#: ../src/gs-application.c:100
+#: src/gs-application.c:103
 msgid "SEARCH"
 msgstr ""
 
-#: ../src/gs-application.c:102
+#: src/gs-application.c:105
 msgid "Show application details (using application ID)"
 msgstr "Näytä sovelluksen tiedot (käyttäen sovelluksen tunnistetta)"
 
-#: ../src/gs-application.c:102
+#: src/gs-application.c:105 src/gs-application.c:109
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:104
+#: src/gs-application.c:107
 msgid "Show application details (using package name)"
 msgstr "Näytä sovelluksen tiedot (käyttäen paketin nimeä)"
 
-#: ../src/gs-application.c:104
+#: src/gs-application.c:107
 msgid "PKGNAME"
 msgstr ""
 
-#: ../src/gs-application.c:106
+#: src/gs-application.c:109
+#| msgid "Show application details (using application ID)"
+msgid "Install the application (using application ID)"
+msgstr "Asenna sovellus (käyttäen sovelluksen tunnistetta)"
+
+#: src/gs-application.c:111
 msgid "Open a local package file"
 msgstr "Avaa paikallinen pakettitiedosto"
 
-#: ../src/gs-application.c:106
+#: src/gs-application.c:111
 msgid "FILENAME"
 msgstr "TIEDOSTONIMI"
 
-#: ../src/gs-application.c:108
+#: src/gs-application.c:113
+msgid ""
+"The kind of interaction expected for this action: either ‘none’, ‘notify’, "
+"or ‘full’"
+msgstr ""
+
+#: src/gs-application.c:116
 msgid "Show verbose debugging information"
 msgstr ""
 
-#: ../src/gs-application.c:110
+#: src/gs-application.c:118
 msgid "Show profiling information for the service"
 msgstr "Näytä palvelun profilointitietoja"
 
-#: ../src/gs-application.c:112
+#: src/gs-application.c:120
 msgid "Quit the running instance"
 msgstr "Lopeta käynnissä oleva instanssi"
 
-#: ../src/gs-application.c:114
+#: src/gs-application.c:122
 msgid "Prefer local file sources to AppStream"
 msgstr ""
 
-#: ../src/gs-application.c:116
+#: src/gs-application.c:124
 msgid "Show version number"
 msgstr "Näytä versionumero"
 
-#: ../src/gs-application.c:371
+#: src/gs-application.c:313
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
-#. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:375
-msgid "About Software"
-msgstr "Tietoja - Ohjelmistot"
+#. TRANSLATORS: this is the title of the about window, e.g.
+#. * 'About Software' or 'About Application Installer' where the %s is
+#. * the application name chosen by the distro
+#: src/gs-application.c:320
+#, c-format
+#| msgid "_About"
+msgid "About %s"
+msgstr "Tietoja - %s"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:381
+#: src/gs-application.c:324
 msgid "A nice way to manage the software on your system."
 msgstr "Mukava tapa hallita järjestelmän ohjelmistoja."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:172
+#: src/gs-app-row.c:171
 msgid "Visit website"
 msgstr "Käy verkkosivustolla"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:177
+#: src/gs-app-row.c:176
 msgid "Install…"
 msgstr "Asenna…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:184
+#: src/gs-app-row.c:183
 msgid "Cancel"
 msgstr "Peru"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: this is a button in the updates panel
-#. * that allows the app to be easily updated live
 #. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:385
-#: ../src/gs-common.c:342
+#: src/gs-app-row.c:192 src/gs-page.c:366 src/gs-common.c:283
 msgid "Install"
 msgstr "Asenna"
+
+#. TRANSLATORS: this is a button in the updates panel
+#. * that allows the app to be easily updated live
+#: src/gs-app-row.c:199
+msgid "Update"
+msgstr "Päivitä"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:531
+#: src/gs-app-row.c:203 src/gs-app-row.c:212 src/gs-page.c:517
 msgid "Remove"
 msgstr "Poista"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:329
+#: src/gs-app-row.c:329
 msgid "Device cannot be used during update."
 msgstr "Laitetta ei voi käyttää päivityksen aikana."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
+#: src/gs-app-row.c:339 src/gs-shell-details.ui:985
 msgid "Source"
 msgstr "Lähde"
 
-#. security sandbox
-#: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
-msgid "Sandboxed"
-msgstr "Eristetty"
-
 #. TRANSLATORS: this is when the service name is not known
-#: ../src/gs-auth-dialog.c:70
+#: src/gs-auth-dialog.c:70
 msgid "To continue you need to sign in."
 msgstr "Jatkaaksesi sinun tulee olla kirjautunut sisään."
 
 #. TRANSLATORS: the %s is a service name, e.g. "Ubuntu One"
-#: ../src/gs-auth-dialog.c:74
+#: src/gs-auth-dialog.c:74
 #, c-format
 msgid "To continue you need to sign in to %s."
 msgstr "Jatkaaksesi kirjaudu sisään palveluun %s."
 
-#. vim: set noexpandtab:
-#: ../src/gs-auth-dialog.ui.h:1
+#: src/gs-auth-dialog.ui:70
 msgid "Email address"
 msgstr "Sähköpostiosoite"
 
-#: ../src/gs-auth-dialog.ui.h:2
+#: src/gs-auth-dialog.ui:94
 msgid "I have an account already"
 msgstr "Minulla on jo tili"
 
-#: ../src/gs-auth-dialog.ui.h:3
+#: src/gs-auth-dialog.ui:113
 msgid "Password"
 msgstr "Salasana"
 
-#: ../src/gs-auth-dialog.ui.h:4
+#: src/gs-auth-dialog.ui:137
 msgid "I want to register for an account now"
 msgstr "Haluan rekisteröidä tilin nyt"
 
-#: ../src/gs-auth-dialog.ui.h:5
+#: src/gs-auth-dialog.ui:154
 msgid "I have forgotten my password"
 msgstr "Unohdin salasanani"
 
-#: ../src/gs-auth-dialog.ui.h:6
+#: src/gs-auth-dialog.ui:181
 msgid "Sign in automatically next time"
 msgstr "Kirjaudu sisään automaattisesti ensi kerralla"
 
-#: ../src/gs-auth-dialog.ui.h:7
+#: src/gs-auth-dialog.ui:210
 msgid "Enter your one-time pin for two-factor authentication."
 msgstr "Anna kertakäyttöinen PIN-koodi kaksivaiheista tunnistaumista varten."
 
-#: ../src/gs-auth-dialog.ui.h:8
+#: src/gs-auth-dialog.ui:223
 msgid "PIN"
 msgstr "PIN-koodi"
 
-#: ../src/gs-auth-dialog.ui.h:9
+#: src/gs-auth-dialog.ui:337
 msgid "Continue"
 msgstr "Jatka"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:193
+#: src/gs-category.c:193
 msgid "Other"
 msgstr "Muut"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:198
+#: src/gs-category.c:198
 msgid "All"
 msgstr "Kaikki"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:202
+#: src/gs-category.c:202
 msgid "Featured"
 msgstr "Nostot"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: ../src/gs-dbus-helper.c:293
+#: src/gs-dbus-helper.c:293
 msgid "An application"
 msgstr "Sovellus"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: ../src/gs-dbus-helper.c:299
+#: src/gs-dbus-helper.c:299
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "%s pyytää lisätukea tiedostomuodolle."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:301
+#: src/gs-dbus-helper.c:301
 msgid "Additional MIME Types Required"
 msgstr "Lisää MIME-tyyppejä vaaditaan"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: ../src/gs-dbus-helper.c:305
+#: src/gs-dbus-helper.c:305
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "%s pyytää lisää fontteja."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:307
+#: src/gs-dbus-helper.c:307
 msgid "Additional Fonts Required"
 msgstr "Lisäfontteja vaaditaan"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: ../src/gs-dbus-helper.c:311
+#: src/gs-dbus-helper.c:311
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "%s pyytää lisätukea multimediakoodekeille."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:313
+#: src/gs-dbus-helper.c:313
 msgid "Additional Multimedia Codecs Required"
 msgstr "Lisää multimediakoodekkeja vaaditaan"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: ../src/gs-dbus-helper.c:317
+#: src/gs-dbus-helper.c:317
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "%s pyytää erillisiä tulostinajureita."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:319
+#: src/gs-dbus-helper.c:319
 msgid "Additional Printer Drivers Required"
 msgstr "Erillisiä tulostinajureita vaaditaan"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: ../src/gs-dbus-helper.c:323
+#: src/gs-dbus-helper.c:323
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "%s pyytää lisäpaketteja."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:325
+#: src/gs-dbus-helper.c:325
 msgid "Additional Packages Required"
 msgstr "Lisäpaketteja vaaditaan"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: ../src/gs-dbus-helper.c:334
+#: src/gs-dbus-helper.c:334
 msgid "Find in Software"
 msgstr "Etsi ohjelmistoista"
 
-#. vim: set noexpandtab:
-#: ../src/gs-first-run-dialog.ui.h:1
+#: src/gs-first-run-dialog.ui:7 src/gs-first-run-dialog.ui:16
 msgid "Welcome"
 msgstr "Tervetuloa"
 
-#: ../src/gs-first-run-dialog.ui.h:2
+#: src/gs-first-run-dialog.ui:50
 msgid "Welcome to Software"
 msgstr "Tervetuloa ohjelmistojen pariin"
 
-#: ../src/gs-first-run-dialog.ui.h:3
+#: src/gs-first-run-dialog.ui:66
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -594,37 +677,37 @@ msgstr ""
 "Ohjelmistot mahdollistaa keskitetyn asennuspaikan eri ohjelmistoille. "
 "Tutustu suosituksiin, selaa eri luokkia tai etsi haluamaasi sovellusta."
 
-#: ../src/gs-first-run-dialog.ui.h:4
+#: src/gs-first-run-dialog.ui:85
 msgid "_Let’s Go Shopping"
 msgstr "_Siirry ohjelmistojen pariin"
 
 #. TRANSLATORS: Here are 2 strings the same as in gtk/gtkbox.c
 #. in GTK+ project. Please use the same translation.
-#: ../src/gs-hiding-box.c:383
+#: src/gs-hiding-box.c:383
 msgid "Spacing"
-msgstr ""
+msgstr "Välistys"
 
-#: ../src/gs-hiding-box.c:384
+#: src/gs-hiding-box.c:384
 msgid "The amount of space between children"
 msgstr ""
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-history-dialog.c:83
+#: src/gs-history-dialog.c:83
 msgctxt "app status"
 msgid "Removed"
 msgstr "Poistettu"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/gs-history-dialog.c:89
+#: src/gs-history-dialog.c:89
 msgctxt "app status"
 msgid "Installed"
 msgstr "Asennettu"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gs-history-dialog.c:95
+#: src/gs-history-dialog.c:95
 msgctxt "app status"
 msgid "Updated"
 msgstr "Päivitetty"
@@ -632,32 +715,31 @@ msgstr "Päivitetty"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-history-dialog.c:101
+#: src/gs-history-dialog.c:101
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Tuntematon"
 
-#. vim: set noexpandtab:
-#: ../src/gs-history-dialog.ui.h:1
+#: src/gs-history-dialog.ui:6
 msgid "History"
 msgstr "Historia"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:376
+#: src/gs-page.c:357
 #, c-format
 msgid "Prepare %s"
 msgstr "Valmistele %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * source name, e.g. 'GNOME Nightly'
-#: ../src/gs-page.c:500
+#: src/gs-page.c:486
 #, c-format
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Haluatko varmasti poistaa lähteen %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:504
+#: src/gs-page.c:490
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -668,39 +750,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:512
+#: src/gs-page.c:498
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Haluatko varmasti poistaa kohteen %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:515
+#: src/gs-page.c:501
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "%s poistetaan. Jos haluat käyttää sitä jatkossa, se pitää asentaa uudelleen."
 
-#. TRANSLATORS: this is a group of updates that are not
-#. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1049
-msgid "OS Updates"
-msgstr "Järjestelmäpäivitykset"
-
-#. TRANSLATORS: this is a longer description of the
-#. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1054
-msgid "Includes performance, stability and security improvements."
-msgstr ""
-"Sisältää suorituskykyyn, vakauteen ja turvallisuuteen liittyviä parannuksia."
-
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1730 ../src/gs-shell-extras.c:386
+#: src/gs-plugin-loader.c:1878 src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s-muotoa varten ei ole lisäkoodekkeja saatavilla."
 
-#: ../src/gs-plugin-loader.c:1733
+#: src/gs-plugin-loader.c:1881
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -709,7 +778,7 @@ msgstr ""
 "Tietoja kohteesta %s, ja tietoa kuinka saada tätä tiedostomuotoa tukeva "
 "koodekki, löytyy verkkosivustolta."
 
-#: ../src/gs-removal-dialog.c:128
+#: src/gs-removal-dialog.c:128
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -719,95 +788,95 @@ msgstr ""
 "kanssa. Jos jatkat, seuraavat poistetaan automaattisesti versiopäivityksen "
 "yhteydessä."
 
-#. vim: set noexpandtab:
-#: ../src/gs-removal-dialog.ui.h:1
+#: src/gs-removal-dialog.ui:27
 msgid "Incompatible Software"
 msgstr "Yhteensopimaton ohjelmisto"
 
-#: ../src/gs-removal-dialog.ui.h:3
+#: src/gs-removal-dialog.ui:40
 msgid "_Continue"
 msgstr "_Jatka"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
-#: ../src/gs-review-dialog.c:98
+#: src/gs-review-dialog.c:98
 msgid "Hate it"
 msgstr "En tykkää lainkaan"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
-#: ../src/gs-review-dialog.c:102
-msgid "Don't like it"
+#: src/gs-review-dialog.c:102
+#| msgid "Don't like it"
+msgid "Don’t like it"
 msgstr "En tykkää erityisemmin"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
-#: ../src/gs-review-dialog.c:106
-msgid "It's OK"
+#: src/gs-review-dialog.c:106
+#| msgid "It's OK"
+msgid "It’s OK"
 msgstr "Ihan OK"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
-#: ../src/gs-review-dialog.c:110
+#: src/gs-review-dialog.c:110
 msgid "Like it"
 msgstr "Tykkään siitä"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
-#: ../src/gs-review-dialog.c:114
+#: src/gs-review-dialog.c:114
 msgid "Love it"
 msgstr "Tykkään siitä todella paljon"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: ../src/gs-review-dialog.c:136
+#: src/gs-review-dialog.c:136
 msgid "Please take more time writing the review"
 msgstr "Käytä hieman enemmän aikaa arvostelun kirjoittamiseen"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:140
+#: src/gs-review-dialog.c:140
 msgid "Please choose a star rating"
 msgstr "Valitse tähtimäärä"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:144
+#: src/gs-review-dialog.c:144
 msgid "The summary is too short"
 msgstr "Yhteenveto on liian lyhyt"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:148
+#: src/gs-review-dialog.c:148
 msgid "The summary is too long"
 msgstr "Yhteenveto on liian pitkä"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:152
+#: src/gs-review-dialog.c:152
 msgid "The description is too short"
 msgstr "Kuvaus on liian lyhyt"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:156
+#: src/gs-review-dialog.c:156
 msgid "The description is too long"
 msgstr "Kuvaus on liian pitkä"
 
-#. vim: set noexpandtab:
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
-#: ../src/gs-review-dialog.ui.h:2
+#: src/gs-review-dialog.ui:11
 msgid "Post Review"
 msgstr "Lähetä arvostelu"
 
 #. Translators: A button to publish the user's opinion about the app.
-#: ../src/gs-review-dialog.ui.h:5
+#: src/gs-review-dialog.ui:35
 msgid "_Post"
 msgstr "_Lähetä"
 
-#: ../src/gs-review-dialog.ui.h:6
+#: src/gs-review-dialog.ui:85
 msgid "Rating"
 msgstr "Arvosana"
 
-#: ../src/gs-review-dialog.ui.h:7
+#: src/gs-review-dialog.ui:142
 msgid "Summary"
 msgstr "Yhteenveto"
 
-#: ../src/gs-review-dialog.ui.h:8
+#: src/gs-review-dialog.ui:158
 msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
@@ -816,34 +885,35 @@ msgstr ""
 "monipuolinen sovellus, suosittelen.\" "
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: ../src/gs-review-dialog.ui.h:10
+#: src/gs-review-dialog.ui:199
 msgctxt "app review"
 msgid "Review"
 msgstr "Arvostelu"
 
-#: ../src/gs-review-dialog.ui.h:11
+#: src/gs-review-dialog.ui:215
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr ""
 "Mitä pidät tästä sovelluksesta? Yritä tuoda näkemyksiäsi selkeästi esiin."
 
-#: ../src/gs-review-histogram.ui.h:1
-msgid "Total"
-msgstr "Yhteensä"
+#. Translators: A label for the total number of reviews.
+#: src/gs-review-histogram.ui:413
+msgid "ratings in total"
+msgstr "arvosteluja yhteensä"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #. This refers to the license of the application
-#: ../src/gs-review-row.c:71 ../src/gs-shell-details.ui.h:42
+#: src/gs-review-row.c:72 src/gs-shell-details.ui:1106
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: ../src/gs-review-row.c:211
+#: src/gs-review-row.c:235
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Voit ilmoittaa loukkaavista, epäkohteliaista ja syrjivistä arvosteluista."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: ../src/gs-review-row.c:216
+#: src/gs-review-row.c:240
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -853,87 +923,518 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: ../src/gs-review-row.c:230
+#: src/gs-review-row.c:254
 msgid "Report Review?"
 msgstr "Haluatko tehdä ilmoituksen arvostelusta?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: ../src/gs-review-row.c:234
+#: src/gs-review-row.c:258
 msgid "Report"
 msgstr "Ilmoita"
 
-#. vim: set noexpandtab:
 #. Translators: Users can express their opinions about other users' opinions about the apps.
-#: ../src/gs-review-row.ui.h:2
+#: src/gs-review-row.ui:112
 msgid "Was this review useful to you?"
 msgstr "Oliko tästä arvostelusta sinulle hyötyä?"
 
-#: ../src/gs-review-row.ui.h:3
+#: src/gs-review-row.ui:134
 msgid "Yes"
 msgstr "Kyllä"
 
-#: ../src/gs-review-row.ui.h:4
+#: src/gs-review-row.ui:148
 msgid "No"
 msgstr "Ei"
 
 #. Translators: Button text for indifference, only used when moderating
-#: ../src/gs-review-row.ui.h:6
+#: src/gs-review-row.ui:162
 msgid "Meh"
 msgstr "No jaa"
 
-#: ../src/gs-review-row.ui.h:7
+#: src/gs-review-row.ui:196
 msgid "Report…"
 msgstr "Ilmoita…"
 
-#: ../src/gs-review-row.ui.h:8
+#: src/gs-review-row.ui:211
 msgid "Remove…"
 msgstr "Poista…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:220
+#: src/gs-screenshot-image.c:315
 msgid "Screenshot not found"
 msgstr "Kuvakaappausta ei löytynyt"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:236
+#: src/gs-screenshot-image.c:330
 msgid "Failed to load image"
 msgstr "Kuvan lataaminen epäonnistui"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:350
+#: src/gs-screenshot-image.c:463
 msgid "Screenshot size not found"
 msgstr "Kuvakaappauksen kokoa ei löytynyt"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:378
+#: src/gs-screenshot-image.c:491
 msgid "Could not create cache"
 msgstr "Välimuistin luominen ei onnistunut"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:424
+#: src/gs-screenshot-image.c:552
 msgid "Screenshot not valid"
 msgstr "Kuvakaappaus on virheellinen"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:439
+#: src/gs-screenshot-image.c:567
 msgid "Screenshot not available"
 msgstr "Kuvakaappausta ei ole saataville"
 
-#: ../src/gs-screenshot-image.c:482
+#: src/gs-screenshot-image.c:620
 msgid "Screenshot"
 msgstr "Kuvakaappaus"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-category.ui.h:1
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the first %s is a possibly multi-word localised distro
+#. * e.g. 'Fedora Project" and the second %s is the truncated
+#. * hostname, e.g. 'alt.fedoraproject.org'
+#: src/gs-shell.c:788
+#, c-format
+msgid "“%s” [%s]"
+msgstr "“%s” [%s]"
+
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the %s is a possibly multi-word localised distro
+#. * e.g. 'Fedora Project"
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the %s is the truncated hostname, e.g.
+#. * 'alt.fedoraproject.org'
+#. TRANSLATORS: this is part of the in-app notification,
+#. * where the %s is a multi-word localised app name
+#. * e.g. 'Getting things GNOME!"
+#: src/gs-shell.c:795 src/gs-shell.c:801 src/gs-shell.c:817 src/gs-shell.c:821
+#, c-format
+msgid "“%s”"
+msgstr "“%s”"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the source (e.g. "alt.fedoraproject.org")
+#: src/gs-shell.c:841
+#, c-format
+msgid "Unable to download firmware updates from %s"
+msgstr "Laiteohjelmistopäivitysten lataaminen lähteestä %s epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the source (e.g. "alt.fedoraproject.org")
+#: src/gs-shell.c:847
+#, c-format
+msgid "Unable to download updates from %s"
+msgstr "Päivitysten lataaminen lähteestä %s epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:854
+#| msgid "Whether to automatically download updates"
+msgid "Unable to download updates"
+msgstr "Päivitysten lataaminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:859
+#| msgid "Internet access was required but wasn’t available."
+msgid ""
+"Unable to download updates: internet access was required but wasn’t available"
+msgstr ""
+"Päivitysten lataaminen epäonnistui: internetyhteys vaadittiin, mutta sitä ei "
+"ollut saatavilla"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the source (e.g. "alt.fedoraproject.org")
+#: src/gs-shell.c:868
+#, c-format
+msgid "Unable to download updates from %s: not enough disk space"
+msgstr ""
+"Päivitysten lataaminen lähteestä %s epäonnistui: levytilaa ei ole riittävästi"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:873
+#| msgid "There wasn’t enough disk space."
+msgid "Unable to download updates: not enough disk space"
+msgstr "Päivitysten lataaminen epäonnistui: levytilaa ei ole riittävästi"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:881
+msgid "Unable to download updates: authentication was required"
+msgstr "Päivitysten lataaminen epäonnistui: tunnistautuminen vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:886
+msgid "Unable to download updates: authentication was invalid"
+msgstr "Päivitysten lataaminen epäonnistui: tunnistautuminen oli virheellinen"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:891
+msgid ""
+"Unable to download updates: you do not have permission to install software"
+msgstr ""
+"Päivitysten lataaminen epäonnistui: käyttöoikeutesi eivät riitä "
+"ohjelmistojen asentamiseen"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:896
+#| msgid "Go online to check for updates"
+msgid "Unable to get list of updates"
+msgstr "Päivitysluettelon noutaminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the application name (e.g. "GIMP") and
+#. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
+#: src/gs-shell.c:938
+#, c-format
+msgid "Unable to install %s as download failed from %s"
+msgstr ""
+"Sovelluksen %s asennus epäonnistui, koska lataaminen lähteestä %s epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:944
+#, c-format
+msgid "Unable to install %s as download failed"
+msgstr "Sovelluksen %s asennus epäonnistui, koska lataaminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the application name (e.g. "GIMP")
+#. * and the second %s is the name of the runtime, e.g.
+#. * "GNOME SDK [flatpak.gnome.org]"
+#: src/gs-shell.c:956
+#, c-format
+msgid "Unable to install %s as runtime %s not available"
+msgstr ""
+"Sovelluksen %s asennus epäonnistui, koska runtime-kirjasto %s ei ole "
+"saatavilla"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:962
+#, c-format
+#| msgid "The file is not supported."
+msgid "Unable to install %s as not supported"
+msgstr "Sovelluksen %s asennus epäonnistui, koska ei se ei ole tuettu"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:969
+#| msgid "Internet access was required but wasn’t available."
+msgid "Unable to install: internet access was required but wasn’t available"
+msgstr ""
+"Asennus epäonnistui: internetyhteys vaadittiin, mutta sitä ei ollut "
+"saatavilla"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:975
+msgid "Unable to install: the application has an invalid format"
+msgstr "Asennus epäonnistui: sovelluksen muoto ei ole kelvollinen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:980
+#, c-format
+#| msgid "There wasn’t enough disk space."
+msgid "Unable to install %s: not enough disk space"
+msgstr "Sovelluksen %s asennus epäonnistui: levytilaa ei ole riittävästi"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:988
+#, c-format
+msgid "Unable to install %s: authentication was required"
+msgstr "Sovelluksen %s asennus epäonnistui: tunnistautuminen vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:995
+#, c-format
+msgid "Unable to install %s: authentication was invalid"
+msgstr "Sovelluksen %s asennus epäonnistui: tunnistautuminen oli virheellinen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1002
+#, c-format
+msgid "Unable to install %s: you do not have permission to install software"
+msgstr ""
+"Sovelluksen %s asennus epäonnistui: käyttöoikeutesi eivät riitä "
+"ohjelmistojen asennukseen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * the %s is the name of the authentication service,
+#. * e.g. "Ubuntu One"
+#: src/gs-shell.c:1015
+#, c-format
+msgid "Your %s account has been suspended."
+msgstr "\"%s\"-tilisi on jäädytetty."
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1019
+msgid "It is not possible to install software until this has been resolved."
+msgstr ""
+"Ohjelmistojen asennus ei ole mahdollista, ennen kuin tämä asia on selvitetty."
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the clickable link (e.g.
+#. * "http://example.com/what-did-i-do-wrong/")
+#: src/gs-shell.c:1030
+#, c-format
+#| msgid "More information"
+msgid "For more information, visit %s."
+msgstr "Lisätietoja on osoitteessa %s."
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1039
+#, c-format
+msgid "Unable to install %s: AC power is required"
+msgstr "Sovelluksen %s asennus epäonnistui: verkkovirta vaaditaan"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1046
+#, c-format
+#| msgid "Enable and Install"
+msgid "Unable to install %s"
+msgstr "Sovelluksen %s asennus epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the app name (e.g. "GIMP") and
+#. * the second %s is the origin, e.g. "Fedora" or
+#. * "Fedora Project [fedoraproject.org]"
+#: src/gs-shell.c:1088
+#, c-format
+msgid "Unable to update %s from %s"
+msgstr "Sovelluksen %s päivitys lähteestä %s epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1094
+#, c-format
+msgid "Unable to update %s as download failed"
+msgstr "Sovelluksen %s päivitys epäonnistui, koska lataaminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1100
+#| msgid "Internet access was required but wasn’t available."
+msgid "Unable to update: internet access was required but wasn’t available"
+msgstr ""
+"Päivitys epäonnistui: internetyhteys vaadittiin, mutta sitä ei ollut "
+"saatavilla"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1108
+#, c-format
+#| msgid "There wasn’t enough disk space."
+msgid "Unable to update %s: not enough disk space"
+msgstr "Sovelluksen %s päivitys epäonnistui: ei riittävästi levytilaa"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1117
+#, c-format
+msgid "Unable to update %s: authentication was required"
+msgstr "Sovelluksen %s päivitys epäonnistui: tunnistautuminen vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1124
+#, c-format
+msgid "Unable to update %s: authentication was invalid"
+msgstr "Sovelluksen %s päivitys epäonnistui: tunnistautuminen oli virheellinen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1131
+#, c-format
+msgid "Unable to update %s: you do not have permission to update software"
+msgstr ""
+"Sovelluksen %s päivitys epäonnistui: käyttöoikeutesi eivät riitä "
+"ohjelmistojen päivittämiseen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1139
+#, c-format
+msgid "Unable to update %s: AC power is required"
+msgstr "Sovelluksen %s päivitys epäonnistui: verkkovirta vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1146
+#, c-format
+#| msgid "Failed To Update"
+msgid "Unable to update %s"
+msgstr "Sovelluksen %s päivitys epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the distro name (e.g. "Fedora 25") and
+#. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
+#: src/gs-shell.c:1187
+#, c-format
+msgid "Unable to upgrade to %s from %s"
+msgstr "Järjestelmäpäivitys %s lähteestä %s epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the app name (e.g. "GIMP")
+#: src/gs-shell.c:1192
+#, c-format
+#| msgid "Upgrade to %s failed."
+msgid "Unable to upgrade to %s as download failed"
+msgstr "Järjestelmäpäivitys %s epäonnistui, koska lataaminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1199
+#| msgid "Internet access was required but wasn’t available."
+msgid "Unable to upgrade: internet access was required but wasn’t available"
+msgstr ""
+"Järjestelmäpäivitys epäonnistui: internetyhteys vaadittiin, mutta sitä ei "
+"ollut saatavilla"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1207
+#, c-format
+#| msgid "There wasn’t enough disk space."
+msgid "Unable to upgrade to %s: not enough disk space"
+msgstr "Järjestelmäpäivitys %s epäonnistui: ei riittävästi levytilaa"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1216
+#, c-format
+msgid "Unable to upgrade to %s: authentication was required"
+msgstr "Järjestelmäpäivitys %s epäonnistui: tunnistautuminen vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1223
+#, c-format
+msgid "Unable to upgrade to %s: authentication was invalid"
+msgstr "Järjestelmäpäivitys %s epäonnistui: tunnistautuminen oli virheellinen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1230
+#, c-format
+msgid "Unable to upgrade to %s: you do not have permission to upgrade"
+msgstr ""
+"Järjestelmäpäivitys %s epäonnistui: käyttöoikeutesi eivät riitä "
+"järjestelmäpäivitykseen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1237
+#, c-format
+msgid "Unable to upgrade to %s: AC power is required"
+msgstr "Järjestelmäpäivitys %s epäonnistui: verkkovirta vaaditaan"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1244
+#, c-format
+msgid "Unable to upgrade to %s"
+msgstr "Järjestelmäpäivitys %s epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1282
+#, c-format
+msgid "Unable to remove %s: authentication was required"
+msgstr "Sovelluksen %s poistaminen epäonnistui: tunnistautuminen vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1288
+#, c-format
+msgid "Unable to remove %s: authentication was invalid"
+msgstr ""
+"Sovelluksen %s poistaminen epäonnistui: tunnistautuminen oli virheellinen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1294
+#, c-format
+msgid "Unable to remove %s: you do not have permission to remove software"
+msgstr ""
+"Sovelluksen %s poistaminen epäonnistui: käyttöoikeutesi eivät riitä "
+"ohjelmistojen poistamiseen"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1301
+#, c-format
+msgid "Unable to remove %s: AC power is required"
+msgstr "Sovelluksen %s poistaminen epäonnistui: verkkovirta vaadittiin"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1308
+#, c-format
+msgid "Unable to remove %s"
+msgstr "Sovelluksen %s poistaminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the first %s is the application name (e.g. "GIMP")
+#. * and the second %s is the name of the runtime, e.g.
+#. * "GNOME SDK [flatpak.gnome.org]"
+#: src/gs-shell.c:1350
+#, c-format
+#| msgid "%s is now installed"
+msgid "Unable to launch %s: %s is not installed"
+msgstr "Sovelluksen %s käynnistäminen epäonnistui: %s ei ole asennettu"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1357 src/gs-shell.c:1397 src/gs-shell.c:1437
+#| msgid ""
+#| "There wasn’t enough disk space. Please free up some space and try again."
+msgid "Not enough disk space — free up some space and try again"
+msgstr "Levytilaa ei ollut riittävästi — vapauta levytilaa ja yritä uudelleen"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1392
+msgid "Failed to install file: authentication failed"
+msgstr "Tiedoston asennus epäonnistui: tunnistautuminen epäonnistui"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * the %s is the origin, e.g. "Fedora" or
+#. * "Fedora Project [fedoraproject.org]"
+#: src/gs-shell.c:1431
+#, c-format
+msgid "Unable to contact %s"
+msgstr "Yhteys kohteeseen %s ei onnistu"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1446
+#, c-format
+msgid "%s needs to be restarted to use new plugins."
+msgstr ""
+"%s tulee käynnistää uudelleen, jotta uudet liitännäiset ovat käytettävissä."
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1451
+msgid "This application needs to be restarted to use new plugins."
+msgstr ""
+"Tämä sovellus tulee käynnistää uudelleen, jotta uudet liitännäiset ovat "
+"käytettävissä."
+
+#. TRANSLATORS: need to be connected to the AC power
+#: src/gs-shell.c:1457
+msgid "AC power is required"
+msgstr "Verkkovirta vaaditaan"
+
+#: src/gs-shell-category.ui:81
 msgid "Extension Settings"
 msgstr "Laajennusasetukset"
 
-#: ../src/gs-shell-category.ui.h:2
+#: src/gs-shell-category.ui:110
 msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
@@ -945,14 +1446,14 @@ msgstr ""
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: ../src/gs-shell-details.c:267 ../src/gs-shell-details.c:287
-#: ../src/gs-shell-details.ui.h:2 ../src/gs-upgrade-banner.ui.h:6
+#: src/gs-shell-details.c:275 src/gs-shell-details.c:295
+#: src/gs-shell-details.ui:206 src/gs-upgrade-banner.ui:148
 msgid "_Install"
 msgstr "_Asenna"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: ../src/gs-shell-details.c:292
+#: src/gs-shell-details.c:300
 msgid "_Update"
 msgstr "_Päivitä"
 
@@ -960,21 +1461,21 @@ msgstr "_Päivitä"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:305
+#: src/gs-shell-details.c:313
 msgid "_Install…"
 msgstr "_Asenna…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:352 ../src/gs-shell-details.ui.h:5
+#: src/gs-shell-details.c:360 src/gs-shell-details.ui:242
 msgid "_Remove"
 msgstr "_Poista"
 
-#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:503
+#: src/gs-shell-details.c:413 src/gs-sources-dialog.c:506
 msgid "Removing…"
 msgstr "Poistetaan…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:684
+#: src/gs-shell-details.c:694
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -982,90 +1483,84 @@ msgstr ""
 "Tätä sovellusta voi käyttää ainoastaan internetyhteyden ollessa muodostettu."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:811
+#: src/gs-shell-details.c:821
 msgctxt "version"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:845
+#: src/gs-shell-details.c:855
 msgctxt "updated"
 msgid "Never"
 msgstr "Ei koskaan"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:891
+#: src/gs-shell-details.c:901
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Tuntematon"
 
-#: ../src/gs-shell-details.c:1327
+#. TRANSLATORS: we need a remote server to process
+#: src/gs-shell-details.c:1295
+msgid "You need internet access to write a review"
+msgstr "Arvostelun kirjoittaminen vaatii internetyhteyden"
+
+#: src/gs-shell-details.c:1418
 #, c-format
-msgid "Could not find '%s'"
-msgstr "Kohdetta '%s' ei löytynyt"
-
-#. TRANSLATORS: the file format was not recognised by
-#. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1388
-msgid "The file is not supported."
-msgstr "Tiedosto ei ole tuettu."
-
-#. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1398 ../src/gs-common.c:161
-msgid "Sorry, this did not work"
-msgstr "Valitettavasti se ei toiminut"
+#| msgid "Could not find '%s'"
+msgid "Could not find “%s”"
+msgstr "Kohdetta “%s” ei löytynyt"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1754
+#: src/gs-shell-details.c:1907
 msgid "Public domain"
 msgstr "Public domain"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1770 ../src/gs-shell-details.ui.h:51
+#: src/gs-shell-details.c:1923 src/gs-shell-details.ui:1379
 msgid "Free Software"
 msgstr "Vapaa ohjelmisto"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1825
+#: src/gs-shell-details.c:1978
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Käyttäjiä sitoo seuraava lisenssi:"
 msgstr[1] "Käyttäjiä sitovat seuraavat lisenssit:"
 
-#: ../src/gs-shell-details.c:1841 ../src/gs-shell-details.ui.h:55
+#: src/gs-shell-details.c:1994 src/gs-shell-details.ui:1488
 msgid "More information"
 msgstr "Lisätietoja"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-details.ui.h:1
+#: src/gs-shell-details.ui:7
 msgid "Details page"
 msgstr "Tietosivu"
 
 #. Translators: A label for a button to execute the selected application.
-#: ../src/gs-shell-details.ui.h:4
+#: src/gs-shell-details.ui:228
 msgid "_Launch"
 msgstr "_Käynnistä"
 
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: ../src/gs-shell-details.ui.h:9
+#: src/gs-shell-details.ui:358
 msgid "_Add shortcut"
 msgstr "Lis_ää pikakuvake"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: ../src/gs-shell-details.ui.h:11
+#: src/gs-shell-details.ui:373
 msgid "Re_move shortcut"
 msgstr "Poist_a pikakuvake"
 
-#: ../src/gs-shell-details.ui.h:12
+#: src/gs-shell-details.ui:468
 msgid "No screenshot provided"
 msgstr "Ei kuvakaappausta"
 
-#: ../src/gs-shell-details.ui.h:13
+#: src/gs-shell-details.ui:504
 msgid "Software Source Included"
 msgstr "Ohjelmistolähde sisällytetty"
 
-#: ../src/gs-shell-details.ui.h:14
+#: src/gs-shell-details.ui:505
 msgid ""
 "This application includes a software source which provides updates, as well "
 "as access to other software."
@@ -1073,11 +1568,11 @@ msgstr ""
 "Tämä sovellus sisältää ohjelmistolähteen, jonka kautta asentuvat päivitykset "
 "ja mahdollisesti myös muita ohjelmistoja."
 
-#: ../src/gs-shell-details.ui.h:15
+#: src/gs-shell-details.ui:518
 msgid "No Software Source Included"
 msgstr "Ohjelmistolähdettä ei ole sisällytetty"
 
-#: ../src/gs-shell-details.ui.h:16
+#: src/gs-shell-details.ui:519
 msgid ""
 "This application does not include a software source. It will not be updated "
 "with new versions."
@@ -1085,7 +1580,7 @@ msgstr ""
 "Tämä sovellus ei sisällä ohjelmistolähdettä. Sovellusta ei päivitetä "
 "uudempiin versioihin."
 
-#: ../src/gs-shell-details.ui.h:17
+#: src/gs-shell-details.ui:533
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1093,111 +1588,120 @@ msgstr ""
 "Tämä ohjelmisto sisältyy jo käyttämääsi jakeluun, eikä sitä tulisi korvata."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: ../src/gs-shell-details.ui.h:19
+#: src/gs-shell-details.ui:546
 msgid "Software Source Identified"
 msgstr "Ohjelmistolähde tunnistettu"
 
-#: ../src/gs-shell-details.ui.h:20
+#: src/gs-shell-details.ui:547
 msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
 msgstr ""
 "Tämän ohjelmistolähteen lisääminen tarjoaa lisää ohjelmistoja ja päivityksiä."
 
-#: ../src/gs-shell-details.ui.h:21
+#: src/gs-shell-details.ui:548
 msgid "Only use software sources that you trust."
 msgstr "Käytä vain lähteitä, joihin luotat."
 
-#: ../src/gs-shell-details.ui.h:22
+#: src/gs-shell-details.ui:564
 msgid "_Website"
 msgstr "_Verkkosivusto"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:791
+#: src/gs-shell-details.ui:592 src/gs-common.c:515
 msgid "Details"
 msgstr "Tiedot"
 
-#: ../src/gs-shell-details.ui.h:24
+#: src/gs-shell-details.ui:698
 msgid "Localized in your Language"
 msgstr "Saatavilla suomeksi"
 
-#: ../src/gs-shell-details.ui.h:25
+#: src/gs-shell-details.ui:710
 msgid "Documentation"
 msgstr "Dokumentaatio"
 
-#: ../src/gs-shell-details.ui.h:26
+#: src/gs-shell-details.ui:722
 msgid "Release Activity"
 msgstr "Julkaisutoiminta"
 
-#: ../src/gs-shell-details.ui.h:27
+#: src/gs-shell-details.ui:734
 msgid "System Integration"
 msgstr "Järjestelmäintegraatio"
 
-#: ../src/gs-shell-details.ui.h:29 ../src/gs-sources-dialog.ui.h:8
+#: src/gs-shell-details.ui:746
+msgid "Sandboxed"
+msgstr "Eristetty"
+
+#: src/gs-shell-details.ui:771 src/gs-sources-dialog.ui:359
 msgid "Version"
 msgstr "Versio"
 
-#: ../src/gs-shell-details.ui.h:30
+#: src/gs-shell-details.ui:808
+#| msgid "Rating"
+msgid "Age Rating"
+msgstr "Ikäraja"
+
+#: src/gs-shell-details.ui:846
 msgid "Updated"
 msgstr "Päivitetty"
 
-#: ../src/gs-shell-details.ui.h:31
+#: src/gs-shell-details.ui:881
 msgid "Category"
 msgstr "Luokka"
 
-#: ../src/gs-shell-details.ui.h:32
+#: src/gs-shell-details.ui:919
 msgid "Installed Size"
 msgstr "Koko asennettuna"
 
-#: ../src/gs-shell-details.ui.h:33
+#: src/gs-shell-details.ui:952
 msgid "Download Size"
 msgstr "Latauksen koko"
 
-#: ../src/gs-shell-details.ui.h:35
+#: src/gs-shell-details.ui:1018
 msgid "Developer"
 msgstr "Kehittäjä"
 
-#: ../src/gs-shell-details.ui.h:36
+#: src/gs-shell-details.ui:1052
 msgid "License"
 msgstr "Lisenssi"
 
 #. This refers to the license of the application
-#: ../src/gs-shell-details.ui.h:38
+#: src/gs-shell-details.ui:1072
 msgid "Free"
 msgstr "Avoin"
 
 #. This refers to the license of the application
-#: ../src/gs-shell-details.ui.h:40
+#: src/gs-shell-details.ui:1089
 msgid "Proprietary"
 msgstr "Suljettu"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:438
-#: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:344
+#: src/gs-shell-details.ui:1160 src/gs-shell-installed.c:460
+#: src/gs-update-list.c:126 src/plugins/gs-desktop-common.c:330
 msgid "Add-ons"
 msgstr "Lisäosat"
 
-#: ../src/gs-shell-details.ui.h:44
+#: src/gs-shell-details.ui:1173
 msgid "Selected add-ons will be installed with the application."
 msgstr "Valitut lisäosat asennetaan sovelluksen mukana."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: ../src/gs-shell-details.ui.h:46
+#: src/gs-shell-details.ui:1216
 msgid "Reviews"
 msgstr "Arvostelut"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: ../src/gs-shell-details.ui.h:48
+#: src/gs-shell-details.ui:1232
 msgid "_Write a Review"
 msgstr "_Kirjoita arvostelu"
 
 #. Translators: Button to return more application-submitted reviews.
-#: ../src/gs-shell-details.ui.h:50
+#: src/gs-shell-details.ui:1254
 msgid "_Show More"
 msgstr "_Näytä lisää"
 
-#: ../src/gs-shell-details.ui.h:52
+#: src/gs-shell-details.ui:1396
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1205,11 +1709,11 @@ msgstr ""
 "Tämä tarkoittaa, että ohjelmistoa voi vapaasti käyttää, kopioida, levittää, "
 "opiskella ja muokata."
 
-#: ../src/gs-shell-details.ui.h:53
+#: src/gs-shell-details.ui:1455
 msgid "Proprietary Software"
 msgstr "Suljettu ohjelmisto"
 
-#: ../src/gs-shell-details.ui.h:54
+#: src/gs-shell-details.ui:1472
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1219,27 +1723,36 @@ msgstr ""
 "Ohjelman käyttöön liittyy rajoituksia, eikä lähdekoodia ole yleensä "
 "saatavilla."
 
-#: ../src/gs-shell-details.ui.h:56
+#: src/gs-shell-details.ui:1517
 msgid "Unknown Software License"
 msgstr "Tuntematon ohjelmistolisenssi"
 
-#: ../src/gs-shell-details.ui.h:57
+#: src/gs-shell-details.ui:1534
 msgid "The license terms of this software are unknown."
 msgstr "Tämän ohjelmiston lisenssiehdot ovat tuntemattomia."
 
+#: src/gs-shell-details.ui:1561
+msgid "The application was rated this way because it features:"
+msgstr "Sovellus arvioitiin näin, koska se sisältää:"
+
+#: src/gs-shell-details.ui:1587
+#| msgid "No addon codecs are available for the %s format."
+msgid "No details were available for this rating."
+msgstr "Tästä arvostelusta ei ole saatavilla lisätietoja."
+
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:145
+#: src/gs-shell-extras.c:145
 msgid " and "
 msgstr " ja "
 
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:148
+#: src/gs-shell-extras.c:148
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:174
+#: src/gs-shell-extras.c:174
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1248,39 +1761,39 @@ msgstr[1] "Saatavilla olevat fontit \"%s\"-skripteille"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:182
+#: src/gs-shell-extras.c:182
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "Saatavilla olevat ohjelmistot - %s"
 msgstr[1] "Saatavilla olevat ohjelmistot - %s"
 
-#: ../src/gs-shell-extras.c:224
+#: src/gs-shell-extras.c:224
 msgid "Unable to Find Requested Software"
 msgstr "Pyydettyä ohjelmistoa ei löydy"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:320
+#: src/gs-shell-extras.c:321
 #, c-format
 msgid "%s not found"
 msgstr "Kohdetta %s ei löydy"
 
 #. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:324
+#: src/gs-shell-extras.c:325
 msgid "on the website"
 msgstr "verkkosivustolla"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:331
+#: src/gs-shell-extras.c:332
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Tiedostoa %s tarjoavaa sovellusta ei ole saatavilla."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:335 ../src/gs-shell-extras.c:346
-#: ../src/gs-shell-extras.c:357
+#: src/gs-shell-extras.c:336 src/gs-shell-extras.c:347
+#: src/gs-shell-extras.c:358
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1291,21 +1804,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:342 ../src/gs-shell-extras.c:364
+#: src/gs-shell-extras.c:343 src/gs-shell-extras.c:365
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Sovelluksia \"%s\"-tuen tarjoamiseksi ei ole saatavilla."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:353
+#: src/gs-shell-extras.c:354
 #, c-format
 msgid "%s is not available."
 msgstr "%s ei ole saatavilla."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:368
+#: src/gs-shell-extras.c:369
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1316,14 +1829,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:375
+#: src/gs-shell-extras.c:376
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Fontteja ei ole saatavilla \"%s\"-skriptituen tarjoamiseksi."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:379
+#: src/gs-shell-extras.c:380
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1334,7 +1847,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:390
+#: src/gs-shell-extras.c:391
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1345,14 +1858,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:397
+#: src/gs-shell-extras.c:398
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Plasma-resursseja ei ole saatavilla \"%s\"-tuen tarjoamiseksi."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:401
+#: src/gs-shell-extras.c:402
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1363,14 +1876,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:408
+#: src/gs-shell-extras.c:409
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Tulostinajureita ei ole saatavilla tulostimelle %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:412
+#: src/gs-shell-extras.c:413
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1379,12 +1892,12 @@ msgstr ""
 "Tietoja kohteesta %s, ja ohjeita kuinka saada tätä tulostinta tukeva ajuri, "
 "saattaa olla tarjolla tällä %s."
 
-#: ../src/gs-shell-extras.c:457
+#: src/gs-shell-extras.c:458
 msgid "this website"
 msgstr "tältä verkkosivulta"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:461
+#: src/gs-shell-extras.c:462
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1397,97 +1910,95 @@ msgstr[0] ""
 msgstr[1] ""
 "Valitettavasti etsimiäsi koodekkeja %s ei löydy. Katso lisätietoja %s."
 
-#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
-#: ../src/gs-shell-extras.c:640
+#: src/gs-shell-extras.c:536 src/gs-shell-extras.c:591
+#: src/gs-shell-extras.c:631
 msgid "Failed to find any search results"
 msgstr "Hakutuloksia ei löytynyt"
 
-#: ../src/gs-shell-extras.c:814
+#: src/gs-shell-extras.c:815
 #, c-format
 msgid "%s file format"
 msgstr "%s-tiedostomuoto"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-extras.ui.h:1
+#: src/gs-shell-extras.ui:7
 msgid "Codecs page"
 msgstr "Koodekin sivu"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:428
+#: src/gs-shell-installed.c:450
 msgid "System Applications"
 msgstr "Järjestelmäsovellukset"
 
-#: ../src/gs-shell-installed.c:538
+#: src/gs-shell-installed.c:560
 msgid "Click on items to select them"
 msgstr "Napsauta kohdetta valitaksesi sen"
 
-#: ../src/gs-shell-installed.c:738
+#: src/gs-shell-installed.c:760
 msgid "Select"
 msgstr "Valitse"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-installed.ui.h:1
+#: src/gs-shell-installed.ui:7
 msgid "Installed page"
 msgstr "Asennussivu"
 
-#: ../src/gs-shell-installed.ui.h:2
+#: src/gs-shell-installed.ui:65
 msgid "_Add to Folder…"
 msgstr "_Lisää kansioon…"
 
-#: ../src/gs-shell-installed.ui.h:3
+#: src/gs-shell-installed.ui:73
 msgid "_Move to Folder…"
 msgstr "_Siirrä kansioon…"
 
-#: ../src/gs-shell-installed.ui.h:4
+#: src/gs-shell-installed.ui:81
 msgid "_Remove from Folder"
 msgstr "_Poista kansiosta"
 
-#: ../src/gs-shell-moderate.ui.h:1
+#: src/gs-shell-moderate.ui:7
 msgid "Moderate page"
 msgstr "Moderoi sivua"
 
-#: ../src/gs-shell-moderate.ui.h:2
+#: src/gs-shell-moderate.ui:87
 msgid "There are no reviews to moderate"
 msgstr "Ei arvosteluja moderoitavaksi"
 
 #. add button
-#: ../src/gs-shell-overview.c:243
+#: src/gs-shell-overview.c:264
 msgid "More…"
 msgstr "Lisää…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:422
+#: src/gs-shell-overview.c:430
 msgid "Recommended Audio & Video Applications"
 msgstr "Suositut ääni- ja videsovellukset"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:427
+#: src/gs-shell-overview.c:435
 msgid "Recommended Games"
 msgstr "Suositut pelit"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:432
+#: src/gs-shell-overview.c:440
 msgid "Recommended Graphics Applications"
 msgstr "Suositut grafiikkasovellukset"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:437
+#: src/gs-shell-overview.c:445
 msgid "Recommended Productivity Applications"
 msgstr "Suositut tuottavuussovellukset"
 
 #. TRANSLATORS: this is the proprietary info bar
-#: ../src/gs-shell-overview.c:712
+#: src/gs-shell-overview.c:745
 msgid ""
 "Provides access to additional software, including web browsers and games."
 msgstr "Tarjoaa lisäohjelmistoja, kuten verkkoselaimia ja pelejä."
 
 #. TRANSLATORS: this is the proprietary info bar
-#: ../src/gs-shell-overview.c:716
+#: src/gs-shell-overview.c:749
 msgid "Proprietary software has restrictions on use and access to source code."
 msgstr ""
 "Suljetuilla ohjelmistoilla on rajoituksia käytön ja pääsyn lähdekoodiin "
@@ -1495,146 +2006,151 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the proprietary info bar
-#: ../src/gs-shell-overview.c:723 ../src/gs-sources-dialog.c:262
+#: src/gs-shell-overview.c:756 src/gs-sources-dialog.c:264
 msgid "Find out more…"
 msgstr "Lue lisää…"
 
 #. TRANSLATORS: button to turn on proprietary software sources
-#: ../src/gs-shell-overview.c:757
+#: src/gs-shell-overview.c:789
 msgid "Enable"
 msgstr "Käytä"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-overview.ui.h:1
+#: src/gs-shell-overview.ui:7
 msgid "Overview page"
 msgstr "Yhteenvetosivu"
 
-#: ../src/gs-shell-overview.ui.h:2
+#: src/gs-shell-overview.ui:49
 msgid "Enable Proprietary Software Sources?"
 msgstr "Käytetäänkö suljettua ohjelmistolähdettä?"
 
-#: ../src/gs-shell-overview.ui.h:3
+#: src/gs-shell-overview.ui:117
+msgid "Featured Application"
+msgstr "Valokeilassa"
+
+#: src/gs-shell-overview.ui:150
 msgid "Categories"
 msgstr "Luokat"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gs-shell-overview.ui.h:5
-msgid "Editor's Picks"
+#: src/gs-shell-overview.ui:310
+#| msgid "Editor's Picks"
+msgid "Editor’s Picks"
 msgstr "Toimituksen valinnat"
 
-#: ../src/gs-shell-overview.ui.h:6
+#: src/gs-shell-overview.ui:382
 msgid "No Application Data Found"
 msgstr "Sovellustietoja ei löytynyt"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-search.ui.h:1
+#: src/gs-shell-search.ui:7
 msgid "Search page"
 msgstr "Hakusivu"
 
-#: ../src/gs-shell-search.ui.h:2
+#: src/gs-shell-search.ui:54
 msgid "No Application Found"
 msgstr "Sovellusta ei löytynyt"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:198
+#: src/gs-shell-updates.c:198
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:201
+#: src/gs-shell-updates.c:201
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:207
+#: src/gs-shell-updates.c:207
 msgid "Yesterday, %R"
 msgstr "Eilen, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:211
+#: src/gs-shell-updates.c:211
 msgid "Yesterday, %l:%M %p"
 msgstr "Eilen, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:214
+#: src/gs-shell-updates.c:214
 msgid "Two days ago"
 msgstr "Kaksi päivää sitten"
 
-#: ../src/gs-shell-updates.c:216
+#: src/gs-shell-updates.c:216
 msgid "Three days ago"
 msgstr "Kolme päivää sitten"
 
-#: ../src/gs-shell-updates.c:218
+#: src/gs-shell-updates.c:218
 msgid "Four days ago"
 msgstr "Neljä päivää sitten"
 
-#: ../src/gs-shell-updates.c:220
+#: src/gs-shell-updates.c:220
 msgid "Five days ago"
 msgstr "Viisi päivää sitten"
 
-#: ../src/gs-shell-updates.c:222
+#: src/gs-shell-updates.c:222
 msgid "Six days ago"
 msgstr "Kuusi päivää sitten"
 
-#: ../src/gs-shell-updates.c:224
+#: src/gs-shell-updates.c:224
 msgid "One week ago"
 msgstr "Viikko sitten"
 
-#: ../src/gs-shell-updates.c:226
+#: src/gs-shell-updates.c:226
 msgid "Two weeks ago"
 msgstr "Kaksi viikkoa sitten"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:230
+#: src/gs-shell-updates.c:230
 msgid "%e %B %Y"
 msgstr "%e. %Bta %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:243
+#: src/gs-shell-updates.c:243
 msgid "Downloading new updates…"
 msgstr "Ladataan uusia päivityksiä…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:247
+#: src/gs-shell-updates.c:247
 msgid "Looking for new updates…"
 msgstr "Etsitään uusia päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:287
+#: src/gs-shell-updates.c:287
 msgid "Setting up updates…"
 msgstr "Asetetaan päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:288 ../src/gs-shell-updates.c:295
+#: src/gs-shell-updates.c:288 src/gs-shell-updates.c:295
 msgid "(This could take a while)"
 msgstr "(Tämä saattaa kestää hetken)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:425
+#: src/gs-shell-updates.c:423
 #, c-format
 msgid "Last checked: %s"
 msgstr "Viimeksi tarkistettu: %s"
 
 #. TRANSLATORS: all updates will be installed
-#: ../src/gs-shell-updates.c:498
-msgid "_Install All"
-msgstr "_Asenna kaikki"
+#: src/gs-shell-updates.c:516
+#| msgid "Update"
+msgid "U_pdate All"
+msgstr "Päivitä _kaikki"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:502 ../src/gs-shell-updates.c:1348
-msgid "Restart & _Install"
-msgstr "Käynnistä uudelleen ja _asenna"
+#: src/gs-shell-updates.c:520
+#| msgid "Restart & Install"
+msgid "_Restart & Update"
+msgstr "Käynnistä uu_delleen ja asenna"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:829
+#: src/gs-shell-updates.c:849
 msgid "Charges may apply"
 msgstr "Saattaa aiheuttaa lisäkuluja"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:833
+#: src/gs-shell-updates.c:853
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1644,65 +2160,62 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:837
+#: src/gs-shell-updates.c:857
 msgid "Check Anyway"
 msgstr "Tarkista silti"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:853
+#: src/gs-shell-updates.c:873
 msgid "No Network"
 msgstr "Ei verkkoa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:857
+#: src/gs-shell-updates.c:877
 msgid "Internet access is required to check for updates."
 msgstr "Päivitysten tarkistaminen vaatii internetyhteyden."
 
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: ../src/gs-shell-updates.c:861
-msgid "Network Settings"
-msgstr "Verkkoasetukset"
-
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:951
+#: src/gs-shell-updates.c:972
 msgid "Updates have been installed"
 msgstr "Päivitykset on asennettu"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:953
+#: src/gs-shell-updates.c:974
 msgid "A restart is required for them to take effect."
 msgstr "Muutosten voimaan tulemiseksi vaaditaan uudelleenkäynnistys."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:955 ../src/gs-update-monitor.c:102
+#: src/gs-shell-updates.c:976 src/gs-update-monitor.c:102
 msgid "Not Now"
 msgstr "Ei nyt"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:957
+#: src/gs-shell-updates.c:978
 msgid "Restart"
 msgstr "Käynnistä uudelleen"
 
-#: ../src/gs-shell-updates.c:1366
+#: src/gs-shell-updates.c:1354
+msgid "Restart & _Install"
+msgstr "Käynnistä uudelleen ja _asenna"
+
+#: src/gs-shell-updates.c:1372
 msgid "Check for updates"
 msgstr "Tarkista päivitykset"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-updates.ui.h:1
+#: src/gs-shell-updates.ui:7
 msgid "Updates page"
 msgstr "Päivityssivu"
 
-#: ../src/gs-shell-updates.ui.h:2
+#: src/gs-shell-updates.ui:86
 msgid "Other Updates"
 msgstr "Muut päivitykset"
 
-#: ../src/gs-shell-updates.ui.h:3
+#: src/gs-shell-updates.ui:150
 msgid "Software is up to date"
 msgstr "Ohjelmat ovat ajan tasalla"
 
-#: ../src/gs-shell-updates.ui.h:4
+#: src/gs-shell-updates.ui:201
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -1710,31 +2223,31 @@ msgstr ""
 "Päivitysten tarkistaminen mobiilidatayhteydellä saattaa aiheuttaa suuren "
 "laskun"
 
-#: ../src/gs-shell-updates.ui.h:5
+#: src/gs-shell-updates.ui:213
 msgid "_Check Anyway"
 msgstr "_Tarkista silti"
 
-#: ../src/gs-shell-updates.ui.h:6
+#: src/gs-shell-updates.ui:256
 msgid "Go online to check for updates"
 msgstr "Yhdistä verkkoon tarkistaaksesi päivitykset"
 
-#: ../src/gs-shell-updates.ui.h:7
+#: src/gs-shell-updates.ui:267
 msgid "_Network Settings"
 msgstr "_Verkkoasetukset"
 
-#: ../src/gs-shell-updates.ui.h:8
+#: src/gs-shell-updates.ui:349
 msgid "Updates are automatically managed"
 msgstr "Päivityksiä hallitaan automaattisesti"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:99
+#: src/gs-sources-dialog.c:99
 msgid "No applications or addons installed; other software might still be"
 msgstr "Ei sovelluksia tai lisäosia asennettuna; muut ohjelmistot voivat silti"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:104
+#: src/gs-sources-dialog.c:104
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -1743,7 +2256,7 @@ msgstr[1] "%u sovellusta asennettu"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:111
+#: src/gs-sources-dialog.c:111
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -1753,7 +2266,7 @@ msgstr[1] "%u lisäosaa asennettu"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:119
+#: src/gs-sources-dialog.c:119
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -1763,7 +2276,7 @@ msgstr[1] "%u sovellusta"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:125
+#: src/gs-sources-dialog.c:125
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -1774,7 +2287,7 @@ msgstr[1] "%u lisäosaa"
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:132
+#: src/gs-sources-dialog.c:132
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -1782,29 +2295,29 @@ msgstr[0] "%s ja %s asennettu"
 msgstr[1] "%s ja %s asennettu"
 
 #. TRANSLATORS: nonfree software
-#: ../src/gs-sources-dialog.c:252
+#: src/gs-sources-dialog.c:254
 msgid "Typically has restrictions on use and access to source code."
 msgstr "Tyypillisesti rajoituksia käytön ja pääsyn lähdekoodiin suhteen."
 
 #. TRANSLATORS: list header
-#: ../src/gs-sources-dialog.c:273
+#: src/gs-sources-dialog.c:275
 msgid "Proprietary Software Sources"
 msgstr "Suljetut ohjelmistolähteet"
 
-#: ../src/gs-sources-dialog.c:489 ../src/gs-sources-dialog.ui.h:12
+#: src/gs-sources-dialog.c:492 src/gs-sources-dialog.ui:487
 msgid "Remove Source"
 msgstr "Poista lähde"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:572
+#: src/gs-sources-dialog.c:576
 msgid "the operating system"
 msgstr "käyttöjärjestelmä"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:665
+#: src/gs-sources-dialog.c:669
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1813,64 +2326,59 @@ msgstr ""
 "Ohjelmistolähteitä voi ladata internetistä. Niiden avulla on mahdollista "
 "ladata lisää ohjelmistoja, joita %s ei tarjoa."
 
-#. vim: set noexpandtab:
-#: ../src/gs-sources-dialog.ui.h:1
-msgid "Software Sources"
-msgstr "Ohjelmistolähteet"
-
-#: ../src/gs-sources-dialog.ui.h:3
+#: src/gs-sources-dialog.ui:155
 msgid "Additional Sources"
 msgstr "Lisäohjelmistolähteet"
 
-#: ../src/gs-sources-dialog.ui.h:4
+#: src/gs-sources-dialog.ui:175
 msgid ""
 "Removing a source will also remove any software you have installed from it."
 msgstr ""
 "Lähteen poistaminen poistaa myös ne ohjelmistot, jotka on asennettu "
 "kyseisestä lähteestä."
 
-#: ../src/gs-sources-dialog.ui.h:5
+#: src/gs-sources-dialog.ui:260
 msgid "No software installed from this source"
 msgstr "Tästä lähteestä ei ole asennettu ohjelmistoja"
 
-#: ../src/gs-sources-dialog.ui.h:6
+#: src/gs-sources-dialog.ui:287
 msgid "Installed from this Source"
 msgstr "Tästä lähteestä asennetut"
 
-#: ../src/gs-sources-dialog.ui.h:7
+#: src/gs-sources-dialog.ui:333
 msgid "Source Details"
 msgstr "Lähteen tiedot"
 
-#: ../src/gs-sources-dialog.ui.h:9
+#: src/gs-sources-dialog.ui:390
 msgid "Last Checked"
 msgstr "Viimeksi tarkistettu"
 
-#: ../src/gs-sources-dialog.ui.h:10
+#: src/gs-sources-dialog.ui:407
 msgid "Added"
 msgstr "Lisätty"
 
-#: ../src/gs-sources-dialog.ui.h:11
+#: src/gs-sources-dialog.ui:424
 msgid "Website"
 msgstr "Verkkosivusto"
 
-#: ../src/gs-summary-tile.c:74
+#: src/gs-summary-tile.c:72
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Asennettu)"
 
-#: ../src/gs-summary-tile.c:82
+#: src/gs-summary-tile.c:77
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Asennetaan)"
 
-#: ../src/gs-summary-tile.c:90
+#: src/gs-summary-tile.c:82
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Poistetaan)"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: ../src/gs-update-dialog.c:121
+#: src/gs-update-dialog.c:121
 msgid "No update description available."
 msgstr "Päivityksen kuvausta ei ole saatavilla."
 
@@ -1878,80 +2386,80 @@ msgstr "Päivityksen kuvausta ei ole saatavilla."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: ../src/gs-update-dialog.c:216
+#: src/gs-update-dialog.c:216
 #, c-format
 msgid "Installed on %s"
 msgstr "Asennettu %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:236
+#: src/gs-update-dialog.c:236
 msgid "Installed Updates"
 msgstr "Asennetut päivitykset"
 
-#: ../src/gs-update-dialog.ui.h:2
+#: src/gs-update-dialog.ui:111
 msgid "No updates have been installed on this system."
 msgstr "Tähän järjestelmään ei ole asennettu päivityksiä."
 
-#: ../src/gs-update-monitor.c:90
+#: src/gs-update-monitor.c:90
 msgid "Security Updates Pending"
 msgstr "Tietoturvapäivitykset odottavat"
 
-#: ../src/gs-update-monitor.c:91
+#: src/gs-update-monitor.c:91
 msgid "It is recommended that you install important updates now"
 msgstr "On suositeltavaa asentaa tärkeät päivitykset heti"
 
-#: ../src/gs-update-monitor.c:94
+#: src/gs-update-monitor.c:94
 msgid "Restart & Install"
 msgstr "Käynnistä uudelleen ja asenna"
 
-#: ../src/gs-update-monitor.c:98
+#: src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "Ohjelmistopäivityksiä saatavilla"
 
-#: ../src/gs-update-monitor.c:99
+#: src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Tärkeitä järjestelmä- ja sovelluspäivityksiä on valmiina asennettavaksi"
 
-#: ../src/gs-update-monitor.c:103
+#: src/gs-update-monitor.c:103
 msgid "View"
 msgstr "Näytä"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:271
+#: src/gs-update-monitor.c:271
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Uusi \"%s\"-versio on saatavilla asennusta varten"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:275
+#: src/gs-update-monitor.c:275
 msgid "Software Upgrade Available"
 msgstr "Ohjelmistopäivitys saatavilla"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:462
+#: src/gs-update-monitor.c:546
 msgid "Software Updates Failed"
 msgstr "Ohjelmistopäivitykset epäonnistuivat"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:464
+#: src/gs-update-monitor.c:548
 msgid "An important OS update failed to be installed."
 msgstr "Tärkeän järjestelmäpäivityksen asennus epäonnistui."
 
-#: ../src/gs-update-monitor.c:465
+#: src/gs-update-monitor.c:549
 msgid "Show Details"
 msgstr "Näytä tiedot"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:487
+#: src/gs-update-monitor.c:571
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Ohjelmistopäivitys asennettu"
 msgstr[1] "Ohjelmistopäivitykset asennettu"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:491
+#: src/gs-update-monitor.c:575
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tärkeä järjestelmäpäivitys asennettiin."
@@ -1962,30 +2470,30 @@ msgstr[1] "Tärkeitä järjestelmäpäivityksiä asennettiin."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:502
+#: src/gs-update-monitor.c:586
 msgctxt "updates"
 msgid "Review"
 msgstr "Arvostelu"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:546
+#: src/gs-update-monitor.c:631
 msgid "Failed To Update"
 msgstr "Päivitys epäonnistui"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:552
+#: src/gs-update-monitor.c:637
 msgid "The system was already up to date."
 msgstr "Järjestelmä oli jo ajan tasalla."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:557
+#: src/gs-update-monitor.c:642
 msgid "The update was cancelled."
 msgstr "Päivitys peruttiin."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:563
+#: src/gs-update-monitor.c:648
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1994,7 +2502,7 @@ msgstr ""
 "yhteys toimii ja yritä uudelleen."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:569
+#: src/gs-update-monitor.c:654
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -2003,13 +2511,13 @@ msgstr ""
 "tarjoajaan saadaksesi lisätietoja."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:575
+#: src/gs-update-monitor.c:660
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Levytilaa ei ollut riittävästi. Vapauta levytilaa ja yritä uudelleen."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:580
+#: src/gs-update-monitor.c:665
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -2020,7 +2528,7 @@ msgstr ""
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: ../src/gs-upgrade-banner.c:86
+#: src/gs-upgrade-banner.c:86
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s nyt saatavilla"
@@ -2028,7 +2536,7 @@ msgstr "%s %s nyt saatavilla"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: ../src/gs-upgrade-banner.c:96
+#: src/gs-upgrade-banner.c:96
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Ladataan %s %s"
@@ -2037,93 +2545,67 @@ msgstr "Ladataan %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: ../src/gs-upgrade-banner.c:107
+#: src/gs-upgrade-banner.c:107
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s valmiina asennettavaksi"
 
-#. vim: set noexpandtab:
-#: ../src/gs-upgrade-banner.ui.h:1
+#: src/gs-upgrade-banner.ui:34
 msgid "A major upgrade, with new features and added polish."
 msgstr "Suuri päivitys uusin ominaisuuksin ja parannuksin."
 
-#: ../src/gs-upgrade-banner.ui.h:2
+#: src/gs-upgrade-banner.ui:54
 msgid "_Learn More"
 msgstr "L_ue lisää"
 
-#: ../src/gs-upgrade-banner.ui.h:3
+#: src/gs-upgrade-banner.ui:100
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
 "On suositeltavaa varmuuskopioida tärkeät tiedostot ennen päivittämistä."
 
-#: ../src/gs-upgrade-banner.ui.h:4
+#: src/gs-upgrade-banner.ui:118
 msgid "_Download"
 msgstr "_Lataa"
 
+#. TRANSLATORS: this is the summary of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:139
+#| msgid "Updates have been installed"
+msgid "OS updates are now installed"
+msgstr "Käyttöjärjestelmän päivitykset on asennettu"
+
+#. TRANSLATORS: this is the body of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:142
+msgid "Recently installed updates are available to review"
+msgstr "Äskettäin asennetut päivitykset ovat nyt valmiina arvosteltaviksi"
+
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-common.c:137
+#: src/gs-common.c:146
 #, c-format
 msgid "%s is now installed"
 msgstr "%s on nyt asennettu"
 
+#. TRANSLATORS: this is the body of a notification that an application
+#. * has been successfully installed
+#: src/gs-common.c:149
+msgid "Application is ready to be used."
+msgstr "Sovellus on valmiina käytettäväksi."
+
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-common.c:141
+#: src/gs-common.c:155
 msgid "Launch"
 msgstr "Käynnistä"
 
-#. TRANSLATORS: this is when the install fails
-#: ../src/gs-common.c:168
-#, c-format
-msgid "Installation of %s failed."
-msgstr "Kohteen %s asennus epäonnistui."
-
-#. TRANSLATORS: this is when the remove fails
-#: ../src/gs-common.c:173
-#, c-format
-msgid "Removal of %s failed."
-msgstr "Kohteen %s poistaminen epäonnistui."
-
-#. TRANSLATORS: this is when the upgrade download fails
-#: ../src/gs-common.c:182
-#, c-format
-msgid "Upgrade to %s failed."
-msgstr "Päivitys versioon %s epäonnistui."
-
-#. TRANSLATORS: the package manager needed to download
-#. * something with no network available
-#: ../src/gs-common.c:197
-msgid "Internet access was required but wasn’t available."
-msgstr "Internetyhteys vaadittiin, mutta sitä ei ollut saatavilla."
-
-#. TRANSLATORS: plug in the network cable...
-#: ../src/gs-common.c:200
-msgid "Please make sure that you have internet access and try again."
-msgstr "Varmista, että internetyhteys toimii ja yritä uudelleen."
-
-#. TRANSLATORS: we ran out of disk space
-#: ../src/gs-common.c:205
-msgid "There wasn’t enough disk space."
-msgstr "Ei riittävästi levytilaa."
-
-#. TRANSLATORS: delete some stuff!
-#: ../src/gs-common.c:208
-msgid "Please free up some space and try again."
-msgstr "Vapauta levytilaa ja yritä uudelleen."
-
-#. TRANSLATORS: we didn't handle the error type
-#: ../src/gs-common.c:213
-msgid "If the problem persists, contact your software provider."
-msgstr "Jos ongelma uusiutuu, ota yhteys ohjelmiston tarjoajaan."
-
 #. TRANSLATORS: window title
-#: ../src/gs-common.c:273
+#: src/gs-common.c:214
 msgid "Install Third-Party Software?"
 msgstr "Asennetaanko kolmannen osapuolen ohjelmisto?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-common.c:277
+#: src/gs-common.c:218
 msgid "Enable Third-Party Software Source?"
 msgstr "Käytetäänkö kolmannen osapuolen ohjelmistolähdettä?"
 
@@ -2131,7 +2613,7 @@ msgstr "Käytetäänkö kolmannen osapuolen ohjelmistolähdettä?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-common.c:295
+#: src/gs-common.c:236
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -2144,428 +2626,425 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-common.c:305
+#: src/gs-common.c:246
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s on tarjolla lähteestä “%s”."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-common.c:315
+#: src/gs-common.c:256
 msgid "This software source must be enabled to continue installation."
 msgstr ""
 "Tämä ohjelmistolähde tulee ottaa käyttöön, jotta asennusta voidaan jatkaa."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-common.c:325
+#: src/gs-common.c:266
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Kohteen %s asennus ja käyttö saattaa olla laitonta joissain maissa."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-common.c:331
+#: src/gs-common.c:272
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Tämän koodekin asennus ja käyttö saattaa olla laitonta joissain maissa."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-common.c:338
-msgid "Don't Warn Again"
+#: src/gs-common.c:279
+#| msgid "Don't Warn Again"
+msgid "Don’t Warn Again"
 msgstr "Älä varoita uudelleen"
 
 #. TRANSLATORS: button text
-#: ../src/gs-common.c:347
+#: src/gs-common.c:288
 msgid "Enable and Install"
 msgstr "Käytä ja asenna"
 
-#. TRANSLATORS: content rating description
-#: ../src/gs-common.c:403
-msgctxt "content rating violence-cartoon"
-msgid "None"
-msgstr "Ei mitään"
+#. TRANSLATORS: these are show_detailed_error messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: src/gs-common.c:496
+msgid "Detailed errors from the package manager follow:"
+msgstr "Yksityiskohtaiset virhetiedot pakettihallinnalta:"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:406
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:75
+msgid "No cartoon violence"
+msgstr "Ei piirroksilla esitettävää väkivaltaa"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:78
 msgid "Cartoon characters in unsafe situations"
 msgstr "Piirroshahmoja vaarallisissa tilanteissa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:409
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:81
 msgid "Cartoon characters in aggressive conflict"
 msgstr "Piirroshahmot aggressiivisessa ristiriidassa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:412
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:84
 msgid "Graphic violence involving cartoon characters"
 msgstr "Graafista väkivaltaa, johon liittyy piirroshahmoja"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:415
-msgctxt "content rating violence-fantasy"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:87
+msgid "No fantasy violence"
+msgstr "Ei fantasiaan liittyvää väkivaltaa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:418
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:90
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr ""
 "Hahmoja vaarallisissa tilanteissa, helposti todellisuudesta erotettavissa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:421
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:93
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr ""
 "Hahmoja aggressiivisessa ristiriidassa, helposti todellisuudesta "
 "erotettavissa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:424
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:96
 msgid "Graphic violence easily distinguishable from reality"
 msgstr "Graafista väkivaltaa, helposti todellisuudesta erotettavissa"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:427
-msgctxt "content rating violence-realistic"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:99
+msgid "No realistic violence"
+msgstr "Ei realistista väkivaltaa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:430
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:102
 msgid "Mildly realistic characters in unsafe situations"
 msgstr "Tunnistettavia hahmoja vaarallisissa tilanteissa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:433
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:105
 msgid "Depictions of realistic characters in aggressive conflict"
 msgstr "Kuvauksia todellisista hahmoista aggressiivisessa ristiriidassa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:436
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:108
 msgid "Graphic violence involving realistic characters"
 msgstr "Graafista väkivaltaa, johon sisältyy todellisia hahmoja"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:439
-msgctxt "content rating violence-bloodshed"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:111
+#| msgid "Realistic bloodshed"
+msgid "No bloodshed"
+msgstr "Ei verilöylyä"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:442
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:114
 msgid "Unrealistic bloodshed"
 msgstr "Epärealistinen verilöyly"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:445
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:117
 msgid "Realistic bloodshed"
 msgstr "Realistinen verilöyly"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:448
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:120
 msgid "Depictions of bloodshed and the mutilation of body parts"
 msgstr "Kuvauksia verilöylystä ja ruumiinosien silpomista"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:451
-msgctxt "content rating violence-sexual"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:123
+msgid "No sexual violence"
+msgstr "Ei seksuaalista väkivaltaa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:454
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:126
 msgid "Rape or other violent sexual behavior"
 msgstr "Raiskaus tai muuta väkivaltaista seksuaalista käytöstä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:457
-msgctxt "content rating drugs-alcohol"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:129
+#| msgid "References to alcoholic beverages"
+msgid "No references to alcohol"
+msgstr "Ei viittauksia alkoholituotteisiin"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:460
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:132
 msgid "References to alcoholic beverages"
 msgstr "Viittauksia alkoholituotteisiin"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:463
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:135
 msgid "Use of alcoholic beverages"
 msgstr "Alkoholin käyttöä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:466
-msgctxt "content rating drugs-narcotics"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:138
+#| msgid "References to illicit drugs"
+msgid "No references to illicit drugs"
+msgstr "Ei viittauksia laittomiin huumausaineisiin"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:469
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:141
 msgid "References to illicit drugs"
 msgstr "Viittauksia laittomiin huumausaineisiin"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:472
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:144
 msgid "Use of illicit drugs"
 msgstr "Laittomien huumausaineiden käyttöä"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:475
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:147
 msgid "References to tobacco products"
 msgstr "Viittauksia tupakkatuotteisiin"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:478
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:150
 msgid "Use of tobacco products"
 msgstr "Tupakan polttamista"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:481
-msgctxt "content rating sex-nudity"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:153
+msgid "No nudity of any sort"
+msgstr "Ei minkäänlaista alastomuutta"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:484
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:156
 msgid "Brief artistic nudity"
 msgstr "Hetkellistä taiteellista alastomuutta"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:487
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:159
 msgid "Prolonged nudity"
 msgstr "Pitkäkestoista alastomuutta"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:490
-msgctxt "content rating sex-themes"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:162
+#| msgid "Sexual references or depictions"
+msgid "No references or depictions of sexual nature"
+msgstr "Ei seksuaalisia viittauksia tai kuvauksia"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:493
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:165
 msgid "Provocative references or depictions"
 msgstr "Provokatiivisia viittauksia tai kuvauksia"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:496
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:168
 msgid "Sexual references or depictions"
 msgstr "Seksuaalisia viittauksia tai kuvauksia"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:499
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:171
 msgid "Graphic sexual behavior"
 msgstr "Graafista seksuaalista käytöstä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:502
-msgctxt "content rating language-profanity"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:174
+msgid "No profanity of any kind"
+msgstr "Ei minkäänlaista kiroilua"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:505
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:177
 msgid "Mild or infrequent use of profanity"
 msgstr "Vähäistä tai epäsäännöllistä kiroilua"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:508
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:180
 msgid "Moderate use of profanity"
 msgstr "Keskitason kiroilua"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:511
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:183
 msgid "Strong or frequent use of profanity"
 msgstr "Vahvaa tai säännöllistä kiroilua"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:514
-msgctxt "content rating language-humor"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:186
+msgid "No innappropriate humor"
+msgstr "Ei epäasiallista huumoria"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:517
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:189
 msgid "Slapstick humor"
 msgstr "Kermakakkukomiikkaa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:520
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:192
 msgid "Vulgar or bathroom humor"
 msgstr "Alatyylistä wc-huumoria"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:523
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:195
 msgid "Mature or sexual humor"
 msgstr "Aikuismaista tai seksuaalista huumoria"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:526
-msgctxt "content rating language-discrimination"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:198
+msgid "No discriminatory language of any kind"
+msgstr "Ei minkäänlaista syrjivää kieltä"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:529
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:201
 msgid "Negativity towards a specific group of people"
 msgstr "Kielteisyyttä tiettyä ihmisryhmää kohtaan"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:532
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:204
 msgid "Discrimination designed to cause emotional harm"
 msgstr "Syrjintää tarkoituksena aiheuttaa tunteellista epämukavuutta"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:535
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:207
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr ""
 "Syrjintää kohdistuen sukupuoleen, seksuaalisuuteen, rotuun tai uskontoon"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:538
-msgctxt "content rating money-advertising"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:210
+msgid "No advertising of any kind"
+msgstr "Ei minkäänlaisia mainoksia"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:541
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:213
 msgid "Product placement"
 msgstr "Tuotesijoittelua"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:544
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:216
 msgid "Explicit references to specific brands or trademarked products"
 msgstr "Selkeitä viittauksia tiettyyn brändiin tai tavaramerkkiin"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:547
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:219
 msgid "Players are encouraged to purchase specific real-world items"
 msgstr "Pelaajia kehotetaan ostamaan tiettyjä todellisia esineitä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:550
-msgctxt "content rating money-gambling"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:222
+msgid "No gambling of any kind"
+msgstr "Ei minkäänlaista uhkapeliä"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:553
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:225
 msgid "Gambling on random events using tokens or credits"
 msgstr "Satunnaista uhkapeliä pelinappuloita käyttäen"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:556
-msgid "Gambling using \"play\" money"
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:228
+#| msgid "Gambling using \"play\" money"
+msgid "Gambling using “play” money"
 msgstr "Uhkapeliä käyttäen pelin sisäistä rahaa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:559
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:231
 msgid "Gambling using real money"
 msgstr "Uhkapeliä käyttäen oikeaa rahaa"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:562
-msgctxt "content rating money-purchasing"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:234
+#| msgid "Ability to spend real money in-game"
+msgid "No ability to spend money"
+msgstr "Ei mahdollisuutta käyttää oikeaa rahaa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:565
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:237
 msgid "Ability to spend real money in-game"
 msgstr "Mahdollisuus käyttää oikeaa rahaa pelissä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:568
-msgctxt "content rating social-chat"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:240
+msgid "No way to chat with other players"
+msgstr "Ei mahdollisuutta keskustella muiden pelaajien kanssa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:571
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:243
 msgid "Player-to-player game interactions without chat functionality"
 msgstr ""
 "Pelaajien välistä pelin sisäistä vuorovaikutusta ilman "
 "keskustelumahdollisuutta"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:574
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:246
 msgid "Player-to-player preset interactions without chat functionality"
 msgstr ""
 "Pelaajien välistä pelin sisäistä vuorovaikutusta ilman "
 "keskustelumahdollisuutta"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:577
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:249
 msgid "Uncontrolled chat functionality between players"
 msgstr "Valvomaton keskusteluominaisuus pelaajien välillä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:580
-msgctxt "content rating social-audio"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:252
+msgid "No way to talk with other players"
+msgstr "Ei mahdollisuutta puhua muiden pelaajien kanssa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:583
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:255
 msgid "Uncontrolled audio or video chat functionality between players"
 msgstr "Valvomaton ääni- tai videokeskusteluominaisuus pelaajien välillä"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:586
-msgctxt "content rating social-contacts"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:258
+#| msgid "Sharing social network usernames or email addresses"
+msgid "No sharing of social network usernames or email addresses"
+msgstr ""
+"Ei sosiaalisen median käyttäjätunnusten tai sähköpostiosoitteiden jakamista"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:589
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:261
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
 "Sosiaalisen median käyttäjätunnusten tai sähköpostiosoitteiden jakamista"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:592
-msgctxt "content rating social-info"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:264
+#| msgid "Sharing user information with 3rd parties"
+msgid "No sharing of user information with 3rd parties"
+msgstr "Ei käyttäjätiedon jakamista kolmansien osapuolten kanssa"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:595
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:267
 msgid "Sharing user information with 3rd parties"
 msgstr "Käyttäjätiedon jakamista kolmansien osapuolten kanssa"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:598
-msgctxt "content rating social-location"
-msgid "None"
-msgstr "Ei mitään"
+#: src/gs-content-rating.c:270
+#| msgid "Sharing physical location to other users"
+msgid "No sharing of physical location to other users"
+msgstr "Ei fyysisen sijainnin jakamista muille pelaajille"
 
-#. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:601
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:273
 msgid "Sharing physical location to other users"
 msgstr "Fyysisen sijainnin jakamista muille pelaajille"
 
-#. TRANSLATORS: these are show_detailed_error messages from the
-#. * package manager no mortal is supposed to understand,
-#. * but google might know what they mean
-#: ../src/gs-common.c:772
-msgid "Detailed errors from the package manager follow:"
-msgstr "Yksityiskohtaiset virhetiedot pakettihallinnalta:"
-
-#. vim: set noexpandtab:
-#: ../src/gs-menus.ui.h:1
+#: src/gs-menus.ui:7
 msgid "_Software Sources"
 msgstr "_Ohjelmistolähteet"
 
-#: ../src/gs-menus.ui.h:2
+#: src/gs-menus.ui:14
 msgid "_About"
 msgstr "_Tietoja"
 
-#: ../src/gs-menus.ui.h:3
+#: src/gs-menus.ui:18
 msgid "_Quit"
 msgstr "_Lopeta"
 
-#: ../src/org.gnome.Software.desktop.in.h:2
+#: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
 msgstr "Lisää, poista tai päivitä tietokoneen ohjelmistoja"
 
-#: ../src/org.gnome.Software.desktop.in.h:3
+#. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+#: src/org.gnome.Software.desktop.in:6
+#| msgid "Free Software"
+msgid "org.gnome.Software"
+msgstr "org.gnome.Software"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: src/org.gnome.Software.desktop.in:12
 msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
 "Software;App;Store;"
@@ -2575,443 +3054,613 @@ msgstr ""
 "Ohjelmistovarastot;Asenna;Poista;Ohjelma;Sovellus;Kauppa;"
 
 #. TRANSLATORS: initial start
-#: ../src/gs-shell-loading.c:63
+#: src/gs-shell-loading.c:63
 msgid "Software catalog is being downloaded"
 msgstr "Ohjelmistoluetteloa ladataan verkosta"
 
 #. TRANSLATORS: initial start
-#: ../src/gs-shell-loading.c:68
+#: src/gs-shell-loading.c:68
 msgid "Software catalog is being loaded"
 msgstr "Ohjelmistoluetteloa ladataan"
 
-#. vim: set noexpandtab:
-#: ../src/gs-shell-loading.ui.h:1
+#: src/gs-shell-loading.ui:7
 msgid "Loading page"
 msgstr "Ladataan sivua"
 
-#: ../src/gs-shell-loading.ui.h:2
+#: src/gs-shell-loading.ui:53
 msgid "Starting up…"
 msgstr "Käynnistetään…"
 
-#: ../src/plugins/gs-desktop-common.c:30
+#: src/plugins/gs-desktop-common.c:30
 msgctxt "Menu of AudioVideo"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:33
+#: src/plugins/gs-desktop-common.c:33
 msgctxt "Menu of AudioVideo"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:36
+#: src/plugins/gs-desktop-common.c:36
 msgctxt "Menu of AudioVideo"
 msgid "Audio Creation & Editing"
 msgstr "Äänen luonti ja muokkaus"
 
-#: ../src/plugins/gs-desktop-common.c:42
+#: src/plugins/gs-desktop-common.c:42
 msgctxt "Menu of AudioVideo"
 msgid "Music Players"
 msgstr "Musiikkisoittimet"
 
-#: ../src/plugins/gs-desktop-common.c:51
+#: src/plugins/gs-desktop-common.c:51
 msgctxt "Menu of Development"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:54
+#: src/plugins/gs-desktop-common.c:54
 msgctxt "Menu of Development"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:57
+#: src/plugins/gs-desktop-common.c:57
 msgctxt "Menu of Development"
 msgid "Debuggers"
 msgstr "Vianjäljittimet"
 
-#: ../src/plugins/gs-desktop-common.c:60
+#: src/plugins/gs-desktop-common.c:60
 msgctxt "Menu of Development"
 msgid "IDEs"
 msgstr "Kehitysympäristöt"
 
-#: ../src/plugins/gs-desktop-common.c:69
-msgctxt "Menu of Education"
+#: src/plugins/gs-desktop-common.c:69
+#| msgid "All"
+msgctxt "Menu of Education and Science"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:72
-msgctxt "Menu of Education"
+#: src/plugins/gs-desktop-common.c:73
+#| msgid "Featured"
+msgctxt "Menu of Education and Science"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:75
-msgctxt "Menu of Education"
+#: src/plugins/gs-desktop-common.c:77
+#| msgctxt "Menu of Science"
+#| msgid "Artificial Intelligence"
+msgctxt "Menu of Education and Science"
+msgid "Artificial Intelligence"
+msgstr "Tekoäly"
+
+#: src/plugins/gs-desktop-common.c:80
+#| msgctxt "Menu of Education"
+#| msgid "Astronomy"
+msgctxt "Menu of Education and Science"
 msgid "Astronomy"
 msgstr "Astronomia"
 
-#: ../src/plugins/gs-desktop-common.c:78
-msgctxt "Menu of Education"
+#: src/plugins/gs-desktop-common.c:84
+#| msgctxt "Menu of Education"
+#| msgid "Chemistry"
+msgctxt "Menu of Education and Science"
 msgid "Chemistry"
 msgstr "Kemia"
 
-#: ../src/plugins/gs-desktop-common.c:81
-msgctxt "Menu of Education"
+#: src/plugins/gs-desktop-common.c:88
+#| msgctxt "Menu of Education"
+#| msgid "Languages"
+msgctxt "Menu of Education and Science"
 msgid "Languages"
 msgstr "Kielet"
 
-#: ../src/plugins/gs-desktop-common.c:85
-msgctxt "Menu of Education"
+#: src/plugins/gs-desktop-common.c:92
+#| msgctxt "Menu of Education"
+#| msgid "Math"
+msgctxt "Menu of Education and Science"
 msgid "Math"
 msgstr "Matematiikka"
 
-#: ../src/plugins/gs-desktop-common.c:94
+#: src/plugins/gs-desktop-common.c:99
+#| msgctxt "Menu of Science"
+#| msgid "Robotics"
+msgctxt "Menu of Education and Science"
+msgid "Robotics"
+msgstr "Robotiikka"
+
+#: src/plugins/gs-desktop-common.c:108
 msgctxt "Menu of Games"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:97
+#: src/plugins/gs-desktop-common.c:111
 msgctxt "Menu of Games"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:100
+#: src/plugins/gs-desktop-common.c:114
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Toimintapelit"
 
-#: ../src/plugins/gs-desktop-common.c:103
+#: src/plugins/gs-desktop-common.c:117
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Seikkailupelit"
 
-#: ../src/plugins/gs-desktop-common.c:106
+#: src/plugins/gs-desktop-common.c:120
 msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "Pelihallipelit"
 
-#: ../src/plugins/gs-desktop-common.c:109
+#: src/plugins/gs-desktop-common.c:123
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Palikkapelit"
 
-#: ../src/plugins/gs-desktop-common.c:112
+#: src/plugins/gs-desktop-common.c:126
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Lautapelit"
 
-#: ../src/plugins/gs-desktop-common.c:115
+#: src/plugins/gs-desktop-common.c:129
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Korttipelit"
 
-#: ../src/plugins/gs-desktop-common.c:118
+#: src/plugins/gs-desktop-common.c:132
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Emulaattorit"
 
-#: ../src/plugins/gs-desktop-common.c:121
+#: src/plugins/gs-desktop-common.c:135
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Lastenpelit"
 
-#: ../src/plugins/gs-desktop-common.c:124
+#: src/plugins/gs-desktop-common.c:138
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Logiikkapelit"
 
-#: ../src/plugins/gs-desktop-common.c:127
+#: src/plugins/gs-desktop-common.c:141
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Roolipelit"
 
-#: ../src/plugins/gs-desktop-common.c:130
+#: src/plugins/gs-desktop-common.c:144
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Urheilupelit"
 
-#: ../src/plugins/gs-desktop-common.c:134
+#: src/plugins/gs-desktop-common.c:148
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Strategiapelit"
 
-#: ../src/plugins/gs-desktop-common.c:142
+#: src/plugins/gs-desktop-common.c:156
 msgctxt "Menu of Graphics"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:145
+#: src/plugins/gs-desktop-common.c:159
 msgctxt "Menu of Graphics"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:148
+#: src/plugins/gs-desktop-common.c:162
 msgctxt "Menu of Graphics"
 msgid "3D Graphics"
 msgstr "3D-grafiikka"
 
-#: ../src/plugins/gs-desktop-common.c:151
+#: src/plugins/gs-desktop-common.c:165
 msgctxt "Menu of Graphics"
 msgid "Photography"
 msgstr "Valokuvaus"
 
-#: ../src/plugins/gs-desktop-common.c:154
+#: src/plugins/gs-desktop-common.c:168
 msgctxt "Menu of Graphics"
 msgid "Scanning"
 msgstr "Kuvanluku"
 
-#: ../src/plugins/gs-desktop-common.c:157
+#: src/plugins/gs-desktop-common.c:171
 msgctxt "Menu of Graphics"
 msgid "Vector Graphics"
 msgstr "Vektorigrafiikka"
 
-#: ../src/plugins/gs-desktop-common.c:160
+#: src/plugins/gs-desktop-common.c:174
 msgctxt "Menu of Graphics"
 msgid "Viewers"
 msgstr "Katselimet"
 
-#: ../src/plugins/gs-desktop-common.c:168
+#: src/plugins/gs-desktop-common.c:182
 msgctxt "Menu of Office"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:171
+#: src/plugins/gs-desktop-common.c:185
 msgctxt "Menu of Office"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:174
+#: src/plugins/gs-desktop-common.c:188
 msgctxt "Menu of Office"
 msgid "Calendar"
 msgstr "Kalenteri"
 
-#: ../src/plugins/gs-desktop-common.c:178
+#: src/plugins/gs-desktop-common.c:192
 msgctxt "Menu of Office"
 msgid "Database"
 msgstr "Tietokanta"
 
-#: ../src/plugins/gs-desktop-common.c:181
+#: src/plugins/gs-desktop-common.c:195
 msgctxt "Menu of Office"
 msgid "Finance"
 msgstr "Talous"
 
-#: ../src/plugins/gs-desktop-common.c:185
+#: src/plugins/gs-desktop-common.c:199
 msgctxt "Menu of Office"
 msgid "Word Processor"
 msgstr "Tekstinkäsittely"
 
-#: ../src/plugins/gs-desktop-common.c:194
+#: src/plugins/gs-desktop-common.c:208
 msgctxt "Menu of Addons"
 msgid "Fonts"
 msgstr "Fontit"
 
-#: ../src/plugins/gs-desktop-common.c:197
+#: src/plugins/gs-desktop-common.c:211
 msgctxt "Menu of Addons"
 msgid "Codecs"
 msgstr "Koodekit"
 
-#: ../src/plugins/gs-desktop-common.c:200
+#: src/plugins/gs-desktop-common.c:214
 msgctxt "Menu of Addons"
 msgid "Input Sources"
 msgstr "Syötelähteet"
 
-#: ../src/plugins/gs-desktop-common.c:203
+#: src/plugins/gs-desktop-common.c:217
 msgctxt "Menu of Addons"
 msgid "Language Packs"
 msgstr "Kielipaketit"
 
-#: ../src/plugins/gs-desktop-common.c:206
+#: src/plugins/gs-desktop-common.c:220
 msgctxt "Menu of Addons"
 msgid "Shell Extensions"
 msgstr "Shell-laajennukset"
 
-#: ../src/plugins/gs-desktop-common.c:209
+#: src/plugins/gs-desktop-common.c:223
 msgctxt "Menu of Addons"
 msgid "Localization"
 msgstr "Lokalisointi"
 
-#: ../src/plugins/gs-desktop-common.c:212
+#: src/plugins/gs-desktop-common.c:226
 msgctxt "Menu of Addons"
 msgid "Hardware Drivers"
 msgstr "Laitteistoajurit"
 
-#: ../src/plugins/gs-desktop-common.c:220
-msgctxt "Menu of Science"
-msgid "All"
-msgstr "Kaikki"
-
-#: ../src/plugins/gs-desktop-common.c:223
-msgctxt "Menu of Science"
-msgid "Featured"
-msgstr "Nostot"
-
-#: ../src/plugins/gs-desktop-common.c:226
-msgctxt "Menu of Science"
-msgid "Artificial Intelligence"
-msgstr "Tekoäly"
-
-#: ../src/plugins/gs-desktop-common.c:229
-msgctxt "Menu of Science"
-msgid "Astronomy"
-msgstr "Astronomia"
-
-#: ../src/plugins/gs-desktop-common.c:232
-msgctxt "Menu of Science"
-msgid "Chemistry"
-msgstr "Kemia"
-
-#: ../src/plugins/gs-desktop-common.c:235
-msgctxt "Menu of Science"
-msgid "Math"
-msgstr "Matematiikka"
-
-#: ../src/plugins/gs-desktop-common.c:240
-msgctxt "Menu of Science"
-msgid "Robotics"
-msgstr "Robotiikka"
-
-#: ../src/plugins/gs-desktop-common.c:248
+#: src/plugins/gs-desktop-common.c:234
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:251
+#: src/plugins/gs-desktop-common.c:237
 msgctxt "Menu of Communication"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:254
+#: src/plugins/gs-desktop-common.c:240
 msgctxt "Menu of Communication"
 msgid "Chat"
 msgstr "Keskustelu"
 
-#: ../src/plugins/gs-desktop-common.c:261
+#: src/plugins/gs-desktop-common.c:247
 msgctxt "Menu of Communication"
 msgid "News"
 msgstr "Uutisryhmät"
 
-#: ../src/plugins/gs-desktop-common.c:265
+#: src/plugins/gs-desktop-common.c:251
 msgctxt "Menu of Communication"
 msgid "Web Browsers"
 msgstr "Verkkoselaimet"
 
-#: ../src/plugins/gs-desktop-common.c:273
+#: src/plugins/gs-desktop-common.c:259
 msgctxt "Menu of Utility"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:276
+#: src/plugins/gs-desktop-common.c:262
 msgctxt "Menu of Utility"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:279
+#: src/plugins/gs-desktop-common.c:265
 msgctxt "Menu of Utility"
 msgid "Text Editors"
 msgstr "Tekstimuokkaimet"
 
-#: ../src/plugins/gs-desktop-common.c:287
+#: src/plugins/gs-desktop-common.c:273
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "Kaikki"
 
-#: ../src/plugins/gs-desktop-common.c:290
+#: src/plugins/gs-desktop-common.c:276
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "Nostot"
 
-#: ../src/plugins/gs-desktop-common.c:293
+#: src/plugins/gs-desktop-common.c:279
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Taide"
 
-#: ../src/plugins/gs-desktop-common.c:296
+#: src/plugins/gs-desktop-common.c:282
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Biografia"
 
-#: ../src/plugins/gs-desktop-common.c:299
+#: src/plugins/gs-desktop-common.c:285
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Sarjakuvat"
 
-#: ../src/plugins/gs-desktop-common.c:302
+#: src/plugins/gs-desktop-common.c:288
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Fiktio"
 
-#: ../src/plugins/gs-desktop-common.c:305
+#: src/plugins/gs-desktop-common.c:291
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Terveys"
 
-#: ../src/plugins/gs-desktop-common.c:308
+#: src/plugins/gs-desktop-common.c:294
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Historia"
 
-#: ../src/plugins/gs-desktop-common.c:311
+#: src/plugins/gs-desktop-common.c:297
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Elämäntapa"
 
-#: ../src/plugins/gs-desktop-common.c:314
+#: src/plugins/gs-desktop-common.c:300
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Politiikka"
 
-#: ../src/plugins/gs-desktop-common.c:317
+#: src/plugins/gs-desktop-common.c:303
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Urheilu"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: ../src/plugins/gs-desktop-common.c:326
+#: src/plugins/gs-desktop-common.c:312
 msgid "Audio & Video"
 msgstr "Ääni ja video"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: ../src/plugins/gs-desktop-common.c:329
+#: src/plugins/gs-desktop-common.c:315
 msgid "Developer Tools"
 msgstr "Kehitystyökalut"
 
-#. TRANSLATORS: this is the menu spec main category for Education
-#: ../src/plugins/gs-desktop-common.c:332
-msgid "Education"
-msgstr "Koulutus"
+#. TRANSLATORS: this is the menu spec main category for Education & Science
+#: src/plugins/gs-desktop-common.c:318
+#| msgid "Education"
+msgid "Education & Science"
+msgstr "Koulutus ja tieteet"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: ../src/plugins/gs-desktop-common.c:335
+#: src/plugins/gs-desktop-common.c:321
 msgid "Games"
 msgstr "Pelit"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: ../src/plugins/gs-desktop-common.c:338
+#: src/plugins/gs-desktop-common.c:324
 msgid "Graphics & Photography"
 msgstr "Grafiikka ja valokuvaus"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: ../src/plugins/gs-desktop-common.c:341
+#: src/plugins/gs-desktop-common.c:327
 msgid "Productivity"
 msgstr "Tuottavuus"
 
-#. TRANSLATORS: this is the menu spec main category for Science
-#: ../src/plugins/gs-desktop-common.c:347
-msgid "Science"
-msgstr "Tiede"
-
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: ../src/plugins/gs-desktop-common.c:350
+#: src/plugins/gs-desktop-common.c:333
 msgid "Communication & News"
 msgstr "Yhteydenpito ja uutiset"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: ../src/plugins/gs-desktop-common.c:353
+#: src/plugins/gs-desktop-common.c:336
 msgid "Reference"
 msgstr "Viittaus"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: ../src/plugins/gs-desktop-common.c:356
+#: src/plugins/gs-desktop-common.c:339
 msgid "Utilities"
 msgstr "Apuohjelmat"
+
+#. TRANSLATORS: tool that is used when copying profiles system-wide
+#: src/plugins/gs-install-appstream.c:118
+msgid "GNOME Software AppStream system-wide installer"
+msgstr ""
+"Gnomen Ohjelmistot-sovelluksen järjestelmänlaajuinen AppStream-asennusohjelma"
+
+#: src/plugins/gs-install-appstream.c:120
+#| msgid "Failed to load image"
+msgid "Failed to parse command line arguments"
+msgstr "Komentorivivalitsimien jäsentäminen epäonnistui"
+
+#. TRANSLATORS: user did not specify a valid filename
+#: src/plugins/gs-install-appstream.c:127
+msgid "You need to specify exactly one filename"
+msgstr "Määritä tasan yksi tiedostonimi"
+
+#. TRANSLATORS: only able to install files as root
+#: src/plugins/gs-install-appstream.c:134
+msgid "This program can only be used by the root user"
+msgstr "Tätä ohjelmaa voi käyttää vain root-käyttäjä"
+
+#. TRANSLATORS: error details
+#: src/plugins/gs-install-appstream.c:142
+msgid "Failed to validate content type"
+msgstr "Sisältötyypin vahvistaminen epäonnistui"
+
+#. TRANSLATORS: error details
+#: src/plugins/gs-install-appstream.c:149
+#| msgid "Failed To Update"
+msgid "Failed to copy"
+msgstr "Kopiointi epäonnistui"
+
+#. TRANSLATORS: this is a group of updates that are not
+#. * packages and are not shown in the main list
+#: src/plugins/gs-plugin-generic-updates.c:65
+msgid "OS Updates"
+msgstr "Järjestelmäpäivitykset"
+
+#. TRANSLATORS: this is a longer description of the
+#. * "OS Updates" string
+#: src/plugins/gs-plugin-generic-updates.c:70
+msgid "Includes performance, stability and security improvements."
+msgstr ""
+"Sisältää suorituskykyyn, vakauteen ja turvallisuuteen liittyviä parannuksia."
+
+#~ msgid "The GNOME Project"
+#~ msgstr "Gnome-projekti"
+
+#~ msgid "About Software"
+#~ msgstr "Tietoja - Ohjelmistot"
+
+#~ msgid "Total"
+#~ msgstr "Yhteensä"
+
+#~ msgid "Sorry, this did not work"
+#~ msgstr "Valitettavasti se ei toiminut"
+
+#~ msgid "_Install All"
+#~ msgstr "_Asenna kaikki"
+
+#~ msgid "Installation of %s failed."
+#~ msgstr "Kohteen %s asennus epäonnistui."
+
+#~ msgid "Removal of %s failed."
+#~ msgstr "Kohteen %s poistaminen epäonnistui."
+
+#~ msgid "Please make sure that you have internet access and try again."
+#~ msgstr "Varmista, että internetyhteys toimii ja yritä uudelleen."
+
+#~ msgid "Please free up some space and try again."
+#~ msgstr "Vapauta levytilaa ja yritä uudelleen."
+
+#~ msgid "If the problem persists, contact your software provider."
+#~ msgstr "Jos ongelma uusiutuu, ota yhteys ohjelmiston tarjoajaan."
+
+#~ msgctxt "content rating violence-cartoon"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating violence-fantasy"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating violence-realistic"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating violence-bloodshed"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating violence-sexual"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating drugs-alcohol"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating drugs-narcotics"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating sex-nudity"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating sex-themes"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating language-profanity"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating language-humor"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating language-discrimination"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating money-advertising"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating money-gambling"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating money-purchasing"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating social-chat"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating social-audio"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating social-contacts"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating social-info"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "content rating social-location"
+#~ msgid "None"
+#~ msgstr "Ei mitään"
+
+#~ msgctxt "Menu of Education"
+#~ msgid "All"
+#~ msgstr "Kaikki"
+
+#~ msgctxt "Menu of Education"
+#~ msgid "Featured"
+#~ msgstr "Nostot"
+
+#~ msgctxt "Menu of Science"
+#~ msgid "All"
+#~ msgstr "Kaikki"
+
+#~ msgctxt "Menu of Science"
+#~ msgid "Featured"
+#~ msgstr "Nostot"
+
+#~ msgctxt "Menu of Science"
+#~ msgid "Astronomy"
+#~ msgstr "Astronomia"
+
+#~ msgctxt "Menu of Science"
+#~ msgid "Chemistry"
+#~ msgstr "Kemia"
+
+#~ msgctxt "Menu of Science"
+#~ msgid "Math"
+#~ msgstr "Matematiikka"
+
+#~ msgid "Science"
+#~ msgstr "Tiede"
 
 #~ msgid "Software sources give you access to additional software."
 #~ msgstr "Ohjelmistolähteet tarjoavat lisää ohjelmia."
@@ -3069,9 +3718,6 @@ msgstr "Apuohjelmat"
 
 #~ msgid "Recommended Office Applications"
 #~ msgstr "Suositut toimistosovellukset"
-
-#~ msgid "Featured Application"
-#~ msgstr "Valokeilassa"
 
 #~ msgid "One Star"
 #~ msgstr "Yksi tähti"
@@ -3592,10 +4238,6 @@ msgstr "Apuohjelmat"
 
 #~ msgid "No AppStream data found"
 #~ msgstr "AppStream-tietoja ei löytynyt"
-
-#~| msgid "Updated"
-#~ msgid "Update"
-#~ msgstr "Päivitä"
 
 #~ msgid "A previous update was unfinished."
 #~ msgstr "Edellinen päivitys jäi viimeistelemättä."
