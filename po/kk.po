@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-12-12 01:56+0000\n"
-"PO-Revision-Date: 2016-12-12 08:55+0500\n"
+"POT-Creation-Date: 2016-12-25 19:43+0000\n"
+"PO-Revision-Date: 2016-12-26 15:52+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -121,7 +121,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether it’s the very first run of GNOME Software"
-msgstr ""
+msgstr "GNOME БҚ қолданбасының бірінші жөнелтілуі ме"
 
 #: data/org.gnome.software.gschema.xml:29
 msgid "Show star ratings next to applications"
@@ -133,7 +133,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:37
 msgid "Non-free applications show a warning dialog before install"
-msgstr ""
+msgstr "Еркін емес қолданбалар орнату алдында ескерту сұхбатын көрсетеді"
 
 #: data/org.gnome.software.gschema.xml:38
 msgid ""
@@ -221,7 +221,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:107
 msgid "Allow access to the Software Sources dialog"
-msgstr ""
+msgstr "БҚ көздерін баптау сұхбатына қатынауды рұқсат ету"
 
 #: data/org.gnome.software.gschema.xml:111
 msgid "Offer upgrades for pre-releases"
@@ -287,7 +287,6 @@ msgstr "Таңдалған БҚ-ны жүйеге орнату"
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: src/gnome-software-local-file.desktop.in:10
-#| msgid "Software Install"
 msgid "system-software-install"
 msgstr "system-software-install"
 
@@ -299,11 +298,7 @@ msgstr "Барлығын таңдау"
 msgid "Select None"
 msgstr "Ештеңе таңдамау"
 
-#. TRANSLATORS: this is the application name
-#. set the window title back to default
-#. TRANSLATORS: this is the main window title
-#: src/gnome-software.ui:24 src/gs-application.c:314 src/gs-shell.c:295
-#: src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:24 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Бағд. қамтама"
 
@@ -397,7 +392,7 @@ msgstr "ІЗДЕУ"
 msgid "Show application details (using application ID)"
 msgstr "Қолданба ақпаратын көрсету (қолданба ID-ін қолданып)"
 
-#: src/gs-application.c:105
+#: src/gs-application.c:105 src/gs-application.c:109
 msgid "ID"
 msgstr "ID"
 
@@ -410,44 +405,57 @@ msgid "PKGNAME"
 msgstr "ДЕСТЕ_АТЫ"
 
 #: src/gs-application.c:109
+msgid "Install the application (using application ID)"
+msgstr "Қолданбаны орнату (қолданба ID-ін қолданып)"
+
+#: src/gs-application.c:111
 msgid "Open a local package file"
 msgstr "Жергілікті десте файлын ашу"
 
-#: src/gs-application.c:109
+#: src/gs-application.c:111
 msgid "FILENAME"
 msgstr "ФАЙЛ_АТЫ"
 
-#: src/gs-application.c:111
+#: src/gs-application.c:113
+msgid ""
+"The kind of interaction expected for this action: either ‘none’, ‘notify’, "
+"or ‘full’"
+msgstr ""
+
+#: src/gs-application.c:116
 msgid "Show verbose debugging information"
 msgstr "Кеңейтілген жөндеу ақпаратын көрсету"
 
-#: src/gs-application.c:113
+#: src/gs-application.c:118
 msgid "Show profiling information for the service"
 msgstr "Қызмет үшін профильдеу ақпаратын көрсету"
 
-#: src/gs-application.c:115
+#: src/gs-application.c:120
 msgid "Quit the running instance"
 msgstr "Орындалып тұрған нұсқаның жұмысын аяқтау"
 
-#: src/gs-application.c:117
+#: src/gs-application.c:122
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream орнына жергілікті файлдағы қайнар көздерін қалау"
 
-#: src/gs-application.c:119
+#: src/gs-application.c:124
 msgid "Show version number"
 msgstr "Нұсқа ақпаратын шығару"
 
-#: src/gs-application.c:307
+#: src/gs-application.c:313
 msgid "translator-credits"
 msgstr "Baurzhan Muftakhidinov <baurthefirst@gmail.com>"
 
-#. TRANSLATORS: this is the title of the about window
-#: src/gs-application.c:311
-msgid "About Software"
-msgstr "Осы туралы"
+#. TRANSLATORS: this is the title of the about window, e.g.
+#. * 'About Software' or 'About Application Installer' where the %s is
+#. * the application name chosen by the distro
+#: src/gs-application.c:320
+#, c-format
+msgid "About %s"
+msgstr "%s туралы"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:317
+#: src/gs-application.c:324
 msgid "A nice way to manage the software on your system."
 msgstr "Жүйеңізде БҚ-ны басқарудың ыңғайлы жолы."
 
@@ -474,7 +482,7 @@ msgstr "Бас тарту"
 #. * allows the application to be easily installed
 #. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: src/gs-app-row.c:192 src/gs-page.c:360 src/gs-common.c:275
+#: src/gs-app-row.c:192 src/gs-page.c:366 src/gs-common.c:283
 msgid "Install"
 msgstr "Орнату"
 
@@ -487,7 +495,7 @@ msgstr "Жаңарту"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:203 src/gs-app-row.c:212 src/gs-page.c:511
+#: src/gs-app-row.c:203 src/gs-app-row.c:212 src/gs-page.c:517
 msgid "Remove"
 msgstr "Өшіру"
 
@@ -698,20 +706,20 @@ msgstr "Тарихы"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:351
+#: src/gs-page.c:357
 #, c-format
 msgid "Prepare %s"
 msgstr "%s дайындау"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * source name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:480
+#: src/gs-page.c:486
 #, c-format
 msgid "Are you sure you want to remove the %s source?"
 msgstr "%s қайнар көзін өшіруді шынымен қалайсыз ба?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:484
+#: src/gs-page.c:490
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -722,39 +730,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:492
+#: src/gs-page.c:498
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "%s өшіруді шынымен қалайсыз ба?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:495
+#: src/gs-page.c:501
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "%s өшіріледі, және оны қолданғыңыз келсе, сізге оны қайтадан орнату керек "
 "болады."
 
-#. TRANSLATORS: this is a group of updates that are not
-#. * packages and are not shown in the main list
-#: src/gs-plugin-loader.c:1226
-msgid "OS Updates"
-msgstr "ОЖ жаңартулары"
-
-#. TRANSLATORS: this is a longer description of the
-#. * "OS Updates" string
-#: src/gs-plugin-loader.c:1231
-msgid "Includes performance, stability and security improvements."
-msgstr "Өнімділік, тұрақтылық және қауіпсіздік жақсартуларын әкеледі."
-
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-plugin-loader.c:1942 src/gs-shell-extras.c:386
+#: src/gs-plugin-loader.c:1878 src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s пішімі үшін бірде-бір аддон кодектері жоқ."
 
-#: src/gs-plugin-loader.c:1945
+#: src/gs-plugin-loader.c:1881
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -976,7 +972,7 @@ msgstr "Скриншот"
 #. * where the first %s is a possibly multi-word localised distro
 #. * e.g. 'Fedora Project" and the second %s is the truncated
 #. * hostname, e.g. 'alt.fedoraproject.org'
-#: src/gs-shell.c:782
+#: src/gs-shell.c:788
 #, c-format
 msgid "“%s” [%s]"
 msgstr "\"%s\" [%s]"
@@ -990,32 +986,32 @@ msgstr "\"%s\" [%s]"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:789 src/gs-shell.c:795 src/gs-shell.c:811 src/gs-shell.c:815
+#: src/gs-shell.c:795 src/gs-shell.c:801 src/gs-shell.c:817 src/gs-shell.c:821
 #, c-format
 msgid "“%s”"
 msgstr "\"%s\""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:835
+#: src/gs-shell.c:841
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:841
+#: src/gs-shell.c:847
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "%s адресінен жаңартуларды жүктеп алу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:848
+#: src/gs-shell.c:854
 msgid "Unable to download updates"
 msgstr "Жаңартуларды жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:853
+#: src/gs-shell.c:859
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -1024,48 +1020,48 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:862
+#: src/gs-shell.c:868
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "%s адресінен жаңартуларды жүктеп алу мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:867
+#: src/gs-shell.c:873
 msgid "Unable to download updates: not enough disk space"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:875
+#: src/gs-shell.c:881
 msgid "Unable to download updates: authentication was required"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:880
+#: src/gs-shell.c:886
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:885
+#: src/gs-shell.c:891
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "Жаңартуларды жүктеп алу мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:890
+#: src/gs-shell.c:896
 msgid "Unable to get list of updates"
 msgstr "Жаңартулар тізімін алу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:932
+#: src/gs-shell.c:938
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "%s орнату мүмкін емес, өйткені %s адресінен жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:938
+#: src/gs-shell.c:944
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "%s орнату мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
@@ -1074,51 +1070,51 @@ msgstr "%s орнату мүмкін емес, өйткені жүктеп ал�
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:950
+#: src/gs-shell.c:956
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "%s орнату мүмкін емес, өйткені %s орындалу ортасы қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:956
+#: src/gs-shell.c:962
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "%s қолдауы жоқ ретінде орнату мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:963
+#: src/gs-shell.c:969
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Орнату мүмкін емес: интернетке байланыс керек, бірақ, ол қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:969
+#: src/gs-shell.c:975
 msgid "Unable to install: the application has an invalid format"
 msgstr "Орнату мүмкін емес: қолданба пішімі қате"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:974
+#: src/gs-shell.c:980
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "%s орнату мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:982
+#: src/gs-shell.c:988
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "%s орнату мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:989
+#: src/gs-shell.c:995
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "%s орнату мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:996
+#: src/gs-shell.c:1002
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "%s орнату мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
@@ -1126,27 +1122,34 @@ msgstr "%s орнату мүмкін емес: сізде БҚ орнатуға 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: src/gs-shell.c:1009
+#: src/gs-shell.c:1015
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "Сіздің %s тіркелгіңіз тоқтатылған."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1013
+#: src/gs-shell.c:1019
 msgid "It is not possible to install software until this has been resolved."
 msgstr "Бұл шешілмегенше, БҚ орнату мүмкін емес."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: src/gs-shell.c:1024
+#: src/gs-shell.c:1030
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Көбірек ақпарат алу үшін, %s шолыңыз."
 
 #. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1039
+#, c-format
+msgid "Unable to install %s: AC power is required"
+msgstr "%s орнату мүмкін емес: эл. қорегіне қосылу керек"
+
+#. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1033
+#: src/gs-shell.c:1046
 #, c-format
 msgid "Unable to install %s"
 msgstr "%s орнату мүмкін емес"
@@ -1155,54 +1158,61 @@ msgstr "%s орнату мүмкін емес"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1075
+#: src/gs-shell.c:1088
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "%s өнімін %s адресінен жаңарту мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1081
+#: src/gs-shell.c:1094
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "%s жаңарту мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1087
+#: src/gs-shell.c:1100
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "Жаңарту мүмкін емес: интернетке байланыс керек, бірақ, ол қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1095
+#: src/gs-shell.c:1108
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "%s жаңарту мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1104
+#: src/gs-shell.c:1117
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "%s жаңарту мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1111
+#: src/gs-shell.c:1124
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "%s жаңарту мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1118
+#: src/gs-shell.c:1131
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "%s жаңарту мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "Dell XPS 13")
+#: src/gs-shell.c:1139
+#, c-format
+msgid "Unable to update %s: AC power is required"
+msgstr "%s жаңарту мүмкін емес: эл. қорегіне қосылу керек"
+
+#. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1126
+#: src/gs-shell.c:1146
 #, c-format
 msgid "Unable to update %s"
 msgstr "%s жаңарту мүмкін емес"
@@ -1210,82 +1220,96 @@ msgstr "%s жаңарту мүмкін емес"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1167
+#: src/gs-shell.c:1187
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "%s дейін %s өнімін жаңарту мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1172
+#: src/gs-shell.c:1192
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "%s дейін жаңартылу мүмкін емес, өйткені жүктеп алу сәтсіз аяқталды"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1179
+#: src/gs-shell.c:1199
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr "Жаңарту мүмкін емес: интернетке байланыс керек, бірақ, ол қолжетерсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1187
+#: src/gs-shell.c:1207
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "%s дейін жаңарту мүмкін емес: диск орны жетпейді"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1196
+#: src/gs-shell.c:1216
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "%s дейін жаңартылу мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1203
+#: src/gs-shell.c:1223
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "%s дейін жаңартылу мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1210
+#: src/gs-shell.c:1230
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "%s дейін жаңартылу мүмкін емес: сізде жүйені жаңартуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1217
+#: src/gs-shell.c:1237
+#, c-format
+msgid "Unable to upgrade to %s: AC power is required"
+msgstr "%s дейін жаңартылу мүмкін емес: эл. қорегіне қосылу керек"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the distro name (e.g. "Fedora 25")
+#: src/gs-shell.c:1244
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "%s дейін жаңарту мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1255
+#: src/gs-shell.c:1282
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "%s өшіру мүмкін емес: аутентификация керек болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1261
+#: src/gs-shell.c:1288
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "%s өшіру мүмкін емес: аутентификация қате болды"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1267
+#: src/gs-shell.c:1294
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "%s өшіру мүмкін емес: сізде БҚ орнатуға рұқсаттар жоқ"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1274
+#: src/gs-shell.c:1301
+#, c-format
+msgid "Unable to remove %s: AC power is required"
+msgstr "%s өшіру мүмкін емес: эл. қорегіне қосылу керек"
+
+#. TRANSLATORS: failure text for the in-app notification,
+#. * where the %s is the application name (e.g. "GIMP")
+#: src/gs-shell.c:1308
 #, c-format
 msgid "Unable to remove %s"
 msgstr "%s өшіру мүмкін емес"
@@ -1294,40 +1318,45 @@ msgstr "%s өшіру мүмкін емес"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1316
+#: src/gs-shell.c:1350
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "%s жөнелту мүмкін емес: %s орнатылмаған"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1323 src/gs-shell.c:1363 src/gs-shell.c:1403
+#: src/gs-shell.c:1357 src/gs-shell.c:1397 src/gs-shell.c:1437
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Диск орны жетпейді — орынды босатып, қайталап көріңіз"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1358
+#: src/gs-shell.c:1392
 msgid "Failed to install file: authentication failed"
 msgstr "Файлды орнату сәтсіз аяқталды: аутентификация сәтсіз"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1397
+#: src/gs-shell.c:1431
 #, c-format
 msgid "Unable to contact %s"
 msgstr "%s адресіне байланысу мүмкін емес"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1412
+#: src/gs-shell.c:1446
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Жаңа плагиндерді қолдану үшін %s қайта іске қосу керек."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1417
+#: src/gs-shell.c:1451
 msgid "This application needs to be restarted to use new plugins."
 msgstr "Бұл қолданба жаңа плагиндерді қолдану үшін қайта іске қосылуы керек."
+
+#. TRANSLATORS: need to be connected to the AC power
+#: src/gs-shell.c:1457
+msgid "AC power is required"
+msgstr "Эл. қорегіне қосылу керек"
 
 #: src/gs-shell-category.ui:81
 msgid "Extension Settings"
@@ -1410,22 +1439,22 @@ msgid "Could not find “%s”"
 msgstr "\"%s\" табу мүмкін емес"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-shell-details.c:1900
+#: src/gs-shell-details.c:1907
 msgid "Public domain"
 msgstr "Публикалық меншік"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-shell-details.c:1916 src/gs-shell-details.ui:1379
+#: src/gs-shell-details.c:1923 src/gs-shell-details.ui:1379
 msgid "Free Software"
 msgstr "Еркін бағд. қамтама"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-shell-details.c:1971
+#: src/gs-shell-details.c:1978
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Пайдаланушылар келесі лицензиялармен шектелген:"
 
-#: src/gs-shell-details.c:1987 src/gs-shell-details.ui:1488
+#: src/gs-shell-details.c:1994 src/gs-shell-details.ui:1488
 msgid "More information"
 msgstr "Көбірек ақпарат"
 
@@ -1499,7 +1528,7 @@ msgstr "Тек сенімді БҚ қайнар көздерін қолданы�
 msgid "_Website"
 msgstr "_Веб сайты"
 
-#: src/gs-shell-details.ui:592 src/gs-common.c:507
+#: src/gs-shell-details.ui:592 src/gs-common.c:515
 msgid "Details"
 msgstr "Ақпараты"
 
@@ -1656,27 +1685,27 @@ msgid "Unable to Find Requested Software"
 msgstr "Сұралған БҚ табу мүмкін емес"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-shell-extras.c:320
+#: src/gs-shell-extras.c:321
 #, c-format
 msgid "%s not found"
 msgstr "%s табылмады"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-shell-extras.c:324
+#: src/gs-shell-extras.c:325
 msgid "on the website"
 msgstr "вебсайттан"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-shell-extras.c:331
+#: src/gs-shell-extras.c:332
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "%s файлын ұсынатын бірде-бір қолданба жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-shell-extras.c:335 src/gs-shell-extras.c:346
-#: src/gs-shell-extras.c:357
+#: src/gs-shell-extras.c:336 src/gs-shell-extras.c:347
+#: src/gs-shell-extras.c:358
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1687,21 +1716,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-shell-extras.c:342 src/gs-shell-extras.c:364
+#: src/gs-shell-extras.c:343 src/gs-shell-extras.c:365
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "%s қолдауы үшін бірде-бір қолданба жоқ."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-shell-extras.c:353
+#: src/gs-shell-extras.c:354
 #, c-format
 msgid "%s is not available."
 msgstr "%s қолжетерсіз."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-shell-extras.c:368
+#: src/gs-shell-extras.c:369
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1712,14 +1741,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-shell-extras.c:375
+#: src/gs-shell-extras.c:376
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "%s жазудың қолдауы үшін бірде-бір қаріп жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-shell-extras.c:379
+#: src/gs-shell-extras.c:380
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1730,7 +1759,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-shell-extras.c:390
+#: src/gs-shell-extras.c:391
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1741,14 +1770,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-shell-extras.c:397
+#: src/gs-shell-extras.c:398
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "%s қолдауы үшін бірде-бір Plasma ресурсы жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-shell-extras.c:401
+#: src/gs-shell-extras.c:402
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1759,14 +1788,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-shell-extras.c:408
+#: src/gs-shell-extras.c:409
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "%s үшін принтер драйверлері жоқ."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-shell-extras.c:412
+#: src/gs-shell-extras.c:413
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1775,12 +1804,12 @@ msgstr ""
 "%s туралы ақпаратты және бұл принтерді қолдайтын драйверді орнату жолы "
 "жөнінде %s білуге болады."
 
-#: src/gs-shell-extras.c:457
+#: src/gs-shell-extras.c:458
 msgid "this website"
 msgstr "бұл вебсайт"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: src/gs-shell-extras.c:461
+#: src/gs-shell-extras.c:462
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1792,12 +1821,12 @@ msgstr[0] ""
 "Өкінішке орай, сіз іздеген %s табу мүмкін емес. Көбірек білу үшін, %s "
 "қараңыз."
 
-#: src/gs-shell-extras.c:535 src/gs-shell-extras.c:590
-#: src/gs-shell-extras.c:630
+#: src/gs-shell-extras.c:536 src/gs-shell-extras.c:591
+#: src/gs-shell-extras.c:631
 msgid "Failed to find any search results"
 msgstr "Іздеу нәтижелері табылмады"
 
-#: src/gs-shell-extras.c:814
+#: src/gs-shell-extras.c:815
 #, c-format
 msgid "%s file format"
 msgstr "%s файл пішімі"
@@ -1874,24 +1903,27 @@ msgid "Recommended Productivity Applications"
 msgstr "Ұсынылатын өнімділік қолданбалары"
 
 #. TRANSLATORS: this is the proprietary info bar
-#: src/gs-shell-overview.c:744
+#: src/gs-shell-overview.c:745
 msgid ""
 "Provides access to additional software, including web browsers and games."
 msgstr ""
+"Қосымша БҚ-ны қолжетерлік қылады, соның ішінде браузерлер және ойындар."
 
 #. TRANSLATORS: this is the proprietary info bar
-#: src/gs-shell-overview.c:748
+#: src/gs-shell-overview.c:749
 msgid "Proprietary software has restrictions on use and access to source code."
 msgstr ""
+"Проприетарлы БҚ қолданылу және бастапқы кодтарға қатынау бойынша шектеулері "
+"бар."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the proprietary info bar
-#: src/gs-shell-overview.c:755 src/gs-sources-dialog.c:264
+#: src/gs-shell-overview.c:756 src/gs-sources-dialog.c:264
 msgid "Find out more…"
 msgstr "Көбірек білу…"
 
 #. TRANSLATORS: button to turn on proprietary software sources
-#: src/gs-shell-overview.c:788
+#: src/gs-shell-overview.c:789
 msgid "Enable"
 msgstr "Іске қосу"
 
@@ -2170,6 +2202,7 @@ msgstr[0] "%s және %s орнатылды"
 #: src/gs-sources-dialog.c:254
 msgid "Typically has restrictions on use and access to source code."
 msgstr ""
+"Әдетте қолданылу және бастапқы кодтарға қатынау бойынша шектеулері бар."
 
 #. TRANSLATORS: list header
 #: src/gs-sources-dialog.c:275
@@ -2440,29 +2473,41 @@ msgstr "Жү_ктеп алу"
 
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:138
+#: src/gs-common.c:139
 msgid "OS updates are now installed"
 msgstr "ОЖ жаңартулары орнатылды"
 
+#. TRANSLATORS: this is the body of a notification that OS updates
+#. * have been successfully installed
+#: src/gs-common.c:142
+msgid "Recently installed updates are available to review"
+msgstr ""
+
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:142
+#: src/gs-common.c:146
 #, c-format
 msgid "%s is now installed"
 msgstr "%s енді орнатылған"
 
+#. TRANSLATORS: this is the body of a notification that an application
+#. * has been successfully installed
+#: src/gs-common.c:149
+msgid "Application is ready to be used."
+msgstr "Қолданба қолданылуға дайын."
+
 #. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:147
+#: src/gs-common.c:155
 msgid "Launch"
 msgstr "Жөнелту"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:206
+#: src/gs-common.c:214
 msgid "Install Third-Party Software?"
 msgstr "Үшінші жақты БҚ орнату керек пе?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:210
+#: src/gs-common.c:218
 msgid "Enable Third-Party Software Source?"
 msgstr "Үшінші жақты БҚ іске қосу керек пе?"
 
@@ -2470,7 +2515,7 @@ msgstr "Үшінші жақты БҚ іске қосу керек пе?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: src/gs-common.c:228
+#: src/gs-common.c:236
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -2482,41 +2527,41 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: src/gs-common.c:238
+#: src/gs-common.c:246
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s дестесін “%s” ұсынады."
 
 #. TRANSLATORS: a software source is a repo
-#: src/gs-common.c:248
+#: src/gs-common.c:256
 msgid "This software source must be enabled to continue installation."
 msgstr "Орнатуды жалғастыру үшін бұл БҚ көзі іске қосылған болуы тиіс."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:258
+#: src/gs-common.c:266
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "%s кейбір елдерде орнату немесе қолдану заңсыз болуы мүмкін."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:264
+#: src/gs-common.c:272
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Бұл кодекті кейбір елдерде орнату немесе қолдану заңсыз болуы мүмкін."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:271
+#: src/gs-common.c:279
 msgid "Don’t Warn Again"
 msgstr "Келесіде ескертпеу"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:280
+#: src/gs-common.c:288
 msgid "Enable and Install"
 msgstr "Іске қосу және орнату"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:488
+#: src/gs-common.c:496
 msgid "Detailed errors from the package manager follow:"
 msgstr "Дестелер басқарушысы ұсынған толығырақ ақпараты бар қателер:"
 
@@ -2748,7 +2793,7 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:210
 msgid "No advertising of any kind"
-msgstr ""
+msgstr "Жарнаманың ешбір түрі жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:213
@@ -2759,11 +2804,12 @@ msgstr ""
 #: src/gs-content-rating.c:216
 msgid "Explicit references to specific brands or trademarked products"
 msgstr ""
+"Кейбір брендтер немесе сауда маркасымен қорғалған өнімдерге тікелей сілтеу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:219
 msgid "Players are encouraged to purchase specific real-world items"
-msgstr ""
+msgstr "Ойыншаларға шын әлемнен кейбір нәрселерді сатып алу ұсынылады"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:222
@@ -2788,17 +2834,17 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:234
 msgid "No ability to spend money"
-msgstr ""
+msgstr "Ақшаны жарату мүмкіндігі жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:237
 msgid "Ability to spend real money in-game"
-msgstr ""
+msgstr "Ойынша шын ақшаны жарату мүмкіндігі"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:240
 msgid "No way to chat with other players"
-msgstr ""
+msgstr "Басқа ойыншылармен чат мүмкін емес"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:243
@@ -2813,47 +2859,47 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:249
 msgid "Uncontrolled chat functionality between players"
-msgstr ""
+msgstr "Ойыншылар арасындағы басқарылмайтын чат мүмкіндігі"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:252
 msgid "No way to talk with other players"
-msgstr ""
+msgstr "Басқа ойыншылармен сөйлесу мүмкін емес"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:255
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr ""
+msgstr "Ойыншылар арасындағы басқарылмайтын аудио немесе видео чат мүмкіндігі"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:258
 msgid "No sharing of social network usernames or email addresses"
-msgstr ""
+msgstr "Әлеуметтік желілердегі аттар немесе эл. пошта адрестермен бөлісу жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:261
 msgid "Sharing social network usernames or email addresses"
-msgstr ""
+msgstr "Әлеуметтік желілердегі аттар немесе эл. пошта адрестермен бөлісу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:264
 msgid "No sharing of user information with 3rd parties"
-msgstr ""
+msgstr "Пайдаланушы ақпаратын 3-ші жақтармен бөлісу жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:267
 msgid "Sharing user information with 3rd parties"
-msgstr ""
+msgstr "Пайдаланушы ақпаратын 3-ші жақтармен бөлісу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:270
 msgid "No sharing of physical location to other users"
-msgstr ""
+msgstr "Басқа пайдаланушылармен нақты орналасумен бөлісу жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:273
 msgid "Sharing physical location to other users"
-msgstr ""
+msgstr "Басқа пайдаланушылармен нақты орналасумен бөлісу"
 
 #: src/gs-menus.ui:7
 msgid "_Software Sources"
@@ -2873,7 +2919,6 @@ msgstr "Бұл компьютерде БҚ-ны қосу, өшіру не жаң
 
 #. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
 #: src/org.gnome.Software.desktop.in:6
-#| msgid "Free Software"
 msgid "org.gnome.Software"
 msgstr "org.gnome.Software"
 
@@ -3322,6 +3367,21 @@ msgstr "Құрама түрін тексеру сәтсіз аяқталды"
 #: src/plugins/gs-install-appstream.c:149
 msgid "Failed to copy"
 msgstr "Көшіріп алу сәтсіз аяқталды"
+
+#. TRANSLATORS: this is a group of updates that are not
+#. * packages and are not shown in the main list
+#: src/plugins/gs-plugin-generic-updates.c:65
+msgid "OS Updates"
+msgstr "ОЖ жаңартулары"
+
+#. TRANSLATORS: this is a longer description of the
+#. * "OS Updates" string
+#: src/plugins/gs-plugin-generic-updates.c:70
+msgid "Includes performance, stability and security improvements."
+msgstr "Өнімділік, тұрақтылық және қауіпсіздік жақсартуларын әкеледі."
+
+#~ msgid "About Software"
+#~ msgstr "Осы туралы"
 
 #~ msgid "The GNOME Project"
 #~ msgstr "GNOME жобасы"
