@@ -34,7 +34,7 @@ struct {
 	const gchar *id;
 	const gchar *css;
 } myapps[] = {
-	{ "ardour2.desktop",
+	{ "ardour5.desktop",
 		"border-color: #333333;\n"
 		"text-shadow: 0 1px 1px rgba(0,0,0,0.5);\n"
 		"color: #ffffff;\n"
