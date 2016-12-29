@@ -419,13 +419,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		                    /* TRANSLATORS: this is a title for Fedora distro upgrades */
 		                    _("A major upgrade, with new features and added polish."));
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
-					/* TRANSLATORS: this is a description
-					 * displayed with Fedora distro upgrades */
-		                        _("Fedora Workstation is a polished, "
-		                          "easy to use operating system for "
-		                          "laptop and desktop computers, with a "
-		                          "complete set of tools for developers "
-		                          "and makers of all kinds."));
+		                        "Fedora Workstation is a polished, "
+		                        "easy to use operating system for "
+		                        "laptop and desktop computers, with a "
+		                        "complete set of tools for developers "
+		                        "and makers of all kinds.");
 		gs_app_set_version (app, app_version);
 		gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
 		gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
