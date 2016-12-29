@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
 #include <gnome-software.h>
 
@@ -391,8 +392,8 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
-				    "A major upgrade, with new features "
-				    "and added polish.");
+		                    /* TRANSLATORS: this is a title for Fedora distro upgrades */
+		                    _("A major upgrade, with new features and added polish."));
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
 					"Fedora Workstation is a polished, "
 					"easy to use operating system for "
