@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-01 18:22+0100\n"
-"PO-Revision-Date: 2016-12-01 18:23+0100\n"
+"POT-Creation-Date: 2016-12-29 18:17+0100\n"
+"PO-Revision-Date: 2016-12-29 18:18+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -243,7 +243,7 @@ msgstr "_Dodaj"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #. vim: set noexpandtab:
-#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
+#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
 #: ../src/gs-app-row.ui.h:1 ../src/gs-feature-tile.c:66
 #: ../src/gs-popular-tile.c:72 ../src/gs-popular-tile.c:75
 #: ../src/gs-summary-tile.c:78 ../src/gs-summary-tile.ui.h:1
@@ -300,7 +300,7 @@ msgstr "_Aktualizacje"
 msgid "Search"
 msgstr "Wyszukaj"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:426
+#: ../src/gs-app-addon-row.c:97 ../src/gs-app-row.c:426
 #: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "Oczekujące"
@@ -309,7 +309,7 @@ msgstr "Oczekujące"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:216
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:216
 #: ../src/gs-shell-details.c:410 ../src/gs-summary-tile.c:86
 msgid "Installing"
 msgstr "Instalowanie"
@@ -318,7 +318,7 @@ msgstr "Instalowanie"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:222
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:222
 #: ../src/gs-summary-tile.c:94
 msgid "Removing"
 msgstr "Usuwanie"
@@ -690,24 +690,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1104
+#: ../src/gs-plugin-loader.c:1133
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1109
+#: ../src/gs-plugin-loader.c:1138
 msgid "Includes performance, stability and security improvements."
 msgstr "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1806 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1835 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Brak dodatkowych kodeków dla formatu %s."
 
-#: ../src/gs-plugin-loader.c:1809
+#: ../src/gs-plugin-loader.c:1838
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1124,7 +1124,7 @@ msgstr "Należy używać tylko zaufanych źródeł oprogramowania."
 msgid "_Website"
 msgstr "_Witryna"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:791
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:793
 msgid "Details"
 msgstr "Informacje"
 
@@ -2080,7 +2080,7 @@ msgstr "System %s %s jest gotowy do zainstalowania"
 #. vim: set noexpandtab:
 #: ../src/gs-upgrade-banner.ui.h:1
 msgid "A major upgrade, with new features and added polish."
-msgstr "Znacząca aktualizacja, dodająca nowe funkcje i naprawiająca błędy."
+msgstr "Duża aktualizacja, dodająca nowe funkcje i naprawiająca błędy."
 
 #: ../src/gs-upgrade-banner.ui.h:2
 msgid "_Learn More"
@@ -2219,369 +2219,369 @@ msgid "Enable and Install"
 msgstr "Włącz i zainstaluj"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:403
+#: ../src/gs-common.c:405
 msgctxt "content rating violence-cartoon"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:406
+#: ../src/gs-common.c:408
 msgid "Cartoon characters in unsafe situations"
 msgstr "Rysunkowe postacie w niebezpiecznych sytuacjach"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:409
+#: ../src/gs-common.c:411
 msgid "Cartoon characters in aggressive conflict"
 msgstr "Rysunkowe postacie w agresywnym konflikcie"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:412
+#: ../src/gs-common.c:414
 msgid "Graphic violence involving cartoon characters"
 msgstr "Obrazowa przemoc dotycząca rysunkowych postaci"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:415
+#: ../src/gs-common.c:417
 msgctxt "content rating violence-fantasy"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:418
+#: ../src/gs-common.c:420
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr ""
 "Postacie w niebezpiecznych sytuacjach, łatwo odróżnialnych od rzeczywistości"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:421
+#: ../src/gs-common.c:423
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr "Postacie w agresywnym konflikcie, łatwo odróżnialnym od rzeczywistości"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:424
+#: ../src/gs-common.c:426
 msgid "Graphic violence easily distinguishable from reality"
 msgstr "Obrazowa przemoc, łatwo odróżnialna od rzeczywistości"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:427
+#: ../src/gs-common.c:429
 msgctxt "content rating violence-realistic"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:430
+#: ../src/gs-common.c:432
 msgid "Mildly realistic characters in unsafe situations"
 msgstr "Średnio realistyczne postacie w niebezpiecznych sytuacjach"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:433
+#: ../src/gs-common.c:435
 msgid "Depictions of realistic characters in aggressive conflict"
 msgstr "Przedstawienia realistycznych postaci w agresywnym konflikcie"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:436
+#: ../src/gs-common.c:438
 msgid "Graphic violence involving realistic characters"
 msgstr "Obrazowa przemoc dotycząca realistycznych postaci"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:439
+#: ../src/gs-common.c:441
 msgctxt "content rating violence-bloodshed"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:442
+#: ../src/gs-common.c:444
 msgid "Unrealistic bloodshed"
 msgstr "Nierealistyczny rozlew krwi"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:445
+#: ../src/gs-common.c:447
 msgid "Realistic bloodshed"
 msgstr "Realistyczny rozlew krwi"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:448
+#: ../src/gs-common.c:450
 msgid "Depictions of bloodshed and the mutilation of body parts"
 msgstr "Przedstawienia rozlewu krwi i okaleczeń części ciała"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:451
+#: ../src/gs-common.c:453
 msgctxt "content rating violence-sexual"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:454
+#: ../src/gs-common.c:456
 msgid "Rape or other violent sexual behavior"
 msgstr "Gwałt lub inne brutalne zachowanie seksualne"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:457
+#: ../src/gs-common.c:459
 msgctxt "content rating drugs-alcohol"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:460
+#: ../src/gs-common.c:462
 msgid "References to alcoholic beverages"
 msgstr "Odniesienia do napojów alkoholowych"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:463
+#: ../src/gs-common.c:465
 msgid "Use of alcoholic beverages"
 msgstr "Spożycie napojów alkoholowych"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:466
+#: ../src/gs-common.c:468
 msgctxt "content rating drugs-narcotics"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:469
+#: ../src/gs-common.c:471
 msgid "References to illicit drugs"
 msgstr "Odniesienia do narkotyków"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:472
+#: ../src/gs-common.c:474
 msgid "Use of illicit drugs"
 msgstr "Spożycie narkotyków"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:475
+#: ../src/gs-common.c:477
 msgid "References to tobacco products"
 msgstr "Odniesienia do wyrobów tytoniowych"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:478
+#: ../src/gs-common.c:480
 msgid "Use of tobacco products"
 msgstr "Spożycie wyrobów tytoniowych"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:481
+#: ../src/gs-common.c:483
 msgctxt "content rating sex-nudity"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:484
+#: ../src/gs-common.c:486
 msgid "Brief artistic nudity"
 msgstr "Krótkotrwała nagość artystyczna"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:487
+#: ../src/gs-common.c:489
 msgid "Prolonged nudity"
 msgstr "Długotrwała nagość"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:490
+#: ../src/gs-common.c:492
 msgctxt "content rating sex-themes"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:493
+#: ../src/gs-common.c:495
 msgid "Provocative references or depictions"
 msgstr "Wyzywające odniesienia lub przedstawienia"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:496
+#: ../src/gs-common.c:498
 msgid "Sexual references or depictions"
 msgstr "Seksualne odniesienia lub przedstawienia"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:499
+#: ../src/gs-common.c:501
 msgid "Graphic sexual behavior"
 msgstr "Obrazowe zachowania seksualne"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:502
+#: ../src/gs-common.c:504
 msgctxt "content rating language-profanity"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:505
+#: ../src/gs-common.c:507
 msgid "Mild or infrequent use of profanity"
 msgstr "Lekkie lub nieczęste użycie przekleństw"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:508
+#: ../src/gs-common.c:510
 msgid "Moderate use of profanity"
 msgstr "Umiarkowane użycie przekleństw"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:511
+#: ../src/gs-common.c:513
 msgid "Strong or frequent use of profanity"
 msgstr "Silne lub częste użycie przekleństw"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:514
+#: ../src/gs-common.c:516
 msgctxt "content rating language-humor"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:517
+#: ../src/gs-common.c:519
 msgid "Slapstick humor"
 msgstr "Komedia slapstikowa"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:520
+#: ../src/gs-common.c:522
 msgid "Vulgar or bathroom humor"
 msgstr "Komedia wulgarna lub toaletowa"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:523
+#: ../src/gs-common.c:525
 msgid "Mature or sexual humor"
 msgstr "Komedia dla dorosłych lub seksualna"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:526
+#: ../src/gs-common.c:528
 msgctxt "content rating language-discrimination"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:529
+#: ../src/gs-common.c:531
 msgid "Negativity towards a specific group of people"
 msgstr "Niechęć wobec konkretnej grupy ludzi"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:532
+#: ../src/gs-common.c:534
 msgid "Discrimination designed to cause emotional harm"
 msgstr "Dyskryminacja mająca na celu krzywdę emocjonalną"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:535
+#: ../src/gs-common.c:537
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr ""
 "Jawna dyskryminacja ze względu na płeć, orientację seksualną, rasę lub "
 "religię"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:538
+#: ../src/gs-common.c:540
 msgctxt "content rating money-advertising"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:541
+#: ../src/gs-common.c:543
 msgid "Product placement"
 msgstr "Lokowanie produktu"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:544
+#: ../src/gs-common.c:546
 msgid "Explicit references to specific brands or trademarked products"
 msgstr "Jawne odniesienia do konkretnych marek lub zastrzeżonych produktów"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:547
+#: ../src/gs-common.c:549
 msgid "Players are encouraged to purchase specific real-world items"
 msgstr "Gracze są zachęcani do zakupu fizycznych przedmiotów"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:550
+#: ../src/gs-common.c:552
 msgctxt "content rating money-gambling"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:553
+#: ../src/gs-common.c:555
 msgid "Gambling on random events using tokens or credits"
 msgstr "Zakłady o losowe wydarzenia używające żetonów lub punktów"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:556
+#: ../src/gs-common.c:558
 msgid "Gambling using \"play\" money"
 msgstr "Zakłady używające wirtualnych pieniędzy"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:559
+#: ../src/gs-common.c:561
 msgid "Gambling using real money"
 msgstr "Zakłady używające prawdziwych pieniędzy"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:562
+#: ../src/gs-common.c:564
 msgctxt "content rating money-purchasing"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:565
+#: ../src/gs-common.c:567
 msgid "Ability to spend real money in-game"
 msgstr "Możliwość wydawania prawdziwych pieniędzy w grze"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:568
+#: ../src/gs-common.c:570
 msgctxt "content rating social-chat"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:571
+#: ../src/gs-common.c:573
 msgid "Player-to-player game interactions without chat functionality"
 msgstr "Interakcje w grze między graczami bez funkcji rozmów tekstowych"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:574
+#: ../src/gs-common.c:576
 msgid "Player-to-player preset interactions without chat functionality"
 msgstr ""
 "Wcześniej ustalone interakcje między graczami bez funkcji rozmów tekstowych"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:577
+#: ../src/gs-common.c:579
 msgid "Uncontrolled chat functionality between players"
 msgstr "Niekontrolowana funkcja rozmów tekstowych między graczami"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:580
+#: ../src/gs-common.c:582
 msgctxt "content rating social-audio"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:583
+#: ../src/gs-common.c:585
 msgid "Uncontrolled audio or video chat functionality between players"
 msgstr "Niekontrolowana funkcja rozmów głosowych lub wideo między graczami"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:586
+#: ../src/gs-common.c:588
 msgctxt "content rating social-contacts"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:589
+#: ../src/gs-common.c:591
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
 "Udostępnianie nazw użytkowników serwisów społecznościowych lub adresów e-mail"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:592
+#: ../src/gs-common.c:594
 msgctxt "content rating social-info"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:595
+#: ../src/gs-common.c:597
 msgid "Sharing user information with 3rd parties"
 msgstr "Udostępnianie informacji o użytkownikach stronom trzecim"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:598
+#: ../src/gs-common.c:600
 msgctxt "content rating social-location"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:601
+#: ../src/gs-common.c:603
 msgid "Sharing physical location to other users"
 msgstr "Udostępnianie rzeczywistego adresu innym użytkownikom"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:772
+#: ../src/gs-common.c:774
 msgid "Detailed errors from the package manager follow:"
 msgstr "Szczegółowe błędy z menedżera pakietów:"
 
@@ -3049,3 +3049,12 @@ msgstr "Źródła"
 #: ../src/plugins/gs-desktop-common.c:356
 msgid "Utilities"
 msgstr "Narzędzia"
+
+msgid ""
+"Fedora Workstation is a polished, easy to use operating system for laptop "
+"and desktop computers, with a complete set of tools for developers and "
+"makers of all kinds."
+msgstr ""
+"Fedora Workstation to dopracowany, łatwy w obsłudze system operacyjny dla "
+"laptopów i komputerów stacjonarnych, zawierający pełny zestaw narzędzi dla "
+"programistów i twórców wszelkiego rodzaju."
