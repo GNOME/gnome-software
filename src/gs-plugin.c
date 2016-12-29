@@ -437,7 +437,7 @@ gs_plugin_get_appstream_id (GsPlugin *plugin)
  *
  * Since: 3.24
  **/
-const void
+void
 gs_plugin_set_appstream_id (GsPlugin *plugin, const gchar *appstream_id)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
