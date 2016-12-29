@@ -2,26 +2,24 @@
 # Aviary.pl
 # Jeśli masz jakiekolwiek uwagi odnoszące się do tłumaczenia lub chcesz
 # pomóc w jego rozwijaniu i pielęgnowaniu, napisz do nas:
-# gnomepl@aviary.pl
+# community-poland@mozilla.org
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # Piotr Drąg <piotrdrag@gmail.com>, 2012-2016.
-# Aviary.pl <gnomepl@aviary.pl>, 2012-2016.
+# Aviary.pl <community-poland@mozilla.org>, 2012-2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-07-12 21:07+0200\n"
-"PO-Revision-Date: 2016-07-12 21:08+0200\n"
+"POT-Creation-Date: 2016-12-29 18:21+0100\n"
+"PO-Revision-Date: 2016-12-29 18:22+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
-"Language-Team: Polish <gnomepl@aviary.pl>\n"
+"Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Poedit-Language: Polish\n"
-"X-Poedit-Country: Poland\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -323,7 +321,7 @@ msgstr "Wyświetla numer wersji"
 msgid "translator-credits"
 msgstr ""
 "Piotr Drąg <piotrdrag@gmail.com>, 2012-2016\n"
-"Aviary.pl <gnomepl@aviary.pl>, 2012-2016"
+"Aviary.pl <community-poland@mozilla.org>, 2012-2016"
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:373
@@ -366,7 +364,7 @@ msgstr "Anuluj"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:271 ../src/gs-app-row.c:278 ../src/gs-page.c:285
+#: ../src/gs-app-row.c:271 ../src/gs-app-row.c:278 ../src/gs-page.c:382
 #: ../src/gs-utils.c:312
 msgid "Install"
 msgstr "Zainstaluj"
@@ -374,7 +372,7 @@ msgstr "Zainstaluj"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:282 ../src/gs-app-row.c:293 ../src/gs-page.c:356
+#: ../src/gs-app-row.c:282 ../src/gs-app-row.c:293 ../src/gs-page.c:453
 msgid "Remove"
 msgstr "Usuń"
 
@@ -403,7 +401,7 @@ msgstr "Należy się zalogować przed kontynuowaniem."
 #: ../src/gs-auth-dialog.c:74
 #, c-format
 msgid "To continue you need to sign in to %s."
-msgstr "Należy się zalogować w serwisie %s przed kontynuowaniem."
+msgstr "Należy się zalogować w serwisie %s przed kontynuowaniem."
 
 #. vim: set noexpandtab:
 #: ../src/gs-auth-dialog.ui.h:1
@@ -460,67 +458,67 @@ msgid "Featured"
 msgstr "Polecane"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: ../src/gs-dbus-helper.c:307
+#: ../src/gs-dbus-helper.c:308
 msgid "An application"
 msgstr "Program"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: ../src/gs-dbus-helper.c:313
+#: ../src/gs-dbus-helper.c:314
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "Program %s wymaga dodatkowej obsługi formatu pliku."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:315
+#: ../src/gs-dbus-helper.c:316
 msgid "Additional MIME Types Required"
 msgstr "Wymagany jest dodatkowy typ MIME"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: ../src/gs-dbus-helper.c:319
+#: ../src/gs-dbus-helper.c:320
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "Program %s wymaga dodatkowych czcionek."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:321
+#: ../src/gs-dbus-helper.c:322
 msgid "Additional Fonts Required"
 msgstr "Wymagane są dodatkowe czcionki"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: ../src/gs-dbus-helper.c:325
+#: ../src/gs-dbus-helper.c:326
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "Program %s wymaga dodatkowych kodeków multimedialnych."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:327
+#: ../src/gs-dbus-helper.c:328
 msgid "Additional Multimedia Codecs Required"
 msgstr "Wymagane są dodatkowe kodeki multimedialne"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: ../src/gs-dbus-helper.c:331
+#: ../src/gs-dbus-helper.c:332
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "Program %s wymaga dodatkowych sterowników drukarki."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:333
+#: ../src/gs-dbus-helper.c:334
 msgid "Additional Printer Drivers Required"
 msgstr "Wymagane są dodatkowe sterowniki drukarki"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: ../src/gs-dbus-helper.c:337
+#: ../src/gs-dbus-helper.c:338
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "Program %s wymaga dodatkowych pakietów."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:339
+#: ../src/gs-dbus-helper.c:340
 msgid "Additional Packages Required"
 msgstr "Wymagane są dodatkowe pakiety"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: ../src/gs-dbus-helper.c:348
+#: ../src/gs-dbus-helper.c:349
 msgid "Find in Software"
 msgstr "Znajdź w menedżerze oprogramowania"
 
@@ -593,20 +591,20 @@ msgstr "Historia"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:279
+#: ../src/gs-page.c:376
 #, c-format
 msgid "Prepare %s"
 msgstr "Przygotuj program %s"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:347
+#: ../src/gs-page.c:444
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:352
+#: ../src/gs-page.c:449
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -615,24 +613,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:679
+#: ../src/gs-plugin-loader.c:723
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:684
+#: ../src/gs-plugin-loader.c:728
 msgid "Includes performance, stability and security improvements."
 msgstr "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1391 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1435 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Brak dostępnych dodatkowych kodeków dla formatu %s."
 
-#: ../src/gs-plugin-loader.c:1394
+#: ../src/gs-plugin-loader.c:1438
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -855,15 +853,15 @@ msgstr "Ustawienia rozszerzenia"
 #. * can be live-installed
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
-#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:202 ../src/gs-shell-details.c:228
+#: ../src/gs-shell-details.c:233 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:6
 msgid "_Install"
 msgstr "_Zainstaluj"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:212
+#: ../src/gs-shell-details.c:213
 msgid "_Installing"
 msgstr "_Instalowanie"
 
@@ -871,7 +869,7 @@ msgstr "_Instalowanie"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:245
+#: ../src/gs-shell-details.c:246
 msgid "_Install…"
 msgstr "_Zainstaluj…"
 
@@ -956,13 +954,13 @@ msgstr ""
 msgid "This software may contain non-free components."
 msgstr "To oprogramowanie może zawierać własnościowe składniki."
 
-#: ../src/gs-shell-details.c:1135
+#: ../src/gs-shell-details.c:1204
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nie można odnaleźć „%s”"
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1198 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1267 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "To nie zadziałało"
 
@@ -1888,7 +1886,7 @@ msgstr "System %s %s jest gotowy do zainstalowania"
 #. vim: set noexpandtab:
 #: ../src/gs-upgrade-banner.ui.h:1
 msgid "A major upgrade, with new features and added polish."
-msgstr "Znacząca aktualizacja, dodająca nowe funkcje i naprawiająca błędy."
+msgstr "Duża aktualizacja, dodająca nowe funkcje i naprawiająca błędy."
 
 #: ../src/gs-upgrade-banner.ui.h:2
 msgid "_Learn More"
@@ -2904,8 +2902,8 @@ msgid ""
 "you continue, the following will be automatically removed during the "
 "upgrade:"
 msgstr ""
-"Część obecnie zainstalowanego oprogramowania jest niezgodna z systemem "
-"%s. Kontynuacja aktualizacji spowoduje automatyczne usunięcie poniższych "
+"Część obecnie zainstalowanego oprogramowania jest niezgodna z systemem %s. "
+"Kontynuacja aktualizacji spowoduje automatyczne usunięcie poniższych "
 "programów:"
 
 msgid "Upgrade to %s failed."
@@ -2916,3 +2914,12 @@ msgstr "Niezgodne oprogramowanie"
 
 msgid "_Continue"
 msgstr "_Kontynuuj"
+
+msgid ""
+"Fedora Workstation is a polished, easy to use operating system for laptop "
+"and desktop computers, with a complete set of tools for developers and "
+"makers of all kinds."
+msgstr ""
+"Fedora Workstation to dopracowany, łatwy w obsłudze system operacyjny dla "
+"laptopów i komputerów stacjonarnych, zawierający pełny zestaw narzędzi dla "
+"programistów i twórców wszelkiego rodzaju."
