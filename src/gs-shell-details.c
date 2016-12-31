@@ -1961,6 +1961,8 @@ gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
 			continue;
 		if (g_strcmp0 (tokens[i], "|") == 0)
 			continue;
+		if (g_strcmp0 (tokens[i], "+") == 0)
+			continue;
 
 		/* add widget */
 		w = gs_shell_details_license_widget_for_token (self, tokens[i]);
