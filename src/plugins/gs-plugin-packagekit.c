@@ -275,6 +275,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		/* get everything up front we need */
 		source_ids = gs_app_get_source_ids (app);
+		if (source_ids->len == 0) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "installing not available");
+			return FALSE;
+		}
 		package_ids = g_new0 (gchar *, 2);
 		package_ids[0] = g_strdup (g_ptr_array_index (source_ids, 0));
 
