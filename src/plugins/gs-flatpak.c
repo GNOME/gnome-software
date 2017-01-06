@@ -1923,6 +1923,69 @@ gs_flatpak_app_remove (GsFlatpak *self,
 	return TRUE;
 }
 
+static gboolean
+install_runtime_for_app (GsFlatpak *self,
+			 GsApp *app,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	GsApp *runtime;
+	runtime = gs_app_get_runtime (app);
+
+	/* the runtime could come from a different remote to the app */
+	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+	if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+	if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+	if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "Failed to find runtime %s",
+			     gs_app_get_source_default (runtime));
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* not installed */
+	if (gs_app_get_state (runtime) == AS_APP_STATE_AVAILABLE) {
+		g_autoptr(FlatpakInstalledRef) xref = NULL;
+
+		g_debug ("%s/%s is not already installed, so installing",
+			 gs_app_get_id (runtime),
+			 gs_app_get_flatpak_branch (runtime));
+		gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
+
+		xref = flatpak_installation_install (self->installation,
+						     gs_app_get_origin (runtime),
+						     gs_app_get_flatpak_kind (runtime),
+						     gs_app_get_flatpak_name (runtime),
+						     gs_app_get_flatpak_arch (runtime),
+						     gs_app_get_flatpak_branch (runtime),
+						     gs_flatpak_progress_cb, app,
+						     cancellable, error);
+		if (xref == NULL) {
+			gs_app_set_state_recover (runtime);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+		gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
+	} else {
+		g_debug ("%s is already installed, so skipping",
+			 gs_app_get_id (runtime));
+	}
+
+	return TRUE;
+}
+
 gboolean
 gs_flatpak_app_install (GsFlatpak *self,
 			GsApp *app,
@@ -1948,57 +2011,9 @@ gs_flatpak_app_install (GsFlatpak *self,
 	}
 
 	/* install required runtime if not already installed */
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
-		GsApp *runtime;
-		runtime = gs_app_get_runtime (app);
-
-		/* the runtime could come from a different remote to the app */
-		if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-		if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-		if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-		if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Failed to find runtime %s",
-				     gs_app_get_source_default (runtime));
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
-
-		/* not installed */
-		if (gs_app_get_state (runtime) == AS_APP_STATE_AVAILABLE) {
-			g_debug ("%s is not already installed, so installing",
-				 gs_app_get_id (runtime));
-			gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
-			xref = flatpak_installation_install (self->installation,
-							     gs_app_get_origin (runtime),
-							     gs_app_get_flatpak_kind (runtime),
-							     gs_app_get_flatpak_name (runtime),
-							     gs_app_get_flatpak_arch (runtime),
-							     gs_app_get_flatpak_branch (runtime),
-							     gs_flatpak_progress_cb, app,
-							     cancellable, error);
-			if (xref == NULL) {
-				gs_app_set_state_recover (runtime);
-				gs_app_set_state_recover (app);
-				return FALSE;
-			}
-			gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
-		} else {
-			g_debug ("%s is already installed, so skipping",
-				 gs_app_get_id (runtime));
-		}
-	}
+	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
+	    !install_runtime_for_app (self, app, cancellable, error))
+		return FALSE;
 
 	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") == 0) {
 		/* no local_file set */
@@ -2056,6 +2071,12 @@ gs_flatpak_update_app (GsFlatpak *self,
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+	/* install required runtime if not already installed */
+	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
+	    !install_runtime_for_app (self, app, cancellable, error))
+		return FALSE;
+
 	xref = flatpak_installation_update (self->installation,
 					    FLATPAK_UPDATE_FLAGS_NONE,
 					    gs_app_get_flatpak_kind (app),
