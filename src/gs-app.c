@@ -91,6 +91,7 @@ struct _GsApp
 	gchar			*update_version_ui;
 	gchar			*update_details;
 	AsUrgencyKind		 update_urgency;
+	GsApp			*update_runtime;
 	gchar			*management_plugin;
 	guint			 match_value;
 	guint			 priority;
@@ -496,6 +497,10 @@ gs_app_to_string (GsApp *app)
 	if (app->runtime != NULL) {
 		g_autofree gchar *runtime = gs_app_to_string (app->runtime);
 		g_string_append_printf (str, "\n\tRuntime:\n\t%s\n", runtime);
+	}
+	if (app->update_runtime != NULL) {
+		g_autofree gchar *runtime = gs_app_to_string (app->update_runtime);
+		g_string_append_printf (str, "\n\tUpdate Runtime:\n\t%s\n", runtime);
 	}
 
 	return g_string_free (str, FALSE);
@@ -1453,7 +1458,7 @@ gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
  * gs_app_get_runtime:
  * @app: a #GsApp
  *
- * Gets the runtime for the application.
+ * Gets the runtime for the installed application.
  *
  * Returns: (transfer none): a #GsApp, or %NULL for unset
  *
@@ -1471,7 +1476,7 @@ gs_app_get_runtime (GsApp *app)
  * @app: a #GsApp
  * @runtime: a #GsApp
  *
- * Sets the runtime that the application requires.
+ * Sets the runtime that the installed application requires.
  *
  * Since: 3.22
  **/
@@ -1481,6 +1486,40 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->runtime, runtime);
+}
+
+/**
+ * gs_app_get_update_runtime:
+ * @app: a #GsApp
+ *
+ * Gets the runtime required for the application update.
+ *
+ * Returns: (transfer none): a #GsApp, or %NULL for unset
+ *
+ * Since: 3.24
+ **/
+GsApp *
+gs_app_get_update_runtime (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->update_runtime;
+}
+
+/**
+ * gs_app_set_update_runtime:
+ * @app: a #GsApp
+ * @runtime: a #GsApp
+ *
+ * Sets the runtime that the application update requires.
+ *
+ * Since: 3.24
+ **/
+void
+gs_app_set_update_runtime (GsApp *app, GsApp *runtime)
+{
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_return_if_fail (GS_IS_APP (app));
+	g_set_object (&app->update_runtime, runtime);
 }
 
 /**
@@ -2519,7 +2558,10 @@ gs_app_get_size_download (GsApp *app)
 	sz = app->size_download;
 
 	/* add the runtime if this is not installed */
-	if (app->runtime != NULL) {
+	if (app->update_runtime != NULL) {
+		if (gs_app_get_state (app->update_runtime) == AS_APP_STATE_AVAILABLE)
+			sz += gs_app_get_size_installed (app->update_runtime);
+	} else if (app->runtime != NULL) {
 		if (gs_app_get_state (app->runtime) == AS_APP_STATE_AVAILABLE)
 			sz += gs_app_get_size_installed (app->runtime);
 	}
@@ -3465,6 +3507,7 @@ gs_app_dispose (GObject *object)
 	GsApp *app = GS_APP (object);
 
 	g_clear_object (&app->runtime);
+	g_clear_object (&app->update_runtime);
 
 	g_clear_pointer (&app->addons, g_ptr_array_unref);
 	g_clear_pointer (&app->history, g_ptr_array_unref);

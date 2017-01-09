@@ -368,7 +368,7 @@ gs_refine_item_management_plugin (GsPlugin *plugin, GsApp *app, AsApp *item)
 					g_debug ("runtime for %s is %s",
 						 gs_app_get_unique_id (app),
 						 runtime);
-					gs_app_set_runtime (app, app2);
+					gs_app_set_update_runtime (app, app2);
 				}
 			}
 			break;
