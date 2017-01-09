@@ -677,6 +677,8 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderJob *job,
 		job->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
 	if (job->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
 		job->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
+	if (job->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)
+		job->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
 
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (job->plugin_loader, list);
@@ -748,7 +750,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderJob *job,
 	}
 
 	/* also do runtime */
-	if ((job->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
+	if ((job->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) > 0) {
 		g_autoptr(GsAppList) list2 = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *runtime;
