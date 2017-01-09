@@ -1418,7 +1418,8 @@ gs_app_set_local_file (GsApp *app, GFile *local_file)
  * gs_app_get_runtime:
  * @app: a #GsApp
  *
- * Gets the runtime for the installed application.
+ * Gets the runtime for the installed application if the application is already
+ * installed, or the runtime for the available application otherwise.
  *
  * Returns: (transfer none): a #GsApp, or %NULL for unset
  *
@@ -1428,7 +1429,9 @@ GsApp *
 gs_app_get_runtime (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->runtime;
+	if (gs_app_is_installed (app))
+		return app->runtime;
+	return app->update_runtime;
 }
 
 /**
