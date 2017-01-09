@@ -1930,7 +1930,7 @@ install_runtime_for_app (GsFlatpak *self,
 			 GError **error)
 {
 	GsApp *runtime;
-	runtime = gs_app_get_runtime (app);
+	runtime = gs_app_get_update_runtime (app);
 
 	/* the runtime could come from a different remote to the app */
 	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
