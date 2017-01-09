@@ -1753,7 +1753,8 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	}
 
 	/* permissions */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME ||
+	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
 		if (!gs_plugin_refine_item_metadata (self, app,
 						     cancellable, error)) {
 			g_prefix_error (error, "failed to get permissions: ");

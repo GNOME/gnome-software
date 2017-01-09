@@ -167,6 +167,7 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS:		Require the needed permissions
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME:	Require the origin hostname
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI:		Require the origin for UI
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME:		Require the runtime
  *
  * The refine flags.
  **/
@@ -196,6 +197,7 @@ typedef enum {
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS	(1u << 22)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME	(1u << 23)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI	(1u << 24)
+#define GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME		(1u << 25)
 typedef guint64 GsPluginRefineFlags;
 
 /**

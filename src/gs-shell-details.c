@@ -1455,6 +1455,7 @@ gs_shell_details_set_local_file (GsShellDetails *self, GFile *file)
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
 					    self->cancellable,
 					    gs_shell_details_file_to_app_cb,
@@ -1477,6 +1478,7 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
 					   self->cancellable,
 					   gs_shell_details_app_refine_cb,
