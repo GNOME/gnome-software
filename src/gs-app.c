@@ -142,6 +142,48 @@ enum {
 
 G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
 
+static gboolean
+_g_set_str (gchar **str_ptr, const gchar *new_str)
+{
+	if (*str_ptr == new_str || g_strcmp0 (*str_ptr, new_str) == 0)
+		return FALSE;
+	g_free (*str_ptr);
+	*str_ptr = g_strdup (new_str);
+	return TRUE;
+}
+
+static gboolean
+_g_set_strv (gchar ***strv_ptr, gchar **new_strv)
+{
+	if (*strv_ptr == new_strv)
+		return FALSE;
+	g_strfreev (*strv_ptr);
+	*strv_ptr = g_strdupv (new_strv);
+	return TRUE;
+}
+
+static gboolean
+_g_set_ptr_array (GPtrArray **array_ptr, GPtrArray *new_array)
+{
+	if (*array_ptr == new_array)
+		return FALSE;
+	if (*array_ptr != NULL)
+		g_ptr_array_unref (*array_ptr);
+	*array_ptr = g_ptr_array_ref (new_array);
+	return TRUE;
+}
+
+static gboolean
+_g_set_array (GArray **array_ptr, GArray *new_array)
+{
+	if (*array_ptr == new_array)
+		return FALSE;
+	if (*array_ptr != NULL)
+		g_array_unref (*array_ptr);
+	*array_ptr = g_array_ref (new_array);
+	return TRUE;
+}
+
 static void
 gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 {
@@ -558,9 +600,8 @@ gs_app_set_id (GsApp *app, const gchar *id)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->id);
-	app->id = g_strdup (id);
-	app->unique_id_valid = FALSE;
+	if (_g_set_str (&app->id, id))
+		app->unique_id_valid = FALSE;
 }
 
 /**
@@ -593,6 +634,11 @@ void
 gs_app_set_scope (GsApp *app, AsAppScope scope)
 {
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* same */
+	if (scope == app->scope)
+		return;
+
 	app->scope = scope;
 
 	/* no longer valid */
@@ -629,6 +675,11 @@ void
 gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
 {
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* same */
+	if (bundle_kind == app->bundle_kind)
+		return;
+
 	app->bundle_kind = bundle_kind;
 
 	/* no longer valid */
@@ -700,6 +751,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 {
 	gboolean state_change_ok = FALSE;
 
+	/* same */
 	if (app->state == state)
 		return FALSE;
 
@@ -916,6 +968,8 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 	gboolean state_change_ok = FALSE;
 
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* same */
 	if (app->kind == kind)
 		return;
 
@@ -1060,9 +1114,7 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 	if (quality <= app->name_quality)
 		return;
 	app->name_quality = quality;
-
-	g_free (app->name);
-	app->name = g_strdup (name);
+	_g_set_str (&app->name, name);
 }
 
 /**
@@ -1096,11 +1148,8 @@ gs_app_set_branch (GsApp *app, const gchar *branch)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->branch);
-	app->branch = g_strdup (branch);
-
-	/* no longer valid */
-	app->unique_id_valid = FALSE;
+	if (_g_set_str (&app->branch, branch))
+		app->unique_id_valid = FALSE;
 }
 
 /**
@@ -1182,9 +1231,7 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (app->sources != NULL)
-		g_ptr_array_unref (app->sources);
-	app->sources = g_ptr_array_ref (sources);
+	_g_set_ptr_array (&app->sources, sources);
 }
 
 /**
@@ -1254,9 +1301,7 @@ gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (app->source_ids != NULL)
-		g_ptr_array_unref (app->source_ids);
-	app->source_ids = g_ptr_array_ref (source_ids);
+	_g_set_ptr_array (&app->source_ids, source_ids);
 }
 
 /**
@@ -1318,8 +1363,7 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->project_group);
-	app->project_group = g_strdup (project_group);
+	_g_set_str (&app->project_group, project_group);
 }
 
 /**
@@ -1659,10 +1703,11 @@ gs_app_set_version (GsApp *app, const gchar *version)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->version);
-	app->version = g_strdup (version);
-	gs_app_ui_versions_invalidate (app);
-	gs_app_queue_notify (app, "version");
+
+	if (_g_set_str (&app->version, version)) {
+		gs_app_ui_versions_invalidate (app);
+		gs_app_queue_notify (app, "version");
+	}
 }
 
 /**
@@ -1702,9 +1747,7 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 	if (quality <= app->summary_quality)
 		return;
 	app->summary_quality = quality;
-
-	g_free (app->summary);
-	app->summary = g_strdup (summary);
+	_g_set_str (&app->summary, summary);
 }
 
 /**
@@ -1744,9 +1787,7 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 	if (quality <= app->description_quality)
 		return;
 	app->description_quality = quality;
-
-	g_free (app->description);
-	app->description = g_strdup (description);
+	_g_set_str (&app->description, description);
 }
 
 /**
@@ -1878,9 +1919,7 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 			break;
 		}
 	}
-
-	g_free (app->license);
-	app->license = g_strdup (license);
+	_g_set_str (&app->license, license);
 }
 
 /**
@@ -1914,8 +1953,7 @@ gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->summary_missing);
-	app->summary_missing = g_strdup (summary_missing);
+	_g_set_str (&app->summary_missing, summary_missing);
 }
 
 /**
@@ -1952,8 +1990,7 @@ gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_strfreev (app->menu_path);
-	app->menu_path = g_strdupv (menu_path);
+	_g_set_strv (&app->menu_path, menu_path);
 }
 
 /**
@@ -1987,7 +2024,9 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 {
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
-	if (origin == app->origin)
+
+	/* same */
+	if (g_strcmp0 (origin, app->origin) == 0)
 		return;
 
 	/* trying to change */
@@ -2039,10 +2078,7 @@ gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (origin_ui == app->origin_ui)
-		return;
-	g_free (app->origin_ui);
-	app->origin_ui = g_strdup (origin_ui);
+	_g_set_str (&app->origin_ui, origin_ui);
 }
 
 /**
@@ -2087,7 +2123,8 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 
 	g_return_if_fail (GS_IS_APP (app));
 
-	if (origin_hostname == app->origin_hostname)
+	/* same */
+	if (g_strcmp0 (origin_hostname, app->origin_hostname) == 0)
 		return;
 	g_free (app->origin_hostname);
 
@@ -2184,9 +2221,8 @@ gs_app_get_update_version_ui (GsApp *app)
 static void
 gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 {
-	g_free (app->update_version);
-	app->update_version = g_strdup (update_version);
-	gs_app_ui_versions_invalidate (app);
+	if (_g_set_str (&app->update_version, update_version))
+		gs_app_ui_versions_invalidate (app);
 }
 
 /**
@@ -2238,8 +2274,7 @@ gs_app_set_update_details (GsApp *app, const gchar *update_details)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->update_details);
-	app->update_details = g_strdup (update_details);
+	_g_set_str (&app->update_details, update_details);
 }
 
 /**
@@ -2272,6 +2307,8 @@ void
 gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (update_urgency == app->update_urgency)
+		return;
 	app->update_urgency = update_urgency;
 }
 
@@ -2374,6 +2411,8 @@ void
 gs_app_set_rating (GsApp *app, gint rating)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (rating == app->rating)
+		return;
 	app->rating = rating;
 	gs_app_queue_notify (app, "rating");
 }
@@ -2409,9 +2448,7 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (app->review_ratings != NULL)
-		g_array_unref (app->review_ratings);
-	app->review_ratings = g_array_ref (review_ratings);
+	_g_set_array (&app->review_ratings, review_ratings);
 }
 
 /**
@@ -2547,6 +2584,8 @@ void
 gs_app_set_size_download (GsApp *app, guint64 size_download)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (size_download == app->size_download)
+		return;
 	app->size_download = size_download;
 }
 
@@ -2595,6 +2634,8 @@ void
 gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (size_installed == app->size_installed)
+		return;
 	app->size_installed = size_installed;
 }
 
@@ -2845,6 +2886,8 @@ void
 gs_app_set_install_date (GsApp *app, guint64 install_date)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (install_date == app->install_date)
+		return;
 	app->install_date = install_date;
 }
 
@@ -2946,9 +2989,7 @@ gs_app_set_categories (GsApp *app, GPtrArray *categories)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (categories != NULL);
-	if (app->categories != NULL)
-		g_ptr_array_unref (app->categories);
-	app->categories = g_ptr_array_ref (categories);
+	_g_set_ptr_array (&app->categories, categories);
 }
 
 /**
@@ -3003,9 +3044,7 @@ gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_colors != NULL);
-	if (app->key_colors != NULL)
-		g_ptr_array_unref (app->key_colors);
-	app->key_colors = g_ptr_array_ref (key_colors);
+	_g_set_ptr_array (&app->key_colors, key_colors);
 }
 
 /**
@@ -3057,9 +3096,7 @@ gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (keywords != NULL);
-	if (app->keywords != NULL)
-		g_ptr_array_unref (app->keywords);
-	app->keywords = g_ptr_array_ref (keywords);
+	_g_set_ptr_array (&app->keywords, keywords);
 }
 
 /**
