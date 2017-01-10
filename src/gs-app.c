@@ -2025,7 +2025,7 @@ gs_app_get_origin (GsApp *app)
 void
 gs_app_set_origin (GsApp *app, const gchar *origin)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	if (origin == app->origin)
 		return;
@@ -2039,6 +2039,7 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 		return;
 	}
 
+	locker = g_mutex_locker_new (&app->mutex);
 	g_free (app->origin);
 	app->origin = g_strdup (origin);
 
