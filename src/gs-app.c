@@ -2607,6 +2607,12 @@ gs_app_get_size_download (GsApp *app)
 			sz += gs_app_get_size_installed (app->runtime);
 	}
 
+	/* add related apps */
+	for (guint i = 0; i < app->related->len; i++) {
+		GsApp *app_related = g_ptr_array_index (app->related, i);
+		sz += gs_app_get_size_download (app_related);
+	}
+
 	return sz;
 }
 
