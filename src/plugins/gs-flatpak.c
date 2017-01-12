@@ -842,13 +842,82 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	return TRUE;
 }
 
+/* return a new list which contains all the GsApps that are not related to
+ * each other */
+static GsAppList *
+gs_flatpak_list_convert_related (GsFlatpak *self, GsAppList *list,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	g_autoptr(GHashTable) hash_rel = NULL;
+	g_autoptr(GsAppList) list_new = gs_app_list_new ();
+
+	/* use a hash to map the related package back to the main package */
+	hash_rel = g_hash_table_new_full (g_str_hash, g_str_equal,
+					  g_free, (GDestroyNotify) g_object_unref);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		const gchar *remote_name = gs_app_get_origin (app);
+		g_autoptr(GPtrArray) related_xrefs = NULL;
+		g_autofree gchar *ref = NULL;
+
+		/* lookup any related refs for this ref */
+		ref = g_strdup_printf ("%s/%s/%s/%s",
+				       gs_app_get_flatpak_kind_as_str (app),
+				       gs_app_get_flatpak_name (app),
+				       gs_app_get_flatpak_arch (app),
+				       gs_app_get_flatpak_branch (app));
+		related_xrefs = flatpak_installation_list_installed_related_refs_sync (self->installation,
+										       remote_name,
+										       ref,
+										       cancellable,
+										       error);
+		if (related_xrefs == NULL) {
+			return NULL;
+		}
+		for (guint j = 0; j < related_xrefs->len; j++) {
+			FlatpakRelatedRef *xref_rel = g_ptr_array_index (related_xrefs, j);
+			g_autoptr(GsApp) app_rel = NULL;
+
+			/* not related */
+			if (!flatpak_related_ref_should_download (xref_rel))
+				continue;
+
+			/* keep track of this so we don't add it on its own */
+			app_rel = gs_plugin_create_app (self, FLATPAK_REF (xref_rel));
+			g_hash_table_insert (hash_rel,
+					     g_strdup (gs_app_get_unique_id (app_rel)),
+					     g_object_ref (app));
+		}
+	}
+
+	/* is this related to something else */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsApp *app_parent;
+		app_parent = g_hash_table_lookup (hash_rel, gs_app_get_unique_id (app));
+		if (app_parent != NULL) {
+			g_debug ("adding %s as related to %s",
+				 gs_app_get_unique_id (app),
+				 gs_app_get_unique_id (app_parent));
+			gs_app_add_related (app_parent, app);
+		} else {
+			gs_app_list_add (list_new, app);
+		}
+	}
+
+	/* success */
+	return g_steal_pointer (&list_new);
+}
+
 gboolean
 gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
 {
-	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
+	g_autoptr(GsAppList) list_new = gs_app_list_new ();
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
 	/* get all the installed apps (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -857,7 +926,9 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 	if (xrefs == NULL) {
 		return FALSE;
 	}
-	for (i = 0; i < xrefs->len; i++) {
+
+	/* look at each installed xref */
+	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		const gchar *commit;
 		const gchar *latest_commit;
@@ -889,9 +960,16 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 		}
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_size_download (app, 0);
-		gs_app_list_add (list, app);
+		gs_app_list_add (list_tmp, app);
 	}
 
+	/* convert the results to be related */
+	list_new = gs_flatpak_list_convert_related (self, list_tmp, cancellable, error);
+	if (list_new == NULL)
+		return FALSE;
+	gs_app_list_add_list (list, list_new);
+
+	/* success */
 	return TRUE;
 }
 
