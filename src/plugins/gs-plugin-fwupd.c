@@ -567,8 +567,13 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		gs_app_set_size_download (app, 0);
 
 	/* only return things in the right state */
-	if (is_downloaded != g_file_test (filename_cache, G_FILE_TEST_EXISTS))
+	if (is_downloaded != g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
+		g_debug ("%s does not exist for %s, ignoring",
+			 filename_cache,
+			 gs_app_get_unique_id (app));
+		gs_plugin_fwupd_add_required_location (plugin, update_uri);
 		return TRUE;
+	}
 
 	/* actually add the application */
 	file = g_file_new_for_path (filename_cache);
