@@ -40,10 +40,14 @@ struct _GsUpdateListClass
 							 GsApp		*app);
 };
 
-GtkWidget	*gs_update_list_new		(void);
-void		 gs_update_list_add_app		(GsUpdateList	*update_list,
-						 GsApp		*app);
-GsAppList	*gs_update_list_get_apps	(GsUpdateList	*update_list);
+GtkWidget	*gs_update_list_new			(void);
+void		 gs_update_list_add_app			(GsUpdateList	*update_list,
+							 GsApp		*app);
+void		 gs_update_list_remove_all		(GsUpdateList	*update_list);
+GsAppList	*gs_update_list_get_apps		(GsUpdateList	*update_list);
+gboolean	 gs_update_list_has_headers		(GsUpdateList	*update_list);
+void		 gs_update_list_set_force_headers	(GsUpdateList	*update_list,
+							 gboolean	 force_headers);
 
 G_END_DECLS
 

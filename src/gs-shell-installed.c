@@ -454,7 +454,8 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 			      "xalign", 0.0,
 			      NULL);
 		context = gtk_widget_get_style_context (header);
-		gtk_style_context_add_class (context, "header-label");
+		gtk_style_context_add_class (context, "app-listbox-header");
+		gtk_style_context_add_class (context, "app-listbox-header-title");
 	} else if (!gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
 		   gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
 		/* TRANSLATORS: This is the header dividing the normal
@@ -464,7 +465,8 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 			      "xalign", 0.0,
 			      NULL);
 		context = gtk_widget_get_style_context (header);
-		gtk_style_context_add_class (context, "header-label");
+		gtk_style_context_add_class (context, "app-listbox-header");
+		gtk_style_context_add_class (context, "app-listbox-header-title");
 	} else {
 		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	}

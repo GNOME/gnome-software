@@ -92,7 +92,6 @@ struct _GsShellUpdates
 	GtkWidget		*updates_box;
 	GtkWidget		*button_updates_mobile;
 	GtkWidget		*button_updates_offline;
-	GtkWidget		*fake_header_bar;
 	GtkWidget		*label_updates_failed;
 	GtkWidget		*label_updates_last_checked;
 	GtkWidget		*label_updates_spinner;
@@ -250,7 +249,7 @@ gs_shell_updates_get_state_string (GsPluginStatus status)
 static void
 gs_shell_updates_update_ui_state (GsShellUpdates *self)
 {
-	GtkWidget *old_parent;
+	GsUpdateList *update_list;
 	gboolean allow_mobile_refresh = TRUE;
 	g_autofree gchar *checked_str = NULL;
 	g_autofree gchar *spinner_str = NULL;
@@ -328,8 +327,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 				  gs_plugin_loader_get_network_available (self->plugin_loader));
 
 	/* headerbar update button */
+	update_list = GS_UPDATE_LIST (self->list_box_updates);
+	gs_update_list_set_force_headers (update_list,
+			self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
 	gtk_widget_set_visible (self->button_update_all,
-				self->result_flags != GS_SHELL_UPDATES_FLAG_NONE);
+				!gs_update_list_has_headers (update_list));
 
 	/* stack */
 	switch (self->state) {
@@ -382,31 +384,6 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	default:
 		g_assert_not_reached ();
 		break;
-	}
-
-	/* any upgrades? */
-	if (self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES) {
-		/* move header bar buttons to the fake header bar */
-		g_object_ref (self->button_update_all);
-		old_parent = gtk_widget_get_parent (self->button_update_all);
-		if (old_parent != NULL)
-			gtk_container_remove (GTK_CONTAINER (old_parent), self->button_update_all);
-		gtk_header_bar_pack_end (GTK_HEADER_BAR (self->fake_header_bar), self->button_update_all);
-		g_object_unref (self->button_update_all);
-
-		gtk_widget_show (self->fake_header_bar);
-		gtk_widget_show (self->upgrade_banner);
-	} else {
-		/* move header bar buttons to the real header bar */
-		g_object_ref (self->button_update_all);
-		old_parent = gtk_widget_get_parent (self->button_update_all);
-		if (old_parent != NULL)
-			gtk_container_remove (GTK_CONTAINER (old_parent), self->button_update_all);
-		gtk_container_add (GTK_CONTAINER (self->header_end_box), self->button_update_all);
-		g_object_unref (self->button_update_all);
-
-		gtk_widget_hide (self->fake_header_bar);
-		gtk_widget_hide (self->upgrade_banner);
 	}
 
 	/* any updates? */
@@ -591,7 +568,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 
 	if (self->action_cnt > 0)
 		return;
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_updates));
+	gs_update_list_remove_all (GS_UPDATE_LIST (self->list_box_updates));
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
@@ -1428,7 +1405,6 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, updates_box);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, button_updates_mobile);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, button_updates_offline);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, fake_header_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_last_checked);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_spinner);
