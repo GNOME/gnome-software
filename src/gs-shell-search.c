@@ -40,6 +40,7 @@ struct _GsShellSearch
 	GCancellable		*search_cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_button;
 	GsShell			*shell;
 	gchar			*appid_to_show;
 	gchar			*value;
@@ -145,7 +146,8 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		gtk_container_add (GTK_CONTAINER (self->list_box_search), app_row);
 		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 					    self->sizegroup_image,
-					    self->sizegroup_name);
+					    self->sizegroup_name,
+					    self->sizegroup_button);
 		gtk_widget_show (app_row);
 	}
 
@@ -430,6 +432,7 @@ gs_shell_search_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_button);
 
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
@@ -479,6 +482,7 @@ gs_shell_search_init (GsShellSearch *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
 GsShellSearch *

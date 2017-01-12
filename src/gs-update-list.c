@@ -32,8 +32,9 @@
 
 typedef struct
 {
-	GtkSizeGroup	*sizegroup_image;
-	GtkSizeGroup	*sizegroup_name;
+	GtkSizeGroup		*sizegroup_image;
+	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_button;
 } GsUpdateListPrivate;
 
 enum {
@@ -69,7 +70,8 @@ gs_update_list_add_app (GsUpdateList *update_list,
 	gtk_container_add (GTK_CONTAINER (update_list), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    priv->sizegroup_image,
-				    priv->sizegroup_name);
+				    priv->sizegroup_name,
+				    priv->sizegroup_button);
 	gtk_widget_show (app_row);
 }
 
@@ -196,6 +198,7 @@ gs_update_list_dispose (GObject *object)
 
 	g_clear_object (&priv->sizegroup_image);
 	g_clear_object (&priv->sizegroup_name);
+	g_clear_object (&priv->sizegroup_button);
 
 	G_OBJECT_CLASS (gs_update_list_parent_class)->dispose (object);
 }
@@ -206,6 +209,7 @@ gs_update_list_init (GsUpdateList *update_list)
 	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	priv->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (update_list),
 				      list_header_func,

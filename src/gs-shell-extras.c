@@ -59,6 +59,7 @@ struct _GsShellExtras
 	GsShellExtrasState	  state;
 	GtkSizeGroup		 *sizegroup_image;
 	GtkSizeGroup		 *sizegroup_name;
+	GtkSizeGroup		 *sizegroup_button;
 	GPtrArray		 *array_search_data;
 	GsShellExtrasMode	  mode;
 	GsLanguage		 *language;
@@ -302,7 +303,8 @@ gs_shell_extras_add_app (GsShellExtras *self, GsApp *app, SearchData *search_dat
 	gtk_container_add (GTK_CONTAINER (self->list_box_results), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
-				    self->sizegroup_name);
+				    self->sizegroup_name,
+				    self->sizegroup_button);
 	gtk_widget_show (app_row);
 }
 
@@ -1160,6 +1162,7 @@ gs_shell_extras_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_button);
 	g_clear_object (&self->language);
 	g_clear_object (&self->vendor);
 	g_clear_object (&self->builder);
@@ -1180,6 +1183,7 @@ gs_shell_extras_init (GsShellExtras *self)
 	self->state = GS_SHELL_EXTRAS_STATE_LOADING;
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->vendor = gs_vendor_new ();
 
 	/* map ISO639 to language names */

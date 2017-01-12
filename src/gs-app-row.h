@@ -64,7 +64,8 @@ gboolean	 gs_app_row_get_selected		(GsAppRow	*app_row);
 GsApp		*gs_app_row_get_app			(GsAppRow	*app_row);
 void		 gs_app_row_set_size_groups		(GsAppRow	*app_row,
 							 GtkSizeGroup	*image,
-							 GtkSizeGroup	*name);
+							 GtkSizeGroup	*name,
+							 GtkSizeGroup	*button);
 void		 gs_app_row_set_show_installed_size	(GsAppRow	*app_row,
 							 gboolean	 show_size);
 

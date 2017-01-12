@@ -43,6 +43,7 @@ struct _GsShellInstalled
 	GCancellable		*cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_button;
 	gboolean		 cache_valid;
 	gboolean		 waiting;
 	GsShell			*shell;
@@ -188,7 +189,8 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 	gtk_container_add (GTK_CONTAINER (self->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
-				    self->sizegroup_name);
+				    self->sizegroup_name,
+				    self->sizegroup_button);
 
 	if (!gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY)) {
 		gs_app_row_set_show_installed_size (GS_APP_ROW (app_row),
@@ -783,6 +785,7 @@ gs_shell_installed_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_button);
 
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
@@ -823,6 +826,7 @@ gs_shell_installed_init (GsShellInstalled *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	self->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect_swapped (self->settings, "changed",

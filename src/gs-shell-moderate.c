@@ -41,6 +41,7 @@ struct _GsShellModerate
 	GCancellable		*cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_button;
 	GsShell			*shell;
 
 	GtkWidget		*list_box_install;
@@ -111,7 +112,8 @@ gs_shell_moderate_add_app (GsShellModerate *self, GsApp *app)
 	gtk_container_add (GTK_CONTAINER (self->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
-				    self->sizegroup_name);
+				    self->sizegroup_name,
+				    self->sizegroup_button);
 
 	/* add reviews */
 	reviews = gs_app_get_reviews (app);
@@ -264,6 +266,7 @@ gs_shell_moderate_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_button);
 
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
@@ -301,6 +304,7 @@ gs_shell_moderate_init (GsShellModerate *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
 GsShellModerate *
