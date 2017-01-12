@@ -64,7 +64,7 @@ gs_flatpak_build_id (FlatpakRef *xref)
 }
 
 static GsApp *
-gs_plugin_create_app (GsFlatpak *self, FlatpakRef *xref)
+gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 {
 	GsApp *app_cached;
 	g_autofree gchar *id = NULL;
@@ -624,7 +624,7 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	}
 
 	/* create new object */
-	app = gs_plugin_create_app (self, FLATPAK_REF (xref));
+	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
 	gs_flatpak_set_metadata_installed (self, app, xref);
 
 	switch (flatpak_ref_get_kind (FLATPAK_REF(xref))) {
@@ -884,7 +884,7 @@ gs_flatpak_list_convert_related (GsFlatpak *self, GsAppList *list,
 				continue;
 
 			/* keep track of this so we don't add it on its own */
-			app_rel = gs_plugin_create_app (self, FLATPAK_REF (xref_rel));
+			app_rel = gs_flatpak_create_app (self, FLATPAK_REF (xref_rel));
 			g_hash_table_insert (hash_rel,
 					     g_strdup (gs_app_get_unique_id (app_rel)),
 					     g_object_ref (app));
@@ -1319,7 +1319,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 static gboolean
 gs_flatpak_app_matches_xref (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
-	g_autoptr(GsApp) app_tmp = gs_plugin_create_app (self, xref);
+	g_autoptr(GsApp) app_tmp = gs_flatpak_create_app (self, xref);
 
 	/* check ID */
 	if (g_strcmp0 (gs_app_get_unique_id (app),
@@ -2200,7 +2200,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	}
 
 	/* load metadata */
-	app = gs_plugin_create_app (self, FLATPAK_REF (xref_bundle));
+	app = gs_flatpak_create_app (self, FLATPAK_REF (xref_bundle));
 	gs_app_set_flatpak_file_type (app, "flatpak");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
@@ -2507,7 +2507,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	}
 
 	/* load metadata */
-	app = gs_plugin_create_app (self, FLATPAK_REF (xref));
+	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
 	gs_app_set_flatpak_file_type (app, "flatpakref");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
