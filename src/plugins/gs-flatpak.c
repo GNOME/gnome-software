@@ -1600,6 +1600,29 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 	return TRUE;
 }
 
+static GsApp *
+gs_flatpak_create_runtime_from_metadata (GsFlatpak *self,
+					 const GsApp *app,
+					 const gchar *data,
+					 const gsize length,
+					 GError **error)
+{
+	g_autofree gchar *runtime = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+
+	kf = g_key_file_new ();
+	if (!g_key_file_load_from_data (kf, data, length, G_KEY_FILE_NONE, error)) {
+		gs_utils_error_convert_gio (error);
+		return NULL;
+	}
+	runtime = g_key_file_get_string (kf, "Application", "runtime", error);
+	if (runtime == NULL) {
+		gs_utils_error_convert_gio (error);
+		return NULL;
+	}
+	return gs_appstream_create_runtime (self->plugin, app, runtime);
+}
+
 static gboolean
 gs_flatpak_set_app_metadata (GsFlatpak *self,
 			     GsApp *app,
@@ -1672,6 +1695,41 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	return TRUE;
 }
 
+static GBytes *
+gs_flatpak_fetch_remote_metadata (GsFlatpak *self,
+				  GsApp *app,
+				  GCancellable *cancellable,
+				  GError **error)
+{
+	g_autoptr(GBytes) data = NULL;
+	g_autoptr(FlatpakRef) xref = NULL;
+
+	/* no origin */
+	if (gs_app_get_origin (app) == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no origin set for %s",
+			     gs_app_get_unique_id (app));
+		return NULL;
+	}
+
+	/* fetch from the server */
+	xref = gs_flatpak_create_fake_ref (app, error);
+	if (xref == NULL)
+		return NULL;
+	data = flatpak_installation_fetch_remote_metadata_sync (self->installation,
+								gs_app_get_origin (app),
+								xref,
+								cancellable,
+								error);
+	if (data == NULL) {
+		gs_plugin_flatpak_error_convert (error);
+		return NULL;
+	}
+	return g_steal_pointer (&data);
+}
+
 static gboolean
 gs_plugin_refine_item_metadata (GsFlatpak *self,
 				GsApp *app,
@@ -1719,31 +1777,8 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 			return FALSE;
 		str = contents;
 	} else {
-		g_autoptr(FlatpakRef) xref = NULL;
-
-		/* no origin */
-		if (gs_app_get_origin (app) == NULL) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no origin set for %s",
-				     gs_app_get_unique_id (app));
-			return FALSE;
-		}
-
-		/* fetch from the server */
-		xref = gs_flatpak_create_fake_ref (app, error);
-		if (xref == NULL)
-			return FALSE;
-		data = flatpak_installation_fetch_remote_metadata_sync (self->installation,
-									gs_app_get_origin (app),
-									xref,
-									cancellable,
-									error);
-		if (data == NULL) {
-			gs_plugin_flatpak_error_convert (error);
-			return FALSE;
-		}
+		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable,
+							 error);
 		str = g_bytes_get_data (data, &len);
 	}
 
@@ -2176,11 +2211,28 @@ install_runtime_for_app (GsFlatpak *self,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsApp *runtime = gs_app_get_update_runtime (app);
+	GsApp *runtime;
+	gsize len;
+	const gchar *str;
+	g_autoptr(GBytes) data = gs_flatpak_fetch_remote_metadata (self, app,
+								   cancellable,
+								   error);
+
+	if (data == NULL) {
+		gs_utils_error_add_unique_id (error, app);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	str = g_bytes_get_data (data, &len);
+	runtime = gs_flatpak_create_runtime_from_metadata (self, app, str, len,
+							   error);
 
 	/* no runtime required */
 	if (runtime == NULL)
 		return TRUE;
+
+	gs_app_set_update_runtime (app, runtime);
 
 	/* the runtime could come from a different remote to the app */
 	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
@@ -2236,6 +2288,8 @@ install_runtime_for_app (GsFlatpak *self,
 		g_debug ("%s is already installed, so skipping",
 			 gs_app_get_id (runtime));
 	}
+
+	gs_app_set_runtime (app, runtime);
 
 	return TRUE;
 }
