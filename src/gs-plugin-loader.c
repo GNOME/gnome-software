@@ -4579,6 +4579,32 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 	return FALSE;
 }
 
+/**
+ * gs_plugin_loader_app_create:
+ * @plugin_loader: a #GsPluginLoader
+ * @unique_id: a unique_id
+ *
+ * Returns an application from the global cache, creating if required.
+ *
+ * Returns: (transfer full): a #GsApp
+ **/
+GsApp *
+gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_id)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GsApp *app;
+
+	/* already exists */
+	app = gs_app_list_lookup (priv->global_cache, unique_id);
+	if (app != NULL)
+		return g_object_ref (app);
+
+	/* create and add */
+	app = gs_app_new_from_unique_id (unique_id);
+	gs_app_list_add (priv->global_cache, app);
+	return app;
+}
+
 /******************************************************************************/
 
 AsProfile *

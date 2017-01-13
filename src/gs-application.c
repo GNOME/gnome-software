@@ -543,7 +543,7 @@ details_activated (GSimpleAction *action,
 		g_autoptr (GsApp) a = NULL;
 
 		if (as_utils_unique_id_valid (id))
-			a = gs_app_new_from_unique_id (id);
+			a = gs_plugin_loader_app_create (app->plugin_loader, id);
 		else
 			a = gs_app_new (id);
 
@@ -587,7 +587,7 @@ install_activated (GSimpleAction *action,
 	else
 		gs_application_initialize_ui (app);
 
-	a = gs_app_new_from_unique_id (id);
+	a = gs_plugin_loader_app_create (app->plugin_loader, id);
 	if (a == NULL) {
 		g_warning ("Could not create app from unique-id: %s", id);
 		return;
