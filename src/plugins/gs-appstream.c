@@ -329,8 +329,14 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 
 	/* search in the cache */
 	app_cache = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app));
-	if (app_cache != NULL)
+	if (app_cache != NULL) {
+		/* since the cached runtime can have been created somewhere else
+		 * (we're using a global cache), we need to make sure that a
+		 * source is set */
+		if (gs_app_get_source_default (app_cache) == NULL)
+			gs_app_add_source (app_cache, source);
 		return g_object_ref (app_cache);
+	}
 
 	/* save in the cache */
 	gs_plugin_cache_add (plugin, NULL, app);
