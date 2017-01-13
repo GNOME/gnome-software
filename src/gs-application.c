@@ -541,12 +541,11 @@ details_activated (GSimpleAction *action,
 		gs_shell_show_search_result (app->shell, id, search);
 	else {
 		g_autoptr (GsApp) a = NULL;
-
-		if (as_utils_unique_id_valid (id))
-			a = gs_plugin_loader_app_create (app->plugin_loader, id);
-		else
-			a = gs_app_new (id);
-
+		if (!as_utils_unique_id_valid (id)) {
+			g_warning ("Need to use a valid unique-id: %s", id);
+			return;
+		}
+		a = gs_plugin_loader_app_create (app->plugin_loader, id);
 		gs_shell_show_app (app->shell, a);
 	}
 }
