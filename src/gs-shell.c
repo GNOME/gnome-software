@@ -317,12 +317,11 @@ gs_shell_change_mode (GsShell *shell,
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		app = GS_APP (data);
-		if (gs_app_get_kind (app) != AS_APP_KIND_GENERIC ||
-		    gs_app_get_source_default (app) == NULL) {
-			gs_shell_details_set_app (priv->shell_details, data);
+		if (gs_app_get_local_file (app) != NULL) {
+			gs_shell_details_set_local_file (priv->shell_details,
+			                                 gs_app_get_local_file (app));
 		} else {
-			const gchar *tmp = gs_app_get_source_default (app);
-			gs_shell_details_set_filename (priv->shell_details, tmp);
+			gs_shell_details_set_app (priv->shell_details, data);
 		}
 		new_page = GS_PAGE (priv->shell_details);
 		break;
@@ -920,12 +919,11 @@ gs_shell_show_search (GsShell *shell, const gchar *search)
 }
 
 void
-gs_shell_show_filename (GsShell *shell, const gchar *filename)
+gs_shell_show_local_file (GsShell *shell, GFile *file)
 {
 	g_autoptr(GsApp) app = gs_app_new (NULL);
 	save_back_entry (shell);
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-	gs_app_add_source (app, filename);
+	gs_app_set_local_file (app, file);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
 			      (gpointer) app, TRUE);
 	gs_shell_activate (shell);

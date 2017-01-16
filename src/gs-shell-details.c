@@ -1438,12 +1438,9 @@ gs_shell_details_file_to_app_cb (GObject *source,
 }
 
 void
-gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
+gs_shell_details_set_local_file (GsShellDetails *self, GFile *file)
 {
-	g_autoptr(GFile) file = NULL;
-
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_LOADING);
-	file = g_file_new_for_path (filename);
 	gs_plugin_loader_file_to_app_async (self->plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
