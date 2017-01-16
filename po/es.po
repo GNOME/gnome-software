@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the gnome-software package.
 # 
 # 
-# Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014, 2015., 2016.
+# Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014, 2015., 2016, 2017.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-12-20 11:49+0000\n"
-"PO-Revision-Date: 2016-12-20 16:51+0100\n"
+"POT-Creation-Date: 2017-01-07 16:05+0000\n"
+"PO-Revision-Date: 2017-01-11 09:42+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: es <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -125,6 +125,10 @@ msgid ""
 "when using a metered connection (eventually downloading some metadata, "
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
+"Si está activada, GNOME Software actualiza automáticamente en segundo plano "
+"incluso al usar una conexión medida (descargando eventualmente algunos "
+"metadatos, comprobando si hay actualizaciones, etc., lo que puede acarrear "
+"costes al usuario)."
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether it’s the very first run of GNOME Software"
@@ -205,6 +209,10 @@ msgid ""
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr ""
+"Elegir un valor más grande implica menos consultas al servidor remoto, pero "
+"las actualizaciones de las capturas de pantalla pueden tardar más en "
+"mostrarse al usuario. El valor 0 implica no comprobar nunca el servidor "
+"remoto si la imagen ya existe en la caché."
 
 #: data/org.gnome.software.gschema.xml:78
 msgid "The server to use for application reviews"
@@ -484,7 +492,6 @@ msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013-2016"
 #. * the application name chosen by the distro
 #: src/gs-application.c:320
 #, c-format
-#| msgid "_About"
 msgid "About %s"
 msgstr "Acerca de %s"
 
@@ -909,7 +916,7 @@ msgstr ""
 #. Translators: A label for the total number of reviews.
 #: src/gs-review-histogram.ui:413
 msgid "ratings in total"
-msgstr ""
+msgstr "puntuación total"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #. This refers to the license of the application
@@ -1195,7 +1202,6 @@ msgstr "Para obtener más información, visite %s."
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1039
 #, c-format
-#| msgid "Unable to install %s: authentication was required"
 msgid "Unable to install %s: AC power is required"
 msgstr "No se puede instalar %s: se necesita conexión a la alimentación"
 
@@ -1261,7 +1267,6 @@ msgstr "No se puede actualizar %s: no tiene permisos para actualizar software"
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1139
 #, c-format
-#| msgid "Unable to update %s: authentication was required"
 msgid "Unable to update %s: AC power is required"
 msgstr "No se puede actualizar %s: se necesita conexión a la alimentación"
 
@@ -1326,7 +1331,6 @@ msgstr "No se puede actualizar a %s: no tiene permiso para actualizar"
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1237
 #, c-format
-#| msgid "Unable to upgrade to %s: authentication was required"
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "No se puede actualizar a %s: se necesita conexión a la alimentación"
 
@@ -1362,7 +1366,6 @@ msgstr "No se puede quitar %s: no tiene permisos para quitar software"
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1301
 #, c-format
-#| msgid "Unable to remove %s: authentication was required"
 msgid "Unable to remove %s: AC power is required"
 msgstr "No se puede quitar %s: se necesita conexión a la alimentación"
 
@@ -1512,13 +1515,13 @@ msgid "Free Software"
 msgstr "Software libre"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-shell-details.c:1978
+#: src/gs-shell-details.c:1980
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Los usuarios están limitados por la siguiente licencia:"
 msgstr[1] "Los usuarios están limitados por las siguientes licencias:"
 
-#: src/gs-shell-details.c:1994 src/gs-shell-details.ui:1488
+#: src/gs-shell-details.c:1996 src/gs-shell-details.ui:1488
 msgid "More information"
 msgstr "Más información"
 
@@ -2542,7 +2545,9 @@ msgstr "Descargando %s %s"
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s listo para instalar"
 
+#. TRANSLATORS: this is a title for Fedora distro upgrades
 #: src/gs-upgrade-banner.ui:34
+#: src/plugins/gs-plugin-fedora-distro-upgrades.c:420
 msgid "A major upgrade, with new features and added polish."
 msgstr "Una actualización mayor, con características nuevas y optimizaciones."
 
@@ -2570,6 +2575,8 @@ msgstr "Se han instalado las actualizaciones del SO"
 #: src/gs-common.c:142
 msgid "Recently installed updates are available to review"
 msgstr ""
+"Las actualizaciones instaladas recientemente están disponibles para su "
+"revisión"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -3438,7 +3445,7 @@ msgstr "Utilidades"
 #. TRANSLATORS: tool that is used when copying profiles system-wide
 #: src/plugins/gs-install-appstream.c:118
 msgid "GNOME Software AppStream system-wide installer"
-msgstr ""
+msgstr "Instalador de Appstream en todo el sistema de GNOME Software"
 
 #: src/plugins/gs-install-appstream.c:120
 msgid "Failed to parse command line arguments"
