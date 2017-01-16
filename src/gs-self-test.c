@@ -201,6 +201,23 @@ gs_plugin_func (void)
 	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
 	g_object_unref (list_remove);
 
+	/* test removing duplicates when some apps have no app ID */
+	list_remove = gs_app_list_new ();
+	app = gs_app_new (NULL);
+	gs_app_list_add (list_remove, app);
+	g_object_unref (app);
+	app = gs_app_new (NULL);
+	gs_app_list_add (list_remove, app);
+	g_object_unref (app);
+	app = gs_app_new (NULL);
+	gs_app_list_add (list_remove, app);
+	gs_app_set_id (app, "e");
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 3);
+	gs_app_list_filter_duplicates (list_remove, GS_APP_LIST_FILTER_FLAG_NONE);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 3);
+	g_object_unref (list_remove);
+
 	/* remove lazy-loaded app */
 	list_remove = gs_app_list_new ();
 	app = gs_app_new (NULL);
