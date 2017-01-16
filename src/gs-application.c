@@ -602,11 +602,13 @@ filename_activated (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *filename;
+	g_autoptr(GFile) file = NULL;
 
 	gs_application_initialize_ui (app);
 
 	g_variant_get (parameter, "(&s)", &filename);
-	gs_shell_show_filename (app->shell, filename);
+	file = g_file_new_for_path (filename);
+	gs_shell_show_local_file (app->shell, file);
 }
 
 static void
