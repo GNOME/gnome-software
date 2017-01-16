@@ -549,6 +549,7 @@ gs_utils_get_wilson_rating (guint64 star1,
 void
 gs_utils_error_add_unique_id (GError **error, GsApp *app)
 {
+	g_return_if_fail (GS_APP (app));
 	if (error == NULL || *error == NULL)
 		return;
 	g_prefix_error (error, "[%s] ", gs_app_get_unique_id (app));

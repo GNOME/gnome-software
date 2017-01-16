@@ -2176,8 +2176,11 @@ install_runtime_for_app (GsFlatpak *self,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsApp *runtime;
-	runtime = gs_app_get_update_runtime (app);
+	GsApp *runtime = gs_app_get_update_runtime (app);
+
+	/* no runtime required */
+	if (runtime == NULL)
+		return TRUE;
 
 	/* the runtime could come from a different remote to the app */
 	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
