@@ -379,14 +379,34 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 		break;
 	}
 
-	/* sort desktop files, then addons */
+	/* sort apps by kind */
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_DESKTOP:
-	case AS_APP_KIND_WEB_APP:
+	case AS_APP_KIND_OS_UPDATE:
 		g_string_append (key, "1:");
 		break;
-	case AS_APP_KIND_RUNTIME:
+	case AS_APP_KIND_DESKTOP:
 		g_string_append (key, "2:");
+		break;
+	case AS_APP_KIND_WEB_APP:
+		g_string_append (key, "3:");
+		break;
+	case AS_APP_KIND_RUNTIME:
+		g_string_append (key, "4:");
+		break;
+	case AS_APP_KIND_ADDON:
+		g_string_append (key, "5:");
+		break;
+	case AS_APP_KIND_CODEC:
+		g_string_append (key, "6:");
+		break;
+	case AS_APP_KIND_FONT:
+		g_string_append (key, "6:");
+		break;
+	case AS_APP_KIND_INPUT_METHOD:
+		g_string_append (key, "7:");
+		break;
+	case AS_APP_KIND_SHELL_EXTENSION:
+		g_string_append (key, "8:");
 		break;
 	default:
 		g_string_append (key, "9:");
@@ -431,16 +451,48 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 	return g_strcmp0 (key1, key2);
 }
 
-static gboolean
-gs_shell_installed_is_addon_id_kind (GsApp *app)
+typedef enum {
+	GS_UPDATE_LIST_SECTION_REMOVABLE_APPS,
+	GS_UPDATE_LIST_SECTION_SYSTEM_APPS,
+	GS_UPDATE_LIST_SECTION_ADDONS,
+	GS_UPDATE_LIST_SECTION_LAST
+} GsShellInstalledSection;
+
+static GsShellInstalledSection
+gs_shell_installed_get_app_section (GsApp *app)
 {
-	AsAppKind id_kind;
-	id_kind = gs_app_get_kind (app);
-	if (id_kind == AS_APP_KIND_DESKTOP)
-		return FALSE;
-	if (id_kind == AS_APP_KIND_WEB_APP)
-		return FALSE;
-	return TRUE;
+	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP ||
+	    gs_app_get_kind (app) == AS_APP_KIND_WEB_APP) {
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY))
+			return GS_UPDATE_LIST_SECTION_SYSTEM_APPS;
+		return GS_UPDATE_LIST_SECTION_REMOVABLE_APPS;
+	}
+	return GS_UPDATE_LIST_SECTION_ADDONS;
+}
+
+static GtkWidget *
+gs_shell_installed_get_section_header (GsShellInstalledSection section)
+{
+	GtkWidget *header = NULL;
+
+	if (section == GS_UPDATE_LIST_SECTION_SYSTEM_APPS) {
+		/* TRANSLATORS: This is the header dividing the normal
+		 * applications and the system ones */
+		header = gtk_label_new (_("System Applications"));
+	} else if (section == GS_UPDATE_LIST_SECTION_ADDONS) {
+		/* TRANSLATORS: This is the header dividing the normal
+		 * applications and the addons */
+		header = gtk_label_new (_("Add-ons"));
+	}
+
+	/* fix header style */
+	if (header != NULL) {
+		GtkStyleContext *context = gtk_widget_get_style_context (header);
+		gtk_label_set_xalign (GTK_LABEL (header), 0.0);
+		gtk_style_context_add_class (context, "app-listbox-header");
+		gtk_style_context_add_class (context, "app-listbox-header-title");
+	}
+	return header;
 }
 
 static void
@@ -448,38 +500,24 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 				     GtkListBoxRow *before,
 				     gpointer user_data)
 {
-	GtkStyleContext *context;
+	GsApp *app = gs_app_row_get_app (GS_APP_ROW (row));
+	GsShellInstalledSection before_section = GS_UPDATE_LIST_SECTION_LAST;
+	GsShellInstalledSection section;
 	GtkWidget *header;
 
-	/* reset */
+	/* first entry */
 	gtk_list_box_row_set_header (row, NULL);
-	if (before == NULL)
-		return;
+	if (before != NULL) {
+		GsApp *before_app = gs_app_row_get_app (GS_APP_ROW (before));
+		before_section = gs_shell_installed_get_app_section (before_app);
+	}
 
-	if (!gs_app_has_quirk (gs_app_row_get_app (GS_APP_ROW (before)),
-			       AS_APP_QUIRK_COMPULSORY) &&
-	    gs_app_has_quirk (gs_app_row_get_app (GS_APP_ROW (row)),
-			      AS_APP_QUIRK_COMPULSORY)) {
-		/* TRANSLATORS: This is the header dividing the normal
-		 * applications and the system ones */
-		header = gtk_label_new (_("System Applications"));
-		g_object_set (header,
-			      "xalign", 0.0,
-			      NULL);
-		context = gtk_widget_get_style_context (header);
-		gtk_style_context_add_class (context, "app-listbox-header");
-		gtk_style_context_add_class (context, "app-listbox-header-title");
-	} else if (!gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
-		   gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
-		/* TRANSLATORS: This is the header dividing the normal
-		 * applications and the addons */
-		header = gtk_label_new (_("Add-ons"));
-		g_object_set (header,
-			      "xalign", 0.0,
-			      NULL);
-		context = gtk_widget_get_style_context (header);
-		gtk_style_context_add_class (context, "app-listbox-header");
-		gtk_style_context_add_class (context, "app-listbox-header-title");
+	/* section changed or forced to have headers */
+	section = gs_shell_installed_get_app_section (app);
+	if (before_section != section) {
+		header = gs_shell_installed_get_section_header (section);
+		if (header == NULL)
+			return;
 	} else {
 		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	}
