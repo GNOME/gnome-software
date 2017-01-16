@@ -167,6 +167,18 @@ should_show_installed_size (GsShellInstalled *self)
 				       "installed-page-show-size");
 }
 
+static gboolean
+gs_shell_installed_is_actual_app (GsApp *app)
+{
+	if (gs_app_get_description (app) != NULL)
+		return TRUE;
+	/* special snowflake */
+	if (g_strcmp0 (gs_app_get_id (app), "google-chrome.desktop") == 0)
+		return TRUE;
+	g_debug ("%s is not an actual app", gs_app_get_unique_id (app));
+	return FALSE;
+}
+
 static void
 gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 {
@@ -199,7 +211,8 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 	gs_app_row_set_selectable (GS_APP_ROW (app_row),
 				   self->selection_mode);
 
-	gtk_widget_show (app_row);
+	/* only show if is an actual application */
+	gtk_widget_set_visible (app_row, gs_shell_installed_is_actual_app (app));
 }
 
 static void
@@ -577,8 +590,12 @@ set_selection_mode (GsShellInstalled *self, gboolean selection_mode)
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
 	for (l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
+		GsApp *app = gs_app_row_get_app (app_row);
 		gs_app_row_set_selectable (app_row,
 					   self->selection_mode);
+		gtk_widget_set_visible (GTK_WIDGET (app_row),
+					self->selection_mode ||
+					gs_shell_installed_is_actual_app (app));
 	}
 
 	gtk_revealer_set_reveal_child (GTK_REVEALER (self->bottom_install), self->selection_mode);
