@@ -572,6 +572,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	/* fallback warning */
 	screenshots = gs_app_get_screenshots (self->app);
 	switch (gs_app_get_kind (self->app)) {
+	case AS_APP_KIND_GENERIC:
 	case AS_APP_KIND_CODEC:
 	case AS_APP_KIND_ADDON:
 	case AS_APP_KIND_SOURCE:
