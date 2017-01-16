@@ -1008,6 +1008,13 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 
+	/* never show CLI apps */
+	if (gs_app_get_kind (app) == AS_APP_KIND_CONSOLE) {
+		g_debug ("app invalid as console %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
 	/* don't show unknown state */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
 		g_debug ("app invalid as job unknown %s",
