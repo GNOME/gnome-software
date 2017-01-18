@@ -135,7 +135,8 @@ gs_app_row_format_version_update (GsApp *app)
 		version_update = tmp;
 
 	/* have both */
-	if (version_current != NULL && version_update != NULL) {
+	if (version_current != NULL && version_update != NULL &&
+	    g_strcmp0 (version_current, version_update) != 0) {
 		return g_strdup_printf ("%s ▶ %s",
 					version_current,
 					version_update);
