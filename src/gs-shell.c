@@ -160,9 +160,7 @@ gs_shell_profile_dump (GsShell *shell)
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	if (priv->profile_mode) {
 		AsProfile *profile = gs_plugin_loader_get_profile (priv->plugin_loader);
-#if AS_CHECK_VERSION(0,6,4)
 		as_profile_prune (profile, 5000);
-#endif
 		as_profile_dump (profile);
 	}
 }

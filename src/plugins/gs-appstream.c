@@ -517,10 +517,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 AsApp *item,
 			 GError **error)
 {
-#if AS_CHECK_VERSION(0,6,7)
 	AsRequire *req;
 	g_autoptr(GError) error_local = NULL;
-#endif
 	GHashTable *urls;
 	GPtrArray *array;
 	GPtrArray *pkgnames;
@@ -548,7 +546,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_state (app, as_app_get_state (item));
 	}
 
-#if AS_CHECK_VERSION(0,6,7)
 	/* is compatible */
 	req = as_app_get_require_by_value (item,
 					   AS_REQUIRE_KIND_ID,
@@ -563,7 +560,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			return FALSE;
 		}
 	}
-#endif
 
 	/* types we can never launch */
 	switch (gs_app_get_kind (app)) {
