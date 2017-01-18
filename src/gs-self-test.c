@@ -405,6 +405,14 @@ gs_app_func (void)
 	/* correctly parse URL */
 	gs_app_set_origin_hostname (app, "https://mirrors.fedoraproject.org/metalink");
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "fedoraproject.org");
+
+	/* check setting the progress */
+	gs_app_set_progress (app, 42);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 42);
+	g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+			       "Cannot set*as the progress for app*");
+	gs_app_set_progress (app, 142);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 100);
 }
 
 static guint _status_changed_cnt = 0;
