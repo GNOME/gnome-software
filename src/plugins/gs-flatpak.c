@@ -2023,20 +2023,6 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		}
 	}
 
-	/* only do this until we have MetaInfo files in place */
-	if (g_strcmp0 (gs_app_get_name (app), "org.gnome.Platform") == 0) {
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 "GNOME Application Platform");
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
-					"Shared libraries used by GNOME applications.");
-	} else if (g_strcmp0 (gs_app_get_name (app), "org.gnome.Sdk") == 0) {
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 "GNOME Software Development Kit");
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
-					"Tools and headers for developing applications "
-					"using the GNOME application platform.");
-	}
-
 	return TRUE;
 }
 
