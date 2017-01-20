@@ -95,8 +95,7 @@ gs_flatpak_build_id (FlatpakRef *xref)
 		return g_strdup_printf ("%s.desktop",
 					flatpak_ref_get_name (xref));
 	}
-	return g_strdup_printf ("%s.runtime",
-				flatpak_ref_get_name (xref));
+	return g_strdup (flatpak_ref_get_name (xref));
 }
 
 static GsApp *
