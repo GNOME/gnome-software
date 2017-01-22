@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: richard@hughsie.com\n"
-"POT-Creation-Date: 2017-01-07 16:46+0100\n"
-"PO-Revision-Date: 2017-01-04 18:14+0100\n"
+"POT-Creation-Date: 2017-01-22 09:34+0100\n"
+"PO-Revision-Date: 2017-01-22 09:21+0100\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
@@ -42,6 +42,8 @@ msgid ""
 "If disabled, GNOME Software will hide the updates panel and not perform any "
 "automatic updates actions."
 msgstr ""
+" Si s'inhabilita, el Programari del GNOME ocultarà el quadre "
+"d'actualitzacions i no realitzarà cap acció automàtica d'actualització."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
 msgid "Whether to automatically download updates"
@@ -65,6 +67,10 @@ msgid ""
 "when using a metered connection (eventually downloading some metadata, "
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
+"Si s'habilita, el Programari del GNOME refresca automàticament en rerefons "
+"inclús quan s'utilitza una connexió limitada (eventualment baixant "
+"metadades, comprovant actualitzacions, etc el que podria representar despesa "
+"per l'usuari)."
 
 #: ../data/org.gnome.software.gschema.xml.h:9
 msgid "Whether it’s the very first run of GNOME Software"
@@ -77,6 +83,8 @@ msgstr "Mostra les valoracions en estrelles al costat de les aplicacions"
 #: ../data/org.gnome.software.gschema.xml.h:11
 msgid "Filter applications based on the default branch set for the remote"
 msgstr ""
+"Filtra les aplicacions basant-se en la branca per defecte configurada pel "
+"remot"
 
 #: ../data/org.gnome.software.gschema.xml.h:12
 msgid "Non-free applications show a warning dialog before install"
@@ -133,6 +141,8 @@ msgstr "La marca horària de l'última actualització"
 #: ../data/org.gnome.software.gschema.xml.h:22
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr ""
+"El temps en segons per verificar si la captura de pantalla font és encara "
+"vàlida"
 
 #: ../data/org.gnome.software.gschema.xml.h:23
 msgid ""
@@ -140,6 +150,10 @@ msgid ""
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr ""
+"Si escolliu un valor gran hi hauran menys connexions al servidor remot però "
+"les captures de pantalla poden trigar més temps en mostrar-se actualitzades "
+"a l'usuari. Un valor de 0 significa que no es comprovi mai el servidor si "
+"existeix una imatge en la memòria cau"
 
 #: ../data/org.gnome.software.gschema.xml.h:24
 msgid "The server to use for application reviews"
@@ -206,6 +220,8 @@ msgstr "Mostra programari no lliure als resultats de la cerca"
 #: ../data/org.gnome.software.gschema.xml.h:37
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
+"Mostra la mida de les aplicacions instal·lades a la llista d'aplicacions "
+"instal·lades"
 
 #: ../data/org.gnome.software.gschema.xml.h:38
 msgid "The URI that explains nonfree and proprietary software"
@@ -220,8 +236,10 @@ msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
 msgstr ""
+"Una llista dels URLs que apunten als fitxers fonts que es baixaran a la "
+"carpeta app-info"
 
-#: ../src/gs-app-addon-row.c:97 ../src/gs-app-row.c:429
+#: ../src/gs-app-addon-row.c:97 ../src/gs-app-row.c:430
 msgid "Pending"
 msgstr "Pendent"
 
@@ -232,14 +250,14 @@ msgstr "Instal·lat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:218
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:219
 #: ../src/gs-shell-details.c:418
 msgid "Installing"
 msgstr "S'està instal·lant"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:224
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:225
 msgid "Removing"
 msgstr "S'està suprimint"
 
@@ -248,7 +266,7 @@ msgid "Folder Name"
 msgstr "Nom de la carpeta"
 
 #: ../src/gs-app-folder-dialog.c:322 ../src/gs-shell-details.c:366
-#: ../src/gs-shell-installed.c:552
+#: ../src/gs-shell-installed.c:607
 msgid "_Cancel"
 msgstr "_Cancel·la"
 
@@ -308,6 +326,8 @@ msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
+"El tipus d'interacció que s'espera per aquesta acció: ‘none’, ‘notify’, o "
+"‘full’"
 
 #: ../src/gs-application.c:116
 msgid "Show verbose debugging information"
@@ -331,7 +351,7 @@ msgstr "Mostra el número de versió"
 
 #: ../src/gs-application.c:313
 msgid "translator-credits"
-msgstr "Jordi Mas i Hernàndez <jmas@softcatala.org>, 2013-2016"
+msgstr "Jordi Mas i Hernàndez <jmas@softcatala.org>, 2013-2017"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
@@ -348,20 +368,20 @@ msgstr "Una forma atractiva de gestionar el programari del sistema."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:171
+#: ../src/gs-app-row.c:172
 msgid "Visit website"
 msgstr "Visiteu el lloc web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:176
+#: ../src/gs-app-row.c:177
 msgid "Install…"
 msgstr "Instal·la..."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:183
+#: ../src/gs-app-row.c:184
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -369,31 +389,31 @@ msgstr "Cancel·la"
 #. * allows the application to be easily installed
 #. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:192 ../src/gs-page.c:366 ../src/gs-common.c:283
+#: ../src/gs-app-row.c:193 ../src/gs-page.c:366 ../src/gs-common.c:283
 msgid "Install"
 msgstr "Instal·la"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: ../src/gs-app-row.c:199
+#: ../src/gs-app-row.c:200
 msgid "Update"
 msgstr "Actualitza"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:203 ../src/gs-app-row.c:212 ../src/gs-page.c:517
+#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:517
 msgid "Remove"
 msgstr "Suprimeix"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:329
+#: ../src/gs-app-row.c:330
 msgid "Device cannot be used during update."
 msgstr "El dispositiu no pot utilitzar-se durant l'actualització."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339
+#: ../src/gs-app-row.c:340
 msgid "Source"
 msgstr "Font"
 
@@ -568,12 +588,12 @@ msgstr "Se suprimirà %s i haureu d'instal·lar-la per utilitzar-la de nou."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1878 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1887 ../src/gs-shell-extras.c:389
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No s'ha trobat cap còdec disponible per al format %s."
 
-#: ../src/gs-plugin-loader.c:1881
+#: ../src/gs-plugin-loader.c:1890
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -726,7 +746,7 @@ msgstr "Captura de pantalla"
 #. * where the first %s is a possibly multi-word localised distro
 #. * e.g. 'Fedora Project" and the second %s is the truncated
 #. * hostname, e.g. 'alt.fedoraproject.org'
-#: ../src/gs-shell.c:788
+#: ../src/gs-shell.c:785
 #, c-format
 msgid "“%s” [%s]"
 msgstr "«{%s}» [%s]"
@@ -740,15 +760,15 @@ msgstr "«{%s}» [%s]"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: ../src/gs-shell.c:795 ../src/gs-shell.c:801 ../src/gs-shell.c:817
-#: ../src/gs-shell.c:821
+#: ../src/gs-shell.c:792 ../src/gs-shell.c:798 ../src/gs-shell.c:814
+#: ../src/gs-shell.c:818
 #, c-format
 msgid "“%s”"
 msgstr "«{%s}»"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: ../src/gs-shell.c:841
+#: ../src/gs-shell.c:838
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr ""
@@ -756,18 +776,18 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: ../src/gs-shell.c:847
+#: ../src/gs-shell.c:844
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "No s'han pogut baixar les actualitzacions des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:854
+#: ../src/gs-shell.c:851
 msgid "Unable to download updates"
 msgstr "No s'han pogut baixar les actualitzacions"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:859
+#: ../src/gs-shell.c:856
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -776,7 +796,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: ../src/gs-shell.c:868
+#: ../src/gs-shell.c:865
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
@@ -784,24 +804,24 @@ msgstr ""
 "al disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:873
+#: ../src/gs-shell.c:870
 msgid "Unable to download updates: not enough disk space"
 msgstr ""
 "No s'han pogut baixar les actualitzacions: no hi havia prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:881
+#: ../src/gs-shell.c:878
 msgid "Unable to download updates: authentication was required"
 msgstr "No s'han pogut baixar les actualitzacions: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:886
+#: ../src/gs-shell.c:883
 msgid "Unable to download updates: authentication was invalid"
 msgstr ""
 "No s'han pogut baixar les actualitzacions: l'autenticació no era vàlida"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:891
+#: ../src/gs-shell.c:888
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -809,21 +829,21 @@ msgstr ""
 "programari"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:896
+#: ../src/gs-shell.c:893
 msgid "Unable to get list of updates"
 msgstr "No s'ha pogut obtenir una llista d'actualitzacions"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: ../src/gs-shell.c:938
+#: ../src/gs-shell.c:935
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "No s'ha pogut instal·lar %s ja que ha fallat la baixada des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:944
+#: ../src/gs-shell.c:941
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "No s'ha pogut instal·lar %s ja que ha fallat la baixada"
@@ -832,7 +852,7 @@ msgstr "No s'ha pogut instal·lar %s ja que ha fallat la baixada"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: ../src/gs-shell.c:956
+#: ../src/gs-shell.c:953
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
@@ -840,45 +860,45 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:962
+#: ../src/gs-shell.c:959
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "No s'ha pogut instal·lar %s ja que no és compatible"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:969
+#: ../src/gs-shell.c:966
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "No s'ha pogut instal·lar: calia accés a Internet però no estava disponible"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:975
+#: ../src/gs-shell.c:972
 msgid "Unable to install: the application has an invalid format"
 msgstr "No s'ha pogut instal·lar: l'aplicació tenia un forma invàlid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:980
+#: ../src/gs-shell.c:977
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "No s'ha pogut instal·lar %s: no hi ha prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:988
+#: ../src/gs-shell.c:985
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "No s'ha pogut instal·lar %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:995
+#: ../src/gs-shell.c:992
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "No s'ha pogut instal·lar %s: l'autenticació era invàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1002
+#: ../src/gs-shell.c:999
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -887,34 +907,34 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: ../src/gs-shell.c:1015
+#: ../src/gs-shell.c:1012
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "El vostre compte a «%s» ha estat suspès."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1019
+#: ../src/gs-shell.c:1016
 msgid "It is not possible to install software until this has been resolved."
 msgstr "No és possible instal·lar programari fins que això s'hagi resolt."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: ../src/gs-shell.c:1030
+#: ../src/gs-shell.c:1027
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Per a més informació, visiteu %s."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: ../src/gs-shell.c:1039
+#: ../src/gs-shell.c:1036
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "No s'ha pogut instal·lar %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1046
+#: ../src/gs-shell.c:1043
 #, c-format
 msgid "Unable to install %s"
 msgstr "No s'ha pogut instal·lar %s"
@@ -923,62 +943,63 @@ msgstr "No s'ha pogut instal·lar %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: ../src/gs-shell.c:1088
+#: ../src/gs-shell.c:1085
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "No s'ha pogut actualitzar %s des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1094
+#: ../src/gs-shell.c:1091
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "No s'ha pogut actualitzar %s ja que ha fallat la baixada"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1100
+#: ../src/gs-shell.c:1097
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "No s'ha pogut actualitzar: calia accés a Internet però no estava disponible."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1108
+#: ../src/gs-shell.c:1105
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "No s'ha pogut actualitzar %s: no hi havia prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1117
+#: ../src/gs-shell.c:1114
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "No s'ha pogut actualitzar %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1124
+#: ../src/gs-shell.c:1121
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "No s'ha pogut actualitzar %s: l'autenticació no era vàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1131
+#: ../src/gs-shell.c:1128
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
+"No s'ha pogut actualitzar %s: no teniu permís per a actualitzar programari"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: ../src/gs-shell.c:1139
+#: ../src/gs-shell.c:1136
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "No s'ha pogut actualitzar %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1146
+#: ../src/gs-shell.c:1143
 #, c-format
 msgid "Unable to update %s"
 msgstr "No es pot actualitzar %s"
@@ -986,96 +1007,97 @@ msgstr "No es pot actualitzar %s"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: ../src/gs-shell.c:1187
+#: ../src/gs-shell.c:1184
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "No es pot actualitzar a %s des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: ../src/gs-shell.c:1192
+#: ../src/gs-shell.c:1189
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
-msgstr"No s'ha pogut actualitzar a %s ja que ha fallat la baixada"
+msgstr "No s'ha pogut actualitzar a %s ja que ha fallat la baixada"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1199
+#: ../src/gs-shell.c:1196
 msgid "Unable to upgrade: internet access was required but wasn’t available"
-msgstr "No s'ha pogut actualitzar: calia accés a Internet però no estava disponible."
+msgstr ""
+"No s'ha pogut actualitzar: calia accés a Internet però no estava disponible."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: ../src/gs-shell.c:1207
-#,  c-format
+#: ../src/gs-shell.c:1204
+#, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "No s'ha pogut actualitzar %s: no hi havia prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: ../src/gs-shell.c:1216
-#,  c-format
+#: ../src/gs-shell.c:1213
+#, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "No s'ha pogut actualitzar %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: ../src/gs-shell.c:1223
+#: ../src/gs-shell.c:1220
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "No s'ha pogut actualitzar %s: l'autenticació no era vàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: ../src/gs-shell.c:1230
+#: ../src/gs-shell.c:1227
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "No s'ha pogut actualitzar %s: o teniu permís per a actualitzar"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: ../src/gs-shell.c:1237
+#: ../src/gs-shell.c:1234
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "No s'ha pogut actualitzar %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: ../src/gs-shell.c:1244
+#: ../src/gs-shell.c:1241
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "No s'ha pogut actualitzar a %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1282
+#: ../src/gs-shell.c:1279
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "No s'ha pogut suprimir %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1288
+#: ../src/gs-shell.c:1285
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "No s'ha pogut suprimir %s: l'autenticació era invàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1294
+#: ../src/gs-shell.c:1291
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "No s'ha pogut suprimir %s: no teniu permís per a suprimir programari"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1301
+#: ../src/gs-shell.c:1298
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "No s'ha pogut suprimir %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1308
+#: ../src/gs-shell.c:1305
 #, c-format
 msgid "Unable to remove %s"
 msgstr "No s'ha pogut suprimir %s"
@@ -1084,43 +1106,45 @@ msgstr "No s'ha pogut suprimir %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: ../src/gs-shell.c:1350
+#: ../src/gs-shell.c:1347
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "No s'ha pogut executar %s: %s no està instal·lat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1357 ../src/gs-shell.c:1397 ../src/gs-shell.c:1437
+#: ../src/gs-shell.c:1354 ../src/gs-shell.c:1394 ../src/gs-shell.c:1434
 msgid "Not enough disk space — free up some space and try again"
-msgstr "No hi havia prou espai al disc. Allibereu espai a disc i torneu-ho a provar"
+msgstr ""
+"No hi havia prou espai al disc. Allibereu espai a disc i torneu-ho a provar"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1392
+#: ../src/gs-shell.c:1389
 msgid "Failed to install file: authentication failed"
-msgstr "S'ha produït un error en instal·lar el fitxer: ha fallat l'autenticació"
+msgstr ""
+"S'ha produït un error en instal·lar el fitxer: ha fallat l'autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: ../src/gs-shell.c:1431
+#: ../src/gs-shell.c:1428
 #, c-format
 msgid "Unable to contact %s"
 msgstr "No s'ha pogut contactar %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: ../src/gs-shell.c:1446
+#: ../src/gs-shell.c:1443
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Cal reiniciar %s per a utilitzar els nous connectors."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: ../src/gs-shell.c:1451
+#: ../src/gs-shell.c:1448
 msgid "This application needs to be restarted to use new plugins."
 msgstr "Cal reiniciar aquesta aplicació per a utilitzar els nous connectors."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: ../src/gs-shell.c:1457
+#: ../src/gs-shell.c:1454
 msgid "AC power is required"
 msgstr "Cal estar connectat al corrent"
 
@@ -1156,7 +1180,7 @@ msgid "Removing…"
 msgstr "S'està suprimint…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:694
+#: ../src/gs-shell-details.c:695
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1165,30 +1189,30 @@ msgstr ""
 "Internet."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:821
+#: ../src/gs-shell-details.c:822
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconeguda"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:855
+#: ../src/gs-shell-details.c:856
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:901
+#: ../src/gs-shell-details.c:902
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconegut"
 
 #. TRANSLATORS: we need a remote server to process
-#: ../src/gs-shell-details.c:1295
+#: ../src/gs-shell-details.c:1296
 msgid "You need internet access to write a review"
 msgstr "Cal accés a Internet perquè pugueu escriure una ressenya"
 
-#: ../src/gs-shell-details.c:1418
+#: ../src/gs-shell-details.c:1419
 #, c-format
 msgid "Could not find “%s”"
 msgstr "No s'ha trobat «%s»"
@@ -1215,18 +1239,18 @@ msgid "More information"
 msgstr "Més informació"
 
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:145
+#: ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " i "
 
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:148
+#: ../src/gs-shell-extras.c:149
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:174
+#: ../src/gs-shell-extras.c:175
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1235,39 +1259,39 @@ msgstr[1] "Tipus de lletres disponibles per als script %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:182
+#: ../src/gs-shell-extras.c:183
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "Programari disponible per %s"
 msgstr[1] "Programari disponible per %s"
 
-#: ../src/gs-shell-extras.c:224
+#: ../src/gs-shell-extras.c:225
 msgid "Unable to Find Requested Software"
 msgstr "No s'ha pogut trobar el programari demanat"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:321
+#: ../src/gs-shell-extras.c:323
 #, c-format
 msgid "%s not found"
 msgstr "No s'ha trobat %s"
 
 #. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:325
+#: ../src/gs-shell-extras.c:327
 msgid "on the website"
 msgstr "al lloc web"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:332
+#: ../src/gs-shell-extras.c:334
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "No s'ha trobat cap aplicació disponible que proporcioni el fitxer %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:336 ../src/gs-shell-extras.c:347
-#: ../src/gs-shell-extras.c:358
+#: ../src/gs-shell-extras.c:338 ../src/gs-shell-extras.c:349
+#: ../src/gs-shell-extras.c:360
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1278,7 +1302,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
+#: ../src/gs-shell-extras.c:345 ../src/gs-shell-extras.c:367
 #, c-format
 msgid "No applications are available for %s support."
 msgstr ""
@@ -1286,14 +1310,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:354
+#: ../src/gs-shell-extras.c:356
 #, c-format
 msgid "%s is not available."
 msgstr "%s no està disponible."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:369
+#: ../src/gs-shell-extras.c:371
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1304,7 +1328,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:376
+#: ../src/gs-shell-extras.c:378
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr ""
@@ -1313,7 +1337,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:380
+#: ../src/gs-shell-extras.c:382
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1324,7 +1348,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:391
+#: ../src/gs-shell-extras.c:393
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1335,14 +1359,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:398
+#: ../src/gs-shell-extras.c:400
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "No s'ha trobat cap recurs Plasma per a la compatibilitat amb %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:402
+#: ../src/gs-shell-extras.c:404
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1353,14 +1377,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:409
+#: ../src/gs-shell-extras.c:411
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "No s'ha trobat cap controlador d'impressora per %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:413
+#: ../src/gs-shell-extras.c:415
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1369,12 +1393,12 @@ msgstr ""
 "Informació sobre %s, així com opcions per saber com obtenir un controlador "
 "per aquesta impressora poden trobar-se %s."
 
-#: ../src/gs-shell-extras.c:458
+#: ../src/gs-shell-extras.c:460
 msgid "this website"
 msgstr "aquest lloc web"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:462
+#: ../src/gs-shell-extras.c:464
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1389,35 +1413,34 @@ msgstr[1] ""
 "Desafortunadament, %s que cercàveu no s'han pogut trobar. Vegeu %s per a més "
 "informació."
 
-#: ../src/gs-shell-extras.c:536 ../src/gs-shell-extras.c:591
-#: ../src/gs-shell-extras.c:631
+#: ../src/gs-shell-extras.c:538 ../src/gs-shell-extras.c:593
+#: ../src/gs-shell-extras.c:633
 msgid "Failed to find any search results"
 msgstr "No s'ha pogut trobar cap resultat de cerca"
 
-#: ../src/gs-shell-extras.c:815
+#: ../src/gs-shell-extras.c:817
 #, c-format
 msgid "%s file format"
 msgstr "Format de fitxer %s"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:450
+#: ../src/gs-shell-installed.c:481
 msgid "System Applications"
 msgstr "Aplicacions del sistema"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: ../src/gs-shell-installed.c:460 ../src/gs-update-list.c:126
-#: ../src/plugins/gs-desktop-common.c:330
+#: ../src/gs-shell-installed.c:485 ../src/plugins/gs-desktop-common.c:330
 msgid "Add-ons"
 msgstr "Complements"
 
-#: ../src/gs-shell-installed.c:560
+#: ../src/gs-shell-installed.c:615
 msgid "Click on items to select them"
 msgstr "Feu clic als elements per seleccionar-los"
 
-#: ../src/gs-shell-installed.c:760
+#: ../src/gs-shell-installed.c:819
 msgid "Select"
 msgstr "Selecciona"
 
@@ -1475,105 +1498,105 @@ msgid "Enable"
 msgstr "Habilita"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:198
+#: ../src/gs-shell-updates.c:197
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:201
+#: ../src/gs-shell-updates.c:200
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:207
+#: ../src/gs-shell-updates.c:206
 msgid "Yesterday, %R"
 msgstr "Ahir, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:211
+#: ../src/gs-shell-updates.c:210
 msgid "Yesterday, %l:%M %p"
 msgstr "Ahir, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:214
+#: ../src/gs-shell-updates.c:213
 msgid "Two days ago"
 msgstr "Fa dos dies"
 
-#: ../src/gs-shell-updates.c:216
+#: ../src/gs-shell-updates.c:215
 msgid "Three days ago"
 msgstr "Fa tres dies"
 
-#: ../src/gs-shell-updates.c:218
+#: ../src/gs-shell-updates.c:217
 msgid "Four days ago"
 msgstr "Fa quatre dies"
 
-#: ../src/gs-shell-updates.c:220
+#: ../src/gs-shell-updates.c:219
 msgid "Five days ago"
 msgstr "Fa cinc dies"
 
-#: ../src/gs-shell-updates.c:222
+#: ../src/gs-shell-updates.c:221
 msgid "Six days ago"
 msgstr "Fa sis dies"
 
-#: ../src/gs-shell-updates.c:224
+#: ../src/gs-shell-updates.c:223
 msgid "One week ago"
 msgstr "Fa una setmana"
 
-#: ../src/gs-shell-updates.c:226
+#: ../src/gs-shell-updates.c:225
 msgid "Two weeks ago"
 msgstr "Fa dues setmanes"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:230
+#: ../src/gs-shell-updates.c:229
 msgid "%e %B %Y"
 msgstr "%e de %B de %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:243
+#: ../src/gs-shell-updates.c:242
 msgid "Downloading new updates…"
 msgstr "S'estan baixant actualitzacions noves…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:247
+#: ../src/gs-shell-updates.c:246
 msgid "Looking for new updates…"
 msgstr "S'estan cercant actualitzacions…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:287
+#: ../src/gs-shell-updates.c:286
 msgid "Setting up updates…"
 msgstr "S'estan preparant les actualitzacions…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:288 ../src/gs-shell-updates.c:295
+#: ../src/gs-shell-updates.c:287 ../src/gs-shell-updates.c:294
 msgid "(This could take a while)"
 msgstr "(Això pot trigar una estona)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:423
+#: ../src/gs-shell-updates.c:400
 #, c-format
 msgid "Last checked: %s"
 msgstr "Darrera comprovació: %s"
 
 #. TRANSLATORS: all updates will be installed
-#: ../src/gs-shell-updates.c:516
+#: ../src/gs-shell-updates.c:493
 msgid "U_pdate All"
 msgstr "_Actualitza-ho tot"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:520
+#: ../src/gs-shell-updates.c:497
 msgid "_Restart & Update"
 msgstr "_Reinicia i actualitza"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:849
+#: ../src/gs-shell-updates.c:826
 msgid "Charges may apply"
 msgstr "Es poden aplicar càrrecs"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:853
+#: ../src/gs-shell-updates.c:830
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1583,52 +1606,52 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:857
+#: ../src/gs-shell-updates.c:834
 msgid "Check Anyway"
 msgstr "Comprova-ho de totes maneres"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:873
+#: ../src/gs-shell-updates.c:850
 msgid "No Network"
 msgstr "Sense xarxa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:877
+#: ../src/gs-shell-updates.c:854
 msgid "Internet access is required to check for updates."
 msgstr "Es requereix accés a Internet per comprovar si hi ha actualitzacions."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:881
+#: ../src/gs-shell-updates.c:858
 msgid "Network Settings"
 msgstr "Paràmetres de xarxa"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:972
+#: ../src/gs-shell-updates.c:949
 msgid "Updates have been installed"
 msgstr "S'han instal·lat les actualitzacions."
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:974
+#: ../src/gs-shell-updates.c:951
 msgid "A restart is required for them to take effect."
 msgstr "És necessari un reinici perquè els canvis tinguin efecte."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:976 ../src/gs-update-monitor.c:102
+#: ../src/gs-shell-updates.c:953 ../src/gs-update-monitor.c:102
 msgid "Not Now"
 msgstr "Ara no"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:978
+#: ../src/gs-shell-updates.c:955
 msgid "Restart"
 msgstr "Reinicia"
 
-#: ../src/gs-shell-updates.c:1354
+#: ../src/gs-shell-updates.c:1331
 msgid "Restart & _Install"
 msgstr "Reinicia i _instal·la"
 
-#: ../src/gs-shell-updates.c:1372
+#: ../src/gs-shell-updates.c:1349
 msgid "Check for updates"
 msgstr "Comprova si hi ha actualitzacions"
 
@@ -1755,6 +1778,44 @@ msgstr "Instal·lat al %s"
 #: ../src/gs-update-dialog.c:236
 msgid "Installed Updates"
 msgstr "Actualitzacions instal·lades"
+
+#. TRANSLATORS: This is the header for system firmware that
+#. * requires a reboot to apply
+#: ../src/gs-update-list.c:211
+msgid "Integrated Firmware"
+msgstr "Microprogramari integrat"
+
+#. TRANSLATORS: This is the button for upgrading all
+#. * system firmware
+#. TRANSLATORS: This is the button for upgrading all
+#. * offline updates
+#: ../src/gs-update-list.c:214 ../src/gs-update-list.c:224
+msgid "Restart & Update"
+msgstr "Reinicia i actualitza"
+
+#. TRANSLATORS: This is the header for offline OS and offline
+#. * app updates that require a reboot to apply
+#: ../src/gs-update-list.c:221
+msgid "Requires Restart"
+msgstr "Cal reiniciar"
+
+#. TRANSLATORS: This is the header for online runtime and
+#. * app updates, typically flatpaks or snaps
+#: ../src/gs-update-list.c:231
+msgid "Application Updates"
+msgstr "Actualitzacions d'aplicacions"
+
+#. TRANSLATORS: This is the button for upgrading all
+#. * online-updatable applications
+#: ../src/gs-update-list.c:234
+msgid "Update All"
+msgstr "Actualitza-ho tot"
+
+#. TRANSLATORS: This is the header for device firmware that can
+#. * be installed online
+#: ../src/gs-update-list.c:241
+msgid "Device Firmware"
+msgstr "Microprogramari del dispositiu"
 
 #: ../src/gs-update-monitor.c:90
 msgid "Security Updates Pending"
@@ -1921,6 +1982,8 @@ msgstr "S'han instal·lat les actualitzacions del SO"
 #: ../src/gs-common.c:142
 msgid "Recently installed updates are available to review"
 msgstr ""
+"Les actualitzacions instal·lades recentment estan disponibles per ser "
+"revisades"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -1933,7 +1996,7 @@ msgstr "S'ha instal·lat %s"
 #. * has been successfully installed
 #: ../src/gs-common.c:149
 msgid "Application is ready to be used."
-msgstr "L'aplicació ja està a punt per fer-se servir"
+msgstr "L'aplicació ja està a punt per fer-se servir."
 
 #. TRANSLATORS: this is button that opens the newly installed application
 #: ../src/gs-common.c:155
@@ -2106,7 +2169,7 @@ msgstr "Violació o altres comportaments sexuals violents"
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:129
 msgid "No references to alcohol"
-msgstr "Sense referències al alcohol"
+msgstr "Sense referències a l'alcohol"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-content-rating.c:132
@@ -2758,7 +2821,7 @@ msgstr "Utilitats"
 #. TRANSLATORS: tool that is used when copying profiles system-wide
 #: ../src/plugins/gs-install-appstream.c:118
 msgid "GNOME Software AppStream system-wide installer"
-msgstr ""
+msgstr "L'instal·lar del sistema del Programari del GNOME"
 
 #: ../src/plugins/gs-install-appstream.c:120
 msgid "Failed to parse command line arguments"
@@ -3194,9 +3257,6 @@ msgstr "Inclou millores de rendiment, d'estabilitat i de seguretat."
 
 #~ msgid "Search page"
 #~ msgstr "Pàgina de cerca"
-
-#~ msgid "No Application Found"
-#~ msgstr "No s'han trobat aplicacions"
 
 #~ msgid "Updates page"
 #~ msgstr "Pàgina d'actualitzacions"
