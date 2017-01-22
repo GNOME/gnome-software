@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-01-15 10:40+0000\n"
-"PO-Revision-Date: 2017-01-15 15:54+0100\n"
+"POT-Creation-Date: 2017-01-21 13:44+0000\n"
+"PO-Revision-Date: 2017-01-22 15:39+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -69,6 +69,10 @@ msgstr "Panel s aktualizáciami"
 msgid "The update details"
 msgstr "Podrobnosti o aktualizácii"
 
+#: data/appdata/org.gnome.Software.appdata.xml.in:658
+msgid "The GNOME Project"
+msgstr "Projekt GNOME"
+
 #: data/org.gnome.software.external-appstream.policy.in:11
 msgid "Install an appstream file into a system location"
 msgstr ""
@@ -90,10 +94,8 @@ msgstr ""
 "GNOME, KDE a XFCE."
 
 #: data/org.gnome.software.gschema.xml:10
-#, fuzzy
-#| msgid "Whether it's the very first run of GNOME Software"
 msgid "Whether to manage updates in GNOME Software"
-msgstr "Či je úplne prvé spustenie aplikácie Softvér prostredia GNOME"
+msgstr "Či sa majú spravovať aktualizácie v aplikácii Softvér prostredia GNOME"
 
 #: data/org.gnome.software.gschema.xml:11
 msgid ""
@@ -128,8 +130,6 @@ msgid ""
 msgstr ""
 
 #: data/org.gnome.software.gschema.xml:25
-#, fuzzy
-#| msgid "Whether it's the very first run of GNOME Software"
 msgid "Whether it’s the very first run of GNOME Software"
 msgstr "Či je úplne prvé spustenie aplikácie Softvér prostredia GNOME"
 
@@ -291,7 +291,7 @@ msgstr "Pridanie do priečinka s aplikáciami"
 #: src/gs-app-folder-dialog.ui:16 src/gs-app-folder-dialog.c:322
 #: src/gs-removal-dialog.ui:33 src/gs-review-dialog.ui:23
 #: src/gs-shell-details.c:366 src/gs-shell-details.ui:330
-#: src/gs-shell-installed.c:556 src/gs-upgrade-banner.ui:133
+#: src/gs-shell-installed.c:607 src/gs-upgrade-banner.ui:133
 msgid "_Cancel"
 msgstr "_Zrušiť"
 
@@ -382,19 +382,19 @@ msgstr "Nastavenia siete"
 msgid "More Information"
 msgstr "Viac informácií"
 
-#: src/gs-app-addon-row.c:97 src/gs-app-row.c:429 src/gs-shell-details.ui:344
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:430 src/gs-shell-details.ui:344
 msgid "Pending"
 msgstr "Čaká na inštaláciu"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:107 src/gs-app-row.c:218 src/gs-shell-details.c:418
+#: src/gs-app-addon-row.c:107 src/gs-app-row.c:219 src/gs-shell-details.c:418
 msgid "Installing"
 msgstr "Inštaluje sa"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: src/gs-app-addon-row.c:111 src/gs-app-row.c:224
+#: src/gs-app-addon-row.c:111 src/gs-app-row.c:225
 msgid "Removing"
 msgstr "Odstraňuje sa"
 
@@ -506,7 +506,7 @@ msgstr "Pohodlný spôsob správy softvéru vo vašom systéme."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:171
+#: src/gs-app-row.c:172
 msgid "Visit website"
 msgstr "Navštíviť webovú stránku"
 
@@ -514,13 +514,13 @@ msgstr "Navštíviť webovú stránku"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:176
+#: src/gs-app-row.c:177
 msgid "Install…"
 msgstr "Inštalovať…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:183
+#: src/gs-app-row.c:184
 msgid "Cancel"
 msgstr "Zrušiť"
 
@@ -529,13 +529,13 @@ msgstr "Zrušiť"
 #. * allows the application to be easily installed
 #. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: src/gs-app-row.c:192 src/gs-page.c:366 src/gs-common.c:283
+#: src/gs-app-row.c:193 src/gs-page.c:366 src/gs-common.c:283
 msgid "Install"
 msgstr "Inštalovať"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:199
+#: src/gs-app-row.c:200
 msgid "Update"
 msgstr "Aktualizovať"
 
@@ -543,18 +543,18 @@ msgstr "Aktualizovať"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:203 src/gs-app-row.c:212 src/gs-page.c:517
+#: src/gs-app-row.c:204 src/gs-app-row.c:213 src/gs-page.c:517
 msgid "Remove"
 msgstr "Odstrániť"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:329
+#: src/gs-app-row.c:330
 msgid "Device cannot be used during update."
 msgstr "Zariadenie nie je možné používať počas aktualizácie."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:339 src/gs-shell-details.ui:985
+#: src/gs-app-row.c:340 src/gs-shell-details.ui:985
 msgid "Source"
 msgstr "Zdroj"
 
@@ -799,12 +799,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-plugin-loader.c:1880 src/gs-shell-extras.c:389
+#: src/gs-plugin-loader.c:1887 src/gs-shell-extras.c:389
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nie sú dostupné žiadne doplnky s kodekmi pre formát %s."
 
-#: src/gs-plugin-loader.c:1883
+#: src/gs-plugin-loader.c:1890
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -931,7 +931,7 @@ msgstr "Čo si myslíte o aplikácii? Skúste napísať dôvody vašej recenzie.
 #. Translators: A label for the total number of reviews.
 #: src/gs-review-histogram.ui:413
 msgid "ratings in total"
-msgstr ""
+msgstr "hodnotení celkom"
 
 #. TRANSLATORS: this is when a user doesn't specify a name
 #. This refers to the license of the application
@@ -1038,7 +1038,7 @@ msgstr "Snímka obrazovky"
 #. * where the first %s is a possibly multi-word localised distro
 #. * e.g. 'Fedora Project" and the second %s is the truncated
 #. * hostname, e.g. 'alt.fedoraproject.org'
-#: src/gs-shell.c:788
+#: src/gs-shell.c:785
 #, c-format
 msgid "“%s” [%s]"
 msgstr "„%s“ [%s]"
@@ -1052,32 +1052,32 @@ msgstr "„%s“ [%s]"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:795 src/gs-shell.c:801 src/gs-shell.c:817 src/gs-shell.c:821
+#: src/gs-shell.c:792 src/gs-shell.c:798 src/gs-shell.c:814 src/gs-shell.c:818
 #, c-format
 msgid "“%s”"
 msgstr "„%s“"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:841
+#: src/gs-shell.c:838
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nie je možné prevziať aktualizácie firmvéru z %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:847
+#: src/gs-shell.c:844
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nie je možné prevziať aktualizácie z %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:854
+#: src/gs-shell.c:851
 msgid "Unable to download updates"
 msgstr "Nie je možné prevziať aktualizácie"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:859
+#: src/gs-shell.c:856
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -1086,29 +1086,29 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:868
+#: src/gs-shell.c:865
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Nie je možné prevziať aktualizácie z %s: nedostatok miesta na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:873
+#: src/gs-shell.c:870
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nie je možné prevziať aktualizácie: nedostatok miesta na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:881
+#: src/gs-shell.c:878
 msgid "Unable to download updates: authentication was required"
 msgstr ""
 "Nie je možné prevziať aktualizácie: bolo požadované overenie totožnosti"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:886
+#: src/gs-shell.c:883
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nie je možné prevziať aktualizácie: overenie totožnosti nebolo platné"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:891
+#: src/gs-shell.c:888
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -1116,14 +1116,14 @@ msgstr ""
 "softvéru"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:896
+#: src/gs-shell.c:893
 msgid "Unable to get list of updates"
 msgstr "Nie je možné získať zoznam aktualizácií"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:938
+#: src/gs-shell.c:935
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr ""
@@ -1132,7 +1132,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:944
+#: src/gs-shell.c:941
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nie je možné nainštalovať aplikáciu %s, pretože preberanie zlyhalo"
@@ -1141,7 +1141,7 @@ msgstr "Nie je možné nainštalovať aplikáciu %s, pretože preberanie zlyhalo
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:956
+#: src/gs-shell.c:953
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
@@ -1149,32 +1149,32 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:962
+#: src/gs-shell.c:959
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nie je možné nainštalovať aplikáciu %s, pretože nie je podporovaná"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:969
+#: src/gs-shell.c:966
 #, fuzzy
 #| msgid "Internet access was required but wasn’t available."
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Bolo potrebné internetové pripojenie, ale nebolo dostupné."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:975
+#: src/gs-shell.c:972
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nie je možné vykonať inštaláciu: aplikácia je v neplatnom formáte"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:980
+#: src/gs-shell.c:977
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nie je možné nainštalovať aplikáciu %s: nedostatok miesta na disku"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:988
+#: src/gs-shell.c:985
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr ""
@@ -1182,7 +1182,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:995
+#: src/gs-shell.c:992
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr ""
@@ -1190,7 +1190,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1002
+#: src/gs-shell.c:999
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -1200,34 +1200,34 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: src/gs-shell.c:1015
+#: src/gs-shell.c:1012
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "Váš účet služby %s bol dočasne zakázaný."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1019
+#: src/gs-shell.c:1016
 msgid "It is not possible to install software until this has been resolved."
 msgstr "Kým sa nevyrieši tento problém, nebude možné inštalovať softvér."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: src/gs-shell.c:1030
+#: src/gs-shell.c:1027
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Pre viac informácií navštívte adresu %s."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1039
+#: src/gs-shell.c:1036
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Nie je možné nainštalovať aplikáciu %s: vyžaduje sa napájanie zo siete"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1046
+#: src/gs-shell.c:1043
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nie je možné nainštalovať aplikáciu %s"
@@ -1236,20 +1236,20 @@ msgstr "Nie je možné nainštalovať aplikáciu %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1088
+#: src/gs-shell.c:1085
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "Nie je možné aktualizovať aplikáciu %s z lokality %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1094
+#: src/gs-shell.c:1091
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nie je možné aktualizovať aplikáciu %s, pretože zlyhalo preberanie"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1100
+#: src/gs-shell.c:1097
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nie je možné vykonať aktualizáciu: bolo potrebné internetové pripojenie, ale "
@@ -1257,14 +1257,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1108
+#: src/gs-shell.c:1105
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nie je možné aktualizovať aplikáciu %s: nedostatok miesta na disku"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1117
+#: src/gs-shell.c:1114
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr ""
@@ -1272,7 +1272,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1124
+#: src/gs-shell.c:1121
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr ""
@@ -1280,7 +1280,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1131
+#: src/gs-shell.c:1128
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
@@ -1289,14 +1289,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1139
+#: src/gs-shell.c:1136
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Nie je možné aktualizovať aplikáciu %s: vyžaduje sa napájanie zo siete"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1146
+#: src/gs-shell.c:1143
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nie je možné aktualizovať aplikáciu %s"
@@ -1304,20 +1304,20 @@ msgstr "Nie je možné aktualizovať aplikáciu %s"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1187
+#: src/gs-shell.c:1184
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nie je možné aktualizovať na systém %s z lokality %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1192
+#: src/gs-shell.c:1189
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nie je možné aktualizovať na %s, pretože preberanie zlyhalo"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1199
+#: src/gs-shell.c:1196
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr ""
 "Nie je možné vykonať aktualizáciu: bolo potrebné internetové pripojenie, ale "
@@ -1325,124 +1325,133 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1207
+#: src/gs-shell.c:1204
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nie je aktualizovať na systém %s: nedostatok miesta na disku"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1216
+#: src/gs-shell.c:1213
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr ""
+"Nie je možné aktualizovať na systém %s: bolo požadované overenie totožnosti"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1223
+#: src/gs-shell.c:1220
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr ""
+"Nie je možné aktualizovať na systém %s: overenie totožnosti nebolo platné"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1230
+#: src/gs-shell.c:1227
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr ""
+"Nie je možné aktualizovať na systém %s: nemáte dostatočné práva na "
+"aktualizáciu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1237
+#: src/gs-shell.c:1234
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
-msgstr ""
+msgstr "Nie je možné aktualizovať na systém %s: vyžaduje sa napájanie zo siete"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1244
+#: src/gs-shell.c:1241
 #, c-format
 msgid "Unable to upgrade to %s"
-msgstr ""
+msgstr "Nie je možné aktualizovať na systém %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1282
+#: src/gs-shell.c:1279
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr ""
+"Nie je možné odstrániť aplikáciu %s: bolo požadované overenie totožnosti"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1288
+#: src/gs-shell.c:1285
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
-msgstr ""
+msgstr "Nie je možné odstrániť aplikáciu %s: overenie totožnosti nebolo platné"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1294
+#: src/gs-shell.c:1291
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr ""
+"Nie je možné odstrániť aplikáciu %s: nemáte dostatočné práva na odstránenie "
+"softvéru"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1301
+#: src/gs-shell.c:1298
 #, c-format
 msgid "Unable to remove %s: AC power is required"
-msgstr ""
+msgstr "Nie je možné odstrániť aplikáciu %s: vyžaduje sa napájanie zo siete"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1305
 #, c-format
 msgid "Unable to remove %s"
-msgstr ""
+msgstr "Nie je možné odstrániť aplikáciu %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1347
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nie je možné spustiť aplikáciu %s: rozhranie %s nie je nainštalované"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1357 src/gs-shell.c:1397 src/gs-shell.c:1437
+#: src/gs-shell.c:1354 src/gs-shell.c:1394 src/gs-shell.c:1434
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Nedostatok miesta na disku — uvoľnite nejaké miesto a skúste to znovu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1392
+#: src/gs-shell.c:1389
 msgid "Failed to install file: authentication failed"
-msgstr ""
+msgstr "Zlyhala inštalácia súboru: zlyhalo overenie totožnosti"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1431
+#: src/gs-shell.c:1428
 #, c-format
 msgid "Unable to contact %s"
-msgstr ""
+msgstr "Nie je možné kontaktovať lokalitu %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1446
+#: src/gs-shell.c:1443
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr ""
+"Pre používanie nových zásuvných modulov musí byť aplikácia %s reštartovaná."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1451
+#: src/gs-shell.c:1448
 msgid "This application needs to be restarted to use new plugins."
 msgstr ""
+"Pre používanie nových zásuvných modulov musí byť aplikácia reštartovaná."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1457
+#: src/gs-shell.c:1454
 msgid "AC power is required"
-msgstr ""
+msgstr "Požaduje sa napájanie zo siete"
 
 #: src/gs-shell-category.ui:81
 msgid "Extension Settings"
@@ -1492,7 +1501,7 @@ msgid "Removing…"
 msgstr "Odstraňuje sa…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-shell-details.c:694
+#: src/gs-shell-details.c:695
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1500,46 +1509,46 @@ msgstr ""
 "Táto aplikácia sa môže používať iba ak je aktívne internetové pripojenie."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-shell-details.c:821
+#: src/gs-shell-details.c:822
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-shell-details.c:855
+#: src/gs-shell-details.c:856
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-shell-details.c:901
+#: src/gs-shell-details.c:902
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámy"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-shell-details.c:1295
+#: src/gs-shell-details.c:1296
 msgid "You need internet access to write a review"
-msgstr ""
+msgstr "Ak chcete napísať recenziu, musíte byť pripojený k internetu"
 
-#: src/gs-shell-details.c:1418
+#: src/gs-shell-details.c:1419
 #, c-format
 msgid "Could not find “%s”"
 msgstr "Nepodarilo sa nájsť „%s“"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-shell-details.c:1909
+#: src/gs-shell-details.c:1907
 msgid "Public domain"
 msgstr "Verejná doména"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-shell-details.c:1925 src/gs-shell-details.ui:1379
+#: src/gs-shell-details.c:1923 src/gs-shell-details.ui:1379
 msgid "Free Software"
 msgstr "Slobodný softvér"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-shell-details.c:1982
+#: src/gs-shell-details.c:1980
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Používatelia sú viazaní týmito licenciami:"
@@ -1547,7 +1556,7 @@ msgstr[1] "Používatelia sú viazaní touto licenciou:"
 msgstr[2] "Používatelia sú viazaní týmito licenciami:"
 
 # DK:cmd desc
-#: src/gs-shell-details.c:1998 src/gs-shell-details.ui:1488
+#: src/gs-shell-details.c:1996 src/gs-shell-details.ui:1488
 msgid "More information"
 msgstr "Viac informácií"
 
@@ -1706,7 +1715,7 @@ msgstr "Uzavretá"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-shell-details.ui:1160 src/gs-shell-installed.c:463
+#: src/gs-shell-details.ui:1160 src/gs-shell-installed.c:485
 #: src/plugins/gs-desktop-common.c:330
 msgid "Add-ons"
 msgstr "Doplnky"
@@ -1962,16 +1971,16 @@ msgstr "Stránka s kodekmi"
 # cmdline description
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-shell-installed.c:452
+#: src/gs-shell-installed.c:481
 msgid "System Applications"
 msgstr "Systémové aplikácie"
 
-#: src/gs-shell-installed.c:564
+#: src/gs-shell-installed.c:615
 msgid "Click on items to select them"
 msgstr "Kliknutím na položky ich vyberiete"
 
 # GtkButton
-#: src/gs-shell-installed.c:764
+#: src/gs-shell-installed.c:819
 msgid "Select"
 msgstr "Vybrať"
 
@@ -2457,7 +2466,7 @@ msgstr "V tomto počítači neboli nainštalované žiadne aktualizácie."
 #. * requires a reboot to apply
 #: src/gs-update-list.c:211
 msgid "Integrated Firmware"
-msgstr ""
+msgstr "Integrovaný firmvér"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * system firmware
@@ -2489,7 +2498,7 @@ msgstr "Aktualizovať všetko"
 #. * be installed online
 #: src/gs-update-list.c:241
 msgid "Device Firmware"
-msgstr ""
+msgstr "Firmvér zariadenia"
 
 #: src/gs-update-monitor.c:90
 msgid "Security Updates Pending"
@@ -2691,7 +2700,7 @@ msgstr "Softvér %s je teraz nainštalovaný"
 #. * has been successfully installed
 #: src/gs-common.c:149
 msgid "Application is ready to be used."
-msgstr ""
+msgstr "Aplikácia je pripravená na používanie."
 
 # DK: akcia po nainstalovani softveru
 #. TRANSLATORS: this is button that opens the newly installed application
@@ -2771,7 +2780,7 @@ msgstr "Podrobné chybové správy od správcu balíkov:"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:75
 msgid "No cartoon violence"
-msgstr ""
+msgstr "Bez kresleného násilia"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:78
@@ -2791,7 +2800,7 @@ msgstr "Vyobrazené násilie zahŕňajúce kreslené postavy"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:87
 msgid "No fantasy violence"
-msgstr ""
+msgstr "Bez fiktívneho násilia"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:90
@@ -2811,7 +2820,7 @@ msgstr "Vyobrazené násilie ľahko odlíšiteľné od reality"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:99
 msgid "No realistic violence"
-msgstr ""
+msgstr "Bez realistického násilia"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:102
@@ -2916,10 +2925,8 @@ msgstr "Dlhotrvajúca nahota"
 # cmdline description
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:162
-#, fuzzy
-#| msgid "Sexual references or depictions"
 msgid "No references or depictions of sexual nature"
-msgstr "Sexuálne odkazy alebo vyobrazenia"
+msgstr "Bez sexuálnych odkazov alebo vyobrazení"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:165
@@ -2960,7 +2967,7 @@ msgstr "Silné alebo časté rúhanie sa"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:186
 msgid "No innappropriate humor"
-msgstr ""
+msgstr "Bez nevhodného humoru"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:189
@@ -2980,7 +2987,7 @@ msgstr "Sexuálny humor alebo humor pre dospelých"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:198
 msgid "No discriminatory language of any kind"
-msgstr ""
+msgstr "Bez diskriminačného jazyka akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:201
@@ -3002,7 +3009,7 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:210
 msgid "No advertising of any kind"
-msgstr ""
+msgstr "Bez reklám akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:213
@@ -3024,7 +3031,7 @@ msgstr "Hráči sú vyzývaný na nákup špecifických položiek v skutočnom s
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:222
 msgid "No gambling of any kind"
-msgstr ""
+msgstr "Bez hazardovania akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:225
@@ -3054,7 +3061,7 @@ msgstr "Možnosť míňania skutočných peňazí v hre"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:240
 msgid "No way to chat with other players"
-msgstr ""
+msgstr "Bez možnosti textovej komunikácie s ostatnými hráčmi"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:243
@@ -3074,7 +3081,7 @@ msgstr "Nekontrolovateľné rozhovory medzi hráčmi"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:252
 msgid "No way to talk with other players"
-msgstr ""
+msgstr "Bez možnosti hovoriť s ostatnými hráčmi"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:255
@@ -3596,7 +3603,7 @@ msgstr "Tento program môže byť použitý iba správcom"
 #. TRANSLATORS: error details
 #: src/plugins/gs-install-appstream.c:142
 msgid "Failed to validate content type"
-msgstr ""
+msgstr "Zlyhalo schválenie typu obsahu"
 
 # title
 #. TRANSLATORS: error details
@@ -3616,8 +3623,61 @@ msgstr "Aktualizácie operačného systému"
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahŕňa vylepšenia výkonu, stability a zvýšenia bezpečnosti."
 
-#~ msgid "The GNOME Project"
-#~ msgstr "Projekt GNOME"
+#: src/plugins/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
+msgid "Wed Apps Support"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:7
+msgid "Run popular web applications in a browser"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
+msgid "Flatpak Support"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
+msgid "Flatpak is a framework for desktop applications on Linux"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
+msgid "Firmware Upgrade Support"
+msgstr "Podpora aktualizácie firmvéru"
+
+#: src/plugins/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:7
+msgid "Provides support for firmware upgrades"
+msgstr "Poskytuje podporu aktualizácií firmvéru"
+
+#: src/plugins/org.gnome.Software.Plugin.Limba.metainfo.xml.in:6
+msgid "Limba Support"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Limba.metainfo.xml.in:7
+msgid "Limba provides developers a way to easily create software bundles"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:6
+msgid "Open Desktop Ratings Support"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:7
+msgid "ODRS is a service providing user reviews of applications"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Snap.metainfo.xml.in:6
+msgid "Snappy Support"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
+msgid "A snap is a universal Linux package"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Steam.metainfo.xml.in:6
+msgid "Steam Support"
+msgstr ""
+
+#: src/plugins/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
+msgid "The ultimate entertainment platform from Valve"
+msgstr ""
 
 #~ msgid "About Software"
 #~ msgstr "O programe Softvér"
