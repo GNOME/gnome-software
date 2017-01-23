@@ -731,8 +731,29 @@ gs_application_settings_changed_cb (GApplication *self,
 static void
 gs_application_startup (GApplication *application)
 {
+	g_autofree gchar *software_properties = NULL;
+	const gchar *label = NULL;
+	g_autoptr(GMenu) menu = NULL;
+	g_autoptr(GMenu) new = NULL;
+
 	GSettings *settings;
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
+
+	/* This follows the behaviour in src/gs-shell.c; when we have s-p-gtk,
+	 * we will launch it. It provides a UI to manage update behaviour too.
+	 */
+	software_properties = g_find_program_in_path ("software-properties-gtk");
+
+	if (!software_properties)
+		label = _("Software Sources");
+	else
+		label = _("Software & Updates");
+
+	menu =  gtk_application_get_menu_by_id (GTK_APPLICATION (application),
+						"app-menu");
+	new = g_menu_new ();
+	g_menu_append (new, label, "app.sources");
+	g_menu_prepend_section (menu, NULL, G_MENU_MODEL (new));
 
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
 					 actions, G_N_ELEMENTS (actions),
