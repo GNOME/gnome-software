@@ -172,10 +172,6 @@ conf.set_quoted('SYSCONFDIR',
 conf.set_quoted('LOCALSTATEDIR',
                 join_paths(get_option('prefix'),
                            get_option('localstatedir')))
-conf.set_quoted('GS_DATA',
-                join_paths(get_option('prefix'),
-                           get_option('datadir'),
-                           'gnome-software'))
 configure_file(
   output : 'config.h',
   configuration : conf

@@ -22,8 +22,7 @@ AM_CPPFLAGS =						\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
-	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\" \
-	-DGS_DATA=\"$(pkgdatadir)\"
+	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\"
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gnome-software.pc
