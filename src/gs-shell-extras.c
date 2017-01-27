@@ -451,9 +451,9 @@ build_no_results_label (GsShellExtras *self)
 	}
 	g_ptr_array_add (array, NULL);
 
-	/* TRANSLATORS: hyperlink title */
 	url = g_strdup_printf ("<a href=\"%s\">%s</a>",
 	                       gs_app_get_url (app, AS_URL_KIND_MISSING),
+                               /* TRANSLATORS: hyperlink title */
                                _("this website"));
 
 	codec_titles = build_comma_separated_list ((gchar **) array->pdata);
