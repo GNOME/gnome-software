@@ -122,9 +122,9 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 	name_version = g_strdup_printf ("%s %s",
 	                                gs_app_get_name (upgrade),
 	                                gs_app_get_version (upgrade));
-	/* TRANSLATORS: This is a text displayed during a distro upgrade. %s
-	   will be replaced by the name and version of distro, e.g. 'Fedora 23'. */
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (self),
+	                                          /* TRANSLATORS: This is a text displayed during a distro upgrade. %s
+	                                             will be replaced by the name and version of distro, e.g. 'Fedora 23'. */
 	                                          _("Some of the currently installed software is not compatible with %s. "
 	                                            "If you continue, the following will be automatically removed during the upgrade:"),
 	                                          name_version);
