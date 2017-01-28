@@ -133,10 +133,10 @@ gs_plugin_steam_parse_appinfo_file (const gchar *filename, GError **error)
 	GPtrArray *apps;
 	GHashTable *app = NULL;
 	const gchar *tmp;
-	guint8 *data = NULL;
 	gsize data_len = 0;
 	guint i = 0;
 	gboolean debug =  g_getenv ("GS_PLUGIN_STEAM_DEBUG") != NULL;
+	g_autofree guint8 *data = NULL;
 
 	/* load file */
 	if (!g_file_get_contents (filename, (gchar **) &data, &data_len, error)) {
