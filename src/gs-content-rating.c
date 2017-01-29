@@ -183,7 +183,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Strong or frequent use of profanity") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	_("No innappropriate humor") },
+	_("No inappropriate humor") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description */
 	_("Slapstick humor") },
