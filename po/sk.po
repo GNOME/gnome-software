@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-01-21 13:44+0000\n"
-"PO-Revision-Date: 2017-01-22 15:39+0100\n"
+"POT-Creation-Date: 2017-01-29 04:52+0000\n"
+"PO-Revision-Date: 2017-01-29 10:15+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -117,10 +117,8 @@ msgstr ""
 "budú pripravené."
 
 #: data/org.gnome.software.gschema.xml:20
-#, fuzzy
-#| msgid "Whether to automatically download updates"
 msgid "Whether to automatically refresh when on a metered connection"
-msgstr "Či automaticky prevziať aktualizácie"
+msgstr "Či sa má automaticky vykonávať obnova s obmedzeným pripojením"
 
 #: data/org.gnome.software.gschema.xml:21
 msgid ""
@@ -443,10 +441,8 @@ msgstr "NÁZOV_BALÍKU"
 
 # cmdline description
 #: src/gs-application.c:109
-#, fuzzy
-#| msgid "Show application details (using application ID)"
 msgid "Install the application (using application ID)"
-msgstr "Zobrazí podrobnosti o aplikácii (použitím identifikátora aplikácie)"
+msgstr "Nainštaluje aplikáciu (použitím identifikátora aplikácie)"
 
 # DK:cmd desc
 #: src/gs-application.c:111
@@ -813,6 +809,8 @@ msgstr ""
 "Informácie o formáte %s, ako aj o možnostiach získania kodeku na prehranie "
 "tohto formátu, môžete nájsť na webovej stránke."
 
+#. TRANSLATORS: This is a text displayed during a distro upgrade. %s
+#. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
 #: src/gs-removal-dialog.c:128
 #, c-format
 msgid ""
@@ -1156,10 +1154,10 @@ msgstr "Nie je možné nainštalovať aplikáciu %s, pretože nie je podporovan�
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:966
-#, fuzzy
-#| msgid "Internet access was required but wasn’t available."
 msgid "Unable to install: internet access was required but wasn’t available"
-msgstr "Bolo potrebné internetové pripojenie, ale nebolo dostupné."
+msgstr ""
+"Nie je možné vykonať inštaláciu: bolo potrebné internetové pripojenie, ale "
+"nebolo dostupné"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:972
@@ -1669,10 +1667,8 @@ msgid "Version"
 msgstr "Verzia"
 
 #: src/gs-shell-details.ui:808
-#, fuzzy
-#| msgid "Rating"
 msgid "Age Rating"
-msgstr "Hodnotenie"
+msgstr "Hodnotenie veku"
 
 # GtkLabel
 #: src/gs-shell-details.ui:846
@@ -1771,7 +1767,7 @@ msgstr "Licenčné podmienky používania tohto softvéru nie sú známe."
 
 #: src/gs-shell-details.ui:1561
 msgid "The application was rated this way because it features:"
-msgstr ""
+msgstr "Aplikácia bola takto ohodnotená, pretože obsahuje:"
 
 #: src/gs-shell-details.ui:1587
 msgid "No details were available for this rating."
@@ -1931,6 +1927,7 @@ msgstr ""
 "Informácie o kodeku %s, ako aj o možnostiach získania ovládača s podporou "
 "tejto tlačiarne môžete nájsť %s."
 
+#. TRANSLATORS: hyperlink title
 #: src/gs-shell-extras.c:460
 msgid "this website"
 msgstr "túto webovú stránku"
@@ -2687,7 +2684,7 @@ msgstr "Aktualizácie operačného systému boli nainštalované"
 #. * have been successfully installed
 #: src/gs-common.c:142
 msgid "Recently installed updates are available to review"
-msgstr ""
+msgstr "Nedávno nainštalované aktualizácie sú dostupné na kontrolu"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -2780,7 +2777,7 @@ msgstr "Podrobné chybové správy od správcu balíkov:"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:75
 msgid "No cartoon violence"
-msgstr "Bez kresleného násilia"
+msgstr "Žiadne kreslené násilie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:78
@@ -2800,7 +2797,7 @@ msgstr "Vyobrazené násilie zahŕňajúce kreslené postavy"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:87
 msgid "No fantasy violence"
-msgstr "Bez fiktívneho násilia"
+msgstr "Žiadne fiktívne násilie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:90
@@ -2820,7 +2817,7 @@ msgstr "Vyobrazené násilie ľahko odlíšiteľné od reality"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:99
 msgid "No realistic violence"
-msgstr "Bez realistického násilia"
+msgstr "Žiadne realistické násilie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:102
@@ -2840,7 +2837,7 @@ msgstr "Vyobrazené násilie zahŕňajúce skutočné postavy"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:111
 msgid "No bloodshed"
-msgstr "Bez krviprelievania"
+msgstr "Žiadne krviprelievanie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:114
@@ -2860,7 +2857,7 @@ msgstr "Znázornenia krviprelievania a zohavené časti tiel"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:123
 msgid "No sexual violence"
-msgstr "Bez sexuálneho násilia"
+msgstr "Žiadne sexuálne násilie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:126
@@ -2870,7 +2867,7 @@ msgstr "Znásilnenie alebo iné násilné sexuálne správanie"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:129
 msgid "No references to alcohol"
-msgstr "Bez odkazov na alkohol"
+msgstr "Žiadne odkazy na alkohol"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:132
@@ -2885,7 +2882,7 @@ msgstr "Požívanie alkoholických nápojov"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:138
 msgid "No references to illicit drugs"
-msgstr "Bez odkazov na zakázané drogy"
+msgstr "Žiadne odkazy na zakázané drogy"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:141
@@ -2910,7 +2907,7 @@ msgstr "Požívanie tabakových výrobkov"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:153
 msgid "No nudity of any sort"
-msgstr "Bez nahoty akéhokoľvek druhu"
+msgstr "Žiadna nahota akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:156
@@ -2926,7 +2923,7 @@ msgstr "Dlhotrvajúca nahota"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:162
 msgid "No references or depictions of sexual nature"
-msgstr "Bez sexuálnych odkazov alebo vyobrazení"
+msgstr "Žiadne sexuálne odkazy alebo vyobrazenia"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:165
@@ -2947,27 +2944,27 @@ msgstr "Vyobrazené sexuálne správanie"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:174
 msgid "No profanity of any kind"
-msgstr ""
+msgstr "Žiadne zneuctenie akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:177
 msgid "Mild or infrequent use of profanity"
-msgstr "Mierne alebo časte rúhanie sa"
+msgstr "Mierne alebo časte zneuctenie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:180
 msgid "Moderate use of profanity"
-msgstr "Stredne silné rúhanie sa"
+msgstr "Stredne silné zneuctenie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:183
 msgid "Strong or frequent use of profanity"
-msgstr "Silné alebo časté rúhanie sa"
+msgstr "Silné alebo časté zneuctenie"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:186
-msgid "No innappropriate humor"
-msgstr "Bez nevhodného humoru"
+msgid "No inappropriate humor"
+msgstr "Žiadny nevhodný humor"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:189
@@ -2987,7 +2984,7 @@ msgstr "Sexuálny humor alebo humor pre dospelých"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:198
 msgid "No discriminatory language of any kind"
-msgstr "Bez diskriminačného jazyka akéhokoľvek druhu"
+msgstr "Žiadny diskriminačný jazyk akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:201
@@ -3009,7 +3006,7 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:210
 msgid "No advertising of any kind"
-msgstr "Bez reklám akéhokoľvek druhu"
+msgstr "Žiadne reklamy akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:213
@@ -3031,7 +3028,7 @@ msgstr "Hráči sú vyzývaný na nákup špecifických položiek v skutočnom s
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:222
 msgid "No gambling of any kind"
-msgstr "Bez hazardovania akéhokoľvek druhu"
+msgstr "Žiadne hazardovanie akéhokoľvek druhu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:225
@@ -3051,7 +3048,7 @@ msgstr "Hazardovanie so skutočnými peniazmi"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:234
 msgid "No ability to spend money"
-msgstr "Bez možnosti míňania peňazí"
+msgstr "Žiadne možnosti míňania peňazí"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:237
@@ -3061,7 +3058,7 @@ msgstr "Možnosť míňania skutočných peňazí v hre"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:240
 msgid "No way to chat with other players"
-msgstr "Bez možnosti textovej komunikácie s ostatnými hráčmi"
+msgstr "Žiadne možnosti textovej komunikácie s ostatnými hráčmi"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:243
@@ -3081,7 +3078,7 @@ msgstr "Nekontrolovateľné rozhovory medzi hráčmi"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:252
 msgid "No way to talk with other players"
-msgstr "Bez možnosti hovoriť s ostatnými hráčmi"
+msgstr "Žiadne možnosti hovoriť s ostatnými hráčmi"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:255
@@ -3092,7 +3089,7 @@ msgstr "Nekontrolovateľné zvukové alebo video rozhovory medzi hráčmi"
 #: src/gs-content-rating.c:258
 msgid "No sharing of social network usernames or email addresses"
 msgstr ""
-"Bez zdieľania používateľských mien alebo emailových adries zo sociálnych "
+"Žiadne zdieľanie používateľských mien alebo emailových adries zo sociálnych "
 "sietí"
 
 #. TRANSLATORS: content rating description
@@ -3104,7 +3101,7 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:264
 msgid "No sharing of user information with 3rd parties"
-msgstr "Bez zdieľania informácií o používateľoch s tretími stranami"
+msgstr "Žiadne zdieľanie informácií o používateľoch s tretími stranami"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:267
@@ -3114,7 +3111,7 @@ msgstr "Zdieľanie informácií o používateľoch s tretími stranami"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:270
 msgid "No sharing of physical location to other users"
-msgstr "Bez zdieľania fyzickej lokality ostatným používateľom"
+msgstr "Žiadne zdieľanie fyzickej lokality ostatným používateľom"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:273
@@ -3625,19 +3622,19 @@ msgstr "Zahŕňa vylepšenia výkonu, stability a zvýšenia bezpečnosti."
 
 #: src/plugins/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
 msgid "Wed Apps Support"
-msgstr ""
+msgstr "Podpora webových aplikácií "
 
 #: src/plugins/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:7
 msgid "Run popular web applications in a browser"
-msgstr ""
+msgstr "Spúšťanie obľúbených webových aplikácií v prehliadači"
 
 #: src/plugins/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
-msgstr ""
+msgstr "Podpora nástroja Flatpak"
 
 #: src/plugins/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
 msgid "Flatpak is a framework for desktop applications on Linux"
-msgstr ""
+msgstr "Flatpak je architektúra počítačových aplikácií pre systém Linux"
 
 #: src/plugins/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
 msgid "Firmware Upgrade Support"
@@ -3649,31 +3646,31 @@ msgstr "Poskytuje podporu aktualizácií firmvéru"
 
 #: src/plugins/org.gnome.Software.Plugin.Limba.metainfo.xml.in:6
 msgid "Limba Support"
-msgstr ""
+msgstr "Podpora nástroja Limba"
 
 #: src/plugins/org.gnome.Software.Plugin.Limba.metainfo.xml.in:7
 msgid "Limba provides developers a way to easily create software bundles"
-msgstr ""
+msgstr "Limba umožňuje vývojárom jednoduché vytvárania softvérových balíkov"
 
 #: src/plugins/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:6
 msgid "Open Desktop Ratings Support"
-msgstr ""
+msgstr "Podpora služby Open Desktop Ratings"
 
 #: src/plugins/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:7
 msgid "ODRS is a service providing user reviews of applications"
-msgstr ""
+msgstr "ODRS je služba poskytujúca používateľské recenzie aplikácií"
 
 #: src/plugins/org.gnome.Software.Plugin.Snap.metainfo.xml.in:6
 msgid "Snappy Support"
-msgstr ""
+msgstr "Podpora balíkov Snappy"
 
 #: src/plugins/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
-msgstr ""
+msgstr "Snap je univerzálnym balíkom pre systém Linux"
 
 #: src/plugins/org.gnome.Software.Plugin.Steam.metainfo.xml.in:6
 msgid "Steam Support"
-msgstr ""
+msgstr "Podpora služby Steam"
 
 #: src/plugins/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
