@@ -427,6 +427,7 @@ gs_shell_details_refresh_progress (GsShellDetails *self)
 			gtk_widget_set_visible (self->progressbar_top, TRUE);
 			break;
 		}
+		/* FALLTHROUGH */
 	default:
 		gtk_widget_set_visible (self->label_progress_percentage, FALSE);
 		gtk_widget_set_visible (self->progressbar_top, FALSE);
