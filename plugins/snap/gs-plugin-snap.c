@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <json-glib/json-glib.h>
 #include <snapd-glib/snapd-glib.h>
 #include <gnome-software.h>
 
@@ -35,11 +34,13 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr (GError) error = NULL;
 
-	if (!gs_snapd_exists ()) {
-		g_debug ("disabling '%s' as snapd not running",
-			 gs_plugin_get_name (plugin));
+	client = snapd_client_new ();
+	if (!snapd_client_connect_sync (client, NULL, &error)) {
 		gs_plugin_set_enabled (plugin, FALSE);
+		return;
 	}
 
 	priv->auth = gs_auth_new ("snapd");
@@ -72,31 +73,47 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-static void
-get_macaroon (GsPlugin *plugin, gchar **macaroon, gchar ***discharges)
+static SnapdAuthData *
+get_auth (GsPlugin *plugin)
 {
 	GsAuth *auth;
 	const gchar *serialized_macaroon;
 	g_autoptr(GVariant) macaroon_variant = NULL;
+	const gchar *macaroon;
+	g_auto(GStrv) discharges = NULL;
 	g_autoptr (GError) error_local = NULL;
-
-	*macaroon = NULL;
-	*discharges = NULL;
 
 	auth = gs_plugin_get_auth_by_id (plugin, "snapd");
 	if (auth == NULL)
-		return;
+		return NULL;
 	serialized_macaroon = gs_auth_get_metadata_item (auth, "macaroon");
 	if (serialized_macaroon == NULL)
-		return;
+		return NULL;
 	macaroon_variant = g_variant_parse (G_VARIANT_TYPE ("(sas)"),
 					    serialized_macaroon,
 					    NULL,
 					    NULL,
 					    NULL);
 	if (macaroon_variant == NULL)
-		return;
-	g_variant_get (macaroon_variant, "(s^as)", macaroon, discharges);
+		return NULL;
+	g_variant_get (macaroon_variant, "(&s^as)", &macaroon, &discharges);
+
+	return snapd_auth_data_new (macaroon, discharges);
+}
+
+static SnapdClient *
+get_client (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(SnapdAuthData) auth_data = NULL;
+
+	client = snapd_client_new ();
+	if (!snapd_client_connect_sync (client, cancellable, error))
+		return NULL;
+	auth_data = get_auth (plugin);
+	snapd_client_set_auth_data (client, auth_data);
+
+	return g_steal_pointer (&client);
 }
 
 static gboolean
@@ -130,75 +147,62 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 static gboolean
 gs_plugin_snap_refine_app (GsPlugin *plugin,
 			   GsApp *app,
-			   JsonObject *package,
+			   SnapdSnap *snap,
 			   gboolean from_search,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	const gchar *status, *icon_url, *launch_name = NULL;
+	const gchar *icon_url, *launch_name = NULL;
 	const gchar *origin;
 	g_autofree gchar *origin_hostname = NULL;
-	gint64 size = -1;
-
-	get_macaroon (plugin, &macaroon, &discharges);
+	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
+	GPtrArray *screenshots;
 
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-	status = json_object_get_string_member (package, "status");
-	if (g_strcmp0 (status, "installed") == 0 || g_strcmp0 (status, "active") == 0) {
-		const gchar *update_available;
-
-		update_available = json_object_has_member (package, "update_available") ?
-			json_object_get_string_member (package, "update_available") : NULL;
-		if (update_available)
-			gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-		else {
-			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
-				gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		}
-	} else if (g_strcmp0 (status, "not installed") == 0 || g_strcmp0 (status, "available") == 0) {
+	switch (snapd_snap_get_status (snap)) {
+	case SNAPD_SNAP_STATUS_INSTALLED:
+	case SNAPD_SNAP_STATUS_ACTIVE:
+		if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
+			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		break;
+	case SNAPD_SNAP_STATUS_AVAILABLE:
+	case SNAPD_SNAP_STATUS_PRICED:
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		break;
+	default:
+		g_warning ("Ignoring snap with unknown state");
+		return TRUE;
 	}
-	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST,
-			 json_object_get_string_member (package, "name"));
-	gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST,
-			    json_object_get_string_member (package, "summary"));
-	gs_app_set_description (app, GS_APP_QUALITY_HIGHEST,
-				json_object_get_string_member (package, "description"));
-	gs_app_set_version (app, json_object_get_string_member (package, "version"));
-	if (json_object_has_member (package, "installed-size")) {
-		size = json_object_get_int_member (package, "installed-size");
-		if (size > 0)
-			gs_app_set_size_installed (app, (guint64) size);
-	}
-	if (json_object_has_member (package, "download-size")) {
-		size = json_object_get_int_member (package, "download-size");
-		if (size > 0)
-			gs_app_set_size_download (app, (guint64) size);
-	}
+	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
+	gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_summary (snap));
+	gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_description (snap));
+	gs_app_set_version (app, snapd_snap_get_version (snap));
+	if (snapd_snap_get_installed_size (snap) > 0)
+		gs_app_set_size_installed (app, snapd_snap_get_installed_size (snap));
+	if (snapd_snap_get_download_size (snap) > 0)
+		gs_app_set_size_download (app, snapd_snap_get_download_size (snap));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 
 	/* icon is optional, either loaded from snapd or from a URL */
-	icon_url = json_object_get_string_member (package, "icon");
+	icon_url = snapd_snap_get_icon (snap);
 	if (icon_url != NULL && g_strcmp0 (icon_url, "") != 0) {
 		if (g_str_has_prefix (icon_url, "/")) {
-			g_autofree gchar *icon_data = NULL;
-			gsize icon_data_length;
-			g_autoptr(GError) error_local = NULL;
-			icon_data = gs_snapd_get_resource (macaroon,
-							   discharges,
-							   icon_url,
-							   &icon_data_length,
-							   cancellable,
-							   error);
-			if (icon_data == NULL)
+			g_autoptr(SnapdClient) client = NULL;
+			g_autoptr(SnapdIcon) icon = NULL;
+
+			client = get_client (plugin, cancellable, error);
+			if (client == NULL)
 				return FALSE;
+
+			icon = snapd_client_get_icon_sync (client, snapd_snap_get_name (snap), cancellable, error);
+			if (icon == NULL)
+				return FALSE;
+
 			if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
-						(const gchar *) icon_data,
-						icon_data_length,
+						g_bytes_get_data (snapd_icon_get_data (icon), NULL),
+						g_bytes_get_size (snapd_icon_get_data (icon)),
 						error)) {
 				g_prefix_error (error, "Failed to load %s: ", icon_url);
 				return FALSE;
@@ -234,36 +238,33 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 		gs_app_add_icon (app, icon);
 	}
 
-	if (json_object_has_member (package, "screenshots") && gs_app_get_screenshots (app)->len <= 0) {
-		JsonArray *screenshots;
+	screenshots = snapd_snap_get_screenshots (snap);
+	if (screenshots != NULL && screenshots->len > 0) {
 		guint i;
 
-		screenshots = json_object_get_array_member (package, "screenshots");
-		for (i = 0; i < json_array_get_length (screenshots); i++) {
-			JsonObject *screenshot = json_array_get_object_element (screenshots, i);
-			const gchar *url = json_object_get_string_member (screenshot, "url");
+		for (i = 0; i < screenshots->len; i++) {
+			SnapdScreenshot *screenshot = screenshots->pdata[i];
 			g_autoptr(AsScreenshot) ss = NULL;
 			g_autoptr(AsImage) image = NULL;
 
 			ss = as_screenshot_new ();
 			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
 			image = as_image_new ();
-			as_image_set_url (image, url);
+			as_image_set_url (image, snapd_screenshot_get_url (screenshot));
 			as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
 			as_screenshot_add_image (ss, image);
 			gs_app_add_screenshot (app, ss);
 
 			/* fall back to the screenshot */
 			if (origin_hostname == NULL)
-				origin_hostname = g_strdup (url);
+				origin_hostname = g_strdup (snapd_screenshot_get_url (screenshot));
 		}
 	}
 
 	/* set the application origin */
 	if (gs_app_get_origin_hostname (app) == NULL) {
-
 		/* from the snap store */
-		origin = json_object_get_string_member (package, "developer");
+		origin = snapd_snap_get_developer (snap);
 		if (g_strcmp0 (origin, "canonical") == 0)
 			gs_app_set_origin_hostname (app, "myapps.developer.ubuntu.com");
 		else if (origin_hostname != NULL)
@@ -271,13 +272,13 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 	}
 
 	if (!from_search) {
-		JsonArray *apps;
+		GPtrArray *apps;
 
-		apps = json_object_get_array_member (package, "apps");
-		if (apps && json_array_get_length (apps) > 0)
-			launch_name = json_object_get_string_member (json_array_get_object_element (apps, 0), "name");
+		apps = snapd_snap_get_apps (snap);
+		if (apps->len > 0)
+			launch_name = snapd_app_get_name (apps->pdata[0]);
 
-		if (launch_name)
+		if (launch_name != NULL)
 			gs_app_set_metadata (app, "snap::launch-name", launch_name);
 		else
 			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
@@ -293,11 +294,10 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		      GError **error)
 {
 	g_autofree gchar *scheme = NULL;
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	g_autoptr(JsonArray) snaps = NULL;
-	JsonObject *snap;
+	g_autoptr(SnapdClient) client = NULL;
 	g_autofree gchar *path = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
+	SnapdSnap *snap;
 	g_autoptr(GsApp) app = NULL;
 
 	/* not us */
@@ -307,13 +307,15 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
-	get_macaroon (plugin, &macaroon, &discharges);
-	snaps = gs_snapd_find_name (macaroon, discharges, path, cancellable, NULL);
-	if (snaps == NULL || json_array_get_length (snaps) < 1)
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	snaps = snapd_client_find_sync (client, SNAPD_FIND_FLAGS_MATCH_NAME, path, NULL, cancellable, NULL);
+	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
-	snap = json_array_get_object_element (snaps, 0);
-	app = gs_app_new (json_object_get_string_member (snap, "name"));
+	snap = snaps->pdata[0];
+	app = gs_app_new (snapd_snap_get_name (snap));
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
@@ -338,33 +340,31 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	g_autoptr(JsonArray) result = NULL;
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
 	guint i;
 
-	get_macaroon (plugin, &macaroon, &discharges);
-	result = gs_snapd_list (macaroon, discharges, cancellable, error);
-	if (result == NULL)
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	snaps = snapd_client_list_sync (client, cancellable, error);
+	if (snaps == NULL)
 		return FALSE;
 
-	for (i = 0; i < json_array_get_length (result); i++) {
-		JsonObject *package = json_array_get_object_element (result, i);
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
 		g_autoptr(GsApp) app = NULL;
-		const gchar *status, *name;
 
-		status = json_object_get_string_member (package, "status");
-		if (g_strcmp0 (status, "active") != 0)
+		if (snapd_snap_get_status (snap) != SNAPD_SNAP_STATUS_ACTIVE)
 			continue;
 
 		/* create a unique ID for deduplication, TODO: branch? */
-		name = json_object_get_string_member (package, "name");
-		app = gs_app_new (name);
+		app = gs_app_new (snapd_snap_get_name (snap));
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		if (!gs_plugin_snap_refine_app (plugin, app, package, TRUE, cancellable, error))
+		if (!gs_plugin_snap_refine_app (plugin, app, snap, TRUE, cancellable, error))
 			return FALSE;
 		gs_app_list_add (list, app);
 	}
@@ -379,29 +379,30 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	g_autoptr(JsonArray) result = NULL;
+	g_autoptr(SnapdClient) client = NULL;
+	g_autofree gchar *query = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
 	guint i;
 
-	get_macaroon (plugin, &macaroon, &discharges);
-	result = gs_snapd_find (macaroon, discharges, values, cancellable, error);
-	if (result == NULL)
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	query = g_strjoinv (" ", values);
+	snaps = snapd_client_find_sync (client, SNAPD_FIND_FLAGS_NONE, query, NULL, cancellable, error);
+	if (snaps == NULL)
 		return FALSE;
 
-	for (i = 0; i < json_array_get_length (result); i++) {
-		JsonObject *package = json_array_get_object_element (result, i);
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
 		g_autoptr(GsApp) app = NULL;
-		const gchar *name;
 
 		/* create a unique ID for deduplication, TODO: branch? */
-		name = json_object_get_string_member (package, "name");
-		app = gs_app_new (name);
+		app = gs_app_new (snapd_snap_get_name (snap));
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		if (!gs_plugin_snap_refine_app (plugin, app, package, TRUE, cancellable, error))
+		if (!gs_plugin_snap_refine_app (plugin, app, snap, TRUE, cancellable, error))
 			return FALSE;
 		gs_app_list_add (list, app);
 	}
@@ -416,56 +417,45 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
-	g_autoptr(JsonObject) result = NULL;
+	g_autoptr(SnapdClient) client = NULL;
 	const gchar *id;
+	g_autoptr(SnapdSnap) snap = NULL;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
-	get_macaroon (plugin, &macaroon, &discharges);
-
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		id = gs_app_get_source_default (app);
-	result = gs_snapd_list_one (macaroon, discharges, id, cancellable, error);
-	if (result == NULL)
+	snap = snapd_client_list_one_sync (client, id, cancellable, error);
+	if (snap == NULL)
 		return FALSE;
-	if (!gs_plugin_snap_refine_app (plugin, app, result, FALSE, cancellable, error))
+	if (!gs_plugin_snap_refine_app (plugin, app, snap, FALSE, cancellable, error))
 		return FALSE;
 
 	return TRUE;
 }
 
 static void
-progress_cb (JsonObject *result, gpointer user_data)
+progress_cb (SnapdClient *client, SnapdChange *change, gpointer deprecated, gpointer user_data)
 {
 	GsApp *app = user_data;
-	JsonArray *tasks;
-	GList *task_list, *l;
+	GPtrArray *tasks;
+	guint i;
 	gint64 done = 0, total = 0;
 
-	tasks = json_object_get_array_member (result, "tasks");
-	task_list = json_array_get_elements (tasks);
-
-	for (l = task_list; l != NULL; l = l->next) {
-		JsonObject *task, *progress;
-		gint64 task_done, task_total;
-
-		task = json_node_get_object (l->data);
-		progress = json_object_get_object_member (task, "progress");
-		task_done = json_object_get_int_member (progress, "done");
-		task_total = json_object_get_int_member (progress, "total");
-
-		done += task_done;
-		total += task_total;
+	tasks = snapd_change_get_tasks (change);
+	for (i = 0; i < tasks->len; i++) {
+		SnapdTask *task = tasks->pdata[i];
+		done += snapd_task_get_progress_done (task);
+		total += snapd_task_get_progress_total (task);
 	}
 
 	gs_app_set_progress (app, (guint) (100 * done / total));
-
-	g_list_free (task_list);
 }
 
 gboolean
@@ -474,18 +464,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
+	g_autoptr(SnapdClient) client = NULL;
 
 	/* We can only install apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
-	get_macaroon (plugin, &macaroon, &discharges);
-
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	get_macaroon (plugin, &macaroon, &discharges);
-	if (!gs_snapd_install (macaroon, discharges, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	if (!snapd_client_install_sync (client, gs_app_get_id (app), NULL, progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -497,29 +486,32 @@ gs_plugin_app_install (GsPlugin *plugin,
 // This doesn't necessarily mean that every binary uses this interfaces, but is probably true.
 // https://bugs.launchpad.net/bugs/1595023
 static gboolean
-is_graphical (GsApp *app, GCancellable *cancellable)
+is_graphical (GsPlugin *plugin, GsApp *app, GCancellable *cancellable)
 {
-	g_autoptr(JsonObject) result = NULL;
-	JsonArray *plugs;
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GPtrArray) plugs = NULL;
 	guint i;
 	g_autoptr(GError) error = NULL;
 
-	result = gs_snapd_get_interfaces (NULL, NULL, cancellable, &error);
-	if (result == NULL) {
+	client = get_client (plugin, cancellable, &error);
+	if (client == NULL) {
+		g_warning ("Failed to make snapd client: %s", error->message);
+		return FALSE;
+	}
+	if (!snapd_client_get_interfaces_sync (client, &plugs, NULL, cancellable, &error)) {
 		g_warning ("Failed to check interfaces: %s", error->message);
 		return FALSE;
 	}
 
-	plugs = json_object_get_array_member (result, "plugs");
-	for (i = 0; i < json_array_get_length (plugs); i++) {
-		JsonObject *plug = json_array_get_object_element (plugs, i);
+	for (i = 0; i < plugs->len; i++) {
+		SnapdPlug *plug = plugs->pdata[i];
 		const gchar *interface;
 
 		// Only looks at the plugs for this snap
-		if (g_strcmp0 (json_object_get_string_member (plug, "snap"), gs_app_get_id (app)) != 0)
+		if (g_strcmp0 (snapd_plug_get_snap (plug), gs_app_get_id (app)) != 0)
 			continue;
 
-		interface = json_object_get_string_member (plug, "interface");
+		interface = snapd_plug_get_interface (plug);
 		if (interface == NULL)
 			continue;
 
@@ -554,7 +546,7 @@ gs_plugin_launch (GsPlugin *plugin,
 	else
 		binary_name = g_strdup_printf ("/snap/bin/%s.%s", gs_app_get_id (app), launch_name);
 
-	if (!is_graphical (app, cancellable))
+	if (!is_graphical (plugin, app, cancellable))
 		flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
 	info = g_app_info_create_from_commandline (binary_name, NULL, flags, error);
 	if (info == NULL)
@@ -569,17 +561,17 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	g_autofree gchar *macaroon = NULL;
-	g_auto(GStrv) discharges = NULL;
+	g_autoptr(SnapdClient) client = NULL;
 
 	/* We can only remove apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
-	get_macaroon (plugin, &macaroon, &discharges);
-
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	if (!gs_snapd_remove (macaroon, discharges, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	if (!snapd_client_remove_sync (client, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}

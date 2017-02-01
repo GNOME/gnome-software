@@ -3,8 +3,7 @@ cargs = ['-DG_LOG_DOMAIN="GsPluginSnap"']
 shared_module(
   'gs_plugin_snap',
   sources : [
-    'gs-plugin-snap.c',
-    'gs-snapd.c'
+    'gs-plugin-snap.c'
   ],
   include_directories : [
     include_directories('../..'),
