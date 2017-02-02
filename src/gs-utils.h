@@ -79,6 +79,9 @@ gboolean	 gs_utils_error_convert_gdk_pixbuf(GError	**perror);
 gboolean	 gs_utils_error_convert_json_glib (GError	**perror);
 gboolean	 gs_utils_error_convert_appstream (GError	**perror);
 
+gchar		*gs_utils_get_url_scheme	(const gchar	*url);
+gchar		*gs_utils_get_url_path		(const gchar	*url);
+
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */

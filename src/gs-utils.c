@@ -35,6 +35,7 @@
 #include <errno.h>
 #include <fnmatch.h>
 #include <math.h>
+#include <string.h>
 #include <glib/gstdio.h>
 #include <json-glib/json-glib.h>
 
@@ -829,6 +830,66 @@ gs_utils_error_convert_appstream (GError **perror)
 	}
 	error->domain = GS_PLUGIN_ERROR;
 	return TRUE;
+}
+
+/**
+ * gs_utils_get_url_scheme:
+ * @url: A URL, e.g. "appstream://gimp.desktop"
+ *
+ * Gets the scheme from the URL string.
+ *
+ * Returns: the URL scheme, e.g. "appstream"
+ */
+gchar *
+gs_utils_get_url_scheme	(const gchar *url)
+{
+	g_autoptr(SoupURI) uri = NULL;
+
+	/* no data */
+	if (url == NULL)
+		return NULL;
+
+	/* create URI from URL */
+	uri = soup_uri_new (url);
+	if (!SOUP_URI_IS_VALID (uri))
+		return NULL;
+
+	/* success */
+	return g_strdup (soup_uri_get_scheme (uri));
+}
+
+/**
+ * gs_utils_get_url_path:
+ * @url: A URL, e.g. "appstream://gimp.desktop"
+ *
+ * Gets the path from the URL string, removing any leading slashes.
+ *
+ * Returns: the URL path, e.g. "gimp.desktop"
+ */
+gchar *
+gs_utils_get_url_path (const gchar *url)
+{
+	g_autoptr(SoupURI) uri = NULL;
+	const gchar *host;
+	const gchar *path;
+
+	uri = soup_uri_new (url);
+	if (!SOUP_URI_IS_VALID (uri))
+		return NULL;
+
+	/* foo://bar -> scheme: foo, host: bar, path: / */
+	/* foo:bar -> scheme: foo, host: (empty string), path: /bar */
+	host = soup_uri_get_host (uri);
+	path = soup_uri_get_path (uri);
+	if (host != NULL && (strlen (host) > 0))
+		path = host;
+
+	/* trim any leading slashes */
+	while (*path == '/')
+		path++;
+
+	/* success */
+	return g_strdup (path);
 }
 
 /* vim: set noexpandtab: */
