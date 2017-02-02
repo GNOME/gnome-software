@@ -41,6 +41,8 @@ void		 gs_shell_details_set_app	(GsShellDetails		*self,
 						 GsApp			*app);
 void		 gs_shell_details_set_local_file(GsShellDetails		*self,
 						 GFile			*file);
+void		 gs_shell_details_set_url	(GsShellDetails		*self,
+						 const gchar		*url);
 GsApp		*gs_shell_details_get_app       (GsShellDetails		*self);
 void		 gs_shell_details_setup		(GsShellDetails		*self,
 						 GsShell		*shell,

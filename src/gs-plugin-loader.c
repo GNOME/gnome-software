@@ -160,6 +160,11 @@ typedef gboolean	 (*GsPluginFileToAppFunc)	(GsPlugin	*plugin,
 							 GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginUrlToAppFunc)	(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 const gchar	*url,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
 							 GsAppList	*apps,
 							 GCancellable	*cancellable,
@@ -629,6 +634,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderJob *job,
 		{
 			GsPluginFileToAppFunc plugin_func = func;
 			ret = plugin_func (plugin, list, job->file,
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_URL_TO_APP:
+		{
+			GsPluginUrlToAppFunc plugin_func = func;
+			ret = plugin_func (plugin, list, job->value,
 					   cancellable, &error_local);
 		}
 		break;
@@ -4346,6 +4358,147 @@ gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
  **/
 GsApp *
 gs_plugin_loader_file_to_app_finish (GsPluginLoader *plugin_loader,
+				     GAsyncResult *res,
+				     GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_TASK (res), NULL);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	gs_utils_error_convert_gio (error);
+	return g_task_propagate_pointer (G_TASK (res), error);
+}
+
+/******************************************************************************/
+
+static void
+gs_plugin_loader_url_to_app_thread_cb (GTask *task,
+					gpointer object,
+					gpointer task_data,
+					GCancellable *cancellable)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GError *error = NULL;
+	GsPluginLoaderJob *job = (GsPluginLoaderJob *) task_data;
+
+	/* run each plugin */
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		if (g_task_return_error_if_cancelled (task))
+			return;
+		if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, NULL,
+						  cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* set the local file on any of the returned results */
+	for (guint j = 0; j < gs_app_list_length (job->list); j++) {
+		GsApp *app = gs_app_list_index (job->list, j);
+		if (gs_app_get_local_file (app) == NULL)
+			gs_app_set_local_file (app, job->file);
+	}
+
+	/* run refine() on each one */
+	if (!gs_plugin_loader_run_refine (job, job->list, cancellable, &error)) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	/* filter package list */
+	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+
+	/* check the apps have an icon set */
+	for (guint j = 0; j < gs_app_list_length (job->list); j++) {
+		GsApp *app = gs_app_list_index (job->list, j);
+		if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
+		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
+		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
+			g_autoptr(AsIcon) ic = as_icon_new ();
+			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+			if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+				as_icon_set_name (ic, "x-package-repository");
+			else
+				as_icon_set_name (ic, "application-x-executable");
+			gs_app_add_icon (app, ic);
+		}
+	}
+
+	/* run refine() on each one again to pick up any icons */
+	job->refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
+	if (!gs_plugin_loader_run_refine (job, job->list, cancellable, &error)) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	/* success */
+	if (gs_app_list_length (job->list) != 1) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "no application was created for %s",
+					 job->value);
+		return;
+	}
+	g_task_return_pointer (task, g_object_ref (gs_app_list_index (job->list, 0)), (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * gs_plugin_loader_url_to_app_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_url_to_app()
+ * function. The plugins can either return #GsApp objects of kind
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications.
+ *
+ * Files that are supported will have the GFile used to create them available
+ * from the gs_app_get_local_file() method.
+ **/
+void
+gs_plugin_loader_url_to_app_async (GsPluginLoader *plugin_loader,
+				    const gchar	*url,
+				    GsPluginRefineFlags refine_flags,
+				    GsPluginFailureFlags failure_flags,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
+{
+	GsPluginLoaderJob *job;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save job */
+	job = gs_plugin_loader_job_new (plugin_loader);
+	job->refine_flags = refine_flags;
+	job->failure_flags = failure_flags;
+	job->list = gs_app_list_new ();
+	job->value = g_strdup (url);
+	job->action = GS_PLUGIN_ACTION_URL_TO_APP;
+	job->function_name = "gs_plugin_url_to_app";
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, job, (GDestroyNotify) gs_plugin_loader_job_free);
+	g_task_run_in_thread (task, gs_plugin_loader_url_to_app_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_url_to_app_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): An application, or %NULL
+ **/
+GsApp *
+gs_plugin_loader_url_to_app_finish (GsPluginLoader *plugin_loader,
 				     GAsyncResult *res,
 				     GError **error)
 {

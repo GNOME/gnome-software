@@ -1535,6 +1535,8 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "refresh";
 	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
 		return "file-to-app";
+	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
+		return "url-to-app";
 	if (action == GS_PLUGIN_ACTION_AUTH_LOGIN)
 		return "auth-login";
 	if (action == GS_PLUGIN_ACTION_AUTH_LOGOUT)

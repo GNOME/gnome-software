@@ -261,6 +261,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_AUTH_LOGOUT:		Authentication logout action
  * @GS_PLUGIN_ACTION_AUTH_REGISTER:		Authentication register action
  * @GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:	Authentication lost password action
+ * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the file to an application
  *
  * The plugin action.
  **/
@@ -302,6 +303,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_AUTH_LOGOUT,
 	GS_PLUGIN_ACTION_AUTH_REGISTER,
 	GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
+	GS_PLUGIN_ACTION_URL_TO_APP,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;

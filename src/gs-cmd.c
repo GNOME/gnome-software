@@ -369,6 +369,19 @@ main (int argc, char **argv)
 			list = gs_app_list_new ();
 			gs_app_list_add (list, app);
 		}
+	} else if (argc == 3 && g_strcmp0 (argv[1], "url-to-app") == 0) {
+		app = gs_plugin_loader_url_to_app (plugin_loader,
+						   argv[2],
+						   refine_flags,
+						   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+						   NULL,
+						   &error);
+		if (app == NULL) {
+			ret = FALSE;
+		} else {
+			list = gs_app_list_new ();
+			gs_app_list_add (list, app);
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)

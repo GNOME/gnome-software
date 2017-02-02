@@ -860,6 +860,30 @@ gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
+ * gs_plugin_url_to_app:
+ * @plugin: a #GsPlugin
+ * @list: a #GsAppList
+ * @url: a #URL, e.g. "apt://gimp"
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Converts a URL to a #GsApp. It's expected that only one plugin will
+ * match the scheme of @url and that a single #GsApp will be in the returned
+ * list. If no plugins can handle the file, the list will be empty.
+ *
+ * For example, the apt plugin can turn apt://gimp into a application.
+ *
+ * Plugins are expected to add new apps using gs_app_list_add().
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_url_to_app			(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 const gchar	*url,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
  * gs_plugin_update:
  * @plugin: a #GsPlugin
  * @apps: a #GsAppList

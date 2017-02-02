@@ -1523,6 +1523,31 @@ gs_shell_details_set_local_file (GsShellDetails *self, GFile *file)
 					    self);
 }
 
+void
+gs_shell_details_set_url (GsShellDetails *self, const gchar *url)
+{
+	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_LOADING);
+	gs_plugin_loader_url_to_app_async (self->plugin_loader,
+					   url,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
+					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					   self->cancellable,
+					   gs_shell_details_file_to_app_cb,
+					   self);
+}
+
 static void
 gs_shell_details_load (GsShellDetails *self)
 {

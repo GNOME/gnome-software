@@ -172,6 +172,32 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 }
 
 gboolean
+gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsAppList *list,
+		      const gchar *url,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autofree gchar *path = NULL;
+	g_autofree gchar *scheme = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "dummy") != 0)
+		return TRUE;
+
+	/* create app */
+	path = gs_utils_get_url_path (url);
+	app = gs_app_new (path);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
+	gs_app_list_add (list, app);
+	return TRUE;
+}
+
+gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
 		      GsAppList *list,

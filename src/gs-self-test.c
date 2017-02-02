@@ -794,6 +794,24 @@ gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_url_to_app_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	app = gs_plugin_loader_url_to_app (plugin_loader,
+					   "dummy://chiron.desktop",
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+}
+
+static void
 gs_plugin_loader_modalias_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -1622,6 +1640,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{search}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_search_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{url-to-app}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_url_to_app_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{install}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_install_func);

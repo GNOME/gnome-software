@@ -341,6 +341,9 @@ gs_shell_change_mode (GsShell *shell,
 		if (gs_app_get_local_file (app) != NULL) {
 			gs_shell_details_set_local_file (priv->shell_details,
 			                                 gs_app_get_local_file (app));
+		} else if (gs_app_get_metadata_item (app, "GnomeSoftware::from-url") != NULL) {
+			gs_shell_details_set_url (priv->shell_details,
+			                          gs_app_get_metadata_item (app, "GnomeSoftware::from-url"));
 		} else {
 			gs_shell_details_set_app (priv->shell_details, data);
 		}
@@ -1501,6 +1504,7 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ACTION_LAUNCH:
 		return gs_shell_show_event_launch (shell, event);
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
+	case GS_PLUGIN_ACTION_URL_TO_APP:
 		return gs_shell_show_event_file_to_app (shell, event);
 	default:
 		break;

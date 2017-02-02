@@ -117,6 +117,12 @@ GsApp		*gs_plugin_loader_file_to_app		(GsPluginLoader	*plugin_loader,
 							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+GsApp		*gs_plugin_loader_url_to_app		(GsPluginLoader	*plugin_loader,
+							 const gchar	*url,
+							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 
