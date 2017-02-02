@@ -31,8 +31,6 @@ struct GsPluginData {
 	GsAuth		*auth;
 };
 
-typedef gboolean (*AppFilterFunc)(const gchar *id, JsonObject *object, gpointer data);
-
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
