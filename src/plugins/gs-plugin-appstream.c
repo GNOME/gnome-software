@@ -319,6 +319,36 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
+gboolean
+gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsAppList *list,
+		      const gchar *url,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	AsApp *item;
+	g_autofree gchar *path = NULL;
+	g_autofree gchar *scheme = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "appstream") != 0)
+		return TRUE;
+
+	/* create app */
+	path = gs_utils_get_url_path (url);
+	item = as_store_get_app_by_id (priv->store, path);
+	if (item == NULL)
+		return TRUE;
+	app = gs_appstream_create_app (plugin, item, error);
+	if (app == NULL)
+		return FALSE;
+	gs_app_list_add (list, app);
+	return TRUE;
+}
+
 static gboolean
 gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GsApp *app,

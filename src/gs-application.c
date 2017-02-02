@@ -572,6 +572,26 @@ details_pkg_activated (GSimpleAction *action,
 }
 
 static void
+details_url_activated (GSimpleAction *action,
+		       GVariant      *parameter,
+		       gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	const gchar *url;
+	g_autoptr (GsApp) a = NULL;
+
+	initialize_ui_and_present_window (app, NULL);
+
+	g_variant_get (parameter, "(&s)", &url);
+
+	/* this is only used as a wrapper to transport the URL to
+	 * the gs_shell_change_mode() function -- not in the GsAppList */
+	a = gs_app_new (NULL);
+	gs_app_set_metadata (a, "GnomeSoftware::from-url", url);
+	gs_shell_show_app (app->shell, a);
+}
+
+static void
 install_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
@@ -702,6 +722,7 @@ static GActionEntry actions[] = {
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "details-pkg", details_pkg_activated, "(ss)", NULL, NULL },
+	{ "details-url", details_url_activated, "(s)", NULL, NULL },
 	{ "install", install_activated, "(su)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
@@ -913,29 +934,9 @@ gs_application_open (GApplication  *application,
 
 	for (i = 0; i < n_files; i++) {
 		g_autofree gchar *str = g_file_get_uri (files[i]);
-		g_autofree gchar *scheme = NULL;
-		g_autofree gchar *path = NULL;
-
-		scheme = gs_utils_get_url_scheme (str);
-		if (scheme == NULL)
-			continue;
-		path = gs_utils_get_url_path (str);
-		if (path == NULL)
-			continue;
-
-		if (g_strcmp0 (scheme, "appstream") == 0) {
-			g_action_group_activate_action (G_ACTION_GROUP (app),
-			                                "details",
-			                                g_variant_new ("(ss)", path, ""));
-		} else if (g_strcmp0 (scheme, "apt") == 0) {
-			g_action_group_activate_action (G_ACTION_GROUP (app),
-			                                "details-pkg",
-			                                g_variant_new ("(ss)", path, "apt"));
-		} else if (g_strcmp0 (scheme, "snap") == 0) {
-			g_action_group_activate_action (G_ACTION_GROUP (app),
-			                                "details-pkg",
-			                                g_variant_new ("(ss)", path, "snap"));
-		}
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"details-url",
+						g_variant_new ("(s)", str));
 	}
 }
 

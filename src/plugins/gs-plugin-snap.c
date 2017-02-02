@@ -74,6 +74,29 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
+gboolean
+gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsAppList *list,
+		      const gchar *url,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+//	g_autofree gchar *path = NULL;
+	g_autofree gchar *scheme = NULL;
+//	g_autoptr(GsApp) app = NULL;
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "snap") != 0)
+		return TRUE;
+
+	/* create app */
+//	path = gs_utils_get_url_path (url);
+//FIXME: find/create an app using the URL path
+//	gs_app_list_add (list, app);
+	return TRUE;
+}
+
 static void
 get_macaroon (GsPlugin *plugin, gchar **macaroon, gchar ***discharges)
 {
