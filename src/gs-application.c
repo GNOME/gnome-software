@@ -932,11 +932,17 @@ gs_application_open (GApplication  *application,
 			                                g_variant_new ("(ss)", path, ""));
 		}
 		if (g_strcmp0 (soup_uri_get_scheme (uri), "apt") == 0) {
+			const gchar *host = soup_uri_get_host (uri);
 			const gchar *path = soup_uri_get_path (uri);
 
 			/* trim any leading slashes */
 			while (*path == '/')
 				path++;
+
+			/* apt://foo -> scheme: apt, host: foo, path: / */
+			/* apt:foo -> scheme: apt, host: (empty string), path: /foo */
+			if (host != NULL && (strlen (host) > 0))
+				path = host;
 
 			g_action_group_activate_action (G_ACTION_GROUP (app),
 			                                "details-pkg",
