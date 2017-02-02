@@ -1416,8 +1416,10 @@ gs_shell_details_app_refine_cb (GObject *source,
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
 	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *str = NULL;
+		const gchar *id;
 
-		str = g_strdup_printf (_("Could not find “%s”"), gs_app_get_id (self->app));
+		id = gs_app_get_id (self->app);
+		str = g_strdup_printf (_("Could not find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
 		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
 		gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_FAILED);
 		return;
