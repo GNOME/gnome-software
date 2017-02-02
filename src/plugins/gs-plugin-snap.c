@@ -112,6 +112,7 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 
 	get_macaroon (plugin, &macaroon, &discharges);
 
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	status = json_object_get_string_member (package, "status");
 	if (g_strcmp0 (status, "installed") == 0 || g_strcmp0 (status, "active") == 0) {
 		const gchar *update_available;
@@ -265,7 +266,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
 		refine_app (plugin, app, package, TRUE, cancellable);
 		gs_app_list_add (list, app);
@@ -302,7 +302,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
 		refine_app (plugin, app, package, TRUE, cancellable);
 		gs_app_list_add (list, app);
@@ -321,6 +320,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
 	g_autoptr(JsonObject) result = NULL;
+	const gchar *id;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -328,7 +328,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	get_macaroon (plugin, &macaroon, &discharges);
 
-	result = gs_snapd_list_one (macaroon, discharges, gs_app_get_id (app), cancellable, error);
+	id = gs_app_get_id (app);
+	if (id == NULL)
+		id = gs_app_get_source_default (app);
+	result = gs_snapd_list_one (macaroon, discharges, id, cancellable, error);
 	if (result == NULL)
 		return FALSE;
 	refine_app (plugin, app, result, FALSE, cancellable);

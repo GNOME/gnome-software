@@ -557,12 +557,17 @@ details_pkg_activated (GSimpleAction *action,
 		       gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
+	const gchar *name;
+	const gchar *plugin;
 	g_autoptr (GsApp) a = NULL;
 
 	initialize_ui_and_present_window (app, NULL);
 
+	g_variant_get (parameter, "(&s&s)", &name, &plugin);
 	a = gs_app_new (NULL);
-	gs_app_add_source (a, g_variant_get_string (parameter, NULL));
+	gs_app_add_source (a, name);
+	if (strcmp (plugin, "") != 0)
+		gs_app_set_management_plugin (a, plugin);
 	gs_shell_show_app (app->shell, a);
 }
 
@@ -696,7 +701,7 @@ static GActionEntry actions[] = {
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
-	{ "details-pkg", details_pkg_activated, "s", NULL, NULL },
+	{ "details-pkg", details_pkg_activated, "(ss)", NULL, NULL },
 	{ "install", install_activated, "(su)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
@@ -872,7 +877,7 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	} else if (g_variant_dict_lookup (options, "details-pkg", "&s", &pkgname)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details-pkg",
-						g_variant_new_string (pkgname));
+						g_variant_new ("(ss)", pkgname, ""));
 		rc = 0;
 	} else if (g_variant_dict_lookup (options, "install", "&s", &id)) {
 		GsShellInteraction interaction = GS_SHELL_INTERACTION_FULL;
@@ -909,44 +914,36 @@ gs_application_open (GApplication  *application,
 	for (i = 0; i < n_files; i++) {
 		g_autofree gchar *str = g_file_get_uri (files[i]);
 		g_autoptr(SoupURI) uri = NULL;
+		const gchar *host;
+		const gchar *path;
 
 		uri = soup_uri_new (str);
 		if (!SOUP_URI_IS_VALID (uri))
 			continue;
 
+		/* foo://bar -> scheme: foo, host: bar, path: / */
+		/* foo:bar -> scheme: foo, host: (empty string), path: /bar */
+		host = soup_uri_get_host (uri);
+		path = soup_uri_get_path (uri);
+		if (host != NULL && (strlen (host) > 0))
+			path = host;
+
+		/* trim any leading slashes */
+		while (*path == '/')
+			path++;
+
 		if (g_strcmp0 (soup_uri_get_scheme (uri), "appstream") == 0) {
-			const gchar *host = soup_uri_get_host (uri);
-			const gchar *path = soup_uri_get_path (uri);
-
-			/* appstream://foo -> scheme: appstream, host: foo, path: / */
-			/* appstream:foo -> scheme: appstream, host: (empty string), path: /foo */
-			if (host != NULL && (strlen (host) > 0))
-				path = host;
-
-			/* trim any leading slashes */
-			while (*path == '/')
-				path++;
-
 			g_action_group_activate_action (G_ACTION_GROUP (app),
 			                                "details",
 			                                g_variant_new ("(ss)", path, ""));
-		}
-		if (g_strcmp0 (soup_uri_get_scheme (uri), "apt") == 0) {
-			const gchar *host = soup_uri_get_host (uri);
-			const gchar *path = soup_uri_get_path (uri);
-
-			/* trim any leading slashes */
-			while (*path == '/')
-				path++;
-
-			/* apt://foo -> scheme: apt, host: foo, path: / */
-			/* apt:foo -> scheme: apt, host: (empty string), path: /foo */
-			if (host != NULL && (strlen (host) > 0))
-				path = host;
-
+		} else if (g_strcmp0 (soup_uri_get_scheme (uri), "apt") == 0) {
 			g_action_group_activate_action (G_ACTION_GROUP (app),
 			                                "details-pkg",
-			                                g_variant_new_string (path));
+			                                g_variant_new ("(ss)", path, "apt"));
+		} else if (g_strcmp0 (soup_uri_get_scheme (uri), "snap") == 0) {
+			g_action_group_activate_action (G_ACTION_GROUP (app),
+			                                "details-pkg",
+			                                g_variant_new ("(ss)", path, "snap"));
 		}
 	}
 }
