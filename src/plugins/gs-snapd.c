@@ -464,6 +464,55 @@ gs_snapd_find (const gchar *macaroon, gchar **discharges,
 	return json_array_ref (result);
 }
 
+JsonArray *
+gs_snapd_find_name (const gchar *macaroon, gchar **discharges,
+		    const gchar *name,
+		    GCancellable *cancellable, GError **error)
+{
+	g_autofree gchar *escaped = NULL;
+	g_autofree gchar *path = NULL;
+	guint status_code;
+	g_autofree gchar *reason_phrase = NULL;
+	g_autofree gchar *response_type = NULL;
+	g_autofree gchar *response = NULL;
+	g_autoptr(JsonParser) parser = NULL;
+	JsonObject *root;
+	JsonArray *result;
+
+	escaped = soup_uri_encode (name, NULL);
+	path = g_strdup_printf ("/v2/find?name=%s", escaped);
+	if (!send_request ("GET", path, NULL,
+			   macaroon, discharges,
+			   &status_code, &reason_phrase,
+			   &response_type, &response, NULL,
+			   cancellable, error))
+		return NULL;
+
+	if (status_code != SOUP_STATUS_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "snapd returned status code %u: %s",
+			     status_code, reason_phrase);
+		return NULL;
+	}
+
+	parser = parse_result (response, response_type, error);
+	if (parser == NULL)
+		return NULL;
+	root = json_node_get_object (json_parser_get_root (parser));
+	result = json_object_get_array_member (root, "result");
+	if (result == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "snapd returned no result");
+		return NULL;
+	}
+
+	return json_array_ref (result);
+}
+
 JsonObject *
 gs_snapd_get_interfaces (const gchar *macaroon, gchar **discharges, GCancellable *cancellable, GError **error)
 {

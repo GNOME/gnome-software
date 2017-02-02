@@ -74,29 +74,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-gboolean
-gs_plugin_url_to_app (GsPlugin *plugin,
-		      GsAppList *list,
-		      const gchar *url,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-//	g_autofree gchar *path = NULL;
-	g_autofree gchar *scheme = NULL;
-//	g_autoptr(GsApp) app = NULL;
-
-	/* not us */
-	scheme = gs_utils_get_url_scheme (url);
-	if (g_strcmp0 (scheme, "snap") != 0)
-		return TRUE;
-
-	/* create app */
-//	path = gs_utils_get_url_path (url);
-//FIXME: find/create an app using the URL path
-//	gs_app_list_add (list, app);
-	return TRUE;
-}
-
 static void
 get_macaroon (GsPlugin *plugin, gchar **macaroon, gchar ***discharges)
 {
@@ -249,6 +226,45 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 		else
 			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	}
+}
+
+gboolean
+gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsAppList *list,
+		      const gchar *url,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autofree gchar *scheme = NULL;
+	g_autofree gchar *macaroon = NULL;
+	g_auto(GStrv) discharges = NULL;
+	g_autoptr(JsonArray) snaps = NULL;
+	JsonObject *snap;
+	g_autofree gchar *path = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "snap") != 0)
+		return TRUE;
+
+	/* create app */
+	path = gs_utils_get_url_path (url);
+	get_macaroon (plugin, &macaroon, &discharges);
+	snaps = gs_snapd_find_name (macaroon, discharges, path, cancellable, NULL);
+	if (snaps == NULL || json_array_get_length (snaps) < 1)
+		return TRUE;
+
+	snap = json_array_get_object_element (snaps, 0);
+	app = gs_app_new (json_object_get_string_member (snap, "name"));
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+	gs_app_set_management_plugin (app, "snap");
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	refine_app (plugin, app, snap, TRUE, cancellable);
+	gs_app_list_add (list, app);
+
+	return TRUE;
 }
 
 void

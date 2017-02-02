@@ -46,6 +46,12 @@ JsonArray *gs_snapd_find		(const gchar	*macaroon,
 					 GCancellable	*cancellable,
 					 GError		**error);
 
+JsonArray *gs_snapd_find_name		(const gchar	*macaroon,
+					 gchar		**discharges,
+					 const gchar	*name,
+					 GCancellable	*cancellable,
+					 GError		**error);
+
 JsonObject *gs_snapd_get_interfaces	(const gchar	*macaroon,
 					 gchar		**discharges,
 					 GCancellable	*cancellable,
