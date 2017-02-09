@@ -2148,12 +2148,11 @@ gs_flatpak_app_install (GsFlatpak *self,
 		return FALSE;
 
 	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") == 0) {
-		/* no local_file set */
-		if (gs_app_get_origin (app) == NULL) {
+		if (gs_app_get_local_file (app) == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no local_file set for %s",
+				     "no local file set for bundle %s",
 				     gs_app_get_unique_id (app));
 			return FALSE;
 		}
