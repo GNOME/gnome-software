@@ -1708,7 +1708,7 @@ gs_flatpak_fetch_remote_metadata (GsFlatpak *self,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no origin set for %s",
+			     "no origin set when getting metadata for %s",
 			     gs_app_get_unique_id (app));
 		return NULL;
 	}
@@ -2197,27 +2197,32 @@ install_runtime_for_app (GsFlatpak *self,
 			 GError **error)
 {
 	GsApp *runtime;
-	gsize len;
-	const gchar *str;
-	g_autoptr(GBytes) data = gs_flatpak_fetch_remote_metadata (self, app,
-								   cancellable,
-								   error);
 
-	if (data == NULL) {
-		gs_utils_error_add_unique_id (error, app);
-		gs_app_set_state_recover (app);
-		return FALSE;
+	/* only required for ostree-based flatpak apps */
+	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") != 0) {
+		gsize len;
+		const gchar *str;
+		g_autoptr(GBytes) data = NULL;
+		g_autoptr(GsApp) runtime_new = NULL;
+
+		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable, error);
+		if (data == NULL) {
+			gs_utils_error_add_unique_id (error, app);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+
+		str = g_bytes_get_data (data, &len);
+		runtime_new = gs_flatpak_create_runtime_from_metadata (self, app,
+								       str, len,
+								       error);
+		gs_app_set_update_runtime (app, runtime_new);
 	}
 
-	str = g_bytes_get_data (data, &len);
-	runtime = gs_flatpak_create_runtime_from_metadata (self, app, str, len,
-							   error);
-
 	/* no runtime required */
+	runtime = gs_app_get_update_runtime (app);
 	if (runtime == NULL)
 		return TRUE;
-
-	gs_app_set_update_runtime (app, runtime);
 
 	/* the runtime could come from a different remote to the app */
 	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
@@ -2329,7 +2334,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no origin set for %s",
+				     "no origin set for remote %s",
 				     gs_app_get_unique_id (app));
 			return FALSE;
 		}
