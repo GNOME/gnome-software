@@ -1419,7 +1419,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 		const gchar *id;
 
 		id = gs_app_get_id (self->app);
-		str = g_strdup_printf (_("Could not find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
+		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
 		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
 		gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_FAILED);
 		return;
