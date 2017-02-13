@@ -751,6 +751,10 @@ gs_app_set_state_recover (GsApp *app)
 		 as_app_state_to_string (app->state),
 		 as_app_state_to_string (app->state_recover));
 
+	/* make sure progress gets reset when recovering state, to prevent
+	 * confusing initial states when going through more than one attempt */
+	gs_app_set_progress (app, 0);
+
 	app->state = app->state_recover;
 	gs_app_queue_notify (app, "state");
 }
