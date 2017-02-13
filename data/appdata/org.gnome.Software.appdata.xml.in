@@ -46,6 +46,30 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-02-13" version="3.23.90">
+      <description>
+        <p>
+          This is an unstable release in the 3.23 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Handle apt and snap URLs</li>
+          <li>Show the updates panel with sections</li>
+          <li>Sort the apps in the installed panel by kind</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Add a more detailed error message when AC power is required</li>
+          <li>Do not hardcode the gnome-software application name</li>
+          <li>Ensure firmware is downloaded when not cached</li>
+          <li>Fix a rather large memory leak when loading Steam data</li>
+          <li>Fix launching Flatpak apps after updating</li>
+          <li>Install needed Flatpak runtimes when updating an app</li>
+          <li>Only show the scary firmware warning for removable devices</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2016-12-15" version="3.23.3">
       <description>
         <p>
