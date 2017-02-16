@@ -511,6 +511,16 @@ gs_appstream_get_bundle_kind (AsApp *item)
 	return AS_BUNDLE_KIND_UNKNOWN;
 }
 
+static gboolean
+gs_appstream_origin_valid (const gchar *origin)
+{
+	if (origin == NULL)
+		return FALSE;
+	if (g_strcmp0 (origin, "") == 0)
+		return FALSE;
+	return TRUE;
+}
+
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
@@ -796,6 +806,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	tmp = as_app_get_metadata_item (item, "GnomeSoftware::OriginHostnameUrl");
 	if (tmp != NULL && gs_app_get_origin_hostname (app) == NULL)
 		gs_app_set_origin_hostname (app, tmp);
+
+	/* we have an origin in the XML */
+	if (gs_app_get_origin (app) == NULL &&
+	    gs_appstream_origin_valid (as_app_get_origin (item)))
+		gs_app_set_origin (app, as_app_get_origin (item));
 
 	/* is there any update information */
 	if (!gs_appstream_refine_app_updates (plugin, app, item, error))
