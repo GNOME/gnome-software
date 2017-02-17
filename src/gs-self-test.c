@@ -1214,6 +1214,11 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 			 GS_APP_KUDO_SANDBOXED_SECURE |
 			 GS_APP_KUDO_SANDBOXED);
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "");
+	g_assert_cmpstr (gs_app_get_update_version (app), ==, "1.2.4");
+	g_assert_cmpstr (gs_app_get_update_details (app), ==,
+			 "Version 1.2.4:\nThis is best.\n\n"
+			 "Version 1.2.3:\nThis is better.");
+	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_UNKNOWN);
 
 	/* install, also installing runtime */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
