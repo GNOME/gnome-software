@@ -1406,19 +1406,20 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 	 * available system-wide then mark it installed, and vice-versa */
 	if (gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME &&
 	    gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+		g_autoptr(GPtrArray) xrefs2 = NULL;
 		g_autoptr(FlatpakInstallation) installation =
 			gs_flatpak_get_installation_counterpart (self,
 								 cancellable,
 								 error);
 		if (installation == NULL)
 			return FALSE;
-		xrefs = flatpak_installation_list_installed_refs (installation,
-								  cancellable, error);
-		if (xrefs == NULL) {
+		xrefs2 = flatpak_installation_list_installed_refs (installation,
+								   cancellable, error);
+		if (xrefs2 == NULL) {
 			return FALSE;
 		}
-		for (i = 0; i < xrefs->len; i++) {
-			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+		for (i = 0; i < xrefs2->len; i++) {
+			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs2, i);
 			if (!gs_flatpak_app_matches_xref (self, app, FLATPAK_REF(xref)))
 				continue;
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
