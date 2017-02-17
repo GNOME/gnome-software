@@ -551,6 +551,7 @@ gs_folders_convert (void)
 		const gchar * const children[] = {
 			"Utilities",
 			"Sundry",
+			"YaST",
 			NULL
 		};
 		const gchar * const utilities_categories[] = {
@@ -620,6 +621,11 @@ gs_folders_convert (void)
 			"vino-preferences.desktop",
 			NULL
 		};
+		const gchar * const yast_categories[] = {
+			"X-SuSE-YaST",
+			NULL
+		};
+
 		gchar *path;
 		gchar *child_path;
 		GSettings *child;
@@ -636,13 +642,22 @@ gs_folders_convert (void)
 
 		g_object_unref (child);
 		g_free (child_path);
-		
+
 		child_path = g_strconcat (path, "folders/Sundry/", NULL);
 		child = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
 		g_settings_set_string (child, "name", "X-GNOME-Sundry.directory");
 		g_settings_set_boolean (child, "translate", TRUE);
 		g_settings_set_strv (child, "categories", sundry_categories);
 		g_settings_set_strv (child, "apps", sundry_apps);
+
+		g_object_unref (child);
+		g_free (child_path);
+
+		child_path = g_strconcat (path, "folders/YaST/", NULL);
+		child = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
+		g_settings_set_string (child, "name", "suse-yast.directory");
+		g_settings_set_boolean (child, "translate", TRUE);
+		g_settings_set_strv (child, "categories", yast_categories);
 
 		g_object_unref (child);
 		g_free (child_path);
