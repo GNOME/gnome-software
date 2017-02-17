@@ -68,8 +68,8 @@ gs_utils_url_func (void)
 
 	scheme1 = gs_utils_get_url_scheme ("appstream://gimp.desktop");
 	g_assert_cmpstr (scheme1, ==, "appstream");
-	scheme1 = gs_utils_get_url_scheme ("appstream:gimp.desktop");
-	g_assert_cmpstr (scheme1, ==, "appstream");
+	scheme2 = gs_utils_get_url_scheme ("appstream:gimp.desktop");
+	g_assert_cmpstr (scheme2, ==, "appstream");
 
 	path1 = gs_utils_get_url_path ("appstream://gimp.desktop");
 	g_assert_cmpstr (path1, ==, "gimp.desktop");
