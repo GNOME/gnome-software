@@ -442,7 +442,7 @@ gs_plugin_set_appstream_id (GsPlugin *plugin, const gchar *appstream_id)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_free (priv->appstream_id);
-	appstream_id = g_strdup (appstream_id);
+	priv->appstream_id = g_strdup (appstream_id);
 }
 
 /**
