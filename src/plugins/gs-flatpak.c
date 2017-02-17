@@ -915,8 +915,8 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			GError **error)
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
-	g_autoptr(GsAppList) list_new = gs_app_list_new ();
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GsAppList) list_new = NULL;
+	g_autoptr(GsAppList) list_tmp = NULL;
 
 	/* get all the installed apps (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -927,6 +927,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 	}
 
 	/* look at each installed xref */
+	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		const gchar *commit;
