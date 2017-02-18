@@ -2902,6 +2902,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	job = gs_plugin_loader_job_new (plugin_loader);
 	job->app = g_object_ref (app);
 	job->action = action;
+	job->failure_flags = failure_flags;
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:

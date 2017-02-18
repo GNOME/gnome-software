@@ -1095,6 +1095,7 @@ static void
 gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
+	GsApp *runtime;
 	const gchar *root;
 	gboolean ret;
 	gint kf_remote_repo_version;
@@ -1279,6 +1280,40 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 	g_assert (!g_file_test (metadata_fn, G_FILE_TEST_IS_REGULAR));
 	g_assert (!g_file_test (desktop_fn, G_FILE_TEST_IS_REGULAR));
+
+	/* remove the remote (fail, as the runtime is still installed) */
+	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+					   GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
+					   NULL,
+					   &error);
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED);
+	g_assert (!ret);
+	g_clear_error (&error);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
+
+	/* remove the runtime */
+	runtime = gs_app_get_runtime (app);
+	g_assert (runtime != NULL);
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime.runtime/master");
+	ret = gs_plugin_loader_app_action (plugin_loader, runtime,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* remove the remote */
+	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
 }
 
 static void
