@@ -345,6 +345,8 @@ gs_plugin_get_symbol (GsPlugin *plugin, const gchar *function_name)
 	gpointer func = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->vfuncs_mutex);
 
+	g_return_val_if_fail (function_name != NULL, NULL);
+
 	/* disabled plugins shouldn't be checked */
 	if (!priv->enabled)
 		return NULL;

@@ -43,6 +43,7 @@ struct _GsFlatpak {
 	AsAppScope		 scope;
 	GsPlugin		*plugin;
 	AsStore			*store;
+	guint			 changed_id;
 };
 
 G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
@@ -440,8 +441,9 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 		gs_plugin_flatpak_error_convert (error);
 		return FALSE;
 	}
-	g_signal_connect (self->monitor, "changed",
-			  G_CALLBACK (gs_plugin_flatpak_changed_cb), self);
+	self->changed_id =
+		g_signal_connect (self->monitor, "changed",
+				  G_CALLBACK (gs_plugin_flatpak_changed_cb), self);
 
 	/* ensure the legacy AppStream symlink cache is deleted */
 	if (!gs_flatpak_symlinks_cleanup (self->installation, cancellable, error))
@@ -1029,6 +1031,9 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_update_details (app, NULL);
+		gs_app_set_update_version (app, NULL);
+		gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
 		gs_app_set_size_download (app, 0);
 		gs_app_list_add (list_tmp, app);
 	}
@@ -1918,6 +1923,19 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	return TRUE;
 }
 
+static void
+gs_flatpak_refine_appstream_release (AsApp *item, GsApp *app)
+{
+	AsRelease *rel = as_app_get_release_default (item);
+	if (!gs_app_is_installed (app))
+		return;
+	if (rel == NULL)
+		return;
+	if (as_release_get_version (rel) == NULL)
+		return;
+	gs_app_set_version (app, as_release_get_version (rel));
+}
+
 static gboolean
 gs_flatpak_refine_appstream (GsFlatpak *self, GsApp *app, GError **error)
 {
@@ -1938,7 +1956,13 @@ gs_flatpak_refine_appstream (GsFlatpak *self, GsApp *app, GError **error)
 					      AS_STORE_SEARCH_FLAG_USE_WILDCARDS);
 	if (item == NULL)
 		return TRUE;
-	return gs_appstream_refine_app (self->plugin, app, item, error);
+	if (!gs_appstream_refine_app (self->plugin, app, item, error))
+		return FALSE;
+
+	/* use the default release as the version number */
+	gs_flatpak_refine_appstream_release (item, app);
+
+	return TRUE;
 }
 
 gboolean
@@ -2271,6 +2295,7 @@ install_runtime_for_app (GsFlatpak *self,
 						     gs_flatpak_progress_cb, app,
 						     cancellable, error);
 		if (xref == NULL) {
+			gs_plugin_flatpak_error_convert (error);
 			gs_app_set_state_recover (runtime);
 			gs_app_set_state_recover (app);
 			return FALSE;
@@ -2358,6 +2383,11 @@ gs_flatpak_app_install (GsFlatpak *self,
 
 	/* state is known */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+	/* set new version */
+	if (!gs_flatpak_refine_appstream (self, app, error))
+		return FALSE;
+
 	return TRUE;
 }
 
@@ -2396,6 +2426,14 @@ gs_flatpak_update_app (GsFlatpak *self,
 
 	/* state is known */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_update_version (app, NULL);
+	gs_app_set_update_details (app, NULL);
+	gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+
+	/* set new version */
+	if (!gs_flatpak_refine_appstream (self, app, error))
+		return FALSE;
+
 	return TRUE;
 }
 
@@ -2928,6 +2966,11 @@ gs_flatpak_finalize (GObject *object)
 	GsFlatpak *self;
 	g_return_if_fail (GS_IS_FLATPAK (object));
 	self = GS_FLATPAK (object);
+
+	if (self->changed_id > 0) {
+		g_signal_handler_disconnect (self->monitor, self->changed_id);
+		self->changed_id = 0;
+	}
 
 	g_object_unref (self->plugin);
 	g_object_unref (self->store);

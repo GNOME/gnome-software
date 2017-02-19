@@ -392,6 +392,10 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	GPtrArray *releases;
 	g_autoptr(GPtrArray) updates_list = NULL;
 
+	/* only for UPDATABLE apps */
+	if (!gs_app_is_updatable (app))
+		return TRUE;
+
 	/* make a list of valid updates */
 	updates_list = g_ptr_array_new ();
 	releases = as_app_get_releases (item);

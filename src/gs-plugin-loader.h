@@ -277,6 +277,9 @@ AsProfile	*gs_plugin_loader_get_profile		(GsPluginLoader	*plugin_loader);
 GsApp		*gs_plugin_loader_app_create		(GsPluginLoader	*plugin_loader,
 							 const gchar	*unique_id);
 
+/* only useful from the self tests */
+void		 gs_plugin_loader_setup_again		(GsPluginLoader	*plugin_loader);
+
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_LOADER_H */

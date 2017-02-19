@@ -3494,6 +3494,35 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 }
 
 /**
+ * gs_plugin_loader_setup_again:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Calls setup on each plugin. This should only be used from the self tests
+ * and in a controlled way.
+ */
+void
+gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GsPluginLoaderJob) job = gs_plugin_loader_job_new (plugin_loader);
+	job->action = GS_PLUGIN_ACTION_SETUP;
+	job->failure_flags = GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
+	job->function_name = "gs_plugin_setup";
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		g_autoptr(GError) error_local = NULL;
+		if (!gs_plugin_get_enabled (plugin))
+			continue;
+		if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, NULL,
+						  NULL, &error_local)) {
+			g_warning ("resetup of %s failed: %s",
+				   gs_plugin_get_name (plugin),
+				   error_local->message);
+		}
+	}
+}
+
+/**
  * gs_plugin_loader_setup:
  * @plugin_loader: a #GsPluginLoader
  * @whitelist: list of plugin names, or %NULL
