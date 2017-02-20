@@ -53,6 +53,15 @@ gs_update_list_button_clicked_cb (GsAppRow *app_row,
 	g_signal_emit (update_list, signals[SIGNAL_BUTTON_CLICKED], 0, app);
 }
 
+static void
+gs_update_list_app_state_notify_cb (GsApp *app, GParamSpec *pspec, gpointer user_data)
+{
+	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+		GsAppRow *app_row = GS_APP_ROW (user_data);
+		gs_app_row_unreveal (app_row);
+	}
+}
+
 void
 gs_update_list_add_app (GsUpdateList *update_list,
 			GsApp	*app)
@@ -70,6 +79,9 @@ gs_update_list_add_app (GsUpdateList *update_list,
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    priv->sizegroup_image,
 				    priv->sizegroup_name);
+	g_signal_connect (app, "notify::state",
+			  G_CALLBACK (gs_update_list_app_state_notify_cb),
+			  app_row);
 	gtk_widget_show (app_row);
 }
 
