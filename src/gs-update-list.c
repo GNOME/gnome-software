@@ -188,6 +188,7 @@ static void
 gs_update_list_update_offline_firmware_cb (GtkButton *button,
 					   GsUpdateList *update_list)
 {
+	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
 	gs_update_list_emit_clicked_for_section (update_list,
 						 GS_UPDATE_LIST_SECTION_OFFLINE_FIRMWARE);
 }
@@ -195,6 +196,7 @@ gs_update_list_update_offline_firmware_cb (GtkButton *button,
 static void
 gs_update_list_update_offline_cb (GtkButton *button, GsUpdateList *update_list)
 {
+	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
 	gs_update_list_emit_clicked_for_section (update_list,
 						 GS_UPDATE_LIST_SECTION_OFFLINE);
 }
@@ -202,6 +204,7 @@ gs_update_list_update_offline_cb (GtkButton *button, GsUpdateList *update_list)
 static void
 gs_update_list_update_online_cb (GtkButton *button, GsUpdateList *update_list)
 {
+	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
 	gs_update_list_emit_clicked_for_section (update_list,
 						 GS_UPDATE_LIST_SECTION_ONLINE);
 }
