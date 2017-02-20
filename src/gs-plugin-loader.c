@@ -47,6 +47,7 @@ typedef struct
 	AsProfile		*profile;
 	SoupSession		*soup_session;
 	GPtrArray		*auth_array;
+	GsPluginStatus		 global_status_last;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -3477,13 +3478,18 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 				    GsPluginStatus status,
 				    GsPluginLoader *plugin_loader)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+
 	/* nothing specific */
 	if (gs_app_get_id (app) == NULL) {
-		g_debug ("emitting global %s",
-			 gs_plugin_status_to_string (status));
-		g_signal_emit (plugin_loader,
-			       signals[SIGNAL_STATUS_CHANGED],
-			       0, app, status);
+		if (priv->global_status_last != status) {
+			g_debug ("emitting global %s",
+				 gs_plugin_status_to_string (status));
+			g_signal_emit (plugin_loader,
+				       signals[SIGNAL_STATUS_CHANGED],
+				       0, app, status);
+			priv->global_status_last = status;
+		}
 		return;
 	}
 
