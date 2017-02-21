@@ -2251,7 +2251,6 @@ install_runtime_for_app (GsFlatpak *self,
 		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable, error);
 		if (data == NULL) {
 			gs_utils_error_add_unique_id (error, app);
-			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 
@@ -2259,6 +2258,8 @@ install_runtime_for_app (GsFlatpak *self,
 		runtime_new = gs_flatpak_create_runtime_from_metadata (self, app,
 								       str, len,
 								       error);
+		if (runtime_new == NULL)
+			return FALSE;
 		gs_app_set_update_runtime (app, runtime_new);
 	}
 
@@ -2270,17 +2271,14 @@ install_runtime_for_app (GsFlatpak *self,
 	/* the runtime could come from a different remote to the app */
 	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
 		gs_utils_error_add_unique_id (error, runtime);
-		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 	if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
 		gs_utils_error_add_unique_id (error, runtime);
-		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 	if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
 		gs_utils_error_add_unique_id (error, runtime);
-		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 	if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
@@ -2290,7 +2288,6 @@ install_runtime_for_app (GsFlatpak *self,
 			     "Failed to find runtime %s",
 			     gs_app_get_source_default (runtime));
 		gs_utils_error_add_unique_id (error, runtime);
-		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 
@@ -2314,7 +2311,6 @@ install_runtime_for_app (GsFlatpak *self,
 		if (xref == NULL) {
 			gs_plugin_flatpak_error_convert (error);
 			gs_app_set_state_recover (runtime);
-			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 		gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
@@ -2337,8 +2333,8 @@ gs_flatpak_app_install (GsFlatpak *self,
 	g_autoptr(FlatpakInstalledRef) xref = NULL;
 
 	/* ensure we have metadata and state */
-	if (!gs_flatpak_refine_app (self, app, 0, cancellable,
-				    error))
+	if (!gs_flatpak_refine_app (self, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    cancellable, error))
 		return FALSE;
 
 	/* install */
@@ -2354,8 +2350,10 @@ gs_flatpak_app_install (GsFlatpak *self,
 
 	/* install required runtime if not already installed */
 	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
-	    !install_runtime_for_app (self, app, cancellable, error))
+	    !install_runtime_for_app (self, app, cancellable, error)) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
 
 	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") == 0) {
 		if (gs_app_get_local_file (app) == NULL) {
@@ -2421,8 +2419,10 @@ gs_flatpak_update_app (GsFlatpak *self,
 
 	/* install required runtime if not already installed */
 	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
-	    !install_runtime_for_app (self, app, cancellable, error))
+	    !install_runtime_for_app (self, app, cancellable, error)) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
 
 	xref = flatpak_installation_update (self->installation,
 					    FLATPAK_UPDATE_FLAGS_NONE,
