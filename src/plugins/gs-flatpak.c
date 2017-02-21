@@ -70,6 +70,10 @@ gs_plugin_flatpak_error_convert (GError **perror)
 	if (gs_utils_error_convert_gdbus (perror))
 		return;
 
+	/* this are allowed for network ops */
+	if (gs_utils_error_convert_gresolver (perror))
+		return;
+
 	/* custom to this plugin */
 	if (error->domain == FLATPAK_ERROR) {
 		switch (error->code) {

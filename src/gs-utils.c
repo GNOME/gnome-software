@@ -699,6 +699,44 @@ gs_utils_error_convert_gio (GError **perror)
 }
 
 /**
+ * gs_utils_error_convert_gresolver:
+ * @perror: a pointer to a #GError, or %NULL
+ *
+ * Converts the #GResolverError to an error with a GsPluginError domain.
+ *
+ * Returns: %TRUE if the error was converted, or already correct
+ **/
+gboolean
+gs_utils_error_convert_gresolver (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return FALSE;
+	if (error->domain == GS_PLUGIN_ERROR)
+		return TRUE;
+	if (error->domain != G_RESOLVER_ERROR)
+		return FALSE;
+	switch (error->code) {
+	case G_RESOLVER_ERROR_INTERNAL:
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	case G_RESOLVER_ERROR_NOT_FOUND:
+	case G_RESOLVER_ERROR_TEMPORARY_FAILURE:
+		error->code = GS_PLUGIN_ERROR_DOWNLOAD_FAILED;
+		break;
+	default:
+		g_warning ("can't reliably fixup error code %i in domain %s",
+			   error->code, g_quark_to_string (error->domain));
+		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	}
+	error->domain = GS_PLUGIN_ERROR;
+	return TRUE;
+}
+
+/**
  * gs_utils_error_convert_gdk_pixbuf:
  * @perror: a pointer to a #GError, or %NULL
  *
