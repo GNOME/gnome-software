@@ -43,6 +43,7 @@ struct _GsFlatpak {
 	AsAppScope		 scope;
 	GsPlugin		*plugin;
 	AsStore			*store;
+	gchar			*id;
 	guint			 changed_id;
 };
 
@@ -115,6 +116,7 @@ gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 	app = gs_app_new (id);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
+	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
 	if (flatpak_installation_get_is_user (self->installation)) {
 		gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	} else {
@@ -2969,6 +2971,18 @@ gs_flatpak_store_app_removed_cb (AsStore *store, AsApp *app, GsFlatpak *self)
 	gs_plugin_cache_remove (self->plugin, as_app_get_unique_id (app));
 }
 
+const gchar *
+gs_flatpak_get_id (GsFlatpak *self)
+{
+	if (self->id == NULL) {
+		GString *str = g_string_new ("GsFlatpak");
+		g_string_append_printf (str, "-%s",
+					as_app_scope_to_string (self->scope));
+		self->id = g_string_free (str, FALSE);
+	}
+	return self->id;
+}
+
 AsAppScope
 gs_flatpak_get_scope (GsFlatpak *self)
 {
@@ -2987,6 +3001,7 @@ gs_flatpak_finalize (GObject *object)
 		self->changed_id = 0;
 	}
 
+	g_free (self->id);
 	g_object_unref (self->plugin);
 	g_object_unref (self->store);
 	g_hash_table_unref (self->broken_remotes);

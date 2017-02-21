@@ -120,6 +120,7 @@ gs_plugin_flatpak_add_installation (GsPlugin *plugin,
 	flatpak = gs_flatpak_new (plugin, installation);
 	if (!gs_flatpak_setup (flatpak, cancellable, error))
 		return FALSE;
+	g_debug ("successfully set up %s", gs_flatpak_get_id (flatpak));
 
 	/* add objects that set up correctly */
 	g_ptr_array_add (priv->flatpaks, g_steal_pointer (&flatpak));
@@ -270,6 +271,7 @@ static GsFlatpak *
 gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *object_id;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -277,15 +279,27 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 		return NULL;
 	}
 
+	/* specified an explicit name */
+	object_id = gs_app_get_flatpak_object_id (app);
+	if (object_id != NULL) {
+		for (guint i = 0; i < priv->flatpaks->len; i++) {
+			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+			if (g_strcmp0 (gs_flatpak_get_id (flatpak), object_id) == 0) {
+				g_debug ("chose %s using ID",
+					 gs_flatpak_get_id (flatpak));
+				return flatpak;
+			}
+		}
+	}
+
+	/* find a scope that matches */
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-
-		/* check scope */
-		if (!_as_app_scope_is_compatible (gs_flatpak_get_scope (flatpak),
-						  gs_app_get_scope (app))) {
-			continue;
+		if (_as_app_scope_is_compatible (gs_flatpak_get_scope (flatpak),
+						 gs_app_get_scope (app))) {
+			g_debug ("chose %s using scope", gs_flatpak_get_id (flatpak));
+			return flatpak;
 		}
-		return flatpak;
 	}
 	return NULL;
 }
