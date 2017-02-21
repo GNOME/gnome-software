@@ -1958,8 +1958,19 @@ gs_flatpak_refine_appstream (GsFlatpak *self, GsApp *app, GError **error)
 	item = as_store_get_app_by_unique_id (self->store,
 					      unique_id,
 					      AS_STORE_SEARCH_FLAG_USE_WILDCARDS);
-	if (item == NULL)
+	if (item == NULL) {
+		g_autoptr(GPtrArray) apps = NULL;
+		apps = as_store_get_apps_by_id (self->store, gs_app_get_id (app));
+		if (apps->len > 0) {
+			g_debug ("potential matches for %s:", unique_id);
+			for (guint i = 0; i < apps->len; i++) {
+				AsApp *app_tmp = g_ptr_array_index (apps, i);
+				g_debug ("- %s", as_app_get_unique_id (app_tmp));
+			}
+		}
 		return TRUE;
+	}
+
 	if (!gs_appstream_refine_app (self->plugin, app, item, error))
 		return FALSE;
 
