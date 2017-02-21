@@ -480,6 +480,14 @@ gs_shell_plugin_events_more_info_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
+gs_shell_plugin_events_restart_required_cb (GtkWidget *widget, GsShell *shell)
+{
+	g_autoptr(GError) error = NULL;
+	if (!g_spawn_command_line_async (LIBEXECDIR "/gnome-software-restarter", &error))
+		g_warning ("failed to restart: %s", error->message);
+}
+
+static void
 gs_shell_go_back (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
@@ -738,6 +746,7 @@ typedef enum {
 	GS_SHELL_EVENT_BUTTON_NO_SPACE		= 1 << 1,
 	GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS	= 1 << 2,
 	GS_SHELL_EVENT_BUTTON_MORE_INFO		= 1 << 3,
+	GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED	= 1 << 4,
 	GS_SHELL_EVENT_BUTTON_LAST
 } GsShellEventButtons;
 
@@ -765,9 +774,17 @@ gs_shell_show_event_app_notify (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_network_settings"));
 	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0);
 
+	/* restart button */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_restart_required"));
+	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) > 0);
+
 	/* more-info button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_more_info"));
 	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_MORE_INFO) > 0);
+
+	/* dismiss button */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_dismiss"));
+	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) == 0);
 
 	/* set title */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_events"));
@@ -1451,6 +1468,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			g_string_append (str, _("This application needs to be "
 						"restarted to use new plugins."));
 		}
+		buttons |= GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED;
 		break;
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
 		/* TRANSLATORS: need to be connected to the AC power */
@@ -1669,6 +1687,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_more_info"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_plugin_events_more_info_cb), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_restart_required"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_plugin_events_restart_required_cb), shell);
 
 	priv->shell_overview = GS_SHELL_OVERVIEW (gtk_builder_get_object (priv->builder, "shell_overview"));
 	gs_shell_overview_setup (priv->shell_overview,

@@ -446,6 +446,15 @@ reboot_activated (GSimpleAction *action,
 }
 
 static void
+shutdown_activated (GSimpleAction *action,
+		    GVariant      *parameter,
+		    gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	g_application_quit (G_APPLICATION (app));
+}
+
+static void
 reboot_and_install (GSimpleAction *action,
 		    GVariant      *parameter,
 		    gpointer       data)
@@ -718,6 +727,7 @@ static GActionEntry actions[] = {
 	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "reboot", reboot_activated, NULL, NULL, NULL },
+	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },

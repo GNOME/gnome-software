@@ -110,6 +110,7 @@ gnome-software-service.desktop: gnome-software-service.desktop.in Makefile
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
 
 libexec_PROGRAMS =					\
+	gnome-software-restarter			\
 	gnome-software-cmd
 
 gnome_software_cmd_SOURCES =				\
@@ -305,6 +306,20 @@ gnome_software_CFLAGS =					\
 	$(WARN_CFLAGS)
 
 gnome_software_LDFLAGS =				\
+	$(PIE_LDFLAGS)					\
+	$(RELRO_LDFLAGS)
+
+gnome_software_restarter_SOURCES =			\
+	gs-restarter.c
+
+gnome_software_restarter_LDADD =			\
+	$(GLIB_LIBS)
+
+gnome_software_restarter_CFLAGS =			\
+	-DLIBEXECDIR=\"$(libexecdir)\"			\
+	$(WARN_CFLAGS)
+
+gnome_software_restarter_LDFLAGS =			\
 	$(PIE_LDFLAGS)					\
 	$(RELRO_LDFLAGS)
 
