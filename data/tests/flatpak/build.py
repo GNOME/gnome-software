@@ -10,7 +10,7 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
     # delete repodir
     if cleanrepodir and os.path.exists(repodir):
         print "Deleting %s" % repodir
-        #shutil.rmtree(repodir)
+        shutil.rmtree(repodir)
 
     # delete exportdir
     exportdir = os.path.join(srcdir, appid, 'export')
@@ -18,8 +18,15 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
         print "Deleting %s" % exportdir
         shutil.rmtree(exportdir)
 
+    # use git master where available
+    local_checkout = '/home/hughsie/Code/flatpak'
+    if os.path.exists(local_checkout):
+        flatpak_cmd = os.path.join(local_checkout, 'flatpak')
+    else:
+        flatpak_cmd = 'flatpak'
+
     # finish the build
-    argv = ['flatpak', 'build-finish']
+    argv = [flatpak_cmd, 'build-finish']
     argv.append(os.path.join(srcdir, appid))
     subprocess.call(argv)
 
@@ -33,7 +40,7 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
     subprocess.call(argv)
 
     # export into repo
-    argv = ['flatpak', 'build-export']
+    argv = [flatpak_cmd, 'build-export']
     argv.append(repodir)
     argv.append(os.path.join(srcdir, appid))
     argv.append('--update-appstream')
