@@ -59,6 +59,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		return;
 	}
 
+	/* set plugin flags */
+	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
+
 	/* toggle this */
 	priv->allow_updates_id = g_timeout_add_seconds (10,
 		gs_plugin_dummy_allow_updates_cb, plugin);
@@ -81,9 +84,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
-	gs_plugin_cache_add (plugin,
-			     gs_app_get_unique_id (priv->cached_origin),
-			     priv->cached_origin);
+	gs_plugin_cache_add (plugin, NULL, priv->cached_origin);
 
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -246,7 +247,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_app_list_add (list, app);
 
 	/* add to cache so it can be found by the flashing callback */
-	gs_plugin_cache_add (plugin, "chiron", app);
+	gs_plugin_cache_add (plugin, NULL, app);
 
 	return TRUE;
 }
@@ -642,13 +643,14 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	as_icon_set_name (ic, "application-x-addon");
 
 	/* get existing item from the cache */
-	app = gs_plugin_cache_lookup (plugin, "release-rawhide");
+	app = gs_plugin_cache_lookup (plugin, "user/*/*/os-upgrade/org.fedoraproject.release-rawhide.upgrade/*");
 	if (app != NULL) {
 		gs_app_list_add (list, app);
 		return TRUE;
 	}
 
 	app = gs_app_new ("org.fedoraproject.release-rawhide.upgrade");
+	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
@@ -677,7 +679,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_add_icon (app, ic);
 	gs_app_list_add (list, app);
 
-	gs_plugin_cache_add (plugin, "release-rawhide", app);
+	gs_plugin_cache_add (plugin, NULL, app);
 
 	return TRUE;
 }
