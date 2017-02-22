@@ -1542,6 +1542,8 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (app != runtime);
+	g_return_if_fail (runtime->kind == AS_APP_KIND_RUNTIME);
 	g_set_object (&app->runtime, runtime);
 }
 
@@ -1576,6 +1578,8 @@ gs_app_set_update_runtime (GsApp *app, GsApp *runtime)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (app != runtime);
+	g_return_if_fail (runtime->kind == AS_APP_KIND_RUNTIME);
 	g_set_object (&app->update_runtime, runtime);
 }
 
