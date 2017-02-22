@@ -46,8 +46,17 @@ G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
 #define	gs_app_set_flatpak_file_type(app,val)	gs_app_set_metadata(app,"flatpak::file-type",val)
 #define	gs_app_set_flatpak_object_id(app,val)	gs_app_set_metadata(app,"flatpak::object-id",val)
 
+typedef enum {
+	GS_FLATPAK_FLAG_NONE			= 0,
+	/*< private >*/
+	GS_FLATPAK_FLAG_LAST
+} GsFlatpakFlags;
+
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
 						 FlatpakInstallation	*installation);
+void		gs_flatpak_set_flags		(GsFlatpak		*self,
+						 GsFlatpakFlags		 flags);
+GsFlatpakFlags	gs_flatpak_get_flags		(GsFlatpak		*self);
 AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 const gchar	*gs_flatpak_get_id		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,

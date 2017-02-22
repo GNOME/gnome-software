@@ -37,6 +37,7 @@
 
 struct _GsFlatpak {
 	GObject			 parent_instance;
+	GsFlatpakFlags		 flags;
 	FlatpakInstallation	*installation;
 	GHashTable		*broken_remotes;
 	GFileMonitor		*monitor;
@@ -2987,6 +2988,18 @@ AsAppScope
 gs_flatpak_get_scope (GsFlatpak *self)
 {
 	return self->scope;
+}
+
+void
+gs_flatpak_set_flags (GsFlatpak *self, GsFlatpakFlags flags)
+{
+	self->flags = flags;
+}
+
+GsFlatpakFlags
+gs_flatpak_get_flags (GsFlatpak *self)
+{
+	return self->flags;
 }
 
 static void

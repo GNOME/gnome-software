@@ -105,6 +105,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 static gboolean
 gs_plugin_flatpak_add_installation (GsPlugin *plugin,
 				    FlatpakInstallation *installation,
+				    GsFlatpakFlags flags,
 				    GCancellable *cancellable,
 				    GError **error)
 {
@@ -118,6 +119,7 @@ gs_plugin_flatpak_add_installation (GsPlugin *plugin,
 
 	/* create and set up */
 	flatpak = gs_flatpak_new (plugin, installation);
+	gs_flatpak_set_flags (flatpak, flags);
 	if (!gs_flatpak_setup (flatpak, cancellable, error))
 		return FALSE;
 	g_debug ("successfully set up %s", gs_flatpak_get_id (flatpak));
@@ -144,6 +146,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
+							 GS_FLATPAK_FLAG_NONE,
 							 cancellable, error)) {
 			return FALSE;
 		}
@@ -165,6 +168,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
+							 GS_FLATPAK_FLAG_NONE,
 							 cancellable, error)) {
 			return FALSE;
 		}
@@ -179,6 +183,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
+							 GS_FLATPAK_FLAG_NONE,
 							 cancellable, error)) {
 			return FALSE;
 		}
