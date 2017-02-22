@@ -3002,6 +3002,7 @@ gs_flatpak_finalize (GObject *object)
 	}
 
 	g_free (self->id);
+	g_object_unref (self->installation);
 	g_object_unref (self->plugin);
 	g_object_unref (self->store);
 	g_hash_table_unref (self->broken_remotes);
