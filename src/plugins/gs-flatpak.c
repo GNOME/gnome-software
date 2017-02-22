@@ -1779,13 +1779,21 @@ static void
 gs_flatpak_refine_appstream_release (AsApp *item, GsApp *app)
 {
 	AsRelease *rel = as_app_get_release_default (item);
-	if (!gs_app_is_installed (app))
-		return;
 	if (rel == NULL)
 		return;
 	if (as_release_get_version (rel) == NULL)
 		return;
-	gs_app_set_version (app, as_release_get_version (rel));
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+		gs_app_set_version (app, as_release_get_version (rel));
+		break;
+	default:
+		g_debug ("%s is not installed, so ignoring version of %s",
+			 as_app_get_id (item), as_release_get_version (rel));
+		break;
+	}
 }
 
 static gboolean
