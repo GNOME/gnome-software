@@ -25,6 +25,14 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
     else:
         flatpak_cmd = 'flatpak'
 
+    # runtimes have different defaults
+    if appid.find('Runtime') != -1:
+        is_runtime = True
+        prefix = 'usr'
+    else:
+        is_runtime = False
+        prefix = 'files'
+
     # finish the build
     argv = [flatpak_cmd, 'build-finish']
     argv.append(os.path.join(srcdir, appid))
@@ -34,8 +42,8 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
     argv = ['appstream-compose']
     argv.append('--origin=flatpak')
     argv.append('--basename=%s' % appid)
-    argv.append('--prefix=%s' % os.path.join(srcdir, appid, 'files'))
-    argv.append('--output-dir=%s' % os.path.join(srcdir, appid, 'files/share/app-info/xmls'))
+    argv.append('--prefix=%s' % os.path.join(srcdir, appid, prefix))
+    argv.append('--output-dir=%s' % os.path.join(srcdir, appid, prefix, 'share/app-info/xmls'))
     argv.append(appid)
     subprocess.call(argv)
 
@@ -44,7 +52,7 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
     argv.append(repodir)
     argv.append(os.path.join(srcdir, appid))
     argv.append('--update-appstream')
-    if appid.find('Runtime') != -1:
+    if is_runtime:
         argv.append('--runtime')
     subprocess.call(argv)
 
@@ -76,3 +84,8 @@ build_flatpak('org.test.Chiron',
               'app-update',
               'app-update/repo',
               cleanrepodir=False)
+
+# just a runtime present
+build_flatpak('org.test.Runtime',
+              'only-runtime',
+              'only-runtime/repo')

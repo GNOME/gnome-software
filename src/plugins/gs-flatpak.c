@@ -1604,11 +1604,11 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 			}
 		} else {
-			g_warning ("failed to find flatpak %s remote %s for %s",
-				   flatpak_installation_get_is_user (self->installation) ? "user" : "system",
-				   gs_app_get_origin (app),
-				   gs_app_get_unique_id (app));
-			g_warning ("%s", gs_app_to_string (app));
+			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+			g_debug ("failed to find %s remote %s for %s",
+				 self->id,
+				 gs_app_get_origin (app),
+				 gs_app_get_unique_id (app));
 		}
 	}
 
@@ -2208,6 +2208,9 @@ gs_flatpak_app_remove (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	g_autoptr(FlatpakRemote) xremote = NULL;
+	g_autofree gchar *remote_name = NULL;
+
 	/* refine to get basics */
 	if (!gs_flatpak_refine_app (self, app,
 				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
@@ -2234,6 +2237,24 @@ gs_flatpak_app_remove (GsFlatpak *self,
 		gs_plugin_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
+	}
+
+	/* did app also install a noenumerate=True remote */
+	remote_name = g_strdup_printf ("%s-origin", gs_app_get_flatpak_name (app));
+	xremote = flatpak_installation_get_remote_by_name (self->installation,
+							   remote_name,
+							   cancellable,
+							   NULL);
+	if (xremote != NULL) {
+		g_debug ("removing enumerate=true %s remote", remote_name);
+		if (!flatpak_installation_remove_remote (self->installation,
+							 remote_name,
+							 cancellable,
+							 error)) {
+			gs_plugin_flatpak_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	/* state is not known: we don't know if we can re-install this app */
@@ -2347,7 +2368,8 @@ gs_flatpak_app_install (GsFlatpak *self,
 	g_autoptr(FlatpakInstalledRef) xref = NULL;
 
 	/* ensure we have metadata and state */
-	if (!gs_flatpak_refine_app (self, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+	if (!gs_flatpak_refine_app (self, app,
+				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 				    cancellable, error))
 		return FALSE;
 
@@ -2360,6 +2382,41 @@ gs_flatpak_app_install (GsFlatpak *self,
 						      app,
 						      cancellable,
 						      error);
+	}
+
+	/* flatpakref has to be done in two phases */
+	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpakref") == 0) {
+		g_autoptr(FlatpakRemoteRef) xref2 = NULL;
+		gsize len = 0;
+		g_autofree gchar *contents = NULL;
+		g_autoptr(GBytes) data = NULL;
+		if (gs_app_get_local_file (app) == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no local file set for flatpakref %s",
+				     gs_app_get_unique_id (app));
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+		g_debug ("installing flatpakref %s", gs_app_get_unique_id (app));
+		if (!g_file_load_contents (gs_app_get_local_file (app),
+					   cancellable, &contents, &len,
+					   NULL, error)) {
+			gs_utils_error_convert_gio (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+		data = g_bytes_new (contents, len);
+		xref2 = flatpak_installation_install_ref_file (self->installation,
+							      data,
+							      cancellable,
+							      error);
+		if (xref2 == NULL) {
+			gs_plugin_flatpak_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	/* install required runtime if not already installed */
@@ -2762,6 +2819,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autofree gchar *ref_homepage = NULL;
 	g_autofree gchar *ref_icon = NULL;
 	g_autofree gchar *ref_title = NULL;
+	g_autofree gchar *ref_name = NULL;
 
 	/* get file data */
 	if (!g_file_load_contents (file,
@@ -2791,6 +2849,41 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 				     "unsupported version %" G_GUINT64_FORMAT, ver);
 			return FALSE;
 		}
+	}
+
+	/* get name */
+	ref_name = g_key_file_get_string (kf, "Flatpak Ref", "Name", error);
+	if (ref_name == NULL) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	/* remove old version from the remote config */
+	if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) {
+		g_autofree gchar *remote_id_tmp = NULL;
+		g_autofree gchar *remote_name_tmp = NULL;
+		g_autoptr(FlatpakRemote) xremote_tmp = NULL;
+		remote_name_tmp = g_strdup_printf ("%s-origin", ref_name);
+		xremote_tmp = flatpak_installation_get_remote_by_name (self->installation,
+								       remote_name_tmp,
+								       cancellable,
+								       NULL);
+		if (xremote_tmp != NULL) {
+			g_debug ("removing previous remote %s", remote_name_tmp);
+			if (!flatpak_installation_remove_remote (self->installation,
+								 remote_name_tmp,
+								 cancellable,
+								 error)) {
+				gs_plugin_flatpak_error_convert (error);
+				return FALSE;
+			}
+		} else {
+			g_debug ("no previous %s remote to remove", remote_name_tmp);
+		}
+
+		/* remove from the store */
+		remote_id_tmp = g_strdup_printf ("%s.desktop", ref_name);
+		as_store_remove_app_by_id (self->store, remote_id_tmp);
 	}
 
 	/* install the remote, but not the app */
@@ -2863,6 +2956,10 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		return FALSE;
 	}
 
+	/* get this now, as it's not going to be available at install time */
+	if (!gs_plugin_refine_item_metadata (self, app, cancellable, error))
+		return FALSE;
+
 	/* parse it */
 	if (!gs_flatpak_add_apps_from_xremote (self, xremote, cancellable, error))
 		return FALSE;
@@ -2908,7 +3005,8 @@ gs_flatpak_file_to_app (GsFlatpak *self,
 						    cancellable,
 						    error);
 	}
-	if (g_strv_contains (mimetypes_ref, content_type)) {
+	if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY &&
+	    g_strv_contains (mimetypes_ref, content_type)) {
 		return gs_flatpak_file_to_app_ref (self,
 						   list,
 						   file,
@@ -2992,6 +3090,8 @@ gs_flatpak_get_id (GsFlatpak *self)
 		GString *str = g_string_new ("GsFlatpak");
 		g_string_append_printf (str, "-%s",
 					as_app_scope_to_string (self->scope));
+		if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			g_string_append (str, "-temp");
 		self->id = g_string_free (str, FALSE);
 	}
 	return self->id;

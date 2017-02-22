@@ -1553,6 +1553,187 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 }
 
 static void
+gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *runtime;
+	gboolean ret;
+	const gchar *fn = "/tmp/test.flatpakref";
+	g_autofree gchar *testdir2 = NULL;
+	g_autofree gchar *testdir2_repourl = NULL;
+	g_autofree gchar *testdir = NULL;
+	g_autofree gchar *testdir_repourl = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsApp) app_source = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) sources = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* no flatpak, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
+		return;
+
+	/* add a remote with only the runtime in */
+	app_source = gs_app_new ("test");
+	testdir = gs_test_get_filename ("tests/flatpak/only-runtime");
+	if (testdir == NULL)
+		return;
+	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
+	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
+	gs_app_set_management_plugin (app_source, "flatpak");
+	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
+	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
+	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
+					   GS_PLUGIN_ACTION_INSTALL,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
+
+	/* refresh the appstream metadata */
+	ret = gs_plugin_loader_refresh (plugin_loader,
+					0,
+					GS_PLUGIN_REFRESH_FLAGS_METADATA,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					NULL,
+					&error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* find available application */
+	list = gs_plugin_loader_search (plugin_loader,
+					"runtime",
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					NULL,
+					&error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is one entry, the flatpak runtime */
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	runtime = gs_app_list_index (list, 0);
+	g_assert_cmpstr (gs_app_get_id (runtime), ==, "org.test.Runtime");
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
+	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_AVAILABLE);
+
+	/* install the runtime ahead of time */
+	ret = gs_plugin_loader_app_action (plugin_loader, runtime,
+					   GS_PLUGIN_ACTION_INSTALL,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+					   GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
+
+	/* write a flatpakref file */
+	testdir2 = gs_test_get_filename ("tests/flatpak/app-with-runtime");
+	if (testdir2 == NULL)
+		return;
+	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
+	g_string_append (str, "[Flatpak Ref]\n");
+	g_string_append (str, "Title=Chiron\n");
+	g_string_append (str, "Name=org.test.Chiron\n");
+	g_string_append (str, "Branch=master\n");
+	g_string_append_printf (str, "Url=%s\n", testdir2_repourl);
+	g_string_append (str, "IsRuntime=False\n");
+	g_string_append (str, "Comment=Single line synopsis\n");
+	g_string_append (str, "Description=A Testing Application\n");
+	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
+	ret = g_file_set_contents (fn, str->str, -1, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* convert it to a GsApp */
+	file = g_file_new_for_path (fn);
+	app = gs_plugin_loader_file_to_app (plugin_loader,
+					    file,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					    NULL,
+					    &error);
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron.desktop");
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+			"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron.desktop/master"));
+	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
+	g_assert_cmpstr (gs_app_get_description (app), ==, "Long description.");
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
+	g_assert (gs_app_get_local_file (app) != NULL);
+
+	/* get runtime */
+	runtime = gs_app_get_runtime (app);
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
+	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
+
+	/* install */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_ACTION_INSTALL,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+					   GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
+	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+
+	/* remove app */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* remove runtime */
+	ret = gs_plugin_loader_app_action (plugin_loader, runtime,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* remove source */
+	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* there should be no sources now */
+	sources = gs_plugin_loader_get_sources (plugin_loader,
+						GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+						NULL,
+						&error);
+	g_assert_no_error (error);
+	g_assert (sources != NULL);
+	g_assert_cmpint (gs_app_list_length (sources), ==, 0);
+}
+
+static void
 gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -2114,6 +2295,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-missing-runtime}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_flatpak_app_missing_runtime_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-ref}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_flatpak_ref_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-update-runtime}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_flatpak_app_update_func);
