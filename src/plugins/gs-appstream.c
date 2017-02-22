@@ -371,6 +371,11 @@ gs_refine_item_management_plugin (GsPlugin *plugin, GsApp *app, AsApp *item)
 				g_autoptr(GsApp) app2 = NULL;
 				app2 = gs_appstream_create_runtime (plugin, app, runtime);
 				if (app2 != NULL) {
+					if (app == app2) {
+						g_warning ("%s runtime cannot have runtime!",
+							   gs_app_get_unique_id (app));
+						break;
+					}
 					g_debug ("runtime for %s is %s",
 						 gs_app_get_unique_id (app),
 						 runtime);
