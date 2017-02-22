@@ -47,6 +47,8 @@
 #include <gio/gdesktopappinfo.h>
 #include <gdk/gdk.h>
 
+#include <valgrind.h>
+
 #include "gs-app-list-private.h"
 #include "gs-os-release.h"
 #include "gs-plugin-private.h"
@@ -208,8 +210,10 @@ gs_plugin_finalize (GObject *object)
 	g_mutex_clear (&priv->cache_mutex);
 	g_mutex_clear (&priv->timer_mutex);
 	g_mutex_clear (&priv->vfuncs_mutex);
+#ifndef RUNNING_ON_VALGRIND
 	if (priv->module != NULL)
 		g_module_close (priv->module);
+#endif
 }
 
 /**
