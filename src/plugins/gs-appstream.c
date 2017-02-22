@@ -307,7 +307,6 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 			     const gchar *runtime)
 {
 	GsApp *app_cache;
-	g_autofree gchar *id = NULL;
 	g_autofree gchar *source = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -318,8 +317,7 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 		return NULL;
 
 	/* create the complete GsApp from the single string */
-	id = g_strdup_printf ("%s.runtime", split[0]);
-	app = gs_app_new (id);
+	app = gs_app_new (split[0]);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
