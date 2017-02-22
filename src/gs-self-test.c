@@ -1300,7 +1300,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	/* remove the runtime */
 	runtime = gs_app_get_runtime (app);
 	g_assert (runtime != NULL);
-	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime.runtime/master");
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
 	ret = gs_plugin_loader_app_action (plugin_loader, runtime,
 					   GS_PLUGIN_ACTION_REMOVE,
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
@@ -1628,7 +1628,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* remove the runtime */
 	runtime = gs_app_get_runtime (app);
 	g_assert (runtime != NULL);
-	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime.runtime/master");
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
 	ret = gs_plugin_loader_app_action (plugin_loader, runtime,
 					   GS_PLUGIN_ACTION_REMOVE,
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
