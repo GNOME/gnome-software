@@ -1639,6 +1639,8 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 	} else {
 		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable,
 							 error);
+		if (data == NULL)
+			return FALSE;
 		str = g_bytes_get_data (data, &len);
 	}
 
