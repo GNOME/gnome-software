@@ -859,7 +859,8 @@ gs_plugin_status_update_cb (gpointer user_data)
 		       signals[SIGNAL_STATUS_CHANGED], 0,
 		       helper->app,
 		       helper->status);
-	g_object_unref (helper->app);
+	if (helper->app != NULL)
+		g_object_unref (helper->app);
 	g_slice_free (GsPluginStatusHelper, helper);
 	return FALSE;
 }
@@ -881,9 +882,7 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->status = status;
-	if (app == NULL)
-		helper->app = gs_app_new (NULL);
-	else
+	if (app != NULL)
 		helper->app = g_object_ref (app);
 	g_idle_add (gs_plugin_status_update_cb, helper);
 }
