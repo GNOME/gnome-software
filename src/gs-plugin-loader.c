@@ -1036,7 +1036,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 
 	/* don't show unknown state */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
-		g_debug ("app invalid as job unknown %s",
+		g_debug ("app invalid as state unknown %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
