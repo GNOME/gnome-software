@@ -48,6 +48,14 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
         argv.append('--runtime')
     subprocess.call(argv)
 
+def copy_repo(srcdir, destdir):
+    srcdir_repo = os.path.join(srcdir, 'repo')
+    destdir_repo = os.path.join(destdir, 'repo')
+    print "Copying %s to %s" % (srcdir_repo, destdir_repo)
+    if os.path.exists(destdir_repo):
+        shutil.rmtree(destdir_repo)
+    shutil.copytree(srcdir_repo, destdir_repo)
+
 # normal app with runtime in same remote
 build_flatpak('org.test.Chiron',
               'app-with-runtime',
@@ -63,13 +71,7 @@ build_flatpak('org.test.Chiron',
               'app-missing-runtime/repo')
 
 # app with an update
-build_flatpak('org.test.Chiron',
-              'app-with-runtime',
-              'app-update/repo')
-build_flatpak('org.test.Runtime',
-              'app-with-runtime',
-              'app-update/repo',
-              cleanrepodir=False)
+copy_repo('app-with-runtime', 'app-update')
 build_flatpak('org.test.Chiron',
               'app-update',
               'app-update/repo',
