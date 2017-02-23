@@ -1376,8 +1376,8 @@ refine_origin_from_installation (GsFlatpak *self,
 			gs_app_set_origin (app, remote_name);
 			return TRUE;
 		}
-		g_warning ("failed to find remote %s: %s",
-			   remote_name, error_local->message);
+		g_debug ("failed to find remote %s: %s",
+			 remote_name, error_local->message);
 	}
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,

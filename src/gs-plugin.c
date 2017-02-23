@@ -259,6 +259,21 @@ gs_plugin_alloc_data (GsPlugin *plugin, gsize sz)
 }
 
 /**
+ * gs_plugin_clear_data:
+ * @plugin: a #GsPlugin
+ *
+ * Clears and resets the private data. Only run this from the self tests.
+ **/
+void
+gs_plugin_clear_data (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	if (priv->data == NULL)
+		return;
+	g_clear_pointer (&priv->data, g_free);
+}
+
+/**
  * gs_plugin_action_start:
  * @plugin: a #GsPlugin
  * @exclusive: if the plugin action should be performed exclusively

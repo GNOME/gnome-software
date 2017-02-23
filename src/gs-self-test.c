@@ -521,8 +521,8 @@ gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GPtrArray) events = NULL;
 	g_autoptr(GsApp) app = NULL;
 
-	/* remove previous errors */
-	gs_plugin_loader_remove_events (plugin_loader);
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* suppress this */
 	g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
@@ -1468,7 +1468,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 					   GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					   NULL,
 					   &error);
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED);
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
 	g_assert (!ret);
 	g_clear_error (&error);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);

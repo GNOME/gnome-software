@@ -3499,6 +3499,17 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 	gs_plugin_loader_add_event (plugin_loader, event);
 }
 
+void
+gs_plugin_loader_clear_caches (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		gs_plugin_cache_invalidate (plugin);
+	}
+	gs_app_list_remove_all (priv->global_cache);
+}
+
 /**
  * gs_plugin_loader_setup_again:
  * @plugin_loader: a #GsPluginLoader
@@ -3510,20 +3521,38 @@ void
 gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GsPluginLoaderJob) job = gs_plugin_loader_job_new (plugin_loader);
-	job->action = GS_PLUGIN_ACTION_SETUP;
-	job->failure_flags = GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
-	job->function_name = "gs_plugin_setup";
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		g_autoptr(GError) error_local = NULL;
-		if (!gs_plugin_get_enabled (plugin))
-			continue;
-		if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, NULL,
-						  NULL, &error_local)) {
-			g_warning ("resetup of %s failed: %s",
-				   gs_plugin_get_name (plugin),
-				   error_local->message);
+	const gchar *func_names[] = {
+		"gs_plugin_destroy",
+		"gs_plugin_initialize",
+		"gs_plugin_setup",
+		NULL };
+
+	/* clear global cache */
+	gs_plugin_loader_clear_caches (plugin_loader);
+
+	/* remove any events */
+	gs_plugin_loader_remove_events (plugin_loader);
+
+	/* call in order */
+	for (guint j = 0; func_names[j] != NULL; j++) {
+		for (guint i = 0; i < priv->plugins->len; i++) {
+			g_autoptr(GError) error_local = NULL;
+			g_autoptr(GsPluginLoaderJob) job = gs_plugin_loader_job_new (plugin_loader);
+			GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+			if (!gs_plugin_get_enabled (plugin))
+				continue;
+			job->action = GS_PLUGIN_ACTION_SETUP;
+			job->failure_flags = GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
+			job->function_name = func_names[j];
+			if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, NULL,
+							  NULL, &error_local)) {
+				g_warning ("resetup of %s failed: %s",
+					   gs_plugin_get_name (plugin),
+					   error_local->message);
+				break;
+			}
+			if (g_strcmp0 (func_names[j], "gs_plugin_destroy") == 0)
+				gs_plugin_clear_data (plugin);
 		}
 	}
 }

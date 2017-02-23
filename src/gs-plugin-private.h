@@ -37,6 +37,7 @@ GsPlugin	*gs_plugin_create			(const gchar	*filename,
 const gchar	*gs_plugin_error_to_string		(GsPluginError	 error);
 const gchar	*gs_plugin_action_to_string		(GsPluginAction	 action);
 
+void		 gs_plugin_clear_data			(GsPlugin	*plugin);
 void		 gs_plugin_action_start			(GsPlugin	*plugin,
 							 gboolean	 exclusive);
 void		 gs_plugin_action_stop			(GsPlugin	*plugin);

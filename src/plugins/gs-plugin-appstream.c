@@ -254,18 +254,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
 
-	/* setup_again from the tests */
-	as_store_remove_all (priv->store);
-	if (priv->app_hash_old != NULL) {
-		if (priv->app_hash_old != NULL)
-			g_hash_table_unref (priv->app_hash_old);
-		priv->app_hash_old = NULL;
-	}
-	if (priv->store_changed_id != 0) {
-		g_signal_handler_disconnect (priv->store, priv->store_changed_id);
-		priv->store_changed_id = 0;
-	}
-
 	/* Parse the XML */
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
 		as_store_set_add_flags (priv->store,
