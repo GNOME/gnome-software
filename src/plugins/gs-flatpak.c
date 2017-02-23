@@ -1211,6 +1211,7 @@ refine_origin_from_installation (GsFlatpak *self,
 		const gchar *remote_name;
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autoptr(FlatpakRemoteRef) xref = NULL;
+		g_autoptr(GError) error_local = NULL;
 
 		/* not enabled */
 		if (flatpak_remote_get_disabled (xremote))
@@ -1226,12 +1227,14 @@ refine_origin_from_installation (GsFlatpak *self,
 								   gs_app_get_flatpak_arch (app),
 								   gs_app_get_flatpak_branch (app),
 								   cancellable,
-								   NULL);
+								   &error_local);
 		if (xref != NULL) {
 			g_debug ("found remote %s", remote_name);
 			gs_app_set_origin (app, remote_name);
 			return TRUE;
 		}
+		g_warning ("failed to find remote %s: %s",
+			   remote_name, error_local->message);
 	}
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,
