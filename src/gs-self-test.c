@@ -1037,37 +1037,60 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
 	const gchar *group_name = "remote \"example\"";
 	const gchar *root = NULL;
+	const gchar *fn = "/var/tmp/self-test/example.flatpakrepo";
 	gboolean ret;
 	g_autofree gchar *config_fn = NULL;
-	g_autofree gchar *fn = NULL;
 	g_autofree gchar *remote_url = NULL;
+	g_autofree gchar *testdir = NULL;
+	g_autofree gchar *testdir_repourl = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
 		return;
 
+	/* get a resolvable  */
+	testdir = gs_test_get_filename ("tests/flatpak/app-with-runtime");
+	if (testdir == NULL)
+		return;
+	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
+
+	/* create file */
+	g_string_append (str, "[Flatpak Repo]\n");
+	g_string_append (str, "Title=foo-bar\n");
+	g_string_append (str, "Comment=Longer one line comment\n");
+	g_string_append (str, "Description=Longer multiline comment that "
+			      "does into detail.\n");
+	g_string_append (str, "DefaultBranch=stable\n");
+	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
+	g_string_append (str, "Homepage=http://foo.bar\n");
+	g_string_append (str, "GPGKey=FOOBAR\n");
+	ret = g_file_set_contents (fn, str->str, -1, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
 	/* load local file */
-	fn = gs_test_get_filename ("tests/example.flatpakrepo");
-	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
 	app = gs_plugin_loader_file_to_app (plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_SOURCE);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "example");
 	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "flatpak");
-	g_assert_cmpstr (gs_app_get_origin_hostname(app), ==, "foo.bar");
+	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://foo.bar");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "foo-bar");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Longer one line comment");
@@ -1075,6 +1098,9 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 			 "Longer multiline comment that does into detail.");
 	g_assert (gs_app_get_local_file (app) != NULL);
 	g_assert (gs_app_get_pixbuf (app) != NULL);
+
+	/* disable the dummy GPG signing */
+	gs_app_set_metadata (app, "flatpak::gpg-key", NULL);
 
 	/* now install the remote */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
@@ -1097,12 +1123,12 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 
 	g_assert (g_key_file_has_group (kf, "core"));
 	g_assert (g_key_file_has_group (kf, group_name));
-	g_assert (g_key_file_get_boolean (kf, group_name, "gpg-verify", NULL));
+	g_assert (!g_key_file_get_boolean (kf, group_name, "gpg-verify", NULL));
 
 	/* check the URL was unmangled */
 	remote_url = g_key_file_get_string (kf, group_name, "url", &error);
 	g_assert_no_error (error);
-	g_assert_cmpstr (remote_url, ==, "http://foo.bar/apps");
+	g_assert_cmpstr (remote_url, ==, testdir_repourl);
 
 	/* try again, check state is correct */
 	app2 = gs_plugin_loader_file_to_app (plugin_loader,
