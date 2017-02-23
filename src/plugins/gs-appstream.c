@@ -36,8 +36,10 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 		app = gs_app_new (as_app_get_id (item));
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
-		if (!gs_appstream_refine_app (plugin, app, item, error))
+		if (!gs_appstream_refine_app (plugin, app, item, error)) {
+			g_object_unref (app);
 			return NULL;
+		}
 		gs_plugin_cache_add (plugin, unique_id, app);
 	}
 	return app;
@@ -306,9 +308,9 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 			     GsApp *parent,
 			     const gchar *runtime)
 {
-	GsApp *app_cache;
 	g_autofree gchar *source = NULL;
 	g_auto(GStrv) split = NULL;
+	g_autoptr(GsApp) app_cache = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	/* get the name/arch/branch */
@@ -333,7 +335,7 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 		 * source is set */
 		if (gs_app_get_source_default (app_cache) == NULL)
 			gs_app_add_source (app_cache, source);
-		return g_object_ref (app_cache);
+		return g_steal_pointer (&app_cache);
 	}
 
 	/* save in the cache */
