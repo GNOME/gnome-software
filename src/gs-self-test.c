@@ -47,6 +47,19 @@ gs_test_get_filename (const gchar *filename)
 	return g_strdup (full_tmp);
 }
 
+static void
+gs_test_flush_main_context (void)
+{
+	guint cnt = 0;
+	while (g_main_context_iteration (NULL, FALSE)) {
+		if (cnt == 0)
+			g_debug ("clearing pending events...");
+		cnt++;
+	}
+	if (cnt > 0)
+		g_debug ("cleared %u events", cnt);
+}
+
 static gboolean
 gs_app_list_filter_cb (GsApp *app, gpointer user_data)
 {
@@ -478,6 +491,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
@@ -489,6 +503,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
@@ -520,6 +535,7 @@ gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -566,6 +582,7 @@ gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -590,6 +607,7 @@ gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	array = gs_app_get_key_colors (app);
@@ -623,6 +641,7 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -666,6 +685,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 						     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						     NULL,
 						     &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -686,6 +706,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
@@ -697,6 +718,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
@@ -724,6 +746,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 					       GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					       NULL,
 					       &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -783,6 +806,7 @@ gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -805,6 +829,7 @@ gs_plugin_loader_url_to_app_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
@@ -826,6 +851,7 @@ gs_plugin_loader_modalias_func (GsPluginLoader *plugin_loader)
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -857,8 +883,10 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
+
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 }
@@ -885,6 +913,7 @@ gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
@@ -921,6 +950,7 @@ gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
@@ -956,6 +986,7 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL,
 					    &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_FIRMWARE);
@@ -993,6 +1024,7 @@ gs_plugin_loader_repos_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "people.freedesktop.org");
@@ -1048,6 +1080,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
@@ -1076,6 +1109,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app2 != NULL);
 	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
@@ -1086,6 +1120,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
@@ -1159,6 +1194,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
@@ -1230,6 +1266,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
@@ -1306,6 +1343,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -1315,6 +1353,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
@@ -1362,6 +1401,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
@@ -1383,6 +1423,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -1410,6 +1451,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
@@ -1444,6 +1486,7 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	ret = gs_plugin_loader_app_action_finish (plugin_loader, res, &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_main_loop_quit (loop);
@@ -1503,6 +1546,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
@@ -1514,6 +1558,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -1524,6 +1569,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
 					&error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -1540,6 +1586,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
@@ -1569,6 +1616,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 						     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						     NULL,
 						     &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list_updates != NULL);
 
@@ -1634,6 +1682,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -1643,6 +1692,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					   NULL,
 					   &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
@@ -1663,6 +1713,7 @@ gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
 						      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						      NULL,
 						      &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list1 != NULL);
 	g_assert_cmpint (gs_app_list_length (list1), ==, 1);
@@ -1673,6 +1724,7 @@ gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
 						      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 						      NULL,
 						      &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list2 != NULL);
 	g_assert_cmpint (gs_app_list_length (list2), ==, 1);
@@ -1703,6 +1755,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 					    GS_PLUGIN_ACTION_AUTH_REGISTER,
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL, &error);
+	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
 	g_assert (!ret);
 	g_clear_error (&error);
@@ -1715,6 +1768,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
 					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      NULL, &error);
+	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED);
 	g_assert (!ret);
 	g_clear_error (&error);
@@ -1724,6 +1778,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 					    GS_PLUGIN_ACTION_AUTH_LOGIN,
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL, &error);
+	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
 	g_assert (!ret);
 	g_clear_error (&error);
@@ -1736,6 +1791,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 					    GS_PLUGIN_ACTION_AUTH_LOGIN,
 					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					    NULL, &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert (gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
@@ -1746,6 +1802,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
 					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      NULL, &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 }
@@ -1800,6 +1857,7 @@ gs_plugin_loader_wildcard_func (GsPluginLoader *plugin_loader)
 					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					     NULL,
 					     &error);
+	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
