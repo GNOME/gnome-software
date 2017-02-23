@@ -43,12 +43,12 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsApp *app;
 	guint i;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *output = NULL;
 	g_auto(GStrv) argv = NULL;
 	g_auto(GStrv) tokens = NULL;
+	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GString) str = NULL;
 	const gchar *mimetypes[] = {
 		"application/vnd.debian.binary-package",
