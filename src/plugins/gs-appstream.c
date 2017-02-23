@@ -702,9 +702,13 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_refine_item_icon (plugin, app, item);
 
 	/* set categories */
-	if (as_app_get_categories (item) != NULL &&
-	    gs_app_get_categories (app)->len == 0)
-		gs_app_set_categories (app, as_app_get_categories (item));
+	array = as_app_get_categories (item);
+	if (array != NULL && gs_app_get_categories (app)->len == 0) {
+		for (i = 0; i < array->len; i++) {
+			tmp = g_ptr_array_index (array, i);
+			gs_app_add_category (app, tmp);
+		}
+	}
 
 	/* set project group */
 	if (as_app_get_project_group (item) != NULL &&
