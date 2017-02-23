@@ -1152,6 +1152,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 }
 
 static void
@@ -1299,6 +1300,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 
 	/* check the application exists in the right places */
 	metadata_fn = g_build_filename (root,
@@ -1337,6 +1339,35 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 					"README",
 					NULL);
 	g_assert (g_file_test (runtime_fn, G_FILE_TEST_IS_REGULAR));
+
+	/* remove the application */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_ACTION_REMOVE,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert (!g_file_test (metadata_fn, G_FILE_TEST_IS_REGULAR));
+	g_assert (!g_file_test (desktop_fn, G_FILE_TEST_IS_REGULAR));
+
+	/* install again, to check whether the progress gets initialized */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_ACTION_INSTALL,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+
+	/* progress should be set to zero right before installing */
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
+
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 
 	/* remove the application */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
@@ -1472,6 +1503,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 	g_assert (!ret);
 	g_clear_error (&error);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 
 	/* remove the remote */
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
@@ -1621,6 +1653,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 
 	/* switch to the new repo */
 	g_assert (unlink ("/var/tmp/self-test/repo") == 0);
@@ -1685,6 +1718,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.4");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 	g_assert (got_progress_installing);
 	//g_assert_cmpint (progress_cnt, >, 20); //FIXME: bug in OSTree
 
