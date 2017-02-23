@@ -2204,6 +2204,10 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 			origin_hostname += strlen (prefixes[i]);
 	}
 
+	/* fallback for localhost */
+	if (g_strcmp0 (origin_hostname, "") == 0)
+		origin_hostname = "localhost";
+
 	/* success */
 	app->origin_hostname = g_strdup (origin_hostname);
 }

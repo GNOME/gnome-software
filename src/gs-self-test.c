@@ -454,6 +454,8 @@ gs_app_func (void)
 	/* correctly parse URL */
 	gs_app_set_origin_hostname (app, "https://mirrors.fedoraproject.org/metalink");
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "fedoraproject.org");
+	gs_app_set_origin_hostname (app, "file:///home/hughsie");
+	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
 
 	/* check setting the progress */
 	gs_app_set_progress (app, 42);
@@ -1254,7 +1256,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 			 GS_APP_KUDO_HI_DPI_ICON |
 			 GS_APP_KUDO_SANDBOXED_SECURE |
 			 GS_APP_KUDO_SANDBOXED);
-	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "");
+	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "master");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
