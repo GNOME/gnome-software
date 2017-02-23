@@ -1025,6 +1025,9 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 	gboolean ret;
 	guint i;
 
+	/* make sure the progress is properly initialized */
+	gs_app_set_progress (app, 0);
+
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
 		GsPluginActionFunc plugin_func = NULL;
@@ -2829,6 +2832,9 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 					   cancellable,
 					   &error);
 	if (ret) {
+		/* reset the progress after successful operations */
+		gs_app_set_progress (state->app, 0);
+
 		/* unstage addons */
 		addons = gs_app_get_addons (state->app);
 		for (i = 0; i < addons->len; i++) {
