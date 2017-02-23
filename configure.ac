@@ -243,7 +243,7 @@ AC_ARG_ENABLE(flatpak,
               enable_flatpak=maybe)
 AS_IF([test "x$enable_flatpak" != "xno"], [
     PKG_CHECK_MODULES(FLATPAK,
-                      [flatpak >= 0.6.12],
+                      [flatpak >= 0.8.0],
                       [have_flatpak=yes],
                       [have_flatpak=no])
 ], [

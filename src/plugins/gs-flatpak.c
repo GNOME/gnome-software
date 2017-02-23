@@ -2909,6 +2909,10 @@ gs_flatpak_get_id (GsFlatpak *self)
 		GString *str = g_string_new ("GsFlatpak");
 		g_string_append_printf (str, "-%s",
 					as_app_scope_to_string (self->scope));
+		if (flatpak_installation_get_id (self->installation) != NULL) {
+			g_string_append_printf (str, "-%s",
+						flatpak_installation_get_id (self->installation));
+		}
 		if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)
 			g_string_append (str, "-temp");
 		self->id = g_string_free (str, FALSE);

@@ -136,15 +136,18 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* we use a permissions helper to elevate privs */
 	if (priv->has_system_helper && priv->destdir_for_tests == NULL) {
-		g_autoptr(FlatpakInstallation) installation = NULL;
-		installation = flatpak_installation_new_system (cancellable, error);
-		if (installation == NULL) {
+		g_autoptr(GPtrArray) installations = NULL;
+		installations = flatpak_get_system_installations (cancellable, error);
+		if (installations == NULL) {
 			return FALSE;
 		}
-		if (!gs_plugin_flatpak_add_installation (plugin, installation,
-							 GS_FLATPAK_FLAG_NONE,
-							 cancellable, error)) {
-			return FALSE;
+		for (guint i = 0; i < installations->len; i++) {
+			FlatpakInstallation *installation = g_ptr_array_index (installations, i);
+			if (!gs_plugin_flatpak_add_installation (plugin, installation,
+								 GS_FLATPAK_FLAG_NONE,
+								 cancellable, error)) {
+				return FALSE;
+			}
 		}
 	}
 
