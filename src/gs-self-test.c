@@ -1069,7 +1069,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_string_append (str, "DefaultBranch=stable\n");
 	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
 	g_string_append (str, "Homepage=http://foo.bar\n");
-	g_string_append (str, "GPGKey=FOOBAR\n");
+	g_string_append (str, "GPGKey=FOOBAR==\n");
 	ret = g_file_set_contents (fn, str->str, -1, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -1098,9 +1098,6 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 			 "Longer multiline comment that does into detail.");
 	g_assert (gs_app_get_local_file (app) != NULL);
 	g_assert (gs_app_get_pixbuf (app) != NULL);
-
-	/* disable the dummy GPG signing */
-	gs_app_set_metadata (app, "flatpak::gpg-key", NULL);
 
 	/* now install the remote */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,

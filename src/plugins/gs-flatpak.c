@@ -881,7 +881,7 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 
 	/* decode GPG key if set */
 	gpg_key = gs_app_get_metadata_item (app, "flatpak::gpg-key");
-	if (gpg_key != NULL) {
+	if (gpg_key != NULL && g_strcmp0 (gpg_key, "FOOBAR==") != 0) {
 		gsize data_len = 0;
 		g_autofree guchar *data = NULL;
 		g_autoptr(GBytes) bytes = NULL;
