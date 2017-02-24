@@ -833,13 +833,16 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 						 xremote,
 						 cancellable,
 						 error)) {
+		g_prefix_error (error, "cannot modify remote: ");
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 
 	/* refresh the AppStream data manually */
-	if (!gs_flatpak_add_apps_from_xremote (self, xremote, cancellable, error))
+	if (!gs_flatpak_add_apps_from_xremote (self, xremote, cancellable, error)) {
+		g_prefix_error (error, "cannot refresh remote AppStream: ");
 		return FALSE;
+	}
 
 	/* success */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
