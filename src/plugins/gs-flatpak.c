@@ -2332,6 +2332,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 
 	/* flatpakref has to be done in two phases */
 	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpakref") == 0) {
+		GsApp *runtime;
 		g_autoptr(FlatpakRemoteRef) xref2 = NULL;
 		gsize len = 0;
 		g_autofree gchar *contents = NULL;
@@ -2360,6 +2361,83 @@ gs_flatpak_app_install (GsFlatpak *self,
 		if (xref2 == NULL) {
 			gs_app_set_state_recover (app);
 			return FALSE;
+		}
+
+		/* we have a missing remote and a RuntimeRef */
+		runtime = gs_app_get_runtime (app);
+		if (runtime != NULL && gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
+			g_autofree gchar *cache_basename = NULL;
+			g_autofree gchar *cache_fn = NULL;
+			g_autoptr(GFile) file = NULL;
+			g_autoptr(GsApp) app_src = NULL;
+			const gchar *tmp = gs_app_get_metadata_item (app, "flatpak::runtime-repo");
+			if (tmp == NULL) {
+				g_set_error (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "no runtime available for %s",
+					     gs_app_get_unique_id (app));
+				return FALSE;
+			}
+			g_debug ("runtime not available, so using %s", tmp);
+
+			/* download file */
+			cache_basename = g_path_get_basename (tmp);
+			cache_fn = gs_utils_get_cache_filename ("flatpak",
+								cache_basename,
+								GS_UTILS_CACHE_FLAG_WRITEABLE,
+								error);
+			if (cache_fn == NULL)
+				return FALSE;
+			if (!gs_plugin_download_file (self->plugin,
+						      runtime,
+						      tmp,
+						      cache_fn,
+						      cancellable,
+						      error))
+				return FALSE;
+
+			/* get GsApp for local file */
+			file = g_file_new_for_path (cache_fn);
+			app_src = gs_flatpak_create_app_from_repo_file (self,
+									file,
+									cancellable,
+									error);
+			if (app_src == NULL) {
+				g_prefix_error (error,
+						"cannot create source from %s: ",
+						cache_fn);
+				return FALSE;
+			}
+
+			/* install the flatpakrepo */
+			if (!gs_flatpak_app_install_source (self,
+							    app_src,
+							    cancellable,
+							    error)) {
+				g_prefix_error (error,
+						"cannot install source from %s: ",
+						cache_fn);
+				return FALSE;
+			}
+
+			/* get the new state */
+			if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
+				g_prefix_error (error,
+						"cannot refine runtime using %s: ",
+						cache_fn);
+				return FALSE;
+			}
+
+			/* still not found */
+			if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
+				g_set_error (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "no runtime available for %s",
+					     gs_app_get_unique_id (app));
+				return FALSE;
+			}
 		}
 	}
 
@@ -2663,6 +2741,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autofree gchar *ref_icon = NULL;
 	g_autofree gchar *ref_title = NULL;
 	g_autofree gchar *ref_name = NULL;
+	g_autofree gchar *ref_runtime_repo = NULL;
 
 	/* get file data */
 	if (!g_file_load_contents (file,
@@ -2762,6 +2841,9 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		as_icon_set_url (ic, ref_icon);
 		gs_app_add_icon (app, ic);
 	}
+	ref_runtime_repo = g_key_file_get_string (kf, "Flatpak Ref", "RuntimeRepo", NULL);
+	if (ref_runtime_repo != NULL)
+		gs_app_set_metadata (app, "flatpak::runtime-repo", ref_runtime_repo);
 
 	/* set the origin data */
 	remote_name = flatpak_remote_ref_get_remote_name (xref);
