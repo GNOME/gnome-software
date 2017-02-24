@@ -484,6 +484,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			continue;
 		if (!gs_flatpak_search (flatpak, values, list,
 					cancellable, error)) {
 			return FALSE;
