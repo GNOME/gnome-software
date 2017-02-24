@@ -1154,6 +1154,24 @@ gs_plugin_download_data (GsPlugin *plugin,
 	g_return_val_if_fail (uri != NULL, NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	/* local */
+	if (g_str_has_prefix (uri, "file://")) {
+		gsize length = 0;
+		g_autofree gchar *contents = NULL;
+		g_autoptr(GError) error_local = NULL;
+		g_debug ("copying %s from plugin %s", uri, priv->name);
+		if (!g_file_get_contents (uri + 7, &contents, &length, &error_local)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     "failed to copy %s: %s",
+				     uri, error_local->message);
+			return NULL;
+		}
+		return g_bytes_new (contents, length);
+	}
+
+	/* remote */
 	g_debug ("downloading %s from plugin %s", uri, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
@@ -1217,6 +1235,31 @@ gs_plugin_download_file (GsPlugin *plugin,
 	g_return_val_if_fail (filename != NULL, FALSE);
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
+	/* local */
+	if (g_str_has_prefix (uri, "file://")) {
+		gsize length = 0;
+		g_autofree gchar *contents = NULL;
+		g_debug ("copying %s from plugin %s", uri, priv->name);
+		if (!g_file_get_contents (uri + 7, &contents, &length, &error_local)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+				     "failed to copy %s: %s",
+				     uri, error_local->message);
+			return FALSE;
+		}
+		if (!g_file_set_contents (filename, contents, length, &error_local)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_WRITE_FAILED,
+				     "Failed to save file: %s",
+				     error_local->message);
+			return FALSE;
+		}
+		return TRUE;
+	}
+
+	/* remote */
 	g_debug ("downloading %s to %s from plugin %s", uri, filename, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
