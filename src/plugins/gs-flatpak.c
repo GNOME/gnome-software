@@ -2254,6 +2254,8 @@ gs_flatpak_app_remove (GsFlatpak *self,
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
+		if (!gs_flatpak_rescan_appstream_store (self, cancellable, error))
+			return FALSE;
 	}
 
 	/* state is not known: we don't know if we can re-install this app */
