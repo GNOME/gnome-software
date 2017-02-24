@@ -2359,6 +2359,120 @@ install_runtime_for_app (GsFlatpak *self,
 	return TRUE;
 }
 
+static GsApp *
+gs_flatpak_create_app_from_repo_file (GsFlatpak *self,
+				      GFile *file,
+				      GCancellable *cancellable,
+				      GError **error)
+{
+	gchar *tmp;
+	g_autofree gchar *filename = NULL;
+	g_autofree gchar *repo_comment = NULL;
+	g_autofree gchar *repo_default_branch = NULL;
+	g_autofree gchar *repo_description = NULL;
+	g_autofree gchar *repo_gpgkey = NULL;
+	g_autofree gchar *repo_homepage = NULL;
+	g_autofree gchar *repo_icon = NULL;
+	g_autofree gchar *repo_id = NULL;
+	g_autofree gchar *repo_title = NULL;
+	g_autofree gchar *repo_url = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* read the file */
+	kf = g_key_file_new ();
+	filename = g_file_get_path (file);
+	if (!g_key_file_load_from_file (kf, filename,
+					G_KEY_FILE_NONE,
+					&error_local)) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "failed to load flatpakrepo: %s",
+			     error_local->message);
+		return NULL;
+	}
+
+	/* get the ID from the basename */
+	repo_id = g_file_get_basename (file);
+	tmp = g_strrstr (repo_id, ".");
+	if (tmp != NULL)
+		*tmp = '\0';
+
+	/* create source */
+	repo_title = g_key_file_get_string (kf, "Flatpak Repo", "Title", NULL);
+	repo_url = g_key_file_get_string (kf, "Flatpak Repo", "Url", NULL);
+	repo_gpgkey = g_key_file_get_string (kf, "Flatpak Repo", "GPGKey", NULL);
+	if (repo_title == NULL || repo_url == NULL || repo_gpgkey == NULL ||
+	    repo_title[0] == '\0' || repo_url[0] == '\0' || repo_gpgkey[0] == '\0') {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "not enough data in file, "
+				     "expected Title, Url, GPGKey");
+		return NULL;
+	}
+
+	/* check version */
+	if (g_key_file_has_key (kf, "Flatpak Repo", "Version", NULL)) {
+		guint64 ver = g_key_file_get_uint64 (kf, "Flatpak Repo", "Version", NULL);
+		if (ver != 1) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "unsupported version %" G_GUINT64_FORMAT, ver);
+			return NULL;
+		}
+	}
+
+	/* user specified a URL */
+	if (g_str_has_prefix (repo_gpgkey, "http://") ||
+	    g_str_has_prefix (repo_gpgkey, "https://")) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Base64 encoded GPGKey required, not URL");
+		return NULL;
+	}
+
+	/* create source */
+	app = gs_app_new (repo_id);
+	gs_app_set_flatpak_file_type (app, "flatpakrepo");
+	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
+	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
+	gs_app_set_metadata (app, "flatpak::url", repo_url);
+	gs_app_set_origin_hostname (app, repo_url);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+
+	/* optional data */
+	repo_homepage = g_key_file_get_string (kf, "Flatpak Repo", "Homepage", NULL);
+	if (repo_homepage != NULL)
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, repo_homepage);
+	repo_comment = g_key_file_get_string (kf, "Flatpak Repo", "Comment", NULL);
+	if (repo_comment != NULL)
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, repo_comment);
+	repo_description = g_key_file_get_string (kf, "Flatpak Repo", "Description", NULL);
+	if (repo_description != NULL)
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, repo_description);
+	repo_default_branch = g_key_file_get_string (kf, "Flatpak Repo", "DefaultBranch", NULL);
+	if (repo_default_branch != NULL)
+		gs_app_set_branch (app, repo_default_branch);
+	repo_icon = g_key_file_get_string (kf, "Flatpak Repo", "Icon", NULL);
+	if (repo_icon != NULL) {
+		g_autoptr(AsIcon) ic = as_icon_new ();
+		as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
+		as_icon_set_url (ic, repo_icon);
+		gs_app_add_icon (app, ic);
+	}
+
+	/* success */
+	return g_steal_pointer (&app);
+}
+
 gboolean
 gs_flatpak_app_install (GsFlatpak *self,
 			GsApp *app,
@@ -2677,116 +2791,21 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	gchar *tmp;
-	g_autofree gchar *filename = NULL;
-	g_autofree gchar *repo_comment = NULL;
-	g_autofree gchar *repo_description = NULL;
-	g_autofree gchar *repo_default_branch = NULL;
-	g_autofree gchar *repo_gpgkey = NULL;
-	g_autofree gchar *repo_homepage = NULL;
-	g_autofree gchar *repo_icon = NULL;
-	g_autofree gchar *repo_title = NULL;
-	g_autofree gchar *repo_url = NULL;
-	g_autofree gchar *repo_id = NULL;
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 
-	/* read the file */
-	kf = g_key_file_new ();
-	filename = g_file_get_path (file);
-	if (!g_key_file_load_from_file (kf, filename,
-					G_KEY_FILE_NONE,
-					&error_local)) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "failed to load flatpakrepo: %s",
-			     error_local->message);
+	/* create app */
+	app = gs_flatpak_create_app_from_repo_file (self, file, cancellable, error);
+	if (app == NULL)
 		return FALSE;
-	}
-
-	/* get the ID from the basename */
-	repo_id = g_file_get_basename (file);
-	tmp = g_strrstr (repo_id, ".");
-	if (tmp != NULL)
-		*tmp = '\0';
-
-	/* create source */
-	repo_title = g_key_file_get_string (kf, "Flatpak Repo", "Title", NULL);
-	repo_url = g_key_file_get_string (kf, "Flatpak Repo", "Url", NULL);
-	repo_gpgkey = g_key_file_get_string (kf, "Flatpak Repo", "GPGKey", NULL);
-	if (repo_title == NULL || repo_url == NULL || repo_gpgkey == NULL ||
-	    repo_title[0] == '\0' || repo_url[0] == '\0' || repo_gpgkey[0] == '\0') {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "not enough data in file, "
-				     "expected Title, Url, GPGKey");
-		return FALSE;
-	}
-
-	/* check version */
-	if (g_key_file_has_key (kf, "Flatpak Repo", "Version", NULL)) {
-		guint64 ver = g_key_file_get_uint64 (kf, "Flatpak Repo", "Version", NULL);
-		if (ver != 1) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "unsupported version %" G_GUINT64_FORMAT, ver);
-			return FALSE;
-		}
-	}
-
-	/* user specified a URL */
-	if (g_str_has_prefix (repo_gpgkey, "http://") ||
-	    g_str_has_prefix (repo_gpgkey, "https://")) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Base64 encoded GPGKey required, not URL");
-		return FALSE;
-	}
-
-	/* create source */
-	app = gs_app_new (repo_id);
-	gs_app_set_flatpak_file_type (app, "flatpakrepo");
-	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
-	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
-	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
-	gs_app_set_metadata (app, "flatpak::url", repo_url);
-	gs_app_set_origin_hostname (app, repo_url);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
-
-	/* optional data */
-	repo_homepage = g_key_file_get_string (kf, "Flatpak Repo", "Homepage", NULL);
-	if (repo_homepage != NULL)
-		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, repo_homepage);
-	repo_comment = g_key_file_get_string (kf, "Flatpak Repo", "Comment", NULL);
-	if (repo_comment != NULL)
-		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, repo_comment);
-	repo_description = g_key_file_get_string (kf, "Flatpak Repo", "Description", NULL);
-	if (repo_description != NULL)
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, repo_description);
-	repo_default_branch = g_key_file_get_string (kf, "Flatpak Repo", "DefaultBranch", NULL);
-	if (repo_default_branch != NULL)
-		gs_app_set_branch (app, repo_default_branch);
-	repo_icon = g_key_file_get_string (kf, "Flatpak Repo", "Icon", NULL);
-	if (repo_icon != NULL) {
-		g_autoptr(AsIcon) ic = as_icon_new ();
-		as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
-		as_icon_set_url (ic, repo_icon);
-		gs_app_add_icon (app, ic);
-	}
 
 	/* check to see if the repo ID already exists */
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
-							   repo_id,
+							   gs_app_get_id (app),
 							   cancellable, NULL);
 	if (xremote != NULL) {
-		g_debug ("repo %s already exists", repo_id);
+		g_debug ("repo %s already exists", gs_app_get_id (app));
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	} else {
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
