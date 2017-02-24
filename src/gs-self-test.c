@@ -2372,23 +2372,6 @@ main (int argc, char **argv)
 		"    <name>test</name>\n"
 		"    <icon type=\"remote\">file://%s</icon>\n"
 		"  </component>\n"
-		"  <component type=\"desktop\">\n"
-		"    <id>org.test.Chiron.desktop</id>\n"
-		"    <name>Chiron</name>\n"
-		"    <summary>Single line synopsis</summary>\n"
-		"    <description><p>Long description.</p></description>\n"
-		"    <icon height=\"128\" width=\"128\" type=\"cached\">128x128/org.test.Chiron.png</icon>\n"
-		"    <icon height=\"64\" width=\"64\" type=\"cached\">64x64/org.test.Chiron.png</icon>\n"
-		"    <keywords>\n"
-		"      <keyword>Bingo</keyword>\n"
-		"    </keywords>\n"
-		"    <metadata>\n"
-		"      <value key=\"GnomeSoftware::Plugin\">flatpak</value>\n"
-		"    </metadata>\n"
-		"    <project_license>GPL-2.0+</project_license>\n"
-		"    <url type=\"homepage\">http://127.0.0.1/</url>\n"
-		"    <bundle type=\"flatpak\" runtime=\"org.test.Runtime/x86_64/master\">app/org.test.Chiron/x86_64/master</bundle>\n"
-		"  </component>\n"
 		"</components>\n", fn);
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
 	g_setenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT",
