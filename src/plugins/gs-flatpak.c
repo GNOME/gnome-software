@@ -1337,11 +1337,11 @@ gs_app_get_flatpak_kind (GsApp *app)
 }
 
 static gboolean
-refine_origin_from_installation (GsFlatpak *self,
-				 FlatpakInstallation *installation,
-				 GsApp *app,
-				 GCancellable *cancellable,
-				 GError **error)
+gs_flatpak_refine_origin_from_installation (GsFlatpak *self,
+					    FlatpakInstallation *installation,
+					    GsApp *app,
+					    GCancellable *cancellable,
+					    GError **error)
 {
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
@@ -1382,15 +1382,9 @@ refine_origin_from_installation (GsFlatpak *self,
 		g_debug ("failed to find remote %s: %s",
 			 remote_name, error_local->message);
 	}
-	g_set_error (error,
-		     GS_PLUGIN_ERROR,
-		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-		     "Not found %s/%s/%s",
-		     gs_app_get_flatpak_name (app),
-		     gs_app_get_flatpak_arch (app),
-		     gs_app_get_flatpak_branch (app));
 
-	return FALSE;
+	/* not found */
+	return TRUE;
 }
 
 static FlatpakInstallation *
@@ -1418,7 +1412,6 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 {
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GError) local_error = NULL;
-	gboolean ignore_error = FALSE;
 
 	/* already set */
 	if (gs_app_get_origin (app) != NULL)
@@ -1442,36 +1435,39 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		 gs_app_get_flatpak_branch (app));
 
 	/* first check the plugin's own flatpak installation */
-	if (refine_origin_from_installation (self, self->installation, app,
-					     cancellable, &local_error)) {
-		return TRUE;
+	if (!gs_flatpak_refine_origin_from_installation (self,
+							 self->installation,
+							 app,
+							 cancellable,
+							 error)) {
+		g_prefix_error (error, "failed to refine origin from self: ");
+		return FALSE;
 	}
 
-	ignore_error = g_error_matches (local_error, GS_PLUGIN_ERROR,
-					GS_PLUGIN_ERROR_NOT_SUPPORTED);
-
 	/* check the system installation if we're on a user one */
-	if (ignore_error &&
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_USER &&
 	    gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
 		g_autoptr(FlatpakInstallation) installation =
 			gs_flatpak_get_installation_counterpart (self,
 								 cancellable,
 								 error);
 
-		if (installation == NULL)
+		if (installation == NULL) {
+			g_prefix_error (error, "failed to get counterpart: ");
 			return FALSE;
-
-		if (refine_origin_from_installation (self, installation, app,
-						     cancellable, error)) {
-			return TRUE;
 		}
-	} else {
-		g_propagate_error (error, local_error);
-		/* safely handle the autoptr */
-		local_error = NULL;
+		if (!gs_flatpak_refine_origin_from_installation (self,
+								 installation,
+								 app,
+								 cancellable,
+								 error)) {
+			g_prefix_error (error,
+					"failed to refine origin from counterpart: ");
+			return FALSE;
+		}
 	}
 
-	return FALSE;
+	return TRUE;
 }
 
 static gboolean
