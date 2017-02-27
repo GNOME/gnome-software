@@ -608,8 +608,16 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set source */
 	if (gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
+#if AS_CHECK_VERSION(0,6,9)
+		AsFormat *format = as_app_get_format_by_kind (item, AS_FORMAT_KIND_DESKTOP);
+		if (format != NULL) {
+			gs_app_set_metadata (app, "appstream::source-file",
+					     as_format_get_filename (format));
+		}
+#else
 		gs_app_set_metadata (app, "appstream::source-file",
 				     as_app_get_source_file (item));
+#endif
 	}
 
 	/* scope */
