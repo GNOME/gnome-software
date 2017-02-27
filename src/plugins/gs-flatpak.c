@@ -1312,13 +1312,23 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 	/* check the system installation if we're on a user one */
 	if (gs_app_get_scope (app) == AS_APP_SCOPE_USER &&
 	    gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME) {
+		g_autoptr(GError) error_local = NULL;
 		g_autoptr(FlatpakInstallation) installation =
 			gs_flatpak_get_installation_counterpart (self,
 								 cancellable,
-								 error);
-
+								 &error_local);
 		if (installation == NULL) {
-			g_prefix_error (error, "failed to get counterpart: ");
+			if (g_error_matches (error_local,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NO_SECURITY)) {
+				g_debug ("ignoring: %s", error_local->message);
+				return TRUE;
+			}
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "failed to get counterpart: %s",
+				     error_local->message);
 			return FALSE;
 		}
 		if (!gs_flatpak_refine_origin_from_installation (self,
@@ -1425,23 +1435,38 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 	 * available system-wide then mark it installed, and vice-versa */
 	if (gs_app_get_flatpak_kind (app) == FLATPAK_REF_KIND_RUNTIME &&
 	    gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
-		g_autoptr(GPtrArray) xrefs2 = NULL;
+		g_autoptr(GError) error_local = NULL;
 		g_autoptr(FlatpakInstallation) installation =
 			gs_flatpak_get_installation_counterpart (self,
 								 cancellable,
-								 error);
-		if (installation == NULL)
-			return FALSE;
-		xrefs2 = flatpak_installation_list_installed_refs (installation,
-								   cancellable, error);
-		if (xrefs2 == NULL) {
-			return FALSE;
-		}
-		for (i = 0; i < xrefs2->len; i++) {
-			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs2, i);
-			if (!gs_flatpak_app_matches_xref (self, app, FLATPAK_REF(xref)))
-				continue;
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+								 &error_local);
+		if (installation == NULL) {
+			if (g_error_matches (error_local,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NO_SECURITY)) {
+				g_debug ("ignoring: %s", error_local->message);
+			} else {
+				g_set_error (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "failed to get counterpart: %s",
+					     error_local->message);
+				return FALSE;
+			}
+		} else {
+			g_autoptr(GPtrArray) xrefs2 = NULL;
+			xrefs2 = flatpak_installation_list_installed_refs (installation,
+									   cancellable,
+									   error);
+			if (xrefs2 == NULL) {
+				return FALSE;
+			}
+			for (i = 0; i < xrefs2->len; i++) {
+				FlatpakInstalledRef *xref = g_ptr_array_index (xrefs2, i);
+				if (!gs_flatpak_app_matches_xref (self, app, FLATPAK_REF(xref)))
+					continue;
+				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+			}
 		}
 	}
 
