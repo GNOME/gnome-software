@@ -46,6 +46,26 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-02-27" version="3.23.91">
+      <description>
+        <p>
+          This is an unstable release in the 3.23 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add support for RuntimeRepo in flatpakref files</li>
+          <li>Allow the user to restart the currently running gnome-software instance</li>
+          <li>Never show components without AppData files</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Initialize progress to zero right before and after processing an action</li>
+          <li>Animate the removal of live updates</li>
+          <li>Add YaST as a default folder in gnome-shell overview</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-02-13" version="3.23.90">
       <description>
         <p>
