@@ -498,8 +498,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 
-	/* remove -- we're really testing for return code UNKNOWN,
-	 * but dummy::refine() sets it */
+	/* remove */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_REMOVE,
 					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
@@ -508,7 +507,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 }
 
 static void
@@ -785,7 +784,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	addon = g_ptr_array_index (addons, 0);
 	g_assert_cmpstr (gs_app_get_id (addon), ==, "zeus-spell.addon");
 	g_assert_cmpint (gs_app_get_kind (addon), ==, AS_APP_KIND_ADDON);
-	g_assert_cmpint (gs_app_get_state (addon), ==, AS_APP_STATE_UNKNOWN);
+	g_assert_cmpint (gs_app_get_state (addon), ==, AS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_name (addon), ==, "Spell Check");
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
@@ -1281,7 +1280,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 			 GS_APP_KUDO_SANDBOXED_SECURE |
 			 GS_APP_KUDO_SANDBOXED);
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
-	g_assert_cmpstr (gs_app_get_version (app), ==, "master");
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
 	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_UNKNOWN);
