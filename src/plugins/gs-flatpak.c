@@ -362,8 +362,17 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		/* add */
 		as_app_set_state (app, AS_APP_STATE_INSTALLED);
 		as_app_set_scope (app, self->scope);
+#if AS_CHECK_VERSION(0,6,9)
+{
+		g_autoptr(AsFormat) format = as_format_new ();
+		as_format_set_kind (format, AS_FORMAT_KIND_DESKTOP);
+		as_format_set_filename (format, fn_desktop);
+		as_app_add_format (app, format);
+}
+#else
 		as_app_set_source_kind (app, AS_APP_SOURCE_KIND_DESKTOP);
 		as_app_set_source_file (app, fn_desktop);
+#endif
 		as_app_set_icon_path (app, path_exports);
 		as_app_add_keyword (app, NULL, "flatpak");
 		as_store_add_app (self->store, app);
