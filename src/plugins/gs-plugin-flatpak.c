@@ -442,6 +442,16 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return gs_flatpak_update_app (flatpak, app, cancellable, error);
 }
 
+static gboolean
+gs_plugin_flatpak_file_to_app_for_scope (GsFlatpak *flatpak, AsAppScope scope)
+{
+	if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+		return TRUE;
+	if (_as_app_scope_is_compatible (scope, gs_flatpak_get_scope (flatpak)))
+		return TRUE;
+	return FALSE;
+}
+
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,
@@ -462,7 +472,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* run any objects with the corrext scope */
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!_as_app_scope_is_compatible (scope, gs_flatpak_get_scope (flatpak))) {
+		if (!gs_plugin_flatpak_file_to_app_for_scope (flatpak, scope)) {
 			g_debug ("not handling bundle as scope incorrect");
 			continue;
 		}
