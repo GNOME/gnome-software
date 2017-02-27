@@ -677,6 +677,9 @@ gs_utils_error_convert_gio (GError **perror)
 	case G_IO_ERROR_NO_SPACE:
 		error->code = GS_PLUGIN_ERROR_NO_SPACE;
 		break;
+	case G_IO_ERROR_PERMISSION_DENIED:
+		error->code = GS_PLUGIN_ERROR_NO_SECURITY;
+		break;
 	case G_IO_ERROR_HOST_NOT_FOUND:
 	case G_IO_ERROR_HOST_UNREACHABLE:
 	case G_IO_ERROR_CONNECTION_REFUSED:
