@@ -2852,6 +2852,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
+	gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
 	gs_app_set_flatpak_file_type (app, "flatpakref");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
