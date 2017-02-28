@@ -167,7 +167,8 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "flatpak::add-apps-from-remote{%s}",
+				  "%s::add-apps-from-remote{%s}",
+				  gs_flatpak_get_id (self),
 				  flatpak_remote_get_name (xremote));
 	g_assert (ptask != NULL);
 
@@ -271,8 +272,9 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 	g_autofree gchar *path_apps = NULL;
 
 	/* profile */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::rescan-installed");
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::rescan-installed",
+				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 
 	/* add all installed desktop files */
@@ -340,7 +342,14 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 				   GError **error)
 {
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
+
+	/* profile */
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::rescan-appstream",
+				  gs_flatpak_get_id (self));
+	g_assert (ptask != NULL);
 
 	/* remove all components */
 	as_store_remove_all (self->store);
@@ -374,8 +383,9 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GError) error_md = NULL;
 
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::setup");
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::setup",
+				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 
 	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
@@ -420,6 +430,12 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	g_autoptr(AsProfileTask) ptask = NULL;
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::refresh-appstream{%s}",
+				  gs_flatpak_get_id (self),
+				  remote_name);
+	g_assert (ptask != NULL);
 	if (!flatpak_installation_update_appstream_sync (self->installation,
 							 remote_name,
 							 NULL,
@@ -439,7 +455,14 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 	gboolean ret;
 	gboolean something_changed = FALSE;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
+
+	/* profile */
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::refresh-appstream",
+				  gs_flatpak_get_id (self));
+	g_assert (ptask != NULL);
 
 	/* get remotes */
 	xremotes = flatpak_installation_list_remotes (self->installation,
@@ -1085,8 +1108,9 @@ gs_plugin_refine_item_origin_ui (GsFlatpak *self, GsApp *app,
 		return TRUE;
 
 	/* find list of remotes */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::refine-origin-ui");
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::refine-origin-ui",
+				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 	xremotes = flatpak_installation_list_remotes (self->installation,
 						      cancellable,
@@ -1121,7 +1145,8 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "flatpak::refine-origin-hostname{%s}",
+				  "%s::refine-origin-hostname{%s}",
+				  gs_flatpak_get_id (self),
 				  gs_app_get_id (app));
 	g_assert (ptask != NULL);
 
@@ -1287,8 +1312,9 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		return TRUE;
 
 	/* ensure metadata exists */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::refine-origin");
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::refine-origin",
+				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
@@ -1404,8 +1430,9 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 		return FALSE;
 
 	/* get apps and runtimes */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::refine-action");
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::refine-action",
+				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable, error);
@@ -1643,7 +1670,8 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "flatpak::refine-metadata{%s}",
+				  "%s::refine-metadata{%s}",
+				  gs_flatpak_get_id (self),
 				  gs_app_get_id (app));
 	g_assert (ptask != NULL);
 
@@ -1760,8 +1788,9 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	}
 
 	/* just get the size of the app */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
-					  "flatpak::refine-size");
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
+				  "%s::refine-size",
+				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 	if (!gs_plugin_refine_item_origin (self, app,
 					   cancellable, error))
@@ -1843,7 +1872,8 @@ gs_flatpak_refine_appstream (GsFlatpak *self, GsApp *app, GError **error)
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "flatpak::refine-appstream{%s}",
+				  "%s::refine-appstream{%s}",
+				  gs_flatpak_get_id (self),
 				  gs_app_get_id (app));
 	g_assert (ptask != NULL);
 
@@ -1885,7 +1915,8 @@ gs_flatpak_refine_app (GsFlatpak *self,
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "flatpak::refine{%s}",
+				  "%s::refine{%s}",
+				  gs_flatpak_get_id (self),
 				  gs_app_get_id (app));
 	g_assert (ptask != NULL);
 
