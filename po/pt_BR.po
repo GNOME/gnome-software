@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-02-22 19:36+0000\n"
-"PO-Revision-Date: 2017-02-25 11:41-0200\n"
+"POT-Creation-Date: 2017-02-27 10:00+0000\n"
+"PO-Revision-Date: 2017-02-28 18:12-0200\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -74,6 +74,18 @@ msgstr "Painel de atualizações"
 #: data/appdata/org.gnome.Software.appdata.xml.in:41
 msgid "The update details"
 msgstr "Os detalhes da atualização"
+
+#: data/appdata/org.gnome.Software.appdata.xml.in:682
+msgid "The GNOME Project"
+msgstr "O projeto GNOME"
+
+#: data/org.gnome.software.external-appstream.policy.in:11
+msgid "Install an appstream file into a system location"
+msgstr "Instalar um arquivo appstream em um local do sistema"
+
+#: data/org.gnome.software.external-appstream.policy.in:12
+msgid "Installing an appstream file into a system location"
+msgstr "Instalando um arquivo appstream em um local do sistema"
 
 #: data/org.gnome.software.gschema.xml:5
 msgid "A list of compatible projects"
@@ -381,7 +393,6 @@ msgstr "Configurações de rede"
 
 #. button in the info bar
 #: src/gnome-software.ui:382
-#| msgid "Restart"
 msgid "Restart Now"
 msgstr "Reiniciar agora"
 
@@ -791,12 +802,12 @@ msgstr "%s será removido e para usá-lo novamente, você precisará instalá-lo
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-plugin-loader.c:1906 src/gs-shell-extras.c:389
+#: src/gs-plugin-loader.c:1909 src/gs-shell-extras.c:389
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Não há complementos de codecs disponíveis para o formato %s."
 
-#: src/gs-plugin-loader.c:1909
+#: src/gs-plugin-loader.c:1912
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1513,7 +1524,6 @@ msgstr "Você precisa de acesso à Internet para escrever uma avaliação"
 
 #: src/gs-shell-details.c:1422
 #, c-format
-#| msgid "Could not find “%s”"
 msgid "Unable to find “%s”"
 msgstr "Não foi possível localizar “%s”"
 
@@ -2906,7 +2916,6 @@ msgstr "Uso forte e frequente de profanação"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:186
-#| msgid "No innappropriate humor"
 msgid "No inappropriate humor"
 msgstr "Sem humor impróprio"
 
@@ -3540,63 +3549,64 @@ msgstr "Atualizações do SO"
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclui melhorias de desempenho, estabilidade e segurança."
 
-#~ msgid "The GNOME Project"
-#~ msgstr "O projeto GNOME"
+#: src/plugins/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
+#| msgid "Wed Apps Support"
+msgid "Web Apps Support"
+msgstr "Suporte a aplicativos web"
 
-#~ msgid "Install an appstream file into a system location"
-#~ msgstr "Instalar um arquivo appstream em um local do sistema"
+#: src/plugins/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:7
+msgid "Run popular web applications in a browser"
+msgstr "Execute aplicativos web populares em um navegador"
 
-#~ msgid "Installing an appstream file into a system location"
-#~ msgstr "Instalando um arquivo appstream em um local do sistema"
+#: src/plugins/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
+msgid "Flatpak Support"
+msgstr "Suporte a flatpak"
 
-#~| msgid "Support"
-#~ msgid "Wed Apps Support"
-#~ msgstr "Suporte a aplicativos web"
+#: src/plugins/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
+msgid "Flatpak is a framework for desktop applications on Linux"
+msgstr "Flatpak é um framework para aplicativos no Linux"
 
-#~ msgid "Run popular web applications in a browser"
-#~ msgstr "Execute aplicativos web populares em um navegador"
+#: src/plugins/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
+msgid "Firmware Upgrade Support"
+msgstr "Suporte a atualização de firmware"
 
-#~| msgid "Support"
-#~ msgid "Flatpak Support"
-#~ msgstr "Suporte a flatpak"
+#: src/plugins/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:7
+msgid "Provides support for firmware upgrades"
+msgstr "Fornece suporte para atualizações de firmwares"
 
-#~ msgid "Flatpak is a framework for desktop applications on Linux"
-#~ msgstr "Flatpak é um framework para aplicativos no Linux"
+#: src/plugins/org.gnome.Software.Plugin.Limba.metainfo.xml.in:6
+msgid "Limba Support"
+msgstr "Suporte limba"
 
-#~ msgid "Firmware Upgrade Support"
-#~ msgstr "Suporte a atualização de firmware"
+#: src/plugins/org.gnome.Software.Plugin.Limba.metainfo.xml.in:7
+msgid "Limba provides developers a way to easily create software bundles"
+msgstr ""
+"Limba permite aos desenvolvedores uma forma fácil de criar pacotes de "
+"softwares"
 
-#~ msgid "Provides support for firmware upgrades"
-#~ msgstr "Fornece suporte para atualizações de firmwares"
+#: src/plugins/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:6
+msgid "Open Desktop Ratings Support"
+msgstr "Open Desktop Ratings Support"
 
-#~| msgid "Support"
-#~ msgid "Limba Support"
-#~ msgstr "Suporte limba"
+#: src/plugins/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:7
+msgid "ODRS is a service providing user reviews of applications"
+msgstr "ODRS é um serviço que fornece ao usuário avaliações de aplicativos"
 
-#~ msgid "Limba provides developers a way to easily create software bundles"
-#~ msgstr ""
-#~ "Limba permite aos desenvolvedores uma forma fácil de criar pacotes de "
-#~ "softwares"
+#: src/plugins/org.gnome.Software.Plugin.Snap.metainfo.xml.in:6
+msgid "Snappy Support"
+msgstr "Suporte a snappy"
 
-#~ msgid "Open Desktop Ratings Support"
-#~ msgstr "Open Desktop Ratings Support"
+#: src/plugins/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
+msgid "A snap is a universal Linux package"
+msgstr "Um snap é um pacote universal de Linux"
 
-#~ msgid "ODRS is a service providing user reviews of applications"
-#~ msgstr "ODRS é um serviço que fornece ao usuário avaliações de aplicativos"
+#: src/plugins/org.gnome.Software.Plugin.Steam.metainfo.xml.in:6
+msgid "Steam Support"
+msgstr "Suporte a steam"
 
-#~| msgid "Support"
-#~ msgid "Snappy Support"
-#~ msgstr "Suporte a snappy"
-
-#~ msgid "A snap is a universal Linux package"
-#~ msgstr "Um snap é um pacote universal de Linux"
-
-#~| msgid "Support"
-#~ msgid "Steam Support"
-#~ msgstr "Suporte a steam"
-
-#~ msgid "The ultimate entertainment platform from Valve"
-#~ msgstr "A plataforma definida de entretenimento da Valve"
+#: src/plugins/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
+msgid "The ultimate entertainment platform from Valve"
+msgstr "A plataforma definida de entretenimento da Valve"
 
 #~ msgid "Other Updates"
 #~ msgstr "Outras atualizações"
