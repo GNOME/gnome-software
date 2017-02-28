@@ -980,6 +980,17 @@ gs_plugin_loader_app_set_prio (GsApp *app, gpointer user_data)
 static gboolean
 gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 {
+	/* even without AppData, show things in progress */
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_PURCHASING:
+		return TRUE;
+		break;
+	default:
+		break;
+	}
+
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_OS_UPGRADE:
 	case AS_APP_KIND_CODEC:
