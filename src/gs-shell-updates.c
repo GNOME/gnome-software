@@ -645,6 +645,11 @@ static void
 show_update_details (GsApp *app, GsShellUpdates *self)
 {
 	GtkWidget *dialog;
+	g_autofree gchar *str = NULL;
+
+	/* debug */
+	str = gs_app_to_string (app);
+	g_debug ("%s", str);
 
 	dialog = gs_update_dialog_new (self->plugin_loader);
 	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
