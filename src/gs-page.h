@@ -90,6 +90,7 @@ gboolean	 gs_page_setup				(GsPage		*page,
 							 GtkBuilder	*builder,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_page_is_active			(GsPage		*page);
 
 G_END_DECLS
 

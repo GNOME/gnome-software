@@ -1226,6 +1226,26 @@ gs_shell_updates_invalidate_downloaded_upgrade (GsShellUpdates *self)
 		 gs_app_get_id (app));
 }
 
+static gboolean
+gs_shell_update_are_updates_in_progress (GsShellUpdates *self)
+{
+	GsUpdateList *update_list = GS_UPDATE_LIST (self->list_box_updates);
+	g_autoptr(GsAppList) list = gs_update_list_get_apps (update_list);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		switch (gs_app_get_state (app)) {
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_REMOVING:
+		case AS_APP_STATE_PURCHASING:
+			return TRUE;
+			break;
+		default:
+			break;
+		}
+	}
+	return FALSE;
+}
+
 static void
 gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 			     GsShellUpdates *self)
@@ -1233,6 +1253,12 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 	/* if we do a live update and the upgrade is waiting to be deployed
 	 * then make sure all new packages are downloaded */
 	gs_shell_updates_invalidate_downloaded_upgrade (self);
+
+	/* check to see if any apps in the app list are in a processing state */
+	if (gs_shell_update_are_updates_in_progress (self)) {
+		g_debug ("ignoring updates-changed as updates in progress");
+		return;
+	}
 
 	/* refresh updates list */
 	gs_shell_updates_reload (GS_PAGE (self));
