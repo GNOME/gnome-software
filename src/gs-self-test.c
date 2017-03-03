@@ -1534,6 +1534,14 @@ update_app_state_notify_cb (GsApp *app, GParamSpec *pspec, gpointer user_data)
 	}
 }
 
+static gboolean
+update_app_action_delay_cb (gpointer user_data)
+{
+	GMainLoop *loop = (GMainLoop *) user_data;
+	g_main_loop_quit (loop);
+	return FALSE;
+}
+
 static void
 update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user_data)
 {
@@ -1545,7 +1553,7 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_main_loop_quit (loop);
+	g_timeout_add_seconds (5, update_app_action_delay_cb, user_data);
 }
 
 static void
@@ -1884,6 +1892,13 @@ gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_flatpak_count_signal_cb (GsPluginLoader *plugin_loader, guint *cnt)
+{
+	if (cnt != NULL)
+		(*cnt)++;
+}
+
+static void
 gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -1893,7 +1908,11 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	guint notify_progress_id;
 	guint notify_state_id;
+	guint pending_app_changed_cnt = 0;
+	guint pending_apps_changed_id;
 	guint progress_cnt = 0;
+	guint updates_changed_cnt = 0;
+	guint updates_changed_id;
 	g_autofree gchar *repodir1_fn = NULL;
 	g_autofree gchar *repodir2_fn = NULL;
 	g_autoptr(GError) error = NULL;
@@ -2027,6 +2046,14 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, "1.2.4");
 
 	/* care about signals */
+	pending_apps_changed_id =
+		g_signal_connect (plugin_loader, "pending-apps-changed",
+				  G_CALLBACK (gs_plugin_loader_flatpak_count_signal_cb),
+				  &pending_app_changed_cnt);
+	updates_changed_id =
+		g_signal_connect (plugin_loader, "updates-changed",
+				  G_CALLBACK (gs_plugin_loader_flatpak_count_signal_cb),
+				  &updates_changed_cnt);
 	notify_state_id =
 		g_signal_connect (app, "notify::state",
 				  G_CALLBACK (update_app_state_notify_cb),
@@ -2045,6 +2072,7 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 					   update_app_action_finish_sync,
 					   loop);
 	g_main_loop_run (loop);
+	gs_test_flush_main_context ();
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.4");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
@@ -2052,8 +2080,12 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 	g_assert (got_progress_installing);
 	//g_assert_cmpint (progress_cnt, >, 20); //FIXME: bug in OSTree
+	g_assert_cmpint (pending_app_changed_cnt, ==, 0);
+	g_assert_cmpint (updates_changed_cnt, ==, 1);
 
 	/* no longer care */
+	g_signal_handler_disconnect (plugin_loader, pending_apps_changed_id);
+	g_signal_handler_disconnect (plugin_loader, updates_changed_id);
 	g_signal_handler_disconnect (app, notify_state_id);
 	g_signal_handler_disconnect (app, notify_progress_id);
 
