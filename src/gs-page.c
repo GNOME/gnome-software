@@ -37,6 +37,7 @@ typedef struct
 	GsShell			*shell;
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
+	gboolean		 is_active;
 } GsPagePrivate;
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
@@ -618,6 +619,14 @@ gs_page_shortcut_remove (GsPage *page, GsApp *app, GCancellable *cancellable)
 	                                   cancellable,
 	                                   gs_page_app_shortcut_removed_cb,
 	                                   NULL);
+}
+
+gboolean
+gs_page_is_active (GsPage *page)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	g_return_val_if_fail (GS_IS_PAGE (page), FALSE);
+	return priv->is_active;
 }
 
 /**

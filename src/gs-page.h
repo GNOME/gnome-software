@@ -79,6 +79,7 @@ void		 gs_page_setup				(GsPage		*page,
 							 GsShell	*shell,
 							 GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable);
+gboolean	 gs_page_is_active			(GsPage		*page);
 
 G_END_DECLS
 
