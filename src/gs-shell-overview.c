@@ -97,7 +97,7 @@ load_data_free (LoadData *data)
         g_slice_free (LoadData, data);
 }
 
-void
+static void
 gs_shell_overview_invalidate (GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
@@ -762,19 +762,21 @@ gs_shell_overview_refresh_proprietary (GsShellOverview *self)
 	}
 }
 
-void
-gs_shell_overview_setup (GsShellOverview *self,
+static gboolean
+gs_shell_overview_setup (GsPage *page,
 			 GsShell *shell,
 			 GsPluginLoader *plugin_loader,
 			 GtkBuilder *builder,
-			 GCancellable *cancellable)
+			 GCancellable *cancellable,
+			 GError **error)
 {
+	GsShellOverview *self = GS_SHELL_OVERVIEW (page);
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
 
-	g_return_if_fail (GS_IS_SHELL_OVERVIEW (self));
+	g_return_val_if_fail (GS_IS_SHELL_OVERVIEW (self), TRUE);
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
@@ -809,12 +811,7 @@ gs_shell_overview_setup (GsShellOverview *self,
 			  G_CALLBACK (gs_shell_overview_categories_expander_down_cb), self);
 	g_signal_connect (priv->categories_expander_button_up, "clicked",
 			  G_CALLBACK (gs_shell_overview_categories_expander_up_cb), self);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+	return TRUE;
 }
 
 static void
@@ -883,6 +880,7 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	object_class->dispose = gs_shell_overview_dispose;
 	page_class->switch_to = gs_shell_overview_switch_to;
 	page_class->reload = gs_shell_overview_reload;
+	page_class->setup = gs_shell_overview_setup;
 	klass->refreshed = gs_shell_overview_refreshed;
 
 	signals [SIGNAL_REFRESHED] =

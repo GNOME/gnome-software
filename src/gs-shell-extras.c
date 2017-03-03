@@ -1120,14 +1120,17 @@ list_header_func (GtkListBoxRow *row,
 	gtk_list_box_row_set_header (row, header);
 }
 
-void
-gs_shell_extras_setup (GsShellExtras *self,
+static gboolean
+gs_shell_extras_setup (GsPage *page,
 			GsShell *shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
-			GCancellable *cancellable)
+			GCancellable *cancellable,
+			GError **error)
 {
-	g_return_if_fail (GS_IS_SHELL_EXTRAS (self));
+	GsShellExtras *self = GS_SHELL_EXTRAS (page);
+
+	g_return_val_if_fail (GS_IS_SHELL_EXTRAS (self), TRUE);
 
 	self->shell = shell;
 
@@ -1142,12 +1145,7 @@ gs_shell_extras_setup (GsShellExtras *self,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_results),
 				    list_sort_func,
 				    self, NULL);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+	return TRUE;
 }
 
 static void
@@ -1203,6 +1201,7 @@ gs_shell_extras_class_init (GsShellExtrasClass *klass)
 	object_class->dispose = gs_shell_extras_dispose;
 	page_class->switch_to = gs_shell_extras_switch_to;
 	page_class->reload = gs_shell_extras_reload;
+	page_class->setup = gs_shell_extras_setup;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-extras.ui");
 

@@ -277,27 +277,6 @@ gs_shell_category_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_category_parent_class)->dispose (object);
 }
 
-static void
-gs_shell_category_class_init (GsShellCategoryClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	GsPageClass *page_class = GS_PAGE_CLASS (klass);
-	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-
-	object_class->dispose = gs_shell_category_dispose;
-	page_class->switch_to = gs_shell_category_switch_to;
-	page_class->reload = gs_shell_category_reload;
-
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
-
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, category_detail_box);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, infobar_category_shell_extensions);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, button_category_shell_extensions);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, listbox_filter);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_category);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_filter);
-}
-
 static gboolean
 key_event (GtkWidget *listbox, GdkEvent *event, GsShellCategory *self)
 {
@@ -336,13 +315,15 @@ button_shell_extensions_cb (GtkButton *button, GsShellCategory *self)
 		g_warning ("failed to exec %s: %s", argv[0], error->message);
 }
 
-void
-gs_shell_category_setup (GsShellCategory *self,
+static gboolean
+gs_shell_category_setup (GsPage *page,
 			 GsShell *shell,
 			 GsPluginLoader *plugin_loader,
 			 GtkBuilder *builder,
-			 GCancellable *cancellable)
+			 GCancellable *cancellable,
+			 GError **error)
 {
+	GsShellCategory *self = GS_SHELL_CATEGORY (page);
 	GtkAdjustment *adj;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
@@ -359,12 +340,29 @@ gs_shell_category_setup (GsShellCategory *self,
 
 	g_signal_connect (self->button_category_shell_extensions, "clicked",
 			  G_CALLBACK (button_shell_extensions_cb), self);
+	return TRUE;
+}
 
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+static void
+gs_shell_category_class_init (GsShellCategoryClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
+	object_class->dispose = gs_shell_category_dispose;
+	page_class->switch_to = gs_shell_category_switch_to;
+	page_class->reload = gs_shell_category_reload;
+	page_class->setup = gs_shell_category_setup;
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
+
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, category_detail_box);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, infobar_category_shell_extensions);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, button_category_shell_extensions);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, listbox_filter);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_category);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_filter);
 }
 
 GsShellCategory *

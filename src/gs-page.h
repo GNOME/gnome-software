@@ -45,6 +45,12 @@ struct _GsPageClass
 	void		(*switch_to)		(GsPage		 *page,
 						 gboolean	  scroll_up);
 	void		(*reload)		(GsPage		 *page);
+	gboolean	(*setup)		(GsPage		 *page,
+						 GsShell	*shell,
+						 GsPluginLoader	*plugin_loader,
+						 GtkBuilder	*builder,
+						 GCancellable	*cancellable,
+						 GError		**error);
 };
 
 GsPage		*gs_page_new				(void);
@@ -76,10 +82,12 @@ void		 gs_page_shortcut_remove		(GsPage		*page,
 void		 gs_page_switch_to			(GsPage		*page,
 							 gboolean	 scroll_up);
 void		 gs_page_reload				(GsPage		*page);
-void		 gs_page_setup				(GsPage		*page,
+gboolean	 gs_page_setup				(GsPage		*page,
 							 GsShell	*shell,
 							 GsPluginLoader	*plugin_loader,
-							 GCancellable	*cancellable);
+							 GtkBuilder	*builder,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 

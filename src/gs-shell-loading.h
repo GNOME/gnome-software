@@ -42,11 +42,6 @@ struct _GsShellLoadingClass
 };
 
 GsShellLoading	*gs_shell_loading_new		(void);
-void		 gs_shell_loading_setup		(GsShellLoading		*self,
-						 GsShell		*shell,
-						 GsPluginLoader		*plugin_loader,
-						 GtkBuilder		*builder,
-						 GCancellable		*cancellable);
 
 G_END_DECLS
 

@@ -128,23 +128,23 @@ gs_shell_loading_switch_to (GsPage *page, gboolean scroll_up)
 	gs_shell_loading_load (self);
 }
 
-void
-gs_shell_loading_setup (GsShellLoading *self,
+static gboolean
+gs_shell_loading_setup (GsPage *page,
 			GsShell *shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
-			GCancellable *cancellable)
+			GCancellable *cancellable,
+			GError **error)
 {
+	GsShellLoading *self = GS_SHELL_LOADING (page);
 	GsShellLoadingPrivate *priv = gs_shell_loading_get_instance_private (self);
 
-	g_return_if_fail (GS_IS_SHELL_LOADING (self));
+	g_return_val_if_fail (GS_IS_SHELL_LOADING (self), TRUE);
 
 	priv->shell = shell;
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->cancellable = g_object_ref (cancellable);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self), shell, plugin_loader, cancellable);
+	return TRUE;
 }
 
 static void
@@ -168,6 +168,7 @@ gs_shell_loading_class_init (GsShellLoadingClass *klass)
 
 	object_class->dispose = gs_shell_loading_dispose;
 	page_class->switch_to = gs_shell_loading_switch_to;
+	page_class->setup = gs_shell_loading_setup;
 
 	signals [SIGNAL_REFRESHED] =
 		g_signal_new ("refreshed",

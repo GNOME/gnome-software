@@ -67,7 +67,7 @@ static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_l
 							GsShellInstalled *self);
 static void set_selection_mode (GsShellInstalled *self, gboolean selection_mode);
 
-void
+static void
 gs_shell_installed_invalidate (GsShellInstalled *self)
 {
 	self->cache_valid = FALSE;
@@ -773,17 +773,19 @@ gs_shell_settings_changed_cb (GsShellInstalled *self,
 	}
 }
 
-void
-gs_shell_installed_setup (GsShellInstalled *self,
+static gboolean
+gs_shell_installed_setup (GsPage *page,
 			  GsShell *shell,
 			  GsPluginLoader *plugin_loader,
 			  GtkBuilder *builder,
-			  GCancellable *cancellable)
+			  GCancellable *cancellable,
+			  GError **error)
 {
+	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
 	AtkObject *accessible;
 	GtkWidget *widget;
 
-	g_return_if_fail (GS_IS_SHELL_INSTALLED (self));
+	g_return_val_if_fail (GS_IS_SHELL_INSTALLED (self), TRUE);
 
 	self->shell = shell;
 	self->plugin_loader = g_object_ref (plugin_loader);
@@ -827,12 +829,7 @@ gs_shell_installed_setup (GsShellInstalled *self,
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "select_none_menuitem"));
 	g_signal_connect (widget, "activate",
 			  G_CALLBACK (select_none_cb), self);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+	return TRUE;
 }
 
 static void
@@ -863,6 +860,7 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 	page_class->app_removed = gs_shell_installed_app_removed;
 	page_class->switch_to = gs_shell_installed_switch_to;
 	page_class->reload = gs_shell_installed_reload;
+	page_class->setup = gs_shell_installed_setup;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");
 

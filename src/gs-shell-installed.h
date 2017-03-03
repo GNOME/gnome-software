@@ -35,12 +35,6 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsShellInstalled, gs_shell_installed, GS, SHELL_INSTALLED, GsPage)
 
 GsShellInstalled *gs_shell_installed_new	(void);
-void		 gs_shell_installed_invalidate	(GsShellInstalled	*self);
-void		 gs_shell_installed_setup	(GsShellInstalled	*self,
-						 GsShell		*shell,
-						 GsPluginLoader		*plugin_loader,
-						 GtkBuilder		*builder,
-						 GCancellable		*cancellable);
 
 G_END_DECLS
 

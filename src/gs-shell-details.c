@@ -2040,16 +2040,18 @@ gs_shell_details_network_available_notify_cb (GsPluginLoader *plugin_loader,
 	gs_shell_details_refresh_reviews (self);
 }
 
-void
-gs_shell_details_setup (GsShellDetails *self,
+static gboolean
+gs_shell_details_setup (GsPage *page,
 			GsShell	*shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
-			GCancellable *cancellable)
+			GCancellable *cancellable,
+			GError **error)
 {
+	GsShellDetails *self = GS_SHELL_DETAILS (page);
 	GtkAdjustment *adj;
 
-	g_return_if_fail (GS_IS_SHELL_DETAILS (self));
+	g_return_val_if_fail (GS_IS_SHELL_DETAILS (self), TRUE);
 
 	self->shell = shell;
 
@@ -2116,12 +2118,7 @@ gs_shell_details_setup (GsShellDetails *self,
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_details), adj);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+	return TRUE;
 }
 
 static void
@@ -2154,6 +2151,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	page_class->app_removed = gs_shell_details_app_removed;
 	page_class->switch_to = gs_shell_details_switch_to;
 	page_class->reload = gs_shell_details_reload;
+	page_class->setup = gs_shell_details_setup;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-details.ui");
 

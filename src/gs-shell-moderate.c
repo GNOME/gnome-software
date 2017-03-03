@@ -37,7 +37,6 @@ struct _GsShellModerate
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
@@ -237,26 +236,25 @@ gs_shell_moderate_list_header_func (GtkListBoxRow *row,
 	}
 }
 
-void
-gs_shell_moderate_setup (GsShellModerate *self,
+static gboolean
+gs_shell_moderate_setup (GsPage *page,
 			  GsShell *shell,
 			  GsPluginLoader *plugin_loader,
 			  GtkBuilder *builder,
-			  GCancellable *cancellable)
+			  GCancellable *cancellable,
+			  GError **error)
 {
-	g_return_if_fail (GS_IS_SHELL_MODERATE (self));
+	GsShellModerate *self = GS_SHELL_MODERATE (page);
+	g_return_val_if_fail (GS_IS_SHELL_MODERATE (self), TRUE);
 
 	self->shell = shell;
 	self->plugin_loader = g_object_ref (plugin_loader);
-	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_install),
 				      gs_shell_moderate_list_header_func,
 				      self, NULL);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self), shell, plugin_loader, cancellable);
+	return TRUE;
 }
 
 static void
@@ -268,7 +266,6 @@ gs_shell_moderate_dispose (GObject *object)
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_button);
 
-	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 
@@ -285,6 +282,7 @@ gs_shell_moderate_class_init (GsShellModerateClass *klass)
 	object_class->dispose = gs_shell_moderate_dispose;
 	page_class->switch_to = gs_shell_moderate_switch_to;
 	page_class->reload = gs_shell_moderate_reload;
+	page_class->setup = gs_shell_moderate_setup;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-moderate.ui");
 

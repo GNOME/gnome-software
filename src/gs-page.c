@@ -630,18 +630,26 @@ gs_page_reload (GsPage *page)
 	klass->reload (page);
 }
 
-void
+gboolean
 gs_page_setup (GsPage *page,
                GsShell *shell,
                GsPluginLoader *plugin_loader,
-               GCancellable *cancellable)
+               GtkBuilder *builder,
+               GCancellable *cancellable,
+               GError **error)
 {
+	GsPageClass *klass;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 
-	g_return_if_fail (GS_IS_PAGE (page));
+	g_return_val_if_fail (GS_IS_PAGE (page), FALSE);
+
+	klass = GS_PAGE_GET_CLASS (page);
+	g_assert (klass->setup != NULL);
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->shell = shell;
+
+	return klass->setup (page, shell, plugin_loader, builder, cancellable, error);
 }
 
 static void

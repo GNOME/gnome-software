@@ -1281,16 +1281,18 @@ gs_shell_updates_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
 	g_cancellable_cancel (self->cancellable_upgrade_download);
 }
 
-void
-gs_shell_updates_setup (GsShellUpdates *self,
+static gboolean
+gs_shell_updates_setup (GsPage *page,
 			GsShell *shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
-			GCancellable *cancellable)
+			GCancellable *cancellable,
+			GError **error)
 {
+	GsShellUpdates *self = GS_SHELL_UPDATES (page);
 	AtkObject *accessible;
 
-	g_return_if_fail (GS_IS_SHELL_UPDATES (self));
+	g_return_val_if_fail (GS_IS_SHELL_UPDATES (self), TRUE);
 
 	self->shell = shell;
 
@@ -1367,12 +1369,7 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	/* set initial state */
 	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader))
 		self->state = GS_SHELL_UPDATES_STATE_MANAGED;
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+	return TRUE;
 }
 
 static void
@@ -1404,6 +1401,7 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 	object_class->dispose = gs_shell_updates_dispose;
 	page_class->switch_to = gs_shell_updates_switch_to;
 	page_class->reload = gs_shell_updates_reload;
+	page_class->setup = gs_shell_updates_setup;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-updates.ui");
 

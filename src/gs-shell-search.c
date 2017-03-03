@@ -389,14 +389,17 @@ gs_shell_search_app_removed (GsPage *page, GsApp *app)
 	gs_shell_search_reload (page);
 }
 
-void
-gs_shell_search_setup (GsShellSearch *self,
+static gboolean
+gs_shell_search_setup (GsPage *page,
 		       GsShell *shell,
 			  GsPluginLoader *plugin_loader,
 			  GtkBuilder *builder,
-			  GCancellable *cancellable)
+			  GCancellable *cancellable,
+			  GError **error)
 {
-	g_return_if_fail (GS_IS_SHELL_SEARCH (self));
+	GsShellSearch *self = GS_SHELL_SEARCH (page);
+
+	g_return_val_if_fail (GS_IS_SHELL_SEARCH (self), TRUE);
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->builder = g_object_ref (builder);
@@ -417,12 +420,7 @@ gs_shell_search_setup (GsShellSearch *self,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_search),
 				    gs_shell_search_sort_func,
 				    self, NULL);
-
-	/* chain up */
-	gs_page_setup (GS_PAGE (self),
-	               shell,
-	               plugin_loader,
-	               cancellable);
+	return TRUE;
 }
 
 static void
@@ -466,6 +464,7 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 	page_class->app_removed = gs_shell_search_app_removed;
 	page_class->switch_to = gs_shell_search_switch_to;
 	page_class->reload = gs_shell_search_reload;
+	page_class->setup = gs_shell_search_setup;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-search.ui");
 

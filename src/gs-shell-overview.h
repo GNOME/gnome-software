@@ -44,12 +44,6 @@ struct _GsShellOverviewClass
 };
 
 GsShellOverview	*gs_shell_overview_new		(void);
-void		 gs_shell_overview_invalidate	(GsShellOverview	*self);
-void		 gs_shell_overview_setup	(GsShellOverview	*self,
-						 GsShell		*shell,
-						 GsPluginLoader		*plugin_loader,
-						 GtkBuilder		*builder,
-						 GCancellable		*cancellable);
 void		 gs_shell_overview_set_category	(GsShellOverview	*self,
 						 const gchar		*category);
 
