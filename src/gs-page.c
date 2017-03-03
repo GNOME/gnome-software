@@ -610,14 +610,27 @@ void
 gs_page_switch_to (GsPage *page,
                    gboolean scroll_up)
 {
-	GsPageClass *klass;
+	GsPageClass *klass = GS_PAGE_GET_CLASS (page);
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	priv->is_active = TRUE;
+	if (klass->switch_to != NULL)
+		klass->switch_to (page, scroll_up);
+}
 
-	g_return_if_fail (GS_IS_PAGE (page));
-
-	klass = GS_PAGE_GET_CLASS (page);
-	g_assert (klass->switch_to != NULL);
-
-	klass->switch_to (page, scroll_up);
+/**
+ * gs_page_switch_from:
+ *
+ * Pure virtual method that subclasses have to override to show page specific
+ * widgets.
+ */
+void
+gs_page_switch_from (GsPage *page)
+{
+	GsPageClass *klass = GS_PAGE_GET_CLASS (page);
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	priv->is_active = FALSE;
+	if (klass->switch_from != NULL)
+		klass->switch_from (page);
 }
 
 void

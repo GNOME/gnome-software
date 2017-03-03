@@ -78,6 +78,7 @@ typedef struct
 	gchar			*events_info_uri;
 	gboolean		 profile_mode;
 	gboolean		 in_mode_change;
+	GsPage			*page_last;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -360,6 +361,10 @@ gs_shell_change_mode (GsShell *shell,
 				!g_queue_is_empty (priv->back_entry_stack));
 
 	priv->in_mode_change = TRUE;
+
+	if (priv->page_last)
+		gs_page_switch_from (priv->page_last);
+	g_set_object (&priv->page_last, page);
 	gs_page_switch_to (page, scroll_up);
 	priv->in_mode_change = FALSE;
 
@@ -1898,6 +1903,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);
+	g_clear_object (&priv->page_last);
 	g_clear_pointer (&priv->pages, (GDestroyNotify) g_hash_table_unref);
 	g_clear_pointer (&priv->events_info_uri, (GDestroyNotify) g_free);
 	g_clear_pointer (&priv->modal_dialogs, (GDestroyNotify) g_ptr_array_unref);
