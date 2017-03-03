@@ -52,6 +52,7 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
     argv.append(repodir)
     argv.append(os.path.join(srcdir, appid))
     argv.append('--update-appstream')
+    argv.append('--timestamp=2016-09-15T01:02:03')
     if is_runtime:
         argv.append('--runtime')
     subprocess.call(argv)
