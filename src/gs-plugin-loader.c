@@ -4679,7 +4679,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		if (g_task_return_error_if_cancelled (task))
 			return;
-		if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, NULL,
+		if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, job->list,
 						  cancellable, &error)) {
 			g_task_return_error (task, error);
 			return;
