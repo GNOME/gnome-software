@@ -639,9 +639,9 @@ gs_overview_page_categories_expander_up_cb (GtkButton *button, GsOverviewPage *s
 }
 
 static void
-g_overview_page_get_sources_cb (GsPluginLoader *plugin_loader,
-                                GAsyncResult *res,
-                                GsOverviewPage *self)
+gs_overview_page_get_sources_cb (GsPluginLoader *plugin_loader,
+                                 GAsyncResult *res,
+                                 GsOverviewPage *self)
 {
 	guint i;
 	g_auto(GStrv) nonfree_ids = NULL;
@@ -694,21 +694,21 @@ g_overview_page_get_sources_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-g_overview_page_rescan_proprietary_sources (GsOverviewPage *self)
+gs_overview_page_rescan_proprietary_sources (GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gs_plugin_loader_get_sources_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
 					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    priv->cancellable,
-					    (GAsyncReadyCallback) g_overview_page_get_sources_cb,
+					    (GAsyncReadyCallback) gs_overview_page_get_sources_cb,
 					    self);
 }
 
 static void
-g_overview_page_proprietary_response_cb (GtkInfoBar *info_bar,
-                                         gint response_id,
-                                         GsOverviewPage *self)
+gs_overview_page_proprietary_response_cb (GtkInfoBar *info_bar,
+                                          gint response_id,
+                                          GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	g_settings_set_boolean (priv->settings, "show-nonfree-prompt", FALSE);
@@ -721,7 +721,7 @@ g_overview_page_proprietary_response_cb (GtkInfoBar *info_bar,
 	g_settings_set_boolean (priv->settings, "show-nonfree-software", TRUE);
 
 	/* actually call into the plugin loader and do the action */
-	g_overview_page_rescan_proprietary_sources (self);
+	gs_overview_page_rescan_proprietary_sources (self);
 }
 
 static void
@@ -790,7 +790,7 @@ gs_overview_page_setup (GsPage *page,
 				 /* TRANSLATORS: button to turn on proprietary software sources */
 				 _("Enable"), GTK_RESPONSE_YES);
 	g_signal_connect (priv->infobar_proprietary, "response",
-			  G_CALLBACK (g_overview_page_proprietary_response_cb), self);
+			  G_CALLBACK (gs_overview_page_proprietary_response_cb), self);
 
 	/* avoid a ref cycle */
 	priv->shell = shell;
