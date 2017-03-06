@@ -19,31 +19,36 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_SEARCH_H
-#define __GS_SHELL_SEARCH_H
+#ifndef __GS_OVERVIEW_PAGE_H
+#define __GS_OVERVIEW_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
 #include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_SEARCH (gs_shell_search_get_type ())
+#define GS_TYPE_OVERVIEW_PAGE (gs_overview_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellSearch, gs_shell_search, GS, SHELL_SEARCH, GsPage)
+G_DECLARE_DERIVABLE_TYPE (GsOverviewPage, gs_overview_page, GS, OVERVIEW_PAGE, GsPage)
 
-GsShellSearch	*gs_shell_search_new		(void);
-void		 gs_shell_search_set_appid_to_show (GsShellSearch	*self,
-						 const gchar		*appid);
-const gchar	*gs_shell_search_get_text	(GsShellSearch		*self);
-void		 gs_shell_search_set_text	(GsShellSearch		*self,
-						 const gchar		*value);
+struct _GsOverviewPageClass
+{
+	GsPageClass		 parent_class;
+
+	void	(*refreshed)	(GsOverviewPage *self);
+};
+
+GsOverviewPage	*gs_overview_page_new		(void);
+void		 gs_overview_page_set_category	(GsOverviewPage		*self,
+						 const gchar		*category);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_SEARCH_H */
+#endif /* __GS_OVERVIEW_PAGE_H */
 
 /* vim: set noexpandtab: */

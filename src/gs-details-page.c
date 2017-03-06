@@ -29,7 +29,7 @@
 #include "gs-common.h"
 #include "gs-content-rating.h"
 
-#include "gs-shell-details.h"
+#include "gs-details-page.h"
 #include "gs-app-private.h"
 #include "gs-app-addon-row.h"
 #include "gs-auth-dialog.h"
@@ -43,15 +43,15 @@
 /* the number of reviews to show before clicking the 'More Reviews' button */
 #define SHOW_NR_REVIEWS_INITIAL		4
 
-static void gs_shell_details_refresh_all (GsShellDetails *self);
+static void gs_details_page_refresh_all (GsDetailsPage *self);
 
 typedef enum {
-	GS_SHELL_DETAILS_STATE_LOADING,
-	GS_SHELL_DETAILS_STATE_READY,
-	GS_SHELL_DETAILS_STATE_FAILED
-} GsShellDetailsState;
+	GS_DETAILS_PAGE_STATE_LOADING,
+	GS_DETAILS_PAGE_STATE_READY,
+	GS_DETAILS_PAGE_STATE_FAILED
+} GsDetailsPageState;
 
-struct _GsShellDetails
+struct _GsDetailsPage
 {
 	GsPage			 parent_instance;
 
@@ -144,20 +144,20 @@ struct _GsShellDetails
 	GtkWidget		*label_details_rating_title;
 };
 
-G_DEFINE_TYPE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
 static void
-gs_shell_details_set_state (GsShellDetails *self,
-			    GsShellDetailsState state)
+gs_details_page_set_state (GsDetailsPage *self,
+                           GsDetailsPageState state)
 {
 	/* spinner */
 	switch (state) {
-	case GS_SHELL_DETAILS_STATE_LOADING:
+	case GS_DETAILS_PAGE_STATE_LOADING:
 		gs_start_spinner (GTK_SPINNER (self->spinner_details));
 		gtk_widget_show (self->spinner_details);
 		break;
-	case GS_SHELL_DETAILS_STATE_READY:
-	case GS_SHELL_DETAILS_STATE_FAILED:
+	case GS_DETAILS_PAGE_STATE_READY:
+	case GS_DETAILS_PAGE_STATE_FAILED:
 		gs_stop_spinner (GTK_SPINNER (self->spinner_details));
 		gtk_widget_hide (self->spinner_details);
 		break;
@@ -167,13 +167,13 @@ gs_shell_details_set_state (GsShellDetails *self,
 
 	/* stack */
 	switch (state) {
-	case GS_SHELL_DETAILS_STATE_LOADING:
+	case GS_DETAILS_PAGE_STATE_LOADING:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_details), "spinner");
 		break;
-	case GS_SHELL_DETAILS_STATE_READY:
+	case GS_DETAILS_PAGE_STATE_READY:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_details), "ready");
 		break;
-	case GS_SHELL_DETAILS_STATE_FAILED:
+	case GS_DETAILS_PAGE_STATE_FAILED:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_details), "failed");
 		break;
 	default:
@@ -182,7 +182,7 @@ gs_shell_details_set_state (GsShellDetails *self,
 }
 
 static void
-gs_shell_details_update_shortcut_button (GsShellDetails *self)
+gs_details_page_update_shortcut_button (GsDetailsPage *self)
 {
 	gboolean add_shortcut_func;
 	gboolean remove_shortcut_func;
@@ -231,9 +231,9 @@ gs_shell_details_update_shortcut_button (GsShellDetails *self)
 }
 
 static void
-gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
+gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 {
-	GsShellDetails *self = GS_SHELL_DETAILS (page);
+	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	AsAppState state;
 	GtkWidget *widget;
 	GtkStyleContext *sc;
@@ -387,7 +387,7 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 }
 
 static void
-gs_shell_details_refresh_progress (GsShellDetails *self)
+gs_details_page_refresh_progress (GsDetailsPage *self)
 {
 	guint percentage;
 	AsAppState state;
@@ -467,49 +467,49 @@ gs_shell_details_refresh_progress (GsShellDetails *self)
 }
 
 static gboolean
-gs_shell_details_refresh_progress_idle (gpointer user_data)
+gs_details_page_refresh_progress_idle (gpointer user_data)
 {
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
-	gs_shell_details_refresh_progress (self);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	gs_details_page_refresh_progress (self);
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
 }
 
 static void
-gs_shell_details_progress_changed_cb (GsApp *app,
-                                      GParamSpec *pspec,
-                                      GsShellDetails *self)
+gs_details_page_progress_changed_cb (GsApp *app,
+                                     GParamSpec *pspec,
+                                     GsDetailsPage *self)
 {
-	g_idle_add (gs_shell_details_refresh_progress_idle, g_object_ref (self));
+	g_idle_add (gs_details_page_refresh_progress_idle, g_object_ref (self));
 }
 
 static gboolean
-gs_shell_details_switch_to_idle (gpointer user_data)
+gs_details_page_switch_to_idle (gpointer user_data)
 {
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
 		gs_page_switch_to (GS_PAGE (self), TRUE);
 
 	/* update widgets */
-	gs_shell_details_refresh_all (self);
+	gs_details_page_refresh_all (self);
 
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
 }
 
 static void
-gs_shell_details_notify_state_changed_cb (GsApp *app,
-					  GParamSpec *pspec,
-					  GsShellDetails *self)
+gs_details_page_notify_state_changed_cb (GsApp *app,
+                                         GParamSpec *pspec,
+                                         GsDetailsPage *self)
 {
-	g_idle_add (gs_shell_details_switch_to_idle, g_object_ref (self));
+	g_idle_add (gs_details_page_switch_to_idle, g_object_ref (self));
 }
 
 static void
-gs_shell_details_screenshot_selected_cb (GtkListBox *list,
-					 GtkListBoxRow *row,
-					 GsShellDetails *self)
+gs_details_page_screenshot_selected_cb (GtkListBox *list,
+                                        GtkListBoxRow *row,
+                                        GsDetailsPage *self)
 {
 	GsScreenshotImage *ssmain;
 	GsScreenshotImage *ssthumb;
@@ -529,7 +529,7 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 }
 
 static void
-gs_shell_details_refresh_screenshots (GsShellDetails *self)
+gs_details_page_refresh_screenshots (GsDetailsPage *self)
 {
 	GPtrArray *screenshots;
 	AsScreenshot *ss;
@@ -643,18 +643,18 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	gtk_list_box_select_row (GTK_LIST_BOX (list),
 				 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
 	g_signal_connect (list, "row-selected",
-			  G_CALLBACK (gs_shell_details_screenshot_selected_cb),
+			  G_CALLBACK (gs_details_page_screenshot_selected_cb),
 			  self);
 }
 
 static void
-gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_website_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	gs_app_show_url (self->app, AS_URL_KIND_HOMEPAGE);
 }
 
 static void
-gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
+gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 {
 	GtkStyleContext *style_context;
 	GtkWidget *para;
@@ -704,7 +704,7 @@ gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 }
 
 static void
-gs_shell_details_set_sensitive (GtkWidget *widget, gboolean is_active)
+gs_details_page_set_sensitive (GtkWidget *widget, gboolean is_active)
 {
 	GtkStyleContext *style_context;
 	style_context = gtk_widget_get_style_context (widget);
@@ -716,9 +716,9 @@ gs_shell_details_set_sensitive (GtkWidget *widget, gboolean is_active)
 }
 
 static gboolean
-gs_shell_details_history_cb (GtkLabel *label,
-			     gchar *uri,
-			     GsShellDetails *self)
+gs_details_page_history_cb (GtkLabel *label,
+                            gchar *uri,
+                            GsDetailsPage *self)
 {
 	GtkWidget *dialog;
 
@@ -734,7 +734,7 @@ gs_shell_details_history_cb (GtkLabel *label,
 }
 
 static void
-gs_shell_details_refresh_all (GsShellDetails *self)
+gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
@@ -769,7 +769,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);
-	gs_shell_details_set_description (self, tmp);
+	gs_details_page_set_description (self, tmp);
 
 	/* set the icon */
 	pixbuf = gs_app_get_pixbuf (self->app);
@@ -909,22 +909,22 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	kudos = gs_app_get_kudos (self->app);
 	ret = (kudos & GS_APP_KUDO_MY_LANGUAGE) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_translated, ret);
-	gs_shell_details_set_sensitive (self->label_details_kudo_translated, ret);
+	gs_details_page_set_sensitive (self->label_details_kudo_translated, ret);
 
 	/* set RecentRelease kudo */
 	ret = (kudos & GS_APP_KUDO_RECENT_RELEASE) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_updated, ret);
-	gs_shell_details_set_sensitive (self->label_details_kudo_updated, ret);
+	gs_details_page_set_sensitive (self->label_details_kudo_updated, ret);
 
 	/* set UserDocs kudo */
 	ret = (kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_docs, ret);
-	gs_shell_details_set_sensitive (self->label_details_kudo_docs, ret);
+	gs_details_page_set_sensitive (self->label_details_kudo_docs, ret);
 
 	/* set sandboxed kudo */
 	ret = (kudos & GS_APP_KUDO_SANDBOXED) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_sandboxed, ret);
-	gs_shell_details_set_sensitive (self->label_details_kudo_sandboxed, ret);
+	gs_details_page_set_sensitive (self->label_details_kudo_sandboxed, ret);
 
 	/* any of the various integration kudos */
 	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
@@ -933,7 +933,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			      GS_APP_KUDO_HIGH_CONTRAST;
 	ret = (kudos & user_integration_bf) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);
-	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
+	gs_details_page_set_sensitive (self->label_details_kudo_integration, ret);
 
 	/* hide the kudo details for non-desktop software */
 	switch (gs_app_get_kind (self->app)) {
@@ -1002,10 +1002,10 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		break;
 	}
 
-	gs_shell_details_update_shortcut_button (self);
+	gs_details_page_update_shortcut_button (self);
 
 	/* update progress */
-	gs_shell_details_refresh_progress (self);
+	gs_details_page_refresh_progress (self);
 
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
 	gtk_widget_set_visible (self->box_addons, addons != NULL);
@@ -1035,10 +1035,10 @@ list_sort_func (GtkListBoxRow *a,
 			  gs_app_get_name (a2));
 }
 
-static void gs_shell_details_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsShellDetails *self);
+static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
 
 static void
-gs_shell_details_refresh_addons (GsShellDetails *self)
+gs_details_page_refresh_addons (GsDetailsPage *self)
 {
 	GPtrArray *addons;
 	guint i;
@@ -1060,22 +1060,22 @@ gs_shell_details_refresh_addons (GsShellDetails *self)
 		gtk_widget_show (row);
 
 		g_signal_connect (row, "notify::selected",
-				  G_CALLBACK (gs_shell_details_addon_selected_cb),
+				  G_CALLBACK (gs_details_page_addon_selected_cb),
 				  self);
 	}
 }
 
-static void gs_shell_details_refresh_reviews (GsShellDetails *self);
+static void gs_details_page_refresh_reviews (GsDetailsPage *self);
 
 typedef struct {
-	GsShellDetails		*self;
+	GsDetailsPage		*self;
 	AsReview		*review;
 	GsApp			*app;
 	GsPluginAction		 action;
-} GsShellDetailsReviewHelper;
+} GsDetailsPageReviewHelper;
 
 static void
-gs_shell_details_review_helper_free (GsShellDetailsReviewHelper *helper)
+gs_details_page_review_helper_free (GsDetailsPageReviewHelper *helper)
 {
 	g_object_unref (helper->self);
 	g_object_unref (helper->review);
@@ -1083,23 +1083,23 @@ gs_shell_details_review_helper_free (GsShellDetailsReviewHelper *helper)
 	g_free (helper);
 }
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsShellDetailsReviewHelper, gs_shell_details_review_helper_free);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsDetailsPageReviewHelper, gs_details_page_review_helper_free);
 
 static void
-gs_shell_details_app_set_review_cb (GObject *source,
-				    GAsyncResult *res,
-				    gpointer user_data);
+gs_details_page_app_set_review_cb (GObject *source,
+                                   GAsyncResult *res,
+                                   gpointer user_data);
 
 static void
-gs_shell_details_authenticate_cb (GtkDialog *dialog,
-				  GtkResponseType response_type,
-				  GsShellDetailsReviewHelper *helper)
+gs_details_page_authenticate_cb (GtkDialog *dialog,
+                                 GtkResponseType response_type,
+                                 GsDetailsPageReviewHelper *helper)
 {
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	if (response_type != GTK_RESPONSE_OK) {
-		gs_shell_details_review_helper_free (helper);
+		gs_details_page_review_helper_free (helper);
 		return;
 	}
 	gs_plugin_loader_review_action_async (helper->self->plugin_loader,
@@ -1109,17 +1109,17 @@ gs_shell_details_authenticate_cb (GtkDialog *dialog,
 					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
 					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      helper->self->cancellable,
-					      gs_shell_details_app_set_review_cb,
+					      gs_details_page_app_set_review_cb,
 					      helper);
 }
 
 static void
-gs_shell_details_app_set_review_cb (GObject *source,
-				    GAsyncResult *res,
-				    gpointer user_data)
+gs_details_page_app_set_review_cb (GObject *source,
+                                   GAsyncResult *res,
+                                   gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GsShellDetailsReviewHelper) helper = (GsShellDetailsReviewHelper *) user_data;
+	g_autoptr(GsDetailsPageReviewHelper) helper = (GsDetailsPageReviewHelper *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
@@ -1139,7 +1139,7 @@ gs_shell_details_app_set_review_cb (GObject *source,
 			}
 			gs_shell_modal_dialog_present (helper->self->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
-					  G_CALLBACK (gs_shell_details_authenticate_cb),
+					  G_CALLBACK (gs_details_page_authenticate_cb),
 					  g_steal_pointer (&helper));
 			return;
 		}
@@ -1147,15 +1147,15 @@ gs_shell_details_app_set_review_cb (GObject *source,
 			   gs_app_get_id (helper->app), error->message);
 		return;
 	}
-	gs_shell_details_refresh_reviews (helper->self);
+	gs_details_page_refresh_reviews (helper->self);
 }
 
 static void
-gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
-					   GsPluginAction action,
-					   GsShellDetails *self)
+gs_details_page_review_button_clicked_cb (GsReviewRow *row,
+                                          GsPluginAction action,
+                                          GsDetailsPage *self)
 {
-	GsShellDetailsReviewHelper *helper = g_new0 (GsShellDetailsReviewHelper, 1);
+	GsDetailsPageReviewHelper *helper = g_new0 (GsDetailsPageReviewHelper, 1);
 	helper->self = g_object_ref (self);
 	helper->app = g_object_ref (self->app);
 	helper->review = g_object_ref (gs_review_row_get_review (row));
@@ -1167,12 +1167,12 @@ gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
 					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
 					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      self->cancellable,
-					      gs_shell_details_app_set_review_cb,
+					      gs_details_page_app_set_review_cb,
 					      helper);
 }
 
 static void
-gs_shell_details_refresh_reviews (GsShellDetails *self)
+gs_details_page_refresh_reviews (GsDetailsPage *self)
 {
 	GArray *review_ratings = NULL;
 	GPtrArray *reviews;
@@ -1267,7 +1267,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		guint64 actions;
 
 		g_signal_connect (row, "button-clicked",
-				  G_CALLBACK (gs_shell_details_review_button_clicked_cb), self);
+				  G_CALLBACK (gs_details_page_review_button_clicked_cb), self);
 		if (as_review_get_flags (review) & AS_REVIEW_FLAG_SELF) {
 			actions = possible_actions & 1 << GS_PLUGIN_ACTION_REVIEW_REMOVE;
 			show_review_button = FALSE;
@@ -1299,12 +1299,12 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 }
 
 static void
-gs_shell_details_app_refine2_cb (GObject *source,
+gs_details_page_app_refine2_cb (GObject *source,
 				GAsyncResult *res,
 				gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to refine %s: %s",
@@ -1312,14 +1312,14 @@ gs_shell_details_app_refine2_cb (GObject *source,
 			   error->message);
 		return;
 	}
-	gs_shell_details_refresh_reviews (self);
+	gs_details_page_refresh_reviews (self);
 
 	/* seems a good place */
 	gs_shell_profile_dump (self->shell);
 }
 
 static void
-gs_shell_details_app_refine2 (GsShellDetails *self)
+gs_details_page_app_refine2 (GsDetailsPage *self)
 {
 	gs_plugin_loader_app_refine_async (self->plugin_loader, self->app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
@@ -1327,12 +1327,12 @@ gs_shell_details_app_refine2 (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
 					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
-					   gs_shell_details_app_refine2_cb,
+					   gs_details_page_app_refine2_cb,
 					   self);
 }
 
 static void
-gs_shell_details_content_rating_set_css (GtkWidget *widget, guint age)
+gs_details_page_content_rating_set_css (GtkWidget *widget, guint age)
 {
 	g_autoptr(GString) css = g_string_new (NULL);
 	const gchar *color_bg = NULL;
@@ -1354,7 +1354,7 @@ gs_shell_details_content_rating_set_css (GtkWidget *widget, guint age)
 }
 
 static void
-gs_shell_details_refresh_content_rating (GsShellDetails *self)
+gs_details_page_refresh_content_rating (GsDetailsPage *self)
 {
 	AsContentRating *content_rating;
 	GsContentRatingSystem system;
@@ -1386,7 +1386,7 @@ gs_shell_details_refresh_content_rating (GsShellDetails *self)
 		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), display);
 		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
 		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
-		gs_shell_details_content_rating_set_css (self->button_details_rating_value, age);
+		gs_details_page_content_rating_set_css (self->button_details_rating_value, age);
 	} else {
 		gtk_widget_set_visible (self->button_details_rating_value, FALSE);
 		gtk_widget_set_visible (self->label_details_rating_title, FALSE);
@@ -1394,12 +1394,12 @@ gs_shell_details_refresh_content_rating (GsShellDetails *self)
 }
 
 static void
-gs_shell_details_app_refine_cb (GObject *source,
-				GAsyncResult *res,
-				gpointer user_data)
+gs_details_page_app_refine_cb (GObject *source,
+                               GAsyncResult *res,
+                               gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *app_dump = NULL;
@@ -1421,7 +1421,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 		id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
 		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
-		gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_FAILED);
+		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
 		return;
 	}
 
@@ -1429,31 +1429,31 @@ gs_shell_details_app_refine_cb (GObject *source,
 	app_dump = gs_app_to_string (self->app);
 	g_debug ("%s", app_dump);
 
-	gs_shell_details_refresh_screenshots (self);
-	gs_shell_details_refresh_addons (self);
-	gs_shell_details_refresh_reviews (self);
-	gs_shell_details_refresh_all (self);
-	gs_shell_details_refresh_content_rating (self);
-	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
+	gs_details_page_refresh_screenshots (self);
+	gs_details_page_refresh_addons (self);
+	gs_details_page_refresh_reviews (self);
+	gs_details_page_refresh_all (self);
+	gs_details_page_refresh_content_rating (self);
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
 
 	/* do 2nd stage refine */
-	gs_shell_details_app_refine2 (self);
+	gs_details_page_app_refine2 (self);
 }
 
 static void
-gs_shell_details_file_to_app_cb (GObject *source,
-				 GAsyncResult *res,
-				 gpointer user_data)
+gs_details_page_file_to_app_cb (GObject *source,
+                                GAsyncResult *res,
+                                gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *tmp = NULL;
 
 	/* disconnect the old handlers */
 	if (self->app != NULL) {
-		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_notify_state_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_progress_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
 	}
 
 	/* save app */
@@ -1469,16 +1469,16 @@ gs_shell_details_file_to_app_cb (GObject *source,
 	}
 
 	g_signal_connect_object (self->app, "notify::state",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::size",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::license",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
-				 G_CALLBACK (gs_shell_details_progress_changed_cb),
+				 G_CALLBACK (gs_details_page_progress_changed_cb),
 				 self, 0);
 
 	/* print what we've got */
@@ -1487,21 +1487,21 @@ gs_shell_details_file_to_app_cb (GObject *source,
 
 	/* change widgets */
 	gs_page_switch_to (GS_PAGE (self), TRUE);
-	gs_shell_details_refresh_screenshots (self);
-	gs_shell_details_refresh_addons (self);
-	gs_shell_details_refresh_reviews (self);
-	gs_shell_details_refresh_all (self);
-	gs_shell_details_refresh_content_rating (self);
-	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
+	gs_details_page_refresh_screenshots (self);
+	gs_details_page_refresh_addons (self);
+	gs_details_page_refresh_reviews (self);
+	gs_details_page_refresh_all (self);
+	gs_details_page_refresh_content_rating (self);
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
 
 	/* do 2nd stage refine */
-	gs_shell_details_app_refine2 (self);
+	gs_details_page_app_refine2 (self);
 }
 
 void
-gs_shell_details_set_local_file (GsShellDetails *self, GFile *file)
+gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 {
-	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_LOADING);
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	gs_plugin_loader_file_to_app_async (self->plugin_loader,
 					    file,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -1519,14 +1519,14 @@ gs_shell_details_set_local_file (GsShellDetails *self, GFile *file)
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
 					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    self->cancellable,
-					    gs_shell_details_file_to_app_cb,
+					    gs_details_page_file_to_app_cb,
 					    self);
 }
 
 void
-gs_shell_details_set_url (GsShellDetails *self, const gchar *url)
+gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 {
-	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_LOADING);
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	gs_plugin_loader_url_to_app_async (self->plugin_loader,
 					   url,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -1544,12 +1544,12 @@ gs_shell_details_set_url (GsShellDetails *self, const gchar *url)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
 					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
-					   gs_shell_details_file_to_app_cb,
+					   gs_details_page_file_to_app_cb,
 					   self);
 }
 
 static void
-gs_shell_details_load (GsShellDetails *self)
+gs_details_page_load (GsDetailsPage *self)
 {
 	gs_plugin_loader_app_refine_async (self->plugin_loader, self->app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -1568,41 +1568,41 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
 					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
-					   gs_shell_details_app_refine_cb,
+					   gs_details_page_app_refine_cb,
 					   self);
 }
 
 static void
-gs_shell_details_reload (GsPage *page)
+gs_details_page_reload (GsPage *page)
 {
-	GsShellDetails *self = GS_SHELL_DETAILS (page);
+	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	if (self->app != NULL)
-		gs_shell_details_load (self);
+		gs_details_page_load (self);
 }
 
 static void
-settings_changed_cb (GsShellDetails *self,
+settings_changed_cb (GsDetailsPage *self,
 		     const gchar *key,
 		     gpointer data)
 {
 	if (g_strcmp0 (key, "show-nonfree-ui") == 0) {
-		gs_shell_details_refresh_all (self);
+		gs_details_page_refresh_all (self);
 	}
 }
 
 void
-gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
+gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 {
-	g_return_if_fail (GS_IS_SHELL_DETAILS (self));
+	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* get extra details about the app */
-	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_LOADING);
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 
 	/* disconnect the old handlers */
 	if (self->app != NULL) {
-		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_notify_state_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_progress_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->settings,
 						      settings_changed_cb,
 						      self);
@@ -1611,24 +1611,24 @@ gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
 	g_set_object (&self->app, app);
 
 	g_signal_connect_object (self->app, "notify::state",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::size",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::license",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::quirk",
-				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
-				 G_CALLBACK (gs_shell_details_progress_changed_cb),
+				 G_CALLBACK (gs_details_page_progress_changed_cb),
 				 self, 0);
-	gs_shell_details_load (self);
+	gs_details_page_load (self);
 
 	/* change widgets */
-	gs_shell_details_refresh_all (self);
+	gs_details_page_refresh_all (self);
 
 	g_signal_connect_swapped (self->settings, "changed",
 				  G_CALLBACK (settings_changed_cb),
@@ -1636,13 +1636,13 @@ gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
 }
 
 GsApp *
-gs_shell_details_get_app (GsShellDetails *self)
+gs_details_page_get_app (GsDetailsPage *self)
 {
 	return self->app;
 }
 
 static void
-gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_app_remove_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_set_object (&self->cancellable, cancellable);
@@ -1650,14 +1650,14 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 static void
-gs_shell_details_app_cancel_button_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_cancellable_cancel (self->cancellable);
 	gtk_widget_set_sensitive (widget, FALSE);
 }
 
 static void
-gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	GList *l;
 	g_autoptr(GList) addons = NULL;
@@ -1686,9 +1686,9 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 static void
-gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
-				    GParamSpec *pspec,
-				    GsShellDetails *self)
+gs_details_page_addon_selected_cb (GsAppAddonRow *row,
+                                   GParamSpec *pspec,
+                                   GsDetailsPage *self)
 {
 	GsApp *addon;
 
@@ -1708,8 +1708,8 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 			gs_page_remove_app (GS_PAGE (self), addon, self->cancellable);
 			/* make sure the addon checkboxes are synced if the
 			 * user clicks cancel in the remove confirmation dialog */
-			gs_shell_details_refresh_addons (self);
-			gs_shell_details_refresh_all (self);
+			gs_details_page_refresh_addons (self);
+			gs_details_page_refresh_all (self);
 		}
 		break;
 	default:
@@ -1718,7 +1718,7 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 }
 
 static void
-gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_app_launch_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 
@@ -1731,8 +1731,8 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 static void
-gs_shell_details_app_add_shortcut_button_cb (GtkWidget *widget,
-					     GsShellDetails *self)
+gs_details_page_app_add_shortcut_button_cb (GtkWidget *widget,
+                                            GsDetailsPage *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_set_object (&self->cancellable, cancellable);
@@ -1740,8 +1740,8 @@ gs_shell_details_app_add_shortcut_button_cb (GtkWidget *widget,
 }
 
 static void
-gs_shell_details_app_remove_shortcut_button_cb (GtkWidget *widget,
-						GsShellDetails *self)
+gs_details_page_app_remove_shortcut_button_cb (GtkWidget *widget,
+                                               GsDetailsPage *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_set_object (&self->cancellable, cancellable);
@@ -1749,14 +1749,14 @@ gs_shell_details_app_remove_shortcut_button_cb (GtkWidget *widget,
 }
 
 static void
-gs_shell_details_review_response_cb (GtkDialog *dialog,
-				     gint response,
-				     GsShellDetails *self)
+gs_details_page_review_response_cb (GtkDialog *dialog,
+                                    gint response,
+                                    GsDetailsPage *self)
 {
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(AsReview) review = NULL;
-	GsShellDetailsReviewHelper *helper;
+	GsDetailsPageReviewHelper *helper;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
 
 	/* not agreed */
@@ -1775,7 +1775,7 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 	as_review_set_date (review, now);
 
 	/* call into the plugins to set the new value */
-	helper = g_new0 (GsShellDetailsReviewHelper, 1);
+	helper = g_new0 (GsDetailsPageReviewHelper, 1);
 	helper->self = g_object_ref (self);
 	helper->app = g_object_ref (self->app);
 	helper->review = g_object_ref (review);
@@ -1787,7 +1787,7 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
 					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					      self->cancellable,
-					      gs_shell_details_app_set_review_cb,
+					      gs_details_page_app_set_review_cb,
 					      helper);
 
 	/* unmap the dialog */
@@ -1795,30 +1795,30 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 }
 
 static void
-gs_shell_details_write_review_cb (GtkButton *button,
-				  GsShellDetails *self)
+gs_details_page_write_review_cb (GtkButton *button,
+                                 GsDetailsPage *self)
 {
 	GtkWidget *dialog;
 	dialog = gs_review_dialog_new ();
 	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gs_shell_details_review_response_cb), self);
+			  G_CALLBACK (gs_details_page_review_response_cb), self);
 	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 }
 
 static void
-gs_shell_details_app_installed (GsPage *page, GsApp *app)
+gs_details_page_app_installed (GsPage *page, GsApp *app)
 {
-	gs_shell_details_reload (page);
+	gs_details_page_reload (page);
 }
 
 static void
-gs_shell_details_app_removed (GsPage *page, GsApp *app)
+gs_details_page_app_removed (GsPage *page, GsApp *app)
 {
-	gs_shell_details_reload (page);
+	gs_details_page_reload (page);
 }
 
 static void
-gs_shell_details_more_reviews_button_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	gtk_container_foreach (GTK_CONTAINER (self->list_box_reviews),
 			       (GtkCallback) gtk_widget_show, NULL);
@@ -1826,7 +1826,7 @@ gs_shell_details_more_reviews_button_cb (GtkWidget *widget, GsShellDetails *self
 }
 
 static void
-gs_shell_details_content_rating_button_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	AsContentRating *cr;
 	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
@@ -1899,18 +1899,18 @@ gs_shell_details_content_rating_button_cb (GtkWidget *widget, GsShellDetails *se
 }
 
 static gboolean
-gs_shell_details_activate_link_cb (GtkLabel *label,
-				   const gchar *uri,
-				   GsShellDetails *self)
+gs_details_page_activate_link_cb (GtkLabel *label,
+                                  const gchar *uri,
+                                  GsDetailsPage *self)
 {
 	gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, NULL);
 	return TRUE;
 }
 
 static GtkWidget *
-gs_shell_details_label_widget (GsShellDetails *self,
-			       const gchar *title,
-			       const gchar *url)
+gs_details_page_label_widget (GsDetailsPage *self,
+                              const gchar *title,
+                              const gchar *url)
 {
 	GtkWidget *w;
 	g_autofree gchar *markup = NULL;
@@ -1918,7 +1918,7 @@ gs_shell_details_label_widget (GsShellDetails *self,
 	markup = g_strdup_printf ("<a href=\"%s\">%s</a>", url, title);
 	w = gtk_label_new (markup);
 	g_signal_connect (w, "activate-link",
-			  G_CALLBACK (gs_shell_details_activate_link_cb),
+			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
 	gtk_label_set_use_markup (GTK_LABEL (w), TRUE);
 	gtk_label_set_xalign (GTK_LABEL (w), 0.f);
@@ -1927,12 +1927,12 @@ gs_shell_details_label_widget (GsShellDetails *self,
 }
 
 static GtkWidget *
-gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *token)
+gs_details_page_license_widget_for_token (GsDetailsPage *self, const gchar *token)
 {
 	/* public domain */
 	if (g_strcmp0 (token, "@LicenseRef-public-domain") == 0) {
 		/* TRANSLATORS: see the wikipedia page */
-		return gs_shell_details_label_widget (self, _("Public domain"),
+		return gs_details_page_label_widget (self, _("Public domain"),
 			"https://en.wikipedia.org/wiki/Public_domain");
 	}
 
@@ -1948,7 +1948,7 @@ gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *to
 			url = tmp + 1;
 
 		/* TRANSLATORS: see GNU page */
-		return gs_shell_details_label_widget (self, _("Free Software"), url);
+		return gs_details_page_label_widget (self, _("Free Software"), url);
 	}
 
 	/* SPDX value */
@@ -1956,7 +1956,7 @@ gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *to
 		g_autofree gchar *uri = NULL;
 		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
 				       token + 1);
-		return gs_shell_details_label_widget (self, token + 1, uri);
+		return gs_details_page_label_widget (self, token + 1, uri);
 	}
 
 	/* new SPDX value the extractor didn't know about */
@@ -1964,7 +1964,7 @@ gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *to
 		g_autofree gchar *uri = NULL;
 		uri = g_strdup_printf ("http://spdx.org/licenses/%s",
 				       token);
-		return gs_shell_details_label_widget (self, token, uri);
+		return gs_details_page_label_widget (self, token, uri);
 	}
 
 	/* nothing to show */
@@ -1972,7 +1972,7 @@ gs_shell_details_license_widget_for_token (GsShellDetails *self, const gchar *to
 }
 
 static void
-gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_license_free_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	guint cnt = 0;
 	guint i;
@@ -1993,7 +1993,7 @@ gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
 			continue;
 
 		/* add widget */
-		w = gs_shell_details_license_widget_for_token (self, tokens[i]);
+		w = gs_details_page_license_widget_for_token (self, tokens[i]);
 		if (w == NULL)
 			continue;
 		gtk_container_add (GTK_CONTAINER (self->box_details_license_list), w);
@@ -2014,7 +2014,7 @@ gs_shell_details_license_free_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 static void
-gs_shell_details_license_nonfree_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_license_nonfree_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autofree gchar *str = NULL;
 	g_autofree gchar *uri = NULL;
@@ -2027,31 +2027,31 @@ gs_shell_details_license_nonfree_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 static void
-gs_shell_details_license_unknown_cb (GtkWidget *widget, GsShellDetails *self)
+gs_details_page_license_unknown_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	gtk_widget_show (self->popover_license_unknown);
 }
 
 static void
-gs_shell_details_network_available_notify_cb (GsPluginLoader *plugin_loader,
-					      GParamSpec *pspec,
-					      GsShellDetails *self)
+gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
+                                             GParamSpec *pspec,
+                                             GsDetailsPage *self)
 {
-	gs_shell_details_refresh_reviews (self);
+	gs_details_page_refresh_reviews (self);
 }
 
 static gboolean
-gs_shell_details_setup (GsPage *page,
-			GsShell	*shell,
-			GsPluginLoader *plugin_loader,
-			GtkBuilder *builder,
-			GCancellable *cancellable,
-			GError **error)
+gs_details_page_setup (GsPage *page,
+                       GsShell *shell,
+                       GsPluginLoader *plugin_loader,
+                       GtkBuilder *builder,
+                       GCancellable *cancellable,
+                       GError **error)
 {
-	GsShellDetails *self = GS_SHELL_DETAILS (page);
+	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
 
-	g_return_val_if_fail (GS_IS_SHELL_DETAILS (self), TRUE);
+	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
 
 	self->shell = shell;
 
@@ -2064,56 +2064,56 @@ gs_shell_details_setup (GsPage *page,
 		gs_plugin_loader_get_plugin_supported (plugin_loader,
 						       "gs_plugin_review_submit");
 	g_signal_connect (self->button_review, "clicked",
-			  G_CALLBACK (gs_shell_details_write_review_cb),
+			  G_CALLBACK (gs_details_page_write_review_cb),
 			  self);
 
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
-				 G_CALLBACK (gs_shell_details_network_available_notify_cb),
+				 G_CALLBACK (gs_details_page_network_available_notify_cb),
 				 self, 0);
 
 	/* setup details */
 	g_signal_connect (self->button_install, "clicked",
-			  G_CALLBACK (gs_shell_details_app_install_button_cb),
+			  G_CALLBACK (gs_details_page_app_install_button_cb),
 			  self);
 	g_signal_connect (self->button_remove, "clicked",
-			  G_CALLBACK (gs_shell_details_app_remove_button_cb),
+			  G_CALLBACK (gs_details_page_app_remove_button_cb),
 			  self);
 	g_signal_connect (self->button_cancel, "clicked",
-			  G_CALLBACK (gs_shell_details_app_cancel_button_cb),
+			  G_CALLBACK (gs_details_page_app_cancel_button_cb),
 			  self);
 	g_signal_connect (self->button_more_reviews, "clicked",
-			  G_CALLBACK (gs_shell_details_more_reviews_button_cb),
+			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
 			  self);
 	g_signal_connect (self->button_details_rating_value, "clicked",
-			  G_CALLBACK (gs_shell_details_content_rating_button_cb),
+			  G_CALLBACK (gs_details_page_content_rating_button_cb),
 			  self);
 	g_signal_connect (self->label_details_updated_value, "activate-link",
-			  G_CALLBACK (gs_shell_details_history_cb),
+			  G_CALLBACK (gs_details_page_history_cb),
 			  self);
 	g_signal_connect (self->button_details_launch, "clicked",
-			  G_CALLBACK (gs_shell_details_app_launch_button_cb),
+			  G_CALLBACK (gs_details_page_app_launch_button_cb),
 			  self);
 	g_signal_connect (self->button_details_add_shortcut, "clicked",
-			  G_CALLBACK (gs_shell_details_app_add_shortcut_button_cb),
+			  G_CALLBACK (gs_details_page_app_add_shortcut_button_cb),
 			  self);
 	g_signal_connect (self->button_details_remove_shortcut, "clicked",
-			  G_CALLBACK (gs_shell_details_app_remove_shortcut_button_cb),
+			  G_CALLBACK (gs_details_page_app_remove_shortcut_button_cb),
 			  self);
 	g_signal_connect (self->button_details_website, "clicked",
-			  G_CALLBACK (gs_shell_details_website_cb),
+			  G_CALLBACK (gs_details_page_website_cb),
 			  self);
 	g_signal_connect (self->button_details_license_free, "clicked",
-			  G_CALLBACK (gs_shell_details_license_free_cb),
+			  G_CALLBACK (gs_details_page_license_free_cb),
 			  self);
 	g_signal_connect (self->button_details_license_nonfree, "clicked",
-			  G_CALLBACK (gs_shell_details_license_nonfree_cb),
+			  G_CALLBACK (gs_details_page_license_nonfree_cb),
 			  self);
 	g_signal_connect (self->button_details_license_unknown, "clicked",
-			  G_CALLBACK (gs_shell_details_license_unknown_cb),
+			  G_CALLBACK (gs_details_page_license_unknown_cb),
 			  self);
 	g_signal_connect (self->label_license_nonfree_details, "activate-link",
-			  G_CALLBACK (gs_shell_details_activate_link_cb),
+			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
@@ -2122,13 +2122,13 @@ gs_shell_details_setup (GsPage *page,
 }
 
 static void
-gs_shell_details_dispose (GObject *object)
+gs_details_page_dispose (GObject *object)
 {
-	GsShellDetails *self = GS_SHELL_DETAILS (object);
+	GsDetailsPage *self = GS_DETAILS_PAGE (object);
 
 	if (self->app != NULL) {
-		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_notify_state_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_progress_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
 		g_clear_object (&self->app);
 	}
 	g_clear_object (&self->builder);
@@ -2136,107 +2136,107 @@ gs_shell_details_dispose (GObject *object)
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->session);
 
-	G_OBJECT_CLASS (gs_shell_details_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_details_class_init (GsShellDetailsClass *klass)
+gs_details_page_class_init (GsDetailsPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_details_dispose;
-	page_class->app_installed = gs_shell_details_app_installed;
-	page_class->app_removed = gs_shell_details_app_removed;
-	page_class->switch_to = gs_shell_details_switch_to;
-	page_class->reload = gs_shell_details_reload;
-	page_class->setup = gs_shell_details_setup;
+	object_class->dispose = gs_details_page_dispose;
+	page_class->app_installed = gs_details_page_app_installed;
+	page_class->app_removed = gs_details_page_app_removed;
+	page_class->switch_to = gs_details_page_switch_to;
+	page_class->reload = gs_details_page_reload;
+	page_class->setup = gs_details_page_setup;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-details.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-details-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, application_details_icon);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, application_details_summary);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, application_details_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_addons);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_description);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_progress);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, star);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_review_count);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_main);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_thumbnails);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_license_list);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_launch);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_add_shortcut);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_remove_shortcut);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_website);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_remove);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_cancel);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_more_reviews);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_norepo);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_repo);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_package_baseos);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_repo);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_addons_uninstalled_app);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_progress_percentage);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_progress_status);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_license_free);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_license_nonfree);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_license_unknown);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_download_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_download_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_installed_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_installed_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_updated_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_pending);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_reviews);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_fallback);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, histogram);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_review);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_reviews);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, scrolledwindow_details);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_details);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_remove);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, stack_details);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, grid_details_kudo);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_sandboxed);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_integration);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_translated);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_updated);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_docs);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_sandboxed);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_integration);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_translated);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_updated);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, progressbar_top);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_free);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_nonfree);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_license_unknown);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_license_nonfree_details);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_licenses_intro);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, popover_content_rating);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_content_rating_title);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_content_rating_message);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_content_rating_none);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_rating_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_rating_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, application_details_icon);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, application_details_summary);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, application_details_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_main);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_thumbnails);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_list);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_website);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_more_reviews);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_norepo);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_repo);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_addons_uninstalled_app);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_percentage);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_progress_status);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_category_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_category_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_free);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_nonfree);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_unknown);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_pending);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_fallback);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_review);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, scrolledwindow_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, spinner_remove);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, stack_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, grid_details_kudo);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_docs);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_sandboxed);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_integration);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_translated);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_kudo_updated);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_docs);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_sandboxed);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_integration);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_translated);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_kudo_updated);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, progressbar_top);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_free);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_nonfree);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_license_unknown);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_license_nonfree_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_licenses_intro);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_content_rating);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_message);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_none);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_rating_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
 }
 
 static void
-gs_shell_details_init (GsShellDetails *self)
+gs_details_page_init (GsDetailsPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -2253,12 +2253,12 @@ gs_shell_details_init (GsShellDetails *self)
 				    self, NULL);
 }
 
-GsShellDetails *
-gs_shell_details_new (void)
+GsDetailsPage *
+gs_details_page_new (void)
 {
-	GsShellDetails *self;
-	self = g_object_new (GS_TYPE_SHELL_DETAILS, NULL);
-	return GS_SHELL_DETAILS (self);
+	GsDetailsPage *self;
+	self = g_object_new (GS_TYPE_DETAILS_PAGE, NULL);
+	return GS_DETAILS_PAGE (self);
 }
 
 /* vim: set noexpandtab: */

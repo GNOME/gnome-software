@@ -19,25 +19,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_INSTALLED_H
-#define __GS_SHELL_INSTALLED_H
+#ifndef __GS_DETAILS_PAGE_H
+#define __GS_DETAILS_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
+#include "gs-shell.h"
 #include "gs-page.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_INSTALLED (gs_shell_installed_get_type ())
+#define GS_TYPE_DETAILS_PAGE (gs_details_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellInstalled, gs_shell_installed, GS, SHELL_INSTALLED, GsPage)
+G_DECLARE_FINAL_TYPE (GsDetailsPage, gs_details_page, GS, DETAILS_PAGE, GsPage)
 
-GsShellInstalled *gs_shell_installed_new	(void);
+GsDetailsPage	*gs_details_page_new		(void);
+void		 gs_details_page_set_app	(GsDetailsPage		*self,
+						 GsApp			*app);
+void		 gs_details_page_set_local_file(GsDetailsPage		*self,
+						 GFile			*file);
+void		 gs_details_page_set_url	(GsDetailsPage		*self,
+						 const gchar		*url);
+GsApp		*gs_details_page_get_app	(GsDetailsPage		*self);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_INSTALLED_H */
+#endif /* __GS_DETAILS_PAGE_H */
 
 /* vim: set noexpandtab: */

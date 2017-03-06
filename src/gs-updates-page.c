@@ -25,7 +25,7 @@
 #include <gio/gio.h>
 
 #include "gs-shell.h"
-#include "gs-shell-updates.h"
+#include "gs-updates-page.h"
 #include "gs-common.h"
 #include "gs-app-private.h"
 #include "gs-app-row.h"
@@ -46,23 +46,23 @@
 #include <langinfo.h>
 
 typedef enum {
-	GS_SHELL_UPDATES_FLAG_NONE		= 0,
-	GS_SHELL_UPDATES_FLAG_HAS_UPDATES	= 1 << 0,
-	GS_SHELL_UPDATES_FLAG_HAS_UPGRADES	= 1 << 1,
-	GS_SHELL_UPDATES_FLAG_LAST
-} GsShellUpdatesFlags;
+	GS_UPDATES_PAGE_FLAG_NONE		= 0,
+	GS_UPDATES_PAGE_FLAG_HAS_UPDATES	= 1 << 0,
+	GS_UPDATES_PAGE_FLAG_HAS_UPGRADES	= 1 << 1,
+	GS_UPDATES_PAGE_FLAG_LAST
+} GsUpdatesPageFlags;
 
 typedef enum {
-	GS_SHELL_UPDATES_STATE_STARTUP,
-	GS_SHELL_UPDATES_STATE_ACTION_REFRESH,
-	GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES,
-	GS_SHELL_UPDATES_STATE_MANAGED,
-	GS_SHELL_UPDATES_STATE_IDLE,
-	GS_SHELL_UPDATES_STATE_FAILED,
-	GS_SHELL_UPDATES_STATE_LAST,
-} GsShellUpdatesState;
+	GS_UPDATES_PAGE_STATE_STARTUP,
+	GS_UPDATES_PAGE_STATE_ACTION_REFRESH,
+	GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES,
+	GS_UPDATES_PAGE_STATE_MANAGED,
+	GS_UPDATES_PAGE_STATE_IDLE,
+	GS_UPDATES_PAGE_STATE_FAILED,
+	GS_UPDATES_PAGE_STATE_LAST,
+} GsUpdatesPageState;
 
-struct _GsShellUpdates
+struct _GsUpdatesPage
 {
 	GsPage			 parent_instance;
 
@@ -79,8 +79,8 @@ struct _GsShellUpdates
 	gboolean		 any_require_reboot;
 	GsShell			*shell;
 	GsPluginStatus		 last_status;
-	GsShellUpdatesState	 state;
-	GsShellUpdatesFlags	 result_flags;
+	GsUpdatesPageState	 state;
+	GsUpdatesPageFlags	 result_flags;
 	GtkWidget		*button_refresh;
 	GtkWidget		*button_update_all;
 	GtkWidget		*header_spinner_start;
@@ -109,40 +109,40 @@ enum {
 	COLUMN_UPDATE_LAST
 };
 
-G_DEFINE_TYPE (GsShellUpdates, gs_shell_updates, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsUpdatesPage, gs_updates_page, GS_TYPE_PAGE)
 
 static void
-gs_shell_updates_set_flag (GsShellUpdates *self, GsShellUpdatesFlags flag)
+gs_updates_page_set_flag (GsUpdatesPage *self, GsUpdatesPageFlags flag)
 {
 	self->result_flags |= flag;
 }
 
 static void
-gs_shell_updates_clear_flag (GsShellUpdates *self, GsShellUpdatesFlags flag)
+gs_updates_page_clear_flag (GsUpdatesPage *self, GsUpdatesPageFlags flag)
 {
 	self->result_flags &= ~flag;
 }
 
 static const gchar *
-gs_shell_updates_state_to_string (GsShellUpdatesState state)
+gs_updates_page_state_to_string (GsUpdatesPageState state)
 {
-	if (state == GS_SHELL_UPDATES_STATE_STARTUP)
+	if (state == GS_UPDATES_PAGE_STATE_STARTUP)
 		return "startup";
-	if (state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH)
+	if (state == GS_UPDATES_PAGE_STATE_ACTION_REFRESH)
 		return "action-refresh";
-	if (state == GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES)
+	if (state == GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES)
 		return "action-get-updates";
-	if (state == GS_SHELL_UPDATES_STATE_MANAGED)
+	if (state == GS_UPDATES_PAGE_STATE_MANAGED)
 		return "managed";
-	if (state == GS_SHELL_UPDATES_STATE_IDLE)
+	if (state == GS_UPDATES_PAGE_STATE_IDLE)
 		return "idle";
-	if (state == GS_SHELL_UPDATES_STATE_FAILED)
+	if (state == GS_UPDATES_PAGE_STATE_FAILED)
 		return "failed";
 	return NULL;
 }
 
 static void
-gs_shell_updates_invalidate (GsShellUpdates *self)
+gs_updates_page_invalidate (GsUpdatesPage *self)
 {
 	self->cache_valid = FALSE;
 }
@@ -165,7 +165,7 @@ time_next_midnight (void)
 }
 
 static gchar *
-gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
+gs_updates_page_last_checked_time_string (GsUpdatesPage *self)
 {
 #ifdef HAVE_GNOME_DESKTOP
 	GDesktopClockFormat clock_format;
@@ -235,7 +235,7 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
 }
 
 static const gchar *
-gs_shell_updates_get_state_string (GsPluginStatus status)
+gs_updates_page_get_state_string (GsPluginStatus status)
 {
 	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
 		/* TRANSLATORS: the updates are being downloaded */
@@ -247,7 +247,7 @@ gs_shell_updates_get_state_string (GsPluginStatus status)
 }
 
 static void
-gs_shell_updates_update_ui_state (GsShellUpdates *self)
+gs_updates_page_update_ui_state (GsUpdatesPage *self)
 {
 	GsUpdateList *update_list;
 	gboolean allow_mobile_refresh = TRUE;
@@ -259,11 +259,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 
 	/* spinners */
 	switch (self->state) {
-	case GS_SHELL_UPDATES_STATE_STARTUP:
-	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_UPDATES_PAGE_STATE_STARTUP:
+	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
+	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
 		/* if we have updates, avoid clearing the page with a spinner */
-		if (self->result_flags != GS_SHELL_UPDATES_FLAG_NONE) {
+		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gs_stop_spinner (GTK_SPINNER (self->spinner_updates));
 			gtk_spinner_start (GTK_SPINNER (self->header_spinner_start));
 			gtk_widget_show (self->header_spinner_start);
@@ -280,16 +280,16 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 
 	/* spinner text */
 	switch (self->state) {
-	case GS_SHELL_UPDATES_STATE_STARTUP:
+	case GS_UPDATES_PAGE_STATE_STARTUP:
 		spinner_str = g_strdup_printf ("%s\n%s",
 				       /* TRANSLATORS: the updates panel is starting up */
 				       _("Setting up updates…"),
 				       _("(This could take a while)"));
 		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner), spinner_str);
 		break;
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
 		spinner_str = g_strdup_printf ("%s\n%s",
-				       gs_shell_updates_get_state_string (self->last_status),
+				       gs_updates_page_get_state_string (self->last_status),
 				       /* TRANSLATORS: the updates panel is starting up */
 				       _("(This could take a while)"));
 		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner), spinner_str);
@@ -300,20 +300,20 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 
 	/* headerbar refresh icon */
 	switch (self->state) {
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
-	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
+	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
+	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "media-playback-stop-symbolic", GTK_ICON_SIZE_MENU);
 		gtk_widget_show (self->button_refresh);
 		break;
-	case GS_SHELL_UPDATES_STATE_STARTUP:
-	case GS_SHELL_UPDATES_STATE_MANAGED:
+	case GS_UPDATES_PAGE_STATE_STARTUP:
+	case GS_UPDATES_PAGE_STATE_MANAGED:
 		gtk_widget_hide (self->button_refresh);
 		break;
 	default:
 		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
-		if (self->result_flags != GS_SHELL_UPDATES_FLAG_NONE) {
+		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gtk_widget_show (self->button_refresh);
 		} else {
 			if (gs_plugin_loader_get_network_metered (self->plugin_loader) &&
@@ -329,34 +329,34 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	/* headerbar update button */
 	update_list = GS_UPDATE_LIST (self->list_box_updates);
 	gs_update_list_set_force_headers (update_list,
-			self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
+			self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 	gtk_widget_set_visible (self->button_update_all,
 				!gs_update_list_has_headers (update_list));
 
 	/* stack */
 	switch (self->state) {
-	case GS_SHELL_UPDATES_STATE_MANAGED:
+	case GS_UPDATES_PAGE_STATE_MANAGED:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "managed");
 		break;
-	case GS_SHELL_UPDATES_STATE_FAILED:
+	case GS_UPDATES_PAGE_STATE_FAILED:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "failed");
 		break;
-	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
+	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates),
 						  "spinner");
 		break;
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
-		if (self->result_flags != GS_SHELL_UPDATES_FLAG_NONE) {
+	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
+		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "view");
 		} else {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "spinner");
 		}
 		break;
-	case GS_SHELL_UPDATES_STATE_STARTUP:
-	case GS_SHELL_UPDATES_STATE_IDLE:
+	case GS_UPDATES_PAGE_STATE_STARTUP:
+	case GS_UPDATES_PAGE_STATE_IDLE:
 
 		/* if have updates, just show the view, otherwise show network */
-		if (self->result_flags != GS_SHELL_UPDATES_FLAG_NONE) {
+		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "view");
 			break;
 		}
@@ -388,11 +388,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 
 	/* any updates? */
 	gtk_widget_set_visible (self->updates_box,
-				self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
+				self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 
 	/* last checked label */
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates)), "uptodate") == 0) {
-		checked_str = gs_shell_updates_last_checked_time_string (self);
+		checked_str = gs_updates_page_last_checked_time_string (self);
 		if (checked_str != NULL) {
 			g_autofree gchar *last_checked = NULL;
 
@@ -406,19 +406,19 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 }
 
 static void
-gs_shell_updates_set_state (GsShellUpdates *self, GsShellUpdatesState state)
+gs_updates_page_set_state (GsUpdatesPage *self, GsUpdatesPageState state)
 {
 	g_debug ("setting state from %s to %s (has-update:%i, has-upgrade:%i)",
-		 gs_shell_updates_state_to_string (self->state),
-		 gs_shell_updates_state_to_string (state),
-		 (self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPDATES) > 0,
-		 (self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES) > 0);
+		 gs_updates_page_state_to_string (self->state),
+		 gs_updates_page_state_to_string (state),
+		 (self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPDATES) > 0,
+		 (self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) > 0);
 	self->state = state;
-	gs_shell_updates_update_ui_state (self);
+	gs_updates_page_update_ui_state (self);
 }
 
 static void
-gs_shell_updates_decrement_refresh_count (GsShellUpdates *self)
+gs_updates_page_decrement_refresh_count (GsUpdatesPage *self)
 {
 	/* every job increcements this */
 	if (self->action_cnt == 0) {
@@ -429,7 +429,7 @@ gs_shell_updates_decrement_refresh_count (GsShellUpdates *self)
 		return;
 
 	/* all done */
-	gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
+	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_IDLE);
 
 	/* seems a good place */
 	gs_shell_profile_dump (self->shell);
@@ -437,17 +437,17 @@ gs_shell_updates_decrement_refresh_count (GsShellUpdates *self)
 
 
 static void
-gs_shell_updates_network_available_notify_cb (GsPluginLoader *plugin_loader,
-					      GParamSpec *pspec,
-					      GsShellUpdates *self)
+gs_updates_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
+                                             GParamSpec *pspec,
+                                             GsUpdatesPage *self)
 {
-	gs_shell_updates_update_ui_state (self);
+	gs_updates_page_update_ui_state (self);
 }
 
 static void
-gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
-				 GAsyncResult *res,
-				 GsShellUpdates *self)
+gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
+                                GAsyncResult *res,
+                                GsUpdatesPage *self)
 {
 	guint i;
 	GtkWidget *widget;
@@ -459,14 +459,13 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
+		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("updates-shell: failed to get updates: %s", error->message);
 		gs_utils_error_strip_unique_id (error);
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
 				     error->message);
-		gs_shell_updates_set_state (self,
-					    GS_SHELL_UPDATES_STATE_FAILED);
+		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
 							     "button_updates_counter"));
 		gtk_widget_hide (widget);
@@ -520,49 +519,49 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
 		g_debug ("updates-shell: no updates to show");
-		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
+		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 	} else {
-		gs_shell_updates_set_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
+		gs_updates_page_set_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 	}
 
 	/* only when both set */
-	gs_shell_updates_decrement_refresh_count (self);
+	gs_updates_page_decrement_refresh_count (self);
 }
 
 static void
-gs_shell_updates_get_upgrades_cb (GObject *source_object,
-				  GAsyncResult *res,
-				  gpointer user_data)
+gs_updates_page_get_upgrades_cb (GObject *source_object,
+                                 GAsyncResult *res,
+                                 gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
 	/* get the results */
 	list = gs_plugin_loader_get_distro_upgrades_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
+		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_warning ("updates-shell: failed to get upgrades: %s",
 				   error->message);
 		}
 	} else if (gs_app_list_length (list) == 0) {
 		g_debug ("updates-shell: no upgrades to show");
-		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
+		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
 		g_debug ("got upgrade %s", gs_app_get_id (app));
 		gs_upgrade_banner_set_app (GS_UPGRADE_BANNER (self->upgrade_banner), app);
-		gs_shell_updates_set_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
+		gs_updates_page_set_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 	}
 
 	/* only when both set */
-	gs_shell_updates_decrement_refresh_count (self);
+	gs_updates_page_decrement_refresh_count (self);
 }
 
 static void
-gs_shell_updates_load (GsShellUpdates *self)
+gs_updates_page_load (GsUpdatesPage *self)
 {
 	guint64 refine_flags;
 
@@ -573,42 +572,41 @@ gs_shell_updates_load (GsShellUpdates *self)
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
-	gs_shell_updates_set_state (self,
-				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
+	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES);
 	self->action_cnt++;
 	gs_plugin_loader_get_updates_async (self->plugin_loader,
 					    refine_flags,
 					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    self->cancellable,
-					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
+					    (GAsyncReadyCallback) gs_updates_page_get_updates_cb,
 					    self);
 
 	/* don't refresh every each time */
-	if ((self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES) == 0) {
+	if ((self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) == 0) {
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 		gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
 							    refine_flags,
 							    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 							    self->cancellable,
-							    gs_shell_updates_get_upgrades_cb,
+							    gs_updates_page_get_upgrades_cb,
 							    self);
 		self->action_cnt++;
 	}
 }
 
 static void
-gs_shell_updates_reload (GsPage *page)
+gs_updates_page_reload (GsPage *page)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (page);
-	gs_shell_updates_invalidate (self);
-	gs_shell_updates_load (self);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
+	gs_updates_page_invalidate (self);
+	gs_updates_page_load (self);
 }
 
 static void
-gs_shell_updates_switch_to (GsPage *page,
-			    gboolean scroll_up)
+gs_updates_page_switch_to (GsPage *page,
+                           gboolean scroll_up)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (page);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES) {
@@ -630,19 +628,19 @@ gs_shell_updates_switch_to (GsPage *page,
 
 	/* no need to refresh */
 	if (self->cache_valid) {
-		gs_shell_updates_update_ui_state (self);
+		gs_updates_page_update_ui_state (self);
 		return;
 	}
 
-	if (self->state == GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES) {
-		gs_shell_updates_update_ui_state (self);
+	if (self->state == GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES) {
+		gs_updates_page_update_ui_state (self);
 		return;
 	}
-	gs_shell_updates_load (self);
+	gs_updates_page_load (self);
 }
 
 static void
-show_update_details (GsApp *app, GsShellUpdates *self)
+show_update_details (GsApp *app, GsUpdatesPage *self)
 {
 	GtkWidget *dialog;
 	g_autofree gchar *str = NULL;
@@ -661,9 +659,9 @@ show_update_details (GsApp *app, GsShellUpdates *self)
 }
 
 static void
-gs_shell_updates_activated_cb (GtkListBox *list_box,
-			       GtkListBoxRow *row,
-			       GsShellUpdates *self)
+gs_updates_page_activated_cb (GtkListBox *list_box,
+                              GtkListBoxRow *row,
+                              GsUpdatesPage *self)
 {
 	GsApp *app;
 
@@ -673,9 +671,9 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 }
 
 static void
-gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
-				    GsApp *app,
-				    GsShellUpdates *self)
+gs_updates_page_button_clicked_cb (GsUpdateList *update_list,
+                                   GsApp *app,
+                                   GsUpdatesPage *self)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
@@ -685,9 +683,9 @@ gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
 }
 
 static void
-gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
-			     GAsyncResult *res,
-			     GsShellUpdates *self)
+gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
+                            GAsyncResult *res,
+                            GsUpdatesPage *self)
 {
 	gboolean ret;
 	g_autoptr(GDateTime) now = NULL;
@@ -700,15 +698,14 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 		if (g_error_matches (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_CANCELLED)) {
-			gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
+			gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_IDLE);
 			return;
 		}
 		g_warning ("failed to refresh: %s", error->message);
 		gs_utils_error_strip_unique_id (error);
 		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
 				     error->message);
-		gs_shell_updates_set_state (self,
-					    GS_SHELL_UPDATES_STATE_FAILED);
+		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_FAILED);
 		return;
 	}
 
@@ -718,17 +715,17 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 			g_date_time_to_unix (now));
 
 	/* get the new list */
-	gs_shell_updates_invalidate (self);
+	gs_updates_page_invalidate (self);
 	gs_page_switch_to (GS_PAGE (self), TRUE);
 }
 
 static void
-gs_shell_updates_get_new_updates (GsShellUpdates *self)
+gs_updates_page_get_new_updates (GsUpdatesPage *self)
 {
 	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
 
 	/* force a check for updates and download */
-	gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_ACTION_REFRESH);
+	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_REFRESH);
 
 	if (self->cancellable_refresh != NULL) {
 		g_cancellable_cancel (self->cancellable_refresh);
@@ -745,12 +742,12 @@ gs_shell_updates_get_new_updates (GsShellUpdates *self)
 					refresh_flags,
 					GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					self->cancellable_refresh,
-					(GAsyncReadyCallback) gs_shell_updates_refresh_cb,
+					(GAsyncReadyCallback) gs_updates_page_refresh_cb,
 					self);
 }
 
 static void
-gs_shell_updates_show_network_settings (GsShellUpdates *self)
+gs_updates_page_show_network_settings (GsUpdatesPage *self)
 {
 	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
@@ -758,9 +755,9 @@ gs_shell_updates_show_network_settings (GsShellUpdates *self)
 }
 
 static void
-gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
-				     GtkResponseType response_type,
-				     GsShellUpdates *self)
+gs_updates_page_refresh_confirm_cb (GtkDialog *dialog,
+                                    GtkResponseType response_type,
+                                    GsUpdatesPage *self)
 {
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -768,11 +765,11 @@ gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
 	switch (response_type) {
 	case GTK_RESPONSE_REJECT:
 		/* open the control center */
-		gs_shell_updates_show_network_settings (self);
+		gs_updates_page_show_network_settings (self);
 		break;
 	case GTK_RESPONSE_ACCEPT:
 		self->has_agreed_to_mobile_data = TRUE;
-		gs_shell_updates_get_new_updates (self);
+		gs_updates_page_get_new_updates (self);
 		break;
 	case GTK_RESPONSE_CANCEL:
 	case GTK_RESPONSE_DELETE_EVENT:
@@ -783,28 +780,28 @@ gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
 }
 
 static void
-gs_shell_updates_button_network_settings_cb (GtkWidget *widget,
-					     GsShellUpdates *self)
+gs_updates_page_button_network_settings_cb (GtkWidget *widget,
+                                            GsUpdatesPage *self)
 {
-	gs_shell_updates_show_network_settings (self);
+	gs_updates_page_show_network_settings (self);
 }
 
 static void
-gs_shell_updates_button_mobile_refresh_cb (GtkWidget *widget,
-					   GsShellUpdates *self)
+gs_updates_page_button_mobile_refresh_cb (GtkWidget *widget,
+                                          GsUpdatesPage *self)
 {
 	self->has_agreed_to_mobile_data = TRUE;
-	gs_shell_updates_get_new_updates (self);
+	gs_updates_page_get_new_updates (self);
 }
 
 static void
-gs_shell_updates_button_refresh_cb (GtkWidget *widget,
-				    GsShellUpdates *self)
+gs_updates_page_button_refresh_cb (GtkWidget *widget,
+                                   GsUpdatesPage *self)
 {
 	GtkWidget *dialog;
 
 	/* cancel existing action? */
-	if (self->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH) {
+	if (self->state == GS_UPDATES_PAGE_STATE_ACTION_REFRESH) {
 		g_cancellable_cancel (self->cancellable_refresh);
 		g_clear_object (&self->cancellable_refresh);
 		return;
@@ -813,12 +810,12 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 	/* check we have a "free" network connection */
 	if (gs_plugin_loader_get_network_available (self->plugin_loader) &&
 	    !gs_plugin_loader_get_network_metered (self->plugin_loader)) {
-		gs_shell_updates_get_new_updates (self);
+		gs_updates_page_get_new_updates (self);
 
 	/* expensive network connection */
 	} else if (gs_plugin_loader_get_network_metered (self->plugin_loader)) {
 		if (self->has_agreed_to_mobile_data) {
-			gs_shell_updates_get_new_updates (self);
+			gs_updates_page_get_new_updates (self);
 			return;
 		}
 		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
@@ -839,7 +836,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 				       _("Check Anyway"),
 				       GTK_RESPONSE_ACCEPT);
 		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
+				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
 				  self);
 		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 
@@ -863,23 +860,23 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 				       _("Network Settings"),
 				       GTK_RESPONSE_REJECT);
 		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
+				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
 				  self);
 		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 	}
 }
 
 static void
-gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
-					  GsShellUpdates *self)
+gs_updates_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
+                                         GsUpdatesPage *self)
 {
-	gs_shell_updates_invalidate (self);
+	gs_updates_page_invalidate (self);
 }
 
 static void
 cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 	if (!gs_plugin_loader_app_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
@@ -888,9 +885,9 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 }
 
 static void
-gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+gs_updates_page_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GVariant) retval = NULL;
@@ -917,9 +914,9 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 }
 
 static void
-gs_shell_updates_perform_update_cb (GsPluginLoader *plugin_loader,
-                                    GAsyncResult *res,
-                                    GsShellUpdates *self)
+gs_updates_page_perform_update_cb (GsPluginLoader *plugin_loader,
+                                   GAsyncResult *res,
+                                   GsUpdatesPage *self)
 {
 	g_autoptr(GError) error = NULL;
 
@@ -943,7 +940,7 @@ gs_shell_updates_perform_update_cb (GsPluginLoader *plugin_loader,
 					"Reboot",
 					NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
 					G_MAXINT, NULL,
-					gs_shell_updates_reboot_failed_cb,
+					gs_updates_page_reboot_failed_cb,
 					self);
 
 	/* when we are not doing an offline update, show a notification
@@ -964,8 +961,8 @@ gs_shell_updates_perform_update_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_shell_updates_button_update_all_cb (GtkButton      *button,
-				       GsShellUpdates *self)
+gs_updates_page_button_update_all_cb (GtkButton     *button,
+                                      GsUpdatesPage *self)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
@@ -978,14 +975,14 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       apps,
 				       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 				       self->cancellable,
-				       (GAsyncReadyCallback) gs_shell_updates_perform_update_cb,
+				       (GAsyncReadyCallback) gs_updates_page_perform_update_cb,
 				       self);
 	gtk_widget_set_sensitive (GTK_WIDGET (self->button_update_all), FALSE);
 }
 
 typedef struct {
 	GsApp		*app;
-	GsShellUpdates	*self;
+	GsUpdatesPage	*self;
 } GsPageHelper;
 
 static void
@@ -1017,8 +1014,8 @@ upgrade_download_finished_cb (GObject *source,
 }
 
 static void
-gs_shell_updates_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
-                                      GsShellUpdates *self)
+gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
+                                     GsUpdatesPage *self)
 {
 	GsApp *app;
 	GsPageHelper *helper;
@@ -1050,7 +1047,7 @@ upgrade_reboot_failed_cb (GObject *source,
                           GAsyncResult *res,
                           gpointer user_data)
 {
-	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GVariant) retval = NULL;
@@ -1086,7 +1083,7 @@ upgrade_trigger_finished_cb (GObject *source,
                              GAsyncResult *res,
                              gpointer user_data)
 {
-	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
 	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
 
@@ -1110,7 +1107,7 @@ upgrade_trigger_finished_cb (GObject *source,
 }
 
 static void
-trigger_upgrade (GsShellUpdates *self)
+trigger_upgrade (GsUpdatesPage *self)
 {
 	GsApp *upgrade;
 
@@ -1130,9 +1127,9 @@ trigger_upgrade (GsShellUpdates *self)
 }
 
 static void
-gs_shell_updates_upgrade_confirm_cb (GtkDialog *dialog,
-                                     GtkResponseType response_type,
-                                     GsShellUpdates *self)
+gs_updates_page_upgrade_confirm_cb (GtkDialog *dialog,
+                                    GtkResponseType response_type,
+                                    GsUpdatesPage *self)
 {
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -1153,8 +1150,8 @@ gs_shell_updates_upgrade_confirm_cb (GtkDialog *dialog,
 }
 
 static void
-gs_shell_updates_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
-                                     GsShellUpdates *self)
+gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
+                                    GsUpdatesPage *self)
 {
 	GPtrArray *removals;
 	GsApp *upgrade;
@@ -1185,7 +1182,7 @@ gs_shell_updates_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 
 	dialog = gs_removal_dialog_new ();
 	g_signal_connect (dialog, "response",
-	                  G_CALLBACK (gs_shell_updates_upgrade_confirm_cb),
+	                  G_CALLBACK (gs_updates_page_upgrade_confirm_cb),
 	                  self);
 	gs_removal_dialog_show_upgrade_removals (GS_REMOVAL_DIALOG (dialog),
 	                                         upgrade);
@@ -1193,8 +1190,8 @@ gs_shell_updates_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 }
 
 static void
-gs_shell_updates_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
-				  GsShellUpdates *self)
+gs_updates_page_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
+                                 GsUpdatesPage *self)
 {
 	GsApp *app;
 	const gchar *uri;
@@ -1213,7 +1210,7 @@ gs_shell_updates_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
 }
 
 static void
-gs_shell_updates_invalidate_downloaded_upgrade (GsShellUpdates *self)
+gs_updates_page_invalidate_downloaded_upgrade (GsUpdatesPage *self)
 {
 	GsApp *app;
 	app = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
@@ -1227,7 +1224,7 @@ gs_shell_updates_invalidate_downloaded_upgrade (GsShellUpdates *self)
 }
 
 static gboolean
-gs_shell_update_are_updates_in_progress (GsShellUpdates *self)
+gs_shell_update_are_updates_in_progress (GsUpdatesPage *self)
 {
 	GsUpdateList *update_list = GS_UPDATE_LIST (self->list_box_updates);
 	g_autoptr(GsAppList) list = gs_update_list_get_apps (update_list);
@@ -1247,12 +1244,12 @@ gs_shell_update_are_updates_in_progress (GsShellUpdates *self)
 }
 
 static void
-gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
-			     GsShellUpdates *self)
+gs_updates_page_changed_cb (GsPluginLoader *plugin_loader,
+                            GsUpdatesPage *self)
 {
 	/* if we do a live update and the upgrade is waiting to be deployed
 	 * then make sure all new packages are downloaded */
-	gs_shell_updates_invalidate_downloaded_upgrade (self);
+	gs_updates_page_invalidate_downloaded_upgrade (self);
 
 	/* check to see if any apps in the app list are in a processing state */
 	if (gs_shell_update_are_updates_in_progress (self)) {
@@ -1261,14 +1258,14 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* refresh updates list */
-	gs_shell_updates_reload (GS_PAGE (self));
+	gs_updates_page_reload (GS_PAGE (self));
 }
 
 static void
-gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
-				    GsApp *app,
-				    GsPluginStatus status,
-				    GsShellUpdates *self)
+gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
+                                   GsApp *app,
+                                   GsPluginStatus status,
+                                   GsUpdatesPage *self)
 {
 	switch (status) {
 	case GS_PLUGIN_STATUS_INSTALLING:
@@ -1277,7 +1274,7 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 		    gs_app_get_id (app) != NULL) {
 			/* if we do a install or remove then make sure all new
 			 * packages are downloaded */
-			gs_shell_updates_invalidate_downloaded_upgrade (self);
+			gs_updates_page_invalidate_downloaded_upgrade (self);
 		}
 		break;
 	default:
@@ -1285,77 +1282,77 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 	}
 
 	self->last_status = status;
-	gs_shell_updates_update_ui_state (self);
+	gs_updates_page_update_ui_state (self);
 }
 
 static void
-gs_shell_updates_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
-					    GParamSpec *pspec,
-					    GsShellUpdates *self)
+gs_updates_page_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
+                                         GParamSpec *pspec,
+                                         GsUpdatesPage *self)
 {
 	if (!gs_plugin_loader_get_allow_updates (plugin_loader)) {
-		gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_MANAGED);
+		gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_MANAGED);
 		return;
 	}
-	gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
+	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_IDLE);
 }
 
 static void
-gs_shell_updates_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
-				    GsShellUpdates *self)
+gs_updates_page_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
+                                   GsUpdatesPage *self)
 {
 	g_cancellable_cancel (self->cancellable_upgrade_download);
 }
 
 static gboolean
-gs_shell_updates_setup (GsPage *page,
-			GsShell *shell,
-			GsPluginLoader *plugin_loader,
-			GtkBuilder *builder,
-			GCancellable *cancellable,
-			GError **error)
+gs_updates_page_setup (GsPage *page,
+                       GsShell *shell,
+                       GsPluginLoader *plugin_loader,
+                       GtkBuilder *builder,
+                       GCancellable *cancellable,
+                       GError **error)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (page);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
 	AtkObject *accessible;
 
-	g_return_val_if_fail (GS_IS_SHELL_UPDATES (self), TRUE);
+	g_return_val_if_fail (GS_IS_UPDATES_PAGE (self), TRUE);
 
 	self->shell = shell;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (self->plugin_loader, "pending-apps-changed",
-			  G_CALLBACK (gs_shell_updates_pending_apps_changed_cb),
+			  G_CALLBACK (gs_updates_page_pending_apps_changed_cb),
 			  self);
 	g_signal_connect (self->plugin_loader, "status-changed",
-			  G_CALLBACK (gs_shell_updates_status_changed_cb),
+			  G_CALLBACK (gs_updates_page_status_changed_cb),
 			  self);
 	g_signal_connect (self->plugin_loader, "updates-changed",
-			  G_CALLBACK (gs_shell_updates_changed_cb),
+			  G_CALLBACK (gs_updates_page_changed_cb),
 			  self);
 	g_signal_connect_object (self->plugin_loader, "notify::allow-updates",
-				 G_CALLBACK (gs_shell_updates_allow_updates_notify_cb),
+				 G_CALLBACK (gs_updates_page_allow_updates_notify_cb),
 				 self, 0);
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
-				 G_CALLBACK (gs_shell_updates_network_available_notify_cb),
+				 G_CALLBACK (gs_updates_page_network_available_notify_cb),
 				 self, 0);
 	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
 	/* setup updates */
 	g_signal_connect (self->list_box_updates, "row-activated",
-			  G_CALLBACK (gs_shell_updates_activated_cb), self);
+			  G_CALLBACK (gs_updates_page_activated_cb), self);
 	g_signal_connect (self->list_box_updates, "button-clicked",
-			  G_CALLBACK (gs_shell_updates_button_clicked_cb), self);
+			  G_CALLBACK (gs_updates_page_button_clicked_cb), self);
 
 	/* setup system upgrades */
 	g_signal_connect (self->upgrade_banner, "download-clicked",
-			  G_CALLBACK (gs_shell_updates_upgrade_download_cb), self);
+			  G_CALLBACK (gs_updates_page_upgrade_download_cb), self);
 	g_signal_connect (self->upgrade_banner, "install-clicked",
-			  G_CALLBACK (gs_shell_updates_upgrade_install_cb), self);
+			  G_CALLBACK (gs_updates_page_upgrade_install_cb), self);
 	g_signal_connect (self->upgrade_banner, "cancel-clicked",
-			  G_CALLBACK (gs_shell_updates_upgrade_cancel_cb), self);
+			  G_CALLBACK (gs_updates_page_upgrade_cancel_cb), self);
 	g_signal_connect (self->upgrade_banner, "help-clicked",
-			  G_CALLBACK (gs_shell_updates_upgrade_help_cb), self);
+			  G_CALLBACK (gs_updates_page_upgrade_help_cb), self);
 
 	self->header_end_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_visible (self->header_end_box, TRUE);
@@ -1366,7 +1363,7 @@ gs_shell_updates_setup (GsPage *page,
 	gtk_widget_set_visible (self->button_update_all, TRUE);
 	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_update_all), "suggested-action");
 	gtk_container_add (GTK_CONTAINER (self->header_end_box), self->button_update_all);
-	g_signal_connect (self->button_update_all, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), self);
+	g_signal_connect (self->button_update_all, "clicked", G_CALLBACK (gs_updates_page_button_update_all_cb), self);
 
 	self->header_start_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_visible (self->header_start_box, TRUE);
@@ -1382,26 +1379,26 @@ gs_shell_updates_setup (GsPage *page,
 		atk_object_set_name (accessible, _("Check for updates"));
 	gtk_box_pack_start (GTK_BOX (self->header_start_box), self->button_refresh, FALSE, FALSE, 0);
 	g_signal_connect (self->button_refresh, "clicked",
-			  G_CALLBACK (gs_shell_updates_button_refresh_cb),
+			  G_CALLBACK (gs_updates_page_button_refresh_cb),
 			  self);
 
 	g_signal_connect (self->button_updates_mobile, "clicked",
-			  G_CALLBACK (gs_shell_updates_button_mobile_refresh_cb),
+			  G_CALLBACK (gs_updates_page_button_mobile_refresh_cb),
 			  self);
 	g_signal_connect (self->button_updates_offline, "clicked",
-			  G_CALLBACK (gs_shell_updates_button_network_settings_cb),
+			  G_CALLBACK (gs_updates_page_button_network_settings_cb),
 			  self);
 
 	/* set initial state */
 	if (!gs_plugin_loader_get_allow_updates (self->plugin_loader))
-		self->state = GS_SHELL_UPDATES_STATE_MANAGED;
+		self->state = GS_UPDATES_PAGE_STATE_MANAGED;
 	return TRUE;
 }
 
 static void
-gs_shell_updates_dispose (GObject *object)
+gs_updates_page_dispose (GObject *object)
 {
-	GsShellUpdates *self = GS_SHELL_UPDATES (object);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
 
 	if (self->cancellable_refresh != NULL) {
 		g_cancellable_cancel (self->cancellable_refresh);
@@ -1414,44 +1411,44 @@ gs_shell_updates_dispose (GObject *object)
 	g_clear_object (&self->settings);
 	g_clear_object (&self->desktop_settings);
 
-	G_OBJECT_CLASS (gs_shell_updates_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_updates_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_updates_class_init (GsShellUpdatesClass *klass)
+gs_updates_page_class_init (GsUpdatesPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_updates_dispose;
-	page_class->switch_to = gs_shell_updates_switch_to;
-	page_class->reload = gs_shell_updates_reload;
-	page_class->setup = gs_shell_updates_setup;
+	object_class->dispose = gs_updates_page_dispose;
+	page_class->switch_to = gs_updates_page_switch_to;
+	page_class->reload = gs_updates_page_reload;
+	page_class->setup = gs_updates_page_setup;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-updates.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-updates-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, updates_box);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, button_updates_mobile);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, button_updates_offline);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_failed);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_last_checked);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_spinner);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, list_box_updates);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, scrolledwindow_updates);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, spinner_updates);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, stack_updates);
-	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, upgrade_banner);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, updates_box);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_mobile);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, button_updates_offline);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_failed);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_last_checked);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_updates_spinner);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, list_box_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, scrolledwindow_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
 }
 
 static void
-gs_shell_updates_init (GsShellUpdates *self)
+gs_updates_page_init (GsUpdatesPage *self)
 {
 	const char *ampm;
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->state = GS_SHELL_UPDATES_STATE_STARTUP;
+	self->state = GS_UPDATES_PAGE_STATE_STARTUP;
 	self->settings = g_settings_new ("org.gnome.software");
 	self->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
 
@@ -1460,12 +1457,12 @@ gs_shell_updates_init (GsShellUpdates *self)
 		self->ampm_available = TRUE;
 }
 
-GsShellUpdates *
-gs_shell_updates_new (void)
+GsUpdatesPage *
+gs_updates_page_new (void)
 {
-	GsShellUpdates *self;
-	self = g_object_new (GS_TYPE_SHELL_UPDATES, NULL);
-	return GS_SHELL_UPDATES (self);
+	GsUpdatesPage *self;
+	self = g_object_new (GS_TYPE_UPDATES_PAGE, NULL);
+	return GS_UPDATES_PAGE (self);
 }
 
 /* vim: set noexpandtab: */

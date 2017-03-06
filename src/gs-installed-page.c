@@ -27,14 +27,14 @@
 #include <appstream-glib.h>
 
 #include "gs-shell.h"
-#include "gs-shell-installed.h"
+#include "gs-installed-page.h"
 #include "gs-app.h"
 #include "gs-common.h"
 #include "gs-app-row.h"
 #include "gs-app-folder-dialog.h"
 #include "gs-folders.h"
 
-struct _GsShellInstalled
+struct _GsInstalledPage
 {
 	GsPage			 parent_instance;
 
@@ -61,22 +61,22 @@ struct _GsShellInstalled
 	GtkWidget		*stack_install;
 };
 
-G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsInstalledPage, gs_installed_page, GS_TYPE_PAGE)
 
-static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
-							GsShellInstalled *self);
-static void set_selection_mode (GsShellInstalled *self, gboolean selection_mode);
+static void gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
+                                                       GsInstalledPage *self);
+static void set_selection_mode (GsInstalledPage *self, gboolean selection_mode);
 
 static void
-gs_shell_installed_invalidate (GsShellInstalled *self)
+gs_installed_page_invalidate (GsInstalledPage *self)
 {
 	self->cache_valid = FALSE;
 }
 
 static void
-gs_shell_installed_app_row_activated_cb (GtkListBox *list_box,
-					 GtkListBoxRow *row,
-					 GsShellInstalled *self)
+gs_installed_page_app_row_activated_cb (GtkListBox *list_box,
+                                        GtkListBoxRow *row,
+                                        GsInstalledPage *self)
 {
 	if (self->selection_mode) {
 		gboolean selected;
@@ -99,7 +99,7 @@ row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 }
 
 static void
-gs_shell_installed_unreveal_row (GsAppRow *app_row)
+gs_installed_page_unreveal_row (GsAppRow *app_row)
 {
 	gs_app_row_unreveal (app_row);
 	g_signal_connect (app_row, "unrevealed",
@@ -107,9 +107,9 @@ gs_shell_installed_unreveal_row (GsAppRow *app_row)
 }
 
 static void
-gs_shell_installed_app_removed (GsPage *page, GsApp *app)
+gs_installed_page_app_removed (GsPage *page, GsApp *app)
 {
-	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
 	GList *l;
 	g_autoptr(GList) children = NULL;
 
@@ -117,14 +117,14 @@ gs_shell_installed_app_removed (GsPage *page, GsApp *app)
 	for (l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		if (gs_app_row_get_app (app_row) == app) {
-			gs_shell_installed_unreveal_row (app_row);
+			gs_installed_page_unreveal_row (app_row);
 		}
 	}
 }
 
 static void
-gs_shell_installed_app_remove_cb (GsAppRow *app_row,
-				  GsShellInstalled *self)
+gs_installed_page_app_remove_cb (GsAppRow *app_row,
+                                 GsInstalledPage *self)
 {
 	GsApp *app;
 
@@ -133,7 +133,7 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 }
 
 static gboolean
-gs_shell_installed_invalidate_sort_idle (gpointer user_data)
+gs_installed_page_invalidate_sort_idle (gpointer user_data)
 {
 	GsAppRow *app_row = user_data;
 	GsApp *app = gs_app_row_get_app (app_row);
@@ -144,31 +144,31 @@ gs_shell_installed_invalidate_sort_idle (gpointer user_data)
 	/* if the app has been uninstalled (which can happen from another view)
 	 * we should removed it from the installed view */
 	if (state == AS_APP_STATE_AVAILABLE || state == AS_APP_STATE_UNKNOWN)
-		gs_shell_installed_unreveal_row (app_row);
+		gs_installed_page_unreveal_row (app_row);
 
 	g_object_unref (app_row);
 	return G_SOURCE_REMOVE;
 }
 
 static void
-gs_shell_installed_notify_state_changed_cb (GsApp *app,
-					    GParamSpec *pspec,
-					    GsAppRow *app_row)
+gs_installed_page_notify_state_changed_cb (GsApp *app,
+                                           GParamSpec *pspec,
+                                           GsAppRow *app_row)
 {
-	g_idle_add (gs_shell_installed_invalidate_sort_idle, g_object_ref (app_row));
+	g_idle_add (gs_installed_page_invalidate_sort_idle, g_object_ref (app_row));
 }
 
-static void selection_changed (GsShellInstalled *self);
+static void selection_changed (GsInstalledPage *self);
 
 static gboolean
-should_show_installed_size (GsShellInstalled *self)
+should_show_installed_size (GsInstalledPage *self)
 {
 	return g_settings_get_boolean (self->settings,
 				       "installed-page-show-size");
 }
 
 static gboolean
-gs_shell_installed_is_actual_app (GsApp *app)
+gs_installed_page_is_actual_app (GsApp *app)
 {
 	if (gs_app_get_description (app) != NULL)
 		return TRUE;
@@ -180,7 +180,7 @@ gs_shell_installed_is_actual_app (GsApp *app)
 }
 
 static void
-gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
+gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 {
 	GtkWidget *app_row;
 
@@ -192,9 +192,9 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 	    gs_utils_list_has_app_fuzzy (list, app))
 		gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
-			  G_CALLBACK (gs_shell_installed_app_remove_cb), self);
+			  G_CALLBACK (gs_installed_page_app_remove_cb), self);
 	g_signal_connect_object (app, "notify::state",
-				 G_CALLBACK (gs_shell_installed_notify_state_changed_cb),
+				 G_CALLBACK (gs_installed_page_notify_state_changed_cb),
 				 app_row, 0);
 	g_signal_connect_swapped (app_row, "notify::selected",
 				  G_CALLBACK (selection_changed), self);
@@ -212,17 +212,17 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsAppList *list, GsApp *app)
 				   self->selection_mode);
 
 	/* only show if is an actual application */
-	gtk_widget_set_visible (app_row, gs_shell_installed_is_actual_app (app));
+	gtk_widget_set_visible (app_row, gs_installed_page_is_actual_app (app));
 }
 
 static void
-gs_shell_installed_get_installed_cb (GObject *source_object,
-				     GAsyncResult *res,
-				     gpointer user_data)
+gs_installed_page_get_installed_cb (GObject *source_object,
+                                    GAsyncResult *res,
+                                    gpointer user_data)
 {
 	guint i;
 	GsApp *app;
-	GsShellInstalled *self = GS_SHELL_INSTALLED (user_data);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -243,17 +243,17 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	}
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
-		gs_shell_installed_add_app (self, list, app);
+		gs_installed_page_add_app (self, list, app);
 	}
 out:
-	gs_shell_installed_pending_apps_changed_cb (plugin_loader, self);
+	gs_installed_page_pending_apps_changed_cb (plugin_loader, self);
 
 	/* seems a good place */
 	gs_shell_profile_dump (self->shell);
 }
 
 static void
-gs_shell_installed_load (GsShellInstalled *self)
+gs_installed_page_load (GsInstalledPage *self)
 {
 	GsPluginRefineFlags flags;
 
@@ -283,22 +283,22 @@ gs_shell_installed_load (GsShellInstalled *self)
 					      flags,
 					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					      self->cancellable,
-					      gs_shell_installed_get_installed_cb,
+					      gs_installed_page_get_installed_cb,
 					      self);
 	gs_start_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }
 
 static void
-gs_shell_installed_reload (GsPage *page)
+gs_installed_page_reload (GsPage *page)
 {
-	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
-	gs_shell_installed_invalidate (self);
-	gs_shell_installed_load (self);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
+	gs_installed_page_invalidate (self);
+	gs_installed_page_load (self);
 }
 
 static void
-gs_shell_update_button_select_visibility (GsShellInstalled *self)
+gs_shell_update_button_select_visibility (GsInstalledPage *self)
 {
 	gboolean show_button_select;
 	if (gs_utils_is_current_desktop ("GNOME")) {
@@ -311,9 +311,9 @@ gs_shell_update_button_select_visibility (GsShellInstalled *self)
 }
 
 static void
-gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
+gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
 {
-	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_INSTALLED) {
@@ -341,11 +341,11 @@ gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
 	if (self->cache_valid)
 		return;
 
-	gs_shell_installed_load (self);
+	gs_installed_page_load (self);
 }
 
 /**
- * gs_shell_installed_get_app_sort_key:
+ * gs_installed_page_get_app_sort_key:
  *
  * Get a sort key to achive this:
  *
@@ -358,7 +358,7 @@ gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
  * by name.
  **/
 static gchar *
-gs_shell_installed_get_app_sort_key (GsApp *app)
+gs_installed_page_get_app_sort_key (GsApp *app)
 {
 	GString *key;
 	g_autofree gchar *casefolded_name = NULL;
@@ -428,9 +428,9 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 }
 
 static gint
-gs_shell_installed_sort_func (GtkListBoxRow *a,
-			      GtkListBoxRow *b,
-			      gpointer user_data)
+gs_installed_page_sort_func (GtkListBoxRow *a,
+                             GtkListBoxRow *b,
+                             gpointer user_data)
 {
 	GsApp *a1, *a2;
 	g_autofree gchar *key1 = NULL;
@@ -444,8 +444,8 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 
 	a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	key1 = gs_shell_installed_get_app_sort_key (a1);
-	key2 = gs_shell_installed_get_app_sort_key (a2);
+	key1 = gs_installed_page_get_app_sort_key (a1);
+	key2 = gs_installed_page_get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
 	return g_strcmp0 (key1, key2);
@@ -456,10 +456,10 @@ typedef enum {
 	GS_UPDATE_LIST_SECTION_SYSTEM_APPS,
 	GS_UPDATE_LIST_SECTION_ADDONS,
 	GS_UPDATE_LIST_SECTION_LAST
-} GsShellInstalledSection;
+} GsInstalledPageSection;
 
-static GsShellInstalledSection
-gs_shell_installed_get_app_section (GsApp *app)
+static GsInstalledPageSection
+gs_installed_page_get_app_section (GsApp *app)
 {
 	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP ||
 	    gs_app_get_kind (app) == AS_APP_KIND_WEB_APP) {
@@ -471,7 +471,7 @@ gs_shell_installed_get_app_section (GsApp *app)
 }
 
 static GtkWidget *
-gs_shell_installed_get_section_header (GsShellInstalledSection section)
+gs_installed_page_get_section_header (GsInstalledPageSection section)
 {
 	GtkWidget *header = NULL;
 
@@ -496,26 +496,26 @@ gs_shell_installed_get_section_header (GsShellInstalledSection section)
 }
 
 static void
-gs_shell_installed_list_header_func (GtkListBoxRow *row,
-				     GtkListBoxRow *before,
-				     gpointer user_data)
+gs_installed_page_list_header_func (GtkListBoxRow *row,
+                                    GtkListBoxRow *before,
+                                    gpointer user_data)
 {
 	GsApp *app = gs_app_row_get_app (GS_APP_ROW (row));
-	GsShellInstalledSection before_section = GS_UPDATE_LIST_SECTION_LAST;
-	GsShellInstalledSection section;
+	GsInstalledPageSection before_section = GS_UPDATE_LIST_SECTION_LAST;
+	GsInstalledPageSection section;
 	GtkWidget *header;
 
 	/* first entry */
 	gtk_list_box_row_set_header (row, NULL);
 	if (before != NULL) {
 		GsApp *before_app = gs_app_row_get_app (GS_APP_ROW (before));
-		before_section = gs_shell_installed_get_app_section (before_app);
+		before_section = gs_installed_page_get_app_section (before_app);
 	}
 
 	/* section changed or forced to have headers */
-	section = gs_shell_installed_get_app_section (app);
+	section = gs_installed_page_get_app_section (app);
 	if (before_section != section) {
-		header = gs_shell_installed_get_section_header (section);
+		header = gs_installed_page_get_section_header (section);
 		if (header == NULL)
 			return;
 	} else {
@@ -525,8 +525,8 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 }
 
 static gboolean
-gs_shell_installed_has_app (GsShellInstalled *self,
-			    GsApp *app)
+gs_installed_page_has_app (GsInstalledPage *self,
+                           GsApp *app)
 {
 	GList *l;
 	gboolean ret = FALSE;
@@ -544,8 +544,8 @@ gs_shell_installed_has_app (GsShellInstalled *self,
 }
 
 static void
-gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
-					    GsShellInstalled *self)
+gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
+                                           GsInstalledPage *self)
 {
 	GsApp *app;
 	GtkWidget *widget;
@@ -564,8 +564,8 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 			continue;
 
 		/* do not to add pending apps more than once. */
-		if (gs_shell_installed_has_app (self, app) == FALSE)
-			gs_shell_installed_add_app (self, pending, app);
+		if (gs_installed_page_has_app (self, app) == FALSE)
+			gs_installed_page_add_app (self, pending, app);
 
 		/* incremement the label */
 		cnt++;
@@ -585,7 +585,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-set_selection_mode (GsShellInstalled *self, gboolean selection_mode)
+set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 {
 	GList *l;
 	GtkWidget *header;
@@ -633,20 +633,20 @@ set_selection_mode (GsShellInstalled *self, gboolean selection_mode)
 					   self->selection_mode);
 		gtk_widget_set_visible (GTK_WIDGET (app_row),
 					self->selection_mode ||
-					gs_shell_installed_is_actual_app (app));
+					gs_installed_page_is_actual_app (app));
 	}
 
 	gtk_revealer_set_reveal_child (GTK_REVEALER (self->bottom_install), self->selection_mode);
 }
 
 static void
-selection_mode_cb (GtkButton *button, GsShellInstalled *self)
+selection_mode_cb (GtkButton *button, GsInstalledPage *self)
 {
 	set_selection_mode (self, !self->selection_mode);
 }
 
 static GList *
-get_selected_apps (GsShellInstalled *self)
+get_selected_apps (GsInstalledPage *self)
 {
 	GList *l, *list;
 	g_autoptr(GList) children = NULL;
@@ -663,7 +663,7 @@ get_selected_apps (GsShellInstalled *self)
 }
 
 static void
-selection_changed (GsShellInstalled *self)
+selection_changed (GsInstalledPage *self)
 {
 	GList *l;
 	GsApp *app;
@@ -691,14 +691,14 @@ selection_changed (GsShellInstalled *self)
 }
 
 static gboolean
-folder_dialog_done (GsShellInstalled *self)
+folder_dialog_done (GsInstalledPage *self)
 {
 	set_selection_mode (self, FALSE);
 	return FALSE;
 }
 
 static void
-show_folder_dialog (GtkButton *button, GsShellInstalled *self)
+show_folder_dialog (GtkButton *button, GsInstalledPage *self)
 {
 	GtkWidget *toplevel;
 	GtkWidget *dialog;
@@ -715,7 +715,7 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *self)
 }
 
 static void
-remove_folders (GtkButton *button, GsShellInstalled *self)
+remove_folders (GtkButton *button, GsInstalledPage *self)
 {
 	GList *l;
 	GsApp *app;
@@ -738,7 +738,7 @@ remove_folders (GtkButton *button, GsShellInstalled *self)
 }
 
 static void
-select_all_cb (GtkMenuItem *item, GsShellInstalled *self)
+select_all_cb (GtkMenuItem *item, GsInstalledPage *self)
 {
 	GList *l;
 	g_autoptr(GList) children = NULL;
@@ -751,7 +751,7 @@ select_all_cb (GtkMenuItem *item, GsShellInstalled *self)
 }
 
 static void
-select_none_cb (GtkMenuItem *item, GsShellInstalled *self)
+select_none_cb (GtkMenuItem *item, GsInstalledPage *self)
 {
 	GList *l;
 	g_autoptr(GList) children = NULL;
@@ -764,7 +764,7 @@ select_none_cb (GtkMenuItem *item, GsShellInstalled *self)
 }
 
 static void
-gs_shell_settings_changed_cb (GsShellInstalled *self,
+gs_shell_settings_changed_cb (GsInstalledPage *self,
                               const gchar *key,
                               gpointer data)
 {
@@ -774,23 +774,23 @@ gs_shell_settings_changed_cb (GsShellInstalled *self,
 }
 
 static gboolean
-gs_shell_installed_setup (GsPage *page,
-			  GsShell *shell,
-			  GsPluginLoader *plugin_loader,
-			  GtkBuilder *builder,
-			  GCancellable *cancellable,
-			  GError **error)
+gs_installed_page_setup (GsPage *page,
+                         GsShell *shell,
+                         GsPluginLoader *plugin_loader,
+                         GtkBuilder *builder,
+                         GCancellable *cancellable,
+                         GError **error)
 {
-	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
 	AtkObject *accessible;
 	GtkWidget *widget;
 
-	g_return_val_if_fail (GS_IS_SHELL_INSTALLED (self), TRUE);
+	g_return_val_if_fail (GS_IS_INSTALLED_PAGE (self), TRUE);
 
 	self->shell = shell;
 	self->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (self->plugin_loader, "pending-apps-changed",
-			  G_CALLBACK (gs_shell_installed_pending_apps_changed_cb),
+			  G_CALLBACK (gs_installed_page_pending_apps_changed_cb),
 			  self);
 
 	self->builder = g_object_ref (builder);
@@ -798,12 +798,12 @@ gs_shell_installed_setup (GsPage *page,
 
 	/* setup installed */
 	g_signal_connect (self->list_box_install, "row-activated",
-			  G_CALLBACK (gs_shell_installed_app_row_activated_cb), self);
+			  G_CALLBACK (gs_installed_page_app_row_activated_cb), self);
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_install),
-				      gs_shell_installed_list_header_func,
+				      gs_installed_page_list_header_func,
 				      self, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_install),
-				    gs_shell_installed_sort_func,
+				    gs_installed_page_sort_func,
 				    self, NULL);
 
 	g_signal_connect (self->button_folder_add, "clicked",
@@ -833,9 +833,9 @@ gs_shell_installed_setup (GsPage *page,
 }
 
 static void
-gs_shell_installed_dispose (GObject *object)
+gs_installed_page_dispose (GObject *object)
 {
-	GsShellInstalled *self = GS_SHELL_INSTALLED (object);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (object);
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
@@ -846,36 +846,36 @@ gs_shell_installed_dispose (GObject *object)
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->settings);
 
-	G_OBJECT_CLASS (gs_shell_installed_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_installed_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_installed_class_init (GsShellInstalledClass *klass)
+gs_installed_page_class_init (GsInstalledPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_installed_dispose;
-	page_class->app_removed = gs_shell_installed_app_removed;
-	page_class->switch_to = gs_shell_installed_switch_to;
-	page_class->reload = gs_shell_installed_reload;
-	page_class->setup = gs_shell_installed_setup;
+	object_class->dispose = gs_installed_page_dispose;
+	page_class->app_removed = gs_installed_page_app_removed;
+	page_class->switch_to = gs_installed_page_switch_to;
+	page_class->reload = gs_installed_page_reload;
+	page_class->setup = gs_installed_page_setup;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-installed-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, bottom_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, button_folder_add);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, button_folder_move);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, button_folder_remove);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, list_box_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, scrolledwindow_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, spinner_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, stack_install);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, bottom_install);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, button_folder_add);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, button_folder_move);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, button_folder_remove);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, list_box_install);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, scrolledwindow_install);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, spinner_install);
+	gtk_widget_class_bind_template_child (widget_class, GsInstalledPage, stack_install);
 }
 
 static void
-gs_shell_installed_init (GsShellInstalled *self)
+gs_installed_page_init (GsInstalledPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -889,12 +889,12 @@ gs_shell_installed_init (GsShellInstalled *self)
 				  self);
 }
 
-GsShellInstalled *
-gs_shell_installed_new (void)
+GsInstalledPage *
+gs_installed_page_new (void)
 {
-	GsShellInstalled *self;
-	self = g_object_new (GS_TYPE_SHELL_INSTALLED, NULL);
-	return GS_SHELL_INSTALLED (self);
+	GsInstalledPage *self;
+	self = g_object_new (GS_TYPE_INSTALLED_PAGE, NULL);
+	return GS_INSTALLED_PAGE (self);
 }
 
 /* vim: set noexpandtab: */

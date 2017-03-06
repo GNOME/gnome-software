@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk+" version="3.10"/>
-  <template class="GsShellInstalled" parent="GsPage">
+  <template class="GsModeratePage" parent="GsPage">
     <child internal-child="accessible">
-      <object class="AtkObject" id="installed-accessible">
-        <property name="accessible-name" translatable="yes">Installed page</property>
+      <object class="AtkObject" id="moderate-accessible">
+        <property name="accessible-name" translatable="yes">Moderate page</property>
       </object>
     </child>
     <child>
@@ -51,56 +51,54 @@
                 </child>
               </object>
             </child>
-            <child>
-              <object class="GtkRevealer" id="bottom_install">
+          </object>
+          <packing>
+            <property name="name">view</property>
+          </packing>
+        </child>
+
+        <child>
+          <object class="GtkBox" id="updates_uptodate_box">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">48</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+            <child type="center">
+              <object class="GtkBox" id="updates_uptodate_centerbox">
                 <property name="visible">True</property>
-                <property name="transition-type">slide-up</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">12</property>
                 <child>
-                  <object class="GtkActionBar" id="action_bar">
+                  <object class="GtkImage" id="image_updates">
                     <property name="visible">True</property>
-                    <child>
-                      <object class="GtkButton" id="button_folder_add">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">_Add to Folder…</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_folder_move">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">_Move to Folder…</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_folder_remove">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">_Remove from Folder</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
+                    <property name="can_focus">False</property>
+                    <property name="pixel_size">128</property>
+                    <property name="icon_name">object-select-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">There are no reviews to moderate</property>
+                    <attributes>
+                      <attribute name="scale" value="1.4"/>
+                    </attributes>
                   </object>
                 </child>
               </object>
             </child>
           </object>
           <packing>
-            <property name="name">view</property>
+            <property name="name">uptodate</property>
           </packing>
         </child>
+
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup" id="sizegroup_folder_buttons">
-    <property name="ignore-hidden">False</property>
-    <property name="mode">vertical</property>
-    <widgets>
-      <widget name="button_folder_add"/>
-      <widget name="button_folder_move"/>
-      <widget name="button_folder_remove"/>
-    </widgets>
-  </object>
 </interface>

@@ -25,7 +25,7 @@
 
 #include "gs-app.h"
 #include "gs-shell.h"
-#include "gs-shell-loading.h"
+#include "gs-loading-page.h"
 
 typedef struct {
 	GsPage			 parent_instance;
@@ -36,9 +36,9 @@ typedef struct {
 
 	GtkWidget		*progressbar;
 	GtkWidget		*label;
-} GsShellLoadingPrivate;
+} GsLoadingPagePrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellLoading, gs_shell_loading, GS_TYPE_PAGE)
+G_DEFINE_TYPE_WITH_PRIVATE (GsLoadingPage, gs_loading_page, GS_TYPE_PAGE)
 
 enum {
 	SIGNAL_REFRESHED,
@@ -48,12 +48,12 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 static void
-gs_shell_loading_status_changed_cb (GsPluginLoader *plugin_loader,
-				    GsApp *app,
-				    GsPluginStatus status,
-				    GsShellLoading *self)
+gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
+                                   GsApp *app,
+                                   GsPluginStatus status,
+                                   GsLoadingPage *self)
 {
-	GsShellLoadingPrivate *priv = gs_shell_loading_get_instance_private (self);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
 	/* update label */
 	switch (status) {
@@ -77,10 +77,10 @@ gs_shell_loading_status_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_shell_loading_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GsShellLoading *self = GS_SHELL_LOADING (user_data);
+	GsLoadingPage *self = GS_LOADING_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 
 	/* no longer care */
@@ -97,9 +97,9 @@ gs_shell_loading_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer
 }
 
 static void
-gs_shell_loading_load (GsShellLoading *self)
+gs_loading_page_load (GsLoadingPage *self)
 {
-	GsShellLoadingPrivate *priv = gs_shell_loading_get_instance_private (self);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
 	/* ensure that at least some metadata of any age is present, and also
 	 * spin up the plugins enough as to prime caches */
@@ -107,39 +107,39 @@ gs_shell_loading_load (GsShellLoading *self)
 					GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					priv->cancellable,
-					gs_shell_loading_refresh_cb,
+					gs_loading_page_refresh_cb,
 					self);
 	g_signal_connect (priv->plugin_loader, "status-changed",
-			  G_CALLBACK (gs_shell_loading_status_changed_cb),
+			  G_CALLBACK (gs_loading_page_status_changed_cb),
 			  self);
 }
 
 static void
-gs_shell_loading_switch_to (GsPage *page, gboolean scroll_up)
+gs_loading_page_switch_to (GsPage *page, gboolean scroll_up)
 {
-	GsShellLoading *self = GS_SHELL_LOADING (page);
-	GsShellLoadingPrivate *priv = gs_shell_loading_get_instance_private (self);
+	GsLoadingPage *self = GS_LOADING_PAGE (page);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
 	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_LOADING) {
 		g_warning ("Called switch_to(loading) when in mode %s",
 			   gs_shell_get_mode_string (priv->shell));
 		return;
 	}
-	gs_shell_loading_load (self);
+	gs_loading_page_load (self);
 }
 
 static gboolean
-gs_shell_loading_setup (GsPage *page,
-			GsShell *shell,
-			GsPluginLoader *plugin_loader,
-			GtkBuilder *builder,
-			GCancellable *cancellable,
-			GError **error)
+gs_loading_page_setup (GsPage *page,
+                       GsShell *shell,
+                       GsPluginLoader *plugin_loader,
+                       GtkBuilder *builder,
+                       GCancellable *cancellable,
+                       GError **error)
 {
-	GsShellLoading *self = GS_SHELL_LOADING (page);
-	GsShellLoadingPrivate *priv = gs_shell_loading_get_instance_private (self);
+	GsLoadingPage *self = GS_LOADING_PAGE (page);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
-	g_return_val_if_fail (GS_IS_SHELL_LOADING (self), TRUE);
+	g_return_val_if_fail (GS_IS_LOADING_PAGE (self), TRUE);
 
 	priv->shell = shell;
 	priv->plugin_loader = g_object_ref (plugin_loader);
@@ -148,53 +148,53 @@ gs_shell_loading_setup (GsPage *page,
 }
 
 static void
-gs_shell_loading_dispose (GObject *object)
+gs_loading_page_dispose (GObject *object)
 {
-	GsShellLoading *self = GS_SHELL_LOADING (object);
-	GsShellLoadingPrivate *priv = gs_shell_loading_get_instance_private (self);
+	GsLoadingPage *self = GS_LOADING_PAGE (object);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
 
-	G_OBJECT_CLASS (gs_shell_loading_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_loading_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_loading_class_init (GsShellLoadingClass *klass)
+gs_loading_page_class_init (GsLoadingPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_loading_dispose;
-	page_class->switch_to = gs_shell_loading_switch_to;
-	page_class->setup = gs_shell_loading_setup;
+	object_class->dispose = gs_loading_page_dispose;
+	page_class->switch_to = gs_loading_page_switch_to;
+	page_class->setup = gs_loading_page_setup;
 
 	signals [SIGNAL_REFRESHED] =
 		g_signal_new ("refreshed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsShellLoadingClass, refreshed),
+			      G_STRUCT_OFFSET (GsLoadingPageClass, refreshed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-loading.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-loading-page.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellLoading, progressbar);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellLoading, label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsLoadingPage, progressbar);
+	gtk_widget_class_bind_template_child_private (widget_class, GsLoadingPage, label);
 }
 
 static void
-gs_shell_loading_init (GsShellLoading *self)
+gs_loading_page_init (GsLoadingPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 
-GsShellLoading *
-gs_shell_loading_new (void)
+GsLoadingPage *
+gs_loading_page_new (void)
 {
-	GsShellLoading *self;
-	self = g_object_new (GS_TYPE_SHELL_LOADING, NULL);
-	return GS_SHELL_LOADING (self);
+	GsLoadingPage *self;
+	self = g_object_new (GS_TYPE_LOADING_PAGE, NULL);
+	return GS_LOADING_PAGE (self);
 }
 
 /* vim: set noexpandtab: */

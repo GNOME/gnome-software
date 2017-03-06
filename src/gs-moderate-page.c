@@ -29,10 +29,10 @@
 #include "gs-app-row.h"
 #include "gs-review-row.h"
 #include "gs-shell.h"
-#include "gs-shell-moderate.h"
+#include "gs-moderate-page.h"
 #include "gs-common.h"
 
-struct _GsShellModerate
+struct _GsModeratePage
 {
 	GsPage			 parent_instance;
 
@@ -49,12 +49,12 @@ struct _GsShellModerate
 	GtkWidget		*stack_install;
 };
 
-G_DEFINE_TYPE (GsShellModerate, gs_shell_moderate, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsModeratePage, gs_moderate_page, GS_TYPE_PAGE)
 
 static void
-gs_shell_moderate_app_set_review_cb (GObject *source,
-				     GAsyncResult *res,
-				     gpointer user_data)
+gs_moderate_page_app_set_review_cb (GObject *source,
+                                    GAsyncResult *res,
+                                    gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GError) error = NULL;
@@ -66,9 +66,9 @@ gs_shell_moderate_app_set_review_cb (GObject *source,
 }
 
 static void
-gs_shell_moderate_review_clicked_cb (GsReviewRow *row,
-				     GsPluginAction action,
-				     GsShellModerate *self)
+gs_moderate_page_review_clicked_cb (GsReviewRow *row,
+                                    GsPluginAction action,
+                                    GsModeratePage *self)
 {
 	GsApp *app = g_object_get_data (G_OBJECT (row), "GsApp");
 	gs_plugin_loader_review_action_async (self->plugin_loader,
@@ -78,16 +78,16 @@ gs_shell_moderate_review_clicked_cb (GsReviewRow *row,
 					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
 					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					      self->cancellable,
-					      gs_shell_moderate_app_set_review_cb,
+					      gs_moderate_page_app_set_review_cb,
 					      self);
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
 }
 
 
 static void
-gs_shell_moderate_selection_changed_cb (GtkListBox *listbox,
-					GsAppRow *app_row,
-					GsShellModerate *self)
+gs_moderate_page_selection_changed_cb (GtkListBox *listbox,
+                                       GsAppRow *app_row,
+                                       GsModeratePage *self)
 {
 	g_autofree gchar *tmp = NULL;
 	tmp = gs_app_to_string (gs_app_row_get_app (app_row));
@@ -95,7 +95,7 @@ gs_shell_moderate_selection_changed_cb (GtkListBox *listbox,
 }
 
 static void
-gs_shell_moderate_add_app (GsShellModerate *self, GsApp *app)
+gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 {
 	GPtrArray *reviews;
 	GtkWidget *app_row;
@@ -127,7 +127,7 @@ gs_shell_moderate_add_app (GsShellModerate *self, GsApp *app)
 					   1 << GS_PLUGIN_ACTION_REVIEW_DISMISS |
 					   1 << GS_PLUGIN_ACTION_REVIEW_REPORT);
 		g_signal_connect (row, "button-clicked",
-				  G_CALLBACK (gs_shell_moderate_review_clicked_cb), self);
+				  G_CALLBACK (gs_moderate_page_review_clicked_cb), self);
 		g_object_set_data_full (G_OBJECT (row), "GsApp",
 					g_object_ref (app),
 					(GDestroyNotify) g_object_unref);
@@ -137,13 +137,13 @@ gs_shell_moderate_add_app (GsShellModerate *self, GsApp *app)
 }
 
 static void
-gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
-					  GAsyncResult *res,
-					  gpointer user_data)
+gs_moderate_page_get_unvoted_reviews_cb (GObject *source_object,
+                                         GAsyncResult *res,
+                                         gpointer user_data)
 {
 	guint i;
 	GsApp *app;
-	GsShellModerate *self = GS_SHELL_MODERATE (user_data);
+	GsModeratePage *self = GS_MODERATE_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -169,7 +169,7 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
-		gs_shell_moderate_add_app (self, app);
+		gs_moderate_page_add_app (self, app);
 	}
 
 	/* seems a good place */
@@ -177,7 +177,7 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 }
 
 static void
-gs_shell_moderate_load (GsShellModerate *self)
+gs_moderate_page_load (GsModeratePage *self)
 {
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
@@ -193,23 +193,23 @@ gs_shell_moderate_load (GsShellModerate *self)
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
 						    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						    self->cancellable,
-						    gs_shell_moderate_get_unvoted_reviews_cb,
+						    gs_moderate_page_get_unvoted_reviews_cb,
 						    self);
 	gs_start_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }
 
 static void
-gs_shell_moderate_reload (GsPage *page)
+gs_moderate_page_reload (GsPage *page)
 {
-	GsShellModerate *self = GS_SHELL_MODERATE (page);
-	gs_shell_moderate_load (self);
+	GsModeratePage *self = GS_MODERATE_PAGE (page);
+	gs_moderate_page_load (self);
 }
 
 static void
-gs_shell_moderate_switch_to (GsPage *page, gboolean scroll_up)
+gs_moderate_page_switch_to (GsPage *page, gboolean scroll_up)
 {
-	GsShellModerate *self = GS_SHELL_MODERATE (page);
+	GsModeratePage *self = GS_MODERATE_PAGE (page);
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_MODERATE) {
 		g_warning ("Called switch_to(moderate) when in mode %s",
@@ -218,13 +218,13 @@ gs_shell_moderate_switch_to (GsPage *page, gboolean scroll_up)
 	}
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_MODERATE)
 		gs_grab_focus_when_mapped (self->scrolledwindow_install);
-	gs_shell_moderate_load (self);
+	gs_moderate_page_load (self);
 }
 
 static void
-gs_shell_moderate_list_header_func (GtkListBoxRow *row,
-				     GtkListBoxRow *before,
-				     gpointer user_data)
+gs_moderate_page_list_header_func (GtkListBoxRow *row,
+                                   GtkListBoxRow *before,
+                                   gpointer user_data)
 {
 	GtkWidget *header;
 	gtk_list_box_row_set_header (row, NULL);
@@ -237,30 +237,30 @@ gs_shell_moderate_list_header_func (GtkListBoxRow *row,
 }
 
 static gboolean
-gs_shell_moderate_setup (GsPage *page,
-			  GsShell *shell,
-			  GsPluginLoader *plugin_loader,
-			  GtkBuilder *builder,
-			  GCancellable *cancellable,
-			  GError **error)
+gs_moderate_page_setup (GsPage *page,
+                        GsShell *shell,
+                        GsPluginLoader *plugin_loader,
+                        GtkBuilder *builder,
+                        GCancellable *cancellable,
+                        GError **error)
 {
-	GsShellModerate *self = GS_SHELL_MODERATE (page);
-	g_return_val_if_fail (GS_IS_SHELL_MODERATE (self), TRUE);
+	GsModeratePage *self = GS_MODERATE_PAGE (page);
+	g_return_val_if_fail (GS_IS_MODERATE_PAGE (self), TRUE);
 
 	self->shell = shell;
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->cancellable = g_object_ref (cancellable);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_install),
-				      gs_shell_moderate_list_header_func,
+				      gs_moderate_page_list_header_func,
 				      self, NULL);
 	return TRUE;
 }
 
 static void
-gs_shell_moderate_dispose (GObject *object)
+gs_moderate_page_dispose (GObject *object)
 {
-	GsShellModerate *self = GS_SHELL_MODERATE (object);
+	GsModeratePage *self = GS_MODERATE_PAGE (object);
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
@@ -269,48 +269,48 @@ gs_shell_moderate_dispose (GObject *object)
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 
-	G_OBJECT_CLASS (gs_shell_moderate_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_moderate_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_moderate_class_init (GsShellModerateClass *klass)
+gs_moderate_page_class_init (GsModeratePageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_moderate_dispose;
-	page_class->switch_to = gs_shell_moderate_switch_to;
-	page_class->reload = gs_shell_moderate_reload;
-	page_class->setup = gs_shell_moderate_setup;
+	object_class->dispose = gs_moderate_page_dispose;
+	page_class->switch_to = gs_moderate_page_switch_to;
+	page_class->reload = gs_moderate_page_reload;
+	page_class->setup = gs_moderate_page_setup;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-moderate.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-moderate-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShellModerate, list_box_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellModerate, scrolledwindow_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellModerate, spinner_install);
-	gtk_widget_class_bind_template_child (widget_class, GsShellModerate, stack_install);
+	gtk_widget_class_bind_template_child (widget_class, GsModeratePage, list_box_install);
+	gtk_widget_class_bind_template_child (widget_class, GsModeratePage, scrolledwindow_install);
+	gtk_widget_class_bind_template_child (widget_class, GsModeratePage, spinner_install);
+	gtk_widget_class_bind_template_child (widget_class, GsModeratePage, stack_install);
 }
 
 static void
-gs_shell_moderate_init (GsShellModerate *self)
+gs_moderate_page_init (GsModeratePage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	g_signal_connect (self->list_box_install, "row-activated",
-			  G_CALLBACK (gs_shell_moderate_selection_changed_cb), self);
+			  G_CALLBACK (gs_moderate_page_selection_changed_cb), self);
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
-GsShellModerate *
-gs_shell_moderate_new (void)
+GsModeratePage *
+gs_moderate_page_new (void)
 {
-	GsShellModerate *self;
-	self = g_object_new (GS_TYPE_SHELL_MODERATE, NULL);
-	return GS_SHELL_MODERATE (self);
+	GsModeratePage *self;
+	self = g_object_new (GS_TYPE_MODERATE_PAGE, NULL);
+	return GS_MODERATE_PAGE (self);
 }
 
 /* vim: set noexpandtab: */

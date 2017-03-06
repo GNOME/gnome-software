@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#include "gs-shell-extras.h"
+#include "gs-extras-page.h"
 
 #include "gs-app.h"
 #include "gs-app-row.h"
@@ -33,11 +33,11 @@
 #include <glib/gi18n.h>
 
 typedef enum {
-	GS_SHELL_EXTRAS_STATE_LOADING,
-	GS_SHELL_EXTRAS_STATE_READY,
-	GS_SHELL_EXTRAS_STATE_NO_RESULTS,
-	GS_SHELL_EXTRAS_STATE_FAILED
-} GsShellExtrasState;
+	GS_EXTRAS_PAGE_STATE_LOADING,
+	GS_EXTRAS_PAGE_STATE_READY,
+	GS_EXTRAS_PAGE_STATE_NO_RESULTS,
+	GS_EXTRAS_PAGE_STATE_FAILED
+} GsExtrasPageState;
 
 typedef struct {
 	gchar		*title;
@@ -45,10 +45,10 @@ typedef struct {
 	gchar		*search_filename;
 	gchar		*package_filename;
 	gchar		*url_not_found;
-	GsShellExtras	*self;
+	GsExtrasPage	*self;
 } SearchData;
 
-struct _GsShellExtras
+struct _GsExtrasPage
 {
 	GsPage			  parent_instance;
 
@@ -56,12 +56,12 @@ struct _GsShellExtras
 	GtkBuilder		 *builder;
 	GCancellable		 *search_cancellable;
 	GsShell			 *shell;
-	GsShellExtrasState	  state;
+	GsExtrasPageState	  state;
 	GtkSizeGroup		 *sizegroup_image;
 	GtkSizeGroup		 *sizegroup_name;
 	GtkSizeGroup		 *sizegroup_button;
 	GPtrArray		 *array_search_data;
-	GsShellExtrasMode	  mode;
+	GsExtrasPageMode	  mode;
 	GsLanguage		 *language;
 	GsVendor		 *vendor;
 	guint			  pending_search_cnt;
@@ -74,7 +74,7 @@ struct _GsShellExtras
 	GtkWidget		 *stack;
 };
 
-G_DEFINE_TYPE (GsShellExtras, gs_shell_extras, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsExtrasPage, gs_extras_page, GS_TYPE_PAGE)
 
 static void
 search_data_free (SearchData *search_data)
@@ -89,47 +89,47 @@ search_data_free (SearchData *search_data)
 	g_slice_free (SearchData, search_data);
 }
 
-static GsShellExtrasMode
-gs_shell_extras_mode_from_string (const gchar *str)
+static GsExtrasPageMode
+gs_extras_page_mode_from_string (const gchar *str)
 {
 	if (g_strcmp0 (str, "install-package-files") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES;
 	if (g_strcmp0 (str, "install-provide-files") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_PROVIDE_FILES;
 	if (g_strcmp0 (str, "install-package-names") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_NAMES;
 	if (g_strcmp0 (str, "install-mime-types") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_MIME_TYPES;
 	if (g_strcmp0 (str, "install-fontconfig-resources") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_FONTCONFIG_RESOURCES;
 	if (g_strcmp0 (str, "install-gstreamer-resources") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_GSTREAMER_RESOURCES;
 	if (g_strcmp0 (str, "install-plasma-resources") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_PLASMA_RESOURCES;
 	if (g_strcmp0 (str, "install-printer-drivers") == 0)
-		return GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS;
+		return GS_EXTRAS_PAGE_MODE_INSTALL_PRINTER_DRIVERS;
 
 	g_assert_not_reached ();
 }
 
 const gchar *
-gs_shell_extras_mode_to_string (GsShellExtrasMode mode)
+gs_extras_page_mode_to_string (GsExtrasPageMode mode)
 {
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES)
 		return "install-package-files";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_PROVIDE_FILES)
 		return "install-provide-files";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_NAMES)
 		return "install-package-names";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_MIME_TYPES)
 		return "install-mime-types";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_FONTCONFIG_RESOURCES)
 		return "install-fontconfig-resources";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_GSTREAMER_RESOURCES)
 		return "install-gstreamer-resources";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_PLASMA_RESOURCES)
 		return "install-plasma-resources";
-	if (mode == GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS)
+	if (mode == GS_EXTRAS_PAGE_MODE_INSTALL_PRINTER_DRIVERS)
 		return "install-printer-drivers";
 
 	g_assert_not_reached ();
@@ -151,7 +151,7 @@ build_comma_separated_list (gchar **items)
 }
 
 static gchar *
-build_title (GsShellExtras *self)
+build_title (GsExtrasPage *self)
 {
 	guint i;
 	g_autofree gchar *titles = NULL;
@@ -169,7 +169,7 @@ build_title (GsShellExtras *self)
 	titles = build_comma_separated_list ((gchar **) title_array->pdata);
 
 	switch (self->mode) {
-	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_FONTCONFIG_RESOURCES:
 		/* TRANSLATORS: Application window title for fonts installation.
 		   %s will be replaced by name of the script we're searching for. */
 		return g_strdup_printf (ngettext ("Available fonts for the %s script",
@@ -189,7 +189,7 @@ build_title (GsShellExtras *self)
 }
 
 static void
-gs_shell_extras_update_ui_state (GsShellExtras *self)
+gs_extras_page_update_ui_state (GsExtrasPage *self)
 {
 	GtkWidget *widget;
 	g_autofree gchar *title = NULL;
@@ -199,12 +199,12 @@ gs_shell_extras_update_ui_state (GsShellExtras *self)
 
 	/* main spinner */
 	switch (self->state) {
-	case GS_SHELL_EXTRAS_STATE_LOADING:
+	case GS_EXTRAS_PAGE_STATE_LOADING:
 		gs_start_spinner (GTK_SPINNER (self->spinner));
 		break;
-	case GS_SHELL_EXTRAS_STATE_READY:
-	case GS_SHELL_EXTRAS_STATE_NO_RESULTS:
-	case GS_SHELL_EXTRAS_STATE_FAILED:
+	case GS_EXTRAS_PAGE_STATE_READY:
+	case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
+	case GS_EXTRAS_PAGE_STATE_FAILED:
 		gs_stop_spinner (GTK_SPINNER (self->spinner));
 		break;
 	default:
@@ -215,13 +215,13 @@ gs_shell_extras_update_ui_state (GsShellExtras *self)
 	/* headerbar title */
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
 	switch (self->state) {
-	case GS_SHELL_EXTRAS_STATE_LOADING:
-	case GS_SHELL_EXTRAS_STATE_READY:
+	case GS_EXTRAS_PAGE_STATE_LOADING:
+	case GS_EXTRAS_PAGE_STATE_READY:
 		title = build_title (self);
 		gtk_label_set_label (GTK_LABEL (widget), title);
 		break;
-	case GS_SHELL_EXTRAS_STATE_NO_RESULTS:
-	case GS_SHELL_EXTRAS_STATE_FAILED:
+	case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
+	case GS_EXTRAS_PAGE_STATE_FAILED:
 		gtk_label_set_label (GTK_LABEL (widget), _("Unable to Find Requested Software"));
 		break;
 	default:
@@ -231,16 +231,16 @@ gs_shell_extras_update_ui_state (GsShellExtras *self)
 
 	/* stack */
 	switch (self->state) {
-	case GS_SHELL_EXTRAS_STATE_LOADING:
+	case GS_EXTRAS_PAGE_STATE_LOADING:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "spinner");
 		break;
-	case GS_SHELL_EXTRAS_STATE_READY:
+	case GS_EXTRAS_PAGE_STATE_READY:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "results");
 		break;
-	case GS_SHELL_EXTRAS_STATE_NO_RESULTS:
+	case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "no-results");
 		break;
-	case GS_SHELL_EXTRAS_STATE_FAILED:
+	case GS_EXTRAS_PAGE_STATE_FAILED:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "failed");
 		break;
 	default:
@@ -250,16 +250,16 @@ gs_shell_extras_update_ui_state (GsShellExtras *self)
 }
 
 static void
-gs_shell_extras_set_state (GsShellExtras *self,
-			    GsShellExtrasState state)
+gs_extras_page_set_state (GsExtrasPage *self,
+                          GsExtrasPageState state)
 {
 	self->state = state;
-	gs_shell_extras_update_ui_state (self);
+	gs_extras_page_update_ui_state (self);
 }
 
 static void
 app_row_button_clicked_cb (GsAppRow *app_row,
-                           GsShellExtras *self)
+                           GsExtrasPage *self)
 {
 	GsApp *app;
 	app = gs_app_row_get_app (app_row);
@@ -274,7 +274,7 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 }
 
 static void
-gs_shell_extras_add_app (GsShellExtras *self, GsApp *app, SearchData *search_data)
+gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, SearchData *search_data)
 {
 	GtkWidget *app_row;
 	GList *l;
@@ -311,7 +311,7 @@ gs_shell_extras_add_app (GsShellExtras *self, GsApp *app, SearchData *search_dat
 static GsApp *
 create_missing_app (SearchData *search_data)
 {
-	GsShellExtras *self = search_data->self;
+	GsExtrasPage *self = search_data->self;
 	GsApp *app;
 	GString *summary_missing;
 	g_autofree gchar *name = NULL;
@@ -328,7 +328,7 @@ create_missing_app (SearchData *search_data)
 
 	summary_missing = g_string_new ("");
 	switch (self->mode) {
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No applications are available that provide the file %s."), search_data->title);
@@ -339,7 +339,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get missing applications "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PROVIDE_FILES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No applications are available for %s support."), search_data->title);
@@ -350,7 +350,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get missing applications "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_NAMES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("%s is not available."), search_data->title);
@@ -361,7 +361,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get missing applications "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_MIME_TYPES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No applications are available for %s support."), search_data->title);
@@ -372,7 +372,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get an application that can support this format "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_FONTCONFIG_RESOURCES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No fonts are available for the %s script support."), search_data->title);
@@ -383,7 +383,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get additional fonts "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_GSTREAMER_RESOURCES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No addon codecs are available for the %s format."), search_data->title);
@@ -394,7 +394,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get a codec that can play this format "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PLASMA_RESOURCES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No Plasma resources are available for %s support."), search_data->title);
@@ -405,7 +405,7 @@ create_missing_app (SearchData *search_data)
 					"for how to get additional Plasma resources "
 					"might be found %s."), search_data->title, url);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS:
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PRINTER_DRIVERS:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
 		g_string_append_printf (summary_missing, _("No printer drivers are available for %s."), search_data->title);
@@ -431,7 +431,7 @@ create_missing_app (SearchData *search_data)
 }
 
 static gchar *
-build_no_results_label (GsShellExtras *self)
+build_no_results_label (GsExtrasPage *self)
 {
 	GList *l;
 	GsApp *app = NULL;
@@ -469,7 +469,7 @@ build_no_results_label (GsShellExtras *self)
 }
 
 static void
-show_search_results (GsShellExtras *self)
+show_search_results (GsExtrasPage *self)
 {
 	GsApp *app;
 	GList *l;
@@ -496,8 +496,7 @@ show_search_results (GsShellExtras *self)
 		g_debug ("extras: failed to find any results, %u", n_missing);
 		str = build_no_results_label (self);
 		gtk_label_set_label (GTK_LABEL (self->label_no_results), str);
-		gs_shell_extras_set_state (self,
-		                           GS_SHELL_EXTRAS_STATE_NO_RESULTS);
+		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_NO_RESULTS);
 	} else if (n_children == 1) {
 		/* switch directly to details view */
 		g_debug ("extras: found one result, showing in details view");
@@ -507,8 +506,7 @@ show_search_results (GsShellExtras *self)
 	} else {
 		/* show what we got */
 		g_debug ("extras: got %u search results, showing", n_children);
-		gs_shell_extras_set_state (self,
-		                           GS_SHELL_EXTRAS_STATE_READY);
+		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_READY);
 	}
 
 	/* seems a good place */
@@ -521,7 +519,7 @@ search_files_cb (GObject *source_object,
                  gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
-	GsShellExtras *self = search_data->self;
+	GsExtrasPage *self = search_data->self;
 	g_autoptr(GsAppList) list = NULL;
 	guint i;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
@@ -537,7 +535,7 @@ search_files_cb (GObject *source_object,
 		g_warning ("failed to find any search results: %s", error->message);
 		str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
 		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
-		gs_shell_extras_set_state (self, GS_SHELL_EXTRAS_STATE_FAILED);
+		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
 	}
 
@@ -554,7 +552,7 @@ search_files_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_shell_extras_add_app (self, app, search_data);
+		gs_extras_page_add_app (self, app, search_data);
 	}
 
 	self->pending_search_cnt--;
@@ -570,7 +568,7 @@ file_to_app_cb (GObject *source_object,
                 gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
-	GsShellExtras *self = search_data->self;
+	GsExtrasPage *self = search_data->self;
 	GsApp *app;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
@@ -592,14 +590,13 @@ file_to_app_cb (GObject *source_object,
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
 			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
-			gs_shell_extras_set_state (self,
-						    GS_SHELL_EXTRAS_STATE_FAILED);
+			gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 			return;
 		}
 	}
 
 	g_debug ("%s\n\n", gs_app_to_string (app));
-	gs_shell_extras_add_app (self, app, search_data);
+	gs_extras_page_add_app (self, app, search_data);
 
 	self->pending_search_cnt--;
 
@@ -616,7 +613,7 @@ get_search_what_provides_cb (GObject *source_object,
                              gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
-	GsShellExtras *self = search_data->self;
+	GsExtrasPage *self = search_data->self;
 	g_autoptr(GsAppList) list = NULL;
 	guint i;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
@@ -632,7 +629,7 @@ get_search_what_provides_cb (GObject *source_object,
 		g_warning ("failed to find any search results: %s", error->message);
 		str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
 		gtk_label_set_label (GTK_LABEL (self->label_failed), str);
-		gs_shell_extras_set_state (self, GS_SHELL_EXTRAS_STATE_FAILED);
+		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 		return;
 	}
 
@@ -649,7 +646,7 @@ get_search_what_provides_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_shell_extras_add_app (self, app, search_data);
+		gs_extras_page_add_app (self, app, search_data);
 	}
 
 	self->pending_search_cnt--;
@@ -660,7 +657,7 @@ get_search_what_provides_cb (GObject *source_object,
 }
 
 static void
-gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
+gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 {
 	guint i;
 
@@ -683,7 +680,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_results));
 
 	/* set state as loading */
-	self->state = GS_SHELL_EXTRAS_STATE_LOADING;
+	self->state = GS_EXTRAS_PAGE_STATE_LOADING;
 
 	/* start new searches, separate one for each codec */
 	for (i = 0; i < self->array_search_data->len; i++) {
@@ -737,15 +734,15 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 }
 
 static void
-gs_shell_extras_reload (GsPage *page)
+gs_extras_page_reload (GsPage *page)
 {
-	GsShellExtras *self = GS_SHELL_EXTRAS (page);
+	GsExtrasPage *self = GS_EXTRAS_PAGE (page);
 	if (self->array_search_data != NULL)
-		gs_shell_extras_load (self, NULL);
+		gs_extras_page_load (self, NULL);
 }
 
 static void
-gs_shell_extras_search_package_files (GsShellExtras *self, gchar **files)
+gs_extras_page_search_package_files (GsExtrasPage *self, gchar **files)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -761,11 +758,11 @@ gs_shell_extras_search_package_files (GsShellExtras *self, gchar **files)
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_provide_files (GsShellExtras *self, gchar **files)
+gs_extras_page_search_provide_files (GsExtrasPage *self, gchar **files)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -781,11 +778,11 @@ gs_shell_extras_search_provide_files (GsShellExtras *self, gchar **files)
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_package_names (GsShellExtras *self, gchar **package_names)
+gs_extras_page_search_package_names (GsExtrasPage *self, gchar **package_names)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -801,11 +798,11 @@ gs_shell_extras_search_package_names (GsShellExtras *self, gchar **package_names
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_mime_types (GsShellExtras *self, gchar **mime_types)
+gs_extras_page_search_mime_types (GsExtrasPage *self, gchar **mime_types)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -821,7 +818,7 @@ gs_shell_extras_search_mime_types (GsShellExtras *self, gchar **mime_types)
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static gchar *
@@ -834,7 +831,7 @@ font_tag_to_lang (const gchar *tag)
 }
 
 static gchar *
-gs_shell_extras_font_tag_to_localised_name (GsShellExtras *self, const gchar *tag)
+gs_extras_page_font_tag_to_localised_name (GsExtrasPage *self, const gchar *tag)
 {
 	gchar *name;
 	g_autofree gchar *lang = NULL;
@@ -863,7 +860,7 @@ gs_shell_extras_font_tag_to_localised_name (GsShellExtras *self, const gchar *ta
 }
 
 static void
-gs_shell_extras_search_fontconfig_resources (GsShellExtras *self, gchar **resources)
+gs_extras_page_search_fontconfig_resources (GsExtrasPage *self, gchar **resources)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -872,18 +869,18 @@ gs_shell_extras_search_fontconfig_resources (GsShellExtras *self, gchar **resour
 		SearchData *search_data;
 
 		search_data = g_slice_new0 (SearchData);
-		search_data->title = gs_shell_extras_font_tag_to_localised_name (self, resources[i]);
+		search_data->title = gs_extras_page_font_tag_to_localised_name (self, resources[i]);
 		search_data->search = g_strdup (resources[i]);
 		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_FONT);
 		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_gstreamer_resources (GsShellExtras *self, gchar **resources)
+gs_extras_page_search_gstreamer_resources (GsExtrasPage *self, gchar **resources)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -902,11 +899,11 @@ gs_shell_extras_search_gstreamer_resources (GsShellExtras *self, gchar **resourc
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_plasma_resources (GsShellExtras *self, gchar **resources)
+gs_extras_page_search_plasma_resources (GsExtrasPage *self, gchar **resources)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
@@ -922,11 +919,11 @@ gs_shell_extras_search_plasma_resources (GsShellExtras *self, gchar **resources)
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_printer_drivers (GsShellExtras *self, gchar **device_ids)
+gs_extras_page_search_printer_drivers (GsExtrasPage *self, gchar **device_ids)
 {
 	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i, j;
@@ -978,39 +975,39 @@ gs_shell_extras_search_printer_drivers (GsShellExtras *self, gchar **device_ids)
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (self, array_search_data);
+	gs_extras_page_load (self, array_search_data);
 }
 
 void
-gs_shell_extras_search (GsShellExtras  *self,
-                        const gchar    *mode_str,
-                        gchar         **resources)
+gs_extras_page_search (GsExtrasPage  *self,
+                       const gchar   *mode_str,
+                       gchar        **resources)
 {
-	self->mode = gs_shell_extras_mode_from_string (mode_str);
+	self->mode = gs_extras_page_mode_from_string (mode_str);
 	switch (self->mode) {
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES:
-		gs_shell_extras_search_package_files (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES:
+		gs_extras_page_search_package_files (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES:
-		gs_shell_extras_search_provide_files (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PROVIDE_FILES:
+		gs_extras_page_search_provide_files (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES:
-		gs_shell_extras_search_package_names (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_NAMES:
+		gs_extras_page_search_package_names (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES:
-		gs_shell_extras_search_mime_types (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_MIME_TYPES:
+		gs_extras_page_search_mime_types (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
-		gs_shell_extras_search_fontconfig_resources (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_FONTCONFIG_RESOURCES:
+		gs_extras_page_search_fontconfig_resources (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES:
-		gs_shell_extras_search_gstreamer_resources (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_GSTREAMER_RESOURCES:
+		gs_extras_page_search_gstreamer_resources (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES:
-		gs_shell_extras_search_plasma_resources (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PLASMA_RESOURCES:
+		gs_extras_page_search_plasma_resources (self, resources);
 		break;
-	case GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS:
-		gs_shell_extras_search_printer_drivers (self, resources);
+	case GS_EXTRAS_PAGE_MODE_INSTALL_PRINTER_DRIVERS:
+		gs_extras_page_search_printer_drivers (self, resources);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -1019,10 +1016,10 @@ gs_shell_extras_search (GsShellExtras  *self,
 }
 
 static void
-gs_shell_extras_switch_to (GsPage *page,
-                           gboolean scroll_up)
+gs_extras_page_switch_to (GsPage *page,
+                          gboolean scroll_up)
 {
-	GsShellExtras *self = GS_SHELL_EXTRAS (page);
+	GsExtrasPage *self = GS_EXTRAS_PAGE (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS) {
@@ -1040,13 +1037,13 @@ gs_shell_extras_switch_to (GsPage *page,
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
 
-	gs_shell_extras_update_ui_state (self);
+	gs_extras_page_update_ui_state (self);
 }
 
 static void
 row_activated_cb (GtkListBox *list_box,
                   GtkListBoxRow *row,
-                  GsShellExtras *self)
+                  GsExtrasPage *self)
 {
 	GsApp *app;
 
@@ -1121,16 +1118,16 @@ list_header_func (GtkListBoxRow *row,
 }
 
 static gboolean
-gs_shell_extras_setup (GsPage *page,
-			GsShell *shell,
-			GsPluginLoader *plugin_loader,
-			GtkBuilder *builder,
-			GCancellable *cancellable,
-			GError **error)
+gs_extras_page_setup (GsPage *page,
+                      GsShell *shell,
+                      GsPluginLoader *plugin_loader,
+                      GtkBuilder *builder,
+                      GCancellable *cancellable,
+                      GError **error)
 {
-	GsShellExtras *self = GS_SHELL_EXTRAS (page);
+	GsExtrasPage *self = GS_EXTRAS_PAGE (page);
 
-	g_return_val_if_fail (GS_IS_SHELL_EXTRAS (self), TRUE);
+	g_return_val_if_fail (GS_IS_EXTRAS_PAGE (self), TRUE);
 
 	self->shell = shell;
 
@@ -1149,9 +1146,9 @@ gs_shell_extras_setup (GsPage *page,
 }
 
 static void
-gs_shell_extras_dispose (GObject *object)
+gs_extras_page_dispose (GObject *object)
 {
-	GsShellExtras *self = GS_SHELL_EXTRAS (object);
+	GsExtrasPage *self = GS_EXTRAS_PAGE (object);
 
 	if (self->search_cancellable != NULL) {
 		g_cancellable_cancel (self->search_cancellable);
@@ -1168,17 +1165,17 @@ gs_shell_extras_dispose (GObject *object)
 
 	g_clear_pointer (&self->array_search_data, g_ptr_array_unref);
 
-	G_OBJECT_CLASS (gs_shell_extras_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_extras_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_extras_init (GsShellExtras *self)
+gs_extras_page_init (GsExtrasPage *self)
 {
 	g_autoptr(GError) error = NULL;
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->state = GS_SHELL_EXTRAS_STATE_LOADING;
+	self->state = GS_EXTRAS_PAGE_STATE_LOADING;
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -1192,33 +1189,33 @@ gs_shell_extras_init (GsShellExtras *self)
 }
 
 static void
-gs_shell_extras_class_init (GsShellExtrasClass *klass)
+gs_extras_page_class_init (GsExtrasPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_extras_dispose;
-	page_class->switch_to = gs_shell_extras_switch_to;
-	page_class->reload = gs_shell_extras_reload;
-	page_class->setup = gs_shell_extras_setup;
+	object_class->dispose = gs_extras_page_dispose;
+	page_class->switch_to = gs_extras_page_switch_to;
+	page_class->reload = gs_extras_page_reload;
+	page_class->setup = gs_extras_page_setup;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-extras.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-extras-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, label_failed);
-	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, label_no_results);
-	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, list_box_results);
-	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, scrolledwindow);
-	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, spinner);
-	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, label_failed);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, label_no_results);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, list_box_results);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, scrolledwindow);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, spinner);
+	gtk_widget_class_bind_template_child (widget_class, GsExtrasPage, stack);
 }
 
-GsShellExtras *
-gs_shell_extras_new (void)
+GsExtrasPage *
+gs_extras_page_new (void)
 {
-	GsShellExtras *self;
-	self = g_object_new (GS_TYPE_SHELL_EXTRAS, NULL);
-	return GS_SHELL_EXTRAS (self);
+	GsExtrasPage *self;
+	self = g_object_new (GS_TYPE_EXTRAS_PAGE, NULL);
+	return GS_EXTRAS_PAGE (self);
 }
 
 /* vim: set noexpandtab: */

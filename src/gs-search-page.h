@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,32 +19,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_LOADING_H
-#define __GS_SHELL_LOADING_H
+#ifndef __GS_SEARCH_PAGE_H
+#define __GS_SEARCH_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
 #include "gs-page.h"
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_LOADING (gs_shell_loading_get_type ())
+#define GS_TYPE_SEARCH_PAGE (gs_search_page_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsShellLoading, gs_shell_loading, GS, SHELL_LOADING, GsPage)
+G_DECLARE_FINAL_TYPE (GsSearchPage, gs_search_page, GS, SEARCH_PAGE, GsPage)
 
-struct _GsShellLoadingClass
-{
-	GsPageClass		 parent_class;
-
-	void	(*refreshed)	(GsShellLoading	*self);
-};
-
-GsShellLoading	*gs_shell_loading_new		(void);
+GsSearchPage	*gs_search_page_new			(void);
+void		 gs_search_page_set_appid_to_show	(GsSearchPage		*self,
+							 const gchar		*appid);
+const gchar	*gs_search_page_get_text		(GsSearchPage		*self);
+void		 gs_search_page_set_text		(GsSearchPage		*self,
+							 const gchar		*value);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_LOADING_H */
+#endif /* __GS_SEARCH_PAGE_H */
 
 /* vim: set noexpandtab: */

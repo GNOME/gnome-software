@@ -71,15 +71,15 @@ UI_FILES =						\
 	gs-review-histogram.ui				\
 	gs-review-row.ui				\
 	gs-screenshot-image.ui				\
-	gs-shell-category.ui				\
-	gs-shell-details.ui				\
-	gs-shell-extras.ui				\
-	gs-shell-installed.ui				\
-	gs-shell-moderate.ui				\
-	gs-shell-loading.ui				\
-	gs-shell-overview.ui				\
-	gs-shell-search.ui				\
-	gs-shell-updates.ui				\
+	gs-category-page.ui				\
+	gs-details-page.ui				\
+	gs-extras-page.ui				\
+	gs-installed-page.ui				\
+	gs-moderate-page.ui				\
+	gs-loading-page.ui				\
+	gs-overview-page.ui				\
+	gs-search-page.ui				\
+	gs-updates-page.ui				\
 	gs-sources-dialog-row.ui			\
 	gs-sources-dialog.ui				\
 	gs-star-widget.ui				\
@@ -229,24 +229,24 @@ gnome_software_SOURCES =				\
 	gs-screenshot-image.h				\
 	gs-shell.c					\
 	gs-shell.h					\
-	gs-shell-details.c				\
-	gs-shell-details.h				\
-	gs-shell-category.c				\
-	gs-shell-category.h				\
-	gs-shell-extras.c				\
-	gs-shell-extras.h				\
-	gs-shell-installed.c				\
-	gs-shell-installed.h				\
-	gs-shell-moderate.c				\
-	gs-shell-moderate.h				\
-	gs-shell-loading.c				\
-	gs-shell-loading.h				\
-	gs-shell-overview.c				\
-	gs-shell-overview.h				\
-	gs-shell-updates.c				\
-	gs-shell-updates.h				\
-	gs-shell-search.c				\
-	gs-shell-search.h				\
+	gs-details-page.c				\
+	gs-details-page.h				\
+	gs-category-page.c				\
+	gs-category-page.h				\
+	gs-extras-page.c				\
+	gs-extras-page.h				\
+	gs-installed-page.c				\
+	gs-installed-page.h				\
+	gs-moderate-page.c				\
+	gs-moderate-page.h				\
+	gs-loading-page.c				\
+	gs-loading-page.h				\
+	gs-overview-page.c				\
+	gs-overview-page.h				\
+	gs-updates-page.c				\
+	gs-updates-page.h				\
+	gs-search-page.c				\
+	gs-search-page.h				\
 	gs-sources-dialog.c				\
 	gs-sources-dialog.h				\
 	gs-sources-dialog-row.c				\

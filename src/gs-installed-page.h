@@ -19,43 +19,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_EXTRAS_H
-#define __GS_SHELL_EXTRAS_H
+#ifndef __GS_INSTALLED_PAGE_H
+#define __GS_INSTALLED_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
 #include "gs-page.h"
 #include "gs-plugin-loader.h"
-#include "gs-shell.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_EXTRAS (gs_shell_extras_get_type ())
+#define GS_TYPE_INSTALLED_PAGE (gs_installed_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellExtras, gs_shell_extras, GS, SHELL_EXTRAS, GsPage)
+G_DECLARE_FINAL_TYPE (GsInstalledPage, gs_installed_page, GS, INSTALLED_PAGE, GsPage)
 
-typedef enum {
-	GS_SHELL_EXTRAS_MODE_UNKNOWN,
-	GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES,
-	GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS,
-	GS_SHELL_EXTRAS_MODE_LAST
-} GsShellExtrasMode;
-
-const gchar		*gs_shell_extras_mode_to_string		(GsShellExtrasMode	  mode);
-GsShellExtras		*gs_shell_extras_new			(void);
-void			 gs_shell_extras_search			(GsShellExtras		 *self,
-								 const gchar 		 *mode,
-								 gchar			**resources);
+GsInstalledPage	*gs_installed_page_new	(void);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_EXTRAS_H */
+#endif /* __GS_INSTALLED_PAGE_H */
 
 /* vim: set noexpandtab: */

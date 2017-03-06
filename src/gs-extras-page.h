@@ -12,37 +12,50 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more category.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_CATEGORY_H
-#define __GS_SHELL_CATEGORY_H
+#ifndef __GS_EXTRAS_PAGE_H
+#define __GS_EXTRAS_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "gs-category.h"
 #include "gs-page.h"
-#include "gs-shell.h"
 #include "gs-plugin-loader.h"
+#include "gs-shell.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_CATEGORY (gs_shell_category_get_type ())
+#define GS_TYPE_EXTRAS_PAGE (gs_extras_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellCategory, gs_shell_category, GS, SHELL_CATEGORY, GsPage)
+G_DECLARE_FINAL_TYPE (GsExtrasPage, gs_extras_page, GS, EXTRAS_PAGE, GsPage)
 
-GsShellCategory	*gs_shell_category_new		(void);
-void		 gs_shell_category_set_category	(GsShellCategory	*self,
-						 GsCategory		*category);
-GsCategory	*gs_shell_category_get_category (GsShellCategory	*self);
+typedef enum {
+	GS_EXTRAS_PAGE_MODE_UNKNOWN,
+	GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_PROVIDE_FILES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_NAMES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_MIME_TYPES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_FONTCONFIG_RESOURCES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_GSTREAMER_RESOURCES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_PLASMA_RESOURCES,
+	GS_EXTRAS_PAGE_MODE_INSTALL_PRINTER_DRIVERS,
+	GS_EXTRAS_PAGE_MODE_LAST
+} GsExtrasPageMode;
+
+const gchar		*gs_extras_page_mode_to_string		(GsExtrasPageMode	  mode);
+GsExtrasPage		*gs_extras_page_new			(void);
+void			 gs_extras_page_search			(GsExtrasPage		 *self,
+								 const gchar 		 *mode,
+								 gchar			**resources);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_CATEGORY_H */
+#endif /* __GS_EXTRAS_PAGE_H */
 
 /* vim: set noexpandtab: */

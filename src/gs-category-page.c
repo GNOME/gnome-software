@@ -27,9 +27,9 @@
 
 #include "gs-common.h"
 #include "gs-summary-tile.h"
-#include "gs-shell-category.h"
+#include "gs-category-page.h"
 
-struct _GsShellCategory
+struct _GsCategoryPage
 {
 	GsPage		 parent_instance;
 
@@ -48,12 +48,12 @@ struct _GsShellCategory
 	GtkWidget	*scrolledwindow_filter;
 };
 
-G_DEFINE_TYPE (GsShellCategory, gs_shell_category, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
 static void
-gs_shell_category_switch_to (GsPage *page, gboolean scroll_up)
+gs_category_page_switch_to (GsPage *page, gboolean scroll_up)
 {
-	GsShellCategory *self = GS_SHELL_CATEGORY (page);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
@@ -64,7 +64,7 @@ gs_shell_category_switch_to (GsPage *page, gboolean scroll_up)
 static void
 app_tile_clicked (GsAppTile *tile, gpointer data)
 {
-	GsShellCategory *self = GS_SHELL_CATEGORY (data);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
@@ -72,14 +72,14 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 }
 
 static void
-gs_shell_category_get_apps_cb (GObject *source_object,
-			       GAsyncResult *res,
-			       gpointer user_data)
+gs_category_page_get_apps_cb (GObject *source_object,
+                              GAsyncResult *res,
+                              gpointer user_data)
 {
 	guint i;
 	GsApp *app;
 	GtkWidget *tile;
-	GsShellCategory *self = GS_SHELL_CATEGORY (user_data);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -110,9 +110,9 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 }
 
 static void
-gs_shell_category_reload (GsPage *page)
+gs_category_page_reload (GsPage *page)
 {
-	GsShellCategory *self = GS_SHELL_CATEGORY (page);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 	GtkWidget *tile;
 	guint i, count;
 
@@ -152,35 +152,35 @@ gs_shell_category_reload (GsPage *page)
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 						  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						  self->cancellable,
-						  gs_shell_category_get_apps_cb,
+						  gs_category_page_get_apps_cb,
 						  self);
 }
 
 static void
-gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcategory)
+gs_category_page_populate_filtered (GsCategoryPage *self, GsCategory *subcategory)
 {
 	g_assert (subcategory != NULL);
 	g_set_object (&self->subcategory, subcategory);
-	gs_shell_category_reload (GS_PAGE (self));
+	gs_category_page_reload (GS_PAGE (self));
 }
 
 static void
 filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 {
-	GsShellCategory *self = GS_SHELL_CATEGORY (data);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
 	GsCategory *category;
 
 	if (row == NULL)
 		return;
 
 	category = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "category");
-	gs_shell_category_populate_filtered (self, category);
+	gs_category_page_populate_filtered (self, category);
 }
 
 static void
-gs_shell_category_create_filter_list (GsShellCategory *self,
-				      GsCategory *category,
-				      GsCategory *subcategory)
+gs_category_page_create_filter_list (GsCategoryPage *self,
+                                     GsCategory *category,
+                                     GsCategory *subcategory)
 {
 	GtkWidget *row;
 	GsCategory *s;
@@ -217,7 +217,7 @@ gs_shell_category_create_filter_list (GsShellCategory *self,
 }
 
 void
-gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
+gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 {
 	GPtrArray *children = NULL;
 	GsCategory *sub;
@@ -244,25 +244,25 @@ gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 	}
 
 	/* find apps in this group */
-	gs_shell_category_create_filter_list (self, category, selected);
+	gs_category_page_create_filter_list (self, category, selected);
 }
 
 GsCategory *
-gs_shell_category_get_category (GsShellCategory *self)
+gs_category_page_get_category (GsCategoryPage *self)
 {
 	return self->category;
 }
 
 static void
-gs_shell_category_init (GsShellCategory *self)
+gs_category_page_init (GsCategoryPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 
 static void
-gs_shell_category_dispose (GObject *object)
+gs_category_page_dispose (GObject *object)
 {
-	GsShellCategory *self = GS_SHELL_CATEGORY (object);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (object);
 
 	if (self->cancellable != NULL) {
 		g_cancellable_cancel (self->cancellable);
@@ -274,11 +274,11 @@ gs_shell_category_dispose (GObject *object)
 	g_clear_object (&self->subcategory);
 	g_clear_object (&self->plugin_loader);
 
-	G_OBJECT_CLASS (gs_shell_category_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_category_page_parent_class)->dispose (object);
 }
 
 static gboolean
-key_event (GtkWidget *listbox, GdkEvent *event, GsShellCategory *self)
+key_event (GtkWidget *listbox, GdkEvent *event, GsCategoryPage *self)
 {
 	guint keyval;
 	gboolean handled;
@@ -304,7 +304,7 @@ key_event (GtkWidget *listbox, GdkEvent *event, GsShellCategory *self)
 }
 
 static void
-button_shell_extensions_cb (GtkButton *button, GsShellCategory *self)
+button_shell_extensions_cb (GtkButton *button, GsCategoryPage *self)
 {
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
@@ -316,14 +316,14 @@ button_shell_extensions_cb (GtkButton *button, GsShellCategory *self)
 }
 
 static gboolean
-gs_shell_category_setup (GsPage *page,
-			 GsShell *shell,
-			 GsPluginLoader *plugin_loader,
-			 GtkBuilder *builder,
-			 GCancellable *cancellable,
-			 GError **error)
+gs_category_page_setup (GsPage *page,
+                        GsShell *shell,
+                        GsPluginLoader *plugin_loader,
+                        GtkBuilder *builder,
+                        GCancellable *cancellable,
+                        GError **error)
 {
-	GsShellCategory *self = GS_SHELL_CATEGORY (page);
+	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 	GtkAdjustment *adj;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
@@ -344,32 +344,32 @@ gs_shell_category_setup (GsPage *page,
 }
 
 static void
-gs_shell_category_class_init (GsShellCategoryClass *klass)
+gs_category_page_class_init (GsCategoryPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_category_dispose;
-	page_class->switch_to = gs_shell_category_switch_to;
-	page_class->reload = gs_shell_category_reload;
-	page_class->setup = gs_shell_category_setup;
+	object_class->dispose = gs_category_page_dispose;
+	page_class->switch_to = gs_category_page_switch_to;
+	page_class->reload = gs_category_page_reload;
+	page_class->setup = gs_category_page_setup;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, category_detail_box);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, infobar_category_shell_extensions);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, button_category_shell_extensions);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, listbox_filter);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_category);
-	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_filter);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, infobar_category_shell_extensions);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, button_category_shell_extensions);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, listbox_filter);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_filter);
 }
 
-GsShellCategory *
-gs_shell_category_new (void)
+GsCategoryPage *
+gs_category_page_new (void)
 {
-	GsShellCategory *self;
-	self = g_object_new (GS_TYPE_SHELL_CATEGORY, NULL);
+	GsCategoryPage *self;
+	self = g_object_new (GS_TYPE_CATEGORY_PAGE, NULL);
 	return self;
 }
 

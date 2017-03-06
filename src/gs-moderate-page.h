@@ -19,36 +19,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_OVERVIEW_H
-#define __GS_SHELL_OVERVIEW_H
+#ifndef __GS_MODERATE_PAGE_H
+#define __GS_MODERATE_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "gs-app.h"
 #include "gs-page.h"
-#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_OVERVIEW (gs_shell_overview_get_type ())
+#define GS_TYPE_MODERATE_PAGE (gs_moderate_page_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsShellOverview, gs_shell_overview, GS, SHELL_OVERVIEW, GsPage)
+G_DECLARE_FINAL_TYPE (GsModeratePage, gs_moderate_page, GS, MODERATE_PAGE, GsPage)
 
-struct _GsShellOverviewClass
-{
-	GsPageClass		 parent_class;
-
-	void	(*refreshed)	(GsShellOverview *self);
-};
-
-GsShellOverview	*gs_shell_overview_new		(void);
-void		 gs_shell_overview_set_category	(GsShellOverview	*self,
-						 const gchar		*category);
+GsModeratePage	*gs_moderate_page_new		(void);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_OVERVIEW_H */
+#endif /* __GS_MODERATE_PAGE_H */
 
 /* vim: set noexpandtab: */

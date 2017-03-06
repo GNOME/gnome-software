@@ -25,7 +25,7 @@
 #include <math.h>
 
 #include "gs-shell.h"
-#include "gs-shell-overview.h"
+#include "gs-overview-page.h"
 #include "gs-app.h"
 #include "gs-app-list-private.h"
 #include "gs-category.h"
@@ -70,9 +70,9 @@ typedef struct
 	GtkWidget		*categories_expander_button_up;
 	GtkWidget		*categories_expander_box;
 	GtkWidget		*categories_more;
-} GsShellOverviewPrivate;
+} GsOverviewPagePrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, GS_TYPE_PAGE)
+G_DEFINE_TYPE_WITH_PRIVATE (GsOverviewPage, gs_overview_page, GS_TYPE_PAGE)
 
 enum {
 	SIGNAL_REFRESHED,
@@ -83,7 +83,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 
 typedef struct {
         GsCategory	*category;
-        GsShellOverview	*self;
+        GsOverviewPage	*self;
         const gchar	*title;
 } LoadData;
 
@@ -98,9 +98,9 @@ load_data_free (LoadData *data)
 }
 
 static void
-gs_shell_overview_invalidate (GsShellOverview *self)
+gs_overview_page_invalidate (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
 	priv->cache_valid = FALSE;
 }
@@ -108,8 +108,8 @@ gs_shell_overview_invalidate (GsShellOverview *self)
 static void
 app_tile_clicked (GsAppTile *tile, gpointer data)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (data);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsApp *app;
 
 	app = gs_app_tile_get_app (tile);
@@ -125,9 +125,9 @@ filter_category (GsApp *app, gpointer user_data)
 }
 
 static void
-gs_shell_overview_decrement_action_cnt (GsShellOverview *self)
+gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
 	/* every job increcements this */
 	if (priv->action_cnt == 0) {
@@ -150,12 +150,12 @@ gs_shell_overview_decrement_action_cnt (GsShellOverview *self)
 }
 
 static void
-gs_shell_overview_get_popular_cb (GObject *source_object,
-				  GAsyncResult *res,
-				  gpointer user_data)
+gs_overview_page_get_popular_cb (GObject *source_object,
+                                 GAsyncResult *res,
+                                 gpointer user_data)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
 	GsApp *app;
@@ -189,13 +189,13 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	gs_shell_overview_decrement_action_cnt (self);
+	gs_overview_page_decrement_action_cnt (self);
 }
 
 static void
-gs_shell_overview_category_more_cb (GtkButton *button, GsShellOverview *self)
+gs_overview_page_category_more_cb (GtkButton *button, GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsCategory *cat;
 	const gchar *id;
 
@@ -209,13 +209,13 @@ gs_shell_overview_category_more_cb (GtkButton *button, GsShellOverview *self)
 }
 
 static void
-gs_shell_overview_get_category_apps_cb (GObject *source_object,
-					GAsyncResult *res,
-					gpointer user_data)
+gs_overview_page_get_category_apps_cb (GObject *source_object,
+                                       GAsyncResult *res,
+                                       gpointer user_data)
 {
 	LoadData *load_data = (LoadData *) user_data;
-	GsShellOverview *self = load_data->self;
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = load_data->self;
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
 	GsApp *app;
@@ -271,7 +271,7 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 	gtk_widget_set_valign (button, GTK_ALIGN_END);
 	gtk_widget_set_margin_bottom (button, 9);
 	g_signal_connect (button, "clicked",
-			  G_CALLBACK (gs_shell_overview_category_more_cb), self);
+			  G_CALLBACK (gs_overview_page_category_more_cb), self);
 	gtk_container_add (GTK_CONTAINER (headerbox), button);
 	gtk_container_add (GTK_CONTAINER (priv->box_overview), headerbox);
 
@@ -295,16 +295,16 @@ gs_shell_overview_get_category_apps_cb (GObject *source_object,
 
 out:
 	load_data_free (load_data);
-	gs_shell_overview_decrement_action_cnt (self);
+	gs_overview_page_decrement_action_cnt (self);
 }
 
 static void
-gs_shell_overview_get_featured_cb (GObject *source_object,
-				   GAsyncResult *res,
-				   gpointer user_data)
+gs_overview_page_get_featured_cb (GObject *source_object,
+                                  GAsyncResult *res,
+                                  gpointer user_data)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *tile;
 	GsApp *app;
@@ -346,14 +346,14 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	gs_shell_overview_decrement_action_cnt (self);
+	gs_overview_page_decrement_action_cnt (self);
 }
 
 static void
 category_tile_clicked (GsCategoryTile *tile, gpointer data)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (data);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsCategory *category;
 
 	category = gs_category_tile_get_category (tile);
@@ -361,12 +361,12 @@ category_tile_clicked (GsCategoryTile *tile, gpointer data)
 }
 
 static void
-gs_shell_overview_get_categories_cb (GObject *source_object,
-				     GAsyncResult *res,
-				     gpointer user_data)
+gs_overview_page_get_categories_cb (GObject *source_object,
+                                    GAsyncResult *res,
+                                    gpointer user_data)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
 	GsCategory *cat;
@@ -418,11 +418,11 @@ out:
 		priv->empty = FALSE;
 	gtk_widget_set_visible (priv->category_heading, added_cnt > 0);
 
-	gs_shell_overview_decrement_action_cnt (self);
+	gs_overview_page_decrement_action_cnt (self);
 }
 
 static const gchar *
-gs_shell_overview_get_category_label (const gchar *id)
+gs_overview_page_get_category_label (const gchar *id)
 {
 	if (g_strcmp0 (id, "audio-video") == 0) {
 		/* TRANSLATORS: this is a heading for audio applications which
@@ -448,7 +448,7 @@ gs_shell_overview_get_category_label (const gchar *id)
 }
 
 static GPtrArray *
-gs_shell_overview_get_random_categories (void)
+gs_overview_page_get_random_categories (void)
 {
 	GPtrArray *cats;
 	guint i;
@@ -483,9 +483,9 @@ gs_shell_overview_get_random_categories (void)
 }
 
 static void
-gs_shell_overview_load (GsShellOverview *self)
+gs_overview_page_load (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	guint i;
 
 	priv->empty = TRUE;
@@ -496,7 +496,7 @@ gs_shell_overview_load (GsShellOverview *self)
 						     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						     GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						     priv->cancellable,
-						     gs_shell_overview_get_featured_cb,
+						     gs_overview_page_get_featured_cb,
 						     self);
 		priv->action_cnt++;
 	}
@@ -508,7 +508,7 @@ gs_shell_overview_load (GsShellOverview *self)
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						    priv->cancellable,
-						    gs_shell_overview_get_popular_cb,
+						    gs_overview_page_get_popular_cb,
 						    self);
 		priv->action_cnt++;
 	}
@@ -516,7 +516,7 @@ gs_shell_overview_load (GsShellOverview *self)
 	if (!priv->loading_popular_rotating) {
 		const guint MAX_CATS = 2;
 		g_autoptr(GPtrArray) cats_random = NULL;
-		cats_random = gs_shell_overview_get_random_categories ();
+		cats_random = gs_overview_page_get_random_categories ();
 
 		/* load all the categories */
 		for (i = 0; i < cats_random->len && i < MAX_CATS; i++) {
@@ -537,14 +537,14 @@ gs_shell_overview_load (GsShellOverview *self)
 			load_data = g_slice_new0 (LoadData);
 			load_data->category = g_object_ref (category);
 			load_data->self = g_object_ref (self);
-			load_data->title = gs_shell_overview_get_category_label (cat_id);
+			load_data->title = gs_overview_page_get_category_label (cat_id);
 			gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
 								  featured_category,
 								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 								  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 								  priv->cancellable,
-								  gs_shell_overview_get_category_apps_cb,
+								  gs_overview_page_get_category_apps_cb,
 								  load_data);
 			priv->action_cnt++;
 		}
@@ -557,25 +557,25 @@ gs_shell_overview_load (GsShellOverview *self)
 						       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						       priv->cancellable,
-						       gs_shell_overview_get_categories_cb,
+						       gs_overview_page_get_categories_cb,
 						       self);
 		priv->action_cnt++;
 	}
 }
 
 static void
-gs_shell_overview_reload (GsPage *page)
+gs_overview_page_reload (GsPage *page)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (page);
-	gs_shell_overview_invalidate (self);
-	gs_shell_overview_load (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (page);
+	gs_overview_page_invalidate (self);
+	gs_overview_page_load (self);
 }
 
 static void
-gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
+gs_overview_page_switch_to (GsPage *page, gboolean scroll_up)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (page);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (page);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GtkWidget *widget;
 	GtkAdjustment *adj;
 
@@ -605,15 +605,15 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 
 	if (priv->cache_valid || priv->action_cnt > 0)
 		return;
-	gs_shell_overview_load (self);
+	gs_overview_page_load (self);
 }
 
 static void
 categories_more_revealer_changed_cb (GtkRevealer *revealer,
 				     GParamSpec *pspec,
-				     GsShellOverview *self)
+				     GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gboolean child_revealed = gtk_revealer_get_child_revealed (revealer);
 
 	gtk_widget_set_visible (priv->categories_expander_button_up,
@@ -623,31 +623,31 @@ categories_more_revealer_changed_cb (GtkRevealer *revealer,
 }
 
 static void
-gs_shell_overview_categories_expander_down_cb (GtkButton *button, GsShellOverview *self)
+gs_overview_page_categories_expander_down_cb (GtkButton *button, GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), TRUE);
 }
 
 static void
-gs_shell_overview_categories_expander_up_cb (GtkButton *button, GsShellOverview *self)
+gs_overview_page_categories_expander_up_cb (GtkButton *button, GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), FALSE);
 }
 
 static void
-g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
-				 GAsyncResult *res,
-				 GsShellOverview *self)
+g_overview_page_get_sources_cb (GsPluginLoader *plugin_loader,
+                                GAsyncResult *res,
+                                GsOverviewPage *self)
 {
 	guint i;
 	g_auto(GStrv) nonfree_ids = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
 	/* get the results */
 	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
@@ -694,23 +694,23 @@ g_shell_overview_get_sources_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-g_shell_overview_rescan_proprietary_sources (GsShellOverview *self)
+g_overview_page_rescan_proprietary_sources (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gs_plugin_loader_get_sources_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
 					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					    priv->cancellable,
-					    (GAsyncReadyCallback) g_shell_overview_get_sources_cb,
+					    (GAsyncReadyCallback) g_overview_page_get_sources_cb,
 					    self);
 }
 
 static void
-g_shell_overview_proprietary_response_cb (GtkInfoBar *info_bar,
-					  gint response_id,
-					  GsShellOverview *self)
+g_overview_page_proprietary_response_cb (GtkInfoBar *info_bar,
+                                         gint response_id,
+                                         GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	g_settings_set_boolean (priv->settings, "show-nonfree-prompt", FALSE);
 	if (response_id == GTK_RESPONSE_CLOSE) {
 		gtk_widget_hide (priv->infobar_proprietary);
@@ -721,13 +721,13 @@ g_shell_overview_proprietary_response_cb (GtkInfoBar *info_bar,
 	g_settings_set_boolean (priv->settings, "show-nonfree-software", TRUE);
 
 	/* actually call into the plugin loader and do the action */
-	g_shell_overview_rescan_proprietary_sources (self);
+	g_overview_page_rescan_proprietary_sources (self);
 }
 
 static void
-gs_shell_overview_refresh_proprietary (GsShellOverview *self)
+gs_overview_page_refresh_proprietary (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	g_auto(GStrv) nonfree_ids = NULL;
 
 	/* only show if never prompted and have nonfree repos */
@@ -763,20 +763,20 @@ gs_shell_overview_refresh_proprietary (GsShellOverview *self)
 }
 
 static gboolean
-gs_shell_overview_setup (GsPage *page,
-			 GsShell *shell,
-			 GsPluginLoader *plugin_loader,
-			 GtkBuilder *builder,
-			 GCancellable *cancellable,
-			 GError **error)
+gs_overview_page_setup (GsPage *page,
+                        GsShell *shell,
+                        GsPluginLoader *plugin_loader,
+                        GtkBuilder *builder,
+                        GCancellable *cancellable,
+                        GError **error)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (page);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (page);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
 
-	g_return_val_if_fail (GS_IS_SHELL_OVERVIEW (self), TRUE);
+	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
@@ -785,12 +785,12 @@ gs_shell_overview_setup (GsPage *page,
 						     g_free, (GDestroyNotify) g_object_unref);
 
 	/* create info bar if not already dismissed in initial-setup */
-	gs_shell_overview_refresh_proprietary (self);
+	gs_overview_page_refresh_proprietary (self);
 	gtk_info_bar_add_button (GTK_INFO_BAR (priv->infobar_proprietary),
 				 /* TRANSLATORS: button to turn on proprietary software sources */
 				 _("Enable"), GTK_RESPONSE_YES);
 	g_signal_connect (priv->infobar_proprietary, "response",
-			  G_CALLBACK (g_shell_overview_proprietary_response_cb), self);
+			  G_CALLBACK (g_overview_page_proprietary_response_cb), self);
 
 	/* avoid a ref cycle */
 	priv->shell = shell;
@@ -808,29 +808,29 @@ gs_shell_overview_setup (GsPage *page,
 
 	/* handle category expander */
 	g_signal_connect (priv->categories_expander_button_down, "clicked",
-			  G_CALLBACK (gs_shell_overview_categories_expander_down_cb), self);
+			  G_CALLBACK (gs_overview_page_categories_expander_down_cb), self);
 	g_signal_connect (priv->categories_expander_button_up, "clicked",
-			  G_CALLBACK (gs_shell_overview_categories_expander_up_cb), self);
+			  G_CALLBACK (gs_overview_page_categories_expander_up_cb), self);
 	return TRUE;
 }
 
 static void
 settings_changed_cb (GSettings *settings,
 		     const gchar *key,
-		     GsShellOverview *self)
+		     GsOverviewPage *self)
 {
 	if (g_strcmp0 (key, "show-nonfree-software") == 0 ||
 	    g_strcmp0 (key, "show-nonfree-prompt") == 0 ||
 	    g_strcmp0 (key, "nonfree-software-uri") == 0 ||
 	    g_strcmp0 (key, "nonfree-sources") == 0) {
-		gs_shell_overview_refresh_proprietary (self);
+		gs_overview_page_refresh_proprietary (self);
 	}
 }
 
 static void
-gs_shell_overview_init (GsShellOverview *self)
+gs_overview_page_init (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gtk_widget_init_template (GTK_WIDGET (self));
 	priv->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (priv->settings, "changed",
@@ -843,10 +843,10 @@ gs_shell_overview_init (GsShellOverview *self)
 }
 
 static void
-gs_shell_overview_dispose (GObject *object)
+gs_overview_page_dispose (GObject *object)
 {
-	GsShellOverview *self = GS_SHELL_OVERVIEW (object);
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (object);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
 	g_clear_object (&priv->builder);
 	g_clear_object (&priv->plugin_loader);
@@ -855,13 +855,13 @@ gs_shell_overview_dispose (GObject *object)
 	g_clear_pointer (&priv->category_of_day, g_free);
 	g_clear_pointer (&priv->category_hash, g_hash_table_unref);
 
-	G_OBJECT_CLASS (gs_shell_overview_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_overview_page_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_overview_refreshed (GsShellOverview *self)
+gs_overview_page_refreshed (GsOverviewPage *self)
 {
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
 	if (priv->empty) {
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_overview), "no-results");
@@ -871,49 +871,49 @@ gs_shell_overview_refreshed (GsShellOverview *self)
 }
 
 static void
-gs_shell_overview_class_init (GsShellOverviewClass *klass)
+gs_overview_page_class_init (GsOverviewPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_shell_overview_dispose;
-	page_class->switch_to = gs_shell_overview_switch_to;
-	page_class->reload = gs_shell_overview_reload;
-	page_class->setup = gs_shell_overview_setup;
-	klass->refreshed = gs_shell_overview_refreshed;
+	object_class->dispose = gs_overview_page_dispose;
+	page_class->switch_to = gs_overview_page_switch_to;
+	page_class->reload = gs_overview_page_reload;
+	page_class->setup = gs_overview_page_setup;
+	klass->refreshed = gs_overview_page_refreshed;
 
 	signals [SIGNAL_REFRESHED] =
 		g_signal_new ("refreshed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsShellOverviewClass, refreshed),
+			      G_STRUCT_OFFSET (GsOverviewPageClass, refreshed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-overview.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-overview-page.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, infobar_proprietary);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, label_proprietary);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, bin_featured);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_overview);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories2);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button_down);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button_up);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_more);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, infobar_proprietary);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, label_proprietary);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, bin_featured);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_overview);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, category_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, featured_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, flowbox_categories);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, flowbox_categories2);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, popular_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, scrolledwindow_overview);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, stack_overview);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, categories_expander_button_down);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, categories_expander_button_up);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, categories_expander_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, categories_more);
 }
 
-GsShellOverview *
-gs_shell_overview_new (void)
+GsOverviewPage *
+gs_overview_page_new (void)
 {
-	return GS_SHELL_OVERVIEW (g_object_new (GS_TYPE_SHELL_OVERVIEW, NULL));
+	return GS_OVERVIEW_PAGE (g_object_new (GS_TYPE_OVERVIEW_PAGE, NULL));
 }
 
 /* vim: set noexpandtab: */

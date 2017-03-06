@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,34 +19,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_DETAILS_H
-#define __GS_SHELL_DETAILS_H
+#ifndef __GS_LOADING_PAGE_H
+#define __GS_LOADING_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "gs-app.h"
-#include "gs-shell.h"
 #include "gs-page.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_DETAILS (gs_shell_details_get_type ())
+#define GS_TYPE_LOADING_PAGE (gs_loading_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellDetails, gs_shell_details, GS, SHELL_DETAILS, GsPage)
+G_DECLARE_DERIVABLE_TYPE (GsLoadingPage, gs_loading_page, GS, LOADING_PAGE, GsPage)
 
-GsShellDetails	*gs_shell_details_new		(void);
-void		 gs_shell_details_set_app	(GsShellDetails		*self,
-						 GsApp			*app);
-void		 gs_shell_details_set_local_file(GsShellDetails		*self,
-						 GFile			*file);
-void		 gs_shell_details_set_url	(GsShellDetails		*self,
-						 const gchar		*url);
-GsApp		*gs_shell_details_get_app       (GsShellDetails		*self);
+struct _GsLoadingPageClass
+{
+	GsPageClass		 parent_class;
+
+	void	(*refreshed)	(GsLoadingPage	*self);
+};
+
+GsLoadingPage	*gs_loading_page_new		(void);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_DETAILS_H */
+#endif /* __GS_LOADING_PAGE_H */
 
 /* vim: set noexpandtab: */

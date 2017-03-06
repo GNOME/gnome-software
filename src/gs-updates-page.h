@@ -19,25 +19,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_MODERATE_H
-#define __GS_SHELL_MODERATE_H
+#ifndef __GS_UPDATES_PAGE_H
+#define __GS_UPDATES_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
 #include "gs-page.h"
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_MODERATE (gs_shell_moderate_get_type ())
+#define GS_TYPE_UPDATES_PAGE (gs_updates_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellModerate, gs_shell_moderate, GS, SHELL_MODERATE, GsPage)
+G_DECLARE_FINAL_TYPE (GsUpdatesPage, gs_updates_page, GS, UPDATES_PAGE, GsPage)
 
-GsShellModerate	*gs_shell_moderate_new		(void);
+GsUpdatesPage	*gs_updates_page_new		(void);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_MODERATE_H */
+#endif /* __GS_UPDATES_PAGE_H */
 
 /* vim: set noexpandtab: */

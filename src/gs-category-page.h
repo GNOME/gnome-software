@@ -12,33 +12,37 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more category.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_SHELL_UPDATES_H
-#define __GS_SHELL_UPDATES_H
+#ifndef __GS_CATEGORY_PAGE_H
+#define __GS_CATEGORY_PAGE_H
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-category.h"
 #include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_UPDATES (gs_shell_updates_get_type ())
+#define GS_TYPE_CATEGORY_PAGE (gs_category_page_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsShellUpdates, gs_shell_updates, GS, SHELL_UPDATES, GsPage)
+G_DECLARE_FINAL_TYPE (GsCategoryPage, gs_category_page, GS, CATEGORY_PAGE, GsPage)
 
-GsShellUpdates	*gs_shell_updates_new		(void);
+GsCategoryPage	*gs_category_page_new		(void);
+void		 gs_category_page_set_category	(GsCategoryPage		*self,
+						 GsCategory		*category);
+GsCategory	*gs_category_page_get_category	(GsCategoryPage		*self);
 
 G_END_DECLS
 
-#endif /* __GS_SHELL_UPDATES_H */
+#endif /* __GS_CATEGORY_PAGE_H */
 
 /* vim: set noexpandtab: */

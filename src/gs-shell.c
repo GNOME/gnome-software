@@ -27,15 +27,15 @@
 
 #include "gs-common.h"
 #include "gs-shell.h"
-#include "gs-shell-details.h"
-#include "gs-shell-installed.h"
-#include "gs-shell-moderate.h"
-#include "gs-shell-loading.h"
-#include "gs-shell-search.h"
-#include "gs-shell-overview.h"
-#include "gs-shell-updates.h"
-#include "gs-shell-category.h"
-#include "gs-shell-extras.h"
+#include "gs-details-page.h"
+#include "gs-installed-page.h"
+#include "gs-moderate-page.h"
+#include "gs-loading-page.h"
+#include "gs-search-page.h"
+#include "gs-overview-page.h"
+#include "gs-updates-page.h"
+#include "gs-category-page.h"
+#include "gs-extras-page.h"
 #include "gs-sources-dialog.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
@@ -323,7 +323,7 @@ gs_shell_change_mode (GsShell *shell,
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-		gs_shell_search_set_text (GS_SHELL_SEARCH (page), data);
+		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		gs_shell_clean_back_entry_stack (shell);
@@ -333,19 +333,19 @@ gs_shell_change_mode (GsShell *shell,
 		app = GS_APP (data);
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "details"));
 		if (gs_app_get_local_file (app) != NULL) {
-			gs_shell_details_set_local_file (GS_SHELL_DETAILS (page),
-			                                 gs_app_get_local_file (app));
+			gs_details_page_set_local_file (GS_DETAILS_PAGE (page),
+			                                gs_app_get_local_file (app));
 		} else if (gs_app_get_metadata_item (app, "GnomeSoftware::from-url") != NULL) {
-			gs_shell_details_set_url (GS_SHELL_DETAILS (page),
-			                          gs_app_get_metadata_item (app, "GnomeSoftware::from-url"));
+			gs_details_page_set_url (GS_DETAILS_PAGE (page),
+			                         gs_app_get_metadata_item (app, "GnomeSoftware::from-url"));
 		} else {
-			gs_shell_details_set_app (GS_SHELL_DETAILS (page), data);
+			gs_details_page_set_app (GS_DETAILS_PAGE (page), data);
 		}
 		break;
 	case GS_SHELL_MODE_CATEGORY:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "category"));
-		gs_shell_category_set_category (GS_SHELL_CATEGORY (page),
-						GS_CATEGORY (data));
+		gs_category_page_set_category (GS_CATEGORY_PAGE (page),
+		                               GS_CATEGORY (data));
 		break;
 	case GS_SHELL_MODE_EXTRAS:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "extras"));
@@ -393,7 +393,7 @@ gs_shell_change_mode (GsShell *shell,
 }
 
 static void
-gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
+gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell)
 {
 	GsShellMode mode;
 	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
@@ -419,7 +419,7 @@ save_back_entry (GsShell *shell)
 	switch (priv->mode) {
 	case GS_SHELL_MODE_CATEGORY:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "category"));
-		entry->category = gs_shell_category_get_category (GS_SHELL_CATEGORY (page));
+		entry->category = gs_category_page_get_category (GS_CATEGORY_PAGE (page));
 		g_object_ref (entry->category);
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode],
@@ -427,7 +427,7 @@ save_back_entry (GsShell *shell)
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "details"));
-		entry->app = gs_shell_details_get_app (GS_SHELL_DETAILS (page));
+		entry->app = gs_details_page_get_app (GS_DETAILS_PAGE (page));
 		g_object_ref (entry->app);
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode],
@@ -435,7 +435,7 @@ save_back_entry (GsShell *shell)
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-		entry->search = g_strdup (gs_shell_search_get_text (GS_SHELL_SEARCH (page)));
+		entry->search = g_strdup (gs_search_page_get_text (GS_SEARCH_PAGE (page)));
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode], entry->search);
 		break;
@@ -550,17 +550,17 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
+initial_overview_load_done (GsOverviewPage *overview_page, gpointer data)
 {
 	GsPage *page;
 	GsShell *shell = data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
-	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
+	g_signal_handlers_disconnect_by_func (overview_page, initial_overview_load_done, data);
 
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_updates"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "updates_page"));
 	gs_page_reload (page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_installed"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "installed_page"));
 	gs_page_reload (page);
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
@@ -609,7 +609,7 @@ search_changed_handler (GObject *entry, GsShell *shell)
 					      (gpointer) text, TRUE);
 		} else {
 			GsPage *page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-			gs_shell_search_set_text (GS_SHELL_SEARCH (page), text);
+			gs_search_page_set_text (GS_SEARCH_PAGE (page), text);
 			gs_page_switch_to (page, TRUE);
 		}
 	}
@@ -1679,19 +1679,19 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_OVERVIEW));
 	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_shell_overview_button_cb), shell);
+			  G_CALLBACK (gs_overview_page_button_cb), shell);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
 	g_object_set_data (G_OBJECT (widget),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_INSTALLED));
 	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_shell_overview_button_cb), shell);
+			  G_CALLBACK (gs_overview_page_button_cb), shell);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
 	g_object_set_data (G_OBJECT (widget),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
 	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_shell_overview_button_cb), shell);
+			  G_CALLBACK (gs_overview_page_button_cb), shell);
 
 	/* set up in-app notification controls */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_dismiss"));
@@ -1714,23 +1714,23 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			  G_CALLBACK (gs_shell_plugin_events_restart_required_cb), shell);
 
 	/* add pages to hash */
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_overview"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "overview_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("overview"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_updates"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "updates_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("updates"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_installed"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "installed_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("installed"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_moderate"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "moderate_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("moderate"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_loading"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "loading_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("loading"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_search"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "search_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("search"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_details"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "details_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("details"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_category"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "category_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("category"), page);
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_extras"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "extras_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("extras"), page);
 	gs_shell_setup_pages (shell);
 
@@ -1743,7 +1743,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  G_CALLBACK (search_changed_handler), shell);
 
 	/* load content */
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_loading"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "loading_page"));
 	g_signal_connect (page, "refreshed",
 			  G_CALLBACK (initial_overview_load_done), shell);
 
@@ -1848,10 +1848,10 @@ void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **res
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GsPage *page;
 
-	page = GS_PAGE (gtk_builder_get_object (priv->builder, "shell_extras"));
+	page = GS_PAGE (gtk_builder_get_object (priv->builder, "extras_page"));
 
 	save_back_entry (shell);
-	gs_shell_extras_search (GS_SHELL_EXTRAS (page), mode, resources);
+	gs_extras_page_search (GS_EXTRAS_PAGE (page), mode, resources);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, TRUE);
 	gs_shell_activate (shell);
 }
@@ -1883,7 +1883,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 
 	save_back_entry (shell);
 	page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-	gs_shell_search_set_appid_to_show (GS_SHELL_SEARCH (page), id);
+	gs_search_page_set_appid_to_show (GS_SEARCH_PAGE (page), id);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH,
 			      (gpointer) search, TRUE);
 }
