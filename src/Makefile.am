@@ -57,33 +57,33 @@ UI_FILES =						\
 	gs-app-folder-dialog.ui				\
 	gs-app-row.ui					\
 	gs-app-tile.ui					\
-	gs-summary-tile.ui				\
 	gs-auth-dialog.ui				\
+	gs-category-page.ui				\
 	gs-category-tile.ui				\
+	gs-details-page.ui				\
+	gs-extras-page.ui				\
 	gs-feature-tile.ui				\
 	gs-first-run-dialog.ui				\
 	gs-history-dialog.ui				\
 	gs-info-bar.ui					\
+	gs-installed-page.ui				\
+	gs-loading-page.ui				\
 	gs-menus.ui					\
+	gs-moderate-page.ui				\
+	gs-overview-page.ui				\
 	gs-popular-tile.ui				\
 	gs-removal-dialog.ui				\
 	gs-review-dialog.ui				\
 	gs-review-histogram.ui				\
 	gs-review-row.ui				\
 	gs-screenshot-image.ui				\
-	gs-category-page.ui				\
-	gs-details-page.ui				\
-	gs-extras-page.ui				\
-	gs-installed-page.ui				\
-	gs-moderate-page.ui				\
-	gs-loading-page.ui				\
-	gs-overview-page.ui				\
 	gs-search-page.ui				\
-	gs-updates-page.ui				\
 	gs-sources-dialog-row.ui			\
 	gs-sources-dialog.ui				\
 	gs-star-widget.ui				\
+	gs-summary-tile.ui				\
 	gs-update-dialog.ui				\
+	gs-updates-page.ui				\
 	gs-upgrade-banner.ui
 
 dbusservicedir = $(datadir)/dbus-1/services
@@ -151,68 +151,85 @@ bin_PROGRAMS =						\
 
 gnome_software_SOURCES =				\
 	gnome-software.h				\
-	gs-utils.c					\
-	gs-utils.h					\
+	gs-app-addon-row.c				\
+	gs-app-addon-row.h				\
 	gs-app.c					\
+	gs-app-folder-dialog.c				\
+	gs-app-folder-dialog.h				\
 	gs-app.h					\
-	gs-app-private.h				\
+	gs-application.c				\
+	gs-application.h				\
 	gs-app-list.c					\
 	gs-app-list.h					\
 	gs-app-list-private.h				\
+	gs-app-private.h				\
+	gs-app-row.c					\
+	gs-app-row.h					\
+	gs-app-tile.c					\
+	gs-app-tile.h					\
 	gs-auth.c					\
-	gs-auth.h					\
 	gs-auth-dialog.c				\
 	gs-auth-dialog.h				\
+	gs-auth.h					\
 	gs-category.c					\
 	gs-category.h					\
+	gs-category-page.c				\
+	gs-category-page.h				\
 	gs-category-private.h				\
+	gs-category-tile.c				\
+	gs-category-tile.h				\
 	gs-common.c					\
 	gs-common.h					\
 	gs-content-rating.c				\
 	gs-content-rating.h				\
 	gs-debug.c					\
 	gs-debug.h					\
-	gs-app-addon-row.c				\
-	gs-app-addon-row.h				\
-	gs-app-row.c					\
-	gs-app-row.h					\
-	gs-star-widget.c				\
-	gs-star-widget.h				\
-	gs-popular-tile.c				\
-	gs-popular-tile.h				\
+	gs-details-page.c				\
+	gs-details-page.h				\
+	gs-extras-page.c				\
+	gs-extras-page.h				\
 	gs-feature-tile.c				\
 	gs-feature-tile.h				\
-	gs-category-tile.c				\
-	gs-category-tile.h				\
-	gs-app-tile.c					\
-	gs-app-tile.h					\
-	gs-summary-tile.c				\
-	gs-summary-tile.h				\
-	gs-app-folder-dialog.c				\
-	gs-app-folder-dialog.h				\
 	gs-first-run-dialog.c				\
 	gs-first-run-dialog.h				\
+	gs-fixed-size-bin.c				\
+	gs-fixed-size-bin.h				\
+	gs-folders.c					\
+	gs-folders.h					\
+	gs-hiding-box.c					\
+	gs-hiding-box.h					\
 	gs-history-dialog.c				\
 	gs-history-dialog.h				\
-	gs-fixed-size-bin.h				\
-	gs-fixed-size-bin.c				\
-	gs-hiding-box.h					\
-	gs-hiding-box.c					\
-	gs-info-bar.h					\
 	gs-info-bar.c					\
+	gs-info-bar.h					\
+	gs-installed-page.c				\
+	gs-installed-page.h				\
 	gs-language.c					\
 	gs-language.h					\
+	gs-loading-page.c				\
+	gs-loading-page.h				\
+	gs-main.c					\
+	gs-moderate-page.c				\
+	gs-moderate-page.h				\
 	gs-os-release.c					\
 	gs-os-release.h					\
+	gs-overview-page.c				\
+	gs-overview-page.h				\
 	gs-page.c					\
 	gs-page.h					\
 	gs-plugin.c					\
-	gs-plugin.h					\
 	gs-plugin-event.c				\
 	gs-plugin-event.h				\
+	gs-plugin.h					\
+	gs-plugin-loader.c				\
+	gs-plugin-loader.h				\
+	gs-plugin-loader-sync.c				\
+	gs-plugin-loader-sync.h				\
 	gs-plugin-private.h				\
 	gs-plugin-types.h				\
 	gs-plugin-vfuncs.h				\
+	gs-popular-tile.c				\
+	gs-popular-tile.h				\
 	gs-progress-button.c				\
 	gs-progress-button.h				\
 	gs-removal-dialog.c				\
@@ -227,51 +244,34 @@ gnome_software_SOURCES =				\
 	gs-review-row.h					\
 	gs-screenshot-image.c				\
 	gs-screenshot-image.h				\
-	gs-shell.c					\
-	gs-shell.h					\
-	gs-details-page.c				\
-	gs-details-page.h				\
-	gs-category-page.c				\
-	gs-category-page.h				\
-	gs-extras-page.c				\
-	gs-extras-page.h				\
-	gs-installed-page.c				\
-	gs-installed-page.h				\
-	gs-moderate-page.c				\
-	gs-moderate-page.h				\
-	gs-loading-page.c				\
-	gs-loading-page.h				\
-	gs-overview-page.c				\
-	gs-overview-page.h				\
-	gs-updates-page.c				\
-	gs-updates-page.h				\
 	gs-search-page.c				\
 	gs-search-page.h				\
+	gs-shell.c					\
+	gs-shell.h					\
+	gs-shell-search-provider.c			\
+	gs-shell-search-provider.h			\
 	gs-sources-dialog.c				\
 	gs-sources-dialog.h				\
 	gs-sources-dialog-row.c				\
 	gs-sources-dialog-row.h				\
+	gs-star-widget.c				\
+	gs-star-widget.h				\
+	gs-summary-tile.c				\
+	gs-summary-tile.h				\
 	gs-update-dialog.c				\
 	gs-update-dialog.h				\
 	gs-update-list.c				\
 	gs-update-list.h				\
 	gs-update-monitor.c				\
 	gs-update-monitor.h				\
+	gs-updates-page.c				\
+	gs-updates-page.h				\
 	gs-upgrade-banner.c				\
 	gs-upgrade-banner.h				\
+	gs-utils.c					\
+	gs-utils.h					\
 	gs-vendor.c					\
-	gs-vendor.h					\
-	gs-plugin-loader.c				\
-	gs-plugin-loader.h				\
-	gs-plugin-loader-sync.c				\
-	gs-plugin-loader-sync.h				\
-	gs-shell-search-provider.c			\
-	gs-shell-search-provider.h			\
-	gs-application.c				\
-	gs-application.h				\
-	gs-folders.c					\
-	gs-folders.h					\
-	gs-main.c
+	gs-vendor.h
 
 nodist_gnome_software_SOURCES =				\
 	gs-resources.c					\
