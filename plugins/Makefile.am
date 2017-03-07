@@ -50,6 +50,10 @@ if HAVE_GUDEV
 SUBDIRS += modalias
 endif
 
+if HAVE_WEBAPPS
+SUBDIRS += epiphany
+endif
+
 AM_CPPFLAGS =						\
 	-DDATADIR=\"$(datadir)\"			\
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\
@@ -66,10 +70,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_fedora-tagger-usage.la
 
 appdata_in_files =
-
-if HAVE_WEBAPPS
-plugin_LTLIBRARIES += libgs_plugin_epiphany.la
-endif
 
 if HAVE_SHELL_EXTENSIONS
 plugin_LTLIBRARIES += libgs_plugin_shell-extensions.la
@@ -95,12 +95,6 @@ libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
 libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
 libgs_plugin_fedora_tagger_usage_la_LDFLAGS = -module -avoid-version
 libgs_plugin_fedora_tagger_usage_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(SQLITE_CFLAGS)
-
-appdata_in_files += org.gnome.Software.Plugin.Epiphany.metainfo.xml.in
-libgs_plugin_epiphany_la_SOURCES = gs-plugin-epiphany.c
-libgs_plugin_epiphany_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_epiphany_la_LDFLAGS = -module -avoid-version
-libgs_plugin_epiphany_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
 
 if HAVE_FLATPAK
 appdata_in_files += org.gnome.Software.Plugin.Flatpak.metainfo.xml.in

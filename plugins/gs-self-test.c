@@ -26,33 +26,6 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
-{
-	gboolean ret;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsApp) app = NULL;
-
-	/* no epiphany, abort */
-	if (!gs_plugin_loader_get_enabled (plugin_loader, "epiphany"))
-		return;
-
-	/* a webapp with a local icon */
-	app = gs_app_new ("arachne.desktop");
-	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
-	g_assert (gs_app_get_pixbuf (app) != NULL);
-}
-
-static void
 gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
 	const gchar *group_name = "remote \"example\"";
@@ -1149,14 +1122,12 @@ main (int argc, char **argv)
 {
 	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
-	g_autofree gchar *fn = NULL;
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	const gchar *whitelist[] = {
 		"appstream",
 		"dummy",
-		"epiphany",
 		"flatpak",
 		"generic-updates",
 		"hardcoded-blacklist",
@@ -1190,9 +1161,7 @@ main (int argc, char **argv)
 		g_assert (!g_file_test (tmp_root, G_FILE_TEST_EXISTS));
 	}
 
-	fn = gs_test_get_filename (TESTDATADIR, "icons/hicolor/48x48/org.gnome.Software.png");
-	g_assert (fn != NULL);
-	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
+	xml = g_strdup ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
 		"  <component type=\"desktop\">\n"
 		"    <id>chiron.desktop</id>\n"
@@ -1237,12 +1206,7 @@ main (int argc, char **argv)
 		"    <id>org.fedoraproject.release-rawhide.upgrade</id>\n"
 		"    <summary>Release specific tagline</summary>\n"
 		"  </component>\n"
-		"  <component type=\"webapp\">\n"
-		"    <id>arachne.desktop</id>\n"
-		"    <name>test</name>\n"
-		"    <icon type=\"remote\">file://%s</icon>\n"
-		"  </component>\n"
-		"</components>\n", fn);
+		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
 	g_setenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT",
 		  "/var/tmp/self-test/flatpak/appstream/test/x86_64/active/", TRUE);
@@ -1282,9 +1246,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-update-runtime}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_flatpak_app_update_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{webapps}",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_webapps_func);
 
 	/* done last as it would otherwise try to do downloading in other
 	 * gs_plugin_file_to_app()-using tests */

@@ -487,6 +487,7 @@ plugins/Makefile
 plugins/core/Makefile
 plugins/dpkg/Makefile
 plugins/dummy/Makefile
+plugins/epiphany/Makefile
 plugins/external-appstream/Makefile
 plugins/fwupd/Makefile
 plugins/limba/Makefile
