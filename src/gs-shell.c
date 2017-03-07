@@ -1888,6 +1888,31 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 			      (gpointer) search, TRUE);
 }
 
+void
+gs_shell_show_uri (GsShell *shell, const gchar *url)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	g_autoptr(GError) error = NULL;
+
+#if GTK_CHECK_VERSION (3, 22, 0)
+	if (!gtk_show_uri_on_window (priv->main_window,
+	                             url,
+	                             GDK_CURRENT_TIME,
+	                             &error)) {
+		g_warning ("failed to show URI %s: %s",
+		           url, error->message);
+	}
+#else
+	if (!gtk_show_uri (NULL,
+	                   url,
+	                   GDK_CURRENT_TIME,
+	                   &error)) {
+		g_warning ("failed to show URI %s: %s",
+		           url, error->message);
+	}
+#endif
+}
+
 static void
 gs_shell_dispose (GObject *object)
 {

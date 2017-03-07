@@ -649,7 +649,8 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 static void
 gs_details_page_website_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	gs_app_show_url (self->app, AS_URL_KIND_HOMEPAGE);
+	gs_shell_show_uri (self->shell,
+	                   gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE));
 }
 
 static void
@@ -1906,7 +1907,7 @@ gs_details_page_activate_link_cb (GtkLabel *label,
                                   const gchar *uri,
                                   GsDetailsPage *self)
 {
-	gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, NULL);
+	gs_shell_show_uri (self->shell, uri);
 	return TRUE;
 }
 

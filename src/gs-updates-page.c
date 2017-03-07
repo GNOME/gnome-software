@@ -1201,8 +1201,7 @@ gs_updates_page_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
 
 	/* open the link */
 	uri = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
-	if (!gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, &error))
-		g_warning ("failed to open %s: %s", uri, error->message);
+	gs_shell_show_uri (self->shell, uri);
 }
 
 static void

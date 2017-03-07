@@ -80,7 +80,8 @@ gs_search_page_app_row_clicked_cb (GsAppRow *app_row,
 					     self->cancellable);
 			return;
 		}
-		gs_app_show_url (app, AS_URL_KIND_MISSING);
+		gs_shell_show_uri (self->shell,
+		                   gs_app_get_url (app, AS_URL_KIND_MISSING));
 	}
 }
 
