@@ -1,6 +1,5 @@
 EXTRA_DIST =						\
 	os-release					\
-	chiron-1.1-1.fc24.x86_64.rpm			\
 	yum.repos.d/utopia.repo
 
 -include $(top_srcdir)/git.mk

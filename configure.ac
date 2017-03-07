@@ -512,6 +512,7 @@ plugins/fwupd/Makefile
 plugins/limba/Makefile
 plugins/odrs/Makefile
 plugins/ostree/Makefile
+plugins/packagekit/Makefile
 plugins/snap/Makefile
 plugins/steam/Makefile
 plugins/ubuntuone/Makefile
