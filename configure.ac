@@ -505,8 +505,8 @@ doc/Makefile
 doc/api/Makefile
 lib/Makefile
 lib/gnome-software.pc
+plugins/Makefile
 src/Makefile
-src/plugins/Makefile
 tests/Makefile
 ])
 AC_OUTPUT

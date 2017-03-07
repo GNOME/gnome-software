@@ -2,6 +2,7 @@ SUBDIRS =						\
 	data						\
 	po						\
 	lib						\
+	plugins						\
 	src						\
 	tests
 

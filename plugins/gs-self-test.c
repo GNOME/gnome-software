@@ -21,10 +21,6 @@
 
 #include "config.h"
 
-//#include <glib-object.h>
-//#include <glib/gstdio.h>
-//#include <stdlib.h>
-
 #include "gnome-software-private.h"
 
 #include "gs-markdown.h"

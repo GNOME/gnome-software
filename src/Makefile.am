@@ -1,6 +1,3 @@
-SUBDIRS =						\
-	plugins
-
 AM_CPPFLAGS =						\
 	$(GS_PRIVATE_CFLAGS)				\
 	$(GTKSPELL_CFLAGS)				\
@@ -15,7 +12,7 @@ AM_CPPFLAGS =						\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
-	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\"
+	-DLOCALPLUGINDIR=\""$(top_builddir)/plugins/.libs"\"
 
 %.desktop: %.desktop.in
 	$(AM_V_GEN) msgfmt --desktop -d $(top_srcdir)/po --template $< -o $@
