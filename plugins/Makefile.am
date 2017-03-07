@@ -1,7 +1,11 @@
 ## We require new-style dependency handling.
 AUTOMAKE_OPTIONS = 1.7
 
+# core
 SUBDIRS =
+
+# non-core, but no configure option required
+SUBDIRS += dpkg
 
 if HAVE_LIMBA
 SUBDIRS += limba
@@ -49,7 +53,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_desktop-categories.la		\
 	libgs_plugin_desktop-menu-path.la		\
 	libgs_plugin_dummy.la				\
-	libgs_plugin_dpkg.la				\
 	libgs_plugin_generic-updates.la			\
 	libgs_plugin_hardcoded-blacklist.la		\
 	libgs_plugin_hardcoded-popular.la		\
@@ -106,11 +109,6 @@ libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_dpkg_la_SOURCES = gs-plugin-dpkg.c
-libgs_plugin_dpkg_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_dpkg_la_LDFLAGS = -module -avoid-version
-libgs_plugin_dpkg_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
 
 libgs_plugin_generic_updates_la_SOURCES = gs-plugin-generic-updates.c
 libgs_plugin_generic_updates_la_LIBADD = $(GS_PLUGIN_LIBS)
