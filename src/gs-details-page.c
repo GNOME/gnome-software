@@ -1192,6 +1192,10 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		{ GS_PLUGIN_ACTION_LAST,	NULL }
 	};
 
+	/* nothing to show */
+	if (self->app == NULL)
+		return;
+
 	/* show or hide the entire reviews section */
 	switch (gs_app_get_kind (self->app)) {
 	case AS_APP_KIND_DESKTOP:
