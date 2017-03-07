@@ -2,10 +2,11 @@
 AUTOMAKE_OPTIONS = 1.7
 
 # core
-SUBDIRS =
+SUBDIRS = core
 
 # non-core, but no configure option required
 SUBDIRS += dpkg
+SUBDIRS += dummy
 SUBDIRS += ubuntuone
 SUBDIRS += repos
 
@@ -52,24 +53,13 @@ AM_CPPFLAGS =						\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
-	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\"
+	-DLOCALPLUGINDIR=\""$(top_builddir)/plugins/.libs"\"	\
+	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"
 
 plugindir = $(GS_PLUGIN_DIR)
 plugin_LTLIBRARIES =					\
-	libgs_plugin_appstream.la			\
-	libgs_plugin_key-colors.la			\
-	libgs_plugin_desktop-categories.la		\
-	libgs_plugin_desktop-menu-path.la		\
-	libgs_plugin_dummy.la				\
-	libgs_plugin_generic-updates.la			\
-	libgs_plugin_hardcoded-blacklist.la		\
-	libgs_plugin_hardcoded-popular.la		\
-	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_fedora-distro-upgrades.la		\
-	libgs_plugin_provenance.la			\
-	libgs_plugin_provenance-license.la		\
-	libgs_plugin_fedora-tagger-usage.la		\
-	libgs_plugin_icons.la
+	libgs_plugin_fedora-tagger-usage.la
 
 appdata_in_files =
 
@@ -88,21 +78,6 @@ endif
 if HAVE_FLATPAK
 plugin_LTLIBRARIES += libgs_plugin_flatpak.la
 endif
-
-libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
-libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
-libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_generic_updates_la_SOURCES = gs-plugin-generic-updates.c
-libgs_plugin_generic_updates_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_generic_updates_la_LDFLAGS = -module -avoid-version
-libgs_plugin_generic_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_key_colors_la_SOURCES = gs-plugin-key-colors.c
-libgs_plugin_key_colors_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_key_colors_la_LDFLAGS = -module -avoid-version
-libgs_plugin_key_colors_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
 
 if HAVE_SHELL_EXTENSIONS
 libgs_plugin_shell_extensions_la_SOURCES = gs-plugin-shell-extensions.c
@@ -123,16 +98,6 @@ libgs_plugin_modalias_la_LDFLAGS = -module -avoid-version
 libgs_plugin_modalias_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(GUDEV_CFLAGS)
 endif
 
-libgs_plugin_provenance_la_SOURCES = gs-plugin-provenance.c
-libgs_plugin_provenance_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_provenance_la_LDFLAGS = -module -avoid-version
-libgs_plugin_provenance_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_provenance_license_la_SOURCES = gs-plugin-provenance-license.c
-libgs_plugin_provenance_license_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_provenance_license_la_LDFLAGS = -module -avoid-version
-libgs_plugin_provenance_license_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
 libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
 libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
 libgs_plugin_fedora_tagger_usage_la_LDFLAGS = -module -avoid-version
@@ -143,19 +108,6 @@ libgs_plugin_epiphany_la_SOURCES = gs-plugin-epiphany.c
 libgs_plugin_epiphany_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_epiphany_la_LDFLAGS = -module -avoid-version
 libgs_plugin_epiphany_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_icons_la_SOURCES = gs-plugin-icons.c
-libgs_plugin_icons_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_icons_la_LDFLAGS = -module -avoid-version
-libgs_plugin_icons_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_appstream_la_SOURCES =			\
-	gs-appstream.c					\
-	gs-appstream.h					\
-	gs-plugin-appstream.c
-libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
-libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
-libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
 
 if HAVE_FLATPAK
 appdata_in_files += org.gnome.Software.Plugin.Flatpak.metainfo.xml.in
@@ -171,37 +123,6 @@ libgs_plugin_flatpak_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
 libgs_plugin_flatpak_la_LDFLAGS = -module -avoid-version
 libgs_plugin_flatpak_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(FLATPAK_CFLAGS)
 endif
-
-libgs_plugin_desktop_categories_la_SOURCES =		\
-	gs-plugin-desktop-categories.c			\
-	gs-desktop-common.c				\
-	gs-desktop-common.h
-libgs_plugin_desktop_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_desktop_categories_la_LDFLAGS = -module -avoid-version
-libgs_plugin_desktop_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_desktop_menu_path_la_SOURCES =		\
-	gs-plugin-desktop-menu-path.c			\
-	gs-desktop-common.c				\
-	gs-desktop-common.h
-libgs_plugin_desktop_menu_path_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_desktop_menu_path_la_LDFLAGS = -module -avoid-version
-libgs_plugin_desktop_menu_path_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_hardcoded_blacklist_la_SOURCES = gs-plugin-hardcoded-blacklist.c
-libgs_plugin_hardcoded_blacklist_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_hardcoded_blacklist_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_blacklist_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_hardcoded_popular_la_SOURCES = gs-plugin-hardcoded-popular.c
-libgs_plugin_hardcoded_popular_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_hardcoded_popular_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_popular_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
-libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
 
 # MetaInfo files
 %.metainfo.xml: %.metainfo.xml.in

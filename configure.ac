@@ -484,7 +484,9 @@ doc/api/Makefile
 lib/Makefile
 lib/gnome-software.pc
 plugins/Makefile
+plugins/core/Makefile
 plugins/dpkg/Makefile
+plugins/dummy/Makefile
 plugins/external-appstream/Makefile
 plugins/fwupd/Makefile
 plugins/limba/Makefile
