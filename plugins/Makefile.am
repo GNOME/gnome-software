@@ -7,6 +7,7 @@ SUBDIRS = core
 # non-core, but no configure option required
 SUBDIRS += dpkg
 SUBDIRS += dummy
+SUBDIRS += fedora-distro-upgrades
 SUBDIRS += fedora-tagger-usage
 SUBDIRS += ubuntuone
 SUBDIRS += repos
@@ -66,8 +67,7 @@ AM_CPPFLAGS =						\
 	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"
 
 plugindir = $(GS_PLUGIN_DIR)
-plugin_LTLIBRARIES =					\
-	libgs_plugin_fedora-distro-upgrades.la
+plugin_LTLIBRARIES =
 
 appdata_in_files =
 
@@ -85,11 +85,6 @@ libgs_plugin_shell_extensions_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
 libgs_plugin_shell_extensions_la_LDFLAGS = -module -avoid-version
 libgs_plugin_shell_extensions_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS)
 endif
-
-libgs_plugin_fedora_distro_upgrades_la_SOURCES = gs-plugin-fedora-distro-upgrades.c
-libgs_plugin_fedora_distro_upgrades_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
-libgs_plugin_fedora_distro_upgrades_la_LDFLAGS = -module -avoid-version
-libgs_plugin_fedora_distro_upgrades_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_FLATPAK
 appdata_in_files += org.gnome.Software.Plugin.Flatpak.metainfo.xml.in
