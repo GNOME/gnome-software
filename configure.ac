@@ -508,6 +508,7 @@ lib/gnome-software.pc
 plugins/Makefile
 plugins/limba/Makefile
 plugins/odrs/Makefile
+plugins/steam/Makefile
 src/Makefile
 tests/Makefile
 ])

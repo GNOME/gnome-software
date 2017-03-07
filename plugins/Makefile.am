@@ -11,6 +11,10 @@ if HAVE_ODRS
 SUBDIRS += odrs
 endif
 
+if HAVE_STEAM
+SUBDIRS += steam
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -95,10 +99,6 @@ endif
 
 if HAVE_OSTREE
 plugin_LTLIBRARIES += libgs_plugin_ostree.la
-endif
-
-if HAVE_STEAM
-plugin_LTLIBRARIES += libgs_plugin_steam.la
 endif
 
 if HAVE_RPM
@@ -218,14 +218,6 @@ libgs_plugin_rpm_la_SOURCES = gs-plugin-rpm.c
 libgs_plugin_rpm_la_LIBADD = $(GS_PLUGIN_LIBS) $(RPM_LIBS)
 libgs_plugin_rpm_la_LDFLAGS = -module -avoid-version
 libgs_plugin_rpm_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(RPM_CFLAGS)
-endif
-
-if HAVE_STEAM
-appdata_in_files += org.gnome.Software.Plugin.Steam.metainfo.xml.in
-libgs_plugin_steam_la_SOURCES = gs-plugin-steam.c
-libgs_plugin_steam_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_steam_la_LDFLAGS = -module -avoid-version
-libgs_plugin_steam_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
 endif
 
 libgs_plugin_repos_la_SOURCES = gs-plugin-repos.c
