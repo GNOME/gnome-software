@@ -152,7 +152,7 @@ gs_application_initialize_plugins (GsApplication *app)
 
 	app->plugin_loader = gs_plugin_loader_new ();
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
-		gs_plugin_loader_set_location (app->plugin_loader, LOCALPLUGINDIR);
+		gs_plugin_loader_add_location (app->plugin_loader, LOCALPLUGINDIR);
 	if (!gs_plugin_loader_setup (app->plugin_loader,
 				     plugin_whitelist,
 				     plugin_blacklist,

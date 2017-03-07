@@ -202,7 +202,7 @@ gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
-void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
+void		 gs_plugin_loader_add_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
 GsAuth		*gs_plugin_loader_get_auth_by_id	(GsPluginLoader	*plugin_loader,
 							 const gchar	*provider_id);

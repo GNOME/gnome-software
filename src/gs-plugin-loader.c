@@ -41,14 +41,14 @@
 typedef struct
 {
 	GPtrArray		*plugins;
-	gchar			*location;
+	GPtrArray		*locations;
 	gchar			*locale;
 	gchar			*language;
 	GsAppList		*global_cache;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
 	GPtrArray		*auth_array;
-	GFileMonitor		*file_monitor;
+	GPtrArray		*file_monitors;
 	GsPluginStatus		 global_status_last;
 
 	GMutex			 pending_apps_mutex;
@@ -3471,11 +3471,15 @@ gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
 }
 
 void
-gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *location)
+gs_plugin_loader_add_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_free (priv->location);
-	priv->location = g_strdup (location);
+	for (guint i = 0; i < priv->locations->len; i++) {
+		const gchar *location_tmp = g_ptr_array_index (priv->locations, i);
+		if (g_strcmp0 (location_tmp, location) == 0)
+			return;
+	}
+	g_ptr_array_add (priv->locations, g_strdup (location));
 }
 
 static gint
@@ -3606,44 +3610,58 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint dep_loop_check = 0;
 	guint i;
 	guint j;
-	g_autoptr(GDir) dir = NULL;
-	g_autoptr(GFile) plugin_dir = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsPluginLoaderJob) job = NULL;
 
-	g_return_val_if_fail (priv->location != NULL, FALSE);
+	/* use the default, but this requires a 'make install' */
+	if (priv->locations->len == 0) {
+		g_autofree gchar *filename = NULL;
+		filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
+		g_ptr_array_add (priv->locations, g_build_filename (LIBDIR, filename, NULL));
+	}
 
-	plugin_dir = g_file_new_for_path (priv->location);
-	priv->file_monitor = g_file_monitor_directory (plugin_dir,
-						       G_FILE_MONITOR_NONE,
-						       cancellable,
-						       error);
-	if (priv->file_monitor == NULL)
-		return FALSE;
-	g_signal_connect (priv->file_monitor, "changed",
-			  G_CALLBACK (gs_plugin_loader_plugin_dir_changed_cb), plugin_loader);
+	for (i = 0; i < priv->locations->len; i++) {
+		GFileMonitor *monitor;
+		const gchar *location = g_ptr_array_index (priv->locations, i);
+		g_autoptr(GFile) plugin_dir = g_file_new_for_path (location);
+		monitor = g_file_monitor_directory (plugin_dir,
+						    G_FILE_MONITOR_NONE,
+						    cancellable,
+						    error);
+		if (monitor == NULL)
+			return FALSE;
+		g_signal_connect (monitor, "changed",
+				  G_CALLBACK (gs_plugin_loader_plugin_dir_changed_cb), plugin_loader);
+		g_ptr_array_add (priv->file_monitors, monitor);
+	}
 
-	/* search in the plugin directory for plugins */
+	/* search for plugins */
 	ptask = as_profile_start_literal (priv->profile, "GsPlugin::setup");
 	g_assert (ptask != NULL);
-	dir = g_dir_open (priv->location, 0, error);
-	if (dir == NULL)
-		return FALSE;
+	for (i = 0; i < priv->locations->len; i++) {
+		const gchar *location = g_ptr_array_index (priv->locations, i);
+		g_autoptr(GDir) dir = NULL;
 
-	/* try to open each plugin */
-	g_debug ("searching for plugins in %s", priv->location);
-	do {
-		g_autofree gchar *filename_plugin = NULL;
-		filename_tmp = g_dir_read_name (dir);
-		if (filename_tmp == NULL)
-			break;
-		if (!g_str_has_suffix (filename_tmp, ".so"))
-			continue;
-		filename_plugin = g_build_filename (priv->location,
-						    filename_tmp,
-						    NULL);
-		gs_plugin_loader_open_plugin (plugin_loader, filename_plugin);
-	} while (TRUE);
+		/* search in the plugin directory for plugins */
+		dir = g_dir_open (location, 0, error);
+		if (dir == NULL)
+			return FALSE;
+
+		/* try to open each plugin */
+		g_debug ("searching for plugins in %s", location);
+		do {
+			g_autofree gchar *filename_plugin = NULL;
+			filename_tmp = g_dir_read_name (dir);
+			if (filename_tmp == NULL)
+				break;
+			if (!g_str_has_suffix (filename_tmp, ".so"))
+				continue;
+			filename_plugin = g_build_filename (location,
+							    filename_tmp,
+							    NULL);
+			gs_plugin_loader_open_plugin (plugin_loader, filename_plugin);
+		} while (TRUE);
+	}
 
 	/* optional whitelist */
 	if (whitelist != NULL) {
@@ -3939,11 +3957,11 @@ gs_plugin_loader_finalize (GObject *object)
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
 	g_strfreev (priv->compatible_projects);
-	g_free (priv->location);
+	g_ptr_array_unref (priv->locations);
 	g_free (priv->locale);
 	g_free (priv->language);
 	g_object_unref (priv->global_cache);
-	g_object_unref (priv->file_monitor);
+	g_ptr_array_unref (priv->file_monitors);
 	g_hash_table_unref (priv->events_by_id);
 	g_hash_table_unref (priv->disallow_updates);
 
@@ -4035,13 +4053,14 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar *match;
 	gchar **projects;
 	guint i;
-	g_autofree gchar *filename = NULL;
 
 	priv->scale = 1;
 	priv->global_cache = gs_app_list_new ();
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	priv->file_monitors = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	priv->locations = g_ptr_array_new_with_free_func (g_free);
 	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (priv->settings, "changed",
@@ -4100,10 +4119,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	for (i = 0; projects[i] != NULL; i++)
 		g_debug ("compatible-project: %s", projects[i]);
 	priv->compatible_projects = projects;
-
-	/* use the default, but this requires a 'make install' */
-	filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
-	priv->location = g_build_filename (LIBDIR, filename, NULL);
 }
 
 /**
