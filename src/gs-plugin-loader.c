@@ -4452,11 +4452,19 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	}
 
 	/* success */
-	if (gs_app_list_length (state->list) != 1) {
+	if (gs_app_list_length (state->list) == 0) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
 					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					 "no application was created for %s",
+					 g_file_get_path (state->file));
+		return;
+	}
+	if (gs_app_list_length (state->list) > 1) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "more than one application was created for %s",
 					 g_file_get_path (state->file));
 		return;
 	}
