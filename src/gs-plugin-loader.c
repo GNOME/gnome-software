@@ -3743,6 +3743,10 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				continue;
 			ret = g_strv_contains ((const gchar * const *) whitelist,
 					       gs_plugin_get_name (plugin));
+			if (!ret) {
+				g_debug ("%s not in whitelist, disabling",
+					 gs_plugin_get_name (plugin));
+			}
 			gs_plugin_set_enabled (plugin, ret);
 		}
 	}
