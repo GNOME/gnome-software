@@ -489,6 +489,7 @@ plugins/dpkg/Makefile
 plugins/dummy/Makefile
 plugins/epiphany/Makefile
 plugins/external-appstream/Makefile
+plugins/fedora-tagger-usage/Makefile
 plugins/fwupd/Makefile
 plugins/limba/Makefile
 plugins/modalias/Makefile
