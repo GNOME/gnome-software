@@ -56,6 +56,10 @@ if HAVE_WEBAPPS
 SUBDIRS += epiphany
 endif
 
+if HAVE_SHELL_EXTENSIONS
+SUBDIRS += shell-extensions
+endif
+
 AM_CPPFLAGS =						\
 	-DDATADIR=\"$(datadir)\"			\
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\
@@ -71,19 +75,8 @@ plugin_LTLIBRARIES =
 
 appdata_in_files =
 
-if HAVE_SHELL_EXTENSIONS
-plugin_LTLIBRARIES += libgs_plugin_shell-extensions.la
-endif
-
 if HAVE_FLATPAK
 plugin_LTLIBRARIES += libgs_plugin_flatpak.la
-endif
-
-if HAVE_SHELL_EXTENSIONS
-libgs_plugin_shell_extensions_la_SOURCES = gs-plugin-shell-extensions.c
-libgs_plugin_shell_extensions_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
-libgs_plugin_shell_extensions_la_LDFLAGS = -module -avoid-version
-libgs_plugin_shell_extensions_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS)
 endif
 
 if HAVE_FLATPAK

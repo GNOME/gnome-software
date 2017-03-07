@@ -498,6 +498,7 @@ plugins/odrs/Makefile
 plugins/ostree/Makefile
 plugins/packagekit/Makefile
 plugins/repos/Makefile
+plugins/shell-extensions/Makefile
 plugins/snap/Makefile
 plugins/steam/Makefile
 plugins/ubuntuone/Makefile
