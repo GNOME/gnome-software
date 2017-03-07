@@ -35,6 +35,10 @@ if HAVE_SNAP
 SUBDIRS += snap
 endif
 
+if HAVE_FIRMWARE
+SUBDIRS += fwupd
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -42,7 +46,6 @@ AM_CPPFLAGS =						\
 	-DLIBEXECDIR=\""$(libexecdir)"\"		\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DLOCALEDIR=\""$(localedir)"\"			\
-	-DSYSCONFDIR=\""$(sysconfdir)"\"		\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
 	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\"
 
@@ -91,10 +94,6 @@ endif
 
 if HAVE_SHELL_EXTENSIONS
 plugin_LTLIBRARIES += libgs_plugin_shell-extensions.la
-endif
-
-if HAVE_FIRMWARE
-plugin_LTLIBRARIES += libgs_plugin_fwupd.la
 endif
 
 if HAVE_FLATPAK
@@ -272,14 +271,6 @@ libgs_plugin_systemd_updates_la_SOURCES =		\
 libgs_plugin_systemd_updates_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_systemd_updates_la_LDFLAGS = -module -avoid-version
 libgs_plugin_systemd_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(PACKAGEKIT_CFLAGS)
-
-if HAVE_FIRMWARE
-appdata_in_files += org.gnome.Software.Plugin.Fwupd.metainfo.xml.in
-libgs_plugin_fwupd_la_SOURCES = gs-plugin-fwupd.c
-libgs_plugin_fwupd_la_LIBADD = $(GS_PLUGIN_LIBS) $(FWUPD_LIBS)
-libgs_plugin_fwupd_la_LDFLAGS = -module -avoid-version
-libgs_plugin_fwupd_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(FWUPD_CFLAGS)
-endif
 
 libgs_plugin_packagekit_history_la_SOURCES = gs-plugin-packagekit-history.c
 libgs_plugin_packagekit_history_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)

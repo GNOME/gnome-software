@@ -508,6 +508,7 @@ lib/gnome-software.pc
 plugins/Makefile
 plugins/dpkg/Makefile
 plugins/external-appstream/Makefile
+plugins/fwupd/Makefile
 plugins/limba/Makefile
 plugins/odrs/Makefile
 plugins/ostree/Makefile
