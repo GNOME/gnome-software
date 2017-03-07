@@ -34,6 +34,13 @@ gs_self_test_SOURCES = gs-self-test.c
 gs_self_test_LDADD = $(GS_PRIVATE_LIBS)
 gs_self_test_CFLAGS = $(GS_PRIVATE_CFLAGS)
 TESTS = gs-self-test
+
+tests/app-with-runtime/repo: tests/app-with-runtime
+	$(AM_V_GEN) cd tests && ./build.py && cd -
+
+BUILT_SOURCES =						\
+	tests/app-with-runtime/repo
+
 endif
 
 -include $(top_srcdir)/git.mk
