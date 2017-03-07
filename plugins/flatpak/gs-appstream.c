@@ -1,0 +1,1 @@
+../core/gs-appstream.c

@@ -60,55 +60,8 @@ if HAVE_SHELL_EXTENSIONS
 SUBDIRS += shell-extensions
 endif
 
-AM_CPPFLAGS =						\
-	-DDATADIR=\"$(datadir)\"			\
-	-DG_LOG_DOMAIN=\"GsPlugin\"			\
-	-DLIBEXECDIR=\""$(libexecdir)"\"		\
-	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
-	-DLOCALEDIR=\""$(localedir)"\"			\
-	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
-	-DLOCALPLUGINDIR=\""$(top_builddir)/plugins/.libs"\"	\
-	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"
-
-plugindir = $(GS_PLUGIN_DIR)
-plugin_LTLIBRARIES =
-
-appdata_in_files =
-
 if HAVE_FLATPAK
-plugin_LTLIBRARIES += libgs_plugin_flatpak.la
-endif
-
-if HAVE_FLATPAK
-appdata_in_files += org.gnome.Software.Plugin.Flatpak.metainfo.xml.in
-libgs_plugin_flatpak_la_SOURCES =			\
-	gs-appstream.c					\
-	gs-appstream.h					\
-	gs-flatpak.c					\
-	gs-flatpak.h					\
-	gs-flatpak-symlinks.c				\
-	gs-flatpak-symlinks.h				\
-	gs-plugin-flatpak.c
-libgs_plugin_flatpak_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
-libgs_plugin_flatpak_la_LDFLAGS = -module -avoid-version
-libgs_plugin_flatpak_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(FLATPAK_CFLAGS)
-endif
-
-# MetaInfo files
-%.metainfo.xml: %.metainfo.xml.in
-	$(AM_V_GEN) msgfmt --xml -d $(top_srcdir)/po --template $< -o $@
-
-appdatadir = $(datadir)/appdata
-appdata_DATA = $(appdata_in_files:.xml.in=.xml)
-EXTRA_DIST = $(appdata_in_files)
-CLEANFILES = $(appdata_DATA)
-
-if ENABLE_TESTS
-check_PROGRAMS = gs-self-test
-gs_self_test_SOURCES = gs-self-test.c
-gs_self_test_LDADD = $(GS_PRIVATE_LIBS)
-gs_self_test_CFLAGS = $(GS_PRIVATE_CFLAGS)
-TESTS = gs-self-test
+SUBDIRS += flatpak
 endif
 
 -include $(top_srcdir)/git.mk
