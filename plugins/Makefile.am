@@ -23,6 +23,10 @@ if HAVE_OSTREE
 SUBDIRS += ostree
 endif
 
+if HAVE_EXTERNAL_APPSTREAM
+SUBDIRS += external-appstream
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -55,13 +59,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_ubuntuone.la
 
 appdata_in_files =
-
-if HAVE_EXTERNAL_APPSTREAM
-plugin_LTLIBRARIES += libgs_plugin_external-appstream.la
-
-libexec_PROGRAMS = gnome-software-install-appstream
-
-endif
 
 if HAVE_SNAP
 plugin_LTLIBRARIES += libgs_plugin_snap.la
@@ -119,19 +116,6 @@ libgs_plugin_generic_updates_la_SOURCES = gs-plugin-generic-updates.c
 libgs_plugin_generic_updates_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_generic_updates_la_LDFLAGS = -module -avoid-version
 libgs_plugin_generic_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-if HAVE_EXTERNAL_APPSTREAM
-libgs_plugin_external_appstream_la_SOURCES =		\
-	gs-plugin-external-appstream.c
-libgs_plugin_external_appstream_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_external_appstream_la_LDFLAGS = -module -avoid-version
-libgs_plugin_external_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(SOUP_CFLAGS)
-
-gnome_software_install_appstream_SOURCES = gs-install-appstream.c
-gnome_software_install_appstream_LDADD = $(GLIB_LIBS) $(APPSTREAM_LIBS)
-gnome_software_install_appstream_CFLAGS = $(WARN_CFLAGS)
-gnome_software_install_appstream_LDFLAGS = $(PIE_LDFLAGS) $(RELRO_LDFLAGS)
-endif
 
 libgs_plugin_key_colors_la_SOURCES = gs-plugin-key-colors.c
 libgs_plugin_key_colors_la_LIBADD = $(GS_PLUGIN_LIBS)

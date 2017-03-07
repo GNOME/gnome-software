@@ -506,6 +506,7 @@ doc/api/Makefile
 lib/Makefile
 lib/gnome-software.pc
 plugins/Makefile
+plugins/external-appstream/Makefile
 plugins/limba/Makefile
 plugins/odrs/Makefile
 plugins/ostree/Makefile
