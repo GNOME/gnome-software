@@ -365,7 +365,8 @@ gs_plugin_loader_create_event_from_error (GsPluginLoader *plugin_loader,
 }
 
 static gboolean
-gs_plugin_loader_is_error_fatal (GsPluginFailureFlags failure_flags, GError *err)
+gs_plugin_loader_is_error_fatal (GsPluginFailureFlags failure_flags,
+				 const GError *err)
 {
 	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY)
 		return TRUE;
