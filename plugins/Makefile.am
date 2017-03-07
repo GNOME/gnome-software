@@ -7,6 +7,10 @@ if HAVE_LIMBA
 SUBDIRS += limba
 endif
 
+if HAVE_ODRS
+SUBDIRS += odrs
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -95,10 +99,6 @@ endif
 
 if HAVE_STEAM
 plugin_LTLIBRARIES += libgs_plugin_steam.la
-endif
-
-if HAVE_ODRS
-plugin_LTLIBRARIES += libgs_plugin_odrs.la
 endif
 
 if HAVE_RPM
@@ -211,14 +211,6 @@ libgs_plugin_ostree_la_SOURCES = gs-plugin-ostree.c
 libgs_plugin_ostree_la_LIBADD = $(GS_PLUGIN_LIBS) $(OSTREE_LIBS)
 libgs_plugin_ostree_la_LDFLAGS = -module -avoid-version
 libgs_plugin_ostree_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(OSTREE_CFLAGS)
-endif
-
-if HAVE_ODRS
-appdata_in_files += org.gnome.Software.Plugin.Odrs.metainfo.xml.in
-libgs_plugin_odrs_la_SOURCES = gs-plugin-odrs.c
-libgs_plugin_odrs_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
-libgs_plugin_odrs_la_LDFLAGS = -module -avoid-version
-libgs_plugin_odrs_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS)
 endif
 
 if HAVE_RPM
