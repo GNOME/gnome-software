@@ -24,7 +24,7 @@
 #ifndef __GS_SHELL_SEARCH_PROVIDER_H
 #define __GS_SHELL_SEARCH_PROVIDER_H
 
-#include "gs-plugin-loader.h"
+#include "gnome-software-private.h"
 
 #define GS_TYPE_SHELL_SEARCH_PROVIDER gs_shell_search_provider_get_type()
 

@@ -23,7 +23,6 @@
 
 #include <glib/gi18n.h>
 
-#include "gs-app.h"
 #include "gs-shell.h"
 #include "gs-loading-page.h"
 

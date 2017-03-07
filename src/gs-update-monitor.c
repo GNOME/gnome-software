@@ -27,9 +27,7 @@
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
 #include "gs-update-monitor.h"
-#include "gs-plugin-loader.h"
 #include "gs-common.h"
-#include "gs-utils.h"
 
 struct _GsUpdateMonitor {
 	GObject		 parent;
@@ -590,7 +588,6 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* update the timestamp so we don't show again */
 	g_settings_set (monitor->settings,
 			"install-timestamp", "x", gs_app_get_install_date (app));
-
 
 }
 

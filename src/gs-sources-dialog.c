@@ -23,9 +23,8 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
-#include "gs-app-list.h"
+#include "gnome-software-private.h"
 #include "gs-sources-dialog.h"
 #include "gs-os-release.h"
 #include "gs-sources-dialog-row.h"

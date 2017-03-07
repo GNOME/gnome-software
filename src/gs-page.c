@@ -24,13 +24,10 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#include "gs-app-private.h"
 #include "gs-page.h"
-#include "gs-shell.h"
 #include "gs-common.h"
 #include "gs-auth-dialog.h"
 #include "gs-screenshot-image.h"
-#include "gs-utils.h"
 
 typedef struct
 {

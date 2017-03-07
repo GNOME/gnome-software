@@ -23,10 +23,8 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #include "gs-app-addon-row.h"
-#include "gs-utils.h"
 
 struct _GsAppAddonRow
 {

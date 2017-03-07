@@ -25,8 +25,7 @@
 #include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 
-#include "gs-app.h"
-#include "gs-plugin-loader.h"
+#include "gnome-software-private.h"
 
 G_BEGIN_DECLS
 

@@ -22,12 +22,9 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
-#include <appstream-glib.h>
 
 #include "gs-update-list.h"
 
-#include "gs-app.h"
 #include "gs-app-row.h"
 #include "gs-common.h"
 

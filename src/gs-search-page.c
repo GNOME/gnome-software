@@ -22,11 +22,9 @@
 #include "config.h"
 
 #include <string.h>
-#include <glib/gi18n.h>
 
 #include "gs-search-page.h"
 #include "gs-shell.h"
-#include "gs-app.h"
 #include "gs-common.h"
 #include "gs-app-row.h"
 

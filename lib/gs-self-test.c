@@ -21,18 +21,11 @@
 
 #include "config.h"
 
-#include <glib-object.h>
 #include <glib/gstdio.h>
 #include <stdlib.h>
-#include <fnmatch.h>
 
-#include "gs-app-private.h"
-#include "gs-app-list-private.h"
-#include "gs-os-release.h"
-#include "gs-plugin-private.h"
-#include "gs-plugin-loader.h"
-#include "gs-plugin-loader-sync.h"
-#include "gs-utils.h"
+#include "gnome-software-private.h"
+
 #include "gs-test.h"
 
 static gboolean

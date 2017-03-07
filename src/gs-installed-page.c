@@ -24,11 +24,9 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <appstream-glib.h>
 
 #include "gs-shell.h"
 #include "gs-installed-page.h"
-#include "gs-app.h"
 #include "gs-common.h"
 #include "gs-app-row.h"
 #include "gs-app-folder-dialog.h"

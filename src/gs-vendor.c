@@ -21,8 +21,6 @@
 
 #include "config.h"
 
-#include <glib/gi18n.h>
-
 #include "gs-vendor.h"
 
 struct _GsVendor

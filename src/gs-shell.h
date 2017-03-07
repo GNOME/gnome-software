@@ -22,12 +22,9 @@
 #ifndef __GS_SHELL_H
 #define __GS_SHELL_H
 
-#include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "gs-plugin-loader.h"
-#include "gs-category.h"
-#include "gs-app.h"
+#include "gnome-software-private.h"
 
 G_BEGIN_DECLS
 

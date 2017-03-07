@@ -23,12 +23,8 @@
 
 #include <glib/gi18n.h>
 #include <gio/gdesktopappinfo.h>
-#include <errno.h>
-#include <fnmatch.h>
 
-#include "gs-app.h"
 #include "gs-common.h"
-#include "gs-plugin.h"
 
 #define SPINNER_DELAY 500
 

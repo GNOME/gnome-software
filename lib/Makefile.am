@@ -28,6 +28,7 @@ gnomesoftware_include_HEADERS =				\
 noinst_LIBRARIES = libgnomesoftware.a
 libgnomesoftware_a_SOURCES =				\
 	gnome-software.h				\
+	gnome-software-private.h			\
 	gs-app.c					\
 	gs-app.h					\
 	gs-app-list.c					\

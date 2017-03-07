@@ -24,8 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#include "gs-app.h"
-#include "gs-app-list.h"
+#include "gnome-software-private.h"
 
 G_BEGIN_DECLS
 

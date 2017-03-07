@@ -24,7 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#include "gs-plugin-loader.h"
+#include "gnome-software-private.h"
 
 #define GS_APPLICATION_TYPE (gs_application_get_type ())
 

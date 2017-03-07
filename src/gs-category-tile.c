@@ -21,9 +21,6 @@
 
 #include "config.h"
 
-#include <glib/gi18n.h>
-#include <gtk/gtk.h>
-
 #include "gs-category-tile.h"
 #include "gs-common.h"
 

@@ -25,7 +25,8 @@
 
 #include <gtk/gtk.h>
 #include <libsoup/soup.h>
-#include <appstream-glib.h>
+
+#include "gnome-software-private.h"
 
 G_BEGIN_DECLS
 

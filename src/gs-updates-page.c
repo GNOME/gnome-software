@@ -27,7 +27,6 @@
 #include "gs-shell.h"
 #include "gs-updates-page.h"
 #include "gs-common.h"
-#include "gs-app-private.h"
 #include "gs-app-row.h"
 #include "gs-plugin-private.h"
 #include "gs-removal-dialog.h"
@@ -35,9 +34,7 @@
 #include "gs-update-list.h"
 #include "gs-update-monitor.h"
 #include "gs-upgrade-banner.h"
-#include "gs-utils.h"
 #include "gs-application.h"
-#include "gs-utils.h"
 
 #ifdef HAVE_GNOME_DESKTOP
 #include <gdesktop-enums.h>
@@ -434,7 +431,6 @@ gs_updates_page_decrement_refresh_count (GsUpdatesPage *self)
 	/* seems a good place */
 	gs_shell_profile_dump (self->shell);
 }
-
 
 static void
 gs_updates_page_network_available_notify_cb (GsPluginLoader *plugin_loader,

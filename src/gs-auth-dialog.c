@@ -22,9 +22,7 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
-#include "gs-auth.h"
 #include "gs-auth-dialog.h"
 #include "gs-common.h"
 

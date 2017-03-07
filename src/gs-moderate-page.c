@@ -23,9 +23,7 @@
 #include "config.h"
 
 #include <string.h>
-#include <glib/gi18n.h>
 
-#include "gs-app.h"
 #include "gs-app-row.h"
 #include "gs-review-row.h"
 #include "gs-shell.h"
@@ -82,7 +80,6 @@ gs_moderate_page_review_clicked_cb (GsReviewRow *row,
 					      self);
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
 }
-
 
 static void
 gs_moderate_page_selection_changed_cb (GtkListBox *listbox,

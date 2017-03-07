@@ -26,7 +26,6 @@
 
 #include <stdlib.h>
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
 #include <libsoup/soup.h>
@@ -49,7 +48,6 @@
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
 #include "gs-folders.h"
-#include "gs-utils.h"
 
 #define ENABLE_SOFTWARE_SOURCES_CONF_KEY "enable-software-sources"
 

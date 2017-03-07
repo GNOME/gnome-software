@@ -23,7 +23,6 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #ifdef HAVE_GNOME_DESKTOP
 #define GNOME_DESKTOP_USE_UNSTABLE_API
@@ -33,7 +32,6 @@
 
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
-#include "gs-utils.h"
 
 struct _GsScreenshotImage
 {

@@ -24,7 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#include "gs-category.h"
+#include "gnome-software-private.h"
 
 G_BEGIN_DECLS
 

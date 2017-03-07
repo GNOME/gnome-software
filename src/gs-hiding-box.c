@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #include "gs-hiding-box.h"
 
@@ -59,7 +58,6 @@ gs_hiding_box_buildable_init (GtkBuildableIface *iface)
 
 G_DEFINE_TYPE_WITH_CODE (GsHidingBox, gs_hiding_box, GTK_TYPE_CONTAINER,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_BUILDABLE, gs_hiding_box_buildable_init))
-
 
 static void
 gs_hiding_box_set_property (GObject      *object,

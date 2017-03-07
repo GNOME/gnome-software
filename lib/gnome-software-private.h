@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,25 +19,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GS_REMOVAL_DIALOG_H
-#define GS_REMOVAL_DIALOG_H
+#ifndef __GNOME_SOFTWARE_PRIVATE_H__
+#define __GNOME_SOFTWARE_PRIVATE_H__
 
-#include <gtk/gtk.h>
+#ifndef I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
+#define I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
+#endif
 
-#include "gnome-software-private.h"
+#include <gnome-software.h>
 
-G_BEGIN_DECLS
+#include <gs-app-list-private.h>
+#include <gs-app-private.h>
+#include <gs-category-private.h>
+#include <gs-os-release.h>
+#include <gs-plugin-loader.h>
+#include <gs-plugin-loader-sync.h>
+#include <gs-plugin-private.h>
 
-#define GS_TYPE_REMOVAL_DIALOG (gs_removal_dialog_get_type ())
+#endif /* __GNOME_SOFTWARE_PRIVATE_H__ */
 
-G_DECLARE_FINAL_TYPE (GsRemovalDialog, gs_removal_dialog, GS, REMOVAL_DIALOG, GtkMessageDialog)
-
-GtkWidget	*gs_removal_dialog_new				(void);
-void		 gs_removal_dialog_show_upgrade_removals	(GsRemovalDialog	 *self,
-								 GsApp			 *upgrade);
-
-G_END_DECLS
-
-#endif /* GS_REMOVAL_DIALOG_H */
-
-/* vim: set noexpandtab: */

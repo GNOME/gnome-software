@@ -30,7 +30,6 @@
 #include "gs-content-rating.h"
 
 #include "gs-details-page.h"
-#include "gs-app-private.h"
 #include "gs-app-addon-row.h"
 #include "gs-auth-dialog.h"
 #include "gs-history-dialog.h"
@@ -39,7 +38,6 @@
 #include "gs-review-histogram.h"
 #include "gs-review-dialog.h"
 #include "gs-review-row.h"
-#include "gs-utils.h"
 
 /* the number of reviews to show before clicking the 'More Reviews' button */
 #define SHOW_NR_REVIEWS_INITIAL		4

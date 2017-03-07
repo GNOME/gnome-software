@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"

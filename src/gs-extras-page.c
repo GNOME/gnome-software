@@ -23,7 +23,6 @@
 
 #include "gs-extras-page.h"
 
-#include "gs-app.h"
 #include "gs-app-row.h"
 #include "gs-language.h"
 #include "gs-shell.h"

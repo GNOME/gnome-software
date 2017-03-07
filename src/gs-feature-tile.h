@@ -22,9 +22,6 @@
 #ifndef GS_FEATURE_TILE_H
 #define GS_FEATURE_TILE_H
 
-#include <gtk/gtk.h>
-
-#include "gs-app.h"
 #include "gs-app-tile.h"
 
 G_BEGIN_DECLS

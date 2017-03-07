@@ -22,7 +22,6 @@
 
 #include "config.h"
 
-#include <appstream-glib.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>

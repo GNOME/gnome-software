@@ -21,14 +21,13 @@
 
 #include "config.h"
 
-#include <appstream-glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <locale.h>
 
+#include "gnome-software-private.h"
+
 #include "gs-debug.h"
-#include "gs-plugin-loader.h"
-#include "gs-plugin-loader-sync.h"
 
 static void
 gs_cmd_show_results_apps (GsAppList *list)

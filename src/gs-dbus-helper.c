@@ -27,12 +27,13 @@
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "gnome-software-private.h"
+
 #include "gs-dbus-helper.h"
 #include "gs-packagekit-generated.h"
 #include "gs-packagekit-modify2-generated.h"
 #include "gs-resources.h"
 #include "gs-extras-page.h"
-#include "gs-utils.h"
 
 struct _GsDbusHelper {
 	GObject			 parent;

@@ -22,13 +22,7 @@
 #ifndef __GS_DETAILS_PAGE_H
 #define __GS_DETAILS_PAGE_H
 
-#include <glib-object.h>
-#include <gtk/gtk.h>
-
-#include "gs-app.h"
-#include "gs-shell.h"
 #include "gs-page.h"
-#include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
