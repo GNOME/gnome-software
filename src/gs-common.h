@@ -43,8 +43,6 @@ void	 gs_app_notify_failed_modal	(GsApp		*app,
 GtkResponseType
 	gs_app_notify_unavailable	(GsApp		*app,
 					 GtkWindow	*parent);
-void	 gs_app_show_url		(GsApp		*app,
-					 AsUrlKind	 kind);
 
 void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf,

@@ -1045,7 +1045,8 @@ row_activated_cb (GtkListBox *list_box,
 
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE &&
 	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
-		gs_app_show_url (app, AS_URL_KIND_MISSING);
+		gs_shell_show_uri (self->shell,
+		                   gs_app_get_url (app, AS_URL_KIND_MISSING));
 	} else {
 		gs_shell_show_app (self->shell, app);
 	}

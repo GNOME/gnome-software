@@ -357,17 +357,6 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 }
 
 void
-gs_app_show_url (GsApp *app, AsUrlKind kind)
-{
-	const gchar *url;
-	g_autoptr(GError) error = NULL;
-
-	url = gs_app_get_url (app, kind);
-	if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error))
-		g_warning ("spawn of '%s' failed", url);
-}
-
-void
 gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, gint scale)
 {
 	cairo_surface_t *surface;
