@@ -128,6 +128,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
+	/* clear in case we're called from resetup in the self tests */
+	g_ptr_array_set_size (priv->flatpaks, 0);
+
 	/* we use a permissions helper to elevate privs */
 	if (priv->has_system_helper && priv->destdir_for_tests == NULL) {
 		g_autoptr(FlatpakInstallation) installation = NULL;

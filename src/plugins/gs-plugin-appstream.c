@@ -39,6 +39,7 @@
 struct GsPluginData {
 	AsStore			*store;
 	GHashTable		*app_hash_old;
+	guint			 store_changed_id;
 };
 
 #define GS_PLUGIN_NUMBER_CHANGED_RELOAD	10
@@ -186,7 +187,10 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_hash_table_unref (priv->app_hash_old);
+	if (priv->store_changed_id != 0)
+		g_signal_handler_disconnect (priv->store, priv->store_changed_id);
+	if (priv->app_hash_old != NULL)
+		g_hash_table_unref (priv->app_hash_old);
 	g_object_unref (priv->store);
 }
 
@@ -292,9 +296,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	priv->app_hash_old = gs_plugin_appstream_create_app_hash (priv->store);
 
 	/* watch for changes */
-	g_signal_connect (priv->store, "changed",
-			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
-			  plugin);
+	priv->store_changed_id =
+		g_signal_connect (priv->store, "changed",
+				  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
+				  plugin);
 
 	/* ensure the token cache */
 	as_store_load_search_cache (priv->store);
