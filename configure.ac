@@ -506,6 +506,7 @@ doc/api/Makefile
 lib/Makefile
 lib/gnome-software.pc
 plugins/Makefile
+plugins/limba/Makefile
 src/Makefile
 tests/Makefile
 ])

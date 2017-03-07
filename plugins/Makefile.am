@@ -1,6 +1,12 @@
 ## We require new-style dependency handling.
 AUTOMAKE_OPTIONS = 1.7
 
+SUBDIRS =
+
+if HAVE_LIMBA
+SUBDIRS += limba
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -85,10 +91,6 @@ endif
 
 if HAVE_OSTREE
 plugin_LTLIBRARIES += libgs_plugin_ostree.la
-endif
-
-if HAVE_LIMBA
-plugin_LTLIBRARIES += libgs_plugin_limba.la
 endif
 
 if HAVE_STEAM
@@ -188,14 +190,6 @@ libgs_plugin_appstream_la_SOURCES =			\
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-if HAVE_LIMBA
-appdata_in_files += org.gnome.Software.Plugin.Limba.metainfo.xml.in
-libgs_plugin_limba_la_SOURCES = gs-plugin-limba.c
-libgs_plugin_limba_la_LIBADD = $(GS_PLUGIN_LIBS) $(LIMBA_LIBS)
-libgs_plugin_limba_la_LDFLAGS = -module -avoid-version
-libgs_plugin_limba_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(LIMBA_CFLAGS)
-endif
 
 if HAVE_FLATPAK
 appdata_in_files += org.gnome.Software.Plugin.Flatpak.metainfo.xml.in
