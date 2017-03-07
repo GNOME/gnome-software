@@ -30,6 +30,7 @@
 #include "gs-common.h"
 #include "gs-auth-dialog.h"
 #include "gs-screenshot-image.h"
+#include "gs-utils.h"
 
 typedef struct
 {

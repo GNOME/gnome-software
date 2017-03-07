@@ -446,12 +446,6 @@ gs_utils_widget_set_css_app (GsApp *app,
 	gs_utils_widget_set_css_internal (widget, class_name, str->str);
 }
 
-const gchar *
-gs_user_agent (void)
-{
-	return PACKAGE_NAME "/" PACKAGE_VERSION;
-}
-
 static void
 do_not_expand (GtkWidget *child, gpointer data)
 {

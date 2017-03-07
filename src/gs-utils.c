@@ -933,4 +933,17 @@ gs_utils_get_url_path (const gchar *url)
 	return g_strdup (path);
 }
 
+/**
+ * gs_user_agent:
+ *
+ * Gets the user agent to use for remote requests.
+ *
+ * Returns: the user-agent, e.g. "gnome-software/3.22.1"
+ */
+const gchar *
+gs_user_agent (void)
+{
+	return PACKAGE_NAME "/" PACKAGE_VERSION;
+}
+
 /* vim: set noexpandtab: */
