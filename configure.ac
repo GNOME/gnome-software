@@ -449,7 +449,7 @@ AC_SUBST(GS_PLUGIN_DIR, "\$(libdir)/gs-plugins-\${GS_PLUGIN_API_VERSION}")
 
 # common flags used by all plugins
 GS_PLUGIN_CFLAGS=""
-GS_PLUGIN_CFLAGS="$GS_PLUGIN_CFLAGS -I\$(top_srcdir)/src"
+GS_PLUGIN_CFLAGS="$GS_PLUGIN_CFLAGS -I\$(top_srcdir)/lib"
 GS_PLUGIN_CFLAGS="$GS_PLUGIN_CFLAGS -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE"
 GS_PLUGIN_CFLAGS="$GS_PLUGIN_CFLAGS $APPSTREAM_CFLAGS"
 GS_PLUGIN_CFLAGS="$GS_PLUGIN_CFLAGS $GLIB_CFLAGS"
@@ -466,6 +466,22 @@ GS_PLUGIN_LIBS="$GS_PLUGIN_LIBS $GLIB_LIBS"
 GS_PLUGIN_LIBS="$GS_PLUGIN_LIBS $GTK_LIBS"
 GS_PLUGIN_LIBS="$GS_PLUGIN_LIBS $SOUP_LIBS"
 AC_SUBST(GS_PLUGIN_LIBS)
+
+# common cflags used by the private library
+GS_PRIVATE_CFLAGS="$GS_PLUGIN_CFLAGS"
+GS_PRIVATE_CFLAGS="$GS_PRIVATE_CFLAGS $JSON_GLIB_CFLAGS"
+GS_PRIVATE_CFLAGS="$GS_PRIVATE_CFLAGS $POLKIT_CFLAGS"
+GS_PRIVATE_CFLAGS="$GS_PRIVATE_CFLAGS $LIBSECRET_CFLAGS"
+GS_PRIVATE_CFLAGS="$GS_PRIVATE_CFLAGS $VALGRIND_CFLAGS"
+AC_SUBST(GS_PRIVATE_CFLAGS)
+
+# common libraries used by the private library
+GS_PRIVATE_LIBS="$GS_PLUGIN_LIBS"
+GS_PRIVATE_LIBS="$GS_PRIVATE_LIBS \$(top_builddir)/lib/libgnomesoftware.a"
+GS_PRIVATE_LIBS="$GS_PRIVATE_LIBS $JSON_GLIB_LIBS"
+GS_PRIVATE_LIBS="$GS_PRIVATE_LIBS $POLKIT_LIBS"
+GS_PRIVATE_LIBS="$GS_PRIVATE_LIBS $LIBSECRET_LIBS"
+AC_SUBST(GS_PRIVATE_LIBS)
 
 dnl ---------------------------------------------------------------------------
 dnl - Makefiles, etc.
@@ -487,7 +503,8 @@ data/icons/hicolor/scalable/Makefile
 data/tests/Makefile
 doc/Makefile
 doc/api/Makefile
-src/gnome-software.pc
+lib/Makefile
+lib/gnome-software.pc
 src/Makefile
 src/plugins/Makefile
 tests/Makefile

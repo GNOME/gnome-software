@@ -16,7 +16,7 @@ DOC_MAIN_SGML_FILE=$(DOC_MODULE)-docs.xml
 # gtk-doc will search all .c and .h files beneath these paths
 # for inline comments documenting functions and macros.
 # e.g. DOC_SOURCE_DIR=$(top_srcdir)/gtk $(top_srcdir)/gdk
-DOC_SOURCE_DIR=$(top_srcdir)/src
+DOC_SOURCE_DIR=$(top_srcdir)/lib
 
 # Extra options to pass to gtkdoc-scangobj. Normally not needed.
 SCANGOBJ_OPTIONS=
@@ -39,8 +39,8 @@ FIXXREF_OPTIONS=
 # Used for dependencies. The docs will be rebuilt if any of these change.
 # e.g. HFILE_GLOB=$(top_srcdir)/gtk/*.h
 # e.g. CFILE_GLOB=$(top_srcdir)/gtk/*.c
-HFILE_GLOB=$(top_srcdir)/src/*.h
-CFILE_GLOB=$(top_srcdir)/src/*.c
+HFILE_GLOB=$(top_srcdir)/lib/*.h
+CFILE_GLOB=$(top_srcdir)/lib/*.c
 
 # Extra header to include when scanning, which are not under DOC_SOURCE_DIR
 # e.g. EXTRA_HFILES=$(top_srcdir}/contrib/extra.h
@@ -72,22 +72,18 @@ expand_content_files=
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
 GTKDOC_CFLAGS=
 GTKDOC_LIBS=							\
-	$(SOUP_LIBS)						\
-	$(GLIB_LIBS)						\
+	$(GS_PLUGIN_LIBS)					\
 	$(POLKIT_LIBS)						\
-	$(APPSTREAM_LIBS)					\
-	$(LIBM)							\
 	$(LIBSECRET_LIBS)					\
 	$(JSON_GLIB_LIBS)					\
-	$(GTK_LIBS)						\
-	$(top_builddir)/src/gnome_software-gs-app-list.o	\
-	$(top_builddir)/src/gnome_software-gs-app.o		\
-	$(top_builddir)/src/gnome_software-gs-auth.o		\
-	$(top_builddir)/src/gnome_software-gs-category.o	\
-	$(top_builddir)/src/gnome_software-gs-os-release.o	\
-	$(top_builddir)/src/gnome_software-gs-plugin.o		\
-	$(top_builddir)/src/gnome_software-gs-plugin-event.o	\
-	$(top_builddir)/src/gnome_software-gs-utils.o
+	$(top_builddir)/lib/libgnomesoftware_a-gs-app-list.o	\
+	$(top_builddir)/lib/libgnomesoftware_a-gs-app.o		\
+	$(top_builddir)/lib/libgnomesoftware_a-gs-auth.o	\
+	$(top_builddir)/lib/libgnomesoftware_a-gs-category.o	\
+	$(top_builddir)/lib/libgnomesoftware_a-gs-os-release.o	\
+	$(top_builddir)/lib/libgnomesoftware_a-gs-plugin.o	\
+	$(top_builddir)/lib/libgnomesoftware_a-gs-plugin-event.o \
+	$(top_builddir)/lib/libgnomesoftware_a-gs-utils.o
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 include $(top_srcdir)/gtk-doc.make

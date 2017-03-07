@@ -410,19 +410,10 @@ EXTRA_DIST = $(appdata_in_files)
 CLEANFILES = $(appdata_DATA)
 
 if ENABLE_TESTS
-check_PROGRAMS =						\
-	gs-self-test
-
-gs_self_test_SOURCES =						\
-	gs-markdown.c						\
-	gs-self-test.c
-
-gs_self_test_LDADD =						\
-	$(GLIB_LIBS)						\
-	$(GTK_LIBS)
-
-gs_self_test_CFLAGS = $(WARN_CFLAGS)
-
+check_PROGRAMS = gs-self-test
+gs_self_test_SOURCES = gs-self-test.c gs-markdown.c
+gs_self_test_LDADD = $(GS_PRIVATE_LIBS)
+gs_self_test_CFLAGS = $(GS_PRIVATE_CFLAGS)
 TESTS = gs-self-test
 endif
 

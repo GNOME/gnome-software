@@ -32,7 +32,6 @@
 #include "gs-plugin.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-private.h"
-#include "gs-common.h"
 #include "gs-utils.h"
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */

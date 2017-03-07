@@ -2,45 +2,20 @@ SUBDIRS =						\
 	plugins
 
 AM_CPPFLAGS =						\
-	$(APPSTREAM_CFLAGS)				\
-	$(GLIB_CFLAGS)					\
-	$(GTK_CFLAGS)					\
+	$(GS_PRIVATE_CFLAGS)				\
 	$(GTKSPELL_CFLAGS)				\
-	$(SOUP_CFLAGS)					\
-	$(PACKAGEKIT_CFLAGS)				\
 	$(GNOME_DESKTOP_CFLAGS)				\
-	$(POLKIT_CFLAGS)				\
-	$(JSON_GLIB_CFLAGS)				\
-	$(LIBSECRET_CFLAGS)				\
-	$(PIE_CFLAGS)					\
-	$(VALGRIND_CFLAGS)				\
+	-I$(top_srcdir)/lib				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
-	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DLIBDIR=\"$(libdir)\"				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DVERSION="\"$(VERSION)\""			\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
+	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
 	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\"
-
-pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = gnome-software.pc
-
-gnomesoftware_includedir = $(includedir)/gnome-software
-gnomesoftware_include_HEADERS =				\
-	gnome-software.h				\
-	gs-app.h					\
-	gs-app-list.h					\
-	gs-auth.h					\
-	gs-category.h					\
-	gs-os-release.h					\
-	gs-plugin.h					\
-	gs-plugin-event.h				\
-	gs-plugin-types.h				\
-	gs-plugin-vfuncs.h				\
-	gs-utils.h
 
 %.desktop: %.desktop.in
 	$(AM_V_GEN) msgfmt --desktop -d $(top_srcdir)/po --template $< -o $@
@@ -111,79 +86,32 @@ gnome-software-service.desktop: gnome-software-service.desktop.in Makefile
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
 
 libexec_PROGRAMS =					\
-	gnome-software-restarter			\
-	gnome-software-cmd
-
-gnome_software_cmd_SOURCES =				\
-	gs-app.c					\
-	gs-app-list.c					\
-	gs-auth.c					\
-	gs-cmd.c					\
-	gs-common.c					\
-	gs-debug.c					\
-	gs-utils.c					\
-	gs-os-release.c					\
-	gs-plugin-event.c				\
-	gs-plugin-loader.c				\
-	gs-plugin-loader-sync.c				\
-	gs-category.c					\
-	gs-plugin.c
-
-gnome_software_cmd_LDADD =				\
-	$(APPSTREAM_LIBS)				\
-	$(POLKIT_LIBS)					\
-	$(SOUP_LIBS)					\
-	$(LIBSECRET_LIBS)				\
-	$(GLIB_LIBS)					\
-	$(GTK_LIBS)					\
-	$(JSON_GLIB_LIBS)				\
-	$(LIBM)
-
-gnome_software_cmd_CFLAGS =				\
-	$(WARN_CFLAGS)
-
-gnome_software_cmd_LDFLAGS =				\
-	$(PIE_LDFLAGS)					\
-	$(RELRO_LDFLAGS)
+	gnome-software-restarter
 
 bin_PROGRAMS =						\
 	gnome-software
 
 gnome_software_SOURCES =				\
-	gnome-software.h				\
 	gs-app-addon-row.c				\
 	gs-app-addon-row.h				\
-	gs-app.c					\
 	gs-app-folder-dialog.c				\
 	gs-app-folder-dialog.h				\
-	gs-app.h					\
 	gs-application.c				\
 	gs-application.h				\
-	gs-app-list.c					\
-	gs-app-list.h					\
-	gs-app-list-private.h				\
-	gs-app-private.h				\
 	gs-app-row.c					\
 	gs-app-row.h					\
 	gs-app-tile.c					\
 	gs-app-tile.h					\
-	gs-auth.c					\
 	gs-auth-dialog.c				\
 	gs-auth-dialog.h				\
-	gs-auth.h					\
-	gs-category.c					\
-	gs-category.h					\
 	gs-category-page.c				\
 	gs-category-page.h				\
-	gs-category-private.h				\
 	gs-category-tile.c				\
 	gs-category-tile.h				\
 	gs-common.c					\
 	gs-common.h					\
 	gs-content-rating.c				\
 	gs-content-rating.h				\
-	gs-debug.c					\
-	gs-debug.h					\
 	gs-details-page.c				\
 	gs-details-page.h				\
 	gs-extras-page.c				\
@@ -211,23 +139,10 @@ gnome_software_SOURCES =				\
 	gs-main.c					\
 	gs-moderate-page.c				\
 	gs-moderate-page.h				\
-	gs-os-release.c					\
-	gs-os-release.h					\
 	gs-overview-page.c				\
 	gs-overview-page.h				\
 	gs-page.c					\
 	gs-page.h					\
-	gs-plugin.c					\
-	gs-plugin-event.c				\
-	gs-plugin-event.h				\
-	gs-plugin.h					\
-	gs-plugin-loader.c				\
-	gs-plugin-loader.h				\
-	gs-plugin-loader-sync.c				\
-	gs-plugin-loader-sync.h				\
-	gs-plugin-private.h				\
-	gs-plugin-types.h				\
-	gs-plugin-vfuncs.h				\
 	gs-popular-tile.c				\
 	gs-popular-tile.h				\
 	gs-progress-button.c				\
@@ -268,8 +183,6 @@ gnome_software_SOURCES =				\
 	gs-updates-page.h				\
 	gs-upgrade-banner.c				\
 	gs-upgrade-banner.h				\
-	gs-utils.c					\
-	gs-utils.h					\
 	gs-vendor.c					\
 	gs-vendor.h
 
@@ -279,36 +192,32 @@ nodist_gnome_software_SOURCES =				\
 	gs-shell-search-provider-generated.c		\
 	gs-shell-search-provider-generated.h
 
+gnome_software_LDADD =					\
+	$(GS_PRIVATE_LIBS)				\
+	$(GTKSPELL_LIBS)				\
+	$(PACKAGEKIT_LIBS)				\
+	$(GNOME_DESKTOP_LIBS)
+
+gnome_software_CFLAGS =					\
+	$(GS_PRIVATE_CFLAGS)
+
+gnome_software_LDFLAGS =				\
+	$(PIE_LDFLAGS)					\
+	$(RELRO_LDFLAGS)
+
 if HAVE_PACKAGEKIT
 gnome_software_SOURCES +=				\
 	gs-dbus-helper.c				\
 	gs-dbus-helper.h
 
+gnome_software_CFLAGS +=				\
+	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE \
+	 $(PACKAGEKIT_CFLAGS)
+
 nodist_gnome_software_SOURCES +=			\
 	$(packagekit_built_sources)			\
 	$(packagekit_modify2_built_sources)
 endif
-
-gnome_software_LDADD =					\
-	$(APPSTREAM_LIBS)				\
-	$(GLIB_LIBS)					\
-	$(GTK_LIBS)					\
-	$(GTKSPELL_LIBS)				\
-	$(SOUP_LIBS)					\
-	$(LIBSECRET_LIBS)				\
-	$(PACKAGEKIT_LIBS)				\
-	$(GNOME_DESKTOP_LIBS)				\
-	$(POLKIT_LIBS)					\
-	$(JSON_GLIB_LIBS)				\
-	$(LIBM)
-
-gnome_software_CFLAGS =					\
-	-DLIBEXECDIR=\"$(libexecdir)\"			\
-	$(WARN_CFLAGS)
-
-gnome_software_LDFLAGS =				\
-	$(PIE_LDFLAGS)					\
-	$(RELRO_LDFLAGS)
 
 gnome_software_restarter_SOURCES =			\
 	gs-restarter.c
@@ -361,51 +270,11 @@ BUILT_SOURCES =						\
 	gs-resources.c					\
 	gs-resources.h
 
-TESTS_ENVIRONMENT =						\
-	$(top_builddir)/libtool --mode=execute valgrind		\
-	--quiet							\
-	--leak-check=full					\
-	--show-possibly-lost=no
-
-if ENABLE_TESTS
-check_PROGRAMS =						\
-	gs-self-test
-
-gs_self_test_SOURCES =						\
-	gs-app.c						\
-	gs-app-list.c						\
-	gs-auth.c						\
-	gs-category.c						\
-	gs-common.c						\
-	gs-os-release.c						\
-	gs-plugin-event.c					\
-	gs-plugin-loader-sync.c					\
-	gs-plugin-loader.c					\
-	gs-plugin.c						\
-	gs-utils.c						\
-	gs-self-test.c
-
-gs_self_test_LDADD =						\
-	$(APPSTREAM_LIBS)					\
-	$(POLKIT_LIBS)						\
-	$(SOUP_LIBS)						\
-	$(LIBSECRET_LIBS)					\
-	$(GLIB_LIBS)						\
-	$(GTK_LIBS)						\
-	$(JSON_GLIB_LIBS)					\
-	$(LIBM)
-
-gs_self_test_CFLAGS = $(WARN_CFLAGS)
-
-TESTS = gs-self-test
-endif
-
 EXTRA_DIST =						\
 	shell-search-provider-dbus-interfaces.xml	\
 	org.freedesktop.PackageKit.xml			\
 	org.freedesktop.PackageKit.Modify2.xml		\
 	gnome-software.gresource.xml			\
-	gnome-software.pc.in				\
 	gnome-software.xml				\
 	gtk-style.css					\
 	gtk-style-hc.css				\

@@ -1,6 +1,7 @@
 SUBDIRS =						\
 	data						\
 	po						\
+	lib						\
 	src						\
 	tests
 
