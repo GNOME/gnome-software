@@ -6,6 +6,7 @@ SUBDIRS =
 
 # non-core, but no configure option required
 SUBDIRS += dpkg
+SUBDIRS += ubuntuone
 
 if HAVE_LIMBA
 SUBDIRS += limba
@@ -65,8 +66,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_provenance-license.la		\
 	libgs_plugin_repos.la				\
 	libgs_plugin_fedora-tagger-usage.la		\
-	libgs_plugin_icons.la				\
-	libgs_plugin_ubuntuone.la
+	libgs_plugin_icons.la
 
 appdata_in_files =
 
@@ -302,14 +302,6 @@ libgs_plugin_packagekit_proxy_la_SOURCES = gs-plugin-packagekit-proxy.c
 libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(PACKAGEKIT_CFLAGS)
-
-libgs_plugin_ubuntuone_la_SOURCES =			\
-	gs-plugin-ubuntuone.c
-libgs_plugin_ubuntuone_la_LIBADD =			\
-	$(GS_PLUGIN_LIBS)				\
-	$(JSON_GLIB_LIBS)
-libgs_plugin_ubuntuone_la_LDFLAGS = -module -avoid-version
-libgs_plugin_ubuntuone_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS)
 
 # MetaInfo files
 %.metainfo.xml: %.metainfo.xml.in

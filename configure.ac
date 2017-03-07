@@ -514,6 +514,7 @@ plugins/odrs/Makefile
 plugins/ostree/Makefile
 plugins/snap/Makefile
 plugins/steam/Makefile
+plugins/ubuntuone/Makefile
 plugins/ubuntu-reviews/Makefile
 src/Makefile
 tests/Makefile
