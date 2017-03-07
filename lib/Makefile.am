@@ -54,6 +54,8 @@ libgnomesoftware_a_SOURCES =				\
 	gs-plugin-private.h				\
 	gs-plugin-types.h				\
 	gs-plugin-vfuncs.h				\
+	gs-test.c					\
+	gs-test.h					\
 	gs-utils.c					\
 	gs-utils.h
 

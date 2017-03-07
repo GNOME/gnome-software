@@ -33,32 +33,7 @@
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 #include "gs-utils.h"
-
-static gchar *
-gs_test_get_filename (const gchar *filename)
-{
-	gchar *tmp;
-	char full_tmp[PATH_MAX];
-	g_autofree gchar *path = NULL;
-	path = g_build_filename (TESTDATADIR, filename, NULL);
-	tmp = realpath (path, full_tmp);
-	if (tmp == NULL)
-		return NULL;
-	return g_strdup (full_tmp);
-}
-
-static void
-gs_test_flush_main_context (void)
-{
-	guint cnt = 0;
-	while (g_main_context_iteration (NULL, FALSE)) {
-		if (cnt == 0)
-			g_debug ("clearing pending events...");
-		cnt++;
-	}
-	if (cnt > 0)
-		g_debug ("cleared %u events", cnt);
-}
+#include "gs-test.h"
 
 static gboolean
 gs_app_list_filter_cb (GsApp *app, gpointer user_data)
@@ -109,7 +84,7 @@ gs_os_release_func (void)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
 
-	fn = gs_test_get_filename ("tests/os-release");
+	fn = gs_test_get_filename (TESTDATADIR, "tests/os-release");
 	g_assert (fn != NULL);
 	g_setenv ("GS_SELF_TEST_OS_RELEASE_FILENAME", fn, TRUE);
 
@@ -905,7 +880,7 @@ gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* load local file */
-	fn = gs_test_get_filename ("tests/chiron-1.1-1.deb");
+	fn = gs_test_get_filename (TESTDATADIR, "tests/chiron-1.1-1.deb");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
 	app = gs_plugin_loader_file_to_app (plugin_loader,
@@ -942,7 +917,7 @@ gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* load local file */
-	fn = gs_test_get_filename ("tests/chiron-1.1-1.fc24.x86_64.rpm");
+	fn = gs_test_get_filename (TESTDATADIR, "tests/chiron-1.1-1.fc24.x86_64.rpm");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
 	app = gs_plugin_loader_file_to_app (plugin_loader,
@@ -978,7 +953,7 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* load local file */
-	fn = gs_test_get_filename ("tests/chiron-0.2.cab");
+	fn = gs_test_get_filename (TESTDATADIR, "tests/chiron-0.2.cab");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
 	app = gs_plugin_loader_file_to_app (plugin_loader,
@@ -1054,7 +1029,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* get a resolvable  */
-	testdir = gs_test_get_filename ("tests/flatpak/app-with-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-with-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -1183,7 +1158,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* no files to use */
-	repodir_fn = gs_test_get_filename ("tests/flatpak/app-with-runtime/repo");
+	repodir_fn = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-with-runtime/repo");
 	if (repodir_fn == NULL ||
 	    !g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
@@ -1206,7 +1181,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* add a remote */
 	app_source = gs_app_new ("test");
-	testdir = gs_test_get_filename ("tests/flatpak/app-with-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-with-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -1434,7 +1409,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 		return;
 
 	/* no files to use */
-	repodir_fn = gs_test_get_filename ("tests/flatpak/app-missing-runtime/repo");
+	repodir_fn = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-missing-runtime/repo");
 	if (repodir_fn == NULL ||
 	    !g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
@@ -1443,7 +1418,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 
 	/* add a remote */
 	app_source = gs_app_new ("test");
-	testdir = gs_test_get_filename ("tests/flatpak/app-missing-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-missing-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -1581,7 +1556,7 @@ gs_plugin_loader_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* write a flatpakrepo file */
-	testdir = gs_test_get_filename ("tests/flatpak/only-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "tests/flatpak/only-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -1596,7 +1571,7 @@ gs_plugin_loader_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* write a flatpakref file */
 	fn_repourl = g_strdup_printf ("file://%s", fn_repo);
-	testdir2 = gs_test_get_filename ("tests/flatpak/app-missing-runtime");
+	testdir2 = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-missing-runtime");
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
@@ -1737,7 +1712,7 @@ gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
 
 	/* add a remote with only the runtime in */
 	app_source = gs_app_new ("test");
-	testdir = gs_test_get_filename ("tests/flatpak/only-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "tests/flatpak/only-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -1793,7 +1768,7 @@ gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
 
 	/* write a flatpakref file */
-	testdir2 = gs_test_get_filename ("tests/flatpak/app-with-runtime");
+	testdir2 = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-with-runtime");
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
@@ -1929,13 +1904,13 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* no files to use */
-	repodir1_fn = gs_test_get_filename ("tests/flatpak/app-with-runtime/repo");
+	repodir1_fn = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-with-runtime/repo");
 	if (repodir1_fn == NULL ||
 	    !g_file_test (repodir1_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
 		return;
 	}
-	repodir2_fn = gs_test_get_filename ("tests/flatpak/app-update/repo");
+	repodir2_fn = gs_test_get_filename (TESTDATADIR, "tests/flatpak/app-update/repo");
 	if (repodir2_fn == NULL ||
 	    !g_file_test (repodir2_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
@@ -2339,11 +2314,11 @@ main (int argc, char **argv)
 	}
 
 	/* dummy data */
-	reposdir = gs_test_get_filename ("tests/yum.repos.d");
+	reposdir = gs_test_get_filename (TESTDATADIR, "tests/yum.repos.d");
 	g_assert (reposdir != NULL);
 	g_setenv ("GS_SELF_TEST_REPOS_DIR", reposdir, TRUE);
 
-	fn = gs_test_get_filename ("icons/hicolor/48x48/org.gnome.Software.png");
+	fn = gs_test_get_filename (TESTDATADIR, "icons/hicolor/48x48/org.gnome.Software.png");
 	g_assert (fn != NULL);
 	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
