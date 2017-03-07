@@ -27,6 +27,10 @@ if HAVE_EXTERNAL_APPSTREAM
 SUBDIRS += external-appstream
 endif
 
+if HAVE_SNAP
+SUBDIRS += snap
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -59,10 +63,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_ubuntuone.la
 
 appdata_in_files =
-
-if HAVE_SNAP
-plugin_LTLIBRARIES += libgs_plugin_snap.la
-endif
 
 if HAVE_PACKAGEKIT
 plugin_LTLIBRARIES +=					\
@@ -313,24 +313,6 @@ libgs_plugin_packagekit_proxy_la_SOURCES = gs-plugin-packagekit-proxy.c
 libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(PACKAGEKIT_CFLAGS)
-
-if HAVE_SNAP
-appdata_in_files += org.gnome.Software.Plugin.Snap.metainfo.xml.in
-libgs_plugin_snap_la_SOURCES =				\
-	gs-plugin-snap.c				\
-	gs-snapd.h					\
-	gs-snapd.c
-libgs_plugin_snap_la_LIBADD =				\
-	$(GS_PLUGIN_LIBS)				\
-	$(SNAP_LIBS)					\
-	$(SOUP_LIBS)					\
-	$(JSON_GLIB_LIBS)
-libgs_plugin_snap_la_LDFLAGS = -module -avoid-version
-libgs_plugin_snap_la_CFLAGS =				\
-	$(GS_PLUGIN_CFLAGS)				\
-	$(JSON_GLIB_CFLAGS)				\
-	$(SNAP_CFLAGS)
-endif
 
 libgs_plugin_ubuntuone_la_SOURCES =			\
 	gs-plugin-ubuntuone.c

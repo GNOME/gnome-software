@@ -510,6 +510,7 @@ plugins/external-appstream/Makefile
 plugins/limba/Makefile
 plugins/odrs/Makefile
 plugins/ostree/Makefile
+plugins/snap/Makefile
 plugins/steam/Makefile
 plugins/ubuntu-reviews/Makefile
 src/Makefile
