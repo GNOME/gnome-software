@@ -446,27 +446,6 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_repos_func (GsPluginLoader *plugin_loader)
-{
-	gboolean ret;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GError) error = NULL;
-
-	/* get the extra bits */
-	app = gs_app_new ("testrepos.desktop");
-	gs_app_set_origin (app, "utopia");
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (ret);
-	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "people.freedesktop.org");
-}
-
-static void
 gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
 	const gchar *group_name = "remote \"example\"";
@@ -1691,7 +1670,6 @@ main (int argc, char **argv)
 	gboolean ret;
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *xml = NULL;
-	g_autofree gchar *reposdir = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	const gchar *whitelist[] = {
@@ -1731,11 +1709,6 @@ main (int argc, char **argv)
 		g_assert (ret);
 		g_assert (!g_file_test (tmp_root, G_FILE_TEST_EXISTS));
 	}
-
-	/* dummy data */
-	reposdir = gs_test_get_filename (TESTDATADIR, "tests/yum.repos.d");
-	g_assert (reposdir != NULL);
-	g_setenv ("GS_SELF_TEST_REPOS_DIR", reposdir, TRUE);
 
 	fn = gs_test_get_filename (TESTDATADIR, "icons/hicolor/48x48/org.gnome.Software.png");
 	g_assert (fn != NULL);
@@ -1833,9 +1806,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{plugin-cache}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_plugin_cache_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{repos}",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_repos_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-with-runtime}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_flatpak_app_with_runtime_func);
