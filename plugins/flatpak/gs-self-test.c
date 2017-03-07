@@ -26,7 +26,7 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
+gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
 	const gchar *group_name = "remote \"example\"";
 	const gchar *root = NULL;
@@ -146,7 +146,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
+gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *runtime;
@@ -410,7 +410,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
+gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	gboolean ret;
@@ -552,7 +552,7 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 }
 
 static void
-gs_plugin_loader_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
+gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app_source;
 	GsApp *runtime;
@@ -706,7 +706,7 @@ gs_plugin_loader_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
+gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *runtime;
 	gboolean ret;
@@ -887,14 +887,14 @@ gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_flatpak_count_signal_cb (GsPluginLoader *plugin_loader, guint *cnt)
+gs_plugins_flatpak_count_signal_cb (GsPluginLoader *plugin_loader, guint *cnt)
 {
 	if (cnt != NULL)
 		(*cnt)++;
 }
 
 static void
-gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
+gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *app_tmp;
@@ -1043,11 +1043,11 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* care about signals */
 	pending_apps_changed_id =
 		g_signal_connect (plugin_loader, "pending-apps-changed",
-				  G_CALLBACK (gs_plugin_loader_flatpak_count_signal_cb),
+				  G_CALLBACK (gs_plugins_flatpak_count_signal_cb),
 				  &pending_app_changed_cnt);
 	updates_changed_id =
 		g_signal_connect (plugin_loader, "updates-changed",
-				  G_CALLBACK (gs_plugin_loader_flatpak_count_signal_cb),
+				  G_CALLBACK (gs_plugins_flatpak_count_signal_cb),
 				  &updates_changed_cnt);
 	notify_state_id =
 		g_signal_connect (app, "notify::state",
@@ -1174,27 +1174,24 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-with-runtime}",
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/app-with-runtime",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_flatpak_app_with_runtime_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-missing-runtime}",
+			      (GTestDataFunc) gs_plugins_flatpak_app_with_runtime_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/app-missing-runtime",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_flatpak_app_missing_runtime_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-ref}",
+			      (GTestDataFunc) gs_plugins_flatpak_app_missing_runtime_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/ref",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_flatpak_ref_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-runtime-repo}",
+			      (GTestDataFunc) gs_plugins_flatpak_ref_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_flatpak_runtime_repo_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak-app-update-runtime}",
+			      (GTestDataFunc) gs_plugins_flatpak_runtime_repo_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/app-update-runtime",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_flatpak_app_update_func);
-
-	/* done last as it would otherwise try to do downloading in other
-	 * gs_plugin_file_to_app()-using tests */
-	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak:repo}",
+			      (GTestDataFunc) gs_plugins_flatpak_app_update_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_flatpak_repo_func);
+			      (GTestDataFunc) gs_plugins_flatpak_repo_func);
 	return g_test_run ();
 }
 

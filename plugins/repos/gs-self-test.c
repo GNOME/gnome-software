@@ -26,7 +26,7 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_repos_func (GsPluginLoader *plugin_loader)
+gs_plugins_repos_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
@@ -82,9 +82,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{repos}",
+	g_test_add_data_func ("/gnome-software/plugins/repos",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_repos_func);
+			      (GTestDataFunc) gs_plugins_repos_func);
 
 	return g_test_run ();
 }

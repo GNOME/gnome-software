@@ -26,7 +26,7 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
+gs_plugins_epiphany_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
@@ -99,9 +99,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{webapps}",
+	g_test_add_data_func ("/gnome-software/plugins/epiphany",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_webapps_func);
+			      (GTestDataFunc) gs_plugins_epiphany_func);
 
 	return g_test_run ();
 }

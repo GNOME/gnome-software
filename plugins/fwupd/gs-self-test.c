@@ -26,7 +26,7 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
+gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 {
 	g_autofree gchar *fn = NULL;
 	g_autoptr(GError) error = NULL;
@@ -101,9 +101,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{fwupd}",
+	g_test_add_data_func ("/gnome-software/plugins/fwupd",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_fwupd_func);
+			      (GTestDataFunc) gs_plugins_fwupd_func);
 
 	return g_test_run ();
 }

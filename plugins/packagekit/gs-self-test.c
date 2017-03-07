@@ -207,7 +207,7 @@ gs_markdown_func (void)
 }
 
 static void
-gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
+gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
@@ -276,9 +276,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{packagekit-local}",
+	g_test_add_data_func ("/gnome-software/plugins/packagekit/local",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_packagekit_local_func);
+			      (GTestDataFunc) gs_plugins_packagekit_local_func);
 
 	return g_test_run ();
 }

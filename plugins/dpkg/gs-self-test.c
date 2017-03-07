@@ -26,7 +26,7 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
+gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
@@ -93,9 +93,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{dpkg}",
+	g_test_add_data_func ("/gnome-software/plugins/dpkg",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_dpkg_func);
+			      (GTestDataFunc) gs_plugins_dpkg_func);
 
 	return g_test_run ();
 }

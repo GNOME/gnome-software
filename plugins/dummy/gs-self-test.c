@@ -37,7 +37,7 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
@@ -70,7 +70,7 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 {
 	GsPluginEvent *event;
 	const GError *app_error;
@@ -120,7 +120,7 @@ gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
@@ -146,7 +146,7 @@ gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 {
 	GPtrArray *array;
 	gboolean ret;
@@ -182,7 +182,7 @@ gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
@@ -226,7 +226,7 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	gboolean ret;
@@ -279,7 +279,7 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *addon;
@@ -346,7 +346,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	g_autofree gchar *menu_path = NULL;
@@ -372,7 +372,7 @@ gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_url_to_app_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -446,7 +446,7 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app1;
 	GsApp *app2;
@@ -483,7 +483,7 @@ gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
 {
 	GsAuth *auth;
 	gboolean ret;
@@ -555,7 +555,7 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_wildcard_func (GsPluginLoader *plugin_loader)
+gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -672,42 +672,42 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{wildcard}",
+	g_test_add_data_func ("/gnome-software/plugins/dummy/wildcard",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_wildcard_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{authentication}",
+			      (GTestDataFunc) gs_plugins_dummy_wildcard_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/authentication",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_authentication_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{plugin-cache}",
+			      (GTestDataFunc) gs_plugins_dummy_authentication_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/plugin-cache",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_plugin_cache_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{key-colors}",
+			      (GTestDataFunc) gs_plugins_dummy_plugin_cache_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/key-colors",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_key_colors_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{search}",
+			      (GTestDataFunc) gs_plugins_dummy_key_colors_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/search",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_search_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{url-to-app}",
+			      (GTestDataFunc) gs_plugins_dummy_search_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/url-to-app",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_url_to_app_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{install}",
+			      (GTestDataFunc) gs_plugins_dummy_url_to_app_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/install",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_install_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{error}",
+			      (GTestDataFunc) gs_plugins_dummy_install_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/error",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_error_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{installed}",
+			      (GTestDataFunc) gs_plugins_dummy_error_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/installed",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_installed_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{refine}",
+			      (GTestDataFunc) gs_plugins_dummy_installed_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/refine",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_refine_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{updates}",
+			      (GTestDataFunc) gs_plugins_dummy_refine_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/updates",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_updates_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{distro-upgrades}",
+			      (GTestDataFunc) gs_plugins_dummy_updates_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/distro-upgrades",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_distro_upgrades_func);
+			      (GTestDataFunc) gs_plugins_dummy_distro_upgrades_func);
 
 	return g_test_run ();
 }

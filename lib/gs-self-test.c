@@ -480,16 +480,16 @@ main (int argc, char **argv)
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* tests go here */
-	g_test_add_func ("/gnome-software/utils{url}", gs_utils_url_func);
-	g_test_add_func ("/gnome-software/utils{wilson}", gs_utils_wilson_func);
-	g_test_add_func ("/gnome-software/utils{error}", gs_utils_error_func);
-	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
-	g_test_add_func ("/gnome-software/app", gs_app_func);
-	g_test_add_func ("/gnome-software/app{unique-id}", gs_app_unique_id_func);
-	g_test_add_func ("/gnome-software/app{thread}", gs_app_thread_func);
-	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
-	g_test_add_func ("/gnome-software/plugin{global-cache}", gs_plugin_global_cache_func);
-	g_test_add_func ("/gnome-software/auth{secret}", gs_auth_secret_func);
+	g_test_add_func ("/gnome-software/lib/utils{url}", gs_utils_url_func);
+	g_test_add_func ("/gnome-software/lib/utils{wilson}", gs_utils_wilson_func);
+	g_test_add_func ("/gnome-software/lib/utils{error}", gs_utils_error_func);
+	g_test_add_func ("/gnome-software/lib/os-release", gs_os_release_func);
+	g_test_add_func ("/gnome-software/lib/app", gs_app_func);
+	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
+	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
+	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
+	g_test_add_func ("/gnome-software/lib/plugin{global-cache}", gs_plugin_global_cache_func);
+	g_test_add_func ("/gnome-software/lib/auth{secret}", gs_auth_secret_func);
 
 	return g_test_run ();
 }

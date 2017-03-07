@@ -26,7 +26,7 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_modalias_func (GsPluginLoader *plugin_loader)
+gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	g_autofree gchar *menu_path = NULL;
@@ -99,9 +99,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugin-loader{modalias}",
+	g_test_add_data_func ("/gnome-software/plugins/modalias",
 			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_modalias_func);
+			      (GTestDataFunc) gs_plugins_modalias_func);
 
 	return g_test_run ();
 }
