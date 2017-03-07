@@ -281,7 +281,7 @@ AC_ARG_ENABLE(ostree,
               enable_ostree=maybe)
 AS_IF([test "x$enable_ostree" != "xno"], [
     PKG_CHECK_MODULES(OSTREE,
-                      [ostree-1],
+                      [ostree-1 rpm],
                       [have_ostree=yes],
                       [have_ostree=no])
 ], [
@@ -291,7 +291,7 @@ AS_IF([test "x$have_ostree" = "xyes"], [
     AC_DEFINE(HAVE_OSTREE,1,[Build ostree support])
 ], [
     AS_IF([test "x$enable_ostree" = "xyes"], [
-          AC_MSG_ERROR([ostree support requested but 'ostree' was not found])
+          AC_MSG_ERROR([ostree support requested but 'ostree' or 'rpm' was not found])
     ])
 ])
 AM_CONDITIONAL(HAVE_OSTREE, test "$have_ostree" != no)
@@ -317,28 +317,6 @@ AS_IF([test "x$have_limba" = "xyes"], [
     ])
 ])
 AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
-
-# RPM
-AC_ARG_ENABLE(rpm,
-              [AS_HELP_STRING([--enable-rpm],
-                              [enable RPM support [default=auto]])],,
-              enable_rpm=maybe)
-AS_IF([test "x$enable_rpm" != "xno"], [
-    PKG_CHECK_MODULES(RPM,
-                      rpm,
-                      [have_rpm=yes],
-                      [have_rpm=no])
-], [
-    have_rpm=no
-])
-AS_IF([test "x$have_rpm" = "xyes"], [
-    AC_DEFINE(HAVE_RPM, 1, [Build RPM support])
-], [
-    AS_IF([test "x$enable_rpm" = "xyes"], [
-          AC_MSG_ERROR([RPM support requested but 'rpm' was not found])
-    ])
-])
-AM_CONDITIONAL(HAVE_RPM, test x$have_rpm = xyes)
 
 # Steam
 AC_ARG_ENABLE(steam,
@@ -542,7 +520,6 @@ echo "
         OSTree support:            ${have_ostree}
         GtkSpell support:          ${have_gtkspell}
         GNOME desktop support:     ${have_gnome_desktop}
-        RPM support:               ${have_rpm}
         GUDev support:             ${have_gudev}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}

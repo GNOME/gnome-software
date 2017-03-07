@@ -89,10 +89,6 @@ if HAVE_FLATPAK
 plugin_LTLIBRARIES += libgs_plugin_flatpak.la
 endif
 
-if HAVE_RPM
-plugin_LTLIBRARIES += libgs_plugin_rpm.la
-endif
-
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
@@ -174,13 +170,6 @@ libgs_plugin_flatpak_la_SOURCES =			\
 libgs_plugin_flatpak_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
 libgs_plugin_flatpak_la_LDFLAGS = -module -avoid-version
 libgs_plugin_flatpak_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(FLATPAK_CFLAGS)
-endif
-
-if HAVE_RPM
-libgs_plugin_rpm_la_SOURCES = gs-plugin-rpm.c
-libgs_plugin_rpm_la_LIBADD = $(GS_PLUGIN_LIBS) $(RPM_LIBS)
-libgs_plugin_rpm_la_LDFLAGS = -module -avoid-version
-libgs_plugin_rpm_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(RPM_CFLAGS)
 endif
 
 libgs_plugin_repos_la_SOURCES = gs-plugin-repos.c
