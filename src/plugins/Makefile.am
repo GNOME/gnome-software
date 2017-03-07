@@ -9,7 +9,8 @@ AM_CPPFLAGS =						\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DLOCALEDIR=\""$(localedir)"\"			\
 	-DSYSCONFDIR=\""$(sysconfdir)"\"		\
-	-DTESTDATADIR=\""$(top_srcdir)/data/tests"\"
+	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
+	-DLOCALPLUGINDIR=\""$(top_builddir)/src/plugins/.libs"\"
 
 plugindir = $(GS_PLUGIN_DIR)
 plugin_LTLIBRARIES =					\
