@@ -509,6 +509,7 @@ plugins/Makefile
 plugins/limba/Makefile
 plugins/odrs/Makefile
 plugins/steam/Makefile
+plugins/ubuntu-reviews/Makefile
 src/Makefile
 tests/Makefile
 ])

@@ -15,6 +15,10 @@ if HAVE_STEAM
 SUBDIRS += steam
 endif
 
+if HAVE_UBUNTU_REVIEWS
+SUBDIRS += ubuntu-reviews
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -79,10 +83,6 @@ endif
 
 if HAVE_GUDEV
 plugin_LTLIBRARIES += libgs_plugin_modalias.la
-endif
-
-if HAVE_UBUNTU_REVIEWS
-plugin_LTLIBRARIES += libgs_plugin_ubuntu-reviews.la
 endif
 
 if HAVE_SHELL_EXTENSIONS
@@ -255,22 +255,6 @@ libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
 libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS)
-
-if HAVE_UBUNTU_REVIEWS
-libgs_plugin_ubuntu_reviews_la_SOURCES =		\
-	gs-plugin-ubuntu-reviews.c
-libgs_plugin_ubuntu_reviews_la_LIBADD =			\
-	$(GS_PLUGIN_LIBS)				\
-	$(JSON_GLIB_LIBS)				\
-	$(SQLITE_LIBS)					\
-	$(OAUTH_LIBS)
-libgs_plugin_ubuntu_reviews_la_LDFLAGS = -module -avoid-version
-libgs_plugin_ubuntu_reviews_la_CFLAGS =			\
-	$(GS_PLUGIN_CFLAGS)				\
-	$(JSON_GLIB_CFLAGS)				\
-	$(OAUTH_CFLAGS)					\
-	$(SQLITE_CFLAGS)
-endif
 
 libgs_plugin_packagekit_la_SOURCES =			\
 	gs-plugin-packagekit.c				\
