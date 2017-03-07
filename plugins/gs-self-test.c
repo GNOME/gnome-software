@@ -26,34 +26,6 @@
 #include "gs-test.h"
 
 static void
-gs_plugin_loader_modalias_func (GsPluginLoader *plugin_loader)
-{
-	GsApp *app;
-	g_autofree gchar *menu_path = NULL;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-
-	/* get search result based on addon keyword */
-	list = gs_plugin_loader_search (plugin_loader,
-					"colorhug2",
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					NULL,
-					&error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-
-	/* make sure there is one entry, the parent app */
-	g_assert_cmpint (gs_app_list_length (list), ==, 1);
-	app = gs_app_list_index (list, 0);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "com.hughski.ColorHug2.driver");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DRIVER);
-	g_assert (gs_app_has_category (app, "Addons"));
-	g_assert (gs_app_has_category (app, "Drivers"));
-}
-
-static void
 gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
@@ -1192,7 +1164,6 @@ main (int argc, char **argv)
 		"desktop-menu-path",
 		"icons",
 		"key-colors",
-		"modalias",
 		"provenance",
 		"provenance-license",
 		"packagekit-local",
@@ -1223,14 +1194,6 @@ main (int argc, char **argv)
 	g_assert (fn != NULL);
 	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
-		"  <component type=\"driver\">\n"
-		"    <id>com.hughski.ColorHug2.driver</id>\n"
-		"    <name>ColorHug2</name>\n"
-		"    <summary>ColorHug2 Colorimeter Driver</summary>\n"
-		"    <provides>\n"
-		"      <modalias>pci:*</modalias>\n"
-		"    </provides>\n"
-		"  </component>\n"
 		"  <component type=\"desktop\">\n"
 		"    <id>chiron.desktop</id>\n"
 		"    <pkgname>chiron</pkgname>\n"
@@ -1322,9 +1285,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{webapps}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_webapps_func);
-	g_test_add_data_func ("/gnome-software/plugin-loader{modalias}",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugin_loader_modalias_func);
 
 	/* done last as it would otherwise try to do downloading in other
 	 * gs_plugin_file_to_app()-using tests */

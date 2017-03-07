@@ -490,6 +490,7 @@ plugins/dummy/Makefile
 plugins/external-appstream/Makefile
 plugins/fwupd/Makefile
 plugins/limba/Makefile
+plugins/modalias/Makefile
 plugins/odrs/Makefile
 plugins/ostree/Makefile
 plugins/packagekit/Makefile

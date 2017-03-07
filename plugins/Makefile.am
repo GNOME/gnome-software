@@ -46,6 +46,10 @@ if HAVE_PACKAGEKIT
 SUBDIRS += packagekit
 endif
 
+if HAVE_GUDEV
+SUBDIRS += modalias
+endif
+
 AM_CPPFLAGS =						\
 	-DDATADIR=\"$(datadir)\"			\
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\
@@ -67,10 +71,6 @@ if HAVE_WEBAPPS
 plugin_LTLIBRARIES += libgs_plugin_epiphany.la
 endif
 
-if HAVE_GUDEV
-plugin_LTLIBRARIES += libgs_plugin_modalias.la
-endif
-
 if HAVE_SHELL_EXTENSIONS
 plugin_LTLIBRARIES += libgs_plugin_shell-extensions.la
 endif
@@ -90,13 +90,6 @@ libgs_plugin_fedora_distro_upgrades_la_SOURCES = gs-plugin-fedora-distro-upgrade
 libgs_plugin_fedora_distro_upgrades_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
 libgs_plugin_fedora_distro_upgrades_la_LDFLAGS = -module -avoid-version
 libgs_plugin_fedora_distro_upgrades_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS) $(WARN_CFLAGS)
-
-if HAVE_GUDEV
-libgs_plugin_modalias_la_SOURCES = gs-plugin-modalias.c
-libgs_plugin_modalias_la_LIBADD = $(GS_PLUGIN_LIBS) $(GUDEV_LIBS)
-libgs_plugin_modalias_la_LDFLAGS = -module -avoid-version
-libgs_plugin_modalias_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(GUDEV_CFLAGS)
-endif
 
 libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
 libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
