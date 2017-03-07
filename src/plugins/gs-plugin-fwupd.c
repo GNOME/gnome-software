@@ -183,8 +183,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* read config file */
 	config = g_key_file_new ();
 	if (!g_key_file_load_from_file (config, priv->config_fn,
-					G_KEY_FILE_NONE, error))
+					G_KEY_FILE_NONE, error)) {
 		return FALSE;
+	}
 
 	/* get the download URI */
 	priv->download_uri = g_key_file_get_string (config, "fwupd",
@@ -216,12 +217,14 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 							 "firmware.xml.gz.asc",
 							 GS_UTILS_CACHE_FLAG_WRITEABLE,
 							 error);
-	if (priv->lvfs_sig_fn == NULL)
+	if (priv->lvfs_sig_fn == NULL) {
 		return FALSE;
+	}
 	if (g_file_test (priv->lvfs_sig_fn, G_FILE_TEST_EXISTS)) {
 		if (!g_file_get_contents (priv->lvfs_sig_fn,
-					  &data, &len, error))
+					  &data, &len, error)) {
 			return FALSE;
+		}
 		priv->lvfs_sig_hash =
 			g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
 	}
@@ -256,8 +259,9 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 	gsize len;
 	g_autofree gchar *data = NULL;
 
-	if (!g_file_get_contents (filename, &data, &len, error))
+	if (!g_file_get_contents (filename, &data, &len, error)) {
 		return NULL;
+	}
 	return g_compute_checksum_for_data (checksum_type, (const guchar *)data, len);
 }
 
@@ -679,9 +683,9 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 					   cache_fn_data,
 					   priv->lvfs_sig_fn,
 					   cancellable,
-					   error))
+					   error)) {
 		return FALSE;
-
+	}
 	return TRUE;
 }
 
@@ -834,11 +838,18 @@ gs_plugin_update_app (GsPlugin *plugin,
 					     "not enough data for fwupd unlock");
 			return FALSE;
 		}
-		return fwupd_client_unlock (priv->client, device_id,
-					    cancellable, error);
+		if (!fwupd_client_unlock (priv->client, device_id,
+					  cancellable, error)) {
+			return FALSE;
+		}
+		return TRUE;
 	}
 
-	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
+	/* update means install */
+	if (!gs_plugin_fwupd_install (plugin, app, cancellable, error)) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 gboolean
@@ -876,8 +887,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 						  filename,
 						  cancellable,
 						  error);
-	if (results == NULL)
+	if (results == NULL) {
 		return FALSE;
+	}
 	for (i = 0; i < results->len; i++) {
 		FwupdResult *res = g_ptr_array_index (results, i);
 		g_autoptr(GsApp) app = NULL;
@@ -896,8 +908,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 					filename,
 					cancellable,
 					error);
-	if (res == NULL)
+	if (res == NULL) {
 		return FALSE;
+	}
 	app = gs_plugin_fwupd_new_app_from_results (plugin, res);
 
 	/* we have no update view for local files */

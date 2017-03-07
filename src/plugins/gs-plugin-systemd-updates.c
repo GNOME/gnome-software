@@ -67,8 +67,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
-	if (priv->monitor == NULL)
+	if (priv->monitor == NULL) {
 		return FALSE;
+	}
 	g_signal_connect (priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
 			  plugin);
@@ -170,8 +171,11 @@ gs_plugin_update (GsPlugin *plugin,
 	for (i = 0; i < gs_app_list_length (apps); i++) {
 		GsApp *app = gs_app_list_index (apps, i);
 		if (gs_plugin_systemd_updates_requires_trigger (app)) {
-			return pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
-						   cancellable, error);
+			if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
+						 cancellable, error)) {
+				return FALSE;
+			}
+			return TRUE;
 		}
 	}
 	return TRUE;

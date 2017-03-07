@@ -334,8 +334,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		return FALSE;
 
 	/* get cached file */
-	if (!g_file_get_contents (priv->cachefn, &data, &len, error))
+	if (!g_file_get_contents (priv->cachefn, &data, &len, error)) {
 		return FALSE;
+	}
 
 	/* parse data */
 	settings = g_settings_new ("org.gnome.software");

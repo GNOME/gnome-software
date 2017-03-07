@@ -198,8 +198,9 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 					 epi_desktop,
 					 NULL,
 					 error);
-	if (!ret)
+	if (!ret) {
 		return FALSE;
+	}
 
 	/* update state */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -234,8 +235,9 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	                                gs_app_get_id (app),
 	                                NULL);
 	file_app = g_file_new_for_path (app_desktop);
-	if (!g_file_delete (file_app, NULL, error))
+	if (!g_file_delete (file_app, NULL, error)) {
 		return FALSE;
+	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	return TRUE;
 }

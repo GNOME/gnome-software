@@ -261,8 +261,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				     AS_STORE_LOAD_FLAG_APP_INSTALL,
 				     cancellable,
 				     error);
-		if (!ret)
+		if (!ret) {
 			return FALSE;
+		}
 	}
 	items = as_store_get_apps (priv->store);
 	if (items->len == 0) {

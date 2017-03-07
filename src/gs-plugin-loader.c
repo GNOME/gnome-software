@@ -702,9 +702,9 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
-		if (ret)
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			return NULL;
+		}
 
 		/* get symbol */
 		exists = g_module_symbol (gs_plugin_get_module (plugin),
@@ -1033,8 +1033,9 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			return FALSE;
+		}
 		exists = g_module_symbol (gs_plugin_get_module (plugin),
 					  function_name,
 					  (gpointer *) &plugin_func);
@@ -2904,8 +2905,9 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		if (g_cancellable_set_error_if_cancelled (cancellable, &error))
+		if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
 			g_task_return_error (task, error);
+		}
 
 		exists = g_module_symbol (gs_plugin_get_module (plugin),
 					  state->function_name,
@@ -3302,8 +3304,9 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		if (g_cancellable_set_error_if_cancelled (cancellable, &error))
+		if (g_cancellable_set_error_if_cancelled (cancellable, &error)) {
 			g_task_return_error (task, error);
+		}
 
 		exists = g_module_symbol (gs_plugin_get_module (plugin),
 					  state->function_name,
@@ -4180,8 +4183,9 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			return FALSE;
+		}
 
 		exists = g_module_symbol (gs_plugin_get_module (plugin),
 					  function_name,

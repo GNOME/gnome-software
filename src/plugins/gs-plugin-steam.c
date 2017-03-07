@@ -136,8 +136,9 @@ gs_plugin_steam_parse_appinfo_file (const gchar *filename, GError **error)
 	gboolean debug =  g_getenv ("GS_PLUGIN_STEAM_DEBUG") != NULL;
 
 	/* load file */
-	if (!g_file_get_contents (filename, (gchar **) &data, &data_len, error))
+	if (!g_file_get_contents (filename, (gchar **) &data, &data_len, error)) {
 		return NULL;
+	}
 
 	/* a GPtrArray of GHashTable */
 	apps = g_ptr_array_new_with_free_func ((GDestroyNotify) g_hash_table_unref);
@@ -378,8 +379,9 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 	if (cache_fn == NULL)
 		return FALSE;
 	if (g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
-		if (!g_file_get_contents (cache_fn, &data, &data_len, error))
+		if (!g_file_get_contents (cache_fn, &data, &data_len, error)) {
 			return FALSE;
+		}
 	} else {
 		if (!gs_mkdir_parent (cache_fn, error))
 			return FALSE;
@@ -394,8 +396,9 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 
 	/* load the icon as large as possible */
 	pb = gdk_pixbuf_new_from_file (cache_fn, error);
-	if (pb == NULL)
+	if (pb == NULL) {
 		return FALSE;
+	}
 
 	/* too small? */
 	if (gdk_pixbuf_get_width (pb) < 48 ||
@@ -417,8 +420,9 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 						 error);
 	if (cache_png == NULL)
 		return FALSE;
-	if (!gdk_pixbuf_save (pb, cache_png, "png", error, NULL))
+	if (!gdk_pixbuf_save (pb, cache_png, "png", error, NULL)) {
 		return FALSE;
+	}
 
 	/* add an icon */
 	icon = as_icon_new ();
@@ -595,8 +599,9 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	}
 
 	/* get screenshots and descriptions */
-	if (!g_file_get_contents (cache_fn, &html, NULL, error))
+	if (!g_file_get_contents (cache_fn, &html, NULL, error)) {
 		return FALSE;
+	}
 	if (!gs_plugin_steam_update_screenshots (item, html, error))
 		return FALSE;
 	if (!gs_plugin_steam_update_description (item, html, error))
@@ -684,11 +689,13 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 		return FALSE;
 
 	/* save new file */
-	return as_store_to_file (store, file,
-				 AS_NODE_TO_XML_FLAG_FORMAT_INDENT |
-				 AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE,
-				 NULL,
-				 error);
+	if (!as_store_to_file (store, file,
+			       AS_NODE_TO_XML_FLAG_FORMAT_INDENT |
+			       AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE,
+			       NULL, error)) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 gboolean
@@ -711,8 +718,9 @@ gs_plugin_steam_load_app_manifest (const gchar *fn, GError **error)
 	g_auto(GStrv) lines = NULL;
 
 	/* get file */
-	if (!g_file_get_contents (fn, &data, NULL, error))
+	if (!g_file_get_contents (fn, &data, NULL, error)) {
 		return NULL;
+	}
 
 	/* parse each line */
 	manifest = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
@@ -884,7 +892,10 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
 	cmdline = g_strdup_printf ("steam steam://install/%s", gameid);
-	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
+	if (!g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error)) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 gboolean
@@ -903,7 +914,10 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
 	cmdline = g_strdup_printf ("steam steam://uninstall/%s", gameid);
-	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
+	if (!g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error)) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 gboolean
@@ -921,7 +935,10 @@ gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 	/* this is async as steam is a different process: FIXME: use D-Bus */
 	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
 	cmdline = g_strdup_printf ("steam steam://run/%s", gameid);
-	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
+	if (!g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error)) {
+		return FALSE;
+	}
+	return TRUE;
 }
 
 gboolean

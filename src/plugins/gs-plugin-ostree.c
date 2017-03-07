@@ -72,8 +72,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* open */
 	priv->ostree_repo = ostree_repo_new_default ();
-	if (!ostree_repo_open (priv->ostree_repo, cancellable, error))
+	if (!ostree_repo_open (priv->ostree_repo, cancellable, error)) {
 		return FALSE;
+	}
 	return TRUE;
 }
 
@@ -97,8 +98,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		/* get info */
 		if (!ostree_repo_remote_get_url (priv->ostree_repo,
-						 names[i], &url, error))
+						 names[i], &url, error)) {
 			return FALSE;
+		}
 
 		/* create app */
 		app = gs_app_new (names[i]);

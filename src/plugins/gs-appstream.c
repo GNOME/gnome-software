@@ -426,8 +426,9 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 		desc = as_markup_convert (as_release_get_description (rel, NULL),
 					  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 					  error);
-		if (desc == NULL)
+		if (desc == NULL) {
 			return FALSE;
+		}
 		gs_app_set_update_details (app, desc);
 
 	/* get the descriptions with a version prefix */
@@ -439,8 +440,9 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 			desc = as_markup_convert (as_release_get_description (rel, NULL),
 						  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 						  error);
-			if (desc == NULL)
+			if (desc == NULL) {
 				return FALSE;
+			}
 			g_string_append_printf (update_desc,
 						"Version %s:\n%s\n\n",
 						as_release_get_version (rel),
@@ -808,8 +810,9 @@ gs_appstream_store_search (GsPlugin *plugin,
 	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
 	for (i = 0; i < array->len; i++) {
-		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			return FALSE;
+		}
 
 		item = g_ptr_array_index (array, i);
 		ret = gs_appstream_store_search_item (plugin, item,
