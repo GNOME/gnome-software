@@ -19,6 +19,10 @@ if HAVE_UBUNTU_REVIEWS
 SUBDIRS += ubuntu-reviews
 endif
 
+if HAVE_OSTREE
+SUBDIRS += ostree
+endif
+
 AM_CPPFLAGS =						\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DDATADIR=\"$(datadir)\"			\
@@ -95,10 +99,6 @@ endif
 
 if HAVE_FLATPAK
 plugin_LTLIBRARIES += libgs_plugin_flatpak.la
-endif
-
-if HAVE_OSTREE
-plugin_LTLIBRARIES += libgs_plugin_ostree.la
 endif
 
 if HAVE_RPM
@@ -204,13 +204,6 @@ libgs_plugin_flatpak_la_SOURCES =			\
 libgs_plugin_flatpak_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
 libgs_plugin_flatpak_la_LDFLAGS = -module -avoid-version
 libgs_plugin_flatpak_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(FLATPAK_CFLAGS)
-endif
-
-if HAVE_OSTREE
-libgs_plugin_ostree_la_SOURCES = gs-plugin-ostree.c
-libgs_plugin_ostree_la_LIBADD = $(GS_PLUGIN_LIBS) $(OSTREE_LIBS)
-libgs_plugin_ostree_la_LDFLAGS = -module -avoid-version
-libgs_plugin_ostree_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(OSTREE_CFLAGS)
 endif
 
 if HAVE_RPM
