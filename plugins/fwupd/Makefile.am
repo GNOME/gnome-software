@@ -1,6 +1,6 @@
 AM_CPPFLAGS =						\
 	-DSYSCONFDIR=\""$(sysconfdir)"\"		\
-	-DTESTDATADIR=\""$(srcdir)"\"			\
+	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"
 
 plugindir = $(GS_PLUGIN_DIR)

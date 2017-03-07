@@ -40,7 +40,7 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* load local file */
-	fn = gs_test_get_filename (TESTDATADIR, "tests/chiron-0.2.cab");
+	fn = gs_test_get_filename (TESTDATADIR, "chiron-0.2.cab");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
 	app = gs_plugin_loader_file_to_app (plugin_loader,

@@ -1,5 +1,5 @@
 AM_CPPFLAGS =						\
-	-DTESTDATADIR=\""$(srcdir)"\"			\
+	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"	\
 	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"
 

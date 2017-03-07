@@ -48,7 +48,7 @@ gs_plugin_loader_flatpak_repo_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* get a resolvable  */
-	testdir = gs_test_get_filename (TESTDATADIR, "tests/app-with-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -177,7 +177,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* no files to use */
-	repodir_fn = gs_test_get_filename (TESTDATADIR, "tests/app-with-runtime/repo");
+	repodir_fn = gs_test_get_filename (TESTDATADIR, "app-with-runtime/repo");
 	if (repodir_fn == NULL ||
 	    !g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
@@ -200,7 +200,7 @@ gs_plugin_loader_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 
 	/* add a remote */
 	app_source = gs_app_new ("test");
-	testdir = gs_test_get_filename (TESTDATADIR, "tests/app-with-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -429,7 +429,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 		return;
 
 	/* no files to use */
-	repodir_fn = gs_test_get_filename (TESTDATADIR, "tests/app-missing-runtime/repo");
+	repodir_fn = gs_test_get_filename (TESTDATADIR, "app-missing-runtime/repo");
 	if (repodir_fn == NULL ||
 	    !g_file_test (repodir_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
@@ -438,7 +438,7 @@ gs_plugin_loader_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader
 
 	/* add a remote */
 	app_source = gs_app_new ("test");
-	testdir = gs_test_get_filename (TESTDATADIR, "tests/app-missing-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "app-missing-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -576,7 +576,7 @@ gs_plugin_loader_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* write a flatpakrepo file */
-	testdir = gs_test_get_filename (TESTDATADIR, "tests/only-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -591,7 +591,7 @@ gs_plugin_loader_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* write a flatpakref file */
 	fn_repourl = g_strdup_printf ("file://%s", fn_repo);
-	testdir2 = gs_test_get_filename (TESTDATADIR, "tests/app-missing-runtime");
+	testdir2 = gs_test_get_filename (TESTDATADIR, "app-missing-runtime");
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
@@ -732,7 +732,7 @@ gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
 
 	/* add a remote with only the runtime in */
 	app_source = gs_app_new ("test");
-	testdir = gs_test_get_filename (TESTDATADIR, "tests/only-runtime");
+	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -788,7 +788,7 @@ gs_plugin_loader_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
 
 	/* write a flatpakref file */
-	testdir2 = gs_test_get_filename (TESTDATADIR, "tests/app-with-runtime");
+	testdir2 = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
@@ -924,13 +924,13 @@ gs_plugin_loader_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* no files to use */
-	repodir1_fn = gs_test_get_filename (TESTDATADIR, "tests/app-with-runtime/repo");
+	repodir1_fn = gs_test_get_filename (TESTDATADIR, "app-with-runtime/repo");
 	if (repodir1_fn == NULL ||
 	    !g_file_test (repodir1_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
 		return;
 	}
-	repodir2_fn = gs_test_get_filename (TESTDATADIR, "tests/app-update/repo");
+	repodir2_fn = gs_test_get_filename (TESTDATADIR, "app-update/repo");
 	if (repodir2_fn == NULL ||
 	    !g_file_test (repodir2_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");

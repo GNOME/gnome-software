@@ -62,7 +62,7 @@ main (int argc, char **argv)
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* dummy data */
-	reposdir = gs_test_get_filename (TESTDATADIR, "tests/yum.repos.d");
+	reposdir = gs_test_get_filename (TESTDATADIR, "yum.repos.d");
 	g_assert (reposdir != NULL);
 	g_setenv ("GS_SELF_TEST_REPOS_DIR", reposdir, TRUE);
 
