@@ -708,6 +708,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 static void
 gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 {
+	GsApp *app_tmp;
 	GsApp *runtime;
 	gboolean ret;
 	const gchar *fn = "/tmp/test.flatpakref";
@@ -720,6 +721,8 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app_source = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) search1 = NULL;
+	g_autoptr(GsAppList) search2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -848,6 +851,20 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
 
+	/* search for the application */
+	search1 = gs_plugin_loader_search (plugin_loader,
+					   "chiron",
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (search1 != NULL);
+	g_assert_cmpint (gs_app_list_length (search1), ==, 1);
+	app_tmp = gs_app_list_index (search1, 0);
+	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "org.test.Chiron.desktop");
+
 	/* remove app */
 	ret = gs_plugin_loader_app_action (plugin_loader, app,
 					   GS_PLUGIN_ACTION_REMOVE,
@@ -884,6 +901,18 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (sources != NULL);
 	g_assert_cmpint (gs_app_list_length (sources), ==, 0);
+
+	/* there should be no matches now */
+	search2 = gs_plugin_loader_search (plugin_loader,
+					   "chiron",
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (search2 != NULL);
+	g_assert_cmpint (gs_app_list_length (search2), ==, 0);
 }
 
 static void

@@ -2662,6 +2662,10 @@ gs_flatpak_app_install (GsFlatpak *self,
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
+
+		/* update search tokens for new remote */
+		if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0, cancellable, error))
+			return FALSE;
 	}
 
 	/* install required runtime if not already installed */
