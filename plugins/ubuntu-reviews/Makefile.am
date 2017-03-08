@@ -11,6 +11,7 @@ libgs_plugin_ubuntu_reviews_la_LIBADD =			\
 	$(SQLITE_LIBS)					\
 	$(OAUTH_LIBS)
 libgs_plugin_ubuntu_reviews_la_LDFLAGS = -module -avoid-version
+libgs_plugin_ubuntu_reviews_la_CFLAGS =			\
 	$(GS_PLUGIN_CFLAGS)				\
 	$(JSON_GLIB_CFLAGS)				\
 	$(OAUTH_CFLAGS)					\
