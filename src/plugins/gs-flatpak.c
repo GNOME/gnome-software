@@ -3155,6 +3155,13 @@ gs_flatpak_init (GsFlatpak *self)
 			  self);
 	as_store_set_add_flags (self->store, AS_STORE_ADD_FLAG_USE_UNIQUE_ID);
 	as_store_set_watch_flags (self->store, AS_STORE_WATCH_FLAG_REMOVED);
+	as_store_set_search_match (self->store,
+				   AS_APP_SEARCH_MATCH_MIMETYPE |
+				   AS_APP_SEARCH_MATCH_PKGNAME |
+				   AS_APP_SEARCH_MATCH_COMMENT |
+				   AS_APP_SEARCH_MATCH_NAME |
+				   AS_APP_SEARCH_MATCH_KEYWORD |
+				   AS_APP_SEARCH_MATCH_ID);
 }
 
 GsFlatpak *
