@@ -231,6 +231,10 @@ gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 					    NULL,
 					    &error);
 	gs_test_flush_main_context ();
+	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
+		g_test_skip ("rpm files not supported");
+		return;
+	}
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "chiron");
