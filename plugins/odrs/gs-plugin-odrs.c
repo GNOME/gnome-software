@@ -90,8 +90,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* need application IDs and version */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "flatpak-system");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "flatpak-user");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "flatpak");
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Odrs");
