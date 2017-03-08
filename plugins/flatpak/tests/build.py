@@ -1,21 +1,21 @@
-#!/bin/python
+#!/usr/bin/python3
 
 import subprocess
 import os
 import shutil
 
 def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
-    print 'Building %s from %s into %s' % (appid, srcdir, repodir)
+    print('Building %s from %s into %s' % (appid, srcdir, repodir))
 
     # delete repodir
     if cleanrepodir and os.path.exists(repodir):
-        print "Deleting %s" % repodir
+        print("Deleting %s" % repodir)
         shutil.rmtree(repodir)
 
     # delete exportdir
     exportdir = os.path.join(srcdir, appid, 'export')
     if os.path.exists(exportdir):
-        print "Deleting %s" % exportdir
+        print("Deleting %s" % exportdir)
         shutil.rmtree(exportdir)
 
     # use git master where available
@@ -60,7 +60,7 @@ def build_flatpak(appid, srcdir, repodir, cleanrepodir=True):
 def copy_repo(srcdir, destdir):
     srcdir_repo = os.path.join(srcdir, 'repo')
     destdir_repo = os.path.join(destdir, 'repo')
-    print "Copying %s to %s" % (srcdir_repo, destdir_repo)
+    print("Copying %s to %s" % (srcdir_repo, destdir_repo))
     if os.path.exists(destdir_repo):
         shutil.rmtree(destdir_repo)
     shutil.copytree(srcdir_repo, destdir_repo)
