@@ -32,7 +32,7 @@ CLEANFILES = $(appdata_DATA)
 if ENABLE_TESTS
 check_PROGRAMS = gs-self-test
 gs_self_test_SOURCES = gs-self-test.c
-gs_self_test_LDADD = $(GS_PRIVATE_LIBS)
+gs_self_test_LDADD = $(top_builddir)/lib/libgnomesoftware.a $(GS_PRIVATE_LIBS)
 gs_self_test_CFLAGS = $(GS_PRIVATE_CFLAGS)
 TESTS = gs-self-test
 

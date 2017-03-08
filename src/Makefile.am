@@ -190,6 +190,7 @@ nodist_gnome_software_SOURCES =				\
 	gs-shell-search-provider-generated.h
 
 gnome_software_LDADD =					\
+	$(top_builddir)/lib/libgnomesoftware.a		\
 	$(GS_PRIVATE_LIBS)				\
 	$(GTKSPELL_LIBS)				\
 	$(PACKAGEKIT_LIBS)				\
