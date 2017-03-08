@@ -46,6 +46,23 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-03-08" version="3.22.6">
+      <description>
+        <p>This stable release fixes the following bugs:</p>
+        <ul>
+          <li>Add support for RuntimeRepo in flatpakref files</li>
+          <li>Avoid requesting elevated privileges just for viewing flatpakref details</li>
+          <li>Fix launching flatpak apps after updating</li>
+          <li>Install needed Flatpak runtimes when updating an app</li>
+          <li>Do not show related flatpak runtimes as separate entries</li>
+          <li>Improve internal locking, hopefully fixing a few hard-to-debug crashes</li>
+          <li>Fix a large memory leak in the steam plugin</li>
+          <li>Add keywords to match web apps and input methods</li>
+          <li>Fix a few user interface papercuts</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-01-16" version="3.22.5">
       <description>
         <p>This stable release fixes the following bugs:</p>
