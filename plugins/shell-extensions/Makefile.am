@@ -1,3 +1,6 @@
+AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginShellExtensions\"
+
 plugindir = $(GS_PLUGIN_DIR)
 plugin_LTLIBRARIES = libgs_plugin_shell-extensions.la
 libgs_plugin_shell_extensions_la_SOURCES = gs-plugin-shell-extensions.c

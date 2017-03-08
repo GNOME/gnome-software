@@ -1,4 +1,5 @@
 AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginPackageKit\"		\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"

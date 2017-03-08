@@ -1,4 +1,5 @@
 AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginModalias\"		\
 	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"	\
 	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"

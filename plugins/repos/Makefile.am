@@ -1,4 +1,5 @@
 AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginRepos\"		\
 	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"
 

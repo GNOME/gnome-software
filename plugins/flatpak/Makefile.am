@@ -1,4 +1,5 @@
 AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginFlatpak\"		\
 	-DSYSCONFDIR=\""$(sysconfdir)"\"		\
 	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"	\

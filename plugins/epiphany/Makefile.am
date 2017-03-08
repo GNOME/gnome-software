@@ -1,4 +1,5 @@
 AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginEpiphany\"		\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"	\
 	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"

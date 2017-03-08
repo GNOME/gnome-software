@@ -1,3 +1,6 @@
+AM_CPPFLAGS =						\
+	-DG_LOG_DOMAIN=\"GsPluginExternalAppstream\"
+
 plugindir = $(GS_PLUGIN_DIR)
 plugin_LTLIBRARIES = libgs_plugin_external-appstream.la
 
