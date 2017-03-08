@@ -245,6 +245,7 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
+	gtk_label_set_label (GTK_LABEL (widget), "");
 	gtk_widget_show (widget);
 
 	/* not set, perhaps file-to-app */
