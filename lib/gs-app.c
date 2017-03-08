@@ -1567,7 +1567,7 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
  *
  * Returns: (transfer none): a #GsApp, or %NULL for unset
  *
- * Since: 3.24
+ * Since: 3.22
  **/
 GsApp *
 gs_app_get_update_runtime (GsApp *app)
@@ -1583,7 +1583,7 @@ gs_app_get_update_runtime (GsApp *app)
  *
  * Sets the runtime that the application update requires.
  *
- * Since: 3.24
+ * Since: 3.22
  **/
 void
 gs_app_set_update_runtime (GsApp *app, GsApp *runtime)

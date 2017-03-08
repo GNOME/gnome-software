@@ -152,7 +152,7 @@ gs_app_list_add (GsAppList *list, GsApp *app)
  * Removes an application from the list. If the application does not exist the
  * request is ignored.
  *
- * Since: 3.24
+ * Since: 3.22
  **/
 void
 gs_app_list_remove (GsAppList *list, GsApp *app)
@@ -184,7 +184,7 @@ gs_app_list_remove (GsAppList *list, GsApp *app)
  *
  * Adds all the applications in @donor to @list.
  *
- * Since: 3.24
+ * Since: 3.22
  **/
 void
 gs_app_list_add_list (GsAppList *list, GsAppList *donor)
