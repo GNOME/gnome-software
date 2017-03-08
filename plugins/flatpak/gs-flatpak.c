@@ -2957,6 +2957,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autofree gchar *contents = NULL;
 	g_autoptr(FlatpakRemoteRef) xref = NULL;
 	g_autoptr(GBytes) ref_file_data = NULL;
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakRemote) xremote = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
@@ -3103,10 +3104,15 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	gs_app_set_origin_hostname (app, origin_url);
 	gs_app_set_origin_ui (app, origin_title);
 
-	/* get the new appstream data */
+	/* get the new appstream data (nonfatal for failure) */
 	if (!gs_flatpak_refresh_appstream_remote (self, remote_name,
-						  cancellable, error)) {
-		return FALSE;
+						  cancellable, &error_local)) {
+		g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+		gs_plugin_flatpak_error_convert (&error_local);
+		gs_plugin_event_set_app (event, app);
+		gs_plugin_event_set_error (event, error_local);
+		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (self->plugin, event);
 	}
 
 	/* get this now, as it's not going to be available at install time */
