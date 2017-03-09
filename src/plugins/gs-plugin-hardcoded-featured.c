@@ -180,7 +180,7 @@ struct {
 		"outline-offset: 2px;\n"
 		"background:"
 		" url('@datadir@/gnome-software/featured-maps.png')"
-		" left -10px / 352px auto no-repeat,"
+		" 20% -5px / 230px auto no-repeat,"
 		" url('@datadir@/gnome-software/featured-maps-bg.png')"
 		" bottom center / contain no-repeat;" },
 	{ NULL, NULL }
