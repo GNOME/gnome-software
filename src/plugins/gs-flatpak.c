@@ -464,6 +464,10 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
 
+	/* do not care */
+	if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)
+		return TRUE;
+
 	/* get remotes */
 	xremotes = flatpak_installation_list_remotes (self->installation,
 						      cancellable,
