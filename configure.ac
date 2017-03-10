@@ -94,6 +94,12 @@ PKG_CHECK_MODULES(LIBSECRET, libsecret-1)
 PKG_CHECK_MODULES(VALGRIND, valgrind)
 AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 
+# Default, but it's ≥ 0.9.1 if we're building tests because there we need --timestamp
+# If you bump this to > 0.9.1, remove the setting of FLATPAK_REQUIRED in the
+# flatpak case below, otherwise you'll make the requirement go backwards if
+# tests are enabled.
+FLATPAK_REQUIRED=0.8.0
+
 # use -lm
 LT_LIB_M
 AC_SUBST(LIBM)
@@ -256,8 +262,13 @@ AC_ARG_ENABLE(flatpak,
                               [enable flatpak support [default=auto]])],,
               enable_flatpak=maybe)
 AS_IF([test "x$enable_flatpak" != "xno"], [
+    AS_IF([test "x$enable_tests" = "xyes"], [
+           # the flatpak tests want to call flatpak build-export --timestamp,
+           # which exists as of 0.9.1
+           FLATPAK_REQUIRED=0.9.1
+    ])
     PKG_CHECK_MODULES(FLATPAK,
-                      [flatpak >= 0.8.0],
+                      [flatpak >= $FLATPAK_REQUIRED],
                       [have_flatpak=yes],
                       [have_flatpak=no])
 ], [
@@ -267,7 +278,7 @@ AS_IF([test "x$have_flatpak" = "xyes"], [
     AC_DEFINE(HAVE_FLATPAK,1,[Build flatpak support])
 ], [
     AS_IF([test "x$enable_flatpak" = "xyes"], [
-          AC_MSG_ERROR([flatpak support requested but 'flatpak' was not found])
+          AC_MSG_ERROR([flatpak support requested but 'flatpak' ≥ $FLATPAK_REQUIRED was not found])
     ])
 ])
 AM_CONDITIONAL(HAVE_FLATPAK, test "$have_flatpak" != no)
