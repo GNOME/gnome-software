@@ -699,6 +699,7 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 				    GError **error)
 {
 	AsApp *app;
+	const gchar *fn_test;
 	guint i;
 	g_autofree gchar *fn = NULL;
 	g_autoptr(GPtrArray) apps = NULL;
@@ -710,11 +711,16 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 		return TRUE;
 
 	/* check age */
-	fn = g_build_filename (g_get_user_data_dir (),
-			       "app-info",
-			       "xmls",
-			       "extensions-web.xml",
-			       NULL);
+	fn_test = g_getenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN");
+	if (fn_test != NULL) {
+		fn = g_strdup (fn_test);
+	} else {
+		fn = g_build_filename (g_get_user_data_dir (),
+				       "app-info",
+				       "xmls",
+				       "extensions-web.xml",
+				       NULL);
+	}
 	file = g_file_new_for_path (fn);
 	if (g_file_query_exists (file, NULL)) {
 		guint age = gs_utils_get_file_age (file);
