@@ -2420,15 +2420,6 @@ gs_flatpak_app_install (GsFlatpak *self,
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
-		data = g_bytes_new (contents, len);
-		xref2 = flatpak_installation_install_ref_file (self->installation,
-							      data,
-							      cancellable,
-							      error);
-		if (xref2 == NULL) {
-			gs_app_set_state_recover (app);
-			return FALSE;
-		}
 
 		/* we have a missing remote and a RuntimeRef */
 		runtime = gs_app_get_runtime (app);
@@ -2505,6 +2496,17 @@ gs_flatpak_app_install (GsFlatpak *self,
 					     gs_app_get_unique_id (app));
 				return FALSE;
 			}
+		}
+
+		/* now install actual app */
+		data = g_bytes_new (contents, len);
+		xref2 = flatpak_installation_install_ref_file (self->installation,
+							      data,
+							      cancellable,
+							      error);
+		if (xref2 == NULL) {
+			gs_app_set_state_recover (app);
+			return FALSE;
 		}
 	}
 
