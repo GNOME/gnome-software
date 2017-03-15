@@ -561,7 +561,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* is installed already */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
-	    as_app_get_state (item) != AS_APP_STATE_UNKNOWN) {
+	    as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
 		gs_app_set_state (app, as_app_get_state (item));
 	}
 

@@ -35,6 +35,8 @@ struct GsPluginData {
 	guint			 has_auth;
 	GsAuth			*auth;
 	GsApp			*cached_origin;
+	GHashTable		*installed_apps;	/* id:1 */
+	GHashTable		*available_apps;	/* id:1 */
 };
 
 /* just flip-flop this every few seconds */
@@ -86,6 +88,19 @@ gs_plugin_initialize (GsPlugin *plugin)
 	 * unique ID to a GsApp when creating an event */
 	gs_plugin_cache_add (plugin, NULL, priv->cached_origin);
 
+	/* keep track of what apps are installed */
+	priv->installed_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	priv->available_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	g_hash_table_insert (priv->available_apps,
+			     g_strdup ("zeus.desktop"),
+			     GUINT_TO_POINTER (1));
+	g_hash_table_insert (priv->available_apps,
+			     g_strdup ("zeus-spell.addon"),
+			     GUINT_TO_POINTER (1));
+	g_hash_table_insert (priv->available_apps,
+			     g_strdup ("com.hughski.ColorHug2.driver"),
+			     GUINT_TO_POINTER (1));
+
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
@@ -95,6 +110,10 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->installed_apps != NULL)
+		g_hash_table_unref (priv->installed_apps);
+	if (priv->available_apps != NULL)
+		g_hash_table_unref (priv->available_apps);
 	if (priv->quirk_id > 0)
 		g_source_remove (priv->quirk_id);
 	if (priv->auth != NULL)
@@ -417,6 +436,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -431,6 +452,12 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		}
 		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 	}
+
+	/* keep track */
+	g_hash_table_remove (priv->installed_apps, gs_app_get_id (app));
+	g_hash_table_insert (priv->available_apps,
+			     g_strdup (gs_app_get_id (app)),
+			     GUINT_TO_POINTER (1));
 	return TRUE;
 }
 
@@ -440,6 +467,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
@@ -454,6 +483,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	}
+
+	/* keep track */
+	g_hash_table_insert (priv->installed_apps,
+			     g_strdup (gs_app_get_id (app)),
+			     GUINT_TO_POINTER (1));
+	g_hash_table_remove (priv->available_apps, gs_app_get_id (app));
+
 	return TRUE;
 }
 
@@ -498,13 +534,23 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	/* default */
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* state */
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+		if (g_hash_table_lookup (priv->installed_apps,
+					 gs_app_get_id (app)) != NULL)
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		if (g_hash_table_lookup (priv->available_apps,
+					 gs_app_get_id (app)) != NULL)
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	}
+
+	/* kind */
 	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "com.hughski.ColorHug2.driver") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)
 			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	}

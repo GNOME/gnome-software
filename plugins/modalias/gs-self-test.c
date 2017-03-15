@@ -62,12 +62,14 @@ main (int argc, char **argv)
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	const gchar *whitelist[] = {
 		"appstream",
+		"dummy",
 		"modalias",
 		NULL
 	};
 
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
 
 	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
@@ -89,6 +91,7 @@ main (int argc, char **argv)
 	plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR_CORE);
+	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR_DUMMY);
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      (gchar**) whitelist,
 				      NULL,
