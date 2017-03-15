@@ -2053,6 +2053,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	AsAppState old_state = gs_app_get_state (app);
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* profile */
@@ -2082,6 +2083,12 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	if (!gs_plugin_refine_item_state (self, app, cancellable, error)) {
 		g_prefix_error (error, "failed to get state: ");
 		return FALSE;
+	}
+
+	/* if the state was changed, perhaps set the version from the release */
+	if (old_state != gs_app_get_state (app)) {
+		if (!gs_flatpak_refine_appstream (self, app, error))
+			return FALSE;
 	}
 
 	/* version fallback */

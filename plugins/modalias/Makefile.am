@@ -2,7 +2,8 @@ AM_CPPFLAGS =						\
 	-DG_LOG_DOMAIN=\"GsPluginModalias\"		\
 	-DTESTDATADIR=\""$(srcdir)/tests"\"		\
 	-DLOCALPLUGINDIR=\""$(builddir)/.libs"\"	\
-	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"
+	-DLOCALPLUGINDIR_CORE=\""$(top_builddir)/plugins/core/.libs"\"\
+	-DLOCALPLUGINDIR_DUMMY=\""$(top_builddir)/plugins/dummy/.libs"\"
 
 plugindir = $(GS_PLUGIN_DIR)
 plugin_LTLIBRARIES = libgs_plugin_modalias.la
