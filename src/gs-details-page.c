@@ -1446,13 +1446,8 @@ gs_details_page_app_refine_cb (GObject *source,
 }
 
 static void
-gs_details_page_file_to_app_cb (GObject *source,
-                                GAsyncResult *res,
-                                gpointer user_data)
+set_app (GsDetailsPage *self, GsApp *app)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	g_autoptr(GError) error = NULL;
 	g_autofree gchar *tmp = NULL;
 
 	/* disconnect the old handlers */
@@ -1462,12 +1457,8 @@ gs_details_page_file_to_app_cb (GObject *source,
 	}
 
 	/* save app */
-	g_set_object (&self->app,
-		      gs_plugin_loader_file_to_app_finish (plugin_loader,
-							   res,
-							   &error));
+	g_set_object (&self->app, app);
 	if (self->app == NULL) {
-		g_warning ("failed to convert to GsApp: %s", error->message);
 		/* switch away from the details view that failed to load */
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 		return;
@@ -1501,6 +1492,42 @@ gs_details_page_file_to_app_cb (GObject *source,
 
 	/* do 2nd stage refine */
 	gs_details_page_app_refine2 (self);
+}
+
+static void
+gs_details_page_file_to_app_cb (GObject *source,
+                                GAsyncResult *res,
+                                gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_plugin_loader_file_to_app_finish (plugin_loader,
+						   res,
+						   &error);
+	if (app == NULL)
+		g_warning ("failed to convert file to GsApp: %s", error->message);
+	set_app (self, app);
+}
+
+static void
+gs_details_page_url_to_app_cb (GObject *source,
+                               GAsyncResult *res,
+                               gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_plugin_loader_url_to_app_finish (plugin_loader,
+						  res,
+						  &error);
+	if (app == NULL)
+		g_warning ("failed to convert URL to GsApp: %s", error->message);
+	set_app (self, app);
 }
 
 void
@@ -1549,7 +1576,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
 					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					   self->cancellable,
-					   gs_details_page_file_to_app_cb,
+					   gs_details_page_url_to_app_cb,
 					   self);
 }
 
