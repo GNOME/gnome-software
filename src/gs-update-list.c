@@ -193,7 +193,6 @@ gs_update_list_update_offline_firmware_cb (GtkButton *button,
 {
 	g_autoptr(GsAppList) apps = gs_update_list_get_apps_for_section (update_list,
 	                                                                 GS_UPDATE_LIST_SECTION_OFFLINE_FIRMWARE);
-	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
 	g_signal_emit (update_list, signals[SIGNAL_UPDATE_ALL], 0, apps);
 }
 
@@ -202,7 +201,6 @@ gs_update_list_update_offline_cb (GtkButton *button, GsUpdateList *update_list)
 {
 	g_autoptr(GsAppList) apps = gs_update_list_get_apps_for_section (update_list,
 	                                                                 GS_UPDATE_LIST_SECTION_OFFLINE);
-	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
 	g_signal_emit (update_list, signals[SIGNAL_UPDATE_ALL], 0, apps);
 }
 
