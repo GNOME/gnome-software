@@ -48,6 +48,7 @@ typedef struct
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
+	SIGNAL_UPDATE_ALL,
 	SIGNAL_LAST
 };
 
@@ -166,44 +167,52 @@ gs_update_list_get_apps (GsUpdateList *update_list)
 	return apps;
 }
 
-static void
-gs_update_list_emit_clicked_for_section (GsUpdateList *update_list,
-					 GsUpdateListSection section)
+static GsAppList *
+gs_update_list_get_apps_for_section (GsUpdateList *update_list,
+                                     GsUpdateListSection section)
 {
+	GsAppList *apps;
+	GList *l;
 	g_autoptr(GList) children = NULL;
+
+	apps = gs_app_list_new ();
 	children = gtk_container_get_children (GTK_CONTAINER (update_list));
-	for (GList *l = children; l != NULL; l = l->next) {
+	for (l = children; l != NULL; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		GsApp *app = gs_app_row_get_app (app_row);
 		if (gs_update_list_get_app_section (app) != section)
 			continue;
-		g_signal_emit (update_list, signals[SIGNAL_BUTTON_CLICKED], 0, app);
+		gs_app_list_add (apps, gs_app_row_get_app (app_row));
 	}
+	return apps;
 }
 
 static void
 gs_update_list_update_offline_firmware_cb (GtkButton *button,
 					   GsUpdateList *update_list)
 {
+	g_autoptr(GsAppList) apps = gs_update_list_get_apps_for_section (update_list,
+	                                                                 GS_UPDATE_LIST_SECTION_OFFLINE_FIRMWARE);
 	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
-	gs_update_list_emit_clicked_for_section (update_list,
-						 GS_UPDATE_LIST_SECTION_OFFLINE_FIRMWARE);
+	g_signal_emit (update_list, signals[SIGNAL_UPDATE_ALL], 0, apps);
 }
 
 static void
 gs_update_list_update_offline_cb (GtkButton *button, GsUpdateList *update_list)
 {
+	g_autoptr(GsAppList) apps = gs_update_list_get_apps_for_section (update_list,
+	                                                                 GS_UPDATE_LIST_SECTION_OFFLINE);
 	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
-	gs_update_list_emit_clicked_for_section (update_list,
-						 GS_UPDATE_LIST_SECTION_OFFLINE);
+	g_signal_emit (update_list, signals[SIGNAL_UPDATE_ALL], 0, apps);
 }
 
 static void
 gs_update_list_update_online_cb (GtkButton *button, GsUpdateList *update_list)
 {
+	g_autoptr(GsAppList) apps = gs_update_list_get_apps_for_section (update_list,
+	                                                                 GS_UPDATE_LIST_SECTION_ONLINE);
 	gtk_widget_set_sensitive (GTK_WIDGET (button), FALSE);
-	gs_update_list_emit_clicked_for_section (update_list,
-						 GS_UPDATE_LIST_SECTION_ONLINE);
+	g_signal_emit (update_list, signals[SIGNAL_UPDATE_ALL], 0, apps);
 }
 
 static GtkWidget *
@@ -423,6 +432,13 @@ gs_update_list_class_init (GsUpdateListClass *klass)
 			      G_STRUCT_OFFSET (GsUpdateListClass, button_clicked),
 			      NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE, 1, GS_TYPE_APP);
+
+	signals [SIGNAL_UPDATE_ALL] =
+		g_signal_new ("update-all",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsUpdateListClass, update_all),
+			      NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP_LIST);
 
 	object_class->dispose = gs_update_list_dispose;
 }

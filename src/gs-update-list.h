@@ -37,6 +37,8 @@ struct _GsUpdateListClass
 	GtkListBoxClass		 parent_class;
 	void			(*button_clicked)	(GsUpdateList	*update_list,
 							 GsApp		*app);
+	void			(*update_all)		(GsUpdateList	*update_list,
+							 GsAppList	*apps);
 };
 
 GtkWidget	*gs_update_list_new			(void);
