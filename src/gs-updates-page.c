@@ -957,23 +957,37 @@ gs_updates_page_perform_update_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_updates_page_button_update_all_cb (GtkButton     *button,
-                                      GsUpdatesPage *self)
+update_all (GsUpdatesPage *self, GsAppList *apps)
 {
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 
-	/* do the offline update */
 	g_set_object (&self->cancellable, cancellable);
-	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_update_async (self->plugin_loader,
 				       apps,
 				       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 				       self->cancellable,
 				       (GAsyncReadyCallback) gs_updates_page_perform_update_cb,
 				       self);
+}
+
+static void
+gs_updates_page_header_update_all_cb (GtkButton     *button,
+                                      GsUpdatesPage *self)
+{
+	g_autoptr(GsAppList) apps = NULL;
+
+	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
+	update_all (self, apps);
 	gtk_widget_set_sensitive (GTK_WIDGET (self->button_update_all), FALSE);
+}
+
+static void
+gs_updates_page_update_all_cb (GsUpdateList *update_list,
+                               GsAppList *apps,
+                               GsUpdatesPage *self)
+{
+	update_all (self, apps);
 }
 
 typedef struct {
@@ -1338,6 +1352,8 @@ gs_updates_page_setup (GsPage *page,
 			  G_CALLBACK (gs_updates_page_activated_cb), self);
 	g_signal_connect (self->list_box_updates, "button-clicked",
 			  G_CALLBACK (gs_updates_page_button_clicked_cb), self);
+	g_signal_connect (self->list_box_updates, "update-all",
+			  G_CALLBACK (gs_updates_page_update_all_cb), self);
 
 	/* setup system upgrades */
 	g_signal_connect (self->upgrade_banner, "download-clicked",
@@ -1358,7 +1374,7 @@ gs_updates_page_setup (GsPage *page,
 	gtk_widget_set_visible (self->button_update_all, TRUE);
 	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_update_all), "suggested-action");
 	gtk_container_add (GTK_CONTAINER (self->header_end_box), self->button_update_all);
-	g_signal_connect (self->button_update_all, "clicked", G_CALLBACK (gs_updates_page_button_update_all_cb), self);
+	g_signal_connect (self->button_update_all, "clicked", G_CALLBACK (gs_updates_page_header_update_all_cb), self);
 
 	self->header_start_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_visible (self->header_start_box, TRUE);
