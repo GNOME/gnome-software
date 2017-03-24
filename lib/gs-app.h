@@ -144,6 +144,9 @@ void		 gs_app_clear_source_ids	(GsApp		*app);
 const gchar	*gs_app_get_project_group	(GsApp		*app);
 void		 gs_app_set_project_group	(GsApp		*app,
 						 const gchar	*project_group);
+const gchar	*gs_app_get_developer_name	(GsApp		*app);
+void		 gs_app_set_developer_name	(GsApp		*app,
+						 const gchar	*developer_name);
 const gchar	*gs_app_get_version		(GsApp		*app);
 const gchar	*gs_app_get_version_ui		(GsApp		*app);
 void		 gs_app_set_version		(GsApp		*app,
