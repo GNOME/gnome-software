@@ -69,6 +69,7 @@ struct _GsApp
 	GPtrArray		*sources;
 	GPtrArray		*source_ids;
 	gchar			*project_group;
+	gchar			*developer_name;
 	gchar			*version;
 	gchar			*version_ui;
 	gchar			*summary;
@@ -1378,6 +1379,23 @@ gs_app_get_project_group (GsApp *app)
 }
 
 /**
+ * gs_app_get_developer_name:
+ * @app: a #GsApp
+ *
+ * Gets the developer name for the application.
+ *
+ * Returns: a string, or %NULL for unset
+ *
+ * Since: 3.22
+ **/
+const gchar *
+gs_app_get_developer_name (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->developer_name;
+}
+
+/**
  * gs_app_set_project_group:
  * @app: a #GsApp
  * @project_group: The non-localized project group, e.g. "GNOME" or "KDE"
@@ -1392,6 +1410,23 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	_g_set_str (&app->project_group, project_group);
+}
+
+/**
+ * gs_app_set_developer_name:
+ * @app: a #GsApp
+ * @developer_name: The developer name, e.g. "Richard Hughes"
+ *
+ * Sets a developer name for the application.
+ *
+ * Since: 3.22
+ **/
+void
+gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
+{
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_return_if_fail (GS_IS_APP (app));
+	_g_set_str (&app->developer_name, developer_name);
 }
 
 /**
@@ -3616,6 +3651,7 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (app->sources);
 	g_ptr_array_unref (app->source_ids);
 	g_free (app->project_group);
+	g_free (app->developer_name);
 	g_free (app->version);
 	g_free (app->version_ui);
 	g_free (app->summary);

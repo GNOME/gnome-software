@@ -725,6 +725,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	    gs_app_get_project_group (app) == NULL)
 		gs_app_set_project_group (app, as_app_get_project_group (item));
 
+	/* set developer name */
+	if (gs_app_get_developer_name (app) == NULL &&
+	    as_app_get_developer_name (item, NULL) != NULL)
+		gs_app_set_developer_name (app, as_app_get_developer_name (item, NULL));
+
 	/*
 	 * Set the core applications for the current desktop that cannot be
 	 * removed -- but note: XDG_CURRENT_DESKTOP="GNOME" is different to
