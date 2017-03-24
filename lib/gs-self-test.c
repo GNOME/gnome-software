@@ -377,6 +377,20 @@ gs_app_unique_id_func (void)
 }
 
 static void
+gs_app_addons_func (void)
+{
+	g_autoptr(GsApp) app = gs_app_new ("test.desktop");
+	GsApp *addon;
+
+	/* create, add then drop ref, so @app has the only refcount of addon */
+	addon = gs_app_new ("test.desktop");
+	gs_app_add_addon (app, addon);
+	g_object_unref (addon);
+
+	gs_app_remove_addon (app, addon);
+}
+
+static void
 gs_app_func (void)
 {
 	g_autoptr(GsApp) app = NULL;
@@ -485,6 +499,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/utils{error}", gs_utils_error_func);
 	g_test_add_func ("/gnome-software/lib/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/lib/app", gs_app_func);
+	g_test_add_func ("/gnome-software/lib/app{addons}", gs_app_addons_func);
 	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
