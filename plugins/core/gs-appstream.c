@@ -1139,6 +1139,15 @@ gs_appstream_add_extra_info (GsPlugin *plugin, AsApp *app)
 		as_app_add_category (app, "Localization");
 	}
 
+	/* fall back for drivers */
+	if (as_app_get_kind (app) == AS_APP_KIND_DRIVER) {
+		g_autoptr(AsIcon) icon = NULL;
+		icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "application-x-firmware-symbolic");
+		as_app_add_icon (app, icon);
+	}
+
 	/* fix up drivers with our nonstandard groups */
 	if (as_app_get_kind (app) == AS_APP_KIND_DRIVER) {
 		as_app_add_category (app, "Addons");
