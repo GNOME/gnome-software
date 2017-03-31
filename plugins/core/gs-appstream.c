@@ -32,6 +32,20 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 {
 	const gchar *unique_id = as_app_get_unique_id (item);
 	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
+
+	/* if the app we found has the "match-any-prefix" quirk and our item does
+	 * not, then we create a new one because ours will be "complete", and
+	 * using the mentioned quirk will lead to a different behavior (e.g. it'll
+	 * be refined using refine_wildcard, it won't allow a management plugin to
+	 * be set, etc.)  */
+	if (app != NULL && gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX) &&
+	    !as_app_has_quirk (item, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+		g_debug ("Looking for %s, got %s but has 'match-any-prefix' quirk "
+			 "so we create a new one instead.",
+			 unique_id, gs_app_get_unique_id (app));
+		g_clear_object (&app);
+	}
+
 	if (app == NULL) {
 		app = gs_app_new_from_unique_id (unique_id);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
