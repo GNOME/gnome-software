@@ -1715,6 +1715,15 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 			gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 			gs_app_list_add (job->list, app);
 		}
+
+		/* prepare refine job */
+		job->action = GS_PLUGIN_ACTION_REFINE;
+		job->function_name = "gs_plugin_refine";
+		job->failure_flags = GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS;
+		if (!gs_plugin_loader_run_refine (job, job->list, cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
 	} else {
 		/* do things that would block */
 		job->function_name = "gs_plugin_add_popular";
