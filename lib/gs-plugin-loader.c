@@ -700,6 +700,7 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderJob *job,
 	for (i = 0; i < priv->plugins->len; i++) {
 		g_autoptr(AsProfileTask) ptask = NULL;
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		g_autoptr(GsAppList) app_list = NULL;
 
 		/* run the batched plugin symbol then the per-app plugin */
 		job->function_name = "gs_plugin_refine";
@@ -707,8 +708,14 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderJob *job,
 						  cancellable, error)) {
 			return FALSE;
 		}
-		for (j = 0; j < gs_app_list_length (list); j++) {
-			app = gs_app_list_index (list, j);
+
+		/* use a copy of the list for the loop because a function called
+		 * on the plugin may affect the list which can lead to problems
+		 * (e.g. inserting an app in the list on every call results in
+		 * an infinite loop) */
+		app_list = gs_app_list_copy (list);
+		for (j = 0; j < gs_app_list_length (app_list); j++) {
+			app = gs_app_list_index (app_list, j);
 			if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
 				job->function_name = "gs_plugin_refine_app";
 			} else {
