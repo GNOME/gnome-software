@@ -33,7 +33,7 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 	const gchar *unique_id = as_app_get_unique_id (item);
 	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
 	if (app == NULL) {
-		app = gs_app_new (as_app_get_id (item));
+		app = gs_app_new_from_unique_id (unique_id);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
 		if (!gs_appstream_refine_app (plugin, app, item, error)) {
