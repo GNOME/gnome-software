@@ -144,7 +144,8 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 		if (size > 0)
 			gs_app_set_size_download (app, (guint64) size);
 	}
-	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	icon_url = json_object_get_string_member (package, "icon");
 	if (g_str_has_prefix (icon_url, "/")) {
 		g_autofree gchar *icon_data = NULL;
