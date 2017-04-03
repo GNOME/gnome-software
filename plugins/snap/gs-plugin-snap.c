@@ -128,7 +128,7 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	}
 	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST,
-			 json_object_get_string_member (package, "summary"));
+			 json_object_get_string_member (package, "name"));
 	gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST,
 			    json_object_get_string_member (package, "summary"));
 	gs_app_set_description (app, GS_APP_QUALITY_HIGHEST,
