@@ -105,6 +105,8 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
 	const gchar *status, *icon_url, *launch_name = NULL;
+	const gchar *origin;
+	g_autofree gchar *origin_hostname = NULL;
 	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
 	gint64 size = -1;
 
@@ -182,6 +184,9 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 			gdk_pixbuf_loader_close (loader, NULL);
 			icon_pixbuf = g_object_ref (gdk_pixbuf_loader_get_pixbuf (loader));
 		}
+
+		/* assume the origin is where the icon is coming from */
+		origin_hostname = g_strdup (icon_url);
 	}
 
 	if (icon_pixbuf) {
@@ -200,17 +205,37 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 		screenshots = json_object_get_array_member (package, "screenshots");
 		for (i = 0; i < json_array_get_length (screenshots); i++) {
 			JsonObject *screenshot = json_array_get_object_element (screenshots, i);
+			const gchar *url = json_object_get_string_member (screenshot, "url");
 			g_autoptr(AsScreenshot) ss = NULL;
 			g_autoptr(AsImage) image = NULL;
 
 			ss = as_screenshot_new ();
 			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
 			image = as_image_new ();
-			as_image_set_url (image, json_object_get_string_member (screenshot, "url"));
+			as_image_set_url (image, url);
 			as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
 			as_screenshot_add_image (ss, image);
 			gs_app_add_screenshot (app, ss);
+
+			/* fall back to the screenshot */
+			if (origin_hostname == NULL)
+				origin_hostname = g_strdup (url);
 		}
+	}
+
+	/* set the application origin */
+	if (gs_app_get_origin_hostname (app) == NULL) {
+
+		/* from the snap store */
+		origin = json_object_get_string_member (package, "developer");
+		if (g_strcmp0 (origin, "canonical") == 0)
+			gs_app_set_origin_hostname (app, "myapps.developer.ubuntu.com");
+		else if (origin_hostname != NULL)
+			gs_app_set_origin_hostname (app, origin_hostname);
+
+		/* derive this from the origin hosname */
+		if (g_strcmp0 (gs_app_get_origin_hostname (app), "myapps.developer.ubuntu.com") == 0)
+			gs_app_set_origin_ui (app, "The Ubuntu Store");
 	}
 
 	if (!from_search) {
