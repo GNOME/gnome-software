@@ -551,6 +551,7 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 					     GS_PLUGIN_ERROR_AUTH_INVALID,
 					     local_error->message);
 		} else {
+			g_dbus_error_strip_remote_error (local_error);
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
