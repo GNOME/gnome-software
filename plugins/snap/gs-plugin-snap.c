@@ -99,15 +99,47 @@ get_macaroon (GsPlugin *plugin, gchar **macaroon, gchar ***discharges)
 	g_variant_get (macaroon_variant, "(s^as)", macaroon, discharges);
 }
 
-static void
-refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_search, GCancellable *cancellable)
+static gboolean
+gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize count, GError **error)
+{
+	g_autoptr(GdkPixbufLoader) loader = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	loader = gdk_pixbuf_loader_new ();
+	if (!gdk_pixbuf_loader_write (loader, buf, count, &error_local)) {
+		g_debug ("icon_data[%" G_GSIZE_FORMAT "]=%s", count, buf);
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to write: %s",
+			     error_local->message);
+		return FALSE;
+	}
+	if (!gdk_pixbuf_loader_close (loader, &error_local)) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to close: %s",
+			     error_local->message);
+		return FALSE;
+	}
+	gs_app_set_pixbuf (app, gdk_pixbuf_loader_get_pixbuf (loader));
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_snap_refine_app (GsPlugin *plugin,
+			   GsApp *app,
+			   JsonObject *package,
+			   gboolean from_search,
+			   GCancellable *cancellable,
+			   GError **error)
 {
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
 	const gchar *status, *icon_url, *launch_name = NULL;
 	const gchar *origin;
 	g_autofree gchar *origin_hostname = NULL;
-	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
 	gint64 size = -1;
 
 	get_macaroon (plugin, &macaroon, &discharges);
@@ -148,49 +180,53 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	}
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+
+	/* icon is optional, either loaded from snapd or from a URL */
 	icon_url = json_object_get_string_member (package, "icon");
-	if (g_str_has_prefix (icon_url, "/")) {
-		g_autofree gchar *icon_data = NULL;
-		gsize icon_data_length;
-		g_autoptr(GError) error = NULL;
-
-		icon_data = gs_snapd_get_resource (macaroon, discharges, icon_url, &icon_data_length, cancellable, &error);
-		if (icon_data != NULL) {
+	if (icon_url != NULL && g_strcmp0 (icon_url, "") != 0) {
+		if (g_str_has_prefix (icon_url, "/")) {
+			g_autofree gchar *icon_data = NULL;
+			gsize icon_data_length;
+			g_autoptr(GError) error_local = NULL;
+			icon_data = gs_snapd_get_resource (macaroon,
+							   discharges,
+							   icon_url,
+							   &icon_data_length,
+							   cancellable,
+							   error);
+			if (icon_data == NULL)
+				return FALSE;
+			if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
+						(const gchar *) icon_data,
+						icon_data_length,
+						error)) {
+				g_prefix_error (error, "Failed to load %s: ", icon_url);
+				return FALSE;
+			}
+		} else {
+			g_autoptr(SoupMessage) message = NULL;
 			g_autoptr(GdkPixbufLoader) loader = NULL;
-
-			loader = gdk_pixbuf_loader_new ();
-			gdk_pixbuf_loader_write (loader,
-						 (guchar *) icon_data,
-						 icon_data_length,
-						 NULL);
-			gdk_pixbuf_loader_close (loader, NULL);
-			icon_pixbuf = g_object_ref (gdk_pixbuf_loader_get_pixbuf (loader));
-		}
-		else
-			g_printerr ("Failed to get icon: %s\n", error->message);
-	}
-	else {
-		g_autoptr(SoupMessage) message = NULL;
-		g_autoptr(GdkPixbufLoader) loader = NULL;
-
-		message = soup_message_new (SOUP_METHOD_GET, icon_url);
-		if (message != NULL) {
+			message = soup_message_new (SOUP_METHOD_GET, icon_url);
+			if (message == NULL) {
+				g_set_error (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "Failed to parse icon URL: %s",
+					     icon_url);
+				return FALSE;
+			}
 			soup_session_send_message (gs_plugin_get_soup_session (plugin), message);
-			loader = gdk_pixbuf_loader_new ();
-			gdk_pixbuf_loader_write (loader,
-						 (guint8 *) message->response_body->data,
-						 (gsize) message->response_body->length,
-						 NULL);
-			gdk_pixbuf_loader_close (loader, NULL);
-			icon_pixbuf = g_object_ref (gdk_pixbuf_loader_get_pixbuf (loader));
+			if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
+						(const gchar *) message->response_body->data,
+						message->response_body->length,
+						error)) {
+				g_prefix_error (error, "Failed to load %s: ", icon_url);
+				return FALSE;
+			}
+
+			/* assume the origin is where the icon is coming from */
+			origin_hostname = g_strdup (icon_url);
 		}
-
-		/* assume the origin is where the icon is coming from */
-		origin_hostname = g_strdup (icon_url);
-	}
-
-	if (icon_pixbuf) {
-		gs_app_set_pixbuf (app, icon_pixbuf);
 	} else {
 		g_autoptr(AsIcon) icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
@@ -250,6 +286,7 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 		else
 			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	}
+	return TRUE;
 }
 
 gboolean
@@ -285,7 +322,8 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-	refine_app (plugin, app, snap, TRUE, cancellable);
+	if (!gs_plugin_snap_refine_app (plugin, app, snap, TRUE, cancellable, error))
+		return FALSE;
 	gs_app_list_add (list, app);
 
 	return TRUE;
@@ -330,7 +368,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		refine_app (plugin, app, package, TRUE, cancellable);
+		if (!gs_plugin_snap_refine_app (plugin, app, package, TRUE, cancellable, error))
+			return FALSE;
 		gs_app_list_add (list, app);
 	}
 
@@ -366,7 +405,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		refine_app (plugin, app, package, TRUE, cancellable);
+		if (!gs_plugin_snap_refine_app (plugin, app, package, TRUE, cancellable, error))
+			return FALSE;
 		gs_app_list_add (list, app);
 	}
 
@@ -397,7 +437,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	result = gs_snapd_list_one (macaroon, discharges, id, cancellable, error);
 	if (result == NULL)
 		return FALSE;
-	refine_app (plugin, app, result, FALSE, cancellable);
+	if (!gs_plugin_snap_refine_app (plugin, app, result, FALSE, cancellable, error))
+		return FALSE;
 
 	return TRUE;
 }
