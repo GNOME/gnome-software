@@ -42,7 +42,7 @@ gs_snapd_exists (void)
 }
 
 static GSocket *
-open_snapd_socket (GCancellable *cancellable, GError **error)
+gs_snapd_socket_open (GCancellable *cancellable, GError **error)
 {
 	GSocket *socket;
 	g_autoptr(GSocketAddress) address = NULL;
@@ -75,12 +75,12 @@ open_snapd_socket (GCancellable *cancellable, GError **error)
 }
 
 static gboolean
-read_from_snapd (GSocket *socket,
-		 GByteArray *buffer,
-		 gsize *read_offset,
-		 gsize size,
-		 GCancellable *cancellable,
-		 GError **error)
+gs_snapd_socket_read (GSocket *socket,
+		      GByteArray *buffer,
+		      gsize *read_offset,
+		      gsize size,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	gssize n_read;
 
@@ -102,18 +102,18 @@ read_from_snapd (GSocket *socket,
 }
 
 static gboolean
-send_request (const gchar  *method,
-	      const gchar  *path,
-	      const gchar  *content,
-	      const gchar  *macaroon,
-	      gchar       **discharges,
-	      guint        *status_code,
-	      gchar       **reason_phrase,
-	      gchar       **response_type,
-	      gchar       **response,
-	      gsize        *response_length,
-	      GCancellable *cancellable,
-	      GError      **error)
+gs_snapd_send_request (const gchar  *method,
+		       const gchar  *path,
+		       const gchar  *content,
+		       const gchar  *macaroon,
+		       gchar       **discharges,
+		       guint        *status_code,
+		       gchar       **reason_phrase,
+		       gchar       **response_type,
+		       gchar       **response,
+		       gsize        *response_length,
+		       GCancellable *cancellable,
+		       GError      **error)
 {
 	g_autoptr (GSocket) socket = NULL;
 	g_autoptr (GString) request = NULL;
@@ -129,7 +129,7 @@ send_request (const gchar  *method,
 	// NOTE: Would love to use libsoup but it doesn't support unix sockets
 	// https://bugzilla.gnome.org/show_bug.cgi?id=727563
 
-	socket = open_snapd_socket (cancellable, error);
+	socket = gs_snapd_socket_open (cancellable, error);
 	if (socket == NULL)
 		return FALSE;
 
@@ -162,7 +162,7 @@ send_request (const gchar  *method,
 	/* read HTTP headers */
 	buffer = g_byte_array_new ();
 	while (body == NULL) {
-		if (!read_from_snapd (socket,
+		if (!gs_snapd_socket_read (socket,
 				      buffer,
 				      &data_length,
 				      1024,
@@ -202,7 +202,7 @@ send_request (const gchar  *method,
 	case SOUP_ENCODING_EOF:
 		while (TRUE) {
 			gsize n_read = data_length;
-			if (!read_from_snapd (socket,
+			if (!gs_snapd_socket_read (socket,
 					      buffer,
 					      &data_length,
 					      1024,
@@ -220,7 +220,7 @@ send_request (const gchar  *method,
 			chunk_start = strstr (body, "\r\n");
 			if (chunk_start)
 				break;
-			if (!read_from_snapd (socket,
+			if (!gs_snapd_socket_read (socket,
 					      buffer,
 					      &data_length,
 					      1024,
@@ -242,7 +242,7 @@ send_request (const gchar  *method,
 		/* check if enough space to read chunk */
 		n_required = (chunk_start - buffer->data) + chunk_length;
 		while (data_length < n_required)
-			if (!read_from_snapd (socket,
+			if (!gs_snapd_socket_read (socket,
 					      buffer,
 					      &data_length,
 					      n_required - data_length,
@@ -255,12 +255,12 @@ send_request (const gchar  *method,
 		chunk_start = body;
 		n_required = header_length + chunk_length;
 		while (data_length < n_required) {
-			if (!read_from_snapd (socket,
-					      buffer,
-					      &data_length,
-					      n_required - data_length,
-					      cancellable,
-					      error))
+			if (!gs_snapd_socket_read (socket,
+						   buffer,
+						   &data_length,
+						   n_required - data_length,
+						   cancellable,
+						   error))
 				return FALSE;
 		}
 		break;
@@ -288,11 +288,12 @@ send_request (const gchar  *method,
 }
 
 static JsonParser *
-parse_result (const gchar *response, const gchar *response_type, GError **error)
+gs_snapd_parse_result (const gchar *response, const gchar *response_type, GError **error)
 {
 	g_autoptr(JsonParser) parser = NULL;
 	g_autoptr(GError) error_local = NULL;
 
+	g_warning ("trying to parse %s: %s", response_type, response);
 	if (response_type == NULL) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
@@ -342,7 +343,7 @@ gs_snapd_list_one (const gchar *macaroon, gchar **discharges,
 	JsonObject *root, *result;
 
 	path = g_strdup_printf ("/v2/snaps/%s", name);
-	if (!send_request ("GET", path, NULL,
+	if (!gs_snapd_send_request ("GET", path, NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -358,7 +359,7 @@ gs_snapd_list_one (const gchar *macaroon, gchar **discharges,
 		return NULL;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return NULL;
 	root = json_node_get_object (json_parser_get_root (parser));
@@ -386,7 +387,7 @@ gs_snapd_list (const gchar *macaroon, gchar **discharges,
 	JsonObject *root;
 	JsonArray *result;
 
-	if (!send_request ("GET", "/v2/snaps", NULL,
+	if (!gs_snapd_send_request ("GET", "/v2/snaps", NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -402,7 +403,7 @@ gs_snapd_list (const gchar *macaroon, gchar **discharges,
 		return NULL;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return NULL;
 	root = json_node_get_object (json_parser_get_root (parser));
@@ -438,7 +439,7 @@ gs_snapd_find (const gchar *macaroon, gchar **discharges,
 	query = g_strjoinv (" ", values);
 	escaped = soup_uri_encode (query, NULL);
 	g_string_append (path, escaped);
-	if (!send_request ("GET", path->str, NULL,
+	if (!gs_snapd_send_request ("GET", path->str, NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -454,7 +455,7 @@ gs_snapd_find (const gchar *macaroon, gchar **discharges,
 		return NULL;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return NULL;
 	root = json_node_get_object (json_parser_get_root (parser));
@@ -487,7 +488,7 @@ gs_snapd_find_name (const gchar *macaroon, gchar **discharges,
 
 	escaped = soup_uri_encode (name, NULL);
 	path = g_strdup_printf ("/v2/find?name=%s", escaped);
-	if (!send_request ("GET", path, NULL,
+	if (!gs_snapd_send_request ("GET", path, NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -503,7 +504,7 @@ gs_snapd_find_name (const gchar *macaroon, gchar **discharges,
 		return NULL;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return NULL;
 	root = json_node_get_object (json_parser_get_root (parser));
@@ -530,7 +531,7 @@ gs_snapd_get_interfaces (const gchar *macaroon, gchar **discharges, GCancellable
 	JsonObject *root;
 	JsonObject *result;
 
-	if (!send_request ("GET", "/v2/interfaces", NULL,
+	if (!gs_snapd_send_request ("GET", "/v2/interfaces", NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -546,7 +547,7 @@ gs_snapd_get_interfaces (const gchar *macaroon, gchar **discharges, GCancellable
 		return NULL;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return NULL;
 	root = json_node_get_object (json_parser_get_root (parser));
@@ -563,9 +564,9 @@ gs_snapd_get_interfaces (const gchar *macaroon, gchar **discharges, GCancellable
 }
 
 static JsonObject *
-get_changes (const gchar *macaroon, gchar **discharges,
-	     const gchar *change_id,
-	     GCancellable *cancellable, GError **error)
+gs_snapd_get_changes (const gchar *macaroon, gchar **discharges,
+		      const gchar *change_id,
+		      GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *path = NULL;
 	guint status_code;
@@ -576,7 +577,7 @@ get_changes (const gchar *macaroon, gchar **discharges,
 	JsonObject *root, *result;
 
 	path = g_strdup_printf ("/v2/changes/%s", change_id);
-	if (!send_request ("GET", path, NULL,
+	if (!gs_snapd_send_request ("GET", path, NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -592,7 +593,7 @@ get_changes (const gchar *macaroon, gchar **discharges,
 		return NULL;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return NULL;
 	root = json_node_get_object (json_parser_get_root (parser));
@@ -609,14 +610,14 @@ get_changes (const gchar *macaroon, gchar **discharges,
 }
 
 static gboolean
-send_package_action (const gchar *macaroon,
-		     gchar **discharges,
-		     const gchar *name,
-		     const gchar *action,
-		     GsSnapdProgressCallback callback,
-		     gpointer user_data,
-		     GCancellable *cancellable,
-		     GError **error)
+gs_snapd_send_package_action (const gchar *macaroon,
+			      gchar **discharges,
+			      const gchar *name,
+			      const gchar *action,
+			      GsSnapdProgressCallback callback,
+			      gpointer user_data,
+			      GCancellable *cancellable,
+			      GError **error)
 {
 	g_autofree gchar *content = NULL, *path = NULL;
 	guint status_code;
@@ -630,7 +631,7 @@ send_package_action (const gchar *macaroon,
 
 	content = g_strdup_printf ("{\"action\": \"%s\"}", action);
 	path = g_strdup_printf ("/v2/snaps/%s", name);
-	if (!send_request ("POST", path, content,
+	if (!gs_snapd_send_request ("POST", path, content,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -654,7 +655,7 @@ send_package_action (const gchar *macaroon,
 		return FALSE;
 	}
 
-	parser = parse_result (response, response_type, error);
+	parser = gs_snapd_parse_result (response, response_type, error);
 	if (parser == NULL)
 		return FALSE;
 
@@ -670,7 +671,7 @@ send_package_action (const gchar *macaroon,
 			/* Wait for a little bit before polling */
 			g_usleep (100 * 1000);
 
-			result = get_changes (macaroon, discharges, change_id, cancellable, error);
+			result = gs_snapd_get_changes (macaroon, discharges, change_id, cancellable, error);
 			if (result == NULL)
 				return FALSE;
 
@@ -701,7 +702,7 @@ gs_snapd_install (const gchar *macaroon, gchar **discharges,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	return send_package_action (macaroon, discharges, name, "install", callback, user_data, cancellable, error);
+	return gs_snapd_send_package_action (macaroon, discharges, name, "install", callback, user_data, cancellable, error);
 }
 
 gboolean
@@ -710,7 +711,7 @@ gs_snapd_remove (const gchar *macaroon, gchar **discharges,
 		 GsSnapdProgressCallback callback, gpointer user_data,
 		 GCancellable *cancellable, GError **error)
 {
-	return send_package_action (macaroon, discharges, name, "remove", callback, user_data, cancellable, error);
+	return gs_snapd_send_package_action (macaroon, discharges, name, "remove", callback, user_data, cancellable, error);
 }
 
 gchar *
@@ -724,7 +725,7 @@ gs_snapd_get_resource (const gchar *macaroon, gchar **discharges,
 	g_autofree gchar *response_type = NULL;
 	g_autofree gchar *data = NULL;
 
-	if (!send_request ("GET", path, NULL,
+	if (!gs_snapd_send_request ("GET", path, NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   NULL, &data, data_length,
