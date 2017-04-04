@@ -1,6 +1,7 @@
 
 AM_CPPFLAGS =						\
 	-DG_LOG_DOMAIN=\"Gs\"				\
+	-DG_LOG_USE_STRUCTURED				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DLIBDIR=\"$(libdir)\"				\
 	-DLOCALEDIR=\""$(localedir)"\"			\

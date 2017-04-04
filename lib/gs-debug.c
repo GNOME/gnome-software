@@ -32,26 +32,38 @@ struct _GsDebug
 	GMutex		 mutex;
 	gboolean	 use_time;
 	gboolean	 use_color;
-	GLogFunc	 log_func_old;
 };
 
 G_DEFINE_TYPE (GsDebug, gs_debug, G_TYPE_OBJECT)
 
-static void
-gs_debug_handler_cb (const gchar *log_domain,
-		     GLogLevelFlags log_level,
-		     const gchar *message,
-		     gpointer user_data)
+static GLogWriterOutput
+gs_log_writer_console (GLogLevelFlags log_level,
+		       const GLogField *fields,
+		       gsize n_fields,
+		       gpointer user_data)
 {
-	GsDebug *debug = (GsDebug *) user_data;
-	gsize i;
+	GsDebug *debug = GS_DEBUG (user_data);
+	const gchar *log_domain = NULL;
+	const gchar *log_message = NULL;
 	g_autofree gchar *tmp = NULL;
-	g_autoptr(GString) domain = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GString) domain = NULL;
 
 	/* enabled */
-	if (g_getenv ("GS_DEBUG") == NULL && log_level == G_LOG_LEVEL_DEBUG)
-		return;
+	if (g_getenv ("GS_DEBUG") == NULL)
+		return G_LOG_WRITER_HANDLED;
+
+	/* get data from arguments */
+	for (gsize i = 0; i < n_fields; i++) {
+		if (g_strcmp0 (fields[i].key, "MESSAGE") == 0) {
+			log_message = fields[i].value;
+			continue;
+		}
+		if (g_strcmp0 (fields[i].key, "GLIB_DOMAIN") == 0) {
+			log_domain = fields[i].value;
+			continue;
+		}
+	}
 
 	/* make threadsafe */
 	locker = g_mutex_locker_new (&debug->mutex);
@@ -76,7 +88,7 @@ gs_debug_handler_cb (const gchar *log_domain,
 
 	/* pad out domain */
 	domain = g_string_new (log_domain);
-	for (i = domain->len; i < 3; i++)
+	for (guint i = domain->len; i < 3; i++)
 		g_string_append (domain, " ");
 
 	/* to file */
@@ -84,29 +96,52 @@ gs_debug_handler_cb (const gchar *log_domain,
 		if (tmp != NULL)
 			g_print ("%s ", tmp);
 		g_print ("%s ", domain->str);
-		g_print ("%s\n", message);
-		return;
-	}
+		g_print ("%s\n", log_message);
 
 	/* to screen */
+	} else {
+		switch (log_level) {
+		case G_LOG_LEVEL_ERROR:
+		case G_LOG_LEVEL_CRITICAL:
+		case G_LOG_LEVEL_WARNING:
+			/* critical in red */
+			if (tmp != NULL)
+				g_print ("%c[%dm%s ", 0x1B, 32, tmp);
+			g_print ("%s ", domain->str);
+			g_print ("%c[%dm%s\n%c[%dm", 0x1B, 31, log_message, 0x1B, 0);
+			break;
+		default:
+			/* debug in blue */
+			if (tmp != NULL)
+				g_print ("%c[%dm%s ", 0x1B, 32, tmp);
+			g_print ("%s ", domain->str);
+			g_print ("%c[%dm%s\n%c[%dm", 0x1B, 34, log_message, 0x1B, 0);
+			break;
+		}
+	}
+
+	/* success */
+	return G_LOG_WRITER_HANDLED;
+}
+
+static GLogWriterOutput
+gs_debug_log_writer (GLogLevelFlags log_level,
+		     const GLogField *fields,
+		     gsize n_fields,
+		     gpointer user_data)
+{
+	/* important enough to force to the journal */
 	switch (log_level) {
 	case G_LOG_LEVEL_ERROR:
 	case G_LOG_LEVEL_CRITICAL:
 	case G_LOG_LEVEL_WARNING:
-		/* critical in red */
-		if (tmp != NULL)
-			g_print ("%c[%dm%s ", 0x1B, 32, tmp);
-		g_print ("%s ", domain->str);
-		g_print ("%c[%dm%s\n%c[%dm", 0x1B, 31, message, 0x1B, 0);
+	case G_LOG_LEVEL_INFO:
+		g_log_writer_journald (log_level, fields, n_fields, user_data);
 		break;
 	default:
-		/* debug in blue */
-		if (tmp != NULL)
-			g_print ("%c[%dm%s ", 0x1B, 32, tmp);
-		g_print ("%s ", domain->str);
-		g_print ("%c[%dm%s\n%c[%dm", 0x1B, 34, message, 0x1B, 0);
 		break;
 	}
+	return gs_log_writer_console (log_level, fields, n_fields, user_data);
 }
 
 static void
@@ -114,8 +149,6 @@ gs_debug_finalize (GObject *object)
 {
 	GsDebug *debug = GS_DEBUG (object);
 
-	if (debug->log_func_old != NULL)
-		g_log_set_default_handler (debug->log_func_old, NULL);
 	g_mutex_clear (&debug->mutex);
 
 	G_OBJECT_CLASS (gs_debug_parent_class)->finalize (object);
@@ -134,7 +167,7 @@ gs_debug_init (GsDebug *debug)
 	g_mutex_init (&debug->mutex);
 	debug->use_time = g_getenv ("GS_DEBUG_NO_TIME") == NULL;
 	debug->use_color = (isatty (fileno (stdout)) == 1);
-	debug->log_func_old = g_log_set_default_handler (gs_debug_handler_cb, debug);
+	g_log_set_writer_func (gs_debug_log_writer, debug, NULL);
 }
 
 GsDebug *
