@@ -41,6 +41,16 @@ struct _GsShellClass
 };
 
 typedef enum {
+	GS_SHELL_EVENT_BUTTON_NONE		= 0,
+	GS_SHELL_EVENT_BUTTON_SOURCES		= 1 << 0,
+	GS_SHELL_EVENT_BUTTON_NO_SPACE		= 1 << 1,
+	GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS	= 1 << 2,
+	GS_SHELL_EVENT_BUTTON_MORE_INFO		= 1 << 3,
+	GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED	= 1 << 4,
+	GS_SHELL_EVENT_BUTTON_LAST
+} GsShellEventButtons;
+
+typedef enum {
 	GS_SHELL_MODE_UNKNOWN,
 	GS_SHELL_MODE_OVERVIEW,
 	GS_SHELL_MODE_INSTALLED,
@@ -97,6 +107,9 @@ void		 gs_shell_show_extras_search	(GsShell	*shell,
 						 gchar		**resources);
 void		 gs_shell_show_uri		(GsShell	*shell,
 						 const gchar	*url);
+void		gs_shell_show_event_app_notify	(GsShell		*shell,
+						 const gchar		*title,
+						 GsShellEventButtons	buttons);
 void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
