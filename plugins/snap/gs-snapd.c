@@ -27,6 +27,8 @@
 #include <libsoup/soup.h>
 #include <gio/gunixsocketaddress.h>
 
+#include <gnome-software.h>
+
 #include "gs-snapd.h"
 
 // snapd API documentation is at https://github.com/snapcore/snapd/blob/master/docs/rest.md
@@ -89,8 +91,10 @@ read_from_snapd (GSocket *socket,
 				   size,
 				   cancellable,
 				   error);
-	if (n_read < 0)
+	if (n_read < 0) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 	*read_offset += (gsize) n_read;
 	buffer->data[*read_offset] = '\0';
 
@@ -148,8 +152,10 @@ send_request (const gchar  *method,
 
 	/* send HTTP request */
 	n_written = g_socket_send (socket, request->str, request->len, cancellable, error);
-	if (n_written < 0)
+	if (n_written < 0) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 
 	/* read HTTP headers */
 	buffer = g_byte_array_new ();
