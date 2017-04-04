@@ -47,6 +47,7 @@ BuildRequires: rpm-devel
 BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
 BuildRequires: liboauth-devel
+BuildRequires: snapd-glib-devel
 
 Requires: appstream-data
 %if 0%{?fedora}
@@ -84,13 +85,21 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 These development files are for building gnome-software plugins outside
 the source tree. Most users do not need this subpackage installed.
 
+%package snap
+Summary: Support for Ubuntu Snap packages
+Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: snapd-login-service
+
+%description snap
+Adds support for Snap packages from the Ubuntu store.
+
 %prep
 %setup -q
 
 %build
 %meson \
     -Denable-tests=false \
-    -Denable-snap=false \
+    -Denable-snap=true \
     -Denable-ubuntu-reviews=false \
     -Denable-gudev=true \
 %if %{with packagekit}
@@ -137,6 +146,10 @@ fi
 %posttrans
 gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+
+%files snap
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
 
 %files -f %{name}.lang
 %doc AUTHORS README
