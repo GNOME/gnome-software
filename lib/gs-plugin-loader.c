@@ -226,6 +226,73 @@ gs_plugin_loader_job_free (GsPluginLoaderJob *job)
 	g_slice_free (GsPluginLoaderJob, job);
 }
 
+static void
+gs_plugin_loader_job_debug (GsPluginLoaderJob *job)
+{
+	g_autoptr(GString) str = g_string_new (NULL);
+	g_string_append_printf (str, "running %s",
+				gs_plugin_action_to_string (job->action));
+	if (job->refine_flags > 0) {
+		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (job->refine_flags);
+		g_string_append_printf (str, " with refine-flags=%s", tmp);
+	}
+	if (job->failure_flags > 0) {
+		g_autofree gchar *tmp = gs_plugin_failure_flags_to_string (job->failure_flags);
+		g_string_append_printf (str, " with failure-flags=%s", tmp);
+	}
+	if (job->cache_age != 0) {
+		if (job->cache_age == G_MAXUINT) {
+			g_string_append (str, " with cache age=any");
+		} else {
+			g_string_append_printf (str, " with cache age=%u",
+						job->cache_age);
+		}
+	}
+	if (job->value != NULL) {
+		g_string_append_printf (str, " with value=%s",
+					job->value);
+	}
+	if (job->category != NULL) {
+		GsCategory *parent = gs_category_get_parent (job->category);
+		if (parent != NULL) {
+			g_string_append_printf (str, " with category=%s/%s",
+						gs_category_get_id (parent),
+						gs_category_get_id (job->category));
+		} else {
+			g_string_append_printf (str, " with category=%s",
+						gs_category_get_id (job->category));
+		}
+	}
+	if (job->review != NULL) {
+		g_string_append_printf (str, " with review=%s",
+					as_review_get_id (job->review));
+	}
+	if (job->review != NULL) {
+		g_string_append_printf (str, " with review=%s",
+					as_review_get_id (job->review));
+	}
+	if (job->auth != NULL) {
+		g_string_append_printf (str, " with auth=%s",
+					gs_auth_get_provider_id (job->auth));
+	}
+	if (job->file != NULL) {
+		g_autofree gchar *path = g_file_get_path (job->file);
+		g_string_append_printf (str, " with file=%s", path);
+	}
+	if (job->list != NULL && gs_app_list_length (job->list) > 0) {
+		g_autofree const gchar **unique_ids = NULL;
+		g_autofree gchar *unique_ids_str = NULL;
+		unique_ids = g_new0 (const gchar *, gs_app_list_length (job->list) + 1);
+		for (guint i = 0; i < gs_app_list_length (job->list); i++) {
+			GsApp *app = gs_app_list_index (job->list, i);
+			unique_ids[i] = gs_app_get_unique_id (app);
+		}
+		unique_ids_str = g_strjoinv (",", (gchar**) unique_ids);
+		g_string_append_printf (str, " on apps %s", unique_ids_str);
+	}
+	g_info ("%s", str->str);
+}
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderJob, gs_plugin_loader_job_free)
 
 static gint
@@ -1329,6 +1396,7 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_UPDATES;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1407,6 +1475,7 @@ gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1485,6 +1554,7 @@ gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1566,6 +1636,7 @@ gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_SOURCES;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1660,6 +1731,7 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_INSTALLED;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1757,6 +1829,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_POPULAR;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -1868,6 +1941,7 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->action = GS_PLUGIN_ACTION_GET_FEATURED;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2060,6 +2134,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	job->values = as_utils_search_tokenize (job->value);
 	job->action = GS_PLUGIN_ACTION_SEARCH;
 	job->function_name = "gs_plugin_add_search";
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2133,6 +2208,7 @@ gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
 	job->values = g_new0 (gchar *, 2);
 	job->values[0] = g_strdup (job->value);
 	job->action = GS_PLUGIN_ACTION_SEARCH_FILES;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2207,6 +2283,7 @@ gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
 	job->values[0] = g_strdup (job->value);
 	job->action = GS_PLUGIN_ACTION_SEARCH_PROVIDES;
 	job->function_name = "gs_plugin_add_search_what_provides";
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2359,6 +2436,7 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 	job->failure_flags = failure_flags;
 	job->catlist = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	job->action = GS_PLUGIN_ACTION_GET_CATEGORIES;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2477,6 +2555,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 	job->category = g_object_ref (category);
 	job->action = GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
 	job->function_name = "gs_plugin_add_category_apps";
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2557,6 +2636,7 @@ gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 	/* enforce this */
 	if (job->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
 		job->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2922,6 +3002,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	job->app = g_object_ref (app);
 	job->action = action;
 	job->failure_flags = failure_flags;
+	gs_plugin_loader_job_debug (job);
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_INSTALL:
@@ -2985,6 +3066,7 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	job->review = g_object_ref (review);
 	job->action = action;
 	job->failure_flags = failure_flags;
+	gs_plugin_loader_job_debug (job);
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
@@ -3078,6 +3160,7 @@ gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 	job->auth = g_object_ref (auth);
 	job->action = action;
 	job->failure_flags = failure_flags;
+	gs_plugin_loader_job_debug (job);
 
 	switch (action) {
 	case GS_PLUGIN_ACTION_AUTH_LOGIN:
@@ -3478,6 +3561,7 @@ gs_plugin_loader_add_location (GsPluginLoader *plugin_loader, const gchar *locat
 		if (g_strcmp0 (location_tmp, location) == 0)
 			return;
 	}
+	g_info ("adding plugin location %s", location);
 	g_ptr_array_add (priv->locations, g_strdup (location));
 }
 
@@ -3868,15 +3952,25 @@ void
 gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GString) str_enabled = g_string_new (NULL);
+	g_autoptr(GString) str_disabled = g_string_new (NULL);
 
-	/* print what the priorities are */
+	/* print what the priorities are if verbose */
 	for (guint i = 0; i < priv->plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		GString *str = gs_plugin_get_enabled (plugin) ? str_enabled : str_disabled;
+		g_string_append_printf (str, "%s, ", gs_plugin_get_name (plugin));
 		g_debug ("[%s]\t%u\t->\t%s",
 			 gs_plugin_get_enabled (plugin) ? "enabled" : "disabld",
 			 gs_plugin_get_order (plugin),
 			 gs_plugin_get_name (plugin));
 	}
+	if (str_enabled->len > 2)
+		g_string_truncate (str_enabled, str_enabled->len - 2);
+	if (str_disabled->len > 2)
+		g_string_truncate (str_disabled, str_disabled->len - 2);
+	g_info ("enabled plugins: %s", str_enabled->str);
+	g_info ("disabled plugins: %s", str_disabled->str);
 }
 
 static void
@@ -4299,6 +4393,7 @@ gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 	job->cache_age = cache_age;
 	job->action = GS_PLUGIN_ACTION_REFRESH;
 	job->function_name = "gs_plugin_refresh";
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4460,6 +4555,7 @@ gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
 	job->file = g_object_ref (file);
 	job->action = GS_PLUGIN_ACTION_FILE_TO_APP;
 	job->function_name = "gs_plugin_file_to_app";
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4579,6 +4675,7 @@ gs_plugin_loader_url_to_app_async (GsPluginLoader *plugin_loader,
 	job->value = g_strdup (url);
 	job->action = GS_PLUGIN_ACTION_URL_TO_APP;
 	job->function_name = "gs_plugin_url_to_app";
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4795,6 +4892,7 @@ gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
 	job->list = gs_app_list_copy (apps);
 	job->action = GS_PLUGIN_ACTION_UPDATE;
 	job->failure_flags = failure_flags;
+	gs_plugin_loader_job_debug (job);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
