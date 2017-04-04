@@ -1415,6 +1415,10 @@ gs_updates_page_dispose (GObject *object)
 		g_cancellable_cancel (self->cancellable_refresh);
 		g_clear_object (&self->cancellable_refresh);
 	}
+	if (self->cancellable_upgrade_download != NULL) {
+		g_cancellable_cancel (self->cancellable_upgrade_download);
+		g_clear_object (&self->cancellable_upgrade_download);
+	}
 
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
