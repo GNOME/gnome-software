@@ -4525,31 +4525,9 @@ gs_plugin_loader_url_to_app_thread_cb (GTask *task,
 	}
 
 	/* filter package list */
+	gs_app_list_filter (job->list, gs_plugin_loader_app_is_valid, job);
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
 	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
-
-	/* check the apps have an icon set */
-	for (guint j = 0; j < gs_app_list_length (job->list); j++) {
-		GsApp *app = gs_app_list_index (job->list, j);
-		if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
-		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
-		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
-			g_autoptr(AsIcon) ic = as_icon_new ();
-			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-			if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
-				as_icon_set_name (ic, "x-package-repository");
-			else
-				as_icon_set_name (ic, "application-x-executable");
-			gs_app_add_icon (app, ic);
-		}
-	}
-
-	/* run refine() on each one again to pick up any icons */
-	job->refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
-	if (!gs_plugin_loader_run_refine (job, job->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
 
 	/* success */
 	if (gs_app_list_length (job->list) != 1) {
