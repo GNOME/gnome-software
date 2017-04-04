@@ -92,6 +92,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->installed_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	priv->available_apps = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	g_hash_table_insert (priv->available_apps,
+			     g_strdup ("chiron.desktop"),
+			     GUINT_TO_POINTER (1));
+	g_hash_table_insert (priv->available_apps,
 			     g_strdup ("zeus.desktop"),
 			     GUINT_TO_POINTER (1));
 	g_hash_table_insert (priv->available_apps,
