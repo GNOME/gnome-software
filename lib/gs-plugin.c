@@ -1611,6 +1611,102 @@ gs_plugin_action_to_string (GsPluginAction action)
 	return NULL;
 }
 
+/**
+ * gs_plugin_failure_flags_to_string:
+ * @action: some #GsPluginFailureFlags, e.g. %GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY
+ *
+ * Converts the flags to a string.
+ *
+ * Returns: a string
+ **/
+gchar *
+gs_plugin_failure_flags_to_string (GsPluginFailureFlags failure_flags)
+{
+	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
+	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS)
+		g_ptr_array_add (cstrs, "use-events");
+	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY)
+		g_ptr_array_add (cstrs, "fatal-any");
+	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH)
+		g_ptr_array_add (cstrs, "fatal-auth");
+	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE)
+		g_ptr_array_add (cstrs, "no-console");
+	if (cstrs->len == 0)
+		return g_strdup ("none");
+	g_ptr_array_add (cstrs, NULL);
+	return g_strjoinv (",", (gchar**) cstrs->pdata);
+}
+
+/**
+ * gs_plugin_refine_flags_to_string:
+ * @action: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE
+ *
+ * Converts the flags to a string.
+ *
+ * Returns: a string
+ **/
+gchar *
+gs_plugin_refine_flags_to_string (GsPluginRefineFlags refine_flags)
+{
+	g_autoptr(GPtrArray) cstrs = g_ptr_array_new ();
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY)
+		g_ptr_array_add (cstrs, "use-history");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE)
+		g_ptr_array_add (cstrs, "require-license");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL)
+		g_ptr_array_add (cstrs, "require-url");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION)
+		g_ptr_array_add (cstrs, "require-description");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)
+		g_ptr_array_add (cstrs, "require-size");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING)
+		g_ptr_array_add (cstrs, "require-rating");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION)
+		g_ptr_array_add (cstrs, "require-version");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY)
+		g_ptr_array_add (cstrs, "require-history");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION)
+		g_ptr_array_add (cstrs, "require-setup-action");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS)
+		g_ptr_array_add (cstrs, "require-update-details");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN)
+		g_ptr_array_add (cstrs, "require-origin");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED)
+		g_ptr_array_add (cstrs, "require-related");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH)
+		g_ptr_array_add (cstrs, "require-menu-path");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)
+		g_ptr_array_add (cstrs, "require-addons");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES)
+		g_ptr_array_add (cstrs, "require-allow-packages");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY)
+		g_ptr_array_add (cstrs, "require-update-severity");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED)
+		g_ptr_array_add (cstrs, "require-upgrade-removed");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE)
+		g_ptr_array_add (cstrs, "require-provenance");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)
+		g_ptr_array_add (cstrs, "require-reviews");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS)
+		g_ptr_array_add (cstrs, "require-review-ratings");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
+		g_ptr_array_add (cstrs, "require-key-colors");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
+		g_ptr_array_add (cstrs, "require-icon");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS)
+		g_ptr_array_add (cstrs, "require-permissions");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
+		g_ptr_array_add (cstrs, "require-origin-hostname");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
+		g_ptr_array_add (cstrs, "require-origin-ui");
+	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME)
+		g_ptr_array_add (cstrs, "require-runtime");
+	if (cstrs->len == 0)
+		return g_strdup ("none");
+	g_ptr_array_add (cstrs, NULL);
+	return g_strjoinv (",", (gchar**) cstrs->pdata);
+}
+
 static void
 gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {

@@ -67,6 +67,8 @@ GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 							 GsPluginRule	 rule);
 gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
 							 const gchar	*function_name);
+gchar		*gs_plugin_failure_flags_to_string	(GsPluginFailureFlags failure_flags);
+gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
 
 G_END_DECLS
 
