@@ -413,14 +413,30 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
 	if (flatpak == NULL)
 		return TRUE;
 
 	/* reset the temporary GsFlatpak object ID */
 	if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY) {
+		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+
+		/* no longer valid */
 		g_debug ("resetting temporary object ID");
 		gs_app_set_flatpak_object_id (app, NULL);
+
+		/* get the new GsFlatpak for handling of local files */
+		gs_app_set_scope (app, g_settings_get_boolean (settings, "install-bundles-system-wide") ?
+					AS_APP_SCOPE_SYSTEM : AS_APP_SCOPE_USER);
+		if (!priv->has_system_helper) {
+			g_info ("no flatpak system helper is available, using user");
+			gs_app_set_scope (app, AS_APP_SCOPE_USER);
+		}
+		if (priv->destdir_for_tests != NULL) {
+			g_debug ("in self tests, using user");
+			gs_app_set_scope (app, AS_APP_SCOPE_USER);
+		}
 		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
 		if (flatpak == NULL)
 			return TRUE;
@@ -442,16 +458,6 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return gs_flatpak_update_app (flatpak, app, cancellable, error);
 }
 
-static gboolean
-gs_plugin_flatpak_file_to_app_for_scope (GsFlatpak *flatpak, AsAppScope scope)
-{
-	if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-		return TRUE;
-	if (_as_app_scope_is_compatible (scope, gs_flatpak_get_scope (flatpak)))
-		return TRUE;
-	return FALSE;
-}
-
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,
@@ -460,27 +466,42 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	AsAppScope scope = AS_APP_SCOPE_UNKNOWN;
+	g_autoptr(GsAppList) list_new = gs_app_list_new ();
 
-	/* get the policy for handling of local files when the helper is available */
-	if (priv->has_system_helper && priv->destdir_for_tests == NULL) {
-		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
-		scope = g_settings_get_boolean (settings, "install-bundles-system-wide") ?
-				AS_APP_SCOPE_SYSTEM : AS_APP_SCOPE_USER;
-	}
-
-	/* run any objects with the corrext scope */
+	/* only use the temporary GsFlatpak to avoid the auth dialog */
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_plugin_flatpak_file_to_app_for_scope (flatpak, scope)) {
-			g_debug ("not handling bundle as scope incorrect");
-			continue;
-		}
-		if (!gs_flatpak_file_to_app (flatpak, list, file,
-					     cancellable, error)) {
-			return FALSE;
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY) {
+			if (!gs_flatpak_file_to_app (flatpak, list_new, file,
+						     cancellable, error)) {
+				return FALSE;
+			}
 		}
 	}
+
+	/* force these to be 'any' scope for installation */
+	for (guint i = 0; i < gs_app_list_length (list_new); i++) {
+		GsApp *app_tmp = gs_app_list_index (list_new, i);
+		gs_app_set_scope (app_tmp, AS_APP_SCOPE_UNKNOWN);
+	}
+
+	/* are any of the new list already installed? */
+	for (guint i = 0; i < gs_app_list_length (list_new); i++) {
+		GsApp *app_tmp = gs_app_list_index (list_new, i);
+		g_autoptr(GsApp) app = NULL;
+		app = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app_tmp));
+		if (app != NULL) {
+			g_debug ("found existing %s for %s, using",
+				 gs_app_get_unique_id (app),
+				 gs_app_get_unique_id (app_tmp));
+			gs_app_list_add (list, app);
+		} else {
+			g_debug ("no existing %s in plugin cache",
+				 gs_app_get_unique_id (app_tmp));
+			gs_app_list_add (list, app_tmp);
+		}
+	}
+
 	return TRUE;
 }
 
