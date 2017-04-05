@@ -929,9 +929,8 @@ gs_app_set_progress (GsApp *app, guint percentage)
 	if (app->progress == percentage)
 		return;
 	if (percentage > 100) {
-		g_warning ("Cannot set '%u' as the progress for app '%s'. "
-			   "Setting the maximum allowed value instead: 100.",
-			   percentage, gs_app_get_unique_id_unlocked (app));
+		g_debug ("cannot set %u%% for %s, setting instead: 100%%",
+			 percentage, gs_app_get_unique_id_unlocked (app));
 		percentage = 100;
 	}
 	app->progress = percentage;

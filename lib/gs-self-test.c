@@ -439,8 +439,6 @@ gs_app_func (void)
 	/* check setting the progress */
 	gs_app_set_progress (app, 42);
 	g_assert_cmpuint (gs_app_get_progress (app), ==, 42);
-	g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-			       "Cannot set*as the progress for app*");
 	gs_app_set_progress (app, 142);
 	g_assert_cmpuint (gs_app_get_progress (app), ==, 100);
 }
