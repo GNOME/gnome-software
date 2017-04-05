@@ -2957,6 +2957,9 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	}
 
+	/* save to the cache */
+	gs_plugin_cache_add (self->plugin, NULL, app);
+
 	/* success */
 	gs_app_list_add (list, app);
 	return TRUE;
