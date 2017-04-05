@@ -89,6 +89,8 @@ the source tree. Most users do not need this subpackage installed.
 %build
 %configure \
     --disable-static \
+    --disable-tests \
+    --disable-snap \
     --enable-gudev \
 %if %{with packagekit}
     --enable-packagekit \
