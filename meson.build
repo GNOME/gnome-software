@@ -1,5 +1,5 @@
 project('gnome-software', 'c',
-  version : '3.23.92',
+  version : '3.25.1',
   default_options : ['warning_level=1'],
   meson_version : '>=0.37.0'
 )
@@ -97,6 +97,7 @@ libm = cc.find_library('libm', required: false)
 libsecret = dependency('libsecret-1')
 libsoup = dependency('libsoup-2.4', version : '>= 2.51.92')
 sqlite3 = dependency('sqlite3')
+valgrind = dependency('valgrind')
 
 if get_option('enable-gnome-desktop')
   gnome_desktop = dependency('gnome-desktop-3.0', version : '>= 3.17.92')
@@ -153,10 +154,6 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 conf.set_quoted('GETTEXT_PACKAGE', meson.project_name())
-conf.set_quoted('TESTDATADIR', join_paths(meson.current_source_dir(), 'data'))
-conf.set_quoted('LOCALPLUGINDIR',
-                join_paths(meson.current_build_dir(),
-                           'src', 'plugins'))
 conf.set_quoted('LOCALEDIR',
                 join_paths(get_option('prefix'),
                            get_option('localedir')))
@@ -172,15 +169,19 @@ conf.set_quoted('SYSCONFDIR',
 conf.set_quoted('LOCALSTATEDIR',
                 join_paths(get_option('prefix'),
                            get_option('localstatedir')))
+conf.set_quoted('LIBEXECDIR',
+                join_paths(get_option('prefix'),
+                           get_option('libexecdir')))
 configure_file(
   output : 'config.h',
   configuration : conf
 )
-top_build_incdir = include_directories(meson.current_build_dir())
 
 add_project_arguments('-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE',
                       language : 'c')
 
+subdir('lib')
+subdir('plugins')
 subdir('src')
 subdir('po')
 subdir('data')

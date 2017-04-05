@@ -1,6 +1,5 @@
-subdir('plugins')
-
 cargs = ['-DG_LOG_DOMAIN="Gs"']
+cargs += ['-DLOCALPLUGINDIR=""']
 
 resources_src = gnome.compile_resources(
   'gs-resources',
@@ -18,20 +17,15 @@ gdbus_src = gnome.gdbus_codegen(
 
 gnome_software_sources = [
   'gs-app-addon-row.c',
-  'gs-app.c',
   'gs-app-folder-dialog.c',
   'gs-application.c',
-  'gs-app-list.c',
   'gs-app-row.c',
   'gs-app-tile.c',
-  'gs-auth.c',
   'gs-auth-dialog.c',
-  'gs-category.c',
   'gs-category-page.c',
   'gs-category-tile.c',
   'gs-common.c',
   'gs-content-rating.c',
-  'gs-debug.c',
   'gs-details-page.c',
   'gs-extras-page.c',
   'gs-feature-tile.c',
@@ -46,13 +40,8 @@ gnome_software_sources = [
   'gs-loading-page.c',
   'gs-main.c',
   'gs-moderate-page.c',
-  'gs-os-release.c',
   'gs-overview-page.c',
   'gs-page.c',
-  'gs-plugin.c',
-  'gs-plugin-event.c',
-  'gs-plugin-loader.c',
-  'gs-plugin-loader-sync.c',
   'gs-popular-tile.c',
   'gs-progress-button.c',
   'gs-removal-dialog.c',
@@ -73,7 +62,6 @@ gnome_software_sources = [
   'gs-update-monitor.c',
   'gs-updates-page.c',
   'gs-upgrade-banner.c',
-  'gs-utils.c',
   'gs-vendor.c'
 ]
 
@@ -114,97 +102,15 @@ executable(
   sources : gnome_software_sources,
   include_directories : [
     include_directories('..'),
+    include_directories('../lib'),
   ],
   dependencies : gnome_software_dependencies,
+  link_with : [
+    libgnomesoftware
+  ],
   c_args : cargs,
   install : true,
   install_dir : 'bin'
-)
-
-executable(
-  'gnome-software-cmd',
-  sources : [
-    'gs-app.c',
-    'gs-app-list.c',
-    'gs-auth.c',
-    'gs-cmd.c',
-    'gs-common.c',
-    'gs-debug.c',
-    'gs-utils.c',
-    'gs-os-release.c',
-    'gs-plugin-event.c',
-    'gs-plugin-loader.c',
-    'gs-plugin-loader-sync.c',
-    'gs-category.c',
-    'gs-plugin.c'
-  ],
-  include_directories : [
-    include_directories('..'),
-  ],
-  dependencies : [
-    appstream_glib,
-    gio_unix,
-    gmodule,
-    gtk,
-    json_glib,
-    libm,
-    libsecret,
-    libsoup
-  ],
-  c_args : cargs,
-  install : true,
-  install_dir : 'libexec'
-)
-
-if get_option('enable-tests')
-  e = executable(
-    'gs-self-test',
-    sources : [
-      'gs-app.c',
-      'gs-app-list.c',
-      'gs-auth.c',
-      'gs-category.c',
-      'gs-common.c',
-      'gs-os-release.c',
-      'gs-plugin-event.c',
-      'gs-plugin-loader-sync.c',
-      'gs-plugin-loader.c',
-      'gs-plugin.c',
-      'gs-utils.c',
-      'gs-self-test.c'
-    ],
-    include_directories : [
-      include_directories('..'),
-    ],
-    dependencies : [
-      appstream_glib,
-      gio_unix,
-      gmodule,
-      gtk,
-      json_glib,
-      libm,
-      libsecret,
-      libsoup
-    ],
-    c_args : cargs
-  )
-  test('gs-self-test', e)
-endif
-
-install_headers([
-    'gnome-software.h',
-    'gs-app.h',
-    'gs-app-list.h',
-    'gs-auth.h',
-    'gs-category.h',
-    'gs-os-release.h',
-    'gs-plugin.h',
-    'gs-plugin-event.h',
-    'gs-plugin-types.h',
-    'gs-plugin-vfuncs.h',
-    'gs-utils.h'
-  ],
-  subdir : 'gnome-software'
 )
 
 # replace @VERSION@
@@ -278,11 +184,3 @@ if get_option('enable-packagekit')
     configuration : conf
   )
 endif
-
-configure_file(
-  input : 'gnome-software.pc.in',
-  output : 'gnome-software.pc',
-  install: true,
-  install_dir: join_paths(get_option('libdir'), 'pkgconfig'),
-  configuration : conf
-)

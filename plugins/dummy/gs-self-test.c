@@ -391,61 +391,6 @@ gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugin_loader_modalias_func (GsPluginLoader *plugin_loader)
-{
-	GsApp *app;
-	g_autofree gchar *menu_path = NULL;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-
-	/* get search result based on addon keyword */
-	list = gs_plugin_loader_search (plugin_loader,
-					"colorhug2",
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					NULL,
-					&error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-
-	/* make sure there is one entry, the parent app */
-	g_assert_cmpint (gs_app_list_length (list), ==, 1);
-	app = gs_app_list_index (list, 0);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "com.hughski.ColorHug2.driver");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DRIVER);
-	g_assert (gs_app_has_category (app, "Addons"));
-	g_assert (gs_app_has_category (app, "Drivers"));
-}
-
-static void
-gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
-{
-	gboolean ret;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsApp) app = NULL;
-
-	/* no epiphany, abort */
-	if (!gs_plugin_loader_get_enabled (plugin_loader, "epiphany"))
-		return;
-
-	/* a webapp with a local icon */
-	app = gs_app_new ("arachne.desktop");
-	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
-	g_assert (gs_app_get_pixbuf (app) != NULL);
-}
-
-static void
 gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app1;

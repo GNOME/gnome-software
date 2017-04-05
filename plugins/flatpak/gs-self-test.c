@@ -541,7 +541,6 @@ static void
 update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GMainLoop *loop = (GMainLoop *) user_data;
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	ret = gs_plugin_loader_app_action_finish (plugin_loader, res, &error);
