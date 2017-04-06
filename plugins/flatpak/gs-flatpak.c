@@ -2803,6 +2803,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 	}
 
 	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
+		GError *local_error = NULL;
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
 		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 		if (gs_app_get_local_file (app) == NULL) {
@@ -2820,11 +2821,23 @@ gs_flatpak_app_install (GsFlatpak *self,
 							    gs_app_get_local_file (app),
 							    gs_flatpak_progress_cb,
 							    phelper,
-							    cancellable, error);
+							    cancellable, &local_error);
 		if (xref == NULL) {
-			gs_flatpak_error_convert (error);
-			gs_app_set_state_recover (app);
-			return FALSE;
+			gboolean already_installed = g_error_matches (local_error,
+								      FLATPAK_ERROR,
+								      FLATPAK_ERROR_ALREADY_INSTALLED);
+			if (!already_installed) {
+				g_propagate_error (error, local_error);
+				gs_flatpak_error_convert (error);
+				gs_app_set_state_recover (app);
+				return FALSE;
+			}
+
+			g_clear_error (&local_error);
+			g_debug ("Error: bundle %s is already installed; "
+				 "marking the GsApp as installed and continuing...",
+				 gs_app_get_unique_id (app));
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		}
 	} else {
 		g_autoptr(GsAppList) list = NULL;
@@ -2857,6 +2870,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 			gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
 		}
 		for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+			GError *local_error = NULL;
 			GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 			g_autoptr(FlatpakInstalledRef) xref = NULL;
 			g_debug ("installing %s", gs_flatpak_app_get_ref_name (app_tmp));
@@ -2868,12 +2882,23 @@ gs_flatpak_app_install (GsFlatpak *self,
 							     gs_flatpak_app_get_ref_arch (app_tmp),
 							     gs_flatpak_app_get_ref_branch (app_tmp),
 							     gs_flatpak_progress_cb, phelper,
-							     cancellable, error);
+							     cancellable, &local_error);
 			if (xref == NULL) {
-				gs_flatpak_error_convert (error);
-				gs_app_set_state_recover (app);
-				gs_app_set_state_recover (app_tmp);
-				return FALSE;
+				gboolean already_installed = g_error_matches (local_error,
+									      FLATPAK_ERROR,
+									      FLATPAK_ERROR_ALREADY_INSTALLED);
+				if (!already_installed) {
+					g_propagate_error (error, local_error);
+					gs_flatpak_error_convert (error);
+					gs_app_set_state_recover (app);
+					gs_app_set_state_recover (app_tmp);
+					return FALSE;
+				}
+
+				g_clear_error (&local_error);
+				g_debug ("Error: %s is already installed; "
+					 "marking the GsApp as installed and continuing...",
+					 gs_app_get_unique_id (app_tmp));
 			}
 
 			/* state is known */
@@ -2933,6 +2958,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 		gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
 	}
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+		GError *local_error = NULL;
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 		g_autofree gchar *ref_display = NULL;
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
@@ -2948,7 +2974,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 							     gs_flatpak_app_get_ref_arch (app_tmp),
 							     gs_flatpak_app_get_ref_branch (app_tmp),
 							     gs_flatpak_progress_cb, phelper,
-							     cancellable, error);
+							     cancellable, &local_error);
 		} else {
 			g_debug ("updating %s", ref_display);
 			xref = flatpak_installation_update (self->installation,
@@ -2958,12 +2984,23 @@ gs_flatpak_update_app (GsFlatpak *self,
 							    gs_flatpak_app_get_ref_arch (app_tmp),
 							    gs_flatpak_app_get_ref_branch (app_tmp),
 							    gs_flatpak_progress_cb, phelper,
-							    cancellable, error);
+							    cancellable, &local_error);
 		}
 		if (xref == NULL) {
-			gs_flatpak_error_convert (error);
-			gs_app_set_state_recover (app);
-			return FALSE;
+			gboolean already_installed = g_error_matches (local_error,
+								      FLATPAK_ERROR,
+								      FLATPAK_ERROR_ALREADY_INSTALLED);
+			if (!already_installed) {
+				g_propagate_error (error, local_error);
+				gs_flatpak_error_convert (error);
+				gs_app_set_state_recover (app);
+				return FALSE;
+			}
+
+			g_clear_error (&local_error);
+			g_debug ("Error: %s update is installed; "
+				 "marking the GsApp as installed and continuing...",
+				 gs_app_get_unique_id (app_tmp));
 		}
 		gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
 	}
