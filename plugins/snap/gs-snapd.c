@@ -115,11 +115,9 @@ send_request (const gchar  *method,
 	g_autoptr (GString) request = NULL;
 	gssize n_written;
 	g_autoptr (GByteArray) buffer = NULL;
-	gsize data_length = 0, header_length;
-	gchar *body = NULL;
+	gsize data_length = 0, header_length, body_offset = 0;
 	g_autoptr (SoupMessageHeaders) headers = NULL;
-	gsize chunk_length = 0, n_required;
-	guint8 *chunk_start = NULL;
+	gsize chunk_length = 0, n_required, chunk_offset;
 	guint code;
 
 	// NOTE: Would love to use libsoup but it doesn't support unix sockets
@@ -155,7 +153,10 @@ send_request (const gchar  *method,
 
 	/* read HTTP headers */
 	buffer = g_byte_array_new ();
-	while (body == NULL) {
+	while (TRUE) {
+		const gchar *divider;
+
+		gsize n_read = data_length;
 		if (!read_from_snapd (socket,
 				      buffer,
 				      &data_length,
@@ -163,23 +164,25 @@ send_request (const gchar  *method,
 				      cancellable,
 				      error))
 			return FALSE;
-		body = strstr (buffer->data, "\r\n\r\n");
-	}
-	if (body == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "Unable to find header separator in snapd response");
-		return FALSE;
-	}
 
-	/* body starts after header divider */
-	body += 4;
-	header_length = (gsize) ((guint8 *) body - buffer->data);
+		if (n_read == data_length) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_INVALID_FORMAT,
+					     "Unable to find header separator in snapd response");
+			return FALSE;
+		}
+
+		divider = strstr (buffer->data, "\r\n\r\n");
+		if (divider != NULL) {
+			body_offset = ((guint8*) divider - buffer->data) + 4;
+			break;
+		}
+	}
 
 	/* parse headers */
 	headers = soup_message_headers_new (SOUP_MESSAGE_HEADERS_RESPONSE);
-	if (!soup_headers_parse_response (buffer->data, (gint) header_length, headers,
+	if (!soup_headers_parse_response (buffer->data, (gint) body_offset, headers,
 					  NULL, &code, reason_phrase)) {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
@@ -194,6 +197,7 @@ send_request (const gchar  *method,
 	/* read content */
 	switch (soup_message_headers_get_encoding (headers)) {
 	case SOUP_ENCODING_EOF:
+		chunk_offset = body_offset;
 		while (TRUE) {
 			gsize n_read = data_length;
 			if (!read_from_snapd (socket,
@@ -211,9 +215,17 @@ send_request (const gchar  *method,
 	case SOUP_ENCODING_CHUNKED:
 		// FIXME: support multiple chunks
 		while (TRUE) {
-			chunk_start = strstr (body, "\r\n");
-			if (chunk_start)
+			const gchar *divider;
+			gsize n_read;
+
+			divider = strstr (buffer->data + body_offset, "\r\n");
+			if (divider) {
+				chunk_length = strtoul (buffer->data + body_offset, NULL, 16);
+				chunk_offset = ((guint8*) divider - buffer->data) + 2;
 				break;
+			}
+
+			n_read = data_length;
 			if (!read_from_snapd (socket,
 					      buffer,
 					      &data_length,
@@ -221,20 +233,19 @@ send_request (const gchar  *method,
 					      cancellable,
 					      error))
 				return FALSE;
+
+			if (n_read == data_length) {
+				g_set_error_literal (error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_INVALID_FORMAT,
+						     "Unable to find chunk header in "
+						     "snapd response");
+				return FALSE;
+			}
 		}
-		if (!chunk_start) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_INVALID_FORMAT,
-					     "Unable to find chunk header in "
-					     "snapd response");
-			return FALSE;
-		}
-		chunk_length = strtoul (body, NULL, 16);
-		chunk_start += 2;
 
 		/* check if enough space to read chunk */
-		n_required = (chunk_start - buffer->data) + chunk_length;
+		n_required = chunk_offset + chunk_length;
 		while (data_length < n_required)
 			if (!read_from_snapd (socket,
 					      buffer,
@@ -245,9 +256,9 @@ send_request (const gchar  *method,
 				return FALSE;
 		break;
 	case SOUP_ENCODING_CONTENT_LENGTH:
+		chunk_offset = body_offset;
 		chunk_length = soup_message_headers_get_content_length (headers);
-		chunk_start = body;
-		n_required = header_length + chunk_length;
+		n_required = chunk_offset + chunk_length;
 		while (data_length < n_required) {
 			if (!read_from_snapd (socket,
 					      buffer,
@@ -269,10 +280,9 @@ send_request (const gchar  *method,
 
 	if (response_type)
 		*response_type = g_strdup (soup_message_headers_get_content_type (headers, NULL));
-	if (response != NULL && chunk_start != NULL) {
-		*response = g_malloc (chunk_length + 2);
-		memcpy (*response, chunk_start, chunk_length + 1);
-		(*response)[chunk_length + 1] = '\0';
+	if (response != NULL) {
+		*response = g_malloc (chunk_length + 1);
+		memcpy (*response, buffer->data + chunk_offset, chunk_length + 1);
 		g_debug ("snapd status %u: %s", code, *response);
 	}
 	if (response_length)
