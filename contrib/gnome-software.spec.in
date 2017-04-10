@@ -87,24 +87,23 @@ the source tree. Most users do not need this subpackage installed.
 %setup -q
 
 %build
-%configure \
-    --disable-static \
-    --disable-tests \
-    --disable-snap \
-    --enable-gudev \
+%meson \
+    -Denable-tests=false \
+    -Denable-snap=false \
+    -Denable-ubuntu-reviews=false \
+    -Denable-gudev=true \
 %if %{with packagekit}
-    --enable-packagekit \
+    -Denable-packagekit=true \
 %else
-    --disable-packagekit \
+    -Denable-packagekit=false \
 %endif
-    --disable-external-appstream \
-    --disable-silent-rules
-make %{?_smp_mflags}
+    -Ddisable-external-appstream=false
+%meson_build
 
 %install
-%make_install
+%meson_install
 
-rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
+#rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 
 # make the software center load faster
 desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.desktop \
@@ -139,7 +138,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files -f %{name}.lang
-%doc AUTHORS NEWS README
+%doc AUTHORS README
 %license COPYING
 %{_bindir}/gnome-software
 %{_datadir}/applications/*.desktop
