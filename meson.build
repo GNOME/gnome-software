@@ -163,6 +163,9 @@ conf.set_quoted('DATADIR',
 conf.set_quoted('LIBDIR',
                 join_paths(get_option('prefix'),
                            get_option('libdir')))
+conf.set_quoted('BINDIR',
+                join_paths(get_option('prefix'),
+                           get_option('bindir')))
 conf.set_quoted('SYSCONFDIR',
                 join_paths(get_option('prefix'),
                            get_option('sysconfdir')))

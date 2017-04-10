@@ -113,6 +113,20 @@ executable(
   install_dir : 'bin'
 )
 
+executable(
+  'gnome-software-restarter',
+  sources : 'gs-restarter.c',
+  include_directories : [
+    include_directories('..'),
+  ],
+  dependencies : [
+    gio_unix,
+  ],
+  c_args : cargs,
+  install : true,
+  install_dir : 'libexec'
+)
+
 # replace @VERSION@
 configure_file(
   input : 'org.gnome.Software.service.in',
