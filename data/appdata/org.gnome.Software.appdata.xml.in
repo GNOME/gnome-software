@@ -46,6 +46,24 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-04-10" version="3.24.1">
+      <description>
+        <p>
+          This is an stable release with the following bug fixes:
+        </p>
+        <ul>
+          <li>Fall back to a stock icon for hardware drivers</li>
+          <li>Fix a crash when removing an addon</li>
+          <li>Respect the user/system preference when installing flatpakref files</li>
+          <li>Make offline update triggering work when online updates are available</li>
+          <li>Never include the size of the runtime in the installed size</li>
+          <li>Use the developer name if set in preference to the project group</li>
+          <li>Never show a remote snapd error in the authentication dialog</li>
+          <li>Only auto-add snap provenance when running on Ubuntu</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-03-20" version="3.24.0">
       <description>
         <p>This is the first stable release for GNOME 3.24.</p>
