@@ -503,6 +503,7 @@ plugins/external-appstream/Makefile
 plugins/fedora-distro-upgrades/Makefile
 plugins/fedora-tagger-usage/Makefile
 plugins/flatpak/Makefile
+plugins/flatpak/tests/Makefile
 plugins/fwupd/Makefile
 plugins/limba/Makefile
 plugins/modalias/Makefile
