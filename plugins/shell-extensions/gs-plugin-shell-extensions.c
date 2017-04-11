@@ -654,11 +654,8 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	}
 
 	/* create the GET data */
-	uri = g_strdup_printf ("%s/extension-query/"
-			       "?shell_version=%s"
-			       "&page=1&n_per_page=1000",
-			       SHELL_EXTENSIONS_API_URI,
-			       priv->shell_version);
+	uri = g_strdup_printf ("%s/static/extensions.json",
+			       SHELL_EXTENSIONS_API_URI);
 	data = gs_plugin_download_data (plugin, dummy, uri, cancellable, error);
 	if (data == NULL) {
 		gs_utils_error_add_unique_id (error, priv->cached_origin);
