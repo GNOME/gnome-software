@@ -655,8 +655,8 @@ gs_page_reload (GsPage *page)
 	GsPageClass *klass;
 	g_return_if_fail (GS_IS_PAGE (page));
 	klass = GS_PAGE_GET_CLASS (page);
-	g_assert (klass->reload != NULL);
-	klass->reload (page);
+	if (klass->reload != NULL)
+		klass->reload (page);
 }
 
 void
