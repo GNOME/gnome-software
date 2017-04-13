@@ -308,7 +308,7 @@ gs_plugin_loader_app_sort_id_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 	return g_strcmp0 (gs_app_get_id (app1), gs_app_get_id (app2));
 }
 
-static GsPlugin *
+GsPlugin *
 gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
 {

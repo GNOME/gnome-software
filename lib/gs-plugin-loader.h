@@ -280,6 +280,9 @@ GsApp		*gs_plugin_loader_app_create		(GsPluginLoader	*plugin_loader,
 /* only useful from the self tests */
 void		 gs_plugin_loader_setup_again		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_clear_caches	(GsPluginLoader	*plugin_loader);
+GsPlugin	*gs_plugin_loader_find_plugin	(GsPluginLoader	*plugin_loader,
+						 const gchar	*plugin_name);
+
 
 G_END_DECLS
 

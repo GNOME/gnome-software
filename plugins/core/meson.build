@@ -153,3 +153,27 @@ shared_module(
   c_args : cargs,
   dependencies : plugin_libs
 )
+
+if get_option('enable-tests')
+  cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
+  cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
+  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
+  e = executable('gs-self-test-core',
+    sources : [
+      'gs-self-test.c',
+      'gs-appstream.c'
+    ],
+    include_directories : [
+      include_directories('../..'),
+      include_directories('../../lib'),
+    ],
+    dependencies : [
+      plugin_libs,
+    ],
+    link_with : [
+      libgnomesoftware
+    ],
+    c_args : cargs,
+  )
+  test('gs-self-test-core', e)
+endif
