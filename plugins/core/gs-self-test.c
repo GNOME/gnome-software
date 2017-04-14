@@ -86,14 +86,48 @@ gs_plugins_core_app_creation_func (GsPluginLoader *plugin_loader)
 	g_assert (cached_app == app);
 }
 
+static void
+gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app;
+	g_autofree gchar *menu_path = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app_tmp = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* force this app to be installed */
+	app_tmp = gs_plugin_loader_app_create (plugin_loader, "*/*/yellow/desktop/arachne.desktop/*");
+	gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
+
+	/* get search result based on addon keyword */
+	list = gs_plugin_loader_search (plugin_loader,
+					"yellow",
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					NULL,
+					&error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is one entry, the parent app */
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	app = gs_app_list_index (list, 0);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "arachne.desktop");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+}
+
 int
 main (int argc, char **argv)
 {
 	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
-	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
+	const gchar *xml;
 	const gchar *whitelist[] = {
 		"appstream",
 		"icons",
@@ -116,6 +150,19 @@ main (int argc, char **argv)
 	g_setenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT",
 		  "/var/tmp/self-test/flatpak/appstream/test/x86_64/active/", TRUE);
 
+	/* fake some data */
+	xml = "<?xml version=\"1.0\"?>\n"
+		"<components origin=\"yellow\" version=\"0.9\">\n"
+		"  <component type=\"desktop\">\n"
+		"    <id>arachne.desktop</id>\n"
+		"    <name>test</name>\n"
+		"    <summary>Test</summary>\n"
+		"    <icon type=\"stock\">system-file-manager</icon>\n"
+		"  </component>\n"
+		"</components>\n";
+	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_SELF_TEST_ALL_ORIGIN_KEYWORDS", "1", TRUE);
+
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
@@ -132,6 +179,9 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugins/core/search-repo-name",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_core_search_repo_name_func);
 	g_test_add_data_func ("/gnome-software/plugins/core/app-creation",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_core_app_creation_func);

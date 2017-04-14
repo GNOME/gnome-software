@@ -250,6 +250,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	const gchar *tmp;
 	const gchar *test_xml;
 	const gchar *test_icon_root;
+	gboolean all_origin_keywords = g_getenv ("GS_SELF_TEST_ALL_ORIGIN_KEYWORDS") != NULL;
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
@@ -302,9 +303,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
 				  plugin);
 
-	/* ensure the token cache */
-	as_store_load_search_cache (priv->store);
-
 	/* add search terms for apps not in the main source */
 	origins = gs_plugin_appstream_get_origins_hash (items);
 	for (i = 0; i < items->len; i++) {
@@ -313,12 +311,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		if (tmp == NULL || tmp[0] == '\0')
 			continue;
 		perc = g_hash_table_lookup (origins, tmp);
-		if (*perc < 10) {
+		if (*perc < 10 || all_origin_keywords) {
 			g_debug ("adding keyword '%s' to %s",
 				 tmp, as_app_get_id (app));
 			as_app_add_keyword (app, NULL, tmp);
 		}
 	}
+
+	/* ensure the token cache */
+	as_store_load_search_cache (priv->store);
 
 	/* rely on the store keeping itself updated */
 	return TRUE;
