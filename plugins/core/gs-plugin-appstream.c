@@ -314,7 +314,13 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		if (*perc < 10 || all_origin_keywords) {
 			g_debug ("adding keyword '%s' to %s",
 				 tmp, as_app_get_id (app));
+#if AS_CHECK_VERSION(0,6,13)
+			as_app_set_search_match (app,
+						 as_store_get_search_match (priv->store) |
+						 AS_APP_SEARCH_MATCH_ORIGIN);
+#else
 			as_app_add_keyword (app, NULL, tmp);
+#endif
 		}
 	}
 

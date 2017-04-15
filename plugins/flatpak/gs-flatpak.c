@@ -242,12 +242,23 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				   AS_APP_SEARCH_MATCH_COMMENT |
 				   AS_APP_SEARCH_MATCH_NAME |
 				   AS_APP_SEARCH_MATCH_KEYWORD |
+#if AS_CHECK_VERSION(0,6,13)
+				   AS_APP_SEARCH_MATCH_ORIGIN |
+#endif
 				   AS_APP_SEARCH_MATCH_ID);
 	if (!as_store_from_file (store, file, NULL, cancellable, error)) {
 		gs_utils_error_convert_appstream (error);
 		return FALSE;
 	}
 
+	/* override the *AppStream* origin */
+	apps = as_store_get_apps (store);
+	for (i = 0; i < apps->len; i++) {
+		AsApp *app = g_ptr_array_index (apps, i);
+		as_app_set_origin (app, flatpak_remote_get_name (xremote));
+	}
+
+#if !AS_CHECK_VERSION(0,6,13)
 	/* add the origin as a keyword */
 	for (i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
@@ -256,6 +267,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 			 as_app_get_id (app));
 		as_app_add_keyword (app, NULL, flatpak_remote_get_name (xremote));
 	}
+#endif
 
 	/* ensure the token cache */
 	as_store_load_search_cache (store);
@@ -274,7 +286,6 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		default_branch = flatpak_remote_get_default_branch (xremote);
 
 	/* get all the apps and fix them up */
-	apps = as_store_get_apps (store);
 	app_filtered = g_ptr_array_new ();
 	for (i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
