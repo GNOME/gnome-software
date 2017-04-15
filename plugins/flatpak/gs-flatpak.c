@@ -248,6 +248,15 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		return FALSE;
 	}
 
+	/* add the origin as a keyword */
+	for (i = 0; i < apps->len; i++) {
+		AsApp *app = g_ptr_array_index (apps, i);
+		g_debug ("adding keyword '%s' to %s",
+			 flatpak_remote_get_name (xremote),
+			 as_app_get_id (app));
+		as_app_add_keyword (app, NULL, flatpak_remote_get_name (xremote));
+	}
+
 	/* ensure the token cache */
 	as_store_load_search_cache (store);
 
