@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "gs-search-page.h"
 #include "gs-shell.h"
@@ -150,6 +151,27 @@ gs_search_page_get_search_cb (GObject *source_object,
 					    self->sizegroup_name,
 					    self->sizegroup_button);
 		gtk_widget_show (app_row);
+	}
+
+	/* too many results */
+	if (gs_app_list_has_flag (list, GS_APP_LIST_FLAG_IS_TRUNCATED)) {
+		GtkStyleContext *context;
+		GtkWidget *w = gtk_label_new (NULL);
+		g_autofree gchar *str = NULL;
+
+		/* TRANSLATORS: this is when there are too many search results
+		 * to show in in the search page */
+		str = g_strdup_printf (_("%u more matches"),
+				       gs_app_list_get_size_peak (list) - gs_app_list_length (list));
+		gtk_label_set_label (GTK_LABEL (w), str);
+		gtk_widget_set_margin_bottom (w, 20);
+		gtk_widget_set_margin_top (w, 20);
+		gtk_widget_set_margin_start (w, 20);
+		gtk_widget_set_margin_end (w, 20);
+		context = gtk_widget_get_style_context (w);
+		gtk_style_context_add_class (context, GTK_STYLE_CLASS_DIM_LABEL);
+		gtk_container_add (GTK_CONTAINER (self->list_box_search), w);
+		gtk_widget_show (w);
 	}
 
 	if (self->appid_to_show != NULL) {
@@ -339,12 +361,21 @@ gs_search_page_sort_func (GtkListBoxRow *a,
                           GtkListBoxRow *b,
                           gpointer user_data)
 {
-	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
-	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	g_autofree gchar *key1 = gs_search_page_get_app_sort_key (a1);
-	g_autofree gchar *key2 = gs_search_page_get_app_sort_key (a2);
+	GsAppRow *ar;
+	GsAppRow *br;
+	g_autofree gchar *key1 = NULL;
+	g_autofree gchar *key2 = NULL;
+
+	if (!GS_IS_APP_ROW (a))
+		return 1;
+	if (!GS_IS_APP_ROW (b))
+		return -1;
 
 	/* compare the keys according to the algorithm above */
+	ar = GS_APP_ROW (a);
+	br = GS_APP_ROW (b);
+	key1 = gs_search_page_get_app_sort_key (gs_app_row_get_app (GS_APP_ROW (ar)));
+	key2 = gs_search_page_get_app_sort_key (gs_app_row_get_app (GS_APP_ROW (br)));
 	return g_strcmp0 (key2, key1);
 }
 

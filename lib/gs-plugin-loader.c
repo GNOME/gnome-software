@@ -2045,6 +2045,16 @@ gs_plugin_loader_convert_unavailable (GsAppList *list, const gchar *search)
 	}
 }
 
+static gint
+gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	if (gs_app_get_match_value (app1) > gs_app_get_match_value (app2))
+		return -1;
+	if (gs_app_get_match_value (app1) < gs_app_get_match_value (app2))
+		return 1;
+	return 0;
+}
+
 static void
 gs_plugin_loader_search_thread_cb (GTask *task,
 				   gpointer object,
@@ -2073,6 +2083,15 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 			return;
 		}
+	}
+
+	/* too many results */
+	if (job->max_results > 0 &&
+	    gs_app_list_length (job->list) > job->max_results) {
+		gs_app_list_sort (job->list, gs_plugin_loader_app_sort_match_value_cb, NULL);
+		g_debug ("truncating results to %u from %u",
+			 job->max_results, gs_app_list_length (job->list));
+		gs_app_list_truncate (job->list, job->max_results);
 	}
 
 	/* run refine() on each one */
