@@ -35,6 +35,7 @@ GsAppList	*gs_plugin_loader_get_installed		(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 GsAppList	*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
+							 guint		 max_results,
 							 GsPluginRefineFlags refine_flags,
 							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,

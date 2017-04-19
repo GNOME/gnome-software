@@ -307,7 +307,7 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			list = gs_plugin_loader_search (plugin_loader,
-							argv[2],
+							argv[2], 0,
 							refine_flags,
 							GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							NULL,

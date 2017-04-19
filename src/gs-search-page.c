@@ -28,6 +28,8 @@
 #include "gs-common.h"
 #include "gs-app-row.h"
 
+#define GS_SEARCH_PAGE_MAX_RESULTS	50
+
 struct _GsSearchPage
 {
 	GsPage			 parent_instance;
@@ -189,6 +191,7 @@ gs_search_page_load (GsSearchPage *self)
 
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       self->value,
+				       GS_SEARCH_PAGE_MAX_RESULTS,
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |

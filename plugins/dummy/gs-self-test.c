@@ -355,7 +355,7 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 
 	/* get search result based on addon keyword */
 	list = gs_plugin_loader_search (plugin_loader,
-					"spell",
+					"spell", 0,
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,

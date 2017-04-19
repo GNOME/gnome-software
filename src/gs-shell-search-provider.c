@@ -29,6 +29,8 @@
 #include "gs-shell-search-provider-generated.h"
 #include "gs-shell-search-provider.h"
 
+#define GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS	20
+
 typedef struct {
 	GsShellSearchProvider *provider;
 	GDBusMethodInvocation *invocation;
@@ -131,6 +133,7 @@ execute_search (GsShellSearchProvider  *self,
 	self->cancellable = g_cancellable_new ();
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       string,
+				       GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				       GS_PLUGIN_FAILURE_FLAGS_NONE,
 				       self->cancellable,

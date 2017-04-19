@@ -192,6 +192,7 @@ typedef struct {
 	GsAuth				*auth;
 	GsPluginAction			 action;
 	gboolean			 anything_ran;
+	guint				 max_results;
 } GsPluginLoaderJob;
 
 static GsPluginLoaderJob *
@@ -2129,6 +2130,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 void
 gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 			       const gchar *value,
+			       guint max_results,
 			       GsPluginRefineFlags refine_flags,
 			       GsPluginFailureFlags failure_flags,
 			       GCancellable *cancellable,
@@ -2146,6 +2148,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	job->refine_flags = refine_flags;
 	job->failure_flags = failure_flags;
 	job->list = gs_app_list_new ();
+	job->max_results = max_results;
 	job->value = g_strdup (value);
 	job->values = as_utils_search_tokenize (job->value);
 	job->action = GS_PLUGIN_ACTION_SEARCH;

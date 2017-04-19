@@ -136,6 +136,7 @@ GsAppList	*gs_plugin_loader_get_category_apps_finish (GsPluginLoader	*plugin_loa
 							 GError		**error);
 void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
+							 guint		 max_results,
 							 GsPluginRefineFlags refine_flags,
 							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
