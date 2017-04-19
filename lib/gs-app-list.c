@@ -327,6 +327,46 @@ gs_app_list_sort (GsAppList *list, GsAppListSortFunc func, gpointer user_data)
 	g_ptr_array_sort_with_data (list->array, gs_app_list_sort_cb, &helper);
 }
 
+/**
+ * gs_app_list_truncate:
+ * @list: A #GsAppList
+ * @length: the new length
+ *
+ * Truncates the application list. It is an error if @length is larger than the
+ * size of the list.
+ *
+ * Since: 3.24
+ **/
+void
+gs_app_list_truncate (GsAppList *list, guint length)
+{
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_if_fail (GS_IS_APP_LIST (list));
+	g_return_if_fail (length <= list->array->len);
+
+	/* everything */
+	if (length == 0) {
+		gs_app_list_remove_all (list);
+		return;
+	}
+
+	/* remove the apps in the positions larger than the length */
+	locker = g_mutex_locker_new (&list->mutex);
+	for (guint i = length; i < list->array->len; i++) {
+		GsApp *app = g_ptr_array_index (list->array, i);
+		const gchar *unique_id;
+		unique_id = gs_app_get_unique_id (app);
+		if (unique_id != NULL) {
+			GsApp *app_tmp = g_hash_table_lookup (list->hash_by_id, unique_id);
+			if (app_tmp != NULL)
+				g_hash_table_remove (list->hash_by_id, unique_id);
+		}
+
+	}
+	g_ptr_array_set_size (list->array, length);
+}
+
 static gint
 gs_app_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 {
