@@ -27,6 +27,22 @@
 G_BEGIN_DECLS
 
 /**
+ * GsAppListFlags:
+ * @GS_APP_LIST_FLAG_NONE:		No flags set
+ * @GS_APP_LIST_FLAG_IS_RANDOMIZED:	List has been randomized
+ * @GS_APP_LIST_FLAG_IS_TRUNCATED:	List has been truncated
+ *
+ * Flags used to describe the list.
+ **/
+typedef enum {
+	GS_APP_LIST_FLAG_NONE			= 0,
+	GS_APP_LIST_FLAG_IS_RANDOMIZED		= 1 << 0,
+	GS_APP_LIST_FLAG_IS_TRUNCATED		= 1 << 1,
+	/*< private >*/
+	GS_APP_LIST_FLAG_LAST
+} GsAppListFlags;
+
+/**
  * GsAppListFilterFlags:
  * @GS_APP_LIST_FILTER_FLAG_NONE:	No flags set
  * @GS_APP_LIST_FILTER_FLAG_PRIORITY:	Filter by application priority
@@ -60,6 +76,8 @@ void		 gs_app_list_randomize		(GsAppList	*list);
 void		 gs_app_list_remove_all		(GsAppList	*list);
 void		 gs_app_list_truncate		(GsAppList	*list,
 						 guint		 length);
+gboolean	 gs_app_list_has_flag		(GsAppList	*list,
+						 GsAppListFlags	 flag);
 
 G_END_DECLS
 

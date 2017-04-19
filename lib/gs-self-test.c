@@ -340,9 +340,11 @@ gs_plugin_func (void)
 	app = gs_app_new ("c");
 	gs_app_list_add (list, app);
 	g_object_unref (app);
+	g_assert (!gs_app_list_has_flag (list, GS_APP_LIST_FLAG_IS_TRUNCATED));
 	g_assert_cmpint (gs_app_list_get_size_peak (list), ==, 3);
 	gs_app_list_truncate (list, 3);
 	g_assert_cmpint (gs_app_list_length (list), ==, 3);
+	g_assert (gs_app_list_has_flag (list, GS_APP_LIST_FLAG_IS_TRUNCATED));
 	g_assert_cmpint (gs_app_list_get_size_peak (list), ==, 3);
 	gs_app_list_truncate (list, 2);
 	g_assert_cmpint (gs_app_list_length (list), ==, 2);

@@ -83,6 +83,23 @@ gs_app_list_lookup (GsAppList *list, const gchar *unique_id)
 	return g_hash_table_lookup (list->hash_by_id, unique_id);
 }
 
+/**
+ * gs_app_list_has_flag:
+ * @list: A #GsAppList
+ * @flag: A flag to test, e.g. %GS_APP_LIST_FLAG_IS_TRUNCATED
+ *
+ * Gets if a specific flag is set.
+ *
+ * Returns: %TRUE if the flag is set
+ *
+ * Since: 3.24
+ **/
+gboolean
+gs_app_list_has_flag (GsAppList *list, GsAppListFlags flag)
+{
+	return (list->flags & flag) > 0;
+}
+
 static gboolean
 gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 {
@@ -367,6 +384,9 @@ gs_app_list_truncate (GsAppList *list, guint length)
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (length <= list->array->len);
 
+	/* mark this list as unworthy */
+	list->flags |= GS_APP_LIST_FLAG_IS_TRUNCATED;
+
 	/* everything */
 	if (length == 0) {
 		gs_app_list_remove_all (list);
@@ -425,6 +445,9 @@ gs_app_list_randomize (GsAppList *list)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	/* mark this list as random */
+	list->flags |= GS_APP_LIST_FLAG_IS_RANDOMIZED;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
