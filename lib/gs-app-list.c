@@ -157,7 +157,7 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 void
 gs_app_list_remove (GsAppList *list, GsApp *app)
 {
-	AsApp *app_tmp;
+	GsApp *app_tmp;
 	const gchar *unique_id;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
 
