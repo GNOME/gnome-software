@@ -47,6 +47,7 @@ typedef gboolean (*GsAppListSortFunc)		(GsApp		*app1,
 						 gpointer	 user_data);
 
 GsAppList	*gs_app_list_copy		(GsAppList	*list);
+guint		 gs_app_list_get_size_peak	(GsAppList	*list);
 void		 gs_app_list_filter		(GsAppList	*list,
 						 GsAppListFilterFunc func,
 						 gpointer	 user_data);

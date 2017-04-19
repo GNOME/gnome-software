@@ -42,9 +42,27 @@ struct _GsAppList
 	GPtrArray		*array;
 	GHashTable		*hash_by_id;		/* app-id : app */
 	GMutex			 mutex;
+	guint			 size_peak;
+	GsAppListFlags		 flags;
 };
 
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
+
+/**
+ * gs_app_list_get_size_peak:
+ * @list: A #GsAppList
+ *
+ * Returns the largest size the list has ever been.
+ *
+ * Returns: integer
+ *
+ * Since: 3.24
+ **/
+guint
+gs_app_list_get_size_peak (GsAppList *list)
+{
+	return list->size_peak;
+}
 
 /**
  * gs_app_list_lookup:
@@ -118,6 +136,10 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 	/* just use the ref */
 	g_ptr_array_add (list->array, g_object_ref (app));
 	g_hash_table_insert (list->hash_by_id, g_strdup (id), g_object_ref (app));
+
+	/* update the historical max */
+	if (list->array->len > list->size_peak)
+		list->size_peak = list->array->len;
 }
 
 /**
