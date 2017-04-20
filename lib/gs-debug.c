@@ -167,7 +167,9 @@ gs_debug_init (GsDebug *debug)
 	g_mutex_init (&debug->mutex);
 	debug->use_time = g_getenv ("GS_DEBUG_NO_TIME") == NULL;
 	debug->use_color = (isatty (fileno (stdout)) == 1);
-	g_log_set_writer_func (gs_debug_log_writer, debug, NULL);
+	g_log_set_writer_func (gs_debug_log_writer,
+			       g_object_ref (debug),
+			       (GDestroyNotify) g_object_unref);
 }
 
 GsDebug *
