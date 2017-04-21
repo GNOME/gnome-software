@@ -1,4 +1,4 @@
-cargs = ['-DG_LOG_DOMAIN="GsPlugin"']
+cargs = ['-DG_LOG_DOMAIN="GsPluginDpkg"']
 
 shared_module(
   'gs_plugin_dpkg',
