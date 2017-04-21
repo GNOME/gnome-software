@@ -922,9 +922,14 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 							       interaction));
 		rc = 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
+		g_autoptr(GFile) file = NULL;
+		g_autofree gchar *absolute_filename = NULL;
+
+		file = g_file_new_for_path (local_filename);
+		absolute_filename = g_file_get_path (file);
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"filename",
-						g_variant_new ("(s)", local_filename));
+						g_variant_new ("(s)", absolute_filename));
 		rc = 0;
 	}
 
