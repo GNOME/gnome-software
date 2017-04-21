@@ -176,7 +176,12 @@ gs_search_page_get_search_cb (GObject *source_object,
 
 	if (self->appid_to_show != NULL) {
 		g_autoptr (GsApp) a = NULL;
-		a = gs_app_new (self->appid_to_show);
+		if (as_utils_unique_id_valid (self->appid_to_show)) {
+			a = gs_plugin_loader_app_create (self->plugin_loader,
+							 self->appid_to_show);
+		} else {
+			a = gs_app_new (self->appid_to_show);
+		}
 		gs_shell_show_app (self->shell, a);
 		g_clear_pointer (&self->appid_to_show, g_free);
 	}

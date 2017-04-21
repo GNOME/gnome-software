@@ -23,25 +23,6 @@
 
 #include "gs-plugin-loader-sync.h"
 
-GsApp *
-gs_plugin_loader_get_app_by_id (GsPluginLoader *plugin_loader,
-				const gchar *id,
-				GsPluginRefineFlags refine_flags,
-				GCancellable *cancellable,
-				GError **error)
-{
-	GsApp *app;
-	gboolean ret;
-
-	app = gs_app_new (id);
-	ret = gs_plugin_loader_app_refine (plugin_loader, app, refine_flags,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
-					   cancellable, error);
-	if (!ret)
-		g_clear_object (&app);
-	return app;
-}
-
 /* tiny helper to help us do the async operation */
 typedef struct {
 	GError		**error;
