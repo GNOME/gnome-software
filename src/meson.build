@@ -127,13 +127,18 @@ executable(
   install_dir : 'libexec'
 )
 
-# replace @VERSION@
+# no quoting
+cdata = configuration_data()
+cdata.set('bindir', join_paths(get_option('prefix'),
+                               get_option('bindir')))
+
+# replace @bindir@
 configure_file(
   input : 'org.gnome.Software.service.in',
   output : 'org.gnome.Software.service',
   install: true,
   install_dir: join_paths(get_option('datadir'), 'dbus-1/services'),
-  configuration : conf
+  configuration : cdata
 )
 
 # replace @bindir@
@@ -142,9 +147,10 @@ configure_file(
   output : 'gnome-software-service.desktop',
   install: true,
   install_dir: join_paths(get_option('sysconfdir'), 'xdg/autostart'),
-  configuration : conf
+  configuration : cdata
 )
 
+# replace @bindir@
 i18n.merge_file(
   input: 'org.gnome.Software.desktop.in',
   output: 'org.gnome.Software.desktop',
