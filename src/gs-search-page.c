@@ -202,6 +202,57 @@ gs_search_page_waiting_show_cb (gpointer user_data)
 	return FALSE;
 }
 
+static gchar *
+gs_search_page_get_app_sort_key (GsApp *app)
+{
+	GString *key = g_string_sized_new (64);
+
+	/* sort apps before runtimes and extensions */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_DESKTOP:
+	case AS_APP_KIND_SHELL_EXTENSION:
+		g_string_append (key, "9:");
+		break;
+	default:
+		g_string_append (key, "1:");
+		break;
+	}
+
+	/* sort missing codecs before applications */
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_UNAVAILABLE:
+		g_string_append (key, "9:");
+		break;
+	default:
+		g_string_append (key, "1:");
+		break;
+	}
+
+	/* sort by the search key */
+	g_string_append_printf (key, "%05x:", gs_app_get_match_value (app));
+
+	/* sort by rating */
+	g_string_append_printf (key, "%03i:", gs_app_get_rating (app));
+
+	/* sort by kudos */
+	g_string_append_printf (key, "%03u:", gs_app_get_kudos_percentage (app));
+
+	/* tie-break with id */
+	g_string_append (key, gs_app_get_unique_id (app));
+
+	return g_string_free (key, FALSE);
+}
+
+static gboolean
+gs_search_page_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	g_autofree gchar *key1 = NULL;
+	g_autofree gchar *key2 = NULL;
+	key1 = gs_search_page_get_app_sort_key (app1);
+	key2 = gs_search_page_get_app_sort_key (app2);
+	return g_strcmp0 (key2, key1);
+}
+
 static void
 gs_search_page_load (GsSearchPage *self)
 {
@@ -219,6 +270,7 @@ gs_search_page_load (GsSearchPage *self)
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       self->value,
 				       GS_SEARCH_PAGE_MAX_RESULTS,
+				       gs_search_page_sort_cb, self,
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
@@ -302,88 +354,6 @@ gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
 	gs_search_page_load (self);
 }
 
-/**
- * gs_installed_page_sort_func:
- *
- * Get a sort key to achive this:
- *
- * 1. Application rating
- * 2. Length of the long description
- * 3. Number of screenshots
- * 4. Install date
- * 5. Name
- **/
-static gchar *
-gs_search_page_get_app_sort_key (GsApp *app)
-{
-	GPtrArray *ss;
-	GString *key;
-	const gchar *desc;
-
-	/* sort installed, removing, other */
-	key = g_string_sized_new (64);
-
-	/* sort missing codecs before applications */
-	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_UNAVAILABLE:
-		g_string_append (key, "9:");
-		break;
-	default:
-		g_string_append (key, "1:");
-		break;
-	}
-
-	/* artificially cut the rating of applications with no description */
-	desc = gs_app_get_description (app);
-	g_string_append_printf (key, "%c:", desc != NULL ? '2' : '1');
-
-	/* sort by the search key */
-	g_string_append_printf (key, "%05x:", gs_app_get_match_value (app));
-
-	/* sort by kudos */
-	g_string_append_printf (key, "%03u:", gs_app_get_kudos_percentage (app));
-
-	/* sort by length of description */
-	g_string_append_printf (key, "%03" G_GSIZE_FORMAT ":",
-				desc != NULL ? strlen (desc) : 0);
-
-	/* sort by number of screenshots */
-	ss = gs_app_get_screenshots (app);
-	g_string_append_printf (key, "%02u:", ss->len);
-
-	/* sort by install date */
-	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
-				G_MAXUINT64 - gs_app_get_install_date (app));
-
-	/* finally, sort by short name */
-	g_string_append (key, gs_app_get_name (app));
-
-	return g_string_free (key, FALSE);
-}
-
-static gint
-gs_search_page_sort_func (GtkListBoxRow *a,
-                          GtkListBoxRow *b,
-                          gpointer user_data)
-{
-	GsAppRow *ar;
-	GsAppRow *br;
-	g_autofree gchar *key1 = NULL;
-	g_autofree gchar *key2 = NULL;
-
-	if (!GS_IS_APP_ROW (a))
-		return 1;
-	if (!GS_IS_APP_ROW (b))
-		return -1;
-
-	/* compare the keys according to the algorithm above */
-	ar = GS_APP_ROW (a);
-	br = GS_APP_ROW (b);
-	key1 = gs_search_page_get_app_sort_key (gs_app_row_get_app (GS_APP_ROW (ar)));
-	key2 = gs_search_page_get_app_sort_key (gs_app_row_get_app (GS_APP_ROW (br)));
-	return g_strcmp0 (key2, key1);
-}
-
 static void
 gs_search_page_list_header_func (GtkListBoxRow *row,
                                  GtkListBoxRow *before,
@@ -455,9 +425,6 @@ gs_search_page_setup (GsPage *page,
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_search),
 				      gs_search_page_list_header_func,
 				      self, NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_search),
-				    gs_search_page_sort_func,
-				    self, NULL);
 	return TRUE;
 }
 

@@ -103,6 +103,50 @@ search_done_cb (GObject *source,
 	g_application_release (g_application_get_default ());
 }
 
+static gchar *
+gs_shell_search_provider_get_app_sort_key (GsApp *app)
+{
+	GString *key = g_string_sized_new (64);
+
+	/* sort available apps before installed ones */
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_AVAILABLE:
+		g_string_append (key, "9:");
+		break;
+	default:
+		g_string_append (key, "1:");
+		break;
+	}
+
+	/* sort apps before runtimes and extensions */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_DESKTOP:
+		g_string_append (key, "9:");
+		break;
+	default:
+		g_string_append (key, "1:");
+		break;
+	}
+
+	/* sort by the search key */
+	g_string_append_printf (key, "%05x:", gs_app_get_match_value (app));
+
+	/* tie-break with id */
+	g_string_append (key, gs_app_get_unique_id (app));
+
+	return g_string_free (key, FALSE);
+}
+
+static gboolean
+gs_shell_search_provider_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	g_autofree gchar *key1 = NULL;
+	g_autofree gchar *key2 = NULL;
+	key1 = gs_shell_search_provider_get_app_sort_key (app1);
+	key2 = gs_shell_search_provider_get_app_sort_key (app2);
+	return g_strcmp0 (key2, key1);
+}
+
 static void
 execute_search (GsShellSearchProvider  *self,
 		GDBusMethodInvocation  *invocation,
@@ -134,6 +178,7 @@ execute_search (GsShellSearchProvider  *self,
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       string,
 				       GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
+				       gs_shell_search_provider_sort_cb, self,
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 				       GS_PLUGIN_FAILURE_FLAGS_NONE,
 				       self->cancellable,

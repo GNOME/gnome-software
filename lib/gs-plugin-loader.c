@@ -193,6 +193,8 @@ typedef struct {
 	GsPluginAction			 action;
 	gboolean			 anything_ran;
 	guint				 max_results;
+	GsAppListSortFunc		 sort_func;
+	gpointer			 sort_func_data;
 } GsPluginLoaderJob;
 
 static GsPluginLoaderJob *
@@ -2085,10 +2087,14 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 		}
 	}
 
+	/* fallback to the match value */
+	if (job->sort_func == NULL)
+		job->sort_func = gs_plugin_loader_app_sort_match_value_cb;
+
 	/* too many results */
 	if (job->max_results > 0 &&
 	    gs_app_list_length (job->list) > job->max_results) {
-		gs_app_list_sort (job->list, gs_plugin_loader_app_sort_match_value_cb, NULL);
+		gs_app_list_sort (job->list, job->sort_func, job->sort_func_data);
 		g_debug ("truncating results to %u from %u",
 			 job->max_results, gs_app_list_length (job->list));
 		gs_app_list_truncate (job->list, job->max_results);
@@ -2111,6 +2117,9 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	/* filter duplicates with priority */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
 	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_NONE);
+
+	/* sort these again as the refine may have added useful metadata */
+	gs_app_list_sort (job->list, job->sort_func, job->sort_func_data);
 
 	/* too many */
 	if (gs_app_list_length (job->list) > 500) {
@@ -2150,6 +2159,8 @@ void
 gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 			       const gchar *value,
 			       guint max_results,
+			       GsAppListSortFunc sort_func,
+			       gpointer sort_func_data,
 			       GsPluginRefineFlags refine_flags,
 			       GsPluginFailureFlags failure_flags,
 			       GCancellable *cancellable,
@@ -2168,6 +2179,8 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	job->failure_flags = failure_flags;
 	job->list = gs_app_list_new ();
 	job->max_results = max_results;
+	job->sort_func = sort_func;
+	job->sort_func_data = sort_func_data;
 	job->value = g_strdup (value);
 	job->values = as_utils_search_tokenize (job->value);
 	job->action = GS_PLUGIN_ACTION_SEARCH;

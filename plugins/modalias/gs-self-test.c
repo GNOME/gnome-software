@@ -36,6 +36,7 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	list = gs_plugin_loader_search (plugin_loader,
 					"colorhug2", 0,
+					NULL, NULL,
 					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					NULL,
