@@ -56,20 +56,8 @@ typedef enum {
 	GS_APP_LIST_FILTER_FLAG_LAST
 } GsAppListFilterFlags;
 
-typedef gboolean (*GsAppListFilterFunc)		(GsApp		*app,
-						 gpointer	 user_data);
-typedef gboolean (*GsAppListSortFunc)		(GsApp		*app1,
-						 GsApp		*app2,
-						 gpointer	 user_data);
-
 GsAppList	*gs_app_list_copy		(GsAppList	*list);
 guint		 gs_app_list_get_size_peak	(GsAppList	*list);
-void		 gs_app_list_filter		(GsAppList	*list,
-						 GsAppListFilterFunc func,
-						 gpointer	 user_data);
-void		 gs_app_list_sort		(GsAppList	*list,
-						 GsAppListSortFunc func,
-						 gpointer	 user_data);
 void		 gs_app_list_filter_duplicates	(GsAppList	*list,
 						 GsAppListFilterFlags flags);
 void		 gs_app_list_randomize		(GsAppList	*list);
