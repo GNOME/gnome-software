@@ -191,6 +191,7 @@ main (int argc, char **argv)
 	AsProfile *profile = NULL;
 	GOptionContext *context;
 	gboolean prefer_local = FALSE;
+	gboolean profile_enable = FALSE;
 	gboolean ret;
 	gboolean show_results = FALSE;
 	gboolean verbose = FALSE;
@@ -229,6 +230,8 @@ main (int argc, char **argv)
 		  "Only load specific plugins", NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  "Show verbose debugging information", NULL },
+		{ "profile", '\0', 0, G_OPTION_ARG_NONE, &profile_enable,
+		  "Show profiling information", NULL },
 		{ NULL}
 	};
 
@@ -515,7 +518,7 @@ main (int argc, char **argv)
 			gs_cmd_show_results_categories (categories);
 	}
 out:
-	if (profile != NULL)
+	if (profile_enable)
 		as_profile_dump (profile);
 	g_option_context_free (context);
 	return status;
