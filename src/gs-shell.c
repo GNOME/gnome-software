@@ -799,27 +799,16 @@ static gchar *
 gs_shell_get_title_from_origin (GsApp *app)
 {
 	/* get a title, falling back */
-	if (gs_app_get_origin_ui (app) != NULL &&
-	    gs_app_get_origin_hostname (app) != NULL) {
-		/* TRANSLATORS: this is part of the in-app notification,
-		 * where the first %s is a possibly multi-word localised distro
-		 * e.g. 'Fedora Project" and the second %s is the truncated
-		 * hostname, e.g. 'alt.fedoraproject.org' */
-		return g_strdup_printf (_("“%s” [%s]"),
-					gs_app_get_origin_ui (app),
-					gs_app_get_origin_hostname (app));
-	} else if (gs_app_get_origin_ui (app) != NULL) {
-		/* TRANSLATORS: this is part of the in-app notification,
-		 * where the %s is a possibly multi-word localised distro
-		 * e.g. 'Fedora Project" */
-		return g_strdup_printf (_("“%s”"),
-					gs_app_get_origin_ui (app));
-	} else if (gs_app_get_origin_hostname (app) != NULL) {
+	if (gs_app_get_origin_hostname (app) != NULL) {
 		/* TRANSLATORS: this is part of the in-app notification,
 		 * where the %s is the truncated hostname, e.g.
 		 * 'alt.fedoraproject.org' */
-		return g_strdup_printf (_("“%s”"),
-					gs_app_get_origin_hostname (app));
+		return g_strdup_printf (_("“%s”"), gs_app_get_origin_hostname (app));
+	}
+	if (gs_app_get_origin (app) != NULL) {
+		/* TRANSLATORS: this is part of the in-app notification,
+		 * where the %s is the origin id, e.g. 'fedora' */
+		return g_strdup_printf (_("“%s”"), gs_app_get_origin (app));
 	}
 	return g_strdup_printf ("“%s”", gs_app_get_id (app));
 }

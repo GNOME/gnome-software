@@ -253,7 +253,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
 	gs_app_set_origin_hostname (priv->cached_origin, priv->download_uri);
-	gs_app_set_origin_ui (priv->cached_origin, "Linux Vendor Firmware Project");
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */

@@ -134,7 +134,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
-	gs_app_set_origin_ui (priv->cached_origin, "Fedora Project PkgDb");
 	gs_app_set_origin_hostname (priv->cached_origin,
 				    FEDORA_PKGDB_COLLECTIONS_API_URI);
 
@@ -431,7 +430,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		gs_app_set_origin_ui (app, distro_info->name);
 		gs_app_add_icon (app, ic);
 		gs_app_set_management_plugin (app, "packagekit");
 

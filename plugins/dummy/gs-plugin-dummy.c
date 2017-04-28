@@ -82,7 +82,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_origin_hostname (priv->cached_origin, "http://www.bbc.co.uk/");
-	gs_app_set_origin_ui (priv->cached_origin, "Dummy Repo");
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
@@ -720,7 +719,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_size_installed (app, 256 * 1024 * 1024);
 	gs_app_set_size_download (app, 1024 * 1024 * 1024);
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
-	gs_app_set_origin_ui (app, "Dummy");
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"

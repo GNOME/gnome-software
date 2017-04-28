@@ -215,7 +215,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
   gs_app_set_version (app, "1.2.3");
   gs_app_set_size_installed (app, 2 * 1024 * 1024);
   gs_app_set_size_download (app, 3 * 1024 * 1024);
-  gs_app_set_origin_ui (app, "The example plugin");
+  gs_app_set_origin_hostname (app, "http://www.teaching-example.org/");
   gs_app_add_category (app, "Game");
   gs_app_add_category (app, "ActionGame");
   gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);

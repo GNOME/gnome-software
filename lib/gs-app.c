@@ -86,7 +86,6 @@ struct _GsApp
 	GsAppQuality		 license_quality;
 	gchar			**menu_path;
 	gchar			*origin;
-	gchar			*origin_ui;
 	gchar			*origin_hostname;
 	gchar			*update_version;
 	gchar			*update_version_ui;
@@ -501,8 +500,6 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "branch", app->branch);
 	if (app->origin != NULL && app->origin[0] != '\0')
 		gs_app_kv_lpad (str, "origin", app->origin);
-	if (app->origin_ui != NULL && app->origin_ui[0] != '\0')
-		gs_app_kv_lpad (str, "origin-ui", app->origin_ui);
 	if (app->origin_hostname != NULL && app->origin_hostname[0] != '\0')
 		gs_app_kv_lpad (str, "origin-hostname", app->origin_hostname);
 	if (app->rating != -1)
@@ -2146,41 +2143,6 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 }
 
 /**
- * gs_app_get_origin_ui:
- * @app: a #GsApp
- *
- * Gets the UI-visible origin used to install the application, e.g. "Fedora".
- *
- * Returns: a string, or %NULL for unset
- *
- * Since: 3.22
- **/
-const gchar *
-gs_app_get_origin_ui (GsApp *app)
-{
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->origin_ui;
-}
-
-/**
- * gs_app_set_origin_ui:
- * @app: a #GsApp
- * @origin_ui: a string, or %NULL
- *
- * The origin is the original source of the application to show in the UI,
- * e.g. "Fedora"
- *
- * Since: 3.22
- **/
-void
-gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
-{
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
-	g_return_if_fail (GS_IS_APP (app));
-	_g_set_str (&app->origin_ui, origin_ui);
-}
-
-/**
  * gs_app_get_origin_hostname:
  * @app: a #GsApp
  *
@@ -3645,7 +3607,6 @@ gs_app_finalize (GObject *object)
 	g_free (app->license);
 	g_strfreev (app->menu_path);
 	g_free (app->origin);
-	g_free (app->origin_ui);
 	g_free (app->origin_hostname);
 	g_ptr_array_unref (app->sources);
 	g_ptr_array_unref (app->source_ids);

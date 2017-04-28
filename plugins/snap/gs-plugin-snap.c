@@ -268,10 +268,6 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 			gs_app_set_origin_hostname (app, "myapps.developer.ubuntu.com");
 		else if (origin_hostname != NULL)
 			gs_app_set_origin_hostname (app, origin_hostname);
-
-		/* derive this from the origin hosname */
-		if (g_strcmp0 (gs_app_get_origin_hostname (app), "myapps.developer.ubuntu.com") == 0)
-			gs_app_set_origin_ui (app, "The Ubuntu Store");
 	}
 
 	if (!from_search) {

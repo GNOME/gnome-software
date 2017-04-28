@@ -1239,49 +1239,6 @@ gs_flatpak_refresh (GsFlatpak *self,
 }
 
 static gboolean
-gs_plugin_refine_item_origin_ui (GsFlatpak *self, GsApp *app,
-				 GCancellable *cancellable,
-				 GError **error)
-{
-	const gchar *origin;
-	guint i;
-	g_autoptr(GPtrArray) xremotes = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* already set */
-	origin = gs_app_get_origin_ui (app);
-	if (origin != NULL)
-		return TRUE;
-
-	/* find list of remotes */
-	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "%s::refine-origin-ui",
-				  gs_flatpak_get_id (self));
-	g_assert (ptask != NULL);
-	xremotes = flatpak_installation_list_remotes (self->installation,
-						      cancellable,
-						      error);
-	if (xremotes == NULL) {
-		gs_plugin_flatpak_error_convert (error);
-		return FALSE;
-	}
-	for (i = 0; i < xremotes->len; i++) {
-		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
-		if (flatpak_remote_get_disabled (xremote))
-			continue;
-		if (g_strcmp0 (gs_app_get_origin (app),
-			       flatpak_remote_get_name (xremote)) == 0) {
-			g_autofree gchar *title = NULL;
-			title = flatpak_remote_get_title (xremote);
-			gs_app_set_origin_ui (app, title);
-			break;
-		}
-	}
-
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 				       GCancellable *cancellable,
 				       GError **error)
@@ -2125,15 +2082,6 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		if (!gs_plugin_refine_item_size (self, app,
 						 cancellable, error)) {
 			g_prefix_error (error, "failed to get size: ");
-			return FALSE;
-		}
-	}
-
-	/* origin */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
-		if (!gs_plugin_refine_item_origin_ui (self, app,
-						      cancellable, error)) {
-			g_prefix_error (error, "failed to get origin: ");
 			return FALSE;
 		}
 	}
@@ -3002,7 +2950,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	g_autoptr(FlatpakRemote) xremote = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autofree gchar *origin_url = NULL;
-	g_autofree gchar *origin_title = NULL;
 	g_autofree gchar *ref_comment = NULL;
 	g_autofree gchar *ref_description = NULL;
 	g_autofree gchar *ref_homepage = NULL;
@@ -3130,7 +3077,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		gs_plugin_flatpak_error_convert (error);
 		return FALSE;
 	}
-	origin_title = flatpak_remote_get_title (xremote);
 	origin_url = flatpak_remote_get_url (xremote);
 	if (origin_url == NULL) {
 		g_set_error (error,
@@ -3142,7 +3088,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	}
 	gs_app_set_origin (app, remote_name);
 	gs_app_set_origin_hostname (app, origin_url);
-	gs_app_set_origin_ui (app, origin_title);
 
 	/* get the new appstream data (nonfatal for failure) */
 	if (!gs_flatpak_refresh_appstream_remote (self, remote_name,

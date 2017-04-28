@@ -178,9 +178,6 @@ void		 gs_app_set_menu_path		(GsApp		*app,
 const gchar	*gs_app_get_origin		(GsApp		*app);
 void		 gs_app_set_origin		(GsApp		*app,
 						 const gchar	*origin);
-const gchar	*gs_app_get_origin_ui		(GsApp		*app);
-void		 gs_app_set_origin_ui		(GsApp		*app,
-						 const gchar	*origin_ui);
 const gchar	*gs_app_get_origin_hostname	(GsApp		*app);
 void		 gs_app_set_origin_hostname	(GsApp		*app,
 						 const gchar	*origin_hostname);
