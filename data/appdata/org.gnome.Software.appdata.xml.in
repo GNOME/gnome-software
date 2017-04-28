@@ -46,6 +46,31 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-04-28" version="3.25.1">
+      <description>
+        <p>
+          This is an unstable release in the 3.23 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Truncate the search results if there are a large number</li>
+          <li>Use the complete source as a search keyword</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Fall back to a stock icon for hardware drivers</li>
+          <li>Fix a crash when removing an addon</li>
+          <li>Fix a critical warning in the shell search provider</li>
+          <li>Fix popular-overrides to show the correct applications</li>
+          <li>Fix various failures to read from snapd</li>
+          <li>Make offline updates work when online updates are available</li>
+          <li>Never include the size of the runtime in the installed size</li>
+          <li>Respect the install preference when for flatpakref files</li>
+          <li>Use the developer name in preference to the project group</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-03-13" version="3.23.92">
       <description>
         <p>

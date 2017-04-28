@@ -15,7 +15,7 @@ git push
 
 4. Create tarball
 
-make distcheck
+ninja-build dist
 
 5. Upload tarballs:
 
@@ -26,7 +26,7 @@ scp *.tar.xz rhughes@master.gnome.org:
 ssh rhughes@master.gnome.org
 ftpadmin install gnome-software-*.tar.xz
 
-7. Do post release version bump in configure.ac and meson.build
+7. Do post release version bump in meson.build
 
 8. Commit trivial changes:
 
