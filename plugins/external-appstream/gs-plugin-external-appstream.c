@@ -225,6 +225,13 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
 
+	/* check we want system-wide */
+	if (!g_settings_get_boolean (priv->settings,
+				     "external-appstream-system-wide")) {
+		g_debug ("not system-wide for external appstream");
+		return TRUE;
+	}
+
 	appstream_urls = g_settings_get_strv (priv->settings,
 					      "external-appstream-urls");
 	for (i = 0; appstream_urls[i] != NULL; ++i) {

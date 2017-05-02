@@ -40,6 +40,7 @@ struct GsPluginData {
 	AsStore			*store;
 	GHashTable		*app_hash_old;
 	guint			 store_changed_id;
+	GSettings		*settings;
 };
 
 #define GS_PLUGIN_NUMBER_CHANGED_RELOAD	10
@@ -181,6 +182,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* need package name */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
+
+	/* require settings */
+	priv->settings = g_settings_new ("org.gnome.software");
 }
 
 void
@@ -192,6 +196,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	if (priv->app_hash_old != NULL)
 		g_hash_table_unref (priv->app_hash_old);
 	g_object_unref (priv->store);
+	g_object_unref (priv->settings);
 }
 
 /*
@@ -639,4 +644,80 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	return gs_appstream_add_featured (plugin, priv->store, list, cancellable,
 					  error);
+}
+
+static gboolean
+gs_plugin_appstream_refresh_url (GsPlugin *plugin,
+				 const gchar *url,
+				 guint cache_age,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	guint file_age;
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *fullpath = NULL;
+	g_autoptr(GFile) file = NULL;
+
+	/* check age */
+	basename = g_path_get_basename (url);
+	fullpath = g_build_filename (g_get_user_data_dir (),
+				     "app-info",
+				     "xmls",
+				     basename,
+				     NULL);
+	file = g_file_new_for_path (fullpath);
+	file_age = gs_utils_get_file_age (file);
+	if (file_age < cache_age) {
+		g_debug ("skipping %s: cache age is older than file", fullpath);
+		return TRUE;
+	}
+
+	/* download file */
+	return gs_plugin_download_file (plugin,
+					NULL, /* GsApp */
+					url,
+					fullpath,
+					cancellable,
+					error);
+}
+
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_auto(GStrv) appstream_urls = NULL;
+
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
+		return TRUE;
+
+	/* check we want per-user */
+	if (g_settings_get_boolean (priv->settings,
+				    "external-appstream-system-wide")) {
+		g_debug ("not per-user for external appstream");
+		return TRUE;
+	}
+	appstream_urls = g_settings_get_strv (priv->settings,
+					      "external-appstream-urls");
+	for (guint i = 0; appstream_urls[i] != NULL; ++i) {
+		g_autoptr(GError) local_error = NULL;
+		if (!g_str_has_prefix (appstream_urls[i], "https")) {
+			g_warning ("cannot use AppStream source %s: use https://",
+				   appstream_urls[i]);
+			continue;
+		}
+		if (!gs_plugin_appstream_refresh_url (plugin,
+						      appstream_urls[i],
+						      cache_age,
+						      cancellable,
+						      &local_error)) {
+			g_warning ("failed to update external AppStream file: %s",
+				   local_error->message);
+		}
+	}
+
+	return TRUE;
 }
