@@ -886,9 +886,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	/* set the origin */
-	tmp = gs_app_get_origin_ui (self->app);
-	if (tmp == NULL)
-		tmp = gs_app_get_origin_hostname (self->app);
+	tmp = gs_app_get_origin_hostname (self->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_origin (self->app);
 	if (tmp == NULL || tmp[0] == '\0') {
@@ -1456,7 +1454,7 @@ gs_shell_details_set_local_file (GsShellDetails *self, GFile *file)
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
 					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
@@ -1480,7 +1478,7 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
