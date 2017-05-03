@@ -332,9 +332,9 @@ GtkWidget *
 gs_upgrade_banner_new (void)
 {
 	GsUpgradeBanner *self;
-
-	self = g_object_new (GS_TYPE_UPGRADE_BANNER, NULL);
-
+	self = g_object_new (GS_TYPE_UPGRADE_BANNER,
+			     "vexpand", FALSE,
+			     NULL);
 	return GTK_WIDGET (self);
 }
 
