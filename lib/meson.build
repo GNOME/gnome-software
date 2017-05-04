@@ -82,7 +82,7 @@ executable(
   ],
   c_args : cargs,
   install : true,
-  install_dir : 'libexec'
+  install_dir : get_option('libexecdir')
 )
 
 if get_option('enable-tests')

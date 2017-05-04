@@ -110,7 +110,7 @@ executable(
   ],
   c_args : cargs,
   install : true,
-  install_dir : 'bin'
+  install_dir : get_option('bindir')
 )
 
 executable(
@@ -124,7 +124,7 @@ executable(
   ],
   c_args : cargs,
   install : true,
-  install_dir : 'libexec'
+  install_dir : get_option('libexecdir')
 )
 
 # no quoting
