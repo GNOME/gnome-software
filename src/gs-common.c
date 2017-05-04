@@ -401,8 +401,10 @@ gs_utils_widget_set_css_app (GsApp *app,
 
 	/* invalid */
 	css = gs_app_get_metadata_item (app, metadata_css);
-	if (css == NULL)
+	if (css == NULL) {
+		gs_utils_widget_set_css_simple (widget, css);
 		return;
+	}
 
 	/* replace any key colors */
 	css_str = g_string_new (css);
