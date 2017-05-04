@@ -52,6 +52,14 @@ app_state_changed_idle (gpointer user_data)
 	AtkObject *accessible;
 	g_autofree gchar *name = NULL;
 
+	/* update text */
+	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (tile->app));
+	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (tile->app));
+
+	/* perhaps set custom css */
+	gs_utils_widget_set_css_app (tile->app, GTK_WIDGET (tile),
+				     "GnomeSoftware::FeatureTile-css");
+
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	switch (gs_app_get_state (tile->app)) {
@@ -93,25 +101,22 @@ gs_feature_tile_set_app (GsAppTile *app_tile, GsApp *app)
 
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
-	if (tile->app)
+	if (tile->app != NULL)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
 
 	g_set_object (&tile->app, app);
-	if (!app)
+	if (app == NULL)
 		return;
 
 	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
 
 	g_signal_connect (tile->app, "notify::state",
 			  G_CALLBACK (app_state_changed), tile);
+	g_signal_connect (tile->app, "notify::name",
+			  G_CALLBACK (app_state_changed), tile);
+	g_signal_connect (tile->app, "notify::summary",
+			  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (tile->app, NULL, tile);
-
-	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
-	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
-
-	/* perhaps set custom css */
-	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
-				     "GnomeSoftware::FeatureTile-css");
 }
 
 static void
