@@ -1142,7 +1142,8 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 	if (quality <= app->name_quality)
 		return;
 	app->name_quality = quality;
-	_g_set_str (&app->name, name);
+	if (_g_set_str (&app->name, name))
+		g_object_notify (G_OBJECT (app), "name");
 }
 
 /**
@@ -1848,7 +1849,8 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 	if (quality <= app->summary_quality)
 		return;
 	app->summary_quality = quality;
-	_g_set_str (&app->summary, summary);
+	if (_g_set_str (&app->summary, summary))
+		g_object_notify (G_OBJECT (app), "summary");
 }
 
 /**
