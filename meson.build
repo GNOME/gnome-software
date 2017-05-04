@@ -12,7 +12,8 @@ conf.set_quoted('PACKAGE_VERSION', meson.project_version())
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-conf.set_quoted('GS_PLUGIN_API_VERSION', '11')
+gs_plugin_api_version = '11'
+conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
 # install docs
 install_data('README', install_dir : 'share/doc/gnome-software')
