@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 typedef enum {
 	GS_UTILS_CACHE_FLAG_NONE	= 0,
 	GS_UTILS_CACHE_FLAG_WRITEABLE	= 1 << 0,
+	GS_UTILS_CACHE_FLAG_USE_HASH	= 1 << 1,
 	/*< private >*/
 	GS_UTILS_CACHE_FLAG_LAST
 } GsUtilsCacheFlags;
@@ -55,7 +56,7 @@ gboolean	 gs_utils_unlink		(const gchar	*filename,
 gboolean	 gs_mkdir_parent		(const gchar	*path,
 						 GError		**error);
 gchar		*gs_utils_get_cache_filename	(const gchar	*kind,
-						 const gchar	*basename,
+						 const gchar	*resource,
 						 GsUtilsCacheFlags flags,
 						 GError		**error);
 gchar		*gs_utils_get_user_hash		(GError		**error);

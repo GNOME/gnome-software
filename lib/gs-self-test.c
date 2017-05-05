@@ -89,6 +89,33 @@ gs_os_release_func (void)
 }
 
 static void
+gs_utils_cache_func (void)
+{
+	g_autofree gchar *fn1 = NULL;
+	g_autofree gchar *fn2 = NULL;
+	g_autoptr(GError) error = NULL;
+
+	fn1 = gs_utils_get_cache_filename ("test",
+					   "http://www.foo.bar/baz",
+					   GS_UTILS_CACHE_FLAG_WRITEABLE,
+					   &error);
+	g_assert_no_error (error);
+	g_assert_cmpstr (fn1, !=, NULL);
+	g_assert (g_str_has_prefix (fn1, g_get_user_cache_dir ()));
+	g_assert (g_str_has_suffix (fn1, "test/baz"));
+
+	fn2 = gs_utils_get_cache_filename ("test",
+					   "http://www.foo.bar/baz",
+					   GS_UTILS_CACHE_FLAG_WRITEABLE |
+					   GS_UTILS_CACHE_FLAG_USE_HASH,
+					   &error);
+	g_assert_no_error (error);
+	g_assert_cmpstr (fn2, !=, NULL);
+	g_assert (g_str_has_prefix (fn2, g_get_user_cache_dir ()));
+	g_assert (g_str_has_suffix (fn2, "test/295099f59d12b3eb0b955325fcb699cd23792a89-baz"));
+}
+
+static void
 gs_utils_error_func (void)
 {
 	guint i;
@@ -521,6 +548,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/utils{url}", gs_utils_url_func);
 	g_test_add_func ("/gnome-software/lib/utils{wilson}", gs_utils_wilson_func);
 	g_test_add_func ("/gnome-software/lib/utils{error}", gs_utils_error_func);
+	g_test_add_func ("/gnome-software/lib/utils{cache}", gs_utils_cache_func);
 	g_test_add_func ("/gnome-software/lib/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/lib/app", gs_app_func);
 	g_test_add_func ("/gnome-software/lib/app{addons}", gs_app_addons_func);

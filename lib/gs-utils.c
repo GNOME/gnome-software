@@ -125,13 +125,16 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
 /**
  * gs_utils_get_cache_filename:
  * @kind: A cache kind, e.g. "firmware" or "screenshots/123x456"
- * @basename: A filename basename, e.g. "system.bin"
+ * @resource: A resource, e.g. "system.bin" or "http://foo.bar/baz.bin"
  * @flags: Some #GsUtilsCacheFlags, e.g. %GS_UTILS_CACHE_FLAG_WRITEABLE
  * @error: A #GError, or %NULL
  *
  * Returns a filename that points into the cache.
  * This may be per-system or per-user, the latter being more likely
  * when %GS_UTILS_CACHE_FLAG_WRITEABLE is specified in @flags.
+ *
+ * If %GS_UTILS_CACHE_FLAG_USE_HASH is set in @flags then the returned filename
+ * will contain the hashed version of @resource.
  *
  * If there is more than one match, the file that has been modified last is
  * returned.
@@ -140,15 +143,27 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
  **/
 gchar *
 gs_utils_get_cache_filename (const gchar *kind,
-			     const gchar *basename,
-			     GsUtilsCacheFlags flags, /* ignored */
+			     const gchar *resource,
+			     GsUtilsCacheFlags flags,
 			     GError **error)
 {
+	g_autofree gchar *basename = NULL;
 	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *vername = NULL;
 	g_auto(GStrv) version = g_strsplit (VERSION, ".", 3);
 	g_autoptr(GFile) cachedir_file = NULL;
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
+
+	/* get basename */
+	basename = g_path_get_basename (resource);
+	if (flags & GS_UTILS_CACHE_FLAG_USE_HASH) {
+		g_autofree gchar *basename_tmp = g_path_get_basename (resource);
+		g_autofree gchar *hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1,
+									resource, -1);
+		basename = g_strdup_printf ("%s-%s", hash, basename_tmp);
+	} else {
+		basename = g_path_get_basename (resource);
+	}
 
 	/* not writable, so try the system cache first */
 	if ((flags & GS_UTILS_CACHE_FLAG_WRITEABLE) == 0) {
