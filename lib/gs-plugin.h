@@ -105,6 +105,11 @@ gboolean	 gs_plugin_download_file		(GsPlugin	*plugin,
 							 const gchar	*filename,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gchar		*gs_plugin_download_rewrite_resource	(GsPlugin	*plugin,
+							 const gchar	*resource,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);
 GsApp		*gs_plugin_cache_lookup			(GsPlugin	*plugin,

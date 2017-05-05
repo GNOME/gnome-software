@@ -138,6 +138,34 @@ gs_utils_error_func (void)
 }
 
 static void
+gs_plugin_download_rewrite_func (void)
+{
+	g_autofree gchar *css = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPlugin) plugin = NULL;
+	const gchar *resource = "background:\n"
+				" url('file://" DATADIR "/gnome-software/featured-maps.png')\n"
+				" url('file://" DATADIR "/gnome-software/featured-maps-bg.png')\n"
+				" bottom center / contain no-repeat;\n";
+
+	/* only when installed */
+	if (!g_file_test (DATADIR "/gnome-software/featured-maps.png", G_FILE_TEST_EXISTS)) {
+		g_test_skip ("not installed");
+		return;
+	}
+
+	/* test rewrite */
+	plugin = gs_plugin_new ();
+	gs_plugin_set_name (plugin, "self-test");
+	css = gs_plugin_download_rewrite_resource (plugin,
+						   resource,
+						   NULL,
+						   &error);
+	g_assert_no_error (error);
+	g_assert (css != NULL);
+}
+
+static void
 gs_plugin_global_cache_func (void)
 {
 	const gchar *unique_id;
@@ -586,6 +614,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
+	g_test_add_func ("/gnome-software/lib/plugin{download-rewrite}", gs_plugin_download_rewrite_func);
 	g_test_add_func ("/gnome-software/lib/plugin{global-cache}", gs_plugin_global_cache_func);
 	g_test_add_func ("/gnome-software/lib/auth{secret}", gs_auth_secret_func);
 

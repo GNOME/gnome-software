@@ -46,6 +46,7 @@
 
 #include <gio/gdesktopappinfo.h>
 #include <gdk/gdk.h>
+#include <string.h>
 
 #ifdef USE_VALGRIND
 #include <valgrind.h>
@@ -1328,6 +1329,108 @@ gs_plugin_download_file (GsPlugin *plugin,
 		return FALSE;
 	}
 	return TRUE;
+}
+
+static gchar *
+gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
+					 const gchar *uri,
+					 GCancellable *cancellable,
+					 GError **error)
+{
+	g_autofree gchar *cachefn = NULL;
+
+	/* local files */
+	if (g_str_has_prefix (uri, "/"))
+		return g_strdup (uri);
+	if (g_str_has_prefix (uri, "file://"))
+		return g_strdup (uri + 7);
+
+	/* get cache location */
+	cachefn = gs_utils_get_cache_filename ("cssresource", uri,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE |
+					       GS_UTILS_CACHE_FLAG_USE_HASH,
+					       error);
+	if (cachefn == NULL)
+		return NULL;
+
+	/* already exists */
+	if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
+		return g_steal_pointer (&cachefn);
+
+	/* download */
+	if (!gs_plugin_download_file (plugin,
+				      NULL, /* GsApp */
+				      uri,
+				      cachefn,
+				      cancellable,
+				      error)) {
+		return NULL;
+	}
+	return g_steal_pointer (&cachefn);
+}
+
+/**
+ * gs_plugin_download_rewrite_resource:
+ * @plugin: a #GsPlugin
+ * @resource: the CSS resource
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Downloads remote assets and rewrites a CSS resource to use cached local URIs.
+ *
+ * Returns: %TRUE for success
+ *
+ * Since: 3.26
+ **/
+gchar *
+gs_plugin_download_rewrite_resource (GsPlugin *plugin,
+				     const gchar *resource,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	guint start = 0;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+	g_return_val_if_fail (resource != NULL, NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	/* look in string for any url() links */
+	for (guint i = 0; resource[i] != '\0'; i++) {
+		if (i > 4 && strncmp (resource + i - 4, "url(", 4) == 0) {
+			start = i;
+			continue;
+		}
+		if (start == 0) {
+			g_string_append_c (str, resource[i]);
+			continue;
+		}
+		if (resource[i] == ')') {
+			guint len;
+			g_autofree gchar *cachefn = NULL;
+			g_autofree gchar *uri = NULL;
+
+			/* remove optional single quotes */
+			if (resource[start] == '\'' || resource[start] == '"')
+				start++;
+			len = i - start;
+			if (i > 0 && (resource[i - 1] == '\'' || resource[i - 1] == '"'))
+				len--;
+			uri = g_strndup (resource + start, len);
+
+			/* download them to per-user cache */
+			cachefn = gs_plugin_download_rewrite_resource_uri (plugin,
+									   uri,
+									   cancellable,
+									   error);
+			if (cachefn == NULL)
+				return NULL;
+			g_string_append_printf (str, "'%s'", cachefn);
+			g_string_append_c (str, resource[i]);
+			start = 0;
+		}
+	}
+	return g_strdup (str->str);
 }
 
 /**
