@@ -134,6 +134,28 @@ gs_plugin_status_to_string (GsPluginStatus status)
 		return "removing";
 	return "unknown";
 }
+
+/**
+ * gs_plugin_set_name:
+ * @plugin: a #GsPlugin
+ * @name: a plugin name
+ *
+ * Sets the name of the plugin.
+ *
+ * Plugins are not required to set the plugin name as it is automatically set
+ * from the `.so` filename.
+ *
+ * Since: 3.26
+ **/
+void
+gs_plugin_set_name (GsPlugin *plugin, const gchar *name)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	if (priv->name != NULL)
+		g_free (priv->name);
+	priv->name = g_strdup (name);
+}
+
 /**
  * gs_plugin_create:
  * @filename: an absolute filename
@@ -167,7 +189,6 @@ gs_plugin_create (const gchar *filename, GError **error)
 	/* create new plugin */
 	plugin = gs_plugin_new ();
 	priv = gs_plugin_get_instance_private (plugin);
-	priv->name = g_strdup (basename + 13);
 	priv->module = g_module_open (filename, 0);
 	if (priv->module == NULL) {
 		g_set_error (error,
@@ -177,6 +198,7 @@ gs_plugin_create (const gchar *filename, GError **error)
 			     filename, g_module_error ());
 		return NULL;
 	}
+	gs_plugin_set_name (plugin, basename + 13);
 	return plugin;
 }
 

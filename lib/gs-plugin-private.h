@@ -49,6 +49,8 @@ void		 gs_plugin_set_order			(GsPlugin	*plugin,
 guint		 gs_plugin_get_priority			(GsPlugin	*plugin);
 void		 gs_plugin_set_priority			(GsPlugin	*plugin,
 							 guint		 priority);
+void		 gs_plugin_set_name			(GsPlugin	*plugin,
+							 const gchar	*name);
 void		 gs_plugin_set_locale			(GsPlugin	*plugin,
 							 const gchar	*locale);
 void		 gs_plugin_set_language			(GsPlugin	*plugin,
