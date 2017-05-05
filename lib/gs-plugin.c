@@ -1284,6 +1284,13 @@ gs_plugin_download_file (GsPlugin *plugin,
 	/* remote */
 	g_debug ("downloading %s to %s from plugin %s", uri, filename, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
+	if (msg == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
+			     "failed to parse URI %s", uri);
+		return FALSE;
+	}
 	if (app != NULL) {
 		helper.plugin = plugin;
 		helper.app = app;
