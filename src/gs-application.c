@@ -166,35 +166,6 @@ gs_application_initialize_plugins (GsApplication *app)
 
 }
 
-static gboolean
-gs_application_dbus_register (GApplication    *application,
-                              GDBusConnection *connection,
-                              const gchar     *object_path,
-                              GError         **error)
-{
-	GsApplication *app = GS_APPLICATION (application);
-
-	gs_application_initialize_plugins (app);
-	app->search_provider = gs_shell_search_provider_new ();
-	gs_shell_search_provider_setup (app->search_provider,
-					app->plugin_loader);
-
-	return gs_shell_search_provider_register (app->search_provider, connection, error);
-}
-
-static void
-gs_application_dbus_unregister (GApplication    *application,
-                                GDBusConnection *connection,
-                                const gchar     *object_path)
-{
-	GsApplication *app = GS_APPLICATION (application);
-
-	if (app->search_provider != NULL) {
-		gs_shell_search_provider_unregister (app->search_provider);
-		g_clear_object (&app->search_provider);
-	}
-}
-
 static void
 gs_application_show_first_run_dialog (GsApplication *app)
 {
@@ -766,6 +737,22 @@ gs_application_settings_changed_cb (GApplication *self,
 }
 
 static void
+gs_application_setup_search_provider (GsApplication *app)
+{
+	GDBusConnection *connection;
+	g_autoptr(GError) error = NULL;
+
+	gs_application_initialize_plugins (app);
+	app->search_provider = gs_shell_search_provider_new ();
+	gs_shell_search_provider_setup (app->search_provider, app->plugin_loader);
+
+	connection = g_application_get_dbus_connection (G_APPLICATION (app));
+	if (!gs_shell_search_provider_register (app->search_provider, connection,
+						&error))
+		g_warning ("Could not register search provider: %s", error->message);
+}
+
+static void
 gs_application_startup (GApplication *application)
 {
 	GSettings *settings;
@@ -774,6 +761,8 @@ gs_application_startup (GApplication *application)
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
 					 actions, G_N_ELEMENTS (actions),
 					 application);
+
+	gs_application_setup_search_provider (GS_APPLICATION (application));
 
 #ifdef HAVE_PACKAGEKIT
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
@@ -833,6 +822,7 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
+	g_clear_object (&app->search_provider);
 #ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
 #endif
@@ -964,8 +954,6 @@ gs_application_class_init (GsApplicationClass *class)
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
 	G_APPLICATION_CLASS (class)->handle_local_options = gs_application_handle_local_options;
 	G_APPLICATION_CLASS (class)->open = gs_application_open;
-	G_APPLICATION_CLASS (class)->dbus_register = gs_application_dbus_register;
-	G_APPLICATION_CLASS (class)->dbus_unregister = gs_application_dbus_unregister;
 }
 
 GsApplication *
