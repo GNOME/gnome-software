@@ -52,6 +52,10 @@ app_state_changed_idle (gpointer user_data)
 	AtkObject *accessible;
 	g_autofree gchar *name = NULL;
 
+	/* nothing set yet */
+	if (tile->app == NULL)
+		return G_SOURCE_REMOVE;
+
 	/* update text */
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (tile->app));
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (tile->app));

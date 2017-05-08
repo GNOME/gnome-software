@@ -61,6 +61,10 @@ app_state_changed_idle (gpointer user_data)
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 
+	/* nothing set yet */
+	if (tile->app == NULL)
+		return G_SOURCE_REMOVE;
+
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	switch (gs_app_get_state (tile->app)) {

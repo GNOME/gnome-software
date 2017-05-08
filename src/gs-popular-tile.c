@@ -186,7 +186,8 @@ gs_popular_tile_new (GsApp *app)
 	GsPopularTile *tile;
 
 	tile = g_object_new (GS_TYPE_POPULAR_TILE, NULL);
-	gs_app_tile_set_app (GS_APP_TILE (tile), app);
+	if (app != NULL)
+		gs_app_tile_set_app (GS_APP_TILE (tile), app);
 
 	return GTK_WIDGET (tile);
 }
