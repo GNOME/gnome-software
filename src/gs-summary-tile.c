@@ -91,7 +91,7 @@ app_state_changed_idle (gpointer user_data)
 
 	gtk_widget_set_visible (tile->eventbox, installed);
 
-	if (GTK_IS_ACCESSIBLE (accessible)) {
+	if (GTK_IS_ACCESSIBLE (accessible) && name != NULL) {
 		atk_object_set_name (accessible, name);
 		atk_object_set_description (accessible, gs_app_get_summary (tile->app));
 	}
