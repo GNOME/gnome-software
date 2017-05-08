@@ -302,9 +302,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
 				  plugin);
 
-	/* ensure the token cache */
-	as_store_load_search_cache (priv->store);
-
 	/* add search terms for apps not in the main source */
 	origins = gs_plugin_appstream_get_origins_hash (items);
 	for (i = 0; i < items->len; i++) {
@@ -319,6 +316,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			as_app_add_keyword (app, NULL, tmp);
 		}
 	}
+
+	/* ensure the token cache */
+	as_store_load_search_cache (priv->store);
 
 	/* rely on the store keeping itself updated */
 	return TRUE;
