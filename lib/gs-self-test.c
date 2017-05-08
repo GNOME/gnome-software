@@ -286,9 +286,40 @@ gs_plugin_func (void)
 	gs_app_set_priority (app, 50);
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 3);
-	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/bar/*/*/e/*");
+	g_object_unref (list);
+
+	/* respect priority (using name and version) when deduplicating */
+	list = gs_app_list_new ();
+	app = gs_app_new ("e");
+	gs_app_add_source (app, "foo");
+	gs_app_set_version (app, "1.2.3");
+	gs_app_set_unique_id (app, "user/foo/repo/*/*/*");
+	gs_app_list_add (list, app);
+	gs_app_set_priority (app, 0);
+	g_object_unref (app);
+	app = gs_app_new ("e");
+	gs_app_add_source (app, "foo");
+	gs_app_set_version (app, "1.2.3");
+	gs_app_set_unique_id (app, "user/foo/repo-security/*/*/*");
+	gs_app_list_add (list, app);
+	gs_app_set_priority (app, 99);
+	g_object_unref (app);
+	app = gs_app_new ("e");
+	gs_app_add_source (app, "foo");
+	gs_app_set_version (app, "1.2.3");
+	gs_app_set_unique_id (app, "user/foo/repo-universe/*/*/*");
+	gs_app_list_add (list, app);
+	gs_app_set_priority (app, 50);
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list), ==, 3);
+	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID |
+					     GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
+					     GS_APP_LIST_FILTER_FLAG_KEY_VERSION);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/foo/repo-security/*/*/*");
 	g_object_unref (list);
 
 	/* use globs when adding */

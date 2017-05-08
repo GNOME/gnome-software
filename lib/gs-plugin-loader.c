@@ -1823,7 +1823,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 
 	/* filter duplicates with priority */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (job->list), (GDestroyNotify) g_object_unref);
@@ -1914,7 +1914,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 
 	/* filter duplicates with priority */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (job->list), (GDestroyNotify) g_object_unref);
@@ -2114,9 +2114,12 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_app_list_filter (job->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (job->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 
-	/* filter duplicates with priority */
+	/* filter duplicates with priority, taking into account the source name
+	 * & version, so we combine available updates with the installed app */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_NONE);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID |
+						  GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
+						  GS_APP_LIST_FILTER_FLAG_KEY_VERSION);
 
 	/* sort these again as the refine may have added useful metadata */
 	gs_app_list_sort (job->list, job->sort_func, job->sort_func_data);
@@ -2553,7 +2556,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 
 	/* filter duplicates with priority */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 
 	/* sort, just in case the UI doesn't do this */
 	gs_app_list_sort (job->list, gs_plugin_loader_app_sort_name_cb, NULL);
@@ -4523,7 +4526,7 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 
 	/* check the apps have an icon set */
 	for (guint j = 0; j < gs_app_list_length (job->list); j++) {
@@ -4674,7 +4677,7 @@ gs_plugin_loader_url_to_app_thread_cb (GTask *task,
 	/* filter package list */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_is_valid, job);
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
 
 	/* success */
 	if (gs_app_list_length (job->list) != 1) {
