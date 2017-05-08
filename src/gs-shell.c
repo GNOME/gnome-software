@@ -1617,6 +1617,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
+	GtkStyleContext *style_context;
 	GsPage *page;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
@@ -1644,6 +1645,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* fix up the header bar */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
 	if (gs_utils_is_current_desktop ("Unity")) {
+		style_context = gtk_widget_get_style_context (widget);
+		gtk_style_context_remove_class (style_context, GTK_STYLE_CLASS_TITLEBAR);
+		gtk_style_context_add_class (style_context, GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
 		gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (widget), "");
 	} else {
 		g_object_ref (widget);
