@@ -33,6 +33,7 @@ G_DECLARE_FINAL_TYPE (GsShellSearchProvider, gs_shell_search_provider, GS, SHELL
 gboolean		 gs_shell_search_provider_register	(GsShellSearchProvider	 *self,
 								 GDBusConnection	 *connection,
 								 GError			**error);
+void			 gs_shell_search_provider_unregister	(GsShellSearchProvider	 *self);
 GsShellSearchProvider	*gs_shell_search_provider_new		(void);
 void			 gs_shell_search_provider_setup		(GsShellSearchProvider	 *provider,
 								 GsPluginLoader		 *loader);

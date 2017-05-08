@@ -316,6 +316,12 @@ gs_shell_search_provider_register (GsShellSearchProvider *self,
 	                                         "/org/gnome/Software/SearchProvider", error);
 }
 
+void
+gs_shell_search_provider_unregister (GsShellSearchProvider *self)
+{
+	g_dbus_interface_skeleton_unexport (G_DBUS_INTERFACE_SKELETON (self->skeleton));
+}
+
 static void
 search_provider_dispose (GObject *obj)
 {
