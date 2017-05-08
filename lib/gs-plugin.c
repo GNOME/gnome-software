@@ -47,7 +47,9 @@
 #include <gio/gdesktopappinfo.h>
 #include <gdk/gdk.h>
 
+#ifdef USE_VALGRIND
 #include <valgrind.h>
+#endif
 
 #include "gs-app-list-private.h"
 #include "gs-os-release.h"

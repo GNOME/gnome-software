@@ -99,7 +99,14 @@ libm = cc.find_library('libm', required: false)
 libsecret = dependency('libsecret-1')
 libsoup = dependency('libsoup-2.4', version : '>= 2.51.92')
 sqlite3 = dependency('sqlite3')
-valgrind = dependency('valgrind')
+
+if get_option('enable-valgrind')
+  valgrind = dependency('valgrind')
+  conf.set('USE_VALGRIND', 1)
+else
+  message('Valgrind integration disabled')
+  valgrind = []
+endif
 
 if get_option('enable-gnome-desktop')
   gnome_desktop = dependency('gnome-desktop-3.0', version : '>= 3.17.92')
