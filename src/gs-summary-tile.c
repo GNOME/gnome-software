@@ -129,6 +129,10 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 
 	g_signal_connect (tile->app, "notify::state",
 			  G_CALLBACK (app_state_changed), tile);
+	g_signal_connect (tile->app, "notify::name",
+			  G_CALLBACK (app_state_changed), tile);
+	g_signal_connect (tile->app, "notify::summary",
+			  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (tile->app, NULL, tile);
 
 	pixbuf = gs_app_get_pixbuf (app);
