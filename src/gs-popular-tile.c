@@ -128,7 +128,13 @@ gs_popular_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
 				     "GnomeSoftware::PopularTile-css");
 
-	gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), gs_app_get_pixbuf (tile->app));
+	if (gs_app_get_pixbuf (tile->app) != NULL) {
+		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), gs_app_get_pixbuf (tile->app));
+	} else {
+		gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
+					      "application-x-executable",
+					      GTK_ICON_SIZE_DIALOG);
+	}
 
 	gtk_label_set_label (GTK_LABEL (tile->label), gs_app_get_name (app));
 }

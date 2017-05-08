@@ -136,8 +136,13 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	app_state_changed (tile->app, NULL, tile);
 
 	pixbuf = gs_app_get_pixbuf (app);
-	if (pixbuf != NULL)
+	if (pixbuf != NULL) {
 		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
+	} else {
+		gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
+					      "application-x-executable",
+					      GTK_ICON_SIZE_DIALOG);
+	}
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
 
 	/* perhaps set custom css */
