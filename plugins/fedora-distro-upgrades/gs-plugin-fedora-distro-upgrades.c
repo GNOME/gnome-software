@@ -33,18 +33,20 @@ struct GsPluginData {
 	gchar		*os_name;
 	guint64		 os_version;
 	GsApp		*cached_origin;
+	GSettings	*settings;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as we're not Fedora", gs_plugin_get_name (plugin));
 		return;
 	}
+	priv->settings = g_settings_new ("org.gnome.software");
 }
 
 void
@@ -55,6 +57,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->cachefn_monitor);
 	if (priv->cached_origin != NULL)
 		g_object_unref (priv->cached_origin);
+	if (priv->settings != NULL)
+		g_object_unref (priv->settings);
 	g_free (priv->os_name);
 	g_free (priv->cachefn);
 }
@@ -345,7 +349,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	guint i;
 	g_autofree gchar *data = NULL;
 	g_autoptr(GPtrArray) distros = NULL;
-	g_autoptr(GSettings) settings = NULL;
 
 	/* just ensure there is any data, no matter how old */
 	if (!gs_plugin_fedora_distro_upgrades_refresh (plugin,
@@ -361,7 +364,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	}
 
 	/* parse data */
-	settings = g_settings_new ("org.gnome.software");
 	distros = parse_pkgdb_collections_data (data, (gssize) len, error);
 	if (distros == NULL)
 		return FALSE;
@@ -387,7 +389,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			continue;
 
 		/* only interested in non-devel distros */
-		if (!g_settings_get_boolean (settings, "show-upgrade-prerelease")) {
+		if (!g_settings_get_boolean (priv->settings, "show-upgrade-prerelease")) {
 			if (distro_info->status == DISTRO_STATUS_DEVEL)
 				continue;
 		}
