@@ -249,6 +249,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	}
 
 	/* add the origin as a keyword */
+	apps = as_store_get_apps (store);
 	for (i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 		g_debug ("adding keyword '%s' to %s",
@@ -274,7 +275,6 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		default_branch = flatpak_remote_get_default_branch (xremote);
 
 	/* get all the apps and fix them up */
-	apps = as_store_get_apps (store);
 	app_filtered = g_ptr_array_new ();
 	for (i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
