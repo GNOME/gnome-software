@@ -338,6 +338,98 @@ sort_distros_cb (gconstpointer a, gconstpointer b)
 	return 0;
 }
 
+static GsApp *
+gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distro_info)
+{
+	g_autofree gchar *app_id = NULL;
+	g_autofree gchar *app_version = NULL;
+	g_autofree gchar *background = NULL;
+	g_autofree gchar *cache_key = NULL;
+	g_autofree gchar *css = NULL;
+	g_autofree gchar *url = NULL;
+	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* search in the cache */
+	cache_key = g_strdup_printf ("release-%u", distro_info->version);
+	app = gs_plugin_cache_lookup (plugin, cache_key);
+	if (app != NULL)
+		return app;
+
+	/* create app */
+	app_id = g_strdup_printf ("org.fedoraproject.release-%u",
+				  distro_info->version);
+	app_version = g_strdup_printf ("%u", distro_info->version);
+
+	/* icon from disk */
+	ic = as_icon_new ();
+	as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
+	as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
+
+	/* create */
+	app = gs_app_new (app_id);
+	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "Fedora Workstation");
+	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
+				"Fedora Workstation is a polished, "
+				"easy to use operating system for "
+				"laptop and desktop computers, with a "
+				"complete set of tools for developers "
+				"and makers of all kinds.");
+	gs_app_set_version (app, app_version);
+	gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
+	gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
+	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
+	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	gs_app_add_icon (app, ic);
+	gs_app_set_management_plugin (app, "packagekit");
+
+	/* show a Fedora magazine article for the release */
+	url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%u-workstation",
+			       distro_info->version);
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
+
+	/* use a fancy background */
+	background = get_upgrade_css_background (distro_info->version);
+	css = g_strdup_printf ("background: %s;"
+			       "background-position: center;"
+			       "background-size: cover;",
+			       background);
+	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
+
+	/* save in the cache */
+	gs_plugin_cache_add (plugin, cache_key, app);
+
+	return g_steal_pointer (&app);
+}
+
+static gboolean
+gs_plugin_fedora_distro_upgrades_is_upgrade (GsPlugin *plugin, DistroInfo *distro_info)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* only interested in upgrades to the same distro */
+	if (g_strcmp0 (distro_info->name, priv->os_name) != 0)
+		return FALSE;
+
+	/* only interested in newer versions, but not more than N+2 */
+	if (distro_info->version <= priv->os_version ||
+	    distro_info->version > priv->os_version + 2)
+		return FALSE;
+
+	/* only interested in non-devel distros */
+	if (!g_settings_get_boolean (priv->settings, "show-upgrade-prerelease")) {
+		if (distro_info->status == DISTRO_STATUS_DEVEL)
+			return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,
@@ -346,7 +438,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gsize len;
-	guint i;
 	g_autofree gchar *data = NULL;
 	g_autoptr(GPtrArray) distros = NULL;
 
@@ -368,90 +459,19 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	if (distros == NULL)
 		return FALSE;
 	g_ptr_array_sort (distros, sort_distros_cb);
-	for (i = 0; i < distros->len; i++) {
+	for (guint i = 0; i < distros->len; i++) {
 		DistroInfo *distro_info = g_ptr_array_index (distros, i);
-		g_autofree gchar *app_id = NULL;
-		g_autofree gchar *app_version = NULL;
-		g_autofree gchar *background = NULL;
-		g_autofree gchar *cache_key = NULL;
-		g_autofree gchar *url = NULL;
-		g_autofree gchar *css = NULL;
-		g_autoptr(GsApp) app = NULL;
-		g_autoptr(AsIcon) ic = NULL;
 
-		/* only interested in upgrades to the same distro */
-		if (g_strcmp0 (distro_info->name, priv->os_name) != 0)
-			continue;
-
-		/* only interested in newer versions, but not more than N+2 */
-		if (distro_info->version <= priv->os_version ||
-		    distro_info->version > priv->os_version + 2)
-			continue;
-
-		/* only interested in non-devel distros */
-		if (!g_settings_get_boolean (priv->settings, "show-upgrade-prerelease")) {
-			if (distro_info->status == DISTRO_STATUS_DEVEL)
-				continue;
-		}
-
-		/* search in the cache */
-		cache_key = g_strdup_printf ("release-%u", distro_info->version);
-		app = gs_plugin_cache_lookup (plugin, cache_key);
-		if (app != NULL) {
+		/* upgrade */
+		if (gs_plugin_fedora_distro_upgrades_is_upgrade (plugin, distro_info)) {
+			g_autoptr(GsApp) app = NULL;
+			app = gs_plugin_fedora_distro_upgrades_create_app (plugin, distro_info);
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+					    /* TRANSLATORS: this is a title for Fedora distro upgrades */
+					    _("A major upgrade, with new features and added polish."));
 			gs_app_list_add (list, app);
-			continue;
 		}
-
-		app_id = g_strdup_printf ("org.fedoraproject.release-%u.upgrade",
-					  distro_info->version);
-		app_version = g_strdup_printf ("%u", distro_info->version);
-
-		/* icon from disk */
-		ic = as_icon_new ();
-		as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
-		as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
-
-		/* create */
-		app = gs_app_new (app_id);
-		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
-		                    /* TRANSLATORS: this is a title for Fedora distro upgrades */
-		                    _("A major upgrade, with new features and added polish."));
-		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
-		                        "Fedora Workstation is a polished, "
-		                        "easy to use operating system for "
-		                        "laptop and desktop computers, with a "
-		                        "complete set of tools for developers "
-		                        "and makers of all kinds.");
-		gs_app_set_version (app, app_version);
-		gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
-		gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
-		gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
-		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
-		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		gs_app_add_icon (app, ic);
-		gs_app_set_management_plugin (app, "packagekit");
-
-		/* show a Fedora magazine article for the release */
-		url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%u-workstation",
-		                       distro_info->version);
-		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
-
-		/* use a fancy background */
-		background = get_upgrade_css_background (distro_info->version);
-		css = g_strdup_printf ("background: %s;"
-				       "background-position: center;"
-				       "background-size: cover;",
-				       background);
-		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
-
-		gs_app_list_add (list, app);
-
-		/* save in the cache */
-		gs_plugin_cache_add (plugin, cache_key, app);
 	}
 
 	return TRUE;
