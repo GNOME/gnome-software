@@ -273,6 +273,8 @@ gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 GPtrArray	*gs_plugin_loader_get_events		(GsPluginLoader	*plugin_loader);
 GsPluginEvent	*gs_plugin_loader_get_event_by_id	(GsPluginLoader	*plugin_loader,
 							 const gchar	*unique_id);
+GsPluginEvent	*gs_plugin_loader_get_event_by_error	(GsPluginLoader	*plugin_loader,
+							 GsPluginError	 error_code);
 GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
 

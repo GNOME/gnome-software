@@ -1271,6 +1271,23 @@ gs_plugin_loader_get_event_by_id (GsPluginLoader *plugin_loader, const gchar *un
 	return g_hash_table_lookup (priv->events_by_id, unique_id);
 }
 
+GsPluginEvent *
+gs_plugin_loader_get_event_by_error (GsPluginLoader *plugin_loader, GsPluginError error_code)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
+	g_autoptr(GList) values = g_hash_table_get_values (priv->events_by_id);
+
+	/* find the one that matches the error code */
+	for (GList *l = values; l != NULL; l = l->next) {
+		GsPluginEvent *event = GS_PLUGIN_EVENT (l->data);
+		const GError *error = gs_plugin_event_get_error (event);
+		if (g_error_matches (error, GS_PLUGIN_ERROR, error_code))
+			return event;
+	}
+	return NULL;
+}
+
 static gboolean
 gs_plugin_loader_run_action (GsPluginLoaderJob *job,
 			     GCancellable *cancellable,
