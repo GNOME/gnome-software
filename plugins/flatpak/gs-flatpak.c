@@ -1166,6 +1166,8 @@ gs_flatpak_progress_cb (const gchar *status,
 			gpointer user_data)
 {
 	GsApp *app = GS_APP (user_data);
+	if (app == NULL)
+		return;
 	gs_app_set_progress (app, progress);
 }
 
@@ -1215,8 +1217,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 		g_autoptr(FlatpakInstalledRef) xref2 = NULL;
 
 		/* try to create a GsApp so we can do progress reporting */
-		app = gs_flatpak_create_installed (self, xref,
-						   NULL);
+		app = gs_flatpak_create_installed (self, xref, NULL);
 
 		/* fetch but do not deploy */
 		g_debug ("pulling update for %s",
