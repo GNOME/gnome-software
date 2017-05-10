@@ -341,6 +341,7 @@ sort_distros_cb (gconstpointer a, gconstpointer b)
 static GsApp *
 gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distro_info)
 {
+	GsApp *app;
 	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *app_version = NULL;
 	g_autofree gchar *background = NULL;
@@ -348,7 +349,6 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 	g_autofree gchar *css = NULL;
 	g_autofree gchar *url = NULL;
 	g_autoptr(AsIcon) ic = NULL;
-	g_autoptr(GsApp) app = NULL;
 
 	/* search in the cache */
 	cache_key = g_strdup_printf ("release-%u", distro_info->version);
@@ -403,7 +403,8 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 	/* save in the cache */
 	gs_plugin_cache_add (plugin, cache_key, app);
 
-	return g_steal_pointer (&app);
+	/* success */
+	return app;
 }
 
 static gboolean
