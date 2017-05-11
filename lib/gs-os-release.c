@@ -45,6 +45,7 @@ struct _GsOsRelease
 	gchar			*id;
 	gchar			*version_id;
 	gchar			*pretty_name;
+	gchar			*cpe_name;
 	gchar			*distro_codename;
 };
 
@@ -115,6 +116,10 @@ gs_os_release_initable_init (GInitable *initable,
 		}
 		if (g_strcmp0 (lines[i], "PRETTY_NAME") == 0) {
 			os_release->pretty_name = g_strdup (tmp);
+			continue;
+		}
+		if (g_strcmp0 (lines[i], "CPE_NAME") == 0) {
+			os_release->cpe_name = g_strdup (tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "UBUNTU_CODENAME") == 0) {
@@ -211,6 +216,23 @@ gs_os_release_get_pretty_name (GsOsRelease *os_release)
 }
 
 /**
+ * gs_os_release_get_cpe_name:
+ * @os_release: A #GsOsRelease
+ *
+ * Gets the pretty name from the os-release parser.
+ *
+ * Returns: a string, or %NULL
+ *
+ * Since: 3.22
+ **/
+const gchar *
+gs_os_release_get_cpe_name (GsOsRelease *os_release)
+{
+	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
+	return os_release->cpe_name;
+}
+
+/**
  * gs_os_release_get_distro_codename:
  * @os_release: A #GsOsRelease
  *
@@ -236,6 +258,7 @@ gs_os_release_finalize (GObject *object)
 	g_free (os_release->id);
 	g_free (os_release->version_id);
 	g_free (os_release->pretty_name);
+	g_free (os_release->cpe_name);
 	g_free (os_release->distro_codename);
 	G_OBJECT_CLASS (gs_os_release_parent_class)->finalize (object);
 }
