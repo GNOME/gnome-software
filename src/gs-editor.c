@@ -788,10 +788,10 @@ gs_editor_button_remove_clicked_cb (GtkWidget *widget, GsEditor *self)
 			name = as_app_get_name (item_global, NULL);
 	}
 	if (name != NULL) {
-		msg = g_strdup_printf ("<b>%s</b> %s", name,
-				       /* TRANSLATORS, this is prefixed with the
-					* app name, e.g. 'Inkscape ' */
-					_("banner design deleted."));
+		g_autofree gchar *name_markup = NULL;
+		name_markup = g_strdup_printf ("<b>%s</b>", name);
+		/* TRANSLATORS, the %s is the app name, e.g. 'Inkscape' */
+		msg = g_strdup_printf (_("%s banner design deleted."), name_markup);
 	} else {
 		/* TRANSLATORS, this is a notification */
 		msg = g_strdup (_("Banner design deleted."));
