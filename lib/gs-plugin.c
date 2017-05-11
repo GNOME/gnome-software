@@ -1340,10 +1340,18 @@ gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
 	g_autofree gchar *cachefn = NULL;
 
 	/* local files */
-	if (g_str_has_prefix (uri, "/"))
-		return g_strdup (uri);
 	if (g_str_has_prefix (uri, "file://"))
-		return g_strdup (uri + 7);
+		uri += 7;
+	if (g_str_has_prefix (uri, "/")) {
+		if (!g_file_test (uri, G_FILE_TEST_EXISTS)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Failed to find file: %s", uri);
+			return NULL;
+		}
+		return g_strdup (uri);
+	}
 
 	/* get cache location */
 	cachefn = gs_utils_get_cache_filename ("cssresource", uri,
