@@ -354,8 +354,13 @@ gs_editor_refresh_details (GsEditor *self)
 		GtkTextIter iter_start;
 		g_autofree gchar *css_existing = NULL;
 
-		css = as_app_get_metadata_item (self->selected_item,
-						"GnomeSoftware::FeatureTile-css");
+		if (app_kind == AS_APP_KIND_OS_UPGRADE) {
+			css = as_app_get_metadata_item (self->selected_item,
+							"GnomeSoftware::UpgradeBanner-css");
+		} else {
+			css = as_app_get_metadata_item (self->selected_item,
+							"GnomeSoftware::FeatureTile-css");
+		}
 		if (css == NULL)
 			css = "";
 		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
@@ -437,8 +442,13 @@ gs_design_dialog_buffer_changed_cb (GtkTextBuffer *buffer, GsEditor *self)
 	gtk_text_buffer_get_bounds (buffer, &iter_start, &iter_end);
 	css = gtk_text_buffer_get_text (buffer, &iter_start, &iter_end, FALSE);
 	g_debug ("CSS now '%s'", css);
-	as_app_add_metadata (self->selected_item, "GnomeSoftware::FeatureTile-css", NULL);
-	as_app_add_metadata (self->selected_item, "GnomeSoftware::FeatureTile-css", css);
+	if (as_app_get_kind (self->selected_item) == AS_APP_KIND_OS_UPGRADE) {
+		as_app_add_metadata (self->selected_item, "GnomeSoftware::UpgradeBanner-css", NULL);
+		as_app_add_metadata (self->selected_item, "GnomeSoftware::UpgradeBanner-css", css);
+	} else {
+		as_app_add_metadata (self->selected_item, "GnomeSoftware::FeatureTile-css", NULL);
+		as_app_add_metadata (self->selected_item, "GnomeSoftware::FeatureTile-css", css);
+	}
 	self->pending_changes = TRUE;
 	gs_design_dialog_refresh_details_delayed (self);
 }
