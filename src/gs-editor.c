@@ -609,17 +609,6 @@ gs_editor_button_import_file (GsEditor *self, GFile *file)
 	self->pending_changes = FALSE;
 }
 
-static gchar *
-gs_editor_get_default_save_location (void)
-{
-	gchar *xmlfn = g_build_filename (g_get_user_data_dir (),
-					 "app-info",
-					 "xmls",
-					 NULL);
-	g_mkdir_with_parents (xmlfn, 0777);
-	return xmlfn;
-}
-
 static void
 gs_editor_button_import_clicked_cb (GtkApplication *application, GsEditor *self)
 {
@@ -628,7 +617,6 @@ gs_editor_button_import_clicked_cb (GtkApplication *application, GsEditor *self)
 	GtkWidget *dialog;
 	gint res;
 	g_autoptr(GFile) file = NULL;
-	g_autofree gchar *appinfo_xml = NULL;
 
 	/* import warning */
 	window = GTK_WINDOW (gtk_builder_get_object (self->builder,
@@ -671,8 +659,6 @@ gs_editor_button_import_clicked_cb (GtkApplication *application, GsEditor *self)
 	filter = gtk_file_filter_new ();
 	gtk_file_filter_add_pattern (filter, "*.xml");
 	gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog), filter);
-	appinfo_xml = gs_editor_get_default_save_location ();
-	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), appinfo_xml);
 	res = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (res != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (dialog);
@@ -690,7 +676,6 @@ gs_editor_button_save_clicked_cb (GtkApplication *application, GsEditor *self)
 	GtkWidget *dialog;
 	GtkWindow *window;
 	gint res;
-	g_autofree gchar *appinfo_xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
 
@@ -706,8 +691,6 @@ gs_editor_button_save_clicked_cb (GtkApplication *application, GsEditor *self)
 	filter = gtk_file_filter_new ();
 	gtk_file_filter_add_pattern (filter, "*.xml");
 	gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog), filter);
-	appinfo_xml = gs_editor_get_default_save_location ();
-	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), appinfo_xml);
 	res = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (res != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (dialog);
