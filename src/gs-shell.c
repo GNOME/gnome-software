@@ -79,6 +79,7 @@ typedef struct
 	gboolean		 profile_mode;
 	gboolean		 in_mode_change;
 	GsPage			*page_last;
+	gchar			*last_search;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -602,6 +603,16 @@ search_changed_handler (GObject *entry, GsShell *shell)
 	const gchar *text;
 
 	text = gtk_entry_get_text (GTK_ENTRY (entry));
+
+	/* ignore if search text not changed. This is a workaround since GtkEntry
+         * emits changed even when the character limit is hit
+         * https://bugzilla.gnome.org/show_bug.cgi?id=782636
+         */
+	if (g_strcmp0 (text, priv->last_search) == 0)
+		return;
+	g_free (priv->last_search);
+	priv->last_search = g_strdup (text);
+
 	if (strlen (text) > 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
 			save_back_entry (shell);
@@ -1936,6 +1947,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_pointer (&priv->pages, (GDestroyNotify) g_hash_table_unref);
 	g_clear_pointer (&priv->events_info_uri, (GDestroyNotify) g_free);
 	g_clear_pointer (&priv->modal_dialogs, (GDestroyNotify) g_ptr_array_unref);
+	g_clear_pointer (&priv->last_search, g_free);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
