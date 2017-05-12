@@ -17,7 +17,6 @@
             <property name="border_width">0</property>
             <property name="orientation">horizontal</property>
             <property name="spacing">18</property>
-            <property name="margin_bottom">18</property>
             <style>
               <class name="eol-box"/>
             </style>
@@ -134,33 +133,19 @@
                       <object class="GtkBox" id="list_box_updates_box">
                         <property name="visible">True</property>
                         <property name="orientation">vertical</property>
-                        <style>
-                          <class name="app-list"/>
-                        </style>
                         <child>
                           <object class="GsUpgradeBanner" id="upgrade_banner">
                             <property name="visible">False</property>
                             <property name="hexpand">True</property>
                             <property name="vexpand">False</property>
+                            <property name="margin_top">18</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkBox" id="updates_box">
                             <property name="visible">True</property>
                             <property name="orientation">vertical</property>
-                            <child>
-                              <object class="GsUpdateList" id="list_box_updates">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="selection_mode">none</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="list_box_updates_separator">
-                                <property name="visible">True</property>
-                                <property name="orientation">horizontal</property>
-                              </object>
-                            </child>
+                            <property name="margin_bottom">18</property>
                           </object>
                         </child>
                       </object>
