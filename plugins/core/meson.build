@@ -167,9 +167,22 @@ shared_module(
   dependencies : plugin_libs
 )
 
+shared_module(
+  'gs_plugin_os-release',
+  sources : 'gs-plugin-os-release.c',
+  include_directories : [
+    include_directories('../..'),
+    include_directories('../../lib'),
+  ],
+  install : true,
+  install_dir: plugin_dir,
+  c_args : cargs,
+  dependencies : plugin_libs
+)
+
 if get_option('enable-tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
-  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
+  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable('gs-self-test-core',
     sources : [
       'gs-self-test.c',

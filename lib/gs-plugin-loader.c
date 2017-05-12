@@ -5028,6 +5028,20 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 	return app;
 }
 
+/**
+ * gs_plugin_loader_get_system_app:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Returns the application that represents the currently installed OS.
+ *
+ * Returns: (transfer full): a #GsApp
+ **/
+GsApp *
+gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
+{
+	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/*/system/*");
+}
+
 /******************************************************************************/
 
 AsProfile *

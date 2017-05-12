@@ -357,7 +357,7 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 		return app;
 
 	/* create app */
-	app_id = g_strdup_printf ("org.fedoraproject.release-%u",
+	app_id = g_strdup_printf ("org.fedoraproject.Fedora-%u",
 				  distro_info->version);
 	app_version = g_strdup_printf ("%u", distro_info->version);
 

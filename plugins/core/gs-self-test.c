@@ -121,23 +121,79 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 }
 
+static void
+gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsApp) app3 = NULL;
+	g_autoptr(GError) error = NULL;
+
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* refine system application */
+	app = gs_plugin_loader_get_system_app (plugin_loader);
+	ret = gs_plugin_loader_app_refine (plugin_loader,
+					   app,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					   NULL,
+					   &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* make sure there is valid content */
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.Fedora-25");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPGRADE);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Fedora");
+	g_assert_cmpstr (gs_app_get_version (app), ==, "25");
+	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==,
+			 "https://fedoraproject.org/");
+	g_assert_cmpstr (gs_app_get_metadata_item (app, "GnomeSoftware::CpeName"), ==,
+			 "cpe:/o:fedoraproject:fedora:25");
+
+	/* this comes from appstream */
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Fedora Workstation");
+
+	/* get using the new name */
+	app2 = gs_plugin_loader_app_create (plugin_loader,
+					    "*/*/*/*/org.fedoraproject.Fedora-25/*");
+	g_assert (app2 != NULL);
+	g_assert (app2 == app);
+
+	/* check we can get this by the old name too */
+	app3 = gs_plugin_loader_get_system_app (plugin_loader);
+	g_assert (app3 != NULL);
+	g_assert (app3 == app);
+}
+
 int
 main (int argc, char **argv)
 {
 	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
+	g_autofree gchar *os_release_filename = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	const gchar *xml;
 	const gchar *whitelist[] = {
 		"appstream",
 		"icons",
+		"os-release",
 		NULL
 	};
 
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_SELF_TEST_CORE_DATADIR", tmp_root, TRUE);
+
+	os_release_filename = gs_test_get_filename (TESTDATADIR, "os-release");
+	g_assert (os_release_filename != NULL);
+	g_setenv ("GS_SELF_TEST_OS_RELEASE_FILENAME", os_release_filename, TRUE);
 
 	/* ensure test root does not exist */
 	if (g_file_test (tmp_root, G_FILE_TEST_EXISTS)) {
@@ -159,6 +215,10 @@ main (int argc, char **argv)
 		"    <name>test</name>\n"
 		"    <summary>Test</summary>\n"
 		"    <icon type=\"stock\">system-file-manager</icon>\n"
+		"  </component>\n"
+		"  <component type=\"os-upgrade\">\n"
+		"    <id>org.fedoraproject.Fedora-25</id>\n"
+		"    <summary>Fedora Workstation</summary>\n"
 		"  </component>\n"
 		"</components>\n";
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
@@ -186,6 +246,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/core/app-creation",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_core_app_creation_func);
+	g_test_add_data_func ("/gnome-software/plugins/core/os-release",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_core_os_release_func);
 	return g_test_run ();
 }
 

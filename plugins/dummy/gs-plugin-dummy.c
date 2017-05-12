@@ -105,6 +105,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
 }
 
@@ -537,6 +538,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* make the local system EOL */
+	if (gs_app_get_metadata_item (app, "GnomeSoftware::CpeName") != NULL)
+		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 
 	/* state */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
