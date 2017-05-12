@@ -30,6 +30,7 @@ gs_test_get_filename (const gchar *testdatadir, const gchar *filename)
 	char full_tmp[PATH_MAX];
 	g_autofree gchar *path = NULL;
 	path = g_build_filename (testdatadir, filename, NULL);
+	g_debug ("looking in %s", path);
 	tmp = realpath (path, full_tmp);
 	if (tmp == NULL)
 		return NULL;
