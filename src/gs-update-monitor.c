@@ -224,6 +224,42 @@ should_show_upgrade_notification (GsUpdateMonitor *monitor)
 }
 
 static void
+get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GNotification) n = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* get result */
+	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get system: %s", error->message);
+		return;
+	}
+
+	/* might be alrady showing, so just withdraw it and re-issue it */
+	g_application_withdraw_notification (monitor->application, "eol");
+
+	/* do not show when the main window is active */
+	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
+		return;
+
+	/* is not EOL */
+	app = gs_plugin_loader_get_system_app (plugin_loader);
+	if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
+		return;
+
+	/* TRANSLATORS: this is when the current OS version goes end-of-life */
+	n = g_notification_new (_("Operating System Updates Unavailable"));
+	/* TRANSLATORS: this is the message dialog for the distro EOL notice */
+	g_notification_set_body (n, _("Upgrade to continue receiving security updates."));
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "update");
+	g_application_send_notification (monitor->application, "eol", n);
+}
+
+static void
 get_upgrades_finished_cb (GObject *object,
 			  GAsyncResult *res,
 			  gpointer data)
@@ -304,6 +340,21 @@ get_upgrades (GsUpdateMonitor *monitor)
 						    monitor->cancellable,
 						    get_upgrades_finished_cb,
 						    monitor);
+}
+
+static void
+get_system (GsUpdateMonitor *monitor)
+{
+	g_autoptr(GsApp) app = NULL;
+
+	g_debug ("Getting system");
+	app = gs_plugin_loader_get_system_app (monitor->plugin_loader);
+	gs_plugin_loader_app_refine_async (monitor->plugin_loader, app,
+					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   monitor->cancellable,
+					   get_system_finished_cb,
+					   monitor);
 }
 
 static void
@@ -434,6 +485,7 @@ check_thrice_daily_cb (gpointer data)
 
 	g_debug ("Daily upgrades check");
 	get_upgrades (monitor);
+	get_system (monitor);
 
 	return G_SOURCE_CONTINUE;
 }
