@@ -65,8 +65,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
 
 	/* toggle this */
-	priv->allow_updates_id = g_timeout_add_seconds (10,
-		gs_plugin_dummy_allow_updates_cb, plugin);
+	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
+		priv->allow_updates_id = g_timeout_add_seconds (10,
+			gs_plugin_dummy_allow_updates_cb, plugin);
+	}
 
 	/* set up a dummy authentication provider */
 	priv->auth = gs_auth_new (gs_plugin_get_name (plugin));
