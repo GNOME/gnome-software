@@ -402,13 +402,16 @@ gs_app_to_string (GsApp *app)
 			  gs_app_get_kudos_percentage (app));
 	if (app->name != NULL)
 		gs_app_kv_lpad (str, "name", app->name);
-	gs_app_kv_printf (str, "pixbuf", "%p", app->pixbuf);
+	if (app->pixbuf != NULL)
+		gs_app_kv_printf (str, "pixbuf", "%p", app->pixbuf);
 	for (i = 0; i < app->icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (app->icons, i);
 		gs_app_kv_lpad (str, "icon-kind",
 				as_icon_kind_to_string (as_icon_get_kind (icon)));
-		gs_app_kv_printf (str, "icon-pixbuf", "%p",
-				  as_icon_get_pixbuf (icon));
+		if (as_icon_get_pixbuf (icon) != NULL) {
+			gs_app_kv_printf (str, "icon-pixbuf", "%p",
+					  as_icon_get_pixbuf (icon));
+		}
 		if (as_icon_get_name (icon) != NULL)
 			gs_app_kv_lpad (str, "icon-name",
 					as_icon_get_name (icon));
