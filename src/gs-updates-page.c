@@ -97,6 +97,8 @@ struct _GsUpdatesPage
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
 	GtkWidget		*upgrade_banner;
+	GtkWidget		*box_end_of_life;
+	GtkWidget		*label_end_of_life;
 };
 
 enum {
@@ -559,9 +561,60 @@ gs_updates_page_get_upgrades_cb (GObject *source_object,
 }
 
 static void
+gs_updates_page_get_system_finished_cb (GObject *source_object,
+					GAsyncResult *res,
+					gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	/* get result */
+	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get system: %s", error->message);
+		return;
+	}
+
+	/* show or hide the end of life notification */
+	app = gs_plugin_loader_get_system_app (plugin_loader);
+	if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE) {
+		gtk_widget_set_visible (self->box_end_of_life, FALSE);
+		return;
+	}
+
+	/* construct a sufficiently scary message */
+	if (gs_app_get_name (app) != NULL && gs_app_get_version (app) != NULL) {
+		/* TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
+		 * and the second %s is the distro version, e.g. '25' */
+		g_string_append_printf (str, _("%s %s is no longer supported."),
+					gs_app_get_name (app),
+					gs_app_get_version (app));
+	} else {
+		/* TRANSLATORS: OS refers to operating system, e.g. Fedora */
+		g_string_append (str, _("Your OS is no longer supported."));
+	}
+	g_string_append (str, " ");
+
+	/* TRANSLATORS: EOL distros do not get important updates */
+	g_string_append (str, _("This means that it does not receive security updates."));
+	g_string_append (str, " ");
+
+	/* TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26 */
+	g_string_append (str, _("It is recommended that you upgrade to a more recent version."));
+
+	gtk_label_set_label (GTK_LABEL (self->label_end_of_life), str->str);
+	gtk_widget_set_visible (self->box_end_of_life, TRUE);
+
+}
+
+static void
 gs_updates_page_load (GsUpdatesPage *self)
 {
 	guint64 refine_flags;
+	g_autoptr(GsApp) app = NULL;
 
 	if (self->action_cnt > 0)
 		return;
@@ -578,6 +631,15 @@ gs_updates_page_load (GsUpdatesPage *self)
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_updates_page_get_updates_cb,
 					    self);
+
+	/* get the system state */
+	app = gs_plugin_loader_get_system_app (self->plugin_loader);
+	gs_plugin_loader_app_refine_async (self->plugin_loader, app,
+					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					   GS_PLUGIN_FAILURE_FLAGS_NONE,
+					   self->cancellable,
+					   gs_updates_page_get_system_finished_cb,
+					   self);
 
 	/* don't refresh every each time */
 	if ((self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) == 0) {
@@ -1456,6 +1518,8 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, stack_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, upgrade_banner);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, box_end_of_life);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdatesPage, label_end_of_life);
 }
 
 static void
