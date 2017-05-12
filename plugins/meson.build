@@ -10,7 +10,7 @@ subdir('core')
 subdir('dpkg')
 subdir('dummy')
 subdir('epiphany')
-subdir('fedora-distro-upgrades')
+subdir('fedora-pkgdb-collections')
 subdir('fedora-tagger-usage')
 subdir('ubuntuone')
 

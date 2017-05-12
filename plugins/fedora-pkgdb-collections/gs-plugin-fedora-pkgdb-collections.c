@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -34,19 +35,49 @@ struct GsPluginData {
 	guint64		 os_version;
 	GsApp		*cached_origin;
 	GSettings	*settings;
+	gboolean	 is_valid;
+	GPtrArray	*distros;
 };
+
+typedef enum {
+	PKGDB_ITEM_STATUS_ACTIVE,
+	PKGDB_ITEM_STATUS_DEVEL,
+	PKGDB_ITEM_STATUS_EOL,
+	PKGDB_ITEM_STATUS_LAST
+} PkgdbItemStatus;
+
+typedef struct {
+	gchar			*name;
+	PkgdbItemStatus		 status;
+	guint			 version;
+} PkgdbItem;
+
+static void
+_pkgdb_item_free (PkgdbItem *item)
+{
+	g_free (item->name);
+	g_slice_free (PkgdbItem, item);
+}
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as we're not Fedora", gs_plugin_get_name (plugin));
 		return;
 	}
+	priv->distros = g_ptr_array_new_with_free_func ((GDestroyNotify) _pkgdb_item_free);
 	priv->settings = g_settings_new ("org.gnome.software");
+
+	/* require the GnomeSoftware::CpeName metadata */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "os-release");
+
+	/* old name */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "fedora-distro-upgrades");
 }
 
 void
@@ -59,18 +90,20 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->cached_origin);
 	if (priv->settings != NULL)
 		g_object_unref (priv->settings);
+	if (priv->distros != NULL)
+		g_ptr_array_unref (priv->distros);
 	g_free (priv->os_name);
 	g_free (priv->cachefn);
 }
 
 static void
-gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
-					     GFile *file,
-					     GFile *other_file,
-					     GFileMonitorEvent event_type,
-					     gpointer user_data)
+_file_changed_cb (GFileMonitor *monitor,
+		  GFile *file, GFile *other_file,
+		  GFileMonitorEvent event_type,
+		  gpointer user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 
 	/* only reload the update list if the plugin is NOT running itself
 	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
@@ -82,8 +115,10 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 		g_debug ("no notify as plugin %s recently active", gs_plugin_get_name (plugin));
 		return;
 	}
+
 	g_debug ("cache file changed, so reloading upgrades list");
 	gs_plugin_updates_changed (plugin);
+	priv->is_valid = FALSE;
 }
 
 gboolean
@@ -106,13 +141,13 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* watch this in case it is changed by the user */
 	file = g_file_new_for_path (priv->cachefn);
 	priv->cachefn_monitor = g_file_monitor (file,
-							G_FILE_MONITOR_NONE,
-							cancellable,
-							error);
+						G_FILE_MONITOR_NONE,
+						cancellable,
+						error);
 	if (priv->cachefn_monitor == NULL)
 		return FALSE;
 	g_signal_connect (priv->cachefn_monitor, "changed",
-			  G_CALLBACK (gs_plugin_fedora_distro_upgrades_changed_cb), plugin);
+			  G_CALLBACK (_file_changed_cb), plugin);
 
 	/* read os-release for the current versions */
 	os_release = gs_os_release_new (error);
@@ -152,17 +187,17 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 }
 
 static gboolean
-gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
-					  guint cache_age,
-					  GCancellable *cancellable,
-					  GError **error)
+_refresh_cache (GsPlugin *plugin,
+		guint cache_age,
+		GCancellable *cancellable,
+		GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* check cache age */
 	if (cache_age > 0) {
-		guint tmp;
 		g_autoptr(GFile) file = g_file_new_for_path (priv->cachefn);
-		tmp = gs_utils_get_file_age (file);
+		guint tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
 			g_debug ("%s is only %u seconds old",
 				 priv->cachefn, tmp);
@@ -181,6 +216,7 @@ gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 	}
 
 	/* success */
+	priv->is_valid = FALSE;
 	return TRUE;
 }
 
@@ -191,124 +227,14 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	/* only for update metadata, no stored state other than setup() */
+	/* only for update metadata */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
-	return gs_plugin_fedora_distro_upgrades_refresh (plugin,
-							 cache_age,
-							 cancellable,
-							 error);
-}
-
-typedef enum {
-	DISTRO_STATUS_ACTIVE,
-	DISTRO_STATUS_DEVEL,
-	DISTRO_STATUS_EOL,
-	DISTRO_STATUS_LAST
-} DistroStatus;
-
-typedef struct {
-	gchar		*name;
-	DistroStatus	 status;
-	guint		 version;
-} DistroInfo;
-
-static void
-distro_info_free (DistroInfo *distro_info)
-{
-	g_free (distro_info->name);
-	g_slice_free (DistroInfo, distro_info);
-}
-
-static GPtrArray *
-parse_pkgdb_collections_data (const gchar *data,
-                              gssize length,
-                              GError **error)
-{
-	g_autoptr(JsonParser) parser = NULL;
-	GPtrArray *distros = NULL;
-	JsonArray *collections;
-	JsonObject *root;
-	gboolean ret;
-	guint i;
-
-	parser = json_parser_new ();
-
-	ret = json_parser_load_from_data (parser, data, length, error);
-	if (!ret)
-		return NULL;
-
-	root = json_node_get_object (json_parser_get_root (parser));
-	if (root == NULL) {
-		g_set_error (error,
-		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_INVALID_FORMAT,
-		             "no root object");
-		return NULL;
-	}
-
-	collections = json_object_get_array_member (root, "collections");
-	if (collections == NULL) {
-		g_set_error (error,
-		             GS_PLUGIN_ERROR,
-		             GS_PLUGIN_ERROR_INVALID_FORMAT,
-		             "no collections object");
-		return NULL;
-	}
-
-	distros = g_ptr_array_new_with_free_func ((GDestroyNotify) distro_info_free);
-	for (i = 0; i < json_array_get_length (collections); i++) {
-		DistroInfo *distro_info;
-		JsonObject *item;
-		DistroStatus status;
-		const gchar *name;
-		const gchar *status_str;
-		const gchar *version_str;
-		gchar *endptr = NULL;
-		guint64 version;
-
-		item = json_array_get_object_element (collections, i);
-		if (item == NULL)
-			continue;
-
-		name = json_object_get_string_member (item, "name");
-		if (name == NULL)
-			continue;
-
-		status_str = json_object_get_string_member (item, "status");
-		if (status_str == NULL)
-			continue;
-
-		if (g_strcmp0 (status_str, "Active") == 0)
-			status = DISTRO_STATUS_ACTIVE;
-		else if (g_strcmp0 (status_str, "Under Development") == 0)
-			status = DISTRO_STATUS_DEVEL;
-		else if (g_strcmp0 (status_str, "EOL") == 0)
-			status = DISTRO_STATUS_EOL;
-		else
-			continue;
-
-		version_str = json_object_get_string_member (item, "version");
-		if (version_str == NULL)
-			continue;
-
-		version = g_ascii_strtoull (version_str, &endptr, 10);
-		if (endptr == version_str || version > G_MAXUINT)
-			continue;
-
-		distro_info = g_slice_new0 (DistroInfo);
-		distro_info->name = g_strdup (name);
-		distro_info->status = status;
-		distro_info->version = (guint) version;
-
-		g_ptr_array_add (distros, distro_info);
-	}
-
-	return distros;
+	return _refresh_cache (plugin, cache_age, cancellable, error);
 }
 
 static gchar *
-get_upgrade_css_background (guint version)
+_get_upgrade_css_background (guint version)
 {
 	g_autofree gchar *filename1 = NULL;
 	g_autofree gchar *filename2 = NULL;
@@ -326,23 +252,22 @@ get_upgrade_css_background (guint version)
 }
 
 static gint
-sort_distros_cb (gconstpointer a, gconstpointer b)
+_sort_items_cb (gconstpointer a, gconstpointer b)
 {
-	DistroInfo *distro_a = *((DistroInfo **) a);
-	DistroInfo *distro_b = *((DistroInfo **) b);
+	PkgdbItem *item_a = *((PkgdbItem **) a);
+	PkgdbItem *item_b = *((PkgdbItem **) b);
 
-	if (distro_a->version > distro_b->version)
+	if (item_a->version > item_b->version)
 		return 1;
-	if (distro_a->version < distro_b->version)
+	if (item_a->version < item_b->version)
 		return -1;
 	return 0;
 }
 
 static GsApp *
-gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distro_info)
+_create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 {
 	GsApp *app;
-	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *app_version = NULL;
 	g_autofree gchar *background = NULL;
 	g_autofree gchar *cache_key = NULL;
@@ -351,15 +276,13 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 	g_autoptr(AsIcon) ic = NULL;
 
 	/* search in the cache */
-	cache_key = g_strdup_printf ("release-%u", distro_info->version);
+	cache_key = g_strdup_printf ("release-%u", item->version);
 	app = gs_plugin_cache_lookup (plugin, cache_key);
 	if (app != NULL)
 		return app;
 
 	/* create app */
-	app_id = g_strdup_printf ("org.fedoraproject.Fedora-%u",
-				  distro_info->version);
-	app_version = g_strdup_printf ("%u", distro_info->version);
+	app_version = g_strdup_printf ("%u", item->version);
 
 	/* icon from disk */
 	ic = as_icon_new ();
@@ -367,10 +290,13 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 	as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
 
 	/* create */
-	app = gs_app_new (app_id);
+	app = gs_app_new ("org.fedoraproject.Fedora");
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
-	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
-	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "Fedora Workstation");
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+			    /* TRANSLATORS: this is a title for Fedora distro upgrades */
+			    _("A major upgrade, with new features and added polish."));
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
 				"Fedora Workstation is a polished, "
 				"easy to use operating system for "
@@ -389,11 +315,11 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 
 	/* show a Fedora magazine article for the release */
 	url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%u-workstation",
-			       distro_info->version);
+			       item->version);
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 
 	/* use a fancy background */
-	background = get_upgrade_css_background (distro_info->version);
+	background = _get_upgrade_css_background (item->version);
 	css = g_strdup_printf ("background: %s;"
 			       "background-position: center;"
 			       "background-size: cover;",
@@ -408,22 +334,22 @@ gs_plugin_fedora_distro_upgrades_create_app (GsPlugin *plugin, DistroInfo *distr
 }
 
 static gboolean
-gs_plugin_fedora_distro_upgrades_is_upgrade (GsPlugin *plugin, DistroInfo *distro_info)
+_is_valid_upgrade (GsPlugin *plugin, PkgdbItem *item)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
 	/* only interested in upgrades to the same distro */
-	if (g_strcmp0 (distro_info->name, priv->os_name) != 0)
+	if (g_strcmp0 (item->name, priv->os_name) != 0)
 		return FALSE;
 
 	/* only interested in newer versions, but not more than N+2 */
-	if (distro_info->version <= priv->os_version ||
-	    distro_info->version > priv->os_version + 2)
+	if (item->version <= priv->os_version ||
+	    item->version > priv->os_version + 2)
 		return FALSE;
 
 	/* only interested in non-devel distros */
 	if (!g_settings_get_boolean (priv->settings, "show-upgrade-prerelease")) {
-		if (distro_info->status == DISTRO_STATUS_DEVEL)
+		if (item->status == PKGDB_ITEM_STATUS_DEVEL)
 			return FALSE;
 	}
 
@@ -431,22 +357,22 @@ gs_plugin_fedora_distro_upgrades_is_upgrade (GsPlugin *plugin, DistroInfo *distr
 	return TRUE;
 }
 
-gboolean
-gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
+static gboolean
+_ensure_cache (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	JsonArray *collections;
+	JsonObject *root;
 	gsize len;
 	g_autofree gchar *data = NULL;
-	g_autoptr(GPtrArray) distros = NULL;
+	g_autoptr(JsonParser) parser = NULL;
+
+	/* already done */
+	if (priv->is_valid)
+		return TRUE;
 
 	/* just ensure there is any data, no matter how old */
-	if (!gs_plugin_fedora_distro_upgrades_refresh (plugin,
-						       G_MAXUINT,
-						       cancellable,
-						       error))
+	if (!_refresh_cache (plugin, G_MAXUINT, cancellable, error))
 		return FALSE;
 
 	/* get cached file */
@@ -456,23 +382,179 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	}
 
 	/* parse data */
-	distros = parse_pkgdb_collections_data (data, (gssize) len, error);
-	if (distros == NULL)
+	parser = json_parser_new ();
+	if (!json_parser_load_from_data (parser, data, len, error))
 		return FALSE;
-	g_ptr_array_sort (distros, sort_distros_cb);
-	for (guint i = 0; i < distros->len; i++) {
-		DistroInfo *distro_info = g_ptr_array_index (distros, i);
 
-		/* upgrade */
-		if (gs_plugin_fedora_distro_upgrades_is_upgrade (plugin, distro_info)) {
+	root = json_node_get_object (json_parser_get_root (parser));
+	if (root == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "no root object");
+		return FALSE;
+	}
+
+	collections = json_object_get_array_member (root, "collections");
+	if (collections == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "no collections object");
+		return FALSE;
+	}
+
+	g_ptr_array_set_size (priv->distros, 0);
+	for (guint i = 0; i < json_array_get_length (collections); i++) {
+		PkgdbItem *item;
+		JsonObject *collection;
+		PkgdbItemStatus status;
+		const gchar *name;
+		const gchar *status_str;
+		const gchar *version_str;
+		gchar *endptr = NULL;
+		guint64 version;
+
+		collection = json_array_get_object_element (collections, i);
+		if (collection == NULL)
+			continue;
+
+		name = json_object_get_string_member (collection, "name");
+		if (name == NULL)
+			continue;
+
+		status_str = json_object_get_string_member (collection, "status");
+		if (status_str == NULL)
+			continue;
+
+		if (g_strcmp0 (status_str, "Active") == 0)
+			status = PKGDB_ITEM_STATUS_ACTIVE;
+		else if (g_strcmp0 (status_str, "Under Development") == 0)
+			status = PKGDB_ITEM_STATUS_DEVEL;
+		else if (g_strcmp0 (status_str, "EOL") == 0)
+			status = PKGDB_ITEM_STATUS_EOL;
+		else
+			continue;
+
+		version_str = json_object_get_string_member (collection, "version");
+		if (version_str == NULL)
+			continue;
+
+		version = g_ascii_strtoull (version_str, &endptr, 10);
+		if (endptr == version_str || version > G_MAXUINT)
+			continue;
+
+		/* add item */
+		item = g_slice_new0 (PkgdbItem);
+		item->name = g_strdup (name);
+		item->status = status;
+		item->version = (guint) version;
+		g_ptr_array_add (priv->distros, item);
+	}
+
+	/* ensure in correct order */
+	g_ptr_array_sort (priv->distros, _sort_items_cb);
+
+	/* success */
+	priv->is_valid = TRUE;
+	return TRUE;
+}
+
+static PkgdbItem *
+_get_item_by_cpe_name (GsPlugin *plugin, const gchar *cpe_name)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	guint64 version;
+	g_auto(GStrv) split = NULL;
+
+	/* split up 'cpe:/o:fedoraproject:fedora:26' to sections */
+	split = g_strsplit (cpe_name, ":", -1);
+	if (g_strv_length (split) < 5) {
+		g_warning ("CPE invalid format: %s", cpe_name);
+		return NULL;
+	}
+
+	/* find the correct collection */
+	version = g_ascii_strtoull (split[4], NULL, 10);
+	if (version == 0) {
+		g_warning ("failed to parse CPE version: %s", split[4]);
+		return NULL;
+	}
+	for (guint i = 0; i < priv->distros->len; i++) {
+		PkgdbItem *item = g_ptr_array_index (priv->distros, i);
+		if (g_ascii_strcasecmp (item->name, split[3]) == 0 &&
+		    item->version == version)
+			return item;
+	}
+	return NULL;
+}
+
+gboolean
+gs_plugin_add_distro_upgrades (GsPlugin *plugin,
+			       GsAppList *list,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* ensure valid data is loaded */
+	if (!_ensure_cache (plugin, cancellable, error))
+		return FALSE;
+
+	/* are any distros upgradable */
+	for (guint i = 0; i < priv->distros->len; i++) {
+		PkgdbItem *item = g_ptr_array_index (priv->distros, i);
+		if (_is_valid_upgrade (plugin, item)) {
 			g_autoptr(GsApp) app = NULL;
-			app = gs_plugin_fedora_distro_upgrades_create_app (plugin, distro_info);
-			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
-					    /* TRANSLATORS: this is a title for Fedora distro upgrades */
-					    _("A major upgrade, with new features and added polish."));
+			app = _create_upgrade_from_info (plugin, item);
 			gs_app_list_add (list, app);
 		}
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	PkgdbItem *item;
+	const gchar *cpe_name;
+
+	/* not for us */
+	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+		return TRUE;
+
+	/* not enough metadata */
+	cpe_name = gs_app_get_metadata_item (app, "GnomeSoftware::CpeName");
+	if (cpe_name == NULL)
+		return TRUE;
+
+	/* ensure valid data is loaded */
+	if (!_ensure_cache (plugin, cancellable, error))
+		return FALSE;
+
+	/* find item */
+	item = _get_item_by_cpe_name (plugin, cpe_name);
+	if (item == NULL) {
+		g_warning ("did not find %s", cpe_name);
+		return TRUE;
+	}
+
+	/* fix the state */
+	switch (item->status) {
+	case PKGDB_ITEM_STATUS_ACTIVE:
+	case PKGDB_ITEM_STATUS_DEVEL:
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+		break;
+	case PKGDB_ITEM_STATUS_EOL:
+		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+		break;
+	default:
+		break;
 	}
 
 	return TRUE;

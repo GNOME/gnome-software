@@ -3001,6 +3001,8 @@ gboolean
 gs_app_is_updatable (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	if (app->kind == AS_APP_KIND_OS_UPGRADE)
+		return TRUE;
 	return (app->state == AS_APP_STATE_UPDATABLE) ||
 	       (app->state == AS_APP_STATE_UPDATABLE_LIVE);
 }

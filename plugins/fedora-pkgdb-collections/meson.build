@@ -1,8 +1,8 @@
-cargs = ['-DG_LOG_DOMAIN="GsPluginFedoraDistroUpgrades"']
+cargs = ['-DG_LOG_DOMAIN="GsPluginFedoraPkgdbCollections"']
 
 shared_module(
-  'gs_plugin_fedora-distro-upgrades',
-  sources : 'gs-plugin-fedora-distro-upgrades.c',
+  'gs_plugin_fedora-pkgdb-collections',
+  sources : 'gs-plugin-fedora-pkgdb-collections.c',
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
@@ -10,5 +10,5 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : plugin_libs
+  dependencies : plugin_libs,
 )
