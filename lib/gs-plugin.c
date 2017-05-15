@@ -1750,6 +1750,8 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "auth-register";
 	if (action == GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD)
 		return "auth-lost-password";
+	if (action == GS_PLUGIN_ACTION_GET_RECENT)
+		return "get-recent";
 	return NULL;
 }
 

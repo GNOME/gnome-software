@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -444,6 +444,21 @@ main (int argc, char **argv)
 							      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 							      NULL,
 							      &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
+	} else if (argc == 2 && g_strcmp0 (argv[1], "recent") == 0) {
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				g_object_unref (list);
+			list = gs_plugin_loader_get_recent (plugin_loader,
+							    60 * 60 * 24 * 60,
+							    refine_flags,
+							    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+							    NULL,
+							    &error);
 			if (list == NULL) {
 				ret = FALSE;
 				break;

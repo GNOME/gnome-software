@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -320,6 +320,25 @@ gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
 gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
 							 GsCategory	*category,
 							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
+ * gs_plugin_add_recent:
+ * @plugin: a #GsPlugin
+ * @age: a number of seconds
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Return all the applications that have had upstream releases recently.
+ *
+ * Plugins are expected to add new apps using gs_app_list_add().
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_add_recent			(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 guint64	 age,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

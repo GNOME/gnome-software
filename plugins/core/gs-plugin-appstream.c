@@ -646,6 +646,18 @@ gs_plugin_add_featured (GsPlugin *plugin,
 					  error);
 }
 
+gboolean
+gs_plugin_add_recent (GsPlugin *plugin,
+		      GsAppList *list,
+		      guint64 age,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_appstream_add_recent (plugin, priv->store, list, age,
+					cancellable, error);
+}
+
 static gboolean
 gs_plugin_appstream_refresh_url (GsPlugin *plugin,
 				 const gchar *url,

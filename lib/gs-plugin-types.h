@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -262,6 +262,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_AUTH_REGISTER:		Authentication register action
  * @GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:	Authentication lost password action
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the file to an application
+ * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
  *
  * The plugin action.
  **/
@@ -304,6 +305,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_AUTH_REGISTER,
 	GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
 	GS_PLUGIN_ACTION_URL_TO_APP,
+	GS_PLUGIN_ACTION_GET_RECENT,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;

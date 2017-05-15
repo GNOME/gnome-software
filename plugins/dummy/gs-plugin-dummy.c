@@ -676,6 +676,26 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_add_recent (GsPlugin *plugin,
+		      GsAppList *list,
+		      guint64 age,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL));
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_list_add (list, app);
+	return TRUE;
+}
+
+gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,
 			       GCancellable *cancellable,

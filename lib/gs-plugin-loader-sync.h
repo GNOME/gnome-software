@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2015 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -74,6 +74,12 @@ GPtrArray	*gs_plugin_loader_get_categories	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 GsAppList	*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
 							 GsCategory	*category,
+							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
+GsAppList	*gs_plugin_loader_get_recent		(GsPluginLoader	*plugin_loader,
+							 guint64	 age,
 							 GsPluginRefineFlags refine_flags,
 							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,

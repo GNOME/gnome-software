@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2015 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -132,6 +132,16 @@ void		 gs_plugin_loader_get_category_apps_async (GsPluginLoader	*plugin_loader,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
 GsAppList	*gs_plugin_loader_get_category_apps_finish (GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_get_recent_async	(GsPluginLoader	*plugin_loader,
+							 guint64	 age,
+							 GsPluginRefineFlags refine_flags,
+							 GsPluginFailureFlags failure_flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GsAppList	*gs_plugin_loader_get_recent_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,

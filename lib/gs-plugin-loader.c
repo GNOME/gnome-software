@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -113,6 +113,11 @@ typedef gboolean	 (*GsPluginCategoryFunc)	(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginGetRecentFunc)	(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 guint64	 age,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginResultsFunc)		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -193,6 +198,7 @@ typedef struct {
 	GsPluginAction			 action;
 	gboolean			 anything_ran;
 	guint				 max_results;
+	guint64				 age;
 	GsAppListSortFunc		 sort_func;
 	gpointer			 sort_func_data;
 } GsPluginLoaderJob;
@@ -656,6 +662,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderJob *job,
 		{
 			GsPluginReviewFunc plugin_func = func;
 			ret = plugin_func (plugin, app, job->review,
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_RECENT:
+		{
+			GsPluginGetRecentFunc plugin_func = func;
+			ret = plugin_func (plugin, list, job->age,
 					   cancellable, &error_local);
 		}
 		break;
@@ -2637,6 +2650,120 @@ GsAppList *
 gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
 					   GAsyncResult *res,
 					   GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_TASK (res), NULL);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	gs_utils_error_convert_gio (error);
+	return g_task_propagate_pointer (G_TASK (res), error);
+}
+
+/******************************************************************************/
+
+static void
+gs_plugin_loader_get_recent_thread_cb (GTask *task,
+				       gpointer object,
+				       gpointer task_data,
+				       GCancellable *cancellable)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GError *error = NULL;
+	GsPluginLoaderJob *job = (GsPluginLoaderJob *) task_data;
+	const guint max_results = 20;
+
+	/* run each plugin */
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		if (g_task_return_error_if_cancelled (task))
+			return;
+		if (!gs_plugin_loader_call_vfunc (job, plugin, NULL, NULL,
+						  cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* limit: TODO, use sort func */
+	if (gs_app_list_length (job->list) > max_results) {
+		gs_app_list_randomize (job->list);
+		g_debug ("truncating results to %u from %u",
+			 max_results, gs_app_list_length (job->list));
+		gs_app_list_truncate (job->list, max_results);
+	}
+
+	/* run refine() on each one */
+	if (!gs_plugin_loader_run_refine (job, job->list, cancellable, &error)) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	/* filter package list */
+	gs_app_list_filter (job->list, gs_plugin_loader_app_is_non_compulsory, NULL);
+	gs_app_list_filter (job->list, gs_plugin_loader_app_is_valid, job);
+	gs_app_list_filter (job->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
+	gs_app_list_filter (job->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+
+	/* filter duplicates with priority */
+	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
+
+	/* sort, just in case the UI doesn't do this */
+	gs_app_list_sort (job->list, gs_plugin_loader_app_sort_name_cb, NULL);
+
+	/* success */
+	g_task_return_pointer (task, g_object_ref (job->list), (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * gs_plugin_loader_get_recent_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_recent()
+ * function. The plugins return applications that have has upstream releases
+ * within the duration of @age;
+ **/
+void
+gs_plugin_loader_get_recent_async (GsPluginLoader *plugin_loader,
+				   guint64 age,
+				   GsPluginRefineFlags refine_flags,
+				   GsPluginFailureFlags failure_flags,
+				   GCancellable *cancellable,
+				   GAsyncReadyCallback callback,
+				   gpointer user_data)
+{
+	GsPluginLoaderJob *job;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save job */
+	job = gs_plugin_loader_job_new (plugin_loader);
+	job->refine_flags = refine_flags;
+	job->failure_flags = failure_flags;
+	job->list = gs_app_list_new ();
+	job->age = age;
+	job->action = GS_PLUGIN_ACTION_GET_RECENT;
+	job->function_name = "gs_plugin_add_recent";
+	gs_plugin_loader_job_debug (job);
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, job, (GDestroyNotify) gs_plugin_loader_job_free);
+	g_task_run_in_thread (task, gs_plugin_loader_get_recent_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_get_recent_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
+ **/
+GsAppList *
+gs_plugin_loader_get_recent_finish (GsPluginLoader *plugin_loader,
+				    GAsyncResult *res,
+				    GError **error)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_TASK (res), NULL);

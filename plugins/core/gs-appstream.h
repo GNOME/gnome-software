@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2015-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2015-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -61,6 +61,12 @@ gboolean	 gs_appstream_add_popular		(GsPlugin	*plugin,
 gboolean	 gs_appstream_add_featured		(GsPlugin	*plugin,
 							 AsStore	*store,
 							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_appstream_add_recent		(GsPlugin	*plugin,
+							 AsStore	*store,
+							 GsAppList	*list,
+							 guint64	 age,
 							 GCancellable	*cancellable,
 							 GError		**error);
 void		 gs_appstream_add_extra_info		(GsPlugin	*plugin,

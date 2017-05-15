@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2015-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2015-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -1087,6 +1087,54 @@ gs_appstream_add_popular (GsPlugin *plugin,
 			continue;
 		app = gs_app_new (as_app_get_id (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_list_add (list, app);
+	}
+	return TRUE;
+}
+
+static gboolean
+_as_app_is_recent (AsApp *app, guint64 age)
+{
+	AsRelease *rel;
+	guint64 ts;
+	guint64 now;
+
+	rel = as_app_get_release_default (app);
+	if (rel == NULL)
+		return FALSE;
+	ts = as_release_get_timestamp (rel);
+	if (ts == 0)
+		return FALSE;
+	now = (guint64) g_get_real_time () / G_USEC_PER_SEC;
+	return (now - ts) < age;
+}
+
+gboolean
+gs_appstream_add_recent (GsPlugin *plugin,
+			 AsStore *store,
+			 GsAppList *list,
+			 guint64 age,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	GPtrArray *array;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* find out how many packages are in each category */
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-recent");
+	g_assert (ptask != NULL);
+	array = as_store_get_apps (store);
+	for (guint i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		AsApp *item = g_ptr_array_index (array, i);
+		if (as_app_get_id (item) == NULL)
+			continue;
+		if (!_as_app_is_recent (item, age))
+			continue;
+		app = gs_appstream_create_app (plugin, item, error);
+		if (app == NULL)
+			return FALSE;
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
