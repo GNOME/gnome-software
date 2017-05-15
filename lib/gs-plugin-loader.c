@@ -1010,12 +1010,6 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 		break;
 	}
 
-	/* do not show components without AppData files */
-	if (gs_app_get_description (app) == NULL) {
-		g_debug ("Ignoring %s as no AppData file", gs_app_get_id (app));
-		return FALSE;
-	}
-
 	/* ignore this crazy application */
 	if (g_strcmp0 (gs_app_get_id (app), "gnome-system-monitor-kde.desktop") == 0) {
 		g_debug ("Ignoring KDE version of %s", gs_app_get_id (app));
