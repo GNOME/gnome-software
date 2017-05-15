@@ -599,14 +599,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			gs_app_add_icon (app, ic);
 		}
 	}
-	if (g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
-		if (gs_app_get_name (app) == NULL)
-			gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Zeus");
-		if (gs_app_get_summary (app) == NULL)
-			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Zeus");
-		if (gs_app_get_description (app) == NULL)
-			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, "Zeus!");
-	}
 
 	/* description */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) {
