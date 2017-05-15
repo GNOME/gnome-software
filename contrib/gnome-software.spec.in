@@ -146,16 +146,16 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/applications/org.gnome.Software.desktop
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
-%{_datadir}/appdata/*.appdata.xml
+%{_datadir}/metainfo/*.appdata.xml
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured-*.svg
 %{_datadir}/gnome-software/featured-*.jpg
-%{_datadir}/appdata/org.gnome.Software.Plugin.Epiphany.metainfo.xml
-%{_datadir}/appdata/org.gnome.Software.Plugin.Flatpak.metainfo.xml
-%{_datadir}/appdata/org.gnome.Software.Plugin.Fwupd.metainfo.xml
-%{_datadir}/appdata/org.gnome.Software.Plugin.Odrs.metainfo.xml
-%{_datadir}/appdata/org.gnome.Software.Plugin.Steam.metainfo.xml
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Epiphany.metainfo.xml
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Flatpak.metainfo.xml
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Fwupd.metainfo.xml
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Odrs.metainfo.xml
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Steam.metainfo.xml
 %dir %{_libdir}/gs-plugins-%{gs_plugin_version}
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_appstream.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-categories.so
