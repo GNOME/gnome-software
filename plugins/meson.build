@@ -20,7 +20,9 @@ endif
 if get_option('enable-firmware')
   subdir('fwupd')
 endif
-subdir('limba')
+if get_option('enable-limba')
+   subdir('limba')
+endif
 if get_option('enable-gudev')
   subdir('modalias')
 endif
