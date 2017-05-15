@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -45,6 +45,7 @@ typedef struct
 	gint			 action_cnt;
 	gboolean		 loading_featured;
 	gboolean		 loading_popular;
+	gboolean		 loading_recent;
 	gboolean		 loading_popular_rotating;
 	gboolean		 loading_categories;
 	gboolean		 empty;
@@ -57,11 +58,13 @@ typedef struct
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
+	GtkWidget		*box_recent;
 	GtkWidget		*featured_heading;
 	GtkWidget		*category_heading;
 	GtkWidget		*flowbox_categories;
 	GtkWidget		*flowbox_categories2;
 	GtkWidget		*popular_heading;
+	GtkWidget		*recent_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
 	GtkWidget		*categories_expander_button_down;
@@ -141,6 +144,7 @@ gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 	priv->loading_categories = FALSE;
 	priv->loading_featured = FALSE;
 	priv->loading_popular = FALSE;
+	priv->loading_recent = FALSE;
 	priv->loading_popular_rotating = FALSE;
 
 	/* seems a good place */
@@ -183,6 +187,57 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
 	}
+
+	priv->empty = FALSE;
+
+out:
+	gs_overview_page_decrement_action_cnt (self);
+}
+
+static void
+gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
+{
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	guint i;
+	GsApp *app;
+	GtkWidget *tile;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get recent apps */
+	list = gs_plugin_loader_get_recent_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get recent apps: %s", error->message);
+		goto out;
+	}
+
+	/* not enough to show */
+	if (gs_app_list_length (list) < 6) {
+		g_warning ("Only %u apps for recent list, hiding",
+			   gs_app_list_length (list));
+		gtk_widget_set_visible (priv->box_recent, FALSE);
+		gtk_widget_set_visible (priv->recent_heading, FALSE);
+		goto out;
+	}
+
+	/* Don't show apps from the category that's currently featured as the category of the day */
+	gs_app_list_filter (list, filter_category, priv->category_of_day);
+	gs_app_list_randomize (list);
+
+	gs_container_remove_all (GTK_CONTAINER (priv->box_recent));
+
+	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+		app = gs_app_list_index (list, i);
+		tile = gs_popular_tile_new (app);
+		g_signal_connect (tile, "clicked",
+			  G_CALLBACK (app_tile_clicked), self);
+		gtk_container_add (GTK_CONTAINER (priv->box_recent), tile);
+	}
+	gtk_widget_set_visible (priv->box_recent, TRUE);
+	gtk_widget_set_visible (priv->recent_heading, TRUE);
 
 	priv->empty = FALSE;
 
@@ -511,6 +566,19 @@ gs_overview_page_load (GsOverviewPage *self)
 		priv->action_cnt++;
 	}
 
+	if (!priv->loading_recent) {
+		priv->loading_recent = TRUE;
+		gs_plugin_loader_get_recent_async (priv->plugin_loader,
+						   60 * 60 * 24 * 60,
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						   priv->cancellable,
+						   gs_overview_page_get_recent_cb,
+						   self);
+		priv->action_cnt++;
+	}
+
 	if (!priv->loading_popular_rotating) {
 		const guint MAX_CATS = 2;
 		g_autoptr(GPtrArray) cats_random = NULL;
@@ -804,6 +872,10 @@ gs_overview_page_setup (GsPage *page,
 		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
 	}
 
+	/* hide unless there are enough apps */
+	gtk_widget_set_visible (priv->box_recent, FALSE);
+	gtk_widget_set_visible (priv->recent_heading, FALSE);
+
 	/* handle category expander */
 	g_signal_connect (priv->categories_expander_button_down, "clicked",
 			  G_CALLBACK (gs_overview_page_categories_expander_down_cb), self);
@@ -895,11 +967,13 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, bin_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_recent);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, category_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, featured_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, flowbox_categories);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, flowbox_categories2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, popular_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, recent_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, stack_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, categories_expander_button_down);
