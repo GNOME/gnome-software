@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
- * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -136,6 +136,11 @@ gboolean	gs_flatpak_add_popular		(GsFlatpak		*self,
 						 GError			**error);
 gboolean	gs_flatpak_add_featured		(GsFlatpak		*self,
 						 GsAppList		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	gs_flatpak_add_recent		(GsFlatpak		*self,
+						 GsAppList		*list,
+						 guint64		 age,
 						 GCancellable		*cancellable,
 						 GError			**error);
 void		gs_plugin_flatpak_error_convert	(GError			**perror);

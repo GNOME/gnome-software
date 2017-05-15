@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
- * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -594,6 +594,24 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
 			continue;
 		if (!gs_flatpak_add_featured (flatpak, list, cancellable, error))
+			return FALSE;
+	}
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_recent (GsPlugin *plugin,
+		      GsAppList *list,
+		      guint64 age,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			continue;
+		if (!gs_flatpak_add_recent (flatpak, list, age, cancellable, error))
 			return FALSE;
 	}
 	return TRUE;

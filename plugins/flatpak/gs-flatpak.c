@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
- * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -3213,6 +3213,17 @@ gs_flatpak_add_featured (GsFlatpak *self,
 {
 	return gs_appstream_add_featured (self->plugin, self->store, list,
 					  cancellable, error);
+}
+
+gboolean
+gs_flatpak_add_recent (GsFlatpak *self,
+		       GsAppList *list,
+		       guint64 age,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	return gs_appstream_add_recent (self->plugin, self->store, list, age,
+					cancellable, error);
 }
 
 static void
