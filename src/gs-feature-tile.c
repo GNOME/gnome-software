@@ -68,12 +68,12 @@ app_state_changed_idle (gpointer user_data)
 	css = gs_css_new ();
 	if (markup != NULL)
 		gs_css_parse (css, markup, NULL);
-	gs_utils_widget_set_css_app (tile->app, GTK_WIDGET (tile),
-				     gs_css_get_markup_for_id (css, "tile"));
-	gs_utils_widget_set_css_simple (tile->title,
-					gs_css_get_markup_for_id (css, "name"));
-	gs_utils_widget_set_css_simple (tile->subtitle,
-					gs_css_get_markup_for_id (css, "summary"));
+	gs_utils_widget_set_css (GTK_WIDGET (tile),
+				 gs_css_get_markup_for_id (css, "tile"));
+	gs_utils_widget_set_css (tile->title,
+				 gs_css_get_markup_for_id (css, "name"));
+	gs_utils_widget_set_css (tile->subtitle,
+				 gs_css_get_markup_for_id (css, "summary"));
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 

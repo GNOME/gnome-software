@@ -152,7 +152,7 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
-	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile), css);
+	gs_utils_widget_set_css (GTK_WIDGET (tile), css);
 
 	/* some kinds have boring summaries */
 	switch (gs_app_get_kind (app)) {

@@ -63,9 +63,9 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 		g_autofree gchar *css = NULL;
 		g_autofree gchar *color = gdk_rgba_to_string (tmp);;
 		css = g_strdup_printf ("border-bottom: 3px solid %s", color);
-		gs_utils_widget_set_css_simple (GTK_WIDGET (tile), css);
+		gs_utils_widget_set_css (GTK_WIDGET (tile), css);
 	} else {
-		gs_utils_widget_set_css_simple (GTK_WIDGET (tile), NULL);
+		gs_utils_widget_set_css (GTK_WIDGET (tile), NULL);
 	}
 }
 

@@ -365,7 +365,7 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
 }
 
 void
-gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
+gs_utils_widget_set_css (GtkWidget *widget, const gchar *css)
 {
 	g_autofree gchar *class_name = NULL;
 	g_autoptr(GString) str = NULL;
@@ -382,50 +382,6 @@ gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
 	g_string_append_printf (str, "%s\n", css);
 	g_string_append (str, "}");
 
-	gs_utils_widget_set_css_internal (widget, class_name, str->str);
-}
-
-void
-gs_utils_widget_set_css_app (GsApp *app, GtkWidget *widget, const gchar *css)
-{
-	GPtrArray *key_colors;
-	guint i;
-	g_autofree gchar *class_name = NULL;
-	g_autoptr(GString) css_str = NULL;
-	g_autoptr(GString) str = g_string_sized_new (1024);
-
-	g_return_if_fail (GS_IS_APP (app));
-
-	/* invalid */
-	if (css == NULL) {
-		gs_utils_widget_set_css_simple (widget, css);
-		return;
-	}
-
-	/* replace any key colors */
-	css_str = g_string_new (css);
-	key_colors = gs_app_get_key_colors (app);
-	for (i = 0; i < key_colors->len; i++) {
-		GdkRGBA *color = g_ptr_array_index (key_colors, 1);
-		g_autofree gchar *key = NULL;
-		g_autofree gchar *value = NULL;
-		key = g_strdup_printf ("@keycolor-%02u@", i);
-		value = g_strdup_printf ("rgb(%.0f,%.0f,%.0f)",
-					 color->red * 255.f,
-					 color->green * 255.f,
-					 color->blue * 255.f);
-		as_utils_string_replace (css_str, key, value);
-	}
-
-	/* make into a proper CSS class */
-	class_name = g_strdup_printf ("themed-widget_%p", widget);
-	g_string_append_printf (str, ".%s {\n", class_name);
-	g_string_append_printf (str, "%s\n", css_str->str);
-	g_string_append (str, "}");
-
-	g_string_append_printf (str, ".%s:hover {\n", class_name);
-	g_string_append (str, "  opacity: 0.9;\n");
-	g_string_append (str, "}\n");
 	gs_utils_widget_set_css_internal (widget, class_name, str->str);
 }
 
