@@ -89,7 +89,7 @@ add_global_link_arguments(
   language: 'c'
 )
 
-appstream_glib = dependency('appstream-glib', version : '>= 0.6.13')
+appstream_glib = dependency('appstream-glib', version : '>= 0.7.0')
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.31.5')
 gio_unix = dependency('gio-unix-2.0')
 gmodule = dependency('gmodule-2.0')

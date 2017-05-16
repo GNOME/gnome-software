@@ -396,16 +396,24 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	item = as_store_get_app_by_unique_id (priv->store, unique_id,
 					      AS_STORE_SEARCH_FLAG_USE_WILDCARDS);
 	if (item == NULL) {
-		guint i;
-		GPtrArray *apps;
+		GPtrArray *apps = as_store_get_apps (priv->store);
 		g_debug ("no app with ID %s found in system appstream", unique_id);
-		apps = as_store_get_apps (priv->store);
-		for (i = 0; i < apps->len; i++) {
+		for (guint i = 0; i < apps->len; i++) {
 			item = g_ptr_array_index (apps, i);
 			if (g_strcmp0 (as_app_get_id (item), gs_app_get_id (app)) != 0)
 				continue;
 			g_debug ("possible match: %s",
 				 as_app_get_unique_id (item));
+		}
+
+		/* fall back to trying to get a merge app */
+		apps = as_store_get_apps_by_id_merge (priv->store, gs_app_get_id (app));
+		if (apps != NULL) {
+			for (guint i = 0; i < apps->len; i++) {
+				item = g_ptr_array_index (apps, i);
+				if (!gs_appstream_refine_app (plugin, app, item, error))
+					return FALSE;
+			}
 		}
 		return TRUE;
 	}
