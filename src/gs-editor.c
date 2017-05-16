@@ -49,12 +49,7 @@ static gchar *
 gs_editor_css_download_resources (GsEditor *self, const gchar *css, GError **error)
 {
 	g_autoptr(GsPlugin) plugin = NULL;
-	g_autoptr(GString) css2 = NULL;
 	g_autoptr(SoupSession) soup_session = NULL;
-
-	/* replace keywords */
-	css2 = g_string_new (css);
-	as_utils_string_replace (css2, "@datadir@", DATADIR);
 
 	/* make remote URIs local */
 	plugin = gs_plugin_new ();
@@ -63,7 +58,7 @@ gs_editor_css_download_resources (GsEditor *self, const gchar *css, GError **err
 						      SOUP_SESSION_TIMEOUT, 10,
 						      NULL);
 	gs_plugin_set_soup_session (plugin, soup_session);
-	return gs_plugin_download_rewrite_resource (plugin, css2->str, NULL, error);
+	return gs_plugin_download_rewrite_resource (plugin, css, NULL, error);
 }
 
 typedef struct {

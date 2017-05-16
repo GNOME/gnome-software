@@ -1397,11 +1397,16 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 				     GError **error)
 {
 	guint start = 0;
+	g_autoptr(GString) resource_str = g_string_new (resource);
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
 	g_return_val_if_fail (resource != NULL, NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	/* replace datadir */
+	as_utils_string_replace (resource_str, "@datadir@", DATADIR);
+	resource = resource_str->str;
 
 	/* look in string for any url() links */
 	for (guint i = 0; resource[i] != '\0'; i++) {

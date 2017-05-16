@@ -2753,7 +2753,6 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	const gchar *found;
-	GString *str;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -2772,11 +2771,7 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 			   app->id, key, found, value);
 		return;
 	}
-	str = g_string_new (value);
-	as_utils_string_replace (str, "@datadir@", DATADIR);
-	g_hash_table_insert (app->metadata,
-			     g_strdup (key),
-			     g_string_free (str, FALSE));
+	g_hash_table_insert (app->metadata, g_strdup (key), g_strdup (value));
 }
 
 /**
