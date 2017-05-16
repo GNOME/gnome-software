@@ -80,11 +80,9 @@ gs_plugin_fwupd_error_convert (GError **perror)
 		case FWUPD_ERROR_SIGNATURE_INVALID:
 			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
 			break;
-#if FWUPD_CHECK_VERSION(0,8,0)
 		case FWUPD_ERROR_AC_POWER_REQUIRED:
 			error->code = GS_PLUGIN_ERROR_AC_POWER_REQUIRED;
 			break;
-#endif
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
@@ -144,13 +142,8 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 static void
 gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 {
-#if !FWUPD_CHECK_VERSION(0,7,1)
-	/* fwupd < 0.7.1 only supported the ::Changed() signal */
-	gs_plugin_updates_changed (plugin);
-#endif
 }
 
-#if FWUPD_CHECK_VERSION(0,7,1)
 static void
 gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 				   FwupdResult *device,
@@ -170,9 +163,7 @@ gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 		 fwupd_result_get_device_id (device));
 	gs_plugin_updates_changed (plugin);
 }
-#endif
 
-#if FWUPD_CHECK_VERSION(0,7,3)
 static void
 gs_plugin_fwupd_notify_percentage_cb (GObject *object,
 				      GParamSpec *pspec,
@@ -224,7 +215,6 @@ gs_plugin_fwupd_notify_status_cb (GObject *object,
 		break;
 	}
 }
-#endif
 
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
@@ -264,20 +254,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	fwupd_error_quark ();
 	g_signal_connect (priv->client, "changed",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
-#if FWUPD_CHECK_VERSION(0,7,1)
 	g_signal_connect (priv->client, "device-added",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
 	g_signal_connect (priv->client, "device-removed",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
 	g_signal_connect (priv->client, "device-changed",
 			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
-#endif
-#if FWUPD_CHECK_VERSION(0,7,3)
 	g_signal_connect (priv->client, "notify::percentage",
 			  G_CALLBACK (gs_plugin_fwupd_notify_percentage_cb), plugin);
 	g_signal_connect (priv->client, "notify::status",
 			  G_CALLBACK (gs_plugin_fwupd_notify_status_cb), plugin);
-#endif
 
 	/* get the hash of the previously downloaded file */
 	priv->lvfs_sig_fn = gs_utils_get_cache_filename ("firmware",
@@ -340,18 +326,12 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 {
 	FwupdDeviceFlags flags;
 	GsApp *app;
-#if FWUPD_CHECK_VERSION(0,7,2)
 	GPtrArray *guids;
-#endif
 	const gchar *id;
 	g_autoptr(AsIcon) icon = NULL;
 
 	/* get from cache */
-#if FWUPD_CHECK_VERSION(0,7,3)
 	id = fwupd_result_get_unique_id (res);
-#else
-	id = fwupd_result_get_update_id (res);
-#endif
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
 		app = gs_app_new (id);
@@ -390,7 +370,6 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 		gs_app_set_id (app, fwupd_result_get_update_id (res));
 	}
 
-#if FWUPD_CHECK_VERSION(0,7,2)
 	guids = fwupd_result_get_guids (res);
 	if (guids->len > 0) {
 		guint i;
@@ -401,12 +380,6 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 		guid_str = g_strjoinv (",", tmp);
 		gs_app_set_metadata (app, "fwupd::Guid", guid_str);
 	}
-#else
-	if (fwupd_result_get_guid (res) != NULL) {
-		gs_app_set_metadata (app, "fwupd::Guid",
-				     fwupd_result_get_guid (res));
-	}
-#endif
 	if (fwupd_result_get_update_name (res) != NULL) {
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 				 fwupd_result_get_update_name (res));
@@ -457,13 +430,11 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 			gs_app_set_update_details (app, tmp);
 	}
 
-#if FWUPD_CHECK_VERSION(0,7,3)
 	/* needs action */
 	if (fwupd_result_has_device_flag (res, FU_DEVICE_FLAG_NEEDS_BOOTLOADER))
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
 	else
 		gs_app_remove_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
-#endif
 
 	/* the same as we have already */
 	if (g_strcmp0 (fwupd_result_get_device_version (res),
@@ -967,13 +938,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
-#if FWUPD_CHECK_VERSION(0,7,2)
-	guint i;
 	g_autoptr(GPtrArray) results = NULL;
-#else
-	g_autoptr(FwupdResult) res = NULL;
-	g_autoptr(GsApp) app = NULL;
-#endif
 	const gchar *mimetypes[] = {
 		"application/vnd.ms-cab-compressed",
 		NULL };
@@ -987,7 +952,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	/* get results */
 	filename = g_file_get_path (file);
-#if FWUPD_CHECK_VERSION(0,7,2)
 	results = fwupd_client_get_details_local (priv->client,
 						  filename,
 						  cancellable,
@@ -996,7 +960,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
 	}
-	for (i = 0; i < results->len; i++) {
+	for (guint i = 0; i < results->len; i++) {
 		FwupdResult *res = g_ptr_array_index (results, i);
 		g_autoptr(GsApp) app = NULL;
 
@@ -1009,23 +973,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 					gs_app_get_update_details (app));
 		gs_app_list_add (list, app);
 	}
-#else
-	res = fwupd_client_get_details (priv->client,
-					filename,
-					cancellable,
-					error);
-	if (res == NULL) {
-		gs_plugin_fwupd_error_convert (error);
-		return FALSE;
-	}
-	app = gs_plugin_fwupd_new_app_from_results (plugin, res);
-
-	/* we have no update view for local files */
-	gs_app_set_version (app, gs_app_get_update_version (app));
-	gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
-				gs_app_get_update_details (app));
-	gs_app_list_add (list, app);
-#endif
 
 	return TRUE;
 }
