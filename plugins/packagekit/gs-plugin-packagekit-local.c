@@ -159,6 +159,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	const gchar *mimetypes[] = {
 		"application/x-app-package",
 		"application/x-deb",
+		"application/vnd.debian.binary-package",
 		"application/x-redhat-package-manager",
 		"application/x-rpm",
 		NULL };
