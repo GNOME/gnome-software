@@ -386,12 +386,9 @@ gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
 }
 
 void
-gs_utils_widget_set_css_app (GsApp *app,
-			     GtkWidget *widget,
-			     const gchar *metadata_css)
+gs_utils_widget_set_css_app (GsApp *app, GtkWidget *widget, const gchar *css)
 {
 	GPtrArray *key_colors;
-	const gchar *css;
 	guint i;
 	g_autofree gchar *class_name = NULL;
 	g_autoptr(GString) css_str = NULL;
@@ -400,7 +397,6 @@ gs_utils_widget_set_css_app (GsApp *app,
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* invalid */
-	css = gs_app_get_metadata_item (app, metadata_css);
 	if (css == NULL) {
 		gs_utils_widget_set_css_simple (widget, css);
 		return;

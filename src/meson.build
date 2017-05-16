@@ -25,6 +25,7 @@ gnome_software_sources = [
   'gs-category-page.c',
   'gs-category-tile.c',
   'gs-common.c',
+  'gs-css.c',
   'gs-content-rating.c',
   'gs-details-page.c',
   'gs-extras-page.c',
@@ -140,6 +141,7 @@ executable(
   sources : [
     'gs-app-tile.c',
     'gs-common.c',
+    'gs-css.c',
     'gs-editor.c',
     'gs-summary-tile.c',
     'gs-star-widget.c',
@@ -262,4 +264,35 @@ if get_option('enable-packagekit')
     install_dir: join_paths(get_option('datadir'), 'dbus-1', 'services'),
     configuration : conf
   )
+endif
+
+if get_option('enable-tests')
+  cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
+  e = executable(
+    'gs-self-test-src',
+    sources : [
+      'gs-css.c',
+      'gs-common.c',
+      'gs-self-test.c',
+    ],
+    include_directories : [
+      include_directories('..'),
+      include_directories('../lib'),
+    ],
+    dependencies : [
+      appstream_glib,
+      gio_unix,
+      gmodule,
+      gtk,
+      json_glib,
+      libm,
+      libsecret,
+      libsoup,
+    ],
+    link_with : [
+      libgnomesoftware
+    ],
+    c_args : cargs
+  )
+  test('gs-self-test-src', e)
 endif

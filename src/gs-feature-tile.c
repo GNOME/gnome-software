@@ -26,6 +26,7 @@
 
 #include "gs-feature-tile.h"
 #include "gs-common.h"
+#include "gs-css.h"
 
 struct _GsFeatureTile
 {
@@ -50,7 +51,9 @@ app_state_changed_idle (gpointer user_data)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (user_data);
 	AtkObject *accessible;
+	const gchar *markup;
 	g_autofree gchar *name = NULL;
+	g_autoptr(GsCss) css = NULL;
 
 	/* nothing set yet */
 	if (tile->app == NULL)
@@ -61,8 +64,16 @@ app_state_changed_idle (gpointer user_data)
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (tile->app));
 
 	/* perhaps set custom css */
+	markup = gs_app_get_metadata_item (tile->app, "GnomeSoftware::FeatureTile-css");
+	css = gs_css_new ();
+	if (markup != NULL)
+		gs_css_parse (css, markup, NULL);
 	gs_utils_widget_set_css_app (tile->app, GTK_WIDGET (tile),
-				     "GnomeSoftware::FeatureTile-css");
+				     gs_css_get_markup_for_id (css, "tile"));
+	gs_utils_widget_set_css_simple (tile->title,
+					gs_css_get_markup_for_id (css, "name"));
+	gs_utils_widget_set_css_simple (tile->subtitle,
+					gs_css_get_markup_for_id (css, "summary"));
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 

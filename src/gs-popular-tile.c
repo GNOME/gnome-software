@@ -97,6 +97,7 @@ static void
 gs_popular_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
 	GsPopularTile *tile = GS_POPULAR_TILE (app_tile);
+	const gchar *css;
 
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
@@ -125,8 +126,8 @@ gs_popular_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	app_state_changed (tile->app, NULL, tile);
 
 	/* perhaps set custom css */
-	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
-				     "GnomeSoftware::PopularTile-css");
+	css = gs_app_get_metadata_item (app, "GnomeSoftware::PopularTile-css");
+	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile), css);
 
 	if (gs_app_get_pixbuf (tile->app) != NULL) {
 		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), gs_app_get_pixbuf (tile->app));

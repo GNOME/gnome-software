@@ -26,6 +26,7 @@
 #include <locale.h>
 
 #include "gs-common.h"
+#include "gs-css.h"
 #include "gs-feature-tile.h"
 #include "gs-summary-tile.h"
 #include "gs-upgrade-banner.h"
@@ -61,60 +62,21 @@ gs_editor_css_download_resources (GsEditor *self, const gchar *css, GError **err
 	return gs_plugin_download_rewrite_resource (plugin, css, NULL, error);
 }
 
-typedef struct {
-	GsEditor	*self;
-	GError		**error;
-} GsDesignErrorHelper;
-
-static void
-gs_design_css_parsing_error_cb (GtkCssProvider *provider,
-				GtkCssSection *section,
-				GError *error,
-				gpointer user_data)
+static gchar *
+_css_rewrite_cb (gpointer user_data, const gchar *markup, GError **error)
 {
-	GsDesignErrorHelper *helper = (GsDesignErrorHelper *) user_data;
-	if (*(helper->error) != NULL) {
-		g_warning ("ignoring parse error %u:%u: %s",
-			   gtk_css_section_get_start_line (section),
-			   gtk_css_section_get_start_position (section),
-			   error->message);
-		return;
-	}
-	*(helper->error) = g_error_copy (error);
+	GsEditor *self = (GsEditor *) user_data;
+	return gs_editor_css_download_resources (self, markup, error);
 }
 
 static gboolean
-gs_design_validate_css (GsEditor *self, const gchar *css, GError **error)
+gs_design_validate_css (GsEditor *self, const gchar *markup, GError **error)
 {
-	GsDesignErrorHelper helper;
-	g_autofree gchar *css_new = NULL;
-	g_autoptr(GString) str = NULL;
-	g_autoptr(GtkCssProvider) provider = NULL;
-
-	/* nothing set */
-	if (css == NULL)
-		return TRUE;
-
-	/* remove custom class if NULL */
-	str = g_string_new (NULL);
-	g_string_append (str, ".themed-widget {");
-	css_new = gs_editor_css_download_resources (self, css, error);
-	if (css_new == NULL)
+	g_autoptr(GsCss) css = gs_css_new ();
+	gs_css_set_rewrite_func (css, _css_rewrite_cb, self);
+	if (!gs_css_parse (css, markup, error))
 		return FALSE;
-	g_string_append (str, css_new);
-	g_string_append (str, "}");
-
-	/* set up custom provider */
-	helper.self = self;
-	helper.error = error;
-	provider = gtk_css_provider_new ();
-	g_signal_connect (provider, "parsing-error",
-			  G_CALLBACK (gs_design_css_parsing_error_cb), &helper);
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data (provider, str->str, -1, NULL);
-	return *(helper.error) == NULL;
+	return gs_css_validate (css, error);
 }
 
 static void
@@ -220,13 +182,13 @@ gs_editor_convert_app (GsEditor *self, AsApp *item)
 	/* copy metadata */
 	for (guint i = 0; keys[i] != NULL; i++) {
 		g_autoptr(GError) error = NULL;
-		const gchar *css = as_app_get_metadata_item (item, keys[i]);
-		if (css != NULL) {
+		const gchar *markup = as_app_get_metadata_item (item, keys[i]);
+		if (markup != NULL) {
 			g_autofree gchar *css_new = NULL;
-			css_new = gs_editor_css_download_resources (self, css, &error);
+			css_new = gs_editor_css_download_resources (self, markup, &error);
 			if (css_new == NULL) {
 				g_warning ("%s", error->message);
-				gs_app_set_metadata (app, keys[i], css);
+				gs_app_set_metadata (app, keys[i], markup);
 			} else {
 				gs_app_set_metadata (app, keys[i], css_new);
 			}

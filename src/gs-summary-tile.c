@@ -115,6 +115,7 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
 	const GdkPixbuf *pixbuf;
 	GsSummaryTile *tile = GS_SUMMARY_TILE (app_tile);
+	const gchar *css;
 	g_autofree gchar *text = NULL;
 
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -150,8 +151,8 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
 
 	/* perhaps set custom css */
-	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
-				     "GnomeSoftware::AppTile-css");
+	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
+	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile), css);
 
 	/* some kinds have boring summaries */
 	switch (gs_app_get_kind (app)) {
