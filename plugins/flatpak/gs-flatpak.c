@@ -242,9 +242,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				   AS_APP_SEARCH_MATCH_COMMENT |
 				   AS_APP_SEARCH_MATCH_NAME |
 				   AS_APP_SEARCH_MATCH_KEYWORD |
-#if AS_CHECK_VERSION(0,6,13)
 				   AS_APP_SEARCH_MATCH_ORIGIN |
-#endif
 				   AS_APP_SEARCH_MATCH_ID);
 	if (!as_store_from_file (store, file, NULL, cancellable, error)) {
 		gs_utils_error_convert_appstream (error);
@@ -257,17 +255,6 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		AsApp *app = g_ptr_array_index (apps, i);
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));
 	}
-
-#if !AS_CHECK_VERSION(0,6,13)
-	/* add the origin as a keyword */
-	for (i = 0; i < apps->len; i++) {
-		AsApp *app = g_ptr_array_index (apps, i);
-		g_debug ("adding keyword '%s' to %s",
-			 flatpak_remote_get_name (xremote),
-			 as_app_get_id (app));
-		as_app_add_keyword (app, NULL, flatpak_remote_get_name (xremote));
-	}
-#endif
 
 	/* ensure the token cache */
 	as_store_load_search_cache (store);
@@ -354,6 +341,7 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		g_autofree gchar *fn_desktop = NULL;
 		g_autoptr(GError) error_local = NULL;
 		g_autoptr(AsApp) app = NULL;
+		g_autoptr(AsFormat) format = as_format_new ();
 
 		/* ignore */
 		if (g_strcmp0 (fn, "mimeinfo.cache") == 0)
@@ -384,17 +372,9 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		/* add */
 		as_app_set_state (app, AS_APP_STATE_INSTALLED);
 		as_app_set_scope (app, self->scope);
-#if AS_CHECK_VERSION(0,6,9)
-{
-		g_autoptr(AsFormat) format = as_format_new ();
 		as_format_set_kind (format, AS_FORMAT_KIND_DESKTOP);
 		as_format_set_filename (format, fn_desktop);
 		as_app_add_format (app, format);
-}
-#else
-		as_app_set_source_kind (app, AS_APP_SOURCE_KIND_DESKTOP);
-		as_app_set_source_file (app, fn_desktop);
-#endif
 		as_app_set_icon_path (app, path_exports);
 		as_app_add_keyword (app, NULL, "flatpak");
 		as_store_add_app (self->store, app);
