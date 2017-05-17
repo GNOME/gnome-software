@@ -47,10 +47,6 @@ struct _GsPluginLoaderClass
 	void			(*reload)		(GsPluginLoader	*plugin_loader);
 };
 
-typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 gpointer	 user_data);
-
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_get_installed_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags refine_flags,
