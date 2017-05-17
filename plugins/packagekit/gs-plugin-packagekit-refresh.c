@@ -43,7 +43,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->task = pk_task_new ();
 	pk_task_set_only_download (priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
-	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
 
 	/* we can return better results than dpkg directly */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
