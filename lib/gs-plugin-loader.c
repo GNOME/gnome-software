@@ -551,9 +551,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderJob *job,
 		break;
 	case GS_PLUGIN_ACTION_UPDATE:
 		if (g_strcmp0 (job->function_name, "gs_plugin_update_app") == 0) {
-			GsPluginRefineAppFunc plugin_func = func;
-			ret = plugin_func (plugin, app, job->refine_flags,
-					   cancellable, &error_local);
+			GsPluginActionFunc plugin_func = func;
+			ret = plugin_func (plugin, app, cancellable, &error_local);
 		} else if (g_strcmp0 (job->function_name, "gs_plugin_update") == 0) {
 			GsPluginUpdateFunc plugin_func = func;
 			ret = plugin_func (plugin, list, cancellable, &error_local);
