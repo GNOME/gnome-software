@@ -60,7 +60,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_signal_connect (priv->control, "repo-list-changed",
 			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
 	pk_client_set_background (priv->client, FALSE);
-	pk_client_set_interactive (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
 
 	/* we can get better results than the RPM plugin */

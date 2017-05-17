@@ -46,7 +46,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->client = pk_client_new ();
 	pk_client_set_background (priv->client, FALSE);
-	pk_client_set_interactive (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
 	priv->sources = g_hash_table_new_full (g_str_hash,
 						       g_str_equal,
