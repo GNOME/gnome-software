@@ -155,7 +155,6 @@ gs_utils_get_cache_filename (const gchar *kind,
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
 
 	/* get basename */
-	basename = g_path_get_basename (resource);
 	if (flags & GS_UTILS_CACHE_FLAG_USE_HASH) {
 		g_autofree gchar *basename_tmp = g_path_get_basename (resource);
 		g_autofree gchar *hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1,
