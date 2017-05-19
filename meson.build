@@ -110,6 +110,7 @@ endif
 
 if get_option('enable-gnome-desktop')
   gnome_desktop = dependency('gnome-desktop-3.0', version : '>= 3.17.92')
+  conf.set('HAVE_GNOME_DESKTOP', 1)
 endif
 
 if get_option('enable-gtkspell')

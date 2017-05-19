@@ -96,6 +96,10 @@ if get_option('enable-packagekit')
   gnome_software_dependencies += [packagekit]
 endif
 
+if get_option('enable-gnome-desktop')
+  gnome_software_dependencies += [gnome_desktop]
+endif
+
 executable(
   'gnome-software',
   resources_src,
