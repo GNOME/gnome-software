@@ -198,6 +198,7 @@ main (int argc, char **argv)
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gint i;
 	guint cache_age = 0;
+	guint max_results = 0;
 	gint repeat = 1;
 	int status = 0;
 	g_auto(GStrv) plugin_blacklist = NULL;
@@ -222,6 +223,8 @@ main (int argc, char **argv)
 		  "Repeat the action this number of times", NULL },
 		{ "cache-age", '\0', 0, G_OPTION_ARG_INT, &cache_age,
 		  "Use this maximum cache age in seconds", NULL },
+		{ "max-results", '\0', 0, G_OPTION_ARG_INT, &max_results,
+		  "Return a maximum number of results", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
 		{ "plugin-blacklist", '\0', 0, G_OPTION_ARG_STRING, &plugin_blacklist_str,
@@ -310,7 +313,7 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			list = gs_plugin_loader_search (plugin_loader,
-							argv[2], 0,
+							argv[2], max_results,
 							NULL, NULL,
 							refine_flags,
 							GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
