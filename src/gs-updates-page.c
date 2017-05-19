@@ -658,6 +658,9 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 	/* unconditionally re-enable this */
 	gtk_widget_set_sensitive (GTK_WIDGET (helper->self->button_update_all), TRUE);
 
+	/* a good place */
+	gs_shell_profile_dump (helper->self->shell);
+
 	/* get the results */
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to perform update: %s", error->message);
