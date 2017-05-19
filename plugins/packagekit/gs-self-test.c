@@ -213,6 +213,7 @@ gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *fn = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* no packagekit, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "packagekit-local")) {
@@ -224,12 +225,10 @@ gs_plugins_packagekit_local_func (GsPluginLoader *plugin_loader)
 	fn = gs_test_get_filename (TESTDATADIR, "chiron-1.1-1.fc24.x86_64.rpm");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
-	app = gs_plugin_loader_file_to_app (plugin_loader,
-					    file,
-					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					    NULL,
-					    &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
 		g_test_skip ("rpm files not supported");

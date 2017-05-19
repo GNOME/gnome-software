@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -231,9 +231,9 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 	self->waiting = FALSE;
 	self->cache_valid = TRUE;
 
-	list = gs_plugin_loader_get_installed_finish (plugin_loader,
-						      res,
-						      &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get installed apps: %s", error->message);
@@ -254,6 +254,7 @@ static void
 gs_installed_page_load (GsInstalledPage *self)
 {
 	GsPluginRefineFlags flags;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	if (self->waiting)
 		return;
@@ -276,13 +277,16 @@ gs_installed_page_load (GsInstalledPage *self)
 	if (should_show_installed_size (self))
 		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
 
-	/* get popular apps */
-	gs_plugin_loader_get_installed_async (self->plugin_loader,
-					      flags,
-					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					      self->cancellable,
-					      gs_installed_page_get_installed_cb,
-					      self);
+	/* get installed apps */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", flags,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader,
+					    plugin_job,
+					    self->cancellable,
+					    gs_installed_page_get_installed_cb,
+					    self);
 	gs_start_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }

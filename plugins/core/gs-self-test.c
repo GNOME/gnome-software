@@ -94,6 +94,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -103,13 +104,11 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
 
 	/* get search result based on addon keyword */
-	list = gs_plugin_loader_search (plugin_loader,
-					"yellow", 0,
-					NULL, NULL,
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					NULL,
-					&error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", "yellow",
+					 NULL);
+	gs_plugin_job_set_refine_flags (plugin_job, GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
@@ -128,6 +127,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app3 = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* drop all caches */
@@ -135,12 +135,12 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 
 	/* refine system application */
 	app = gs_plugin_loader_get_system_app (plugin_loader);
-	ret = gs_plugin_loader_app_refine (plugin_loader,
-					   app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);

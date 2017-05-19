@@ -41,28 +41,28 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* install */
 	app = gs_app_new ("chiron.desktop");
 	gs_app_set_management_plugin (app, "dummy");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_ACTION_INSTALL,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					 "app", app,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 
 	/* remove */
-	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_ACTION_REMOVE,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -78,6 +78,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) events = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -86,12 +87,12 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("chiron.desktop");
 	gs_app_set_management_plugin (app, "dummy");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	ret = gs_plugin_loader_app_action (plugin_loader, app,
-					   GS_PLUGIN_ACTION_UPDATE,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-					   GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
+					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -125,17 +126,18 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the extra bits */
 	app = gs_app_new ("chiron.desktop");
 	gs_app_set_management_plugin (app, "dummy");
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -152,15 +154,16 @@ gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	guint i;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* get the extra bits */
 	app = gs_app_new ("zeus.desktop");
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -187,14 +190,14 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the updates list */
-	list = gs_plugin_loader_get_updates (plugin_loader,
-					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
-					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					     NULL,
-					     &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
@@ -232,13 +235,11 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the updates list */
-	list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
-						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-						     NULL,
-						     &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
@@ -254,24 +255,22 @@ gs_plugins_dummy_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Release specific tagline");
 
 	/* download the update */
-	ret = gs_plugin_loader_app_action (plugin_loader,
-					   app,
-					   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+					 "app", app,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
 
 	/* trigger the update */
-	ret = gs_plugin_loader_app_action (plugin_loader,
-					   app,
-					   GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
+					 "app", app,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -288,18 +287,18 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get installed packages */
-	list = gs_plugin_loader_get_installed (plugin_loader,
-					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
-					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
-					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
-					       GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					       NULL,
-					       &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
@@ -352,15 +351,14 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get search result based on addon keyword */
-	list = gs_plugin_loader_search (plugin_loader,
-					"spell", 0,
-					NULL, NULL,
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					NULL,
-					&error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", "spell",
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
@@ -377,13 +375,13 @@ gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	app = gs_plugin_loader_url_to_app (plugin_loader,
-					   "dummy://chiron.desktop",
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
+					 "search", "dummy://chiron.desktop",
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
@@ -399,24 +397,20 @@ gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list1 = NULL;
 	g_autoptr(GsAppList) list2 = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* ensure we get the same results back from calling the methods twice */
-	list1 = gs_plugin_loader_get_distro_upgrades (plugin_loader,
-						      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-						      NULL,
-						      &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	list1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list1 != NULL);
 	g_assert_cmpint (gs_app_list_length (list1), ==, 1);
 	app1 = gs_app_list_index (list1, 0);
 
-	list2 = gs_plugin_loader_get_distro_upgrades (plugin_loader,
-						      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-						      NULL,
-						      &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	list2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list2 != NULL);
@@ -435,8 +429,10 @@ gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(AsReview) review = NULL;
 	g_autoptr(AsReview) review2 = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* check initial state */
 	auth = gs_plugin_loader_get_auth_by_id (plugin_loader, "dummy");
@@ -444,57 +440,69 @@ gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_auth_get_flags (auth), ==, 0);
 
 	/* do an action that returns a URL */
-	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
-					    GS_PLUGIN_ACTION_AUTH_REGISTER,
-					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					    NULL, &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_REGISTER,
+					 "auth", auth,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
-	g_assert (!ret);
+	g_assert (list == NULL);
 	g_clear_error (&error);
 	g_assert (!gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
 
 	/* do an action that requires a login */
 	app = gs_app_new (NULL);
 	review = as_review_new ();
-	ret = gs_plugin_loader_review_action (plugin_loader, app, review,
-					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
-					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					      NULL, &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_REMOVE,
+					 "app", app,
+					 "review", review,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED);
 	g_assert (!ret);
 	g_clear_error (&error);
 
 	/* pretend to auth with no credentials */
-	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
-					    GS_PLUGIN_ACTION_AUTH_LOGIN,
-					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					    NULL, &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
+					 "auth", auth,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
-	g_assert (!ret);
+	g_assert (list == NULL);
 	g_clear_error (&error);
 	g_assert (!gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
 
 	/* auth again with correct credentials */
 	gs_auth_set_username (auth, "dummy");
 	gs_auth_set_password (auth, "dummy");
-	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
-					    GS_PLUGIN_ACTION_AUTH_LOGIN,
-					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					    NULL, &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
+						 "auth", auth,
+						 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
-	g_assert (ret);
+	g_assert (list != NULL);
 	g_assert (gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
 
 	/* do the action that requires a login */
 	review2 = as_review_new ();
-	ret = gs_plugin_loader_review_action (plugin_loader, app, review2,
-					      GS_PLUGIN_ACTION_REVIEW_REMOVE,
-					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					      NULL, &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_REMOVE,
+					 "app", app,
+					 "review", review2,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
@@ -508,13 +516,13 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list2 = NULL;
 	const gchar *popular_override = "chiron.desktop,zeus.desktop";
 	g_auto(GStrv) apps = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* use the plugin's add_popular function */
-	list1 = gs_plugin_loader_get_popular (plugin_loader,
-					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					     NULL,
-					     &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	list1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list1 != NULL);
@@ -522,11 +530,9 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 
 	/* override the popular list (do not use the add_popular function) */
 	g_setenv ("GNOME_SOFTWARE_POPULAR", popular_override, TRUE);
-	list2 = gs_plugin_loader_get_popular (plugin_loader,
-					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					     GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					     NULL,
-					     &error);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR, NULL);
+	list2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list2 != NULL);

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -1096,6 +1096,8 @@ gs_details_page_authenticate_cb (GtkDialog *dialog,
                                  GtkResponseType response_type,
                                  GsDetailsPageReviewHelper *helper)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
@@ -1103,15 +1105,16 @@ gs_details_page_authenticate_cb (GtkDialog *dialog,
 		gs_details_page_review_helper_free (helper);
 		return;
 	}
-	gs_plugin_loader_review_action_async (helper->self->plugin_loader,
-					      helper->app,
-					      helper->review,
-					      helper->action,
-					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					      helper->self->cancellable,
-					      gs_details_page_app_set_review_cb,
-					      helper);
+	plugin_job = gs_plugin_job_newv (helper->action,
+					 "app", helper->app,
+					 "review", helper->review,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (helper->self->plugin_loader, plugin_job,
+					    helper->self->cancellable,
+					    gs_details_page_app_set_review_cb,
+					    helper);
 }
 
 static void
@@ -1123,7 +1126,7 @@ gs_details_page_app_set_review_cb (GObject *source,
 	g_autoptr(GsDetailsPageReviewHelper) helper = (GsDetailsPageReviewHelper *) user_data;
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		/* try to authenticate then retry */
 		if (g_error_matches (error,
 				     GS_PLUGIN_ERROR,
@@ -1157,19 +1160,22 @@ gs_details_page_review_button_clicked_cb (GsReviewRow *row,
                                           GsDetailsPage *self)
 {
 	GsDetailsPageReviewHelper *helper = g_new0 (GsDetailsPageReviewHelper, 1);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	helper->self = g_object_ref (self);
 	helper->app = g_object_ref (self->app);
 	helper->review = g_object_ref (gs_review_row_get_review (row));
 	helper->action = action;
-	gs_plugin_loader_review_action_async (self->plugin_loader,
-					      helper->app,
-					      helper->review,
-					      helper->action,
-					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					      self->cancellable,
-					      gs_details_page_app_set_review_cb,
-					      helper);
+	plugin_job = gs_plugin_job_newv (helper->action,
+					 "app", helper->app,
+					 "review", helper->review,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_details_page_app_set_review_cb,
+					    helper);
 }
 
 static void
@@ -1311,7 +1317,7 @@ gs_details_page_app_refine2_cb (GObject *source,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to refine %s: %s",
 			   gs_app_get_id (self->app),
 			   error->message);
@@ -1326,14 +1332,18 @@ gs_details_page_app_refine2_cb (GObject *source,
 static void
 gs_details_page_app_refine2 (GsDetailsPage *self)
 {
-	gs_plugin_loader_app_refine_async (self->plugin_loader, self->app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					   self->cancellable,
-					   gs_details_page_app_refine2_cb,
-					   self);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", self->app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_details_page_app_refine2_cb,
+					    self);
 }
 
 static void
@@ -1409,7 +1419,7 @@ gs_details_page_app_refine_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *app_dump = NULL;
 
-	ret = gs_plugin_loader_app_refine_finish (plugin_loader,
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
 						  res,
 						  &error);
 	if (!ret) {
@@ -1501,15 +1511,18 @@ gs_details_page_file_to_app_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
 
-	app = gs_plugin_loader_file_to_app_finish (plugin_loader,
-						   res,
-						   &error);
-	if (app == NULL)
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
+	if (list == NULL) {
 		g_warning ("failed to convert file to GsApp: %s", error->message);
-	set_app (self, app);
+	} else {
+		GsApp *app = gs_app_list_index (list, 0);
+		set_app (self, app);
+	}
 }
 
 static void
@@ -1519,37 +1532,43 @@ gs_details_page_url_to_app_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
 
-	app = gs_plugin_loader_url_to_app_finish (plugin_loader,
-						  res,
-						  &error);
-	if (app == NULL)
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
+	if (list == NULL) {
 		g_warning ("failed to convert URL to GsApp: %s", error->message);
-	set_app (self, app);
+	} else {
+		GsApp *app = gs_app_list_index (list, 0);
+		set_app (self, app);
+	}
 }
 
 void
 gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
-	gs_plugin_loader_file_to_app_async (self->plugin_loader,
-					    file,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
-					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_file_to_app_cb,
 					    self);
@@ -1558,50 +1577,57 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 void
 gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
-	gs_plugin_loader_url_to_app_async (self->plugin_loader,
-					   url,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					   self->cancellable,
-					   gs_details_page_url_to_app_cb,
-					   self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
+					 "search", url,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_details_page_url_to_app_cb,
+					    self);
 }
 
 static void
 gs_details_page_load (GsDetailsPage *self)
 {
-	gs_plugin_loader_app_refine_async (self->plugin_loader, self->app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					   self->cancellable,
-					   gs_details_page_app_refine_cb,
-					   self);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", self->app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_details_page_app_refine_cb,
+					    self);
 }
 
 static void
@@ -1788,6 +1814,7 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(AsReview) review = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsDetailsPageReviewHelper *helper;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
 
@@ -1812,15 +1839,16 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 	helper->app = g_object_ref (self->app);
 	helper->review = g_object_ref (review);
 	helper->action = GS_PLUGIN_ACTION_REVIEW_SUBMIT;
-	gs_plugin_loader_review_action_async (self->plugin_loader,
-					      helper->app,
-					      helper->review,
-					      helper->action,
-					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					      self->cancellable,
-					      gs_details_page_app_set_review_cb,
-					      helper);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_SUBMIT,
+					 "app", helper->app,
+					 "review", helper->review,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_details_page_app_set_review_cb,
+					    helper);
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));

@@ -31,6 +31,7 @@ gs_plugins_epiphany_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* no epiphany, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "epiphany"))
@@ -39,11 +40,11 @@ gs_plugins_epiphany_func (GsPluginLoader *plugin_loader)
 	/* a webapp with a local icon */
 	app = gs_app_new ("arachne.desktop");
 	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);

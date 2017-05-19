@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -455,7 +455,7 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 	self->cache_valid = TRUE;
 
 	/* get the results */
-	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPDATES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
@@ -537,7 +537,7 @@ gs_updates_page_get_upgrades_cb (GObject *source_object,
 	g_autoptr(GsAppList) list = NULL;
 
 	/* get the results */
-	list = gs_plugin_loader_get_distro_upgrades_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
@@ -572,7 +572,7 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* get result */
-	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get system: %s", error->message);
 		return;
@@ -615,6 +615,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 {
 	guint64 refine_flags;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	if (self->action_cnt > 0)
 		return;
@@ -625,31 +626,40 @@ gs_updates_page_load (GsUpdatesPage *self)
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES);
 	self->action_cnt++;
-	gs_plugin_loader_get_updates_async (self->plugin_loader,
-					    refine_flags,
-					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
+					 "refine-flags", refine_flags,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_updates_page_get_updates_cb,
 					    self);
 
 	/* get the system state */
+	g_object_unref (plugin_job);
 	app = gs_plugin_loader_get_system_app (self->plugin_loader);
-	gs_plugin_loader_app_refine_async (self->plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
-					   self->cancellable,
-					   gs_updates_page_get_system_finished_cb,
-					   self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", refine_flags,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_updates_page_get_system_finished_cb,
+					    self);
 
 	/* don't refresh every each time */
 	if ((self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPGRADES) == 0) {
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
-		gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
-							    refine_flags,
-							    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-							    self->cancellable,
-							    gs_updates_page_get_upgrades_cb,
-							    self);
+		g_object_unref (plugin_job);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
+						 "refine-flags", refine_flags,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader,
+						    plugin_job,
+						    self->cancellable,
+						    gs_updates_page_get_upgrades_cb,
+						    self);
 		self->action_cnt++;
 	}
 }
@@ -752,7 +762,7 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
-	ret = gs_plugin_loader_refresh_finish (plugin_loader, res, &error);
+	ret = gs_plugin_loader_job_action_finish (plugin_loader, res, &error);
 	if (!ret) {
 		/* user cancel */
 		if (g_error_matches (error,
@@ -783,6 +793,7 @@ static void
 gs_updates_page_get_new_updates (GsUpdatesPage *self)
 {
 	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* force a check for updates and download */
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_REFRESH);
@@ -797,13 +808,16 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_METADATA;
 	if (g_settings_get_boolean (self->settings, "download-updates"))
 		refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
-	gs_plugin_loader_refresh_async (self->plugin_loader,
-					10 * 60,
-					refresh_flags,
-					GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					self->cancellable_refresh,
-					(GAsyncReadyCallback) gs_updates_page_refresh_cb,
-					self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", refresh_flags,
+					 "refresh-flags", refresh_flags,
+					 "age", 10 * 60,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable_refresh,
+					    (GAsyncReadyCallback) gs_updates_page_refresh_cb,
+					    self);
 }
 
 static void
@@ -938,7 +952,7 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_action_finish (self->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
 	}
@@ -950,6 +964,7 @@ gs_updates_page_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer u
 	GsUpdatesPage *self = GS_UPDATES_PAGE (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
@@ -964,13 +979,14 @@ gs_updates_page_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer u
 
 	/* cancel trigger */
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
-	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   gs_app_list_index (apps, 0),
-					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					   self->cancellable,
-					   cancel_trigger_failed_cb,
-					   self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
+					 "app", gs_app_list_index (apps, 0),
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    cancel_trigger_failed_cb,
+					    self);
 }
 
 static void
@@ -984,7 +1000,7 @@ gs_updates_page_perform_update_cb (GsPluginLoader *plugin_loader,
 	gtk_widget_set_sensitive (GTK_WIDGET (self->button_update_all), TRUE);
 
 	/* get the results */
-	if (!gs_plugin_loader_update_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("Failed to perform update: %s", error->message);
 		return;
 	}
@@ -1025,14 +1041,17 @@ update_all (GsUpdatesPage *self, GsAppList *apps)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	g_set_object (&self->cancellable, cancellable);
-	gs_plugin_loader_update_async (self->plugin_loader,
-				       apps,
-				       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-				       self->cancellable,
-				       (GAsyncReadyCallback) gs_updates_page_perform_update_cb,
-				       self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
+					 "list", apps,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    (GAsyncReadyCallback) gs_updates_page_perform_update_cb,
+					    self);
 }
 
 static void
@@ -1080,7 +1099,7 @@ upgrade_download_finished_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			return;
 		g_warning ("failed to upgrade-download: %s", error->message);
@@ -1093,6 +1112,7 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 {
 	GsApp *app;
 	GsPageHelper *helper;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	app = gs_upgrade_banner_get_app (upgrade_banner);
 	if (app == NULL) {
@@ -1107,13 +1127,15 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	if (self->cancellable_upgrade_download != NULL)
 		g_object_unref (self->cancellable_upgrade_download);
 	self->cancellable_upgrade_download = g_cancellable_new ();
-	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   app,
-					   GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					   self->cancellable_upgrade_download,
-					   upgrade_download_finished_cb,
-					   helper);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+					 "failure-flags",
+					 "app", app,
+					 GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable_upgrade_download,
+					    upgrade_download_finished_cb,
+					    helper);
 }
 
 static void
@@ -1124,6 +1146,7 @@ upgrade_reboot_failed_cb (GObject *source,
 	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPluginJob) plugin_job;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
@@ -1143,13 +1166,14 @@ upgrade_reboot_failed_cb (GObject *source,
 	}
 
 	/* cancel trigger */
-	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   app,
-					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					   self->cancellable,
-					   cancel_trigger_failed_cb,
-					   self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
+					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    cancel_trigger_failed_cb,
+					    self);
 }
 
 static void
@@ -1162,7 +1186,7 @@ upgrade_trigger_finished_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
-	if (!gs_plugin_loader_update_finish (self->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
@@ -1184,6 +1208,7 @@ static void
 trigger_upgrade (GsUpdatesPage *self)
 {
 	GsApp *upgrade;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	upgrade = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
 	if (upgrade == NULL) {
@@ -1191,13 +1216,13 @@ trigger_upgrade (GsUpdatesPage *self)
 		return;
 	}
 
-	gs_plugin_loader_app_action_async (self->plugin_loader,
-	                                   upgrade,
-	                                   GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
-	                                   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-	                                   self->cancellable,
-	                                   upgrade_trigger_finished_cb,
-	                                   self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
+					 "app", upgrade,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    upgrade_trigger_finished_cb,
+					    self);
 }
 
 static void

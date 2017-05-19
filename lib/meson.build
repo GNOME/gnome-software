@@ -63,6 +63,7 @@ libgnomesoftware = static_library(
     'gs-os-release.c',
     'gs-plugin.c',
     'gs-plugin-event.c',
+    'gs-plugin-job.c',
     'gs-plugin-loader.c',
     'gs-plugin-loader-sync.c',
     'gs-test.c',

@@ -80,6 +80,7 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 				 GsPageHelper *helper)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -88,13 +89,13 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 		gs_page_helper_free (helper);
 		return;
 	}
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   helper->app,
-	                                   GS_PLUGIN_ACTION_INSTALL,
-	                                   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   helper->cancellable,
-					   gs_page_app_installed_cb,
-					   helper);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					 "app", helper->app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    helper->cancellable,
+					    gs_page_app_installed_cb,
+					    helper);
 }
 
 static void
@@ -108,6 +109,7 @@ gs_page_remove_authenticate_cb (GtkDialog *dialog,
 				GsPageHelper *helper)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -116,13 +118,13 @@ gs_page_remove_authenticate_cb (GtkDialog *dialog,
 		gs_page_helper_free (helper);
 		return;
 	}
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   helper->app,
-	                                   GS_PLUGIN_ACTION_REMOVE,
-	                                   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   helper->cancellable,
-					   gs_page_app_removed_cb,
-					   helper);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", helper->app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    helper->cancellable,
+					    gs_page_app_removed_cb,
+					    helper);
 }
 
 static void
@@ -137,9 +139,9 @@ gs_page_app_installed_cb (GObject *source,
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-	                                          res,
-	                                          &error);
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
+						   res,
+						   &error);
 	if (g_error_matches (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_CANCELLED)) {
@@ -199,9 +201,9 @@ gs_page_app_removed_cb (GObject *source,
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-	                                          res,
-	                                          &error);
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
+						   res,
+						   &error);
 	if (g_error_matches (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_CANCELLED)) {
@@ -281,6 +283,7 @@ gs_page_install_app (GsPage *page,
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
 	GtkResponseType response;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* probably non-free */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
@@ -295,13 +298,14 @@ gs_page_install_app (GsPage *page,
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
 	helper->interaction = interaction;
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-	                                   app,
-	                                   helper->action,
-	                                   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-	                                   helper->cancellable,
-	                                   gs_page_app_installed_cb,
-	                                   helper);
+	plugin_job = gs_plugin_job_newv (helper->action,
+					 "app", helper->app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader,
+					    plugin_job,
+					    helper->cancellable,
+					    gs_page_app_installed_cb,
+					    helper);
 }
 
 static void
@@ -310,6 +314,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 				GsPageHelper *helper)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -320,13 +325,14 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 		return;
 	}
 	g_debug ("update %s", gs_app_get_id (helper->app));
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   helper->app,
-					   GS_PLUGIN_ACTION_UPDATE,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   helper->cancellable,
-					   gs_page_app_installed_cb,
-					   helper);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
+					 "app", helper->app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader,
+					    plugin_job,
+					    helper->cancellable,
+					    gs_page_app_installed_cb,
+					    helper);
 }
 
 static void
@@ -394,6 +400,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* non-firmware applications do not have to be prepared */
 	helper = g_slice_new0 (GsPageHelper);
@@ -416,13 +423,13 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	}
 
 	/* generic fallback */
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   helper->app,
-					   helper->action,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   helper->cancellable,
-					   gs_page_app_installed_cb,
-					   helper);
+	plugin_job = gs_plugin_job_newv (helper->action,
+					 "app", app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    helper->cancellable,
+					    gs_page_app_installed_cb,
+					    helper);
 }
 
 static void
@@ -431,6 +438,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 				GsPageHelper *helper)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -441,13 +449,13 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 		return;
 	}
 	g_debug ("remove %s", gs_app_get_id (helper->app));
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   helper->app,
-					   helper->action,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   helper->cancellable,
-					   gs_page_app_removed_cb,
-					   helper);
+	plugin_job = gs_plugin_job_newv (helper->action,
+					 "app", helper->app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    helper->cancellable,
+					    gs_page_app_removed_cb,
+					    helper);
 }
 
 void
@@ -466,14 +474,15 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
 	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+						 "app", app,
+						 NULL);
 		g_debug ("remove %s", gs_app_get_id (app));
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-		                                   app,
-		                                   GS_PLUGIN_ACTION_REMOVE,
-		                                   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-		                                   helper->cancellable,
-		                                   gs_page_app_removed_cb,
-		                                   helper);
+		gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+						    helper->cancellable,
+						    gs_page_app_removed_cb,
+						    helper);
 		return;
 	}
 
@@ -528,7 +537,7 @@ gs_page_app_launched_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to launch GsApp: %s", error->message);
 		return;
 	}
@@ -538,13 +547,15 @@ void
 gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-	                                   app,
-	                                   GS_PLUGIN_ACTION_LAUNCH,
-	                                   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-	                                   cancellable,
-	                                   gs_page_app_launched_cb,
-	                                   NULL);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
+					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    cancellable,
+					    gs_page_app_launched_cb,
+					    NULL);
 }
 
 static void
@@ -554,7 +565,7 @@ gs_page_app_shortcut_added_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to add a shortcut to GsApp: %s", error->message);
 		return;
 	}
@@ -564,13 +575,14 @@ void
 gs_page_shortcut_add (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-	                                   app,
-	                                   GS_PLUGIN_ACTION_ADD_SHORTCUT,
-	                                   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-	                                   cancellable,
-	                                   gs_page_app_shortcut_added_cb,
-	                                   NULL);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_ADD_SHORTCUT,
+					 "app", app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    cancellable,
+					    gs_page_app_shortcut_added_cb,
+					    NULL);
 }
 
 static void
@@ -580,7 +592,7 @@ gs_page_app_shortcut_removed_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to remove the shortcut to GsApp: %s", error->message);
 		return;
 	}
@@ -590,13 +602,14 @@ void
 gs_page_shortcut_remove (GsPage *page, GsApp *app, GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-	                                   app,
-	                                   GS_PLUGIN_ACTION_REMOVE_SHORTCUT,
-	                                   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-	                                   cancellable,
-	                                   gs_page_app_shortcut_removed_cb,
-	                                   NULL);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE_SHORTCUT,
+					 "app", app,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    cancellable,
+					    gs_page_app_shortcut_removed_cb,
+					    NULL);
 }
 
 gboolean

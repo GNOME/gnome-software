@@ -116,7 +116,7 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 	gtk_widget_set_visible (dialog->box_error, FALSE);
 
 	/* we failed */
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		const gchar *url;
 
 		if (g_error_matches (error,
@@ -167,20 +167,26 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 static void
 gs_auth_dialog_continue_cb (GtkWidget *widget, GsAuthDialog *dialog)
 {
-	GsPluginAction action = GS_PLUGIN_ACTION_AUTH_LOGIN;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	gtk_widget_set_sensitive (dialog->box_dialog, FALSE);
 	gtk_widget_set_sensitive (dialog->button_continue, FALSE);
 
 	/* alternate actions */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_lost_pwd)))
-		action = GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD;
-	else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_register)))
-		action = GS_PLUGIN_ACTION_AUTH_REGISTER;
-	gs_plugin_loader_auth_action_async (dialog->plugin_loader,
-					    dialog->auth,
-					    action,
-					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_lost_pwd))) {
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
+						 "auth", dialog->auth,
+						 NULL);
+	} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_register))) {
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_REGISTER,
+						 "auth", dialog->auth,
+						 NULL);
+	} else {
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
+						 "auth", dialog->auth,
+						 NULL);
+	}
+	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    gs_auth_dialog_authenticate_cb,
 					    dialog);

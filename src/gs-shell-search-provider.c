@@ -79,7 +79,7 @@ search_done_cb (GObject *source,
 	GVariantBuilder builder;
 	g_autoptr(GsAppList) list = NULL;
 
-	list = gs_plugin_loader_search_finish (self->plugin_loader, res, NULL);
+	list = gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
 		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
 		pending_search_free (search);
@@ -153,9 +153,10 @@ execute_search (GsShellSearchProvider  *self,
 		gchar		 **terms)
 {
 	PendingSearch *pending_search;
-	g_autofree gchar *string = NULL;
+	g_autofree gchar *value = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	string = g_strjoinv (" ", terms);
+	value = g_strjoinv (" ", terms);
 
 	if (self->cancellable != NULL) {
 		g_cancellable_cancel (self->cancellable);
@@ -175,15 +176,19 @@ execute_search (GsShellSearchProvider  *self,
 
 	g_application_hold (g_application_get_default ());
 	self->cancellable = g_cancellable_new ();
-	gs_plugin_loader_search_async (self->plugin_loader,
-				       string,
-				       GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
-				       gs_shell_search_provider_sort_cb, self,
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-				       GS_PLUGIN_FAILURE_FLAGS_NONE,
-				       self->cancellable,
-				       search_done_cb,
-				       pending_search);
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", value,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "max-results", GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
+					 NULL);
+	gs_plugin_job_set_sort_func (plugin_job, gs_shell_search_provider_sort_cb);
+	gs_plugin_job_set_sort_func_data (plugin_job, self);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    search_done_cb,
+					    pending_search);
 }
 
 static gboolean

@@ -31,6 +31,7 @@
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 #include "gs-plugin-event.h"
+#include "gs-plugin-job-private.h"
 #include "gs-plugin-private.h"
 #include "gs-utils.h"
 
@@ -155,7 +156,7 @@ typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
 							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
+typedef gboolean	 (*GsPluginRefreshFunc)		(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags refresh_flags,
 							 GCancellable	*cancellable,
@@ -182,32 +183,19 @@ typedef struct {
 	GsPluginLoader			*plugin_loader;
 	const gchar			*function_name;
 	const gchar			*function_name_parent;
-	GsAppList			*list;
 	GPtrArray			*catlist;
-	GsPluginRefineFlags		 refine_flags;
-	GsPluginRefreshFlags		 refresh_flags;
-	GsPluginFailureFlags		 failure_flags;
-	gchar				*value;
-	gchar				**values;
-	GFile				*file;
-	guint				 cache_age;
-	GsCategory			*category;
-	GsApp				*app;
-	AsReview			*review;
-	GsAuth				*auth;
-	GsPluginAction			 action;
+	GsPluginJob			*plugin_job;
 	gboolean			 anything_ran;
-	guint				 max_results;
-	guint64				 age;
-	GsAppListSortFunc		 sort_func;
-	gpointer			 sort_func_data;
 } GsPluginLoaderHelper;
 
 static GsPluginLoaderHelper *
-gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader)
+gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader, GsPluginJob *plugin_job)
 {
 	GsPluginLoaderHelper *helper = g_slice_new0 (GsPluginLoaderHelper);
+	GsPluginAction action = gs_plugin_job_get_action (plugin_job);
 	helper->plugin_loader = g_object_ref (plugin_loader);
+	helper->plugin_job = g_object_ref (plugin_job);
+	helper->function_name = gs_plugin_action_to_function_name (action);
 	return helper;
 }
 
@@ -215,91 +203,18 @@ static void
 gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
 	g_object_unref (helper->plugin_loader);
-	if (helper->category != NULL)
-		g_object_unref (helper->category);
-	if (helper->app != NULL)
-		g_object_unref (helper->app);
-	if (helper->auth != NULL)
-		g_object_unref (helper->auth);
-	if (helper->review != NULL)
-		g_object_unref (helper->review);
-	if (helper->file != NULL)
-		g_object_unref (helper->file);
-	if (helper->list != NULL)
-		g_object_unref (helper->list);
+	if (helper->plugin_job != NULL)
+		g_object_unref (helper->plugin_job);
 	if (helper->catlist != NULL)
 		g_ptr_array_unref (helper->catlist);
-
-	g_free (helper->value);
-	g_strfreev (helper->values);
 	g_slice_free (GsPluginLoaderHelper, helper);
 }
 
 static void
-gs_plugin_loader_helper_debug (GsPluginLoaderHelper *helper)
+gs_plugin_loader_job_debug (GsPluginLoaderHelper *helper)
 {
-	g_autoptr(GString) str = g_string_new (NULL);
-	g_string_append_printf (str, "running %s",
-				gs_plugin_action_to_string (helper->action));
-	if (helper->refine_flags > 0) {
-		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (helper->refine_flags);
-		g_string_append_printf (str, " with refine-flags=%s", tmp);
-	}
-	if (helper->failure_flags > 0) {
-		g_autofree gchar *tmp = gs_plugin_failure_flags_to_string (helper->failure_flags);
-		g_string_append_printf (str, " with failure-flags=%s", tmp);
-	}
-	if (helper->cache_age != 0) {
-		if (helper->cache_age == G_MAXUINT) {
-			g_string_append (str, " with cache age=any");
-		} else {
-			g_string_append_printf (str, " with cache age=%u",
-						helper->cache_age);
-		}
-	}
-	if (helper->value != NULL) {
-		g_string_append_printf (str, " with value=%s",
-					helper->value);
-	}
-	if (helper->category != NULL) {
-		GsCategory *parent = gs_category_get_parent (helper->category);
-		if (parent != NULL) {
-			g_string_append_printf (str, " with category=%s/%s",
-						gs_category_get_id (parent),
-						gs_category_get_id (helper->category));
-		} else {
-			g_string_append_printf (str, " with category=%s",
-						gs_category_get_id (helper->category));
-		}
-	}
-	if (helper->review != NULL) {
-		g_string_append_printf (str, " with review=%s",
-					as_review_get_id (helper->review));
-	}
-	if (helper->review != NULL) {
-		g_string_append_printf (str, " with review=%s",
-					as_review_get_id (helper->review));
-	}
-	if (helper->auth != NULL) {
-		g_string_append_printf (str, " with auth=%s",
-					gs_auth_get_provider_id (helper->auth));
-	}
-	if (helper->file != NULL) {
-		g_autofree gchar *path = g_file_get_path (helper->file);
-		g_string_append_printf (str, " with file=%s", path);
-	}
-	if (helper->list != NULL && gs_app_list_length (helper->list) > 0) {
-		g_autofree const gchar **unique_ids = NULL;
-		g_autofree gchar *unique_ids_str = NULL;
-		unique_ids = g_new0 (const gchar *, gs_app_list_length (helper->list) + 1);
-		for (guint i = 0; i < gs_app_list_length (helper->list); i++) {
-			GsApp *app = gs_app_list_index (helper->list, i);
-			unique_ids[i] = gs_app_get_unique_id (app);
-		}
-		unique_ids_str = g_strjoinv (",", (gchar**) unique_ids);
-		g_string_append_printf (str, " on apps %s", unique_ids_str);
-	}
-	g_info ("%s", str->str);
+	g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
+	g_info ("%s", str);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderHelper, gs_plugin_loader_helper_free)
@@ -309,12 +224,6 @@ gs_plugin_loader_app_sort_name_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	return g_strcmp0 (gs_app_get_name (app1),
 			  gs_app_get_name (app2));
-}
-
-static gint
-gs_plugin_loader_app_sort_id_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	return g_strcmp0 (gs_app_get_id (app1), gs_app_get_id (app2));
 }
 
 GsPlugin *
@@ -460,6 +369,8 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 				const GError *error_local,
 				GError **error)
 {
+	GsPluginFailureFlags flags;
+
 	/* badly behaved plugin */
 	if (error_local == NULL) {
 		g_critical ("%s did not set error for %s",
@@ -469,23 +380,24 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	}
 
 	/* abort early to allow main thread to process */
-	if (gs_plugin_loader_is_error_fatal (helper->failure_flags, error_local)) {
+	flags = gs_plugin_job_get_failure_flags (helper->plugin_job);
+	if (gs_plugin_loader_is_error_fatal (flags, error_local)) {
 		if (error != NULL)
 			*error = g_error_copy (error_local);
 		return FALSE;
 	}
 
 	/* create event which is handled by the GsShell */
-	if (helper->failure_flags & GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS) {
+	if (flags & GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS) {
 		gs_plugin_loader_create_event_from_error (helper->plugin_loader,
-							  helper->action,
+							  gs_plugin_job_get_action (helper->plugin_job),
 							  plugin,
-							  helper->app,
+							  gs_plugin_job_get_app (helper->plugin_job),
 							  error_local);
 	}
 
 	/* fallback to console warning */
-	if ((helper->failure_flags & GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE) == 0) {
+	if ((flags & GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE) == 0) {
 		g_warning ("failed to call %s on %s: %s",
 			   helper->function_name,
 			   gs_plugin_get_name (plugin),
@@ -585,13 +497,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* fallback if unset */
 	if (app == NULL)
-		app = helper->app;
+		app = gs_plugin_job_get_app (helper->plugin_job);
 	if (list == NULL)
-		list = helper->list;
+		list = gs_plugin_job_get_list (helper->plugin_job);
 
 	/* run the correct vfunc */
 	gs_plugin_loader_action_start (helper->plugin_loader, plugin, FALSE);
-	switch (helper->action) {
+	switch (gs_plugin_job_get_action (helper->plugin_job)) {
 	case GS_PLUGIN_ACTION_INITIALIZE:
 	case GS_PLUGIN_ACTION_DESTROY:
 		{
@@ -608,20 +520,23 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_REFINE:
 		if (g_strcmp0 (helper->function_name, "gs_plugin_refine_wildcard") == 0) {
 			GsPluginRefineWildcardFunc plugin_func = func;
-			ret = plugin_func (plugin, app, list, helper->refine_flags,
+			ret = plugin_func (plugin, app, list,
+					   gs_plugin_job_get_refine_flags (helper->plugin_job),
 					   cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine_app") == 0) {
 			GsPluginRefineAppFunc plugin_func = func;
-			ret = plugin_func (plugin, app, helper->refine_flags,
+			ret = plugin_func (plugin, app,
+					   gs_plugin_job_get_refine_flags (helper->plugin_job),
 					   cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine") == 0) {
 			GsPluginRefineFunc plugin_func = func;
-			ret = plugin_func (plugin, list, helper->refine_flags,
+			ret = plugin_func (plugin, list,
+					   gs_plugin_job_get_refine_flags (helper->plugin_job),
 					   cancellable, &error_local);
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
-				    gs_plugin_action_to_string (helper->action));
+				    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)));
 		}
 		break;
 	case GS_PLUGIN_ACTION_UPDATE:
@@ -634,7 +549,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
-				    gs_plugin_action_to_string (helper->action));
+				    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)));
 		}
 		break;
 	case GS_PLUGIN_ACTION_INSTALL:
@@ -659,18 +574,21 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
 		{
 			GsPluginReviewFunc plugin_func = func;
-			ret = plugin_func (plugin, app, helper->review,
+			ret = plugin_func (plugin, app,
+					   gs_plugin_job_get_review (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_RECENT:
 		{
 			GsPluginGetRecentFunc plugin_func = func;
-			ret = plugin_func (plugin, list, helper->age,
+			ret = plugin_func (plugin, list,
+					   gs_plugin_job_get_age (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_UPDATES:
+	case GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:
 	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
 	case GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS:
 	case GS_PLUGIN_ACTION_GET_SOURCES:
@@ -687,7 +605,9 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->values, list,
+			g_auto(GStrv) tokens = NULL;
+			tokens = as_utils_search_tokenize (gs_plugin_job_get_search (helper->plugin_job));
+			ret = plugin_func (plugin, tokens, list,
 					   cancellable, &error_local);
 		}
 		break;
@@ -701,28 +621,34 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 		{
 			GsPluginCategoryFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->category, list,
+			ret = plugin_func (plugin,
+					   gs_plugin_job_get_category (helper->plugin_job),
+					   list,
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_REFRESH:
 		{
 			GsPluginRefreshFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->cache_age, helper->refresh_flags,
+			ret = plugin_func (plugin,
+					   gs_plugin_job_get_age (helper->plugin_job),
+					   gs_plugin_job_get_refresh_flags (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		{
 			GsPluginFileToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list, helper->file,
+			ret = plugin_func (plugin, list,
+					   gs_plugin_job_get_file (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		{
 			GsPluginUrlToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list, helper->value,
+			ret = plugin_func (plugin, list,
+					   gs_plugin_job_get_search (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
@@ -732,7 +658,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:
 		{
 			GsPluginAuthFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->auth,
+			ret = plugin_func (plugin,
+					   gs_plugin_job_get_auth (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
@@ -765,14 +692,6 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 	GPtrArray *addons;
 	GPtrArray *related;
 	GsApp *app;
-
-	/* this implies the other */
-	if (helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)
-		helper->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
-	if (helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)
-		helper->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
-	if (helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)
-		helper->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
 
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (helper->plugin_loader, list);
@@ -811,7 +730,8 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 	}
 
 	/* ensure these are sorted by score */
-	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) > 0) {
+	if (gs_plugin_job_has_refine_flags (helper->plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS)) {
 		GPtrArray *reviews;
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
@@ -822,12 +742,13 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 	}
 
 	/* refine addons one layer deep */
-	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) > 0) {
+	if (gs_plugin_job_has_refine_flags (helper->plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS)) {
 		g_autoptr(GsAppList) addons_list = NULL;
-
-		helper->refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS;
-		helper->refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS;
-		helper->refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS;
+		gs_plugin_job_remove_refine_flags (helper->plugin_job,
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS);
 		addons_list = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
@@ -851,7 +772,8 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 	}
 
 	/* also do runtime */
-	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) > 0) {
+	if (gs_plugin_job_has_refine_flags (helper->plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME)) {
 		g_autoptr(GsAppList) list2 = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *runtime;
@@ -871,10 +793,11 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 	}
 
 	/* also do related packages one layer deep */
-	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
+	if (gs_plugin_job_has_refine_flags (helper->plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED)) {
 		g_autoptr(GsAppList) related_list = NULL;
-
-		helper->refine_flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
+		gs_plugin_job_remove_refine_flags (helper->plugin_job,
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED);
 		related_list = gs_app_list_new ();
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
@@ -909,9 +832,9 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 {
 	gboolean has_match_any_prefix = FALSE;
 	gboolean ret;
-	guint i;
 	g_autoptr(GsAppList) freeze_list = NULL;
 	g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* nothing to do */
 	if (gs_app_list_length (list) == 0)
@@ -919,24 +842,25 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 
 	/* freeze all apps */
 	freeze_list = gs_app_list_copy (list);
-	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
+	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
 		GsApp *app = gs_app_list_index (freeze_list, i);
 		g_object_freeze_notify (G_OBJECT (app));
 	}
 
 	/* first pass */
-	helper2 = gs_plugin_loader_helper_new (helper->plugin_loader);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "list", list,
+					 "refine-flags", gs_plugin_job_get_refine_flags (helper->plugin_job),
+					 "failure-flags", gs_plugin_job_get_failure_flags (helper->plugin_job),
+					 NULL);
+	helper2 = gs_plugin_loader_helper_new (helper->plugin_loader, plugin_job);
 	helper2->function_name_parent = helper->function_name;
-	helper2->action = GS_PLUGIN_ACTION_REFINE;
-	helper2->list = g_object_ref (list);
-	helper2->refine_flags = helper->refine_flags;
-	helper2->failure_flags = helper->failure_flags;
 	ret = gs_plugin_loader_run_refine_internal (helper2, list, cancellable, error);
 	if (!ret)
 		goto out;
 
 	/* second pass for any unadopted apps */
-	for (i = 0; i < gs_app_list_length (list); i++) {
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
 			has_match_any_prefix = TRUE;
@@ -952,7 +876,7 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 	}
 
 	/* remove any addons that have the same source as the parent app */
-	for (i = 0; i < gs_app_list_length (list); i++) {
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
 		GsApp *app = gs_app_list_index (list, i);
 		GPtrArray *addons = gs_app_get_addons (app);
@@ -982,21 +906,73 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 
 out:
 	/* now emit all the changed signals */
-	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
+	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
 		GsApp *app = gs_app_list_index (freeze_list, i);
 		g_object_thaw_notify (G_OBJECT (app));
 	}
 	return ret;
 }
 
-static GsAppList *
+static void
+gs_plugin_loader_job_sorted_truncation_again (GsPluginLoaderHelper *helper)
+{
+	GsAppListSortFunc sort_func;
+	gpointer sort_func_data;
+
+	/* not valid */
+	if (gs_plugin_job_get_list (helper->plugin_job) == NULL)
+		return;
+
+	/* unset */
+	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job);
+	if (sort_func == NULL)
+		return;
+	sort_func_data = gs_plugin_job_get_sort_func_data (helper->plugin_job);
+	gs_app_list_sort (gs_plugin_job_get_list (helper->plugin_job), sort_func, sort_func_data);
+}
+
+static void
+gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
+{
+	GsAppListSortFunc sort_func;
+	guint max_results;
+	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
+
+	/* not valid */
+	if (list == NULL)
+		return;
+
+	/* unset */
+	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
+	if (max_results == 0)
+		return;
+
+	/* already small enough */
+	if (gs_app_list_length (list) <= max_results)
+		return;
+
+	/* nothing set */
+	g_debug ("truncating results to %u from %u",
+		 max_results, gs_app_list_length (list));
+	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job);
+	if (sort_func == NULL) {
+		g_warning ("no ->sort_func() set, using random!");
+		gs_app_list_randomize (list);
+	} else {
+		gpointer sort_func_data;
+		sort_func_data = gs_plugin_job_get_sort_func_data (helper->plugin_job);
+		gs_app_list_sort (list, sort_func, sort_func_data);
+	}
+	gs_app_list_truncate (list, max_results);
+}
+
+static gboolean
 gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GCancellable *cancellable,
 			      GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GsAppList) list = gs_app_list_new ();
 
 	/* profile */
 	ptask = as_profile_start (priv->profile, "GsPlugin::*(%s)",
@@ -1008,19 +984,15 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			gs_utils_error_convert_gio (error);
-			return NULL;
+			return FALSE;
 		}
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, list,
+		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
 						  cancellable, error)) {
-			return NULL;
+			return FALSE;
 		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-
-	/* run refine() on each one */
-	if (!gs_plugin_loader_run_refine (helper, list, cancellable, error))
-		return NULL;
-
-	return g_steal_pointer (&list);
+	return TRUE;
 }
 
 static const gchar *
@@ -1164,7 +1136,8 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted packages in the application view */
-	if (((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) == 0) &&
+	if (!gs_plugin_job_has_refine_flags (helper->plugin_job,
+						 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
 	    (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)) {
 //		g_debug ("app invalid as only a %s: %s",
 //			 as_app_kind_to_string (gs_app_get_kind (app)),
@@ -1293,612 +1266,6 @@ gs_plugin_loader_get_event_by_error (GsPluginLoader *plugin_loader, GsPluginErro
 	return NULL;
 }
 
-static gboolean
-gs_plugin_loader_run_action (GsPluginLoaderHelper *helper,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
-
-	/* make sure the progress is properly initialized */
-	gs_app_set_progress (helper->app, 0);
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
-			gs_utils_error_convert_gio (error);
-			return FALSE;
-		}
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, helper->app, NULL,
-						  cancellable, error)) {
-			return FALSE;
-		}
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-	}
-
-	/* nothing ran */
-	if (!helper->anything_ran) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no plugin could handle %s",
-			     helper->function_name);
-		return FALSE;
-	}
-	return TRUE;
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_updates_thread_cb (GTask *task,
-					gpointer object,
-					gpointer task_data,
-					GCancellable *cancellable)
-{
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-
-	/* do things that would block */
-	if (helper->action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL) {
-		helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-		if (helper->list == NULL) {
-			g_task_return_error (task, error);
-			return;
-		}
-	} else {
-		/* get downloaded updates */
-		helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-		if (helper->list == NULL) {
-			g_task_return_error (task, error);
-			return;
-		}
-
-		/* get not-yet-downloaded updates */
-		if (!g_settings_get_boolean (priv->settings, "download-updates")) {
-			g_autoptr(GsAppList) list = NULL;
-			helper->function_name = "gs_plugin_add_updates_pending";
-			list = gs_plugin_loader_run_results (helper, cancellable, &error);
-			if (list == NULL) {
-				g_task_return_error (task, error);
-				return;
-			}
-			gs_app_list_add_list (helper->list, list);
-		}
-	}
-
-	/* remove any apps that are not proper applications or OS updates */
-	gs_app_list_filter (helper->list,
-			    gs_plugin_loader_app_is_valid_updatable, helper);
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_NONE);
-
-	/* predictable return order */
-	gs_app_list_sort (helper->list, gs_plugin_loader_app_sort_id_cb, NULL);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_updates_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_updates()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC that remain after refining are
- * added to a new virtual #GsApp of kind %AS_APP_KIND_OS_UPDATE and all the
- * %AS_APP_KIND_GENERIC objects are moved to related packages of this object.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP or %AS_APP_KIND_OS_UPDATE.
- *
- * The #GsApps may be in helper %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
- * and the UI may want to filter the two classes of applications differently.
- **/
-void
-gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
-				    GsPluginRefineFlags refine_flags,
-				    GsPluginFailureFlags failure_flags,
-				    GCancellable *cancellable,
-				    GAsyncReadyCallback callback,
-				    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0)
-		helper->action = GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
-	else
-		helper->action = GS_PLUGIN_ACTION_GET_UPDATES;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_updates_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_updates_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
-				       GAsyncResult *res,
-				       GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
-						gpointer object,
-						gpointer task_data,
-						GCancellable *cancellable)
-{
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GError *error = NULL;
-
-	helper->function_name = "gs_plugin_add_distro_upgrades";
-	helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-	if (helper->list == NULL) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_NONE);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_distro_upgrades_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_distro_upgrades()
- * function. The plugins can returns #GsApp objects of kind %AS_APP_KIND_OS_UPGRADE.
- **/
-void
-gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
-					    GsPluginRefineFlags refine_flags,
-					    GsPluginFailureFlags failure_flags,
-					    GCancellable *cancellable,
-					    GAsyncReadyCallback callback,
-					    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_distro_upgrades_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_distro_upgrades_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_distro_upgrades_finish (GsPluginLoader *plugin_loader,
-					     GAsyncResult *res,
-					     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
-						gpointer object,
-						gpointer task_data,
-						GCancellable *cancellable)
-{
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GError *error = NULL;
-
-	helper->function_name = "gs_plugin_add_unvoted_reviews";
-	helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-	if (helper->list == NULL) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_NONE);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_unvoted_reviews_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_unvoted_reviews()
- * function.
- **/
-void
-gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
-					    GsPluginRefineFlags refine_flags,
-					    GsPluginFailureFlags failure_flags,
-					    GCancellable *cancellable,
-					    GAsyncReadyCallback callback,
-					    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_unvoted_reviews_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_unvoted_reviews_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_unvoted_reviews_finish (GsPluginLoader *plugin_loader,
-					     GAsyncResult *res,
-					     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_sources_thread_cb (GTask *task,
-					gpointer object,
-					gpointer task_data,
-					GCancellable *cancellable)
-{
-	GsPluginLoaderHelper *helper = task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GError *error = NULL;
-
-	helper->function_name = "gs_plugin_add_sources";
-	helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-	if (helper->list == NULL) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_NONE);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_sources_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_sources()
- * function. The plugins return #GsApp objects of kind %AS_APP_KIND_SOURCE..
- *
- * The *applications* installed from each source can be obtained using
- * gs_app_get_related() if this information is available.
- **/
-void
-gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
-				    GsPluginRefineFlags refine_flags,
-				    GsPluginFailureFlags failure_flags,
-				    GCancellable *cancellable,
-				    GAsyncReadyCallback callback,
-				    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_SOURCES;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_sources_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_sources_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_sources_finish (GsPluginLoader *plugin_loader,
-				       GAsyncResult *res,
-				       GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_installed_thread_cb (GTask *task,
-					  gpointer object,
-					  gpointer task_data,
-					  GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GError *error = NULL;
-
-	/* do things that would block */
-	helper->function_name = "gs_plugin_add_installed";
-	helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-	if (helper->list == NULL) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid_installed, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_installed_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_installed()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
- * after refining are automatically removed.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP.
- *
- * The #GsApps will all initially be in helper %AS_APP_STATE_INSTALLED.
- **/
-void
-gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
-				      GsPluginRefineFlags refine_flags,
-				      GsPluginFailureFlags failure_flags,
-				      GCancellable *cancellable,
-				      GAsyncReadyCallback callback,
-				      gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_INSTALLED;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_installed_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_installed_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
-				       GAsyncResult *res,
-				       GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_popular_thread_cb (GTask *task,
-					gpointer object,
-					gpointer task_data,
-					GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	g_auto(GStrv) apps = NULL;
-
-	/* debugging only */
-	if (g_getenv ("GNOME_SOFTWARE_POPULAR"))
-		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
-
-	/* are we using a corporate build */
-	if (apps == NULL)
-		apps = g_settings_get_strv (priv->settings, "popular-overrides");
-	if (apps != NULL && g_strv_length (apps) > 0) {
-		guint i;
-		helper->list = gs_app_list_new ();
-		for (i = 0; apps[i] != NULL; i++) {
-			g_autoptr(GsApp) app = gs_app_new (apps[i]);
-			gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-			gs_app_list_add (helper->list, app);
-		}
-
-		/* prepare refine helper */
-		helper->action = GS_PLUGIN_ACTION_REFINE;
-		helper->function_name = "gs_plugin_refine";
-		helper->failure_flags = GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS;
-		if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	} else {
-		/* do things that would block */
-		helper->function_name = "gs_plugin_add_popular";
-		helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-		if (helper->list == NULL) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-	gs_app_list_filter (helper->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-void
-gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
-				    GsPluginRefineFlags refine_flags,
-				    GsPluginFailureFlags failure_flags,
-				    GCancellable *cancellable,
-				    GAsyncReadyCallback callback,
-				    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_POPULAR;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_popular_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_popular_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
-				     GAsyncResult *res,
-				     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
 /******************************************************************************/
 
 static gboolean
@@ -1910,105 +1277,24 @@ gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 	return FALSE;
 }
 
-static void
-gs_plugin_loader_get_featured_thread_cb (GTask *task,
-					 gpointer object,
-					 gpointer task_data,
-					 GCancellable *cancellable)
+static gint
+gs_plugin_loader_app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GError *error = NULL;
-
-	/* do things that would block */
-	helper->function_name = "gs_plugin_add_featured";
-	helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
-	if (helper->list == NULL) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter package list */
-	if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
-		gs_app_list_filter (helper->list, gs_plugin_loader_featured_debug, NULL);
-	} else {
-		gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-		gs_app_list_filter (helper->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	}
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
+	if (gs_app_get_kind (app1) > gs_app_get_kind (app2))
+		return -1;
+	if (gs_app_get_kind (app1) < gs_app_get_kind (app2))
+		return 1;
+	return 0;
 }
 
-/**
- * gs_plugin_loader_get_featured_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_featured()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC that remain after refining are
- * automatically removed.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP.
- *
- * The #GsApps may be in helper %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
- * and the UI may want to filter the two classes of applications differently.
- **/
-void
-gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
-				     GsPluginRefineFlags refine_flags,
-				     GsPluginFailureFlags failure_flags,
-				     GCancellable *cancellable,
-				     GAsyncReadyCallback callback,
-				     gpointer user_data)
+static gint
+gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_FEATURED;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_featured_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_featured_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
-				      GAsyncResult *res,
-				      GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
+	if (gs_app_get_match_value (app1) > gs_app_get_match_value (app2))
+		return -1;
+	if (gs_app_get_match_value (app1) < gs_app_get_match_value (app2))
+		return 1;
+	return 0;
 }
 
 /******************************************************************************/
@@ -2071,164 +1357,15 @@ gs_plugin_loader_convert_unavailable (GsAppList *list, const gchar *search)
 	}
 }
 
-static gint
-gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer user_data)
-{
-	if (gs_app_get_match_value (app1) > gs_app_get_match_value (app2))
-		return -1;
-	if (gs_app_get_match_value (app1) < gs_app_get_match_value (app2))
-		return 1;
-	return 0;
-}
-
-static void
-gs_plugin_loader_search_thread_cb (GTask *task,
-				   gpointer object,
-				   gpointer task_data,
-				   GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-
-	/* run each plugin */
-	if (helper->values == NULL) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "no valid search terms");
-		return;
-	}
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* fallback to the match value */
-	if (helper->sort_func == NULL)
-		helper->sort_func = gs_plugin_loader_app_sort_match_value_cb;
-
-	/* too many results */
-	if (helper->max_results > 0 &&
-	    gs_app_list_length (helper->list) > helper->max_results) {
-		gs_app_list_sort (helper->list, helper->sort_func, helper->sort_func_data);
-		g_debug ("truncating results to %u from %u",
-			 helper->max_results, gs_app_list_length (helper->list));
-		gs_app_list_truncate (helper->list, helper->max_results);
-	}
-
-	/* run refine() on each one */
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* convert any unavailables */
-	gs_plugin_loader_convert_unavailable (helper->list, helper->value);
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-	gs_app_list_filter (helper->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-
-	/* filter duplicates with priority, taking into account the source name
-	 * & version, so we combine available updates with the installed app */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID |
-						  GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
-						  GS_APP_LIST_FILTER_FLAG_KEY_VERSION);
-
-	/* sort these again as the refine may have added useful metadata */
-	gs_app_list_sort (helper->list, helper->sort_func, helper->sort_func_data);
-
-	/* too many */
-	if (gs_app_list_length (helper->list) > 500) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "Too many search results returned");
-		return;
-	}
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
 /**
- * gs_plugin_loader_search_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_search()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
- * after refining are automatically removed.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP.
- *
- * The #GsApps may be in helper %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
- * and the UI may want to filter the two classes of applications differently.
- **/
-void
-gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
-			       const gchar *value,
-			       guint max_results,
-			       GsAppListSortFunc sort_func,
-			       gpointer sort_func_data,
-			       GsPluginRefineFlags refine_flags,
-			       GsPluginFailureFlags failure_flags,
-			       GCancellable *cancellable,
-			       GAsyncReadyCallback callback,
-			       gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->max_results = max_results;
-	helper->sort_func = sort_func;
-	helper->sort_func_data = sort_func_data;
-	helper->value = g_strdup (value);
-	helper->values = as_utils_search_tokenize (helper->value);
-	helper->action = GS_PLUGIN_ACTION_SEARCH;
-	helper->function_name = "gs_plugin_add_search";
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_search_thread_cb);
-}
-
-/**
- * gs_plugin_loader_search_finish:
+ * gs_plugin_loader_job_process_finish:
  *
  * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GsAppList *
-gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
-				GAsyncResult *res,
-				GError **error)
+gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
+				     GAsyncResult *res,
+				     GError **error)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_TASK (res), NULL);
@@ -2239,153 +1376,22 @@ gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
 	return g_task_propagate_pointer (G_TASK (res), error);
 }
 
-/******************************************************************************/
-
 /**
- * gs_plugin_loader_search_files_async:
+ * gs_plugin_loader_job_action_finish:
  *
- * This method calls all plugins that implement the gs_plugin_add_search_files()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
- * after refining are automatically removed.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP.
- *
- * The #GsApps may be in helper %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
- * and the UI may want to filter the two classes of applications differently.
+ * Return value: success
  **/
-void
-gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
-                                     const gchar *value,
-                                     GsPluginRefineFlags refine_flags,
-                                     GsPluginFailureFlags failure_flags,
-                                     GCancellable *cancellable,
-                                     GAsyncReadyCallback callback,
-                                     gpointer user_data)
+gboolean
+gs_plugin_loader_job_action_finish (GsPluginLoader *plugin_loader,
+				     GAsyncResult *res,
+				     GError **error)
 {
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_TASK (res), FALSE);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->value = g_strdup (value);
-	helper->values = g_new0 (gchar *, 2);
-	helper->values[0] = g_strdup (helper->value);
-	helper->action = GS_PLUGIN_ACTION_SEARCH_FILES;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_search_thread_cb);
-}
-
-/**
- * gs_plugin_loader_search_files_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_search_files_finish (GsPluginLoader *plugin_loader,
-                                      GAsyncResult *res,
-                                      GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-/**
- * gs_plugin_loader_search_what_provides_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_search_what_provides()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
- * after refining are automatically removed.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP.
- *
- * The #GsApps may be in helper %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
- * and the UI may want to filter the two classes of applications differently.
- **/
-void
-gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
-                                             const gchar *value,
-                                             GsPluginRefineFlags refine_flags,
-                                             GsPluginFailureFlags failure_flags,
-                                             GCancellable *cancellable,
-                                             GAsyncReadyCallback callback,
-                                             gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->value = g_strdup (value);
-	helper->values = g_new0 (gchar *, 2);
-	helper->values[0] = g_strdup (helper->value);
-	helper->action = GS_PLUGIN_ACTION_SEARCH_PROVIDES;
-	helper->function_name = "gs_plugin_add_search_what_provides";
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_search_thread_cb);
-}
-
-/**
- * gs_plugin_loader_search_what_provides_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_search_what_provides_finish (GsPluginLoader *plugin_loader,
-                                              GAsyncResult *res,
-                                              GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
+	return g_task_propagate_pointer (G_TASK (res), error) != NULL;
 }
 
 /******************************************************************************/
@@ -2437,40 +1443,29 @@ gs_plugin_loader_fix_category_all (GsCategory *category)
 }
 
 static void
-gs_plugin_loader_get_categories_thread_cb (GTask *task,
-					   gpointer object,
-					   gpointer task_data,
-					   GCancellable *cancellable)
+gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
+					      gpointer object,
+					      gpointer task_data,
+					      GCancellable *cancellable)
 {
 	GError *error = NULL;
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	const gchar *function_name = "gs_plugin_add_categories";
-	guint i;
 
 	/* run each plugin */
-	helper->function_name = function_name;
-	for (i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
+	if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
+		g_task_return_error (task, error);
+		return;
 	}
 
 	/* make sure 'All' has the right categories */
-	for (i = 0; i < helper->catlist->len; i++) {
+	for (guint i = 0; i < helper->catlist->len; i++) {
 		GsCategory *cat = g_ptr_array_index (helper->catlist, i);
 		gs_plugin_loader_fix_category_all (cat);
 	}
 
 	/* sort by name */
 	g_ptr_array_sort (helper->catlist, gs_plugin_loader_category_sort_cb);
-	for (i = 0; i < helper->catlist->len; i++) {
+	for (guint i = 0; i < helper->catlist->len; i++) {
 		GsCategory *cat = GS_CATEGORY (g_ptr_array_index (helper->catlist, i));
 		gs_category_sort_children (cat);
 	}
@@ -2489,15 +1484,14 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 }
 
 /**
- * gs_plugin_loader_get_categories_async:
+ * gs_plugin_loader_job_get_categories_async:
  *
  * This method calls all plugins that implement the gs_plugin_add_categories()
  * function. The plugins return #GsCategory objects.
  **/
 void
-gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
-				       GsPluginRefineFlags refine_flags,
-				       GsPluginFailureFlags failure_flags,
+gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
+				       GsPluginJob *plugin_job,
 				       GCancellable *cancellable,
 				       GAsyncReadyCallback callback,
 				       gpointer user_data)
@@ -2506,148 +1500,27 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 	g_autoptr(GTask) task = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
+	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	helper->catlist = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	helper->action = GS_PLUGIN_ACTION_GET_CATEGORIES;
-	gs_plugin_loader_helper_debug (helper);
+	gs_plugin_loader_job_debug (helper);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_categories_thread_cb);
+	g_task_run_in_thread (task, gs_plugin_loader_job_get_categories_thread_cb);
 }
 
 /**
- * gs_plugin_loader_get_categories_finish:
+ * gs_plugin_loader_job_get_categories_finish:
  *
  * Return value: (element-type GsCategory) (transfer full): A list of applications
  **/
 GPtrArray *
-gs_plugin_loader_get_categories_finish (GsPluginLoader *plugin_loader,
-					GAsyncResult *res,
-					GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
-					      gpointer object,
-					      gpointer task_data,
-					      GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* run refine() on each one */
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_non_compulsory, NULL);
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-	gs_app_list_filter (helper->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-
-	/* sort, just in case the UI doesn't do this */
-	gs_app_list_sort (helper->list, gs_plugin_loader_app_sort_name_cb, NULL);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_category_apps_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_category_apps()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications, set as compulsory.
- *
- * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
- * after refining are automatically removed.
- *
- * This means all of the #GsApp's returning from this function are of kind
- * %AS_APP_KIND_DESKTOP.
- *
- * The #GsApps may be in helper %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
- * and the UI may want to filter the two classes of applications differently.
- **/
-void
-gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
-					  GsCategory *category,
-					  GsPluginRefineFlags refine_flags,
-					  GsPluginFailureFlags failure_flags,
-					  GCancellable *cancellable,
-					  GAsyncReadyCallback callback,
-					  gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->category = g_object_ref (category);
-	helper->action = GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_category_apps_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_category_apps_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
+gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_loader,
 					   GAsyncResult *res,
 					   GError **error)
 {
@@ -2662,200 +1535,6 @@ gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-static void
-gs_plugin_loader_get_recent_thread_cb (GTask *task,
-				       gpointer object,
-				       gpointer task_data,
-				       GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	const guint max_results = 20;
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* limit: TODO, use sort func */
-	if (gs_app_list_length (helper->list) > max_results) {
-		gs_app_list_randomize (helper->list);
-		g_debug ("truncating results to %u from %u",
-			 max_results, gs_app_list_length (helper->list));
-		gs_app_list_truncate (helper->list, max_results);
-	}
-
-	/* run refine() on each one */
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_non_compulsory, NULL);
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
-	gs_app_list_filter (helper->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-
-	/* filter duplicates with priority */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-
-	/* sort, just in case the UI doesn't do this */
-	gs_app_list_sort (helper->list, gs_plugin_loader_app_sort_name_cb, NULL);
-
-	/* success */
-	g_task_return_pointer (task, g_object_ref (helper->list), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_get_recent_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_recent()
- * function. The plugins return applications that have has upstream releases
- * within the duration of @age;
- **/
-void
-gs_plugin_loader_get_recent_async (GsPluginLoader *plugin_loader,
-				   guint64 age,
-				   GsPluginRefineFlags refine_flags,
-				   GsPluginFailureFlags failure_flags,
-				   GCancellable *cancellable,
-				   GAsyncReadyCallback callback,
-				   gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->age = age;
-	helper->action = GS_PLUGIN_ACTION_GET_RECENT;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_get_recent_thread_cb);
-}
-
-/**
- * gs_plugin_loader_get_recent_finish:
- *
- * Return value: (element-type GsApp) (transfer full): A list of applications
- **/
-GsAppList *
-gs_plugin_loader_get_recent_finish (GsPluginLoader *plugin_loader,
-				    GAsyncResult *res,
-				    GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_app_refine_thread_cb (GTask *task,
-				       gpointer object,
-				       gpointer task_data,
-				       GCancellable *cancellable)
-{
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* success */
-	g_task_return_boolean (task, TRUE);
-}
-
-/**
- * gs_plugin_loader_app_refine_async:
- *
- * This method calls all plugins that implement the gs_plugin_refine()
- * function.
- **/
-void
-gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
-				   GsApp *app,
-				   GsPluginRefineFlags refine_flags,
-				   GsPluginFailureFlags failure_flags,
-				   GCancellable *cancellable,
-				   GAsyncReadyCallback callback,
-				   gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->app = g_object_ref (app);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_REFINE;
-	helper->list = gs_app_list_new ();
-	gs_app_list_add (helper->list, helper->app);
-
-	/* enforce this */
-	if (helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
-		helper->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_app_refine_thread_cb);
-}
-
-/**
- * gs_plugin_loader_app_refine_finish:
- *
- * Return value: success
- **/
-gboolean
-gs_plugin_loader_app_refine_finish (GsPluginLoader *plugin_loader,
-				    GAsyncResult *res,
-				    GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
 static gboolean
 emit_pending_apps_idle (gpointer loader)
 {
@@ -2866,127 +1545,51 @@ emit_pending_apps_idle (gpointer loader)
 }
 
 static void
-gs_plugin_loader_app_action_thread_cb (GTask *task,
-				       gpointer object,
-				       gpointer task_data,
-				       GCancellable *cancellable)
+gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
+				   GsPluginLoaderHelper *helper)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GPtrArray *addons;
-	gboolean ret;
-	guint i;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->pending_apps_mutex);
 
-	/* add to list */
-	g_mutex_lock (&priv->pending_apps_mutex);
-	g_ptr_array_add (priv->pending_apps, g_object_ref (helper->app));
-	g_mutex_unlock (&priv->pending_apps_mutex);
-	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
-
-	/* perform action */
-	if (gs_plugin_loader_run_action (helper, cancellable, &error)) {
-		g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
-
-		/* reset the progress after successful operations */
-		gs_app_set_progress (helper->app, 0);
-
-		/* unstage addons */
-		addons = gs_app_get_addons (helper->app);
-		for (i = 0; i < addons->len; i++) {
-			GsApp *addon = g_ptr_array_index (addons, i);
-			if (gs_app_get_to_be_installed (addon))
-				gs_app_set_to_be_installed (addon, FALSE);
-		}
-
-		/* refine again to make sure we pick up new source id */
-		helper2 = gs_plugin_loader_helper_new (helper->plugin_loader);
-		helper2->function_name = "gs_plugin_refine_app";
-		helper2->function_name_parent = helper->function_name;
-		helper2->action = GS_PLUGIN_ACTION_REFINE;
-		helper2->list = gs_app_list_new ();
-		helper2->refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
-		helper2->failure_flags = helper->failure_flags;
-		gs_app_list_add (helper2->list, helper->app);
-		ret = gs_plugin_loader_run_refine_internal (helper2,
-							    helper2->list,
-							    cancellable,
-							    &error);
-		if (ret) {
-			g_task_return_boolean (task, TRUE);
-		} else {
-			g_task_return_error (task, error);
-		}
-	} else {
-		gs_app_set_state_recover (helper->app);
-		g_task_return_error (task, error);
+	g_assert (gs_app_list_length (list) > 0);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		g_ptr_array_add (priv->pending_apps, g_object_ref (app));
+		/* make sure the progress is properly initialized */
+		gs_app_set_progress (app, 0);
 	}
-
-	/* check the app is not still in an action helper */
-	switch (gs_app_get_state (helper->app)) {
-	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_REMOVING:
-		g_warning ("application %s left in %s helper",
-			   gs_app_get_unique_id (helper->app),
-			   as_app_state_to_string (gs_app_get_state (helper->app)));
-		gs_app_set_state (helper->app, AS_APP_STATE_UNKNOWN);
-		break;
-	default:
-		break;
-	}
-
-	/* remove from list */
-	g_mutex_lock (&priv->pending_apps_mutex);
-	g_ptr_array_remove (priv->pending_apps, helper->app);
-	g_mutex_unlock (&priv->pending_apps_mutex);
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
 static void
-gs_plugin_loader_review_action_thread_cb (GTask *task,
-					  gpointer object,
-					  gpointer task_data,
-					  GCancellable *cancellable)
+gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
+				      GsPluginLoaderHelper *helper)
 {
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	guint i;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->pending_apps_mutex);
 
-	/* run each plugin */
-	for (i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
+	g_assert (gs_app_list_length (list) > 0);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		g_ptr_array_remove (priv->pending_apps, app);
+
+		/* check the app is not still in an action helper */
+		switch (gs_app_get_state (app)) {
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_REMOVING:
+			g_warning ("application %s left in %s helper",
+				   gs_app_get_unique_id (app),
+				   as_app_state_to_string (gs_app_get_state (app)));
+			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+			break;
+		default:
+			break;
 		}
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+
 	}
-
-	/* nothing ran */
-	if (!helper->anything_ran) {
-		g_set_error (&error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no plugin could handle %s",
-			     helper->function_name);
-		g_task_return_error (task, error);
-	}
-
-	/* add this to the app */
-	if (g_strcmp0 (helper->function_name, "gs_plugin_review_submit") == 0)
-		gs_app_add_review (helper->app, helper->review);
-
-	/* remove this from the app */
-	if (g_strcmp0 (helper->function_name, "gs_plugin_review_remove") == 0)
-		gs_app_remove_review (helper->app, helper->review);
-
-	g_task_return_boolean (task, TRUE);
+	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
 static gboolean
@@ -3032,11 +1635,11 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	/* refine */
 	if (gs_app_list_length (list) > 0) {
 		g_autoptr(GsPluginLoaderHelper) helper = NULL;
-		helper = gs_plugin_loader_helper_new (plugin_loader);
-		helper->action = GS_PLUGIN_ACTION_REFINE;
-		helper->function_name = "gs_plugin_refine";
-		helper->refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
-		helper->failure_flags = GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
+		helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+		gs_plugin_job_set_failure_flags (helper->plugin_job,
+						 GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS);
 		if (!gs_plugin_loader_run_refine (helper, list, NULL, error))
 			return FALSE;
 	}
@@ -3138,205 +1741,6 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	}
 
 	return ret;
-}
-
-/**
- * gs_plugin_loader_app_action_async:
- *
- * This method calls all plugins that implement the gs_plugin_action()
- * function.
- **/
-void
-gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
-				   GsApp *app,
-				   GsPluginAction action,
-				   GsPluginFailureFlags failure_flags,
-				   GCancellable *cancellable,
-				   GAsyncReadyCallback callback,
-				   gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* handle with a fake list */
-	if (action == GS_PLUGIN_ACTION_UPDATE) {
-		g_autoptr(GsAppList) list = gs_app_list_new ();
-		gs_app_list_add (list, app);
-		gs_plugin_loader_update_async (plugin_loader, list,
-					       failure_flags,
-					       cancellable, callback,
-					       user_data);
-		return;
-	}
-
-	if (action == GS_PLUGIN_ACTION_REMOVE) {
-		if (remove_app_from_install_queue (plugin_loader, app)) {
-			task = g_task_new (plugin_loader, cancellable, callback, user_data);
-			g_task_return_boolean (task, TRUE);
-			return;
-		}
-	}
-
-	if (action == GS_PLUGIN_ACTION_INSTALL &&
-	    !gs_plugin_loader_get_network_available (plugin_loader)) {
-		add_app_to_install_queue (plugin_loader, app);
-		task = g_task_new (plugin_loader, cancellable, callback, user_data);
-		g_task_return_boolean (task, TRUE);
-		return;
-	}
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->app = g_object_ref (app);
-	helper->action = action;
-	helper->failure_flags = failure_flags;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_app_action_thread_cb);
-}
-
-void
-gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
-				      GsApp *app,
-				      AsReview *review,
-				      GsPluginAction action,
-				      GsPluginFailureFlags failure_flags,
-				      GCancellable *cancellable,
-				      GAsyncReadyCallback callback,
-				      gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->app = g_object_ref (app);
-	helper->review = g_object_ref (review);
-	helper->action = action;
-	helper->failure_flags = failure_flags;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_review_action_thread_cb);
-}
-
-gboolean
-gs_plugin_loader_review_action_finish (GsPluginLoader *plugin_loader,
-				       GAsyncResult *res,
-				       GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_auth_action_thread_cb (GTask *task,
-					  gpointer object,
-					  gpointer task_data,
-					  GCancellable *cancellable)
-{
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	g_task_return_boolean (task, TRUE);
-}
-
-void
-gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
-				    GsAuth *auth,
-				    GsPluginAction action,
-				    GsPluginFailureFlags failure_flags,
-				    GCancellable *cancellable,
-				    GAsyncReadyCallback callback,
-				    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->auth = g_object_ref (auth);
-	helper->action = action;
-	helper->failure_flags = failure_flags;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_auth_action_thread_cb);
-}
-
-gboolean
-gs_plugin_loader_auth_action_finish (GsPluginLoader *plugin_loader,
-				     GAsyncResult *res,
-				     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-/**
- * gs_plugin_loader_app_action_finish:
- *
- * Return value: success
- **/
-gboolean
-gs_plugin_loader_app_action_finish (GsPluginLoader *plugin_loader,
-				    GAsyncResult *res,
-				    GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
 }
 
 /******************************************************************************/
@@ -3539,7 +1943,7 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
+gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -3554,7 +1958,7 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 }
 
 static void
-gs_plugin_loader_updates_changed_cb (GsPlugin *plugin,
+gs_plugin_loader_job_actions_changed_cb (GsPlugin *plugin,
 				     GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -3562,7 +1966,7 @@ gs_plugin_loader_updates_changed_cb (GsPlugin *plugin,
 		return;
 	priv->updates_changed_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
-				       gs_plugin_loader_updates_changed_delay_cb,
+				       gs_plugin_loader_job_actions_changed_delay_cb,
 				       g_object_ref (plugin_loader));
 }
 
@@ -3609,7 +2013,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 		return;
 	}
 	g_signal_connect (plugin, "updates-changed",
-			  G_CALLBACK (gs_plugin_loader_updates_changed_cb),
+			  G_CALLBACK (gs_plugin_loader_job_actions_changed_cb),
 			  plugin_loader);
 	g_signal_connect (plugin, "reload",
 			  G_CALLBACK (gs_plugin_loader_reload_cb),
@@ -3763,13 +2167,16 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 	for (guint j = 0; actions[j] != GS_PLUGIN_ACTION_UNKNOWN; j++) {
 		for (guint i = 0; i < priv->plugins->len; i++) {
 			g_autoptr(GError) error_local = NULL;
-			g_autoptr(GsPluginLoaderHelper) helper = gs_plugin_loader_helper_new (plugin_loader);
+			g_autoptr(GsPluginLoaderHelper) helper = NULL;
+			g_autoptr(GsPluginJob) plugin_job = NULL;
 			GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
-			helper->action = actions[j];
-			helper->failure_flags = GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
-			helper->function_name = gs_plugin_action_to_function_name (helper->action);
+
+			plugin_job = gs_plugin_job_newv (actions[j],
+							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
+							 NULL);
+			helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 			if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
 							  NULL, &error_local)) {
 				g_warning ("resetup of %s failed: %s",
@@ -3815,6 +2222,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint j;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* use the default, but this requires a 'make install' */
 	if (priv->locations->len == 0) {
@@ -3898,15 +2306,13 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	}
 
 	/* run the plugins */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->action = GS_PLUGIN_ACTION_INITIALIZE;
-	helper->failure_flags = failure_flags | GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
-		gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-					     cancellable, NULL);
-	}
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INITIALIZE, NULL);
+	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+	gs_plugin_job_set_failure_flags (helper->plugin_job,
+					 failure_flags |
+					 GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE);
+	if (!gs_plugin_loader_run_results (helper, cancellable, error))
+		return FALSE;
 
 	/* order by deps */
 	do {
@@ -4049,8 +2455,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	} while (changes);
 
 	/* run setup */
-	helper->action = GS_PLUGIN_ACTION_SETUP;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
+	gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_SETUP);
+	helper->function_name = "gs_plugin_setup";
 	for (i = 0; i < priv->plugins->len; i++) {
 		g_autoptr(GError) error_local = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
@@ -4136,13 +2542,10 @@ gs_plugin_loader_dispose (GObject *object)
 
 	if (priv->plugins != NULL) {
 		g_autoptr(GsPluginLoaderHelper) helper = NULL;
-		helper = gs_plugin_loader_helper_new (plugin_loader);
-		helper->action = GS_PLUGIN_ACTION_DESTROY;
-		helper->function_name = gs_plugin_action_to_function_name (helper->action);
-		for (guint i = 0; i < priv->plugins->len; i++) {
-			GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-			gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL, NULL, NULL);
-		}
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DESTROY, NULL);
+		helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+		gs_plugin_loader_run_results (helper, NULL, NULL);
 		g_clear_pointer (&priv->plugins, g_ptr_array_unref);
 	}
 	if (priv->updates_changed_id != 0) {
@@ -4358,9 +2761,9 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = GS_APP (user_data);
 
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
+						   res,
+						   &error);
 	if (!ret) {
 		remove_app_from_install_queue (plugin_loader, app);
 		g_warning ("failed to install %s: %s",
@@ -4415,13 +2818,15 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		g_mutex_unlock (&priv->pending_apps_mutex);
 		for (guint i = 0; i < gs_app_list_length (queue); i++) {
 			GsApp *app = gs_app_list_index (queue, i);
-			gs_plugin_loader_app_action_async (plugin_loader,
-							   app,
-							   GS_PLUGIN_ACTION_INSTALL,
-							   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-							   NULL,
-							   gs_plugin_loader_app_installed_cb,
-							   g_object_ref (app));
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+							 "app", app,
+							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+							 NULL);
+			gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+							    NULL,
+							    gs_plugin_loader_app_installed_cb,
+							    g_object_ref (app));
 		}
 	}
 }
@@ -4448,100 +2853,6 @@ gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 
 /******************************************************************************/
 
-static void
-gs_plugin_loader_refresh_thread_cb (GTask *task,
-				    gpointer object,
-				    gpointer task_data,
-				    GCancellable *cancellable)
-{
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* nothing ran */
-	if (!helper->anything_ran) {
-		g_set_error (&error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "no plugin could handle refresh");
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* success */
-	g_task_return_boolean (task, TRUE);
-}
-
-/**
- * gs_plugin_loader_refresh_async:
- * @cache_age, the age in seconds, or %G_MAXUINT for "any"
- *
- * This method calls all plugins that implement the gs_plugin_refresh()
- * function.
- **/
-void
-gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
-				guint cache_age,
-				GsPluginRefreshFlags refresh_flags,
-				GsPluginFailureFlags failure_flags,
-				GCancellable *cancellable,
-				GAsyncReadyCallback callback,
-				gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refresh_flags = refresh_flags;
-	helper->failure_flags = failure_flags;
-	helper->cache_age = cache_age;
-	helper->action = GS_PLUGIN_ACTION_REFRESH;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_refresh_thread_cb);
-}
-
-/**
- * gs_plugin_loader_refresh_finish:
- *
- * Return value: success
- **/
-gboolean
-gs_plugin_loader_refresh_finish (GsPluginLoader *plugin_loader,
-				 GAsyncResult *res,
-				 GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
 static AsIcon *
 _gs_app_get_icon_by_kind (GsApp *app, AsIconKind kind)
 {
@@ -4554,276 +2865,6 @@ _gs_app_get_icon_by_kind (GsApp *app, AsIconKind kind)
 	}
 	return NULL;
 }
-
-static void
-gs_plugin_loader_file_to_app_thread_cb (GTask *task,
-					gpointer object,
-					gpointer task_data,
-					GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* set the local file on any of the returned results */
-	for (guint j = 0; j < gs_app_list_length (helper->list); j++) {
-		GsApp *app = gs_app_list_index (helper->list, j);
-		if (gs_app_get_local_file (app) == NULL)
-			gs_app_set_local_file (app, helper->file);
-	}
-
-	/* run refine() on each one */
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-
-	/* check the apps have an icon set */
-	for (guint j = 0; j < gs_app_list_length (helper->list); j++) {
-		GsApp *app = gs_app_list_index (helper->list, j);
-		if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
-		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
-		    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
-			g_autoptr(AsIcon) ic = as_icon_new ();
-			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-			if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
-				as_icon_set_name (ic, "x-package-repository");
-			else
-				as_icon_set_name (ic, "application-x-executable");
-			gs_app_add_icon (app, ic);
-		}
-	}
-
-	/* run refine() on each one again to pick up any icons */
-	helper->refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* success */
-	if (gs_app_list_length (helper->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "no application was created for %s",
-					 g_file_get_path (helper->file));
-		return;
-	}
-	if (gs_app_list_length (helper->list) > 1) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "more than one application was created for %s",
-					 g_file_get_path (helper->file));
-		return;
-	}
-	g_task_return_pointer (task, g_object_ref (gs_app_list_index (helper->list, 0)), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_file_to_app_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_file_to_app()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications.
- *
- * Files that are supported will have the GFile used to create them available
- * from the gs_app_get_local_file() method.
- **/
-void
-gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
-				    GFile *file,
-				    GsPluginRefineFlags refine_flags,
-				    GsPluginFailureFlags failure_flags,
-				    GCancellable *cancellable,
-				    GAsyncReadyCallback callback,
-				    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->file = g_object_ref (file);
-	helper->action = GS_PLUGIN_ACTION_FILE_TO_APP;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_file_to_app_thread_cb);
-}
-
-/**
- * gs_plugin_loader_file_to_app_finish:
- *
- * Return value: (element-type GsApp) (transfer full): An application, or %NULL
- **/
-GsApp *
-gs_plugin_loader_file_to_app_finish (GsPluginLoader *plugin_loader,
-				     GAsyncResult *res,
-				     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_url_to_app_thread_cb (GTask *task,
-					gpointer object,
-					gpointer task_data,
-					GCancellable *cancellable)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GError *error = NULL;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-
-	/* run each plugin */
-	for (guint i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
-
-	/* set the local file on any of the returned results */
-	for (guint j = 0; j < gs_app_list_length (helper->list); j++) {
-		GsApp *app = gs_app_list_index (helper->list, j);
-		if (gs_app_get_local_file (app) == NULL)
-			gs_app_set_local_file (app, helper->file);
-	}
-
-	/* run refine() on each one */
-	if (!gs_plugin_loader_run_refine (helper, helper->list, cancellable, &error)) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* filter package list */
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_is_valid, helper);
-	gs_app_list_filter (helper->list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (helper->list, GS_APP_LIST_FILTER_FLAG_KEY_ID);
-
-	/* success */
-	if (gs_app_list_length (helper->list) != 1) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "no application was created for %s",
-					 helper->value);
-		return;
-	}
-	g_task_return_pointer (task, g_object_ref (gs_app_list_index (helper->list, 0)), (GDestroyNotify) g_object_unref);
-}
-
-/**
- * gs_plugin_loader_url_to_app_async:
- *
- * This method calls all plugins that implement the gs_plugin_add_url_to_app()
- * function. The plugins can either return #GsApp objects of kind
- * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
- * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
- *
- * Once the list of updates is refined, some of the #GsApp's of kind
- * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
- * or if they are core applications.
- *
- * Files that are supported will have the GFile used to create them available
- * from the gs_app_get_local_file() method.
- **/
-void
-gs_plugin_loader_url_to_app_async (GsPluginLoader *plugin_loader,
-				    const gchar	*url,
-				    GsPluginRefineFlags refine_flags,
-				    GsPluginFailureFlags failure_flags,
-				    GCancellable *cancellable,
-				    GAsyncReadyCallback callback,
-				    gpointer user_data)
-{
-	GsPluginLoaderHelper *helper;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->refine_flags = refine_flags;
-	helper->failure_flags = failure_flags;
-	helper->list = gs_app_list_new ();
-	helper->value = g_strdup (url);
-	helper->action = GS_PLUGIN_ACTION_URL_TO_APP;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_url_to_app_thread_cb);
-}
-
-/**
- * gs_plugin_loader_url_to_app_finish:
- *
- * Return value: (element-type GsApp) (transfer full): An application, or %NULL
- **/
-GsApp *
-gs_plugin_loader_url_to_app_finish (GsPluginLoader *plugin_loader,
-				     GAsyncResult *res,
-				     GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-
-	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
-}
-
-/******************************************************************************/
 
 static GPtrArray *
 get_updatable_apps (GPtrArray *apps)
@@ -4883,52 +2924,37 @@ gs_proxy_update_helper_free (GsProxyUpdateHelper *proxy_helper)
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsProxyUpdateHelper, gs_proxy_update_helper_free)
 
-static void
-gs_plugin_loader_update_thread_cb (GTask *task,
-				   gpointer object,
-				   gpointer task_data,
-				   GCancellable *cancellable)
+static gboolean
+gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
+				 GsPluginLoaderHelper *helper,
+				 GCancellable *cancellable,
+				 GError **error)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret = TRUE;
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
-	GError *error = NULL;
-	guint i;
-
-	/* run each plugin */
-	for (i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
-		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, helper->list,
-						  cancellable, &error)) {
-			g_task_return_error (task, error);
-			return;
-		}
-	}
+	GsAppList *list;
 
 	/* run each plugin, per-app version */
-	helper->function_name = "gs_plugin_update_app";
-	for (i = 0; i < priv->plugins->len; i++) {
+	list = gs_plugin_job_get_list (helper->plugin_job);
+	for (guint i = 0; i < priv->plugins->len; i++) {
 		GsPluginActionFunc plugin_app_func = NULL;
-		guint j;
 
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_task_return_error_if_cancelled (task))
-			return;
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
 		plugin_app_func = gs_plugin_get_symbol (plugin, helper->function_name);
 		if (plugin_app_func == NULL)
 			continue;
 
 		/* for each app */
-		for (j = 0; j < gs_app_list_length (helper->list); j++) {
-			GsApp *app_tmp = gs_app_list_index (helper->list, j);
+		for (guint j = 0; j < gs_app_list_length (list); j++) {
+			GsApp *app_tmp = gs_app_list_index (list, j);
 			g_autoptr(GPtrArray) apps = NULL;
-			gboolean is_proxy_update =
-				gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY);
+			gboolean is_proxy_update;
 
 			/* operate on the parent app or the related apps */
+			is_proxy_update = gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY);
 			if (is_proxy_update) {
 				apps = get_updatable_apps (gs_app_get_related (app_tmp));
 				if (apps->len > 0) {
@@ -4942,17 +2968,19 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 				g_ptr_array_add (apps, app_tmp);
 			}
 			for (guint k = 0; k < apps->len; k++) {
-				g_autoptr(GError) error_local = NULL;
-				g_autoptr(AsProfileTask) ptask = NULL;
 				GsApp *app = g_ptr_array_index (apps, k);
+				gboolean ret;
+				g_autoptr(AsProfileTask) ptask = NULL;
+				g_autoptr(GError) error_local = NULL;
 				g_autoptr(GsProxyUpdateHelper) proxy_helper = NULL;
-				g_set_object (&helper->app, app);
+
+				gs_plugin_job_set_app (helper->plugin_job, app);
 
 				if (is_proxy_update) {
 					proxy_helper = gs_proxy_update_helper_new (app_tmp,
-										    app,
-										    apps->len,
-										    k);
+										   app,
+										   apps->len,
+										   k);
 					g_assert (proxy_helper != NULL);
 				}
 
@@ -4967,72 +2995,445 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 						       cancellable,
 						       &error_local);
 				gs_plugin_loader_action_stop (plugin_loader, plugin);
-
 				if (!ret) {
 					if (!gs_plugin_error_handle_failure (helper,
 									     plugin,
 									     error_local,
-									     &error)) {
-						g_task_return_error (task, error);
-						return;
+									     error)) {
+						return FALSE;
 					}
 				}
 			}
 			if (is_proxy_update)
 				gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
 		}
+		helper->anything_ran = TRUE;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
+	return TRUE;
+}
 
-	g_task_return_boolean (task, TRUE);
+static void
+gs_plugin_loader_process_thread_cb (GTask *task,
+				    gpointer object,
+				    gpointer task_data,
+				    GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
+	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
+	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	gboolean add_to_pending_array = FALSE;
+
+	/* these change the pending count on the installed panel */
+	switch (action) {
+	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_REMOVE:
+		add_to_pending_array = TRUE;
+		break;
+	default:
+		break;
+	}
+
+	/* add to pending list */
+	if (add_to_pending_array)
+		gs_plugin_loader_pending_apps_add (plugin_loader, helper);
+
+	/* run each plugin */
+	if (action != GS_PLUGIN_ACTION_REFINE) {
+		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
+			if (add_to_pending_array) {
+				gs_app_set_state_recover (gs_plugin_job_get_app (helper->plugin_job));
+				gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
+			}
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* run per-app version */
+	if (action == GS_PLUGIN_ACTION_UPDATE) {
+		helper->function_name = "gs_plugin_update_app";
+		if (!gs_plugin_loader_generic_update (plugin_loader, helper,
+						      cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* remove from pending list */
+	if (add_to_pending_array)
+		gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
+
+	/* append extra things when we want the list of pending updates */
+	if (action == GS_PLUGIN_ACTION_GET_UPDATES &&
+	    !g_settings_get_boolean (priv->settings, "download-updates")) {
+		helper->function_name = "gs_plugin_add_updates_pending";
+		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* nothing ran */
+	if (action != GS_PLUGIN_ACTION_REFINE) {
+		if (!helper->anything_ran) {
+			g_set_error (&error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no plugin could handle %s",
+				     gs_plugin_action_to_string (action));
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* unstage addons */
+	if (add_to_pending_array) {
+		GPtrArray *addons;
+		addons = gs_app_get_addons (gs_plugin_job_get_app (helper->plugin_job));
+		for (guint i = 0; i < addons->len; i++) {
+			GsApp *addon = g_ptr_array_index (addons, i);
+			if (gs_app_get_to_be_installed (addon))
+				gs_app_set_to_be_installed (addon, FALSE);
+		}
+	}
+
+	/* modify the local app */
+	switch (action) {
+	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
+		gs_app_add_review (gs_plugin_job_get_app (helper->plugin_job), gs_plugin_job_get_review (helper->plugin_job));
+		break;
+	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
+		gs_app_remove_review (gs_plugin_job_get_app (helper->plugin_job), gs_plugin_job_get_review (helper->plugin_job));
+		break;
+	default:
+		break;
+	}
+
+	/* filter to reduce to a sane set */
+	gs_plugin_loader_job_sorted_truncation (helper);
+
+	/* set the local file on any of the returned results */
+	switch (action) {
+	case GS_PLUGIN_ACTION_FILE_TO_APP:
+		for (guint j = 0; j < gs_app_list_length (list); j++) {
+			GsApp *app = gs_app_list_index (list, j);
+			if (gs_app_get_local_file (app) == NULL)
+				gs_app_set_local_file (app, gs_plugin_job_get_file (helper->plugin_job));
+		}
+	default:
+		break;
+	}
+
+	/* pick up new source id */
+	if (add_to_pending_array) {
+		gs_plugin_job_add_refine_flags (helper->plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
+	}
+
+	/* run refine() on each one if required */
+	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0) {
+		if (!gs_plugin_loader_run_refine (helper, list, cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
+	}
+
+	/* convert any unavailable codecs */
+	switch (action) {
+	case GS_PLUGIN_ACTION_SEARCH:
+	case GS_PLUGIN_ACTION_SEARCH_FILES:
+	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+		gs_plugin_loader_convert_unavailable (list, gs_plugin_job_get_search (helper->plugin_job));
+		break;
+	default:
+		break;
+	}
+
+	/* check the local files have an icon set */
+	switch (action) {
+	case GS_PLUGIN_ACTION_URL_TO_APP:
+	case GS_PLUGIN_ACTION_FILE_TO_APP:
+		for (guint j = 0; j < gs_app_list_length (list); j++) {
+			GsApp *app = gs_app_list_index (list, j);
+			if (_gs_app_get_icon_by_kind (app, AS_ICON_KIND_STOCK) == NULL &&
+			    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_LOCAL) == NULL &&
+			    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
+				g_autoptr(AsIcon) ic = as_icon_new ();
+				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+				if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+					as_icon_set_name (ic, "x-package-repository");
+				else
+					as_icon_set_name (ic, "application-x-executable");
+				gs_app_add_icon (app, ic);
+			}
+		}
+
+		/* run refine() on each one again to pick up any icons */
+		gs_plugin_job_set_refine_flags (helper->plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+		if (!gs_plugin_loader_run_refine (helper, list, cancellable, &error)) {
+			g_task_return_error (task, error);
+			return;
+		}
+		break;
+	default:
+		break;
+	}
+
+	/* filter package list */
+	switch (action) {
+	case GS_PLUGIN_ACTION_URL_TO_APP:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		break;
+	case GS_PLUGIN_ACTION_SEARCH:
+	case GS_PLUGIN_ACTION_SEARCH_FILES:
+	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+		break;
+	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+		break;
+	case GS_PLUGIN_ACTION_GET_INSTALLED:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_installed, helper);
+		break;
+	case GS_PLUGIN_ACTION_GET_FEATURED:
+		if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
+			gs_app_list_filter (list, gs_plugin_loader_featured_debug, NULL);
+		} else {
+			gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+			gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_UPDATES:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid_updatable, helper);
+		break;
+	case GS_PLUGIN_ACTION_GET_RECENT:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+		break;
+	case GS_PLUGIN_ACTION_GET_POPULAR:
+		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
+		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
+		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+		break;
+	default:
+		break;
+	}
+
+	/* only allow one result */
+	if (action == GS_PLUGIN_ACTION_URL_TO_APP ||
+	    action == GS_PLUGIN_ACTION_FILE_TO_APP) {
+		if (gs_app_list_length (list) == 0) {
+			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "no application was created for %s",
+						 str);
+			return;
+		}
+		if (gs_app_list_length (list) > 1) {
+			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "more than one application was created for %s",
+						 str);
+			return;
+		}
+	}
+
+	/* too many */
+	if (gs_app_list_length (list) > 500) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "too many results returned");
+		return;
+	}
+
+	/* filter duplicates with priority, taking into account the source name
+	 * & version, so we combine available updates with the installed app */
+	gs_app_list_filter (list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (list,
+				       GS_APP_LIST_FILTER_FLAG_KEY_ID |
+				       GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
+				       GS_APP_LIST_FILTER_FLAG_KEY_VERSION);
+
+	/* sort these again as the refine may have added useful metadata */
+	gs_plugin_loader_job_sorted_truncation_again (helper);
+
+	/* success */
+	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 }
 
 /**
- * gs_plugin_loader_update_async:
+ * gs_plugin_loader_job_process_async:
  *
- * This method calls all plugins that implement the gs_plugin_update()
- * or gs_plugin_update_app() functions.
+ * This method calls all plugins.
  **/
 void
-gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
-			       GsAppList *apps,
-			       GsPluginFailureFlags failure_flags,
-			       GCancellable *cancellable,
-			       GAsyncReadyCallback callback,
-			       gpointer user_data)
+gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
+				    GsPluginJob *plugin_job,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
 {
+	GsPluginAction action;
 	GsPluginLoaderHelper *helper;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GTask) task = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
+	/* deal with the install queue */
+	action = gs_plugin_job_get_action (plugin_job);
+	if (action == GS_PLUGIN_ACTION_REMOVE) {
+		if (remove_app_from_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job))) {
+			GsAppList *list = gs_plugin_job_get_list (plugin_job);
+			task = g_task_new (plugin_loader, cancellable, callback, user_data);
+			g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+			return;
+		}
+	}
+	if (action == GS_PLUGIN_ACTION_INSTALL &&
+	    !gs_plugin_loader_get_network_available (plugin_loader)) {
+		GsAppList *list = gs_plugin_job_get_list (plugin_job);
+		add_app_to_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job));
+		task = g_task_new (plugin_loader, cancellable, callback, user_data);
+		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
+		return;
+	}
+
+	/* hardcoded, so resolve a set list */
+	if (action == GS_PLUGIN_ACTION_GET_POPULAR) {
+		g_auto(GStrv) apps = NULL;
+		if (g_getenv ("GNOME_SOFTWARE_POPULAR") != NULL) {
+			apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
+		} else {
+			apps = g_settings_get_strv (priv->settings, "popular-overrides");
+		}
+		if (apps != NULL && g_strv_length (apps) > 0) {
+			GsAppList *list = gs_plugin_job_get_list (plugin_job);
+			for (guint i = 0; apps[i] != NULL; i++) {
+				g_autoptr(GsApp) app = gs_app_new (apps[i]);
+				gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+				gs_app_list_add (list, app);
+			}
+			gs_plugin_job_set_action (plugin_job, GS_PLUGIN_ACTION_REFINE);
+		}
+	}
+
+	/* FIXME: the plugins should specify this, rather than hardcoding */
+	if (gs_plugin_job_has_refine_flags (plugin_job,
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)) {
+		gs_plugin_job_add_refine_flags (plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
+	}
+	if (gs_plugin_job_has_refine_flags (plugin_job,
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI)) {
+		gs_plugin_job_add_refine_flags (plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
+	}
+	if (gs_plugin_job_has_refine_flags (plugin_job,
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME)) {
+		gs_plugin_job_add_refine_flags (plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
+	}
+	if (gs_plugin_job_has_refine_flags (plugin_job,
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE)) {
+		gs_plugin_job_add_refine_flags (plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME);
+	}
+
+	/* FIXME: this is probably a bug */
+	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES ||
+	    action == GS_PLUGIN_ACTION_GET_SOURCES) {
+		gs_plugin_job_add_refine_flags (plugin_job,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
+	}
+
+	/* check required args */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	switch (action) {
+	case GS_PLUGIN_ACTION_SEARCH:
+	case GS_PLUGIN_ACTION_SEARCH_FILES:
+	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+	case GS_PLUGIN_ACTION_URL_TO_APP:
+		if (gs_plugin_job_get_search (plugin_job) == NULL) {
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "no valid search terms");
+			return;
+		}
+		break;
+	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
+	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
+	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
+	case GS_PLUGIN_ACTION_REVIEW_REPORT:
+	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
+	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
+		if (gs_plugin_job_get_review (plugin_job) == NULL) {
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "no valid review object");
+			return;
+		}
+		break;
+	default:
+		break;
+	}
+
+	/* sorting fallbacks */
+	switch (action) {
+	case GS_PLUGIN_ACTION_SEARCH:
+		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+			gs_plugin_job_set_sort_func (plugin_job,
+						     gs_plugin_loader_app_sort_match_value_cb);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_RECENT:
+		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+			gs_plugin_job_set_sort_func (plugin_job,
+						     gs_plugin_loader_app_sort_kind_cb);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
+		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+			gs_plugin_job_set_sort_func (plugin_job,
+						     gs_plugin_loader_app_sort_name_cb);
+		}
+		break;
+	default:
+		break;
+	}
+
 	/* save helper */
-	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->list = gs_app_list_copy (apps);
-	helper->action = GS_PLUGIN_ACTION_UPDATE;
-	helper->failure_flags = failure_flags;
-	helper->function_name = gs_plugin_action_to_function_name (helper->action);
-	gs_plugin_loader_helper_debug (helper);
+	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
+	gs_plugin_loader_job_debug (helper);
 
 	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	g_task_run_in_thread (task, gs_plugin_loader_update_thread_cb);
+	g_task_run_in_thread (task, gs_plugin_loader_process_thread_cb);
 }
 
-gboolean
-gs_plugin_loader_update_finish (GsPluginLoader *plugin_loader,
-				GAsyncResult *res,
-				GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
+/******************************************************************************/
 
 /**
  * gs_plugin_loader_get_plugin_supported:
@@ -5091,8 +3492,6 @@ gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
 {
 	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/*/system/*");
 }
-
-/******************************************************************************/
 
 AsProfile *
 gs_plugin_loader_get_profile (GsPluginLoader *plugin_loader)

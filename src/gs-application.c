@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -344,7 +344,7 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 {
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_action_finish (app->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (app->plugin_loader, res, &error)) {
 		g_warning ("failed to cancel trigger: %s", error->message);
 		return;
 	}
@@ -356,6 +356,7 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	GsApplication *app = GS_APPLICATION (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GVariant) retval = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get result */
 	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
@@ -368,13 +369,11 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	}
 
 	/* cancel trigger */
-	gs_plugin_loader_app_action_async (app->plugin_loader,
-					   NULL, /* everything! */
-					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   app->cancellable,
-					   cancel_trigger_failed_cb,
-					   app);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL, NULL);
+	gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
+					    app->cancellable,
+					    cancel_trigger_failed_cb,
+					    app);
 }
 
 static void
@@ -384,7 +383,7 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 {
 	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_update_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
@@ -453,13 +452,13 @@ reboot_and_install (GSimpleAction *action,
 		    gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_application_initialize_plugins (app);
-	gs_plugin_loader_update_async (app->plugin_loader,
-				       NULL,
-				       GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-				       app->cancellable,
-				       (GAsyncReadyCallback) offline_update_cb,
-				       app);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE, NULL);
+	gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
+					    app->cancellable,
+					    (GAsyncReadyCallback) offline_update_cb,
+					    app);
 }
 
 static void

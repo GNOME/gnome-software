@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -524,7 +524,7 @@ search_files_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_autofree gchar *str = NULL;
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
@@ -568,12 +568,13 @@ file_to_app_cb (GObject *source_object,
 {
 	SearchData *search_data = (SearchData *) user_data;
 	GsExtrasPage *self = search_data->self;
-	GsApp *app;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
-	app = gs_plugin_loader_file_to_app_finish (plugin_loader, res, &error);
-	if (app == NULL) {
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	if (list == NULL) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("extras: search what provides cancelled");
 			return;
@@ -592,6 +593,8 @@ file_to_app_cb (GObject *source_object,
 			gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_FAILED);
 			return;
 		}
+	} else {
+		app = g_object_ref (gs_app_list_index (list, 0));
 	}
 
 	g_debug ("%s\n\n", gs_app_to_string (app));
@@ -602,8 +605,6 @@ file_to_app_cb (GObject *source_object,
 	/* have all searches finished? */
 	if (self->pending_search_cnt == 0)
 		show_search_results (self);
-
-	g_object_unref (app);
 }
 
 static void
@@ -618,7 +619,7 @@ get_search_what_provides_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_search_what_provides_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_autofree gchar *str = NULL;
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
@@ -687,46 +688,56 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 
 		search_data = g_ptr_array_index (self->array_search_data, i);
 		if (search_data->search_filename != NULL) {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_FILES,
+							 "search", search_data->search_filename,
+							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+							 NULL);
 			g_debug ("searching filename: '%s'", search_data->search_filename);
-			gs_plugin_loader_search_files_async (self->plugin_loader,
-			                                     search_data->search_filename,
-			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                     GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-			                                     self->search_cancellable,
-			                                     search_files_cb,
-			                                     search_data);
+			gs_plugin_loader_job_process_async (self->plugin_loader,
+							    plugin_job,
+							    self->search_cancellable,
+							    search_files_cb,
+							    search_data);
 		} else if (search_data->package_filename != NULL) {
 			g_autoptr (GFile) file = NULL;
-			g_debug ("resolving filename to app: '%s'", search_data->package_filename);
+			g_autoptr(GsPluginJob) plugin_job = NULL;
 			file = g_file_new_for_path (search_data->package_filename);
-			gs_plugin_loader_file_to_app_async (self->plugin_loader,
-			                                    file,
-			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                    GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-			                                    self->search_cancellable,
-			                                    file_to_app_cb,
-			                                    search_data);
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+							 "file", file,
+							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+							 NULL);
+			g_debug ("resolving filename to app: '%s'", search_data->package_filename);
+			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+							    self->search_cancellable,
+							    file_to_app_cb,
+							    search_data);
 		} else {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_debug ("searching what provides: '%s'", search_data->search);
-			gs_plugin_loader_search_what_provides_async (self->plugin_loader,
-			                                             search_data->search,
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                             GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-			                                             self->search_cancellable,
-			                                             get_search_what_provides_cb,
-			                                             search_data);
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
+							 "search", search_data->search_filename,
+							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+							 NULL);
+			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+							    self->search_cancellable,
+							    get_search_what_provides_cb,
+							    search_data);
 		}
 		self->pending_search_cnt++;
 	}

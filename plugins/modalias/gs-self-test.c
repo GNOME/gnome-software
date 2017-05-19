@@ -32,15 +32,14 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get search result based on addon keyword */
-	list = gs_plugin_loader_search (plugin_loader,
-					"colorhug2", 0,
-					NULL, NULL,
-					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					NULL,
-					&error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", "colorhug2",
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);

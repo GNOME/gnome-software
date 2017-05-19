@@ -31,15 +31,16 @@ gs_plugins_repos_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the extra bits */
 	app = gs_app_new ("testrepos.desktop");
 	gs_app_set_origin (app, "utopia");
-	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
-					   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					   NULL,
-					   &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);

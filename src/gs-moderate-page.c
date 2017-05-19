@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -57,7 +57,7 @@ gs_moderate_page_app_set_review_cb (GObject *source,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to set review: %s", error->message);
 		return;
 	}
@@ -69,15 +69,17 @@ gs_moderate_page_review_clicked_cb (GsReviewRow *row,
                                     GsModeratePage *self)
 {
 	GsApp *app = g_object_get_data (G_OBJECT (row), "GsApp");
-	gs_plugin_loader_review_action_async (self->plugin_loader,
-					      app,
-					      gs_review_row_get_review (row),
-					      action,
-					      GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-					      GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					      self->cancellable,
-					      gs_moderate_page_app_set_review_cb,
-					      self);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (action,
+					 "app", app,
+					 "review", gs_review_row_get_review (row),
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_moderate_page_app_set_review_cb,
+					    self);
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
 }
 
@@ -148,7 +150,7 @@ gs_moderate_page_get_unvoted_reviews_cb (GObject *source_object,
 	gs_stop_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "view");
 
-	list = gs_plugin_loader_get_unvoted_reviews_finish (plugin_loader,
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
 							    res,
 							    &error);
 	if (list == NULL) {
@@ -176,22 +178,26 @@ gs_moderate_page_get_unvoted_reviews_cb (GObject *source_object,
 static void
 gs_moderate_page_load (GsModeratePage *self)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
 
 	/* get unvoted reviews as apps */
-	gs_plugin_loader_get_unvoted_reviews_async (self->plugin_loader,
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
-						    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-						    self->cancellable,
-						    gs_moderate_page_get_unvoted_reviews_cb,
-						    self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_moderate_page_get_unvoted_reviews_cb,
+					    self);
 	gs_start_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }

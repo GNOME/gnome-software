@@ -86,9 +86,9 @@ gs_category_page_get_apps_cb (GObject *source_object,
 	/* show an empty space for no results */
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 
-	list = gs_plugin_loader_get_category_apps_finish (plugin_loader,
-							  res,
-							  &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get apps for category apps: %s", error->message);
@@ -114,6 +114,7 @@ gs_category_page_reload (GsPage *page)
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 	GtkWidget *tile;
 	guint i, count;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	if (self->subcategory == NULL)
 		return;
@@ -144,15 +145,18 @@ gs_category_page_reload (GsPage *page)
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
-	gs_plugin_loader_get_category_apps_async (self->plugin_loader,
-						  self->subcategory,
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-						  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-						  self->cancellable,
-						  gs_category_page_get_apps_cb,
-						  self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+					 "category", self->subcategory,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader,
+					    plugin_job,
+					    self->cancellable,
+					    gs_category_page_get_apps_cb,
+					    self);
 }
 
 static void

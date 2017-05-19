@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -160,7 +160,7 @@ get_updates_finished_cb (GObject *object,
 	g_autoptr(GsAppList) apps = NULL;
 
 	/* get result */
-	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
+	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get updates: %s", error->message);
@@ -233,7 +233,7 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(GsApp) app = NULL;
 
 	/* get result */
-	if (!gs_plugin_loader_app_refine_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get system: %s", error->message);
 		return;
@@ -272,7 +272,7 @@ get_upgrades_finished_cb (GObject *object,
 	g_autoptr(GsAppList) apps = NULL;
 
 	/* get result */
-	apps = gs_plugin_loader_get_distro_upgrades_finish (GS_PLUGIN_LOADER (object), res, &error);
+	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_warning ("failed to get upgrades: %s",
@@ -315,13 +315,17 @@ get_upgrades_finished_cb (GObject *object,
 static void
 get_updates (GsUpdateMonitor *monitor)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	/* NOTE: this doesn't actually do any network access, instead it just
 	 * returns already downloaded-and-depsolved packages */
 	g_debug ("Getting updates");
-	gs_plugin_loader_get_updates_async (monitor->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
+					 NULL);
+	gs_plugin_loader_job_process_async (monitor->plugin_loader,
+					    plugin_job,
 					    monitor->cancellable,
 					    get_updates_finished_cb,
 					    monitor);
@@ -330,31 +334,38 @@ get_updates (GsUpdateMonitor *monitor)
 static void
 get_upgrades (GsUpdateMonitor *monitor)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	/* NOTE: this doesn't actually do any network access, it relies on the
 	 * AppStream data being up to date, either by the appstream-data
 	 * package being up-to-date, or the metadata being auto-downloaded */
 	g_debug ("Getting upgrades");
-	gs_plugin_loader_get_distro_upgrades_async (monitor->plugin_loader,
-						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						    GS_PLUGIN_FAILURE_FLAGS_NONE,
-						    monitor->cancellable,
-						    get_upgrades_finished_cb,
-						    monitor);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 NULL);
+	gs_plugin_loader_job_process_async (monitor->plugin_loader,
+					    plugin_job,
+					    monitor->cancellable,
+					    get_upgrades_finished_cb,
+					    monitor);
 }
 
 static void
 get_system (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	g_debug ("Getting system");
 	app = gs_plugin_loader_get_system_app (monitor->plugin_loader);
-	gs_plugin_loader_app_refine_async (monitor->plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
-					   monitor->cancellable,
-					   get_system_finished_cb,
-					   monitor);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 NULL);
+	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
+					    monitor->cancellable,
+					    get_system_finished_cb,
+					    monitor);
 }
 
 static void
@@ -365,7 +376,7 @@ refresh_cache_finished_cb (GObject *object,
 	GsUpdateMonitor *monitor = data;
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_refresh_finish (GS_PLUGIN_LOADER (object), res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
@@ -391,6 +402,7 @@ check_updates (GsUpdateMonitor *monitor)
 	gboolean refresh_on_metered;
 	g_autoptr(GDateTime) last_refreshed = NULL;
 	g_autoptr(GDateTime) now_refreshed = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_METADATA;
 
 	/* never check for updates when offline */
@@ -458,13 +470,15 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("Refreshing for metadata only");
 	}
 
-	gs_plugin_loader_refresh_async (monitor->plugin_loader,
-					60 * 60 * 24,
-					refresh_flags,
-					GS_PLUGIN_FAILURE_FLAGS_NONE,
-					monitor->cancellable,
-					refresh_cache_finished_cb,
-					monitor);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UNKNOWN,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 "refresh-flags", refresh_flags,
+					 "age", 60 * 60 * 24,
+					 NULL);
+	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
+					    monitor->cancellable,
+					    refresh_cache_finished_cb,
+					    monitor);
 }
 
 static gboolean
@@ -584,7 +598,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(GNotification) notification = NULL;
 
 	/* get result */
-	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
+	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
 
 		/* save this in case the user clicks the
@@ -647,12 +661,15 @@ static gboolean
 cleanup_notifications_cb (gpointer user_data)
 {
 	GsUpdateMonitor *monitor = user_data;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* this doesn't do any network access */
 	g_debug ("getting historical updates for fresh session");
-	gs_plugin_loader_get_updates_async (monitor->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_USE_HISTORY,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 NULL);
+	gs_plugin_loader_job_process_async (monitor->plugin_loader,
+					    plugin_job,
 					    monitor->cancellable,
 					    get_updates_historical_cb,
 					    monitor);

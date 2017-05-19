@@ -86,7 +86,7 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 	g_signal_handlers_disconnect_by_data (plugin_loader, self);
 
 	/* not sure how to handle this */
-	if (!gs_plugin_loader_refresh_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to load metadata: %s", error->message);
 		return;
 	}
@@ -99,12 +99,16 @@ static void
 gs_loading_page_load (GsLoadingPage *self)
 {
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* ensure that at least some metadata of any age is present, and also
 	 * spin up the plugins enough as to prime caches */
-	gs_plugin_loader_refresh_async (priv->plugin_loader, G_MAXUINT,
-					GS_PLUGIN_REFRESH_FLAGS_METADATA,
-					GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
+					 "age", G_MAXUINT,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					priv->cancellable,
 					gs_loading_page_refresh_cb,
 					self);

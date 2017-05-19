@@ -175,7 +175,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
 
 	/* get the results */
-	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
 				    GS_PLUGIN_ERROR,
@@ -229,7 +229,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 void
 gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 {
-	guint64 refine_flags;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
@@ -238,14 +238,12 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	gs_start_spinner (GTK_SPINNER (dialog->spinner));
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
-	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
-	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-	               GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
-
-	gs_plugin_loader_get_updates_async (dialog->plugin_loader,
-	                                    refine_flags,
-	                                    GS_PLUGIN_FAILURE_FLAGS_NONE,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
+					 NULL);
+	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 	                                    dialog->cancellable,
 	                                    (GAsyncReadyCallback) get_installed_updates_cb,
 	                                    dialog);

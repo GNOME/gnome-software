@@ -28,103 +28,20 @@
 
 G_BEGIN_DECLS
 
-GsAppList	*gs_plugin_loader_get_installed		(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
+GsAppList	*gs_plugin_loader_job_process		(GsPluginLoader	*plugin_loader,
+							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GsAppList	*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
-							 const gchar	*value,
-							 guint		 max_results,
-							 GsAppListSortFunc sort_func,
-							 gpointer	 sort_func_data,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
+GsApp		*gs_plugin_loader_job_process_app	(GsPluginLoader	*plugin_loader,
+							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GsAppList	*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
+gboolean	 gs_plugin_loader_job_action		(GsPluginLoader	*plugin_loader,
+							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GsAppList	*gs_plugin_loader_get_distro_upgrades	(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsAppList	*gs_plugin_loader_get_sources		(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsAppList	*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsAppList	*gs_plugin_loader_get_featured		(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GPtrArray	*gs_plugin_loader_get_categories	(GsPluginLoader	*plugin_loader,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsAppList	*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
-							 GsCategory	*category,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsAppList	*gs_plugin_loader_get_recent		(GsPluginLoader	*plugin_loader,
-							 guint64	 age,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GsPluginAction	 action,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-gboolean	 gs_plugin_loader_review_action		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 AsReview	*review,
-							 GsPluginAction	 action,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-gboolean	 gs_plugin_loader_auth_action		(GsPluginLoader	*plugin_loader,
-							 GsAuth		*auth,
-							 GsPluginAction	 action,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-gboolean	 gs_plugin_loader_refresh		(GsPluginLoader	*plugin_loader,
-							 guint		 cache_age,
-							 GsPluginRefreshFlags refresh_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsApp		*gs_plugin_loader_file_to_app		(GsPluginLoader	*plugin_loader,
-							 GFile		*file,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-GsApp		*gs_plugin_loader_url_to_app		(GsPluginLoader	*plugin_loader,
-							 const gchar	*url,
-							 GsPluginRefineFlags refine_flags,
-							 GsPluginFailureFlags failure_flags,
+GPtrArray	*gs_plugin_loader_job_get_categories	(GsPluginLoader	*plugin_loader,
+							 GsPluginJob	*plugin_job,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

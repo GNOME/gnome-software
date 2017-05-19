@@ -120,7 +120,7 @@ typedef enum {
 /**
  * GsPluginRefineFlags:
  * @GS_PLUGIN_REFINE_FLAGS_DEFAULT:			No explicit flags set
- * @GS_PLUGIN_REFINE_FLAGS_USE_HISTORY:			Get the historical view
+ * @GS_PLUGIN_REFINE_FLAGS_USE_HISTORY:			Get the historical view (unused)
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE:		Require the license
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL:			Require the URL
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION:		Require the long description
@@ -150,7 +150,7 @@ typedef enum {
  * The refine flags.
  **/
 #define GS_PLUGIN_REFINE_FLAGS_DEFAULT			(0u)
-#define GS_PLUGIN_REFINE_FLAGS_USE_HISTORY		(1u << 0)
+#define GS_PLUGIN_REFINE_FLAGS_USE_HISTORY		(1u << 0) /* unused, TODO: perhaps ->STATE */
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE		(1u << 1)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL		(1u << 2)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION	(1u << 3)
@@ -164,7 +164,7 @@ typedef enum {
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED		(1u << 11)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH	(1u << 12)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS		(1u << 13)
-#define GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES		(1u << 14)
+#define GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES		(1u << 14) /* TODO: move to request */
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY	(1u << 15)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED	(1u << 16)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE	(1u << 17)
@@ -263,7 +263,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:	Authentication lost password action
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the file to an application
  * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
- * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:	Get the list of historical updates
  * @GS_PLUGIN_ACTION_INITIALIZE:		Initialize the plugin
  * @GS_PLUGIN_ACTION_DESTROY:			Destroy the plugin
  *

@@ -166,7 +166,7 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 	g_autoptr(GsAppList) list = NULL;
 
 	/* get popular apps */
-	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	gtk_widget_set_visible (priv->box_popular, list != NULL);
 	gtk_widget_set_visible (priv->popular_heading, list != NULL);
 	if (list == NULL) {
@@ -207,7 +207,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	g_autoptr(GsAppList) list = NULL;
 
 	/* get recent apps */
-	list = gs_plugin_loader_get_recent_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get recent apps: %s", error->message);
@@ -281,7 +281,7 @@ gs_overview_page_get_category_apps_cb (GObject *source_object,
 	g_autoptr(GsAppList) list = NULL;
 
 	/* get popular apps */
-	list = gs_plugin_loader_get_category_apps_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			goto out;
@@ -364,7 +364,7 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
-	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 		goto out;
 
@@ -430,7 +430,7 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) list = NULL;
 
-	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
@@ -544,22 +544,34 @@ gs_overview_page_load (GsOverviewPage *self)
 	priv->empty = TRUE;
 
 	if (!priv->loading_featured) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
 		priv->loading_featured = TRUE;
-		gs_plugin_loader_get_featured_async (priv->plugin_loader,
-						     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						     GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-						     priv->cancellable,
-						     gs_overview_page_get_featured_cb,
-						     self);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
+						 "max-results", 5,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 NULL);
+		gs_plugin_loader_job_process_async (priv->plugin_loader,
+						    plugin_job,
+						    priv->cancellable,
+						    gs_overview_page_get_featured_cb,
+						    self);
 		priv->action_cnt++;
 	}
 
 	if (!priv->loading_popular) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
 		priv->loading_popular = TRUE;
-		gs_plugin_loader_get_popular_async (priv->plugin_loader,
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
+						 "max-results", 20,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 NULL);
+		gs_plugin_loader_job_process_async (priv->plugin_loader,
+						    plugin_job,
 						    priv->cancellable,
 						    gs_overview_page_get_popular_cb,
 						    self);
@@ -567,15 +579,21 @@ gs_overview_page_load (GsOverviewPage *self)
 	}
 
 	if (!priv->loading_recent) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
 		priv->loading_recent = TRUE;
-		gs_plugin_loader_get_recent_async (priv->plugin_loader,
-						   60 * 60 * 24 * 60,
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-						   GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-						   priv->cancellable,
-						   gs_overview_page_get_recent_cb,
-						   self);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
+						 "age", 60 * 60 * 24 * 60,
+						 "max-results", 20,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 NULL);
+		gs_plugin_loader_job_process_async (priv->plugin_loader,
+						    plugin_job,
+						    priv->cancellable,
+						    gs_overview_page_get_recent_cb,
+						    self);
 		priv->action_cnt++;
 	}
 
@@ -590,6 +608,7 @@ gs_overview_page_load (GsOverviewPage *self)
 			const gchar *cat_id;
 			g_autoptr(GsCategory) category = NULL;
 			g_autoptr(GsCategory) featured_category = NULL;
+			g_autoptr(GsPluginJob) plugin_job = NULL;
 
 			cat_id = g_ptr_array_index (cats_random, i);
 			if (i == 0) {
@@ -604,27 +623,33 @@ gs_overview_page_load (GsOverviewPage *self)
 			load_data->category = g_object_ref (category);
 			load_data->self = g_object_ref (self);
 			load_data->title = gs_overview_page_get_category_label (cat_id);
-			gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
-								  featured_category,
-								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-								  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-								  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-								  priv->cancellable,
-								  gs_overview_page_get_category_apps_cb,
-								  load_data);
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+							 "max-results", 20,
+							 "category", featured_category,
+							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+							 NULL);
+			gs_plugin_loader_job_process_async (priv->plugin_loader,
+							    plugin_job,
+							    priv->cancellable,
+							    gs_overview_page_get_category_apps_cb,
+							    load_data);
 			priv->action_cnt++;
 		}
 		priv->loading_popular_rotating = TRUE;
 	}
 
 	if (!priv->loading_categories) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
 		priv->loading_categories = TRUE;
-		gs_plugin_loader_get_categories_async (priv->plugin_loader,
-						       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-						       priv->cancellable,
-						       gs_overview_page_get_categories_cb,
-						       self);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 NULL);
+		gs_plugin_loader_job_get_categories_async (priv->plugin_loader, plugin_job,
+							  priv->cancellable,
+							  gs_overview_page_get_categories_cb,
+							  self);
 		priv->action_cnt++;
 	}
 }
@@ -716,7 +741,7 @@ gs_overview_page_get_sources_cb (GsPluginLoader *plugin_loader,
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
 	/* get the results */
-	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
 				     GS_PLUGIN_ERROR,
@@ -763,9 +788,14 @@ static void
 gs_overview_page_rescan_proprietary_sources (GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
-	gs_plugin_loader_get_sources_async (priv->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
-					    GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader,
+					    plugin_job,
 					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_overview_page_get_sources_cb,
 					    self);

@@ -112,7 +112,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 	/* don't do the delayed spinner */
 	gs_search_page_waiting_cancel (self);
 
-	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("search cancelled");
@@ -256,6 +256,8 @@ gs_search_page_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 static void
 gs_search_page_load (GsSearchPage *self)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	/* cancel any pending searches */
 	if (self->search_cancellable != NULL) {
 		g_cancellable_cancel (self->search_cancellable);
@@ -266,26 +268,28 @@ gs_search_page_load (GsSearchPage *self)
 	/* search for apps */
 	gs_search_page_waiting_cancel (self);
 	self->waiting_id = g_timeout_add (250, gs_search_page_waiting_show_cb, self);
-
-	gs_plugin_loader_search_async (self->plugin_loader,
-				       self->value,
-				       GS_SEARCH_PAGE_MAX_RESULTS,
-				       gs_search_page_sort_cb, self,
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-				       GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-				       self->search_cancellable,
-				       gs_search_page_get_search_cb,
-				       self);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", self->value,
+					 "max-results", GS_SEARCH_PAGE_MAX_RESULTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+					 NULL);
+	gs_plugin_job_set_sort_func (plugin_job, gs_search_page_sort_cb);
+	gs_plugin_job_set_sort_func_data (plugin_job, self);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->search_cancellable,
+					    gs_search_page_get_search_cb,
+					    self);
 }
 
 static void

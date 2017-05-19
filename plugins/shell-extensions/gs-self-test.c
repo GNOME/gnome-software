@@ -33,6 +33,7 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* no shell-extensions, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "shell-extensions")) {
@@ -41,10 +42,8 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* get installed packages */
-	list = gs_plugin_loader_get_installed (plugin_loader,
-					       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					       GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					       NULL, &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED, NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
@@ -80,6 +79,7 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(AsStore) store = NULL;
 
 	/* ensure files are removed */
@@ -87,12 +87,11 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 
 	/* refresh the metadata */
 	g_setenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN", xml_fn, TRUE);
-	ret = gs_plugin_loader_refresh (plugin_loader,
-					G_MAXUINT,
-					GS_PLUGIN_REFRESH_FLAGS_METADATA,
-					GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					NULL,
-					&error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
+					 "age", G_MAXUINT,
+					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 

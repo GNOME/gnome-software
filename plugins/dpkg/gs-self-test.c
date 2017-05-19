@@ -29,6 +29,7 @@ static void
 gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *fn = NULL;
 	g_autoptr(GFile) file = NULL;
@@ -43,12 +44,10 @@ gs_plugins_dpkg_func (GsPluginLoader *plugin_loader)
 	fn = gs_test_get_filename (TESTDATADIR, "chiron-1.1-1.deb");
 	g_assert (fn != NULL);
 	file = g_file_new_for_path (fn);
-	app = gs_plugin_loader_file_to_app (plugin_loader,
-					    file,
-					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-					    NULL,
-					    &error);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);

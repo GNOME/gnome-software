@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -171,7 +171,7 @@ source_modified_cb (GObject *source,
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to remove: %s", error->message);
 	} else {
 		reload_sources (dialog);
@@ -199,23 +199,27 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 		/* depending on the new policy, add or remove the source */
 		if (g_settings_get_boolean (dialog->settings, "show-nonfree-software")) {
 			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
-				gs_plugin_loader_app_action_async (dialog->plugin_loader,
-								   app,
-								   GS_PLUGIN_ACTION_INSTALL,
-								   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-								   dialog->cancellable,
-								   source_modified_cb,
-								   dialog);
+				g_autoptr(GsPluginJob) plugin_job = NULL;
+				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+								 "app", app,
+								 NULL);
+				gs_plugin_loader_job_process_async (dialog->plugin_loader,
+								    plugin_job,
+								    dialog->cancellable,
+								    source_modified_cb,
+								    dialog);
 			}
 		} else {
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-				gs_plugin_loader_app_action_async (dialog->plugin_loader,
-								   app,
-								   GS_PLUGIN_ACTION_REMOVE,
-								   GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
-								   dialog->cancellable,
-								   source_modified_cb,
-								   dialog);
+				g_autoptr(GsPluginJob) plugin_job = NULL;
+				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+								 "app", app,
+								 NULL);
+				gs_plugin_loader_job_process_async (dialog->plugin_loader,
+								    plugin_job,
+								    dialog->cancellable,
+								    source_modified_cb,
+								    dialog);
 			}
 		}
 	}
@@ -316,7 +320,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
 
 	/* get the results */
-	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
 				     GS_PLUGIN_ERROR,
@@ -357,16 +361,19 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 static void
 reload_sources (GsSourcesDialog *dialog)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
 	gs_start_spinner (GTK_SPINNER (dialog->spinner));
 	gtk_widget_hide (dialog->button_back);
 	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
 
 	/* get the list of non-core software sources */
-	gs_plugin_loader_get_sources_async (dialog->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED,
-					    GS_PLUGIN_FAILURE_FLAGS_NONE,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED,
+					 NULL);
+	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
 					    (GAsyncReadyCallback) get_sources_cb,
 					    dialog);
@@ -480,7 +487,7 @@ app_removed_cb (GObject *source,
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
 	g_autoptr(GError) error = NULL;
 
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to remove: %s", error->message);
 	} else {
 		reload_sources (dialog);
@@ -499,6 +506,7 @@ static void
 remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 {
 	GsApp *app;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* disable button */
 	gtk_widget_set_sensitive (dialog->button_remove, FALSE);
@@ -511,13 +519,14 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 	/* remove source */
 	app = GS_APP (g_object_get_data (G_OBJECT (dialog->stack), "GsShell::app"));
 	g_debug ("removing source '%s'", gs_app_get_name (app));
-	gs_plugin_loader_app_action_async (dialog->plugin_loader,
-					   app,
-					   GS_PLUGIN_ACTION_REMOVE,
-					   GS_PLUGIN_FAILURE_FLAGS_NONE,
-					   dialog->cancellable,
-					   app_removed_cb,
-					   dialog);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 NULL);
+	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
+					    dialog->cancellable,
+					    app_removed_cb,
+					    dialog);
 }
 
 static gboolean
