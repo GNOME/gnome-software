@@ -136,7 +136,7 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 			if (!gtk_show_uri_on_window (GTK_WINDOW (dialog),
 			                             url,
 			                             GDK_CURRENT_TIME,
-			                             &error)) {
+			                             &error_local)) {
 				g_warning ("failed to show URI %s: %s",
 				           url, error_local->message);
 			}
