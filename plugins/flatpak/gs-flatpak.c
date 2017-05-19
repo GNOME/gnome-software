@@ -441,18 +441,6 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 			   error_md->message);
 	}
 
-	/* load just the wildcards */
-	if (!as_store_load (self->store,
-			    AS_STORE_LOAD_FLAG_ONLY_MERGE_APPS |
-			    AS_STORE_LOAD_FLAG_ONLY_UNCOMPRESSED |
-			    AS_STORE_LOAD_FLAG_APP_INFO_USER |
-			    AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM,
-			    cancellable, error)) {
-		gs_utils_error_convert_appstream (error);
-		return FALSE;
-	}
-
-
 	/* watch for changes */
 	self->monitor = flatpak_installation_create_monitor (self->installation,
 							     cancellable,
