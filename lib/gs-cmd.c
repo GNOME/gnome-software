@@ -470,12 +470,14 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "recent") == 0) {
+		if (cache_age == 0)
+			cache_age = 60 * 60 * 24 * 60;
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-							 "age", 60 * 60 * 24 * 60,
+							 "age", cache_age,
 							 "refine-flags", refine_flags,
 							 "max-results", max_results,
 							 NULL);
