@@ -1132,11 +1132,28 @@ gs_editor_commandline_cb (GApplication *application,
 	return TRUE;
 }
 
+static void
+gs_editor_self_free (GsEditor *self)
+{
+	if (self->selected_item != NULL)
+		g_object_unref (self->selected_item);
+	if (self->deleted_item != NULL)
+		g_object_unref (self->deleted_item);
+	if (self->refresh_details_delayed_id != 0)
+		g_source_remove (self->refresh_details_delayed_id);
+	g_object_unref (self->cancellable);
+	g_object_unref (self->store);
+	g_object_unref (self->store_global);
+	g_object_unref (self->builder);
+	g_free (self);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsEditor, gs_editor_self_free)
+
 int
 main (int argc, char *argv[])
 {
-	gint status = 0;
-	GsEditor *self = NULL;
+	g_autoptr(GsEditor) self = NULL;
 
 	setlocale (LC_ALL, "");
 
@@ -1163,20 +1180,5 @@ main (int argc, char *argv[])
 			  G_CALLBACK (gs_editor_commandline_cb), self);
 
 	/* run */
-	status = g_application_run (G_APPLICATION (self->application), argc, argv);
-
-	if (self != NULL) {
-		if (self->selected_item != NULL)
-			g_object_unref (self->selected_item);
-		if (self->deleted_item != NULL)
-			g_object_unref (self->deleted_item);
-		if (self->refresh_details_delayed_id != 0)
-			g_source_remove (self->refresh_details_delayed_id);
-		g_object_unref (self->cancellable);
-		g_object_unref (self->store);
-		g_object_unref (self->store_global);
-		g_object_unref (self->builder);
-		g_free (self);
-	}
-	return status;
+	return g_application_run (G_APPLICATION (self->application), argc, argv);
 }
