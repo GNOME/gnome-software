@@ -35,7 +35,9 @@
 
 struct GsPluginData {
 	GFileMonitor		*monitor;
+	GFileMonitor		*monitor_trigger;
 	GPermission		*permission;
+	gboolean		 is_triggered;
 };
 
 void
@@ -50,6 +52,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (priv->monitor != NULL)
 		g_object_unref (priv->monitor);
+	if (priv->monitor_trigger != NULL)
+		g_object_unref (priv->monitor_trigger);
 }
 
 static void
@@ -75,10 +79,34 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 	gs_plugin_updates_changed (plugin);
 }
 
+static void
+gs_plugin_systemd_updates_refresh_is_triggered (GsPlugin *plugin, GCancellable *cancellable)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GFile) file_trigger = NULL;
+	file_trigger = g_file_new_for_path ("/system-update");
+	priv->is_triggered = g_file_query_exists (file_trigger, NULL);
+	g_debug ("offline trigger is now %s",
+		 priv->is_triggered ? "enabled" : "disabled");
+}
+
+static void
+gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
+				      GFile *file, GFile *other_file,
+				      GFileMonitorEvent event_type,
+				      gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	gs_plugin_systemd_updates_refresh_is_triggered (plugin, NULL);
+}
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GFile) file_trigger = NULL;
+
+	/* watch the prepared file */
 	priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
 	if (priv->monitor == NULL) {
 		gs_utils_error_convert_gio (error);
@@ -86,6 +114,20 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 	g_signal_connect (priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
+			  plugin);
+
+	/* watch the trigger file */
+	file_trigger = g_file_new_for_path ("/system-update");
+	priv->monitor_trigger = g_file_monitor_file (file_trigger,
+						     G_FILE_MONITOR_NONE,
+						     NULL,
+						     error);
+	if (priv->monitor_trigger == NULL) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+	g_signal_connect (priv->monitor_trigger, "changed",
+			  G_CALLBACK (gs_plugin_systemd_trigger_changed_cb),
 			  plugin);
 
 	/* check if we have permission to trigger the update */
@@ -162,12 +204,18 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* if we can process this online do not require a trigger */
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
 		return TRUE;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
+
+	/* already in correct state */
+	if (priv->is_triggered)
 		return TRUE;
 
 	/* trigger offline update */
@@ -177,10 +225,12 @@ gs_plugin_update_app (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	/* don't rely on the file monitor */
+	gs_plugin_systemd_updates_refresh_is_triggered (plugin, cancellable);
+
 	/* success! */
 	return TRUE;
 }
-
 
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,
@@ -188,10 +238,25 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
-	return pk_offline_cancel (NULL, error);
+
+	/* already in correct state */
+	if (!priv->is_triggered)
+		return TRUE;
+
+	/* cancel offline update */
+	if (!pk_offline_cancel (NULL, error))
+		return FALSE;
+
+	/* don't rely on the file monitor */
+	gs_plugin_systemd_updates_refresh_is_triggered (plugin, cancellable);
+
+	/* success! */
+	return TRUE;
 }
 
 gboolean
