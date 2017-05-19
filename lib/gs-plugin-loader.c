@@ -592,18 +592,17 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	/* run the correct vfunc */
 	gs_plugin_loader_action_start (helper->plugin_loader, plugin, FALSE);
 	switch (helper->action) {
-	case GS_PLUGIN_ACTION_SETUP:
-		if (g_strcmp0 (helper->function_name, "gs_plugin_initialize") == 0 ||
-		    g_strcmp0 (helper->function_name, "gs_plugin_destroy") == 0) {
+	case GS_PLUGIN_ACTION_INITIALIZE:
+	case GS_PLUGIN_ACTION_DESTROY:
+		{
 			GsPluginFunc plugin_func = func;
 			plugin_func (plugin);
-		} else if (g_strcmp0 (helper->function_name, "gs_plugin_setup") == 0) {
+		}
+		break;
+	case GS_PLUGIN_ACTION_SETUP:
+		{
 			GsPluginSetupFunc plugin_func = func;
 			ret = plugin_func (plugin, cancellable, &error_local);
-		} else {
-			g_critical ("function_name %s invalid for %s",
-				    helper->function_name,
-				    gs_plugin_action_to_string (helper->action));
 		}
 		break;
 	case GS_PLUGIN_ACTION_REFINE:
@@ -3748,11 +3747,11 @@ void
 gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	const gchar *func_names[] = {
-		"gs_plugin_destroy",
-		"gs_plugin_initialize",
-		"gs_plugin_setup",
-		NULL };
+	GsPluginAction actions[] = {
+		GS_PLUGIN_ACTION_DESTROY,
+		GS_PLUGIN_ACTION_INITIALIZE,
+		GS_PLUGIN_ACTION_SETUP,
+		GS_PLUGIN_ACTION_UNKNOWN };
 
 	/* clear global cache */
 	gs_plugin_loader_clear_caches (plugin_loader);
@@ -3761,16 +3760,16 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_remove_events (plugin_loader);
 
 	/* call in order */
-	for (guint j = 0; func_names[j] != NULL; j++) {
+	for (guint j = 0; actions[j] != GS_PLUGIN_ACTION_UNKNOWN; j++) {
 		for (guint i = 0; i < priv->plugins->len; i++) {
 			g_autoptr(GError) error_local = NULL;
 			g_autoptr(GsPluginLoaderHelper) helper = gs_plugin_loader_helper_new (plugin_loader);
 			GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
-			helper->action = GS_PLUGIN_ACTION_SETUP;
+			helper->action = actions[j];
 			helper->failure_flags = GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
-			helper->function_name = func_names[j];
+			helper->function_name = gs_plugin_action_to_function_name (helper->action);
 			if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
 							  NULL, &error_local)) {
 				g_warning ("resetup of %s failed: %s",
@@ -3778,7 +3777,7 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 					   error_local->message);
 				break;
 			}
-			if (g_strcmp0 (func_names[j], "gs_plugin_destroy") == 0)
+			if (actions[j] == GS_PLUGIN_ACTION_DESTROY)
 				gs_plugin_clear_data (plugin);
 		}
 	}
@@ -3900,9 +3899,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 
 	/* run the plugins */
 	helper = gs_plugin_loader_helper_new (plugin_loader);
-	helper->action = GS_PLUGIN_ACTION_SETUP;
+	helper->action = GS_PLUGIN_ACTION_INITIALIZE;
 	helper->failure_flags = failure_flags | GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE;
-	helper->function_name = "gs_plugin_initialize";
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	for (i = 0; i < priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (priv->plugins, i);
 		gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL,
@@ -4050,7 +4049,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	} while (changes);
 
 	/* run setup */
-	helper->function_name = "gs_plugin_setup";
+	helper->action = GS_PLUGIN_ACTION_SETUP;
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	for (i = 0; i < priv->plugins->len; i++) {
 		g_autoptr(GError) error_local = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
@@ -4137,8 +4137,8 @@ gs_plugin_loader_dispose (GObject *object)
 	if (priv->plugins != NULL) {
 		g_autoptr(GsPluginLoaderHelper) helper = NULL;
 		helper = gs_plugin_loader_helper_new (plugin_loader);
-		helper->action = GS_PLUGIN_ACTION_SETUP;
-		helper->function_name = "gs_plugin_destroy";
+		helper->action = GS_PLUGIN_ACTION_DESTROY;
+		helper->function_name = gs_plugin_action_to_function_name (helper->action);
 		for (guint i = 0; i < priv->plugins->len; i++) {
 			GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 			gs_plugin_loader_call_vfunc (helper, plugin, NULL, NULL, NULL, NULL);

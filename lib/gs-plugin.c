@@ -1755,6 +1755,10 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_categories";
 	if (action == GS_PLUGIN_ACTION_SETUP)
 		return "gs_plugin_setup";
+	if (action == GS_PLUGIN_ACTION_INITIALIZE)
+		return "gs_plugin_initialize";
+	if (action == GS_PLUGIN_ACTION_DESTROY)
+		return "gs_plugin_destroy";
 	return NULL;
 }
 
@@ -1849,6 +1853,10 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "get-recent";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
 		return "get-updates-historical";
+	if (action == GS_PLUGIN_ACTION_INITIALIZE)
+		return "initialize";
+	if (action == GS_PLUGIN_ACTION_DESTROY)
+		return "destroy";
 	return NULL;
 }
 
