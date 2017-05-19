@@ -1344,7 +1344,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	GError *error = NULL;
 
 	/* do things that would block */
-	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0) {
+	if (helper->action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL) {
 		helper->function_name = "gs_plugin_add_updates_historical";
 		helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
 		if (helper->list == NULL) {
@@ -1428,7 +1428,10 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 	helper = gs_plugin_loader_helper_new (plugin_loader);
 	helper->refine_flags = refine_flags;
 	helper->failure_flags = failure_flags;
-	helper->action = GS_PLUGIN_ACTION_GET_UPDATES;
+	if ((helper->refine_flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0)
+		helper->action = GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
+	else
+		helper->action = GS_PLUGIN_ACTION_GET_UPDATES;
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */

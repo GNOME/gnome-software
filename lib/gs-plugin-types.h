@@ -263,6 +263,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:	Authentication lost password action
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the file to an application
  * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
+ * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:	Get the list of historical updates
  *
  * The plugin action.
  **/
@@ -306,6 +307,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_RECENT,
+	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;

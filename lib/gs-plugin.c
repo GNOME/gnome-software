@@ -1757,6 +1757,8 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "auth-lost-password";
 	if (action == GS_PLUGIN_ACTION_GET_RECENT)
 		return "get-recent";
+	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
+		return "get-updates-historical";
 	return NULL;
 }
 
