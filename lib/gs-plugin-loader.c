@@ -1280,9 +1280,9 @@ gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 static gint
 gs_plugin_loader_app_sort_kind_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	if (gs_app_get_kind (app1) > gs_app_get_kind (app2))
+	if (gs_app_get_kind (app1) == AS_APP_KIND_DESKTOP)
 		return -1;
-	if (gs_app_get_kind (app1) < gs_app_get_kind (app2))
+	if (gs_app_get_kind (app2) == AS_APP_KIND_DESKTOP)
 		return 1;
 	return 0;
 }
