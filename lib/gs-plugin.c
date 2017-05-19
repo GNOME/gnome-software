@@ -1669,6 +1669,96 @@ gs_plugin_error_to_string (GsPluginError error)
 }
 
 /**
+ * gs_plugin_action_to_function_name: (skip)
+ * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ERROR_NO_NETWORK
+ *
+ * Converts the enumerated action to the vfunc name.
+ *
+ * Returns: a string, or %NULL for invalid
+ **/
+const gchar *
+gs_plugin_action_to_function_name (GsPluginAction action)
+{
+	if (action == GS_PLUGIN_ACTION_REFRESH)
+		return "gs_plugin_refresh";
+	if (action == GS_PLUGIN_ACTION_REVIEW_SUBMIT)
+		return "gs_plugin_review_submit";
+	if (action == GS_PLUGIN_ACTION_REVIEW_UPVOTE)
+		return "gs_plugin_review_upvote";
+	if (action == GS_PLUGIN_ACTION_REVIEW_DOWNVOTE)
+		return "gs_plugin_review_downvote";
+	if (action == GS_PLUGIN_ACTION_REVIEW_REPORT)
+		return "gs_plugin_review_report";
+	if (action == GS_PLUGIN_ACTION_REVIEW_REMOVE)
+		return "gs_plugin_review_remove";
+	if (action == GS_PLUGIN_ACTION_REVIEW_DISMISS)
+		return "gs_plugin_review_dismiss";
+	if (action == GS_PLUGIN_ACTION_INSTALL)
+		return "gs_plugin_app_install";
+	if (action == GS_PLUGIN_ACTION_REMOVE)
+		return "gs_plugin_app_remove";
+	if (action == GS_PLUGIN_ACTION_SET_RATING)
+		return "gs_plugin_app_set_rating";
+	if (action == GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD)
+		return "gs_plugin_app_upgrade_download";
+	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
+		return "gs_plugin_app_upgrade_trigger";
+	if (action == GS_PLUGIN_ACTION_LAUNCH)
+		return "gs_plugin_launch";
+	if (action == GS_PLUGIN_ACTION_UPDATE_CANCEL)
+		return "gs_plugin_update_cancel";
+	if (action == GS_PLUGIN_ACTION_ADD_SHORTCUT)
+		return "gs_plugin_add_shortcut";
+	if (action == GS_PLUGIN_ACTION_REMOVE_SHORTCUT)
+		return "gs_plugin_remove_shortcut";
+	if (action == GS_PLUGIN_ACTION_REFINE)
+		return "gs_plugin_refine";
+	if (action == GS_PLUGIN_ACTION_UPDATE)
+		return "gs_plugin_update";
+	if (action == GS_PLUGIN_ACTION_FILE_TO_APP)
+		return "gs_plugin_file_to_app";
+	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
+		return "gs_plugin_url_to_app";
+	if (action == GS_PLUGIN_ACTION_GET_DISTRO_UPDATES)
+		return "gs_plugin_add_distro_upgrades";
+	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
+		return "gs_plugin_add_sources";
+	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
+		return "gs_plugin_add_installed";
+	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
+		return "gs_plugin_add_featured";
+	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
+		return "gs_plugin_add_updates_historical";
+	if (action == GS_PLUGIN_ACTION_GET_UPDATES)
+		return "gs_plugin_add_updates";
+	if (action == GS_PLUGIN_ACTION_GET_POPULAR)
+		return "gs_plugin_add_popular";
+	if (action == GS_PLUGIN_ACTION_GET_RECENT)
+		return "gs_plugin_add_recent";
+	if (action == GS_PLUGIN_ACTION_SEARCH)
+		return "gs_plugin_add_search";
+	if (action == GS_PLUGIN_ACTION_SEARCH_FILES)
+		return "gs_plugin_add_search_files";
+	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
+		return "gs_plugin_add_search_what_provides";
+	if (action == GS_PLUGIN_ACTION_AUTH_LOGIN)
+		return "gs_plugin_auth_login";
+	if (action == GS_PLUGIN_ACTION_AUTH_LOGOUT)
+		return "gs_plugin_auth_logout";
+	if (action == GS_PLUGIN_ACTION_AUTH_REGISTER)
+		return "gs_plugin_auth_register";
+	if (action == GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD)
+		return "gs_plugin_auth_lost_password";
+	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
+		return "gs_plugin_add_category_apps";
+	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
+		return "gs_plugin_add_categories";
+	if (action == GS_PLUGIN_ACTION_SETUP)
+		return "gs_plugin_setup";
+	return NULL;
+}
+
+/**
  * gs_plugin_action_to_string:
  * @action: a #GsPluginAction, e.g. %GS_PLUGIN_ERROR_NO_NETWORK
  *

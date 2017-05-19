@@ -1345,7 +1345,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 
 	/* do things that would block */
 	if (helper->action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL) {
-		helper->function_name = "gs_plugin_add_updates_historical";
 		helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
 		if (helper->list == NULL) {
 			g_task_return_error (task, error);
@@ -1353,7 +1352,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 		}
 	} else {
 		/* get downloaded updates */
-		helper->function_name = "gs_plugin_add_updates";
 		helper->list = gs_plugin_loader_run_results (helper, cancellable, &error);
 		if (helper->list == NULL) {
 			g_task_return_error (task, error);
@@ -1432,6 +1430,7 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 		helper->action = GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
 	else
 		helper->action = GS_PLUGIN_ACTION_GET_UPDATES;
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
@@ -2634,7 +2633,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 	helper->list = gs_app_list_new ();
 	helper->category = g_object_ref (category);
 	helper->action = GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
-	helper->function_name = "gs_plugin_add_category_apps";
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
@@ -2748,7 +2747,7 @@ gs_plugin_loader_get_recent_async (GsPluginLoader *plugin_loader,
 	helper->list = gs_app_list_new ();
 	helper->age = age;
 	helper->action = GS_PLUGIN_ACTION_GET_RECENT;
-	helper->function_name = "gs_plugin_add_recent";
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
@@ -3196,40 +3195,8 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	helper->app = g_object_ref (app);
 	helper->action = action;
 	helper->failure_flags = failure_flags;
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
-
-	switch (action) {
-	case GS_PLUGIN_ACTION_INSTALL:
-		helper->function_name = "gs_plugin_app_install";
-		break;
-	case GS_PLUGIN_ACTION_REMOVE:
-		helper->function_name = "gs_plugin_app_remove";
-		break;
-	case GS_PLUGIN_ACTION_SET_RATING:
-		helper->function_name = "gs_plugin_app_set_rating";
-		break;
-	case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
-		helper->function_name = "gs_plugin_app_upgrade_download";
-		break;
-	case GS_PLUGIN_ACTION_UPGRADE_TRIGGER:
-		helper->function_name = "gs_plugin_app_upgrade_trigger";
-		break;
-	case GS_PLUGIN_ACTION_LAUNCH:
-		helper->function_name = "gs_plugin_launch";
-		break;
-	case GS_PLUGIN_ACTION_UPDATE_CANCEL:
-		helper->function_name = "gs_plugin_update_cancel";
-		break;
-	case GS_PLUGIN_ACTION_ADD_SHORTCUT:
-		helper->function_name = "gs_plugin_add_shortcut";
-		break;
-	case GS_PLUGIN_ACTION_REMOVE_SHORTCUT:
-		helper->function_name = "gs_plugin_remove_shortcut";
-		break;
-	default:
-		g_assert_not_reached ();
-		break;
-	}
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -3260,31 +3227,8 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	helper->review = g_object_ref (review);
 	helper->action = action;
 	helper->failure_flags = failure_flags;
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
-
-	switch (action) {
-	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
-		helper->function_name = "gs_plugin_review_submit";
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_UPVOTE:
-		helper->function_name = "gs_plugin_review_upvote";
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_DOWNVOTE:
-		helper->function_name = "gs_plugin_review_downvote";
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_REPORT:
-		helper->function_name = "gs_plugin_review_report";
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_REMOVE:
-		helper->function_name = "gs_plugin_review_remove";
-		break;
-	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
-		helper->function_name = "gs_plugin_review_dismiss";
-		break;
-	default:
-		g_assert_not_reached ();
-		break;
-	}
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -3354,25 +3298,8 @@ gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 	helper->auth = g_object_ref (auth);
 	helper->action = action;
 	helper->failure_flags = failure_flags;
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
-
-	switch (action) {
-	case GS_PLUGIN_ACTION_AUTH_LOGIN:
-		helper->function_name = "gs_plugin_auth_login";
-		break;
-	case GS_PLUGIN_ACTION_AUTH_LOGOUT:
-		helper->function_name = "gs_plugin_auth_logout";
-		break;
-	case GS_PLUGIN_ACTION_AUTH_REGISTER:
-		helper->function_name = "gs_plugin_auth_register";
-		break;
-	case GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:
-		helper->function_name = "gs_plugin_auth_lost_password";
-		break;
-	default:
-		g_assert_not_reached ();
-		break;
-	}
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -4586,7 +4513,7 @@ gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 	helper->failure_flags = failure_flags;
 	helper->cache_age = cache_age;
 	helper->action = GS_PLUGIN_ACTION_REFRESH;
-	helper->function_name = "gs_plugin_refresh";
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
@@ -4748,7 +4675,7 @@ gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
 	helper->list = gs_app_list_new ();
 	helper->file = g_object_ref (file);
 	helper->action = GS_PLUGIN_ACTION_FILE_TO_APP;
-	helper->function_name = "gs_plugin_file_to_app";
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
@@ -4868,7 +4795,7 @@ gs_plugin_loader_url_to_app_async (GsPluginLoader *plugin_loader,
 	helper->list = gs_app_list_new ();
 	helper->value = g_strdup (url);
 	helper->action = GS_PLUGIN_ACTION_URL_TO_APP;
-	helper->function_name = "gs_plugin_url_to_app";
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
@@ -4970,7 +4897,6 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 	guint i;
 
 	/* run each plugin */
-	helper->function_name = "gs_plugin_update";
 	for (i = 0; i < priv->plugins->len; i++) {
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		if (g_task_return_error_if_cancelled (task))
@@ -5086,6 +5012,7 @@ gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
 	helper->list = gs_app_list_copy (apps);
 	helper->action = GS_PLUGIN_ACTION_UPDATE;
 	helper->failure_flags = failure_flags;
+	helper->function_name = gs_plugin_action_to_function_name (helper->action);
 	gs_plugin_loader_helper_debug (helper);
 
 	/* run in a thread */
