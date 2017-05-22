@@ -29,6 +29,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
 #include <flatpak.h>
 
 #include "gs-appstream.h"
@@ -452,12 +453,22 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	g_autofree gchar *str = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (self->plugin));
+
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
 				  "%s::refresh-appstream{%s}",
 				  gs_flatpak_get_id (self),
 				  remote_name);
 	g_assert (ptask != NULL);
+
+	/* TRANSLATORS: status text when downloading new metadata */
+	str = g_strdup_printf (_("Getting flatpak metadata for %s…"), remote_name);
+	gs_app_set_summary_missing (app_dl, str);
+	gs_app_set_progress (app_dl, 0); // FIXME
+	gs_plugin_status_update (self->plugin, app_dl,
+				 GS_PLUGIN_STATUS_DOWNLOADING);
 	if (!flatpak_installation_update_appstream_sync (self->installation,
 							 remote_name,
 							 NULL,
