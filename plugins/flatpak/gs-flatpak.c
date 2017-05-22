@@ -426,21 +426,6 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 gboolean
 gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 {
-	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GError) error_md = NULL;
-
-	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
-				  "%s::setup",
-				  gs_flatpak_get_id (self));
-	g_assert (ptask != NULL);
-
-	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0,
-					   cancellable,
-					   &error_md)) {
-		g_warning ("failed to get initial available data on setup: %s",
-			   error_md->message);
-	}
-
 	/* watch for changes */
 	self->monitor = flatpak_installation_create_monitor (self->installation,
 							     cancellable,
