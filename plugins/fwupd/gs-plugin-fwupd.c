@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
+#include <glib/gi18n.h>
 #include <glib/gstdio.h>
 
 #include <gnome-software.h>
@@ -693,6 +694,9 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 
 	/* download the signature first, it's smaller */
 	url_sig = g_strdup_printf ("%s.asc", priv->download_uri);
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading firmware update signature…"));
 	data = gs_plugin_download_data (plugin,
 					app_dl,
 					url_sig,
@@ -739,8 +743,10 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	if (cache_fn_data == NULL)
 		return FALSE;
 	g_debug ("saving new LVFS data to %s:", cache_fn_data);
-	if (!gs_plugin_download_file (plugin,
-				      app_dl,
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading firmware update metadata…"));
+	if (!gs_plugin_download_file (plugin, app_dl,
 				      priv->download_uri,
 				      cache_fn_data,
 				      cancellable,
@@ -790,6 +796,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GError) error_local = NULL;
 		g_autofree gchar *basename = NULL;
 		g_autofree gchar *filename_cache = NULL;
+		g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 		tmp = g_ptr_array_index (priv->to_download, i);
 		basename = g_path_get_basename (tmp);
@@ -801,8 +808,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 			return FALSE;
 
 		/* download file */
-		if (!gs_plugin_download_file (plugin,
-					      NULL, /* app */
+		gs_app_set_summary_missing (app_dl,
+					    /* TRANSLATORS: status text when downloading */
+					    _("Downloading firmware update…"));
+		if (!gs_plugin_download_file (plugin, app_dl,
 					      tmp, /* url */
 					      filename_cache,
 					      cancellable,

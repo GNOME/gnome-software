@@ -53,20 +53,22 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
                                    GsLoadingPage *self)
 {
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+	const gchar *str = NULL;
 
 	/* update label */
-	switch (status) {
-	case GS_PLUGIN_STATUS_DOWNLOADING:
-		gtk_label_set_label (GTK_LABEL (priv->label),
-				     /* TRANSLATORS: initial start */
-				     _("Software catalog is being downloaded"));
-		break;
-	default:
-		gtk_label_set_label (GTK_LABEL (priv->label),
-				     /* TRANSLATORS: initial start */
-				     _("Software catalog is being loaded"));
-		break;
+	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
+		str = gs_app_get_summary_missing (app);
+		if (str == NULL) {
+			/* TRANSLATORS: initial start */
+			str = _("Software catalog is being downloaded");
+		}
+	} else {
+		/* TRANSLATORS: initial start */
+		str = _("Software catalog is being loaded");
 	}
+
+	/* update label */
+	gtk_label_set_label (GTK_LABEL (priv->label), str);
 
 	/* update progresbar */
 	if (app != NULL) {

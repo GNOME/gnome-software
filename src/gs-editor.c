@@ -59,7 +59,7 @@ gs_editor_css_download_resources (GsEditor *self, const gchar *css, GError **err
 						      SOUP_SESSION_TIMEOUT, 10,
 						      NULL);
 	gs_plugin_set_soup_session (plugin, soup_session);
-	return gs_plugin_download_rewrite_resource (plugin, css, NULL, error);
+	return gs_plugin_download_rewrite_resource (plugin, NULL, css, NULL, error);
 }
 
 static gchar *

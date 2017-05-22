@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <errno.h>
+#include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
 
 #include <gnome-software.h>
@@ -633,7 +634,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) cachefn_file = NULL;
 	g_autoptr(GBytes) data = NULL;
-	g_autoptr(GsApp) dummy = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* look in the cache */
 	cachefn = gs_utils_get_cache_filename ("extensions",
@@ -656,7 +657,10 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	/* create the GET data */
 	uri = g_strdup_printf ("%s/static/extensions.json",
 			       SHELL_EXTENSIONS_API_URI);
-	data = gs_plugin_download_data (plugin, dummy, uri, cancellable, error);
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading shell extension metadata…"));
+	data = gs_plugin_download_data (plugin, app_dl, uri, cancellable, error);
 	if (data == NULL) {
 		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return NULL;

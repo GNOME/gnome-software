@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
 #include <gnome-software.h>
 
 #include "gs-appstream.h"
@@ -673,6 +674,7 @@ gs_plugin_appstream_refresh_url (GsPlugin *plugin,
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *fullpath = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check age */
 	basename = g_path_get_basename (url);
@@ -689,12 +691,11 @@ gs_plugin_appstream_refresh_url (GsPlugin *plugin,
 	}
 
 	/* download file */
-	return gs_plugin_download_file (plugin,
-					NULL, /* GsApp */
-					url,
-					fullpath,
-					cancellable,
-					error);
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading extra metadata files…"));
+	return gs_plugin_download_file (plugin, app_dl, url, fullpath,
+					cancellable, error);
 }
 
 gboolean

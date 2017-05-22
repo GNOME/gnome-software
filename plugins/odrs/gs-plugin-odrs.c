@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
 #include <gnome-software.h>
 #include <json-glib/json-glib.h>
 #include <string.h>
@@ -199,6 +200,9 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 
 	/* download the complete file */
 	uri = g_strdup_printf ("%s/ratings", priv->review_server);
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading application ratings…"));
 	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, error)) {
 		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return FALSE;

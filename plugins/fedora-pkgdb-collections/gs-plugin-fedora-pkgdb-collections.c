@@ -193,6 +193,7 @@ _refresh_cache (GsPlugin *plugin,
 		GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check cache age */
 	if (cache_age > 0) {
@@ -206,7 +207,10 @@ _refresh_cache (GsPlugin *plugin,
 	}
 
 	/* download new file */
-	if (!gs_plugin_download_file (plugin, NULL,
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading upgrade information…"));
+	if (!gs_plugin_download_file (plugin, app_dl,
 				      FEDORA_PKGDB_COLLECTIONS_API_URI,
 				      priv->cachefn,
 				      cancellable,

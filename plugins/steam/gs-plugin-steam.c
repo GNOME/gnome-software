@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
 #include <gnome-software.h>
 #include <string.h>
 
@@ -596,6 +597,9 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	if (!g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
 		g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 		uri = g_strdup_printf ("http://store.steampowered.com/app/%s/", gameid_str);
+		gs_app_set_summary_missing (app_dl,
+					    /* TRANSLATORS: status text when downloading */
+					    _("Downloading application page…"));
 		if (!gs_plugin_download_file (plugin,
 					      app_dl,
 					      uri,
