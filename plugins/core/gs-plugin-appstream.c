@@ -326,9 +326,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		}
 	}
 
-	/* ensure the token cache */
-	as_store_load_search_cache (priv->store);
-
 	/* rely on the store keeping itself updated */
 	return TRUE;
 }
@@ -707,6 +704,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_auto(GStrv) appstream_urls = NULL;
+
+	/* ensure the token cache */
+	if (cache_age == G_MAXUINT)
+		as_store_load_search_cache (priv->store);
 
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
