@@ -468,9 +468,11 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	gboolean ret = TRUE;
 	gpointer func = NULL;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GTimer) timer = g_timer_new ();
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load the possible symbol */
@@ -503,7 +505,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* run the correct vfunc */
 	gs_plugin_loader_action_start (helper->plugin_loader, plugin, FALSE);
-	switch (gs_plugin_job_get_action (helper->plugin_job)) {
+	switch (action) {
 	case GS_PLUGIN_ACTION_INITIALIZE:
 	case GS_PLUGIN_ACTION_DESTROY:
 		{
@@ -536,7 +538,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
-				    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)));
+				    gs_plugin_action_to_string (action));
 		}
 		break;
 	case GS_PLUGIN_ACTION_UPDATE:
@@ -549,7 +551,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
-				    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)));
+				    gs_plugin_action_to_string (action));
 		}
 		break;
 	case GS_PLUGIN_ACTION_INSTALL:
@@ -673,6 +675,28 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 							plugin,
 							error_local,
 							error);
+	}
+
+	/* check the plugin didn't take too long */
+	switch (action) {
+	case GS_PLUGIN_ACTION_INITIALIZE:
+	case GS_PLUGIN_ACTION_DESTROY:
+	case GS_PLUGIN_ACTION_SETUP:
+		if (g_timer_elapsed (timer, NULL) > 0.5f) {
+			g_warning ("plugin %s took %.1f seconds to do %s",
+				   gs_plugin_get_name (plugin),
+				   g_timer_elapsed (timer, NULL),
+				   gs_plugin_action_to_string (action));
+		}
+		break;
+	default:
+		if (g_timer_elapsed (timer, NULL) > 0.5f) {
+			g_debug ("plugin %s took %.1f seconds to do %s",
+				 gs_plugin_get_name (plugin),
+				 g_timer_elapsed (timer, NULL),
+				 gs_plugin_action_to_string (action));
+			}
+		break;
 	}
 
 	/* success */
