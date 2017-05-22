@@ -106,6 +106,7 @@ gboolean	 gs_plugin_download_file		(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gchar		*gs_plugin_download_rewrite_resource	(GsPlugin	*plugin,
+							 GsApp		*app,
 							 const gchar	*resource,
 							 GCancellable	*cancellable,
 							 GError		**error);

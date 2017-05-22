@@ -158,6 +158,7 @@ gs_plugin_download_rewrite_func (void)
 	plugin = gs_plugin_new ();
 	gs_plugin_set_name (plugin, "self-test");
 	css = gs_plugin_download_rewrite_resource (plugin,
+						   NULL, /* app */
 						   resource,
 						   NULL,
 						   &error);

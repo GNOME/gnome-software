@@ -48,7 +48,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		const gchar *css = gs_app_get_metadata_item (app, keys[i]);
 		if (css != NULL) {
 			g_autofree gchar *css_new = NULL;
+			g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 			css_new = gs_plugin_download_rewrite_resource (plugin,
+								       app,
 								       css,
 								       cancellable,
 								       error);

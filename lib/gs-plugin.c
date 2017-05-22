@@ -1333,6 +1333,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 
 static gchar *
 gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
+					 GsApp *app,
 					 const gchar *uri,
 					 GCancellable *cancellable,
 					 GError **error)
@@ -1366,12 +1367,8 @@ gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
 		return g_steal_pointer (&cachefn);
 
 	/* download */
-	if (!gs_plugin_download_file (plugin,
-				      NULL, /* GsApp */
-				      uri,
-				      cachefn,
-				      cancellable,
-				      error)) {
+	if (!gs_plugin_download_file (plugin, app, uri, cachefn,
+				      cancellable, error)) {
 		return NULL;
 	}
 	return g_steal_pointer (&cachefn);
@@ -1392,6 +1389,7 @@ gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
  **/
 gchar *
 gs_plugin_download_rewrite_resource (GsPlugin *plugin,
+				     GsApp *app,
 				     const gchar *resource,
 				     GCancellable *cancellable,
 				     GError **error)
@@ -1433,6 +1431,7 @@ gs_plugin_download_rewrite_resource (GsPlugin *plugin,
 
 			/* download them to per-user cache */
 			cachefn = gs_plugin_download_rewrite_resource_uri (plugin,
+									   app,
 									   uri,
 									   cancellable,
 									   error);
