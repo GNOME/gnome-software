@@ -35,6 +35,7 @@ typedef struct {
 
 	GtkWidget		*progressbar;
 	GtkWidget		*label;
+	guint			 progress_pulse_id;
 } GsLoadingPagePrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsLoadingPage, gs_loading_page, GS_TYPE_PAGE)
@@ -45,6 +46,15 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
+
+static gboolean
+_pulse_cb (gpointer user_data)
+{
+	GsLoadingPage *self = GS_LOADING_PAGE (user_data);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (priv->progressbar));
+	return TRUE;
+}
 
 static void
 gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
@@ -72,8 +82,16 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 
 	/* update progresbar */
 	if (app != NULL) {
-		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
-					       (gdouble) gs_app_get_progress (app) / 100.0f);
+		if (priv->progress_pulse_id != 0) {
+			g_source_remove (priv->progress_pulse_id);
+			priv->progress_pulse_id = 0;
+		}
+		if (gs_app_get_progress (app) == 0) {
+			priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
+		} else {
+			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
+						       (gdouble) gs_app_get_progress (app) / 100.0f);
+		}
 	}
 }
 
@@ -82,6 +100,7 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsLoadingPage *self = GS_LOADING_PAGE (user_data);
+	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 	g_autoptr(GError) error = NULL;
 
 	/* no longer care */
@@ -91,6 +110,12 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to load metadata: %s", error->message);
 		return;
+	}
+
+	/* no more pulsing */
+	if (priv->progress_pulse_id != 0) {
+		g_source_remove (priv->progress_pulse_id);
+		priv->progress_pulse_id = 0;
 	}
 
 	/* UI is good to go */
@@ -157,6 +182,11 @@ gs_loading_page_dispose (GObject *object)
 {
 	GsLoadingPage *self = GS_LOADING_PAGE (object);
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
+
+	if (priv->progress_pulse_id != 0) {
+		g_source_remove (priv->progress_pulse_id);
+		priv->progress_pulse_id = 0;
+	}
 
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
