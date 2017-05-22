@@ -293,6 +293,22 @@ main (int argc, char **argv)
 	}
 	gs_plugin_loader_dump_state (plugin_loader);
 
+	/* ensure that at least some metadata of any age is present, and also
+	 * spin up the plugins enough as to prime caches */
+	if (g_getenv ("GS_CMD_NO_INITIAL_REFRESH") == NULL) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
+						 "age", G_MAXUINT,
+						 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
+						 NULL);
+		ret = gs_plugin_loader_job_action (plugin_loader, plugin_job,
+						    NULL, &error);
+		if (!ret) {
+			g_print ("Failed to refresh plugins: %s\n", error->message);
+			goto out;
+		}
+	}
+
 	/* do action */
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
 		for (i = 0; i < repeat; i++) {
