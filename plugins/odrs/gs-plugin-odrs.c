@@ -211,15 +211,6 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
-{
-	/* just ensure there is any data, no matter how old */
-	if (!gs_plugin_odrs_refresh_ratings (plugin, G_MAXUINT, cancellable, error))
-		return FALSE;
-	return TRUE;
-}
-
-gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
 		   GsPluginRefreshFlags flags,
