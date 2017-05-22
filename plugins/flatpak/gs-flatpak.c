@@ -447,6 +447,18 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
+static void
+gs_flatpak_progress_cb (const gchar *status,
+			guint progress,
+			gboolean estimating,
+			gpointer user_data)
+{
+	GsApp *app = GS_APP (user_data);
+	if (app == NULL)
+		return;
+	gs_app_set_progress (app, progress);
+}
+
 static gboolean
 gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 				     const gchar *remote_name,
@@ -466,9 +478,21 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	/* TRANSLATORS: status text when downloading new metadata */
 	str = g_strdup_printf (_("Getting flatpak metadata for %s…"), remote_name);
 	gs_app_set_summary_missing (app_dl, str);
-	gs_app_set_progress (app_dl, 0); // FIXME
-	gs_plugin_status_update (self->plugin, app_dl,
-				 GS_PLUGIN_STATUS_DOWNLOADING);
+	gs_plugin_status_update (self->plugin, app_dl, GS_PLUGIN_STATUS_DOWNLOADING);
+#if FLATPAK_CHECK_VERSION(0,9,4)
+	if (!flatpak_installation_update_appstream_full_sync (self->installation,
+							      remote_name,
+							      NULL, /* arch */
+							      gs_flatpak_progress_cb,
+							      app_dl,
+							      NULL, /* out_changed */
+							      cancellable,
+							      error)) {
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+#else
+	gs_app_set_progress (app_dl, 0);
 	if (!flatpak_installation_update_appstream_sync (self->installation,
 							 remote_name,
 							 NULL,
@@ -478,6 +502,10 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 		gs_plugin_flatpak_error_convert (error);
 		return FALSE;
 	}
+#endif
+
+	/* success */
+	gs_app_set_progress (app_dl, 100);
 	return TRUE;
 }
 
@@ -1121,18 +1149,6 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 
 	/* success */
 	return TRUE;
-}
-
-static void
-gs_flatpak_progress_cb (const gchar *status,
-			guint progress,
-			gboolean estimating,
-			gpointer user_data)
-{
-	GsApp *app = GS_APP (user_data);
-	if (app == NULL)
-		return;
-	gs_app_set_progress (app, progress);
 }
 
 gboolean
