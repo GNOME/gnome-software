@@ -1468,9 +1468,8 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 		g_object_unref (self->cancellable_upgrade_download);
 	self->cancellable_upgrade_download = g_cancellable_new ();
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
-					 "failure-flags",
 					 "app", app,
-					 GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_upgrade_download,
