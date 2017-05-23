@@ -447,16 +447,56 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
+typedef struct {
+	GsPlugin	*plugin;
+	GsApp		*app;
+} GsFlatpakProgressHelper;
+
+static void
+gs_flatpak_progress_helper_free (GsFlatpakProgressHelper *phelper)
+{
+	g_object_unref (phelper->plugin);
+	if (phelper->app != NULL)
+		g_object_unref (phelper->app);
+	g_slice_free (GsFlatpakProgressHelper, phelper);
+}
+
+static GsFlatpakProgressHelper *
+gs_flatpak_progress_helper_new (GsPlugin *plugin, GsApp *app)
+{
+	GsFlatpakProgressHelper *phelper;
+	phelper = g_slice_new0 (GsFlatpakProgressHelper);
+	phelper->plugin = g_object_ref (plugin);
+	if (app != NULL)
+		phelper->app = g_object_ref (app);
+	return phelper;
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsFlatpakProgressHelper, gs_flatpak_progress_helper_free)
+
 static void
 gs_flatpak_progress_cb (const gchar *status,
 			guint progress,
 			gboolean estimating,
 			gpointer user_data)
 {
-	GsApp *app = GS_APP (user_data);
-	if (app == NULL)
-		return;
-	gs_app_set_progress (app, progress);
+	GsFlatpakProgressHelper *phelper = (GsFlatpakProgressHelper *) user_data;
+	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
+	if (phelper->app != NULL) {
+		gs_app_set_progress (phelper->app, progress);
+		switch (gs_app_get_state (phelper->app)) {
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_PURCHASING:
+			plugin_status = GS_PLUGIN_STATUS_INSTALLING;
+			break;
+		case AS_APP_STATE_REMOVING:
+			plugin_status = GS_PLUGIN_STATUS_REMOVING;
+			break;
+		default:
+			break;
+		}
+	}
+	gs_plugin_status_update (phelper->plugin, phelper->app, plugin_status);
 }
 
 static gboolean
@@ -468,6 +508,7 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	g_autofree gchar *str = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (self->plugin));
+	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
 				  "%s::refresh-appstream{%s}",
@@ -480,11 +521,12 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	gs_app_set_summary_missing (app_dl, str);
 	gs_plugin_status_update (self->plugin, app_dl, GS_PLUGIN_STATUS_DOWNLOADING);
 #if FLATPAK_CHECK_VERSION(0,9,4)
+	phelper = gs_flatpak_progress_helper_new (self->plugin, app_dl);
 	if (!flatpak_installation_update_appstream_full_sync (self->installation,
 							      remote_name,
 							      NULL, /* arch */
 							      gs_flatpak_progress_cb,
-							      app_dl,
+							      phelper,
 							      NULL, /* out_changed */
 							      cancellable,
 							      error)) {
@@ -1193,22 +1235,24 @@ gs_flatpak_refresh (GsFlatpak *self,
 	}
 	for (i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		g_autoptr(GsApp) app = NULL;
 		g_autoptr(FlatpakInstalledRef) xref2 = NULL;
+		g_autoptr(GsApp) app_dl = NULL;
+		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 		/* try to create a GsApp so we can do progress reporting */
-		app = gs_flatpak_create_installed (self, xref, NULL);
+		app_dl = gs_flatpak_create_installed (self, xref, NULL);
 
 		/* fetch but do not deploy */
 		g_debug ("pulling update for %s",
 			 flatpak_ref_get_name (FLATPAK_REF (xref)));
+		phelper = gs_flatpak_progress_helper_new (self->plugin, app_dl);
 		xref2 = flatpak_installation_update (self->installation,
 						     FLATPAK_UPDATE_FLAGS_NO_DEPLOY,
 						     flatpak_ref_get_kind (FLATPAK_REF (xref)),
 						     flatpak_ref_get_name (FLATPAK_REF (xref)),
 						     flatpak_ref_get_arch (FLATPAK_REF (xref)),
 						     flatpak_ref_get_branch (FLATPAK_REF (xref)),
-						     gs_flatpak_progress_cb, app,
+						     gs_flatpak_progress_cb, phelper,
 						     cancellable, error);
 		if (xref2 == NULL) {
 			gs_plugin_flatpak_error_convert (error);
@@ -2215,8 +2259,9 @@ gs_flatpak_app_remove (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autoptr(FlatpakRemote) xremote = NULL;
 	g_autofree gchar *remote_name = NULL;
+	g_autoptr(FlatpakRemote) xremote = NULL;
+	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 	/* refine to get basics */
 	if (!gs_flatpak_refine_app (self, app,
@@ -2234,12 +2279,13 @@ gs_flatpak_app_remove (GsFlatpak *self,
 
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	phelper = gs_flatpak_progress_helper_new (self->plugin, app);
 	if (!flatpak_installation_uninstall (self->installation,
 					     gs_app_get_flatpak_kind (app),
 					     gs_app_get_flatpak_name (app),
 					     gs_app_get_flatpak_arch (app),
 					     gs_app_get_flatpak_branch (app),
-					     gs_flatpak_progress_cb, app,
+					     gs_flatpak_progress_cb, phelper,
 					     cancellable, error)) {
 		gs_plugin_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
@@ -2338,19 +2384,20 @@ install_runtime_for_app (GsFlatpak *self,
 	/* not installed */
 	if (gs_app_get_state (runtime) == AS_APP_STATE_AVAILABLE) {
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
+		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 		g_debug ("%s/%s is not already installed, so installing",
 			 gs_app_get_id (runtime),
 			 gs_app_get_flatpak_branch (runtime));
 		gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
-
+		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
 		xref = flatpak_installation_install (self->installation,
 						     gs_app_get_origin (runtime),
 						     gs_app_get_flatpak_kind (runtime),
 						     gs_app_get_flatpak_name (runtime),
 						     gs_app_get_flatpak_arch (runtime),
 						     gs_app_get_flatpak_branch (runtime),
-						     gs_flatpak_progress_cb, app,
+						     gs_flatpak_progress_cb, phelper,
 						     cancellable, error);
 		if (xref == NULL) {
 			gs_plugin_flatpak_error_convert (error);
@@ -2636,6 +2683,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 	}
 
 	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") == 0) {
+		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 		if (gs_app_get_local_file (app) == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
@@ -2645,12 +2693,14 @@ gs_flatpak_app_install (GsFlatpak *self,
 			return FALSE;
 		}
 		g_debug ("installing bundle %s", gs_app_get_unique_id (app));
+		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
 		xref = flatpak_installation_install_bundle (self->installation,
 							    gs_app_get_local_file (app),
 							    gs_flatpak_progress_cb,
-							    app,
+							    phelper,
 							    cancellable, error);
 	} else {
+		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 		/* no origin set */
 		if (gs_app_get_origin (app) == NULL) {
 			g_set_error (error,
@@ -2661,13 +2711,14 @@ gs_flatpak_app_install (GsFlatpak *self,
 			return FALSE;
 		}
 		g_debug ("installing %s", gs_app_get_id (app));
+		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
 		xref = flatpak_installation_install (self->installation,
 						     gs_app_get_origin (app),
 						     gs_app_get_flatpak_kind (app),
 						     gs_app_get_flatpak_name (app),
 						     gs_app_get_flatpak_arch (app),
 						     gs_app_get_flatpak_branch (app),
-						     gs_flatpak_progress_cb, app,
+						     gs_flatpak_progress_cb, phelper,
 						     cancellable, error);
 	}
 	if (xref == NULL) {
@@ -2693,6 +2744,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 		       GError **error)
 {
 	g_autoptr(FlatpakInstalledRef) xref = NULL;
+	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -2704,13 +2756,14 @@ gs_flatpak_update_app (GsFlatpak *self,
 		return FALSE;
 	}
 
+	phelper = gs_flatpak_progress_helper_new (self->plugin, app);
 	xref = flatpak_installation_update (self->installation,
 					    FLATPAK_UPDATE_FLAGS_NONE,
 					    gs_app_get_flatpak_kind (app),
 					    gs_app_get_flatpak_name (app),
 					    gs_app_get_flatpak_arch (app),
 					    gs_app_get_flatpak_branch (app),
-					    gs_flatpak_progress_cb, app,
+					    gs_flatpak_progress_cb, phelper,
 					    cancellable, error);
 	if (xref == NULL) {
 		gs_plugin_flatpak_error_convert (error);
