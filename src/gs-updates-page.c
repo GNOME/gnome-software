@@ -1557,6 +1557,7 @@ trigger_upgrade (GsUpdatesPage *self)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
 					 "app", upgrade,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,

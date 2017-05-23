@@ -91,6 +91,7 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 	}
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", helper->app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
@@ -300,6 +301,7 @@ gs_page_install_app (GsPage *page,
 	helper->interaction = interaction;
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "app", helper->app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
@@ -425,6 +427,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	/* generic fallback */
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
@@ -477,6 +480,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 						 "app", app,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						 NULL);
 		g_debug ("remove %s", gs_app_get_id (app));
 		gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
