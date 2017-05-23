@@ -398,10 +398,14 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 
 	/* fallback to console warning */
 	if ((flags & GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE) == 0) {
-		g_warning ("failed to call %s on %s: %s",
-			   helper->function_name,
-			   gs_plugin_get_name (plugin),
-			   error_local->message);
+		if (!g_error_matches (error_local,
+				      GS_PLUGIN_ERROR,
+				      GS_PLUGIN_ERROR_CANCELLED)) {
+			g_warning ("failed to call %s on %s: %s",
+				   helper->function_name,
+				   gs_plugin_get_name (plugin),
+				   error_local->message);
+		}
 	}
 
 	return TRUE;
