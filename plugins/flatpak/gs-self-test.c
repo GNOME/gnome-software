@@ -165,6 +165,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GKeyFile) kf1 = g_key_file_new ();
 	g_autoptr(GKeyFile) kf2 = g_key_file_new ();
 	g_autoptr(GsApp) app_source = NULL;
+	g_autoptr(GsAppList) list_all = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -245,6 +246,17 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
+
+	/* all the apps should have the flatpak keyword */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", "flatpak",
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	list_all = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (list_all != NULL);
+	g_assert_cmpint (gs_app_list_length (list_all), ==, 2);
 
 	/* find available application */
 	g_object_unref (plugin_job);
