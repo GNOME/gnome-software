@@ -17,6 +17,7 @@
 #include <config.h>
 
 #include <flatpak.h>
+#include <glib/gi18n.h>
 #include <gnome-software.h>
 
 #include "gs-appstream.h"
@@ -735,6 +736,17 @@ gs_plugin_update (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gchar *
+get_dir_mount_point_name (GFile *dir,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	g_autoptr(GMount) mount = g_file_find_enclosing_mount (dir, cancellable, error);
+	if (mount == NULL)
+		return NULL;
+	return g_mount_get_name (mount);
+}
+
 static GsApp *
 gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 				    GFile *file,
@@ -743,6 +755,56 @@ gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsApp) app = NULL;
+	GFileType file_type = G_FILE_TYPE_UNKNOWN;
+
+	file_type = g_file_query_file_type (file, G_FILE_QUERY_INFO_NONE, cancellable);
+
+	/* check if this is actually a directory */
+	if (file_type == G_FILE_TYPE_DIRECTORY) {
+		for (guint i = 0; i < priv->flatpaks->len; ++i) {
+			g_autoptr(GError) error_local = NULL;
+			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+			app = gs_flatpak_create_app_from_repo_dir (flatpak, file, cancellable,
+								   &error_local);
+			if (app != NULL)
+				break;
+
+			/* if the error is "not found" than it's just that
+			 * no remotes in this Flatpak installation matched
+			 * others in the USB remote, but other installations
+			 * can still have them... */
+			if (g_error_matches (error_local, G_IO_ERROR,
+					     G_IO_ERROR_NOT_FOUND))
+				continue;
+
+			gs_flatpak_error_convert (&error_local);
+			g_propagate_error (error, g_steal_pointer (&error_local));
+			return NULL;
+		}
+
+		if (app == NULL) {
+			g_autoptr(GError) error_local = NULL;
+			g_autofree gchar *mount_name = get_dir_mount_point_name (file,
+										 cancellable,
+										 &error_local);
+			if (mount_name == NULL) {
+				mount_name = g_file_get_path (file);
+				g_debug ("Failed to get mount for %s: %s", mount_name,
+					 error_local->message);
+				g_clear_error (&error_local);
+			}
+			/* TRANSLATORS: error message with the name of the USB
+			 * mount point or path, to inform the user we failed
+			 * to load apps from that location */
+			g_set_error (error, GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     _("No sources of applications found in the USB drive ‘%s’"),
+				     mount_name);
+			return NULL;
+		}
+
+		return g_steal_pointer (&app);
+	}
 
 	/* parse the repo file */
 	app = gs_flatpak_app_new_from_repo_file (file, cancellable, error);
@@ -897,6 +959,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		NULL };
 	const gchar *mimetypes_repo[] = {
 		"application/vnd.flatpak.repo",
+		"inode/directory",
+		"x-content/ostree-repository",
 		NULL };
 	const gchar *mimetypes_ref[] = {
 		"application/vnd.flatpak.ref",
