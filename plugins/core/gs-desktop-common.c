@@ -292,6 +292,14 @@ static const GsDesktopMap map_reference[] = {
 	{ NULL }
 };
 
+/* USB */
+static const GsDesktopMap map_usb[] = {
+	{ "all",		NC_("Menu of Reference", "All"),
+					{ "USB",
+					  NULL } },
+	{ NULL }
+};
+
 /* main categories */
 /* Please keep category name and subcategory context synchronized!!! */
 static const GsDesktopData msdata[] = {
@@ -325,6 +333,9 @@ static const GsDesktopData msdata[] = {
 	/* TRANSLATORS: this is the menu spec main category for Utilities */
 	{ "utilities",		map_utilities,		N_("Utilities"),
 				"applications-utilities-symbolic", "#d3d7c7", 10 },
+	/* TRANSLATORS: this is the menu spec main category for updates on a USB stick */
+	{ "usb",		map_usb,		N_("USB"),
+				"media-removable-symbolic", "#ccff00", 5 },
 	{ NULL }
 };
 
