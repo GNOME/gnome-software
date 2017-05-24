@@ -2088,6 +2088,68 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	return TRUE;
 }
 
+GsApp *
+gs_flatpak_create_app_from_repo_dir (GsFlatpak *self,
+				     GFile *file,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	g_autoptr(GPtrArray) remotes = NULL;
+	gboolean dir_has_repo = FALSE;
+	gboolean reload_overview = FALSE;
+	g_autoptr(GsApp) app = NULL;
+	const FlatpakRemoteType usb_type[] = { FLATPAK_REMOTE_TYPE_USB };
+
+	remotes = flatpak_installation_list_remotes_by_type (self->installation,
+							     usb_type,
+							     G_N_ELEMENTS (usb_type),
+							     cancellable, error);
+	if (remotes == NULL)
+		return NULL;
+
+	for (guint i = 0; i < remotes->len; ++i) {
+		FlatpakRemote *remote = g_ptr_array_index (remotes, i);
+		g_autofree gchar *remote_uri = flatpak_remote_get_url (remote);
+		g_autoptr(GFile) remote_file = g_file_new_for_uri (remote_uri);
+		g_autoptr(GError) local_error = NULL;
+		gboolean reload_overview_local = FALSE;
+
+		/* skip if the remote does not have the dir's path as a parent */
+		if (!g_file_has_prefix (remote_file, file))
+			continue;
+
+		dir_has_repo = TRUE;
+
+		if (!gs_flatpak_mark_apps_from_usb_remote (self, remote, &reload_overview_local,
+							   cancellable, &local_error)) {
+			g_debug ("Failed to mark USB apps from remote at %s: %s",
+				 remote_uri, local_error->message);
+			continue;
+		}
+
+		reload_overview = reload_overview || reload_overview_local;
+	}
+
+	if (!dir_has_repo) {
+		g_autofree gchar *file_uri = g_file_get_uri (file);
+		g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
+			     "No remotes from the given directory: %s", file_uri);
+		return NULL;
+	}
+
+	app = gs_flatpak_app_new ("com.endlessm.RemovableMediaRepo");
+	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Removable Media Repo");
+	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+	gs_app_set_metadata (app, "GnomeSoftware::RemovableMediaCategory", "usb");
+	if (reload_overview)
+		gs_app_set_metadata (app, "GnomeSoftware::ReloadOverview", "true");
+
+	return g_steal_pointer (&app);
+}
+
 static void
 gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 {

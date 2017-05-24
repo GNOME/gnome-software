@@ -569,6 +569,47 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 	                  G_CALLBACK (gs_shell_reload_cb), shell);
 }
 
+typedef struct {
+	GsShell *shell;  /* (unowned) */
+	gchar *category_id;  /* (owned) */
+} CategoriesLoadedData;
+
+static void
+categories_loaded_data_free (CategoriesLoadedData *data)
+{
+	g_free (data->category_id);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (CategoriesLoadedData, categories_loaded_data_free)
+
+static void
+on_overview_categories_loaded (GsOverviewPage *page, gpointer user_data)
+{
+	g_autoptr(CategoriesLoadedData) data = user_data;
+
+	g_signal_handlers_disconnect_by_func (page, on_overview_categories_loaded,
+					      user_data);
+	if (!gs_overview_page_set_category (page, data->category_id))
+		gs_shell_change_mode (data->shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+}
+
+static void
+reload_overview_and_select_category (GsShell *shell, const gchar *category_id)
+{
+	GsPage *page;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	CategoriesLoadedData *data = g_new0 (CategoriesLoadedData, 1);
+
+	data->shell = shell;
+	data->category_id = g_strdup (category_id);
+	page = GS_PAGE (g_hash_table_lookup (priv->pages, "overview"));
+
+	g_signal_connect (page, "categories-loaded",
+			  G_CALLBACK (on_overview_categories_loaded), data);
+	gs_page_reload (page);
+}
+
 static gboolean
 window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
@@ -2269,15 +2310,94 @@ gs_shell_show_search (GsShell *shell, const gchar *search)
 			      (gpointer) search, TRUE);
 }
 
+static void
+gs_shell_file_to_app_cb (GObject *source,
+			 GAsyncResult *res,
+			 gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShell *shell = GS_SHELL (user_data);
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *tmp = NULL;
+	const gchar *removable_media_cat = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	GsApp *app;
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
+	if (list == NULL) {
+		g_warning ("failed to convert file to GsApp: %s", error->message);
+		/* go back to the overview */
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
+		return;
+	} else {
+		app = gs_app_list_index (list, 0);
+	}
+
+	/* print what we've got */
+	tmp = gs_app_to_string (app);
+	g_debug ("App from file:\n%s", tmp);
+
+	removable_media_cat = gs_app_get_metadata_item (app, "GnomeSoftware::RemovableMediaCategory");
+	if (removable_media_cat != NULL) {
+		if (gs_app_get_metadata_item (app, "GnomeSoftware::ReloadOverview") != NULL) {
+			reload_overview_and_select_category (shell, removable_media_cat);
+		} else {
+			GsPage *page;
+
+			page = GS_PAGE (gtk_builder_get_object (priv->builder, "overview_page"));
+
+			if (!gs_overview_page_set_category (GS_OVERVIEW_PAGE (page), removable_media_cat))
+				reload_overview_and_select_category (shell, removable_media_cat);
+		}
+		gs_shell_activate (shell);
+	} else {
+		save_back_entry (shell);
+		/* change widgets */
+		gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
+				      app, TRUE);
+	}
+}
+
 void
 gs_shell_show_local_file (GsShell *shell, GFile *file)
 {
 	g_autoptr(GsApp) app = gs_app_new (NULL);
-	save_back_entry (shell);
-	gs_app_set_local_file (app, file);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
-			      (gpointer) app, TRUE);
-	gs_shell_activate (shell);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GFileType file_type = g_file_query_file_type (file, G_FILE_QUERY_INFO_NONE,
+						      NULL);
+
+	/* check if this is rather a directory */
+	if (file_type == G_FILE_TYPE_DIRECTORY) {
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+						 "file", file,
+						 "interactive", TRUE,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+						 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
+						 NULL);
+		gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+						    priv->cancellable,
+						    gs_shell_file_to_app_cb,
+						    shell);
+	} else {
+		gs_app_set_local_file (app, file);
+		gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
+				      app, TRUE);
+	}
 }
 
 void

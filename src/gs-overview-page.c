@@ -71,6 +71,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsOverviewPage, gs_overview_page, GS_TYPE_PAGE)
 
 enum {
 	SIGNAL_REFRESHED,
+	SIGNAL_CATEGORIES_LOADED,
 	SIGNAL_LAST
 };
 
@@ -260,6 +261,22 @@ gs_overview_page_category_more_cb (GtkButton *button, GsOverviewPage *self)
 	if (cat == NULL)
 		return;
 	gs_shell_show_category (priv->shell, cat);
+}
+
+gboolean
+gs_overview_page_set_category (GsOverviewPage *self, const gchar *id)
+{
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
+	GsCategory *cat;
+
+	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), FALSE);
+	g_return_val_if_fail (id != NULL, FALSE);
+
+	cat = g_hash_table_lookup (priv->category_hash, id);
+	if (cat == NULL)
+		return FALSE;
+	gs_shell_show_category (priv->shell, cat);
+	return TRUE;
 }
 
 static void
@@ -583,6 +600,9 @@ out:
 	if (added_cnt > 0)
 		priv->empty = FALSE;
 	gtk_widget_set_visible (priv->category_heading, added_cnt > 0);
+
+	if (list != NULL)
+		g_signal_emit (self, signals[SIGNAL_CATEGORIES_LOADED], 0);
 
 	gs_overview_page_decrement_action_cnt (self);
 }
@@ -1101,6 +1121,13 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 		g_signal_new ("refreshed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsOverviewPageClass, refreshed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+
+	signals [SIGNAL_CATEGORIES_LOADED] =
+		g_signal_new ("categories-loaded",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsOverviewPageClass, categories_loaded),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 

@@ -20,11 +20,12 @@ struct _GsOverviewPageClass
 {
 	GsPageClass		 parent_class;
 
-	void	(*refreshed)	(GsOverviewPage *self);
+	void	(*refreshed)		(GsOverviewPage *self);
+	void	(*categories_loaded)	(GsOverviewPage *self);
 };
 
 GsOverviewPage	*gs_overview_page_new		(void);
-void		 gs_overview_page_set_category	(GsOverviewPage		*self,
-						 const gchar		*category);
+gboolean	 gs_overview_page_set_category	(GsOverviewPage		*self,
+						 const gchar		*id);
 
 G_END_DECLS
