@@ -24,8 +24,6 @@
 #include <snapd-glib/snapd-glib.h>
 #include <gnome-software.h>
 
-#include "gs-snapd.h"
-
 struct GsPluginData {
 	GsAuth		*auth;
 };
