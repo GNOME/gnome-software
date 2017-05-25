@@ -202,7 +202,7 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
-	/* make sure there are two entries */
+	/* make sure there are three entries */
 	g_assert_cmpint (gs_app_list_length (list), ==, 3);
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
