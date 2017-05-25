@@ -184,6 +184,8 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 		gs_app_set_size_download (app, snapd_snap_get_download_size (snap));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
+		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	/* icon is optional, either loaded from snapd or from a URL */
 	icon_url = snapd_snap_get_icon (snap);
