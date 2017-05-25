@@ -107,10 +107,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_string_append_printf (str, " with review=%s",
 					as_review_get_id (self->review));
 	}
-	if (self->review != NULL) {
-		g_string_append_printf (str, " with review=%s",
-					as_review_get_id (self->review));
-	}
 	if (self->auth != NULL) {
 		g_string_append_printf (str, " with auth=%s",
 					gs_auth_get_provider_id (self->auth));
