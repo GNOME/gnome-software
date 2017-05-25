@@ -131,6 +131,11 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginPurchaseFunc)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsPrice	*price,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 AsReview	*review,
@@ -570,6 +575,14 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		{
 			GsPluginActionFunc plugin_func = func;
 			ret = plugin_func (plugin, app, cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_PURCHASE:
+		{
+			GsPluginPurchaseFunc plugin_func = func;
+			ret = plugin_func (plugin, app,
+					   gs_plugin_job_get_price (helper->plugin_job),
+					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:

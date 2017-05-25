@@ -27,6 +27,8 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <appstream-glib.h>
 
+#include "gs-price.h"
+
 G_BEGIN_DECLS
 
 #define GS_TYPE_APP (gs_app_get_type ())
@@ -203,6 +205,10 @@ void		 gs_app_set_management_plugin	(GsApp		*app,
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
+GsPrice		*gs_app_get_price		(GsApp		*app);
+void		 gs_app_set_price		(GsApp		*app,
+						 gdouble	 amount,
+						 const gchar	*currency);
 GPtrArray	*gs_app_get_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,
 						 AsIcon		*icon);

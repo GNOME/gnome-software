@@ -122,6 +122,7 @@ struct _GsApp
 	GFile			*local_file;
 	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;
+	GsPrice			*price;
 };
 
 enum {
@@ -527,6 +528,10 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_size (str, "size-installed", app->size_installed);
 	if (app->size_download != 0)
 		gs_app_kv_size (str, "size-download", app->size_download);
+	if (app->price != NULL)
+		gs_app_kv_printf (str, "price", "%s %.2f",
+				  gs_price_get_currency (app->price),
+				  gs_price_get_amount (app->price));
 	if (app->related->len > 0)
 		gs_app_kv_printf (str, "related", "%u", app->related->len);
 	if (app->history->len > 0)
@@ -803,7 +808,8 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		    state == AS_APP_STATE_AVAILABLE_LOCAL ||
 		    state == AS_APP_STATE_UPDATABLE ||
 		    state == AS_APP_STATE_UPDATABLE_LIVE ||
-		    state == AS_APP_STATE_UNAVAILABLE)
+		    state == AS_APP_STATE_UNAVAILABLE ||
+		    state == AS_APP_STATE_PURCHASABLE)
 			state_change_ok = TRUE;
 		break;
 	case AS_APP_STATE_INSTALLED:
@@ -841,6 +847,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* removing has to go into an stable state */
 		if (state == AS_APP_STATE_UNKNOWN ||
 		    state == AS_APP_STATE_AVAILABLE ||
+		    state == AS_APP_STATE_PURCHASABLE ||
 		    state == AS_APP_STATE_INSTALLED)
 			state_change_ok = TRUE;
 		break;
@@ -868,6 +875,19 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* local has to go into an action state */
 		if (state == AS_APP_STATE_UNKNOWN ||
 		    state == AS_APP_STATE_INSTALLING)
+			state_change_ok = TRUE;
+		break;
+	case AS_APP_STATE_PURCHASABLE:
+		/* local has to go into an action state */
+		if (state == AS_APP_STATE_UNKNOWN ||
+		    state == AS_APP_STATE_PURCHASING)
+			state_change_ok = TRUE;
+		break;
+	case AS_APP_STATE_PURCHASING:
+		/* purchasing has to go into an stable state */
+		if (state == AS_APP_STATE_UNKNOWN ||
+		    state == AS_APP_STATE_AVAILABLE ||
+		    state == AS_APP_STATE_PURCHASABLE)
 			state_change_ok = TRUE;
 		break;
 	default:
@@ -1646,6 +1666,43 @@ gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->pixbuf, pixbuf);
+}
+
+/**
+ * gs_app_get_price:
+ * @app: a #GsApp
+ *
+ * Gets the price required to purchase the application.
+ *
+ * Returns: (transfer none): a #GsPrice, or %NULL
+ *
+ * Since: 3.26
+ **/
+GsPrice *
+gs_app_get_price (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->price;
+}
+
+/**
+ * gs_app_set_price:
+ * @app: a #GsApp
+ * @amount: the amount of this price, e.g. 0.99
+ * @currency: an ISO 4217 currency code, e.g. "USD"
+ *
+ * Sets a price required to purchase the application.
+ *
+ * Since: 3.26
+ **/
+void
+gs_app_set_price (GsApp *app, gdouble amount, const gchar *currency)
+{
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_return_if_fail (GS_IS_APP (app));
+	if (app->price != NULL)
+		g_object_unref (app->price);
+	app->price = gs_price_new (amount, currency);
 }
 
 typedef enum {
@@ -3637,6 +3694,8 @@ gs_app_finalize (GObject *object)
 		g_object_unref (app->content_rating);
 	if (app->pixbuf != NULL)
 		g_object_unref (app->pixbuf);
+	if (app->price != NULL)
+		g_object_unref (app->price);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }

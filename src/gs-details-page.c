@@ -235,6 +235,8 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	AsAppState state;
 	GtkWidget *widget;
+	GsPrice *price;
+	g_autofree gchar *text = NULL;
 	GtkStyleContext *sc;
 	GtkAdjustment *adj;
 
@@ -278,6 +280,16 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (self->button_install, FALSE);
+		break;
+	case AS_APP_STATE_PURCHASABLE:
+		gtk_widget_set_visible (self->button_install, TRUE);
+		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
+		price = gs_app_get_price (self->app);
+		text = gs_price_to_string (price);
+		gtk_button_set_label (GTK_BUTTON (self->button_install), text);
+		break;
+	case AS_APP_STATE_PURCHASING:
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case AS_APP_STATE_UNKNOWN:
@@ -371,6 +383,8 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 		case AS_APP_STATE_REMOVING:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_UNKNOWN:
+		case AS_APP_STATE_PURCHASABLE:
+		case AS_APP_STATE_PURCHASING:
 			gtk_widget_set_visible (self->button_remove, FALSE);
 			break;
 		default:

@@ -546,6 +546,31 @@ gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 	}
 }
 
+static void
+gs_plugins_dummy_purchase_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* get the updates list */
+	app = gs_app_new ("chiron-paid.desktop");
+	gs_app_set_management_plugin (app, "dummy");
+	gs_app_set_state (app, AS_APP_STATE_PURCHASABLE);
+	gs_app_set_price (app, 100, "USD");
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
+					 "app", app,
+					 "price", gs_app_get_price (app),
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -684,7 +709,10 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/distro-upgrades",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_distro_upgrades_func);
-
+	g_test_add_data_func ("/gnome-software/plugins/dummy/purchase",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_dummy_purchase_func);
+;
 	return g_test_run ();
 }
 

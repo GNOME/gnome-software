@@ -810,6 +810,28 @@ gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 }
 
 gboolean
+gs_plugin_app_purchase (GsPlugin *plugin,
+			GsApp *app,
+			GsPrice *price,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_debug ("Purchasing app");
+
+	/* purchase app */
+	if (g_strcmp0 (gs_app_get_id (app), "chiron-paid.desktop") == 0) {
+		gs_app_set_state (app, AS_APP_STATE_PURCHASING);
+		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, error)) {
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	}
+
+	return TRUE;
+}
+
+gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
 			 GsApp *app,
 			 AsReview *review,

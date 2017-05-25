@@ -44,6 +44,7 @@ struct _GsPluginJob
 	GFile			*file;
 	GsCategory		*category;
 	AsReview		*review;
+	GsPrice			*price;
 };
 
 enum {
@@ -61,6 +62,7 @@ enum {
 	PROP_CATEGORY,
 	PROP_REVIEW,
 	PROP_MAX_RESULTS,
+	PROP_PRICE,
 	PROP_LAST
 };
 
@@ -106,6 +108,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->review != NULL) {
 		g_string_append_printf (str, " with review=%s",
 					as_review_get_id (self->review));
+	}
+	if (self->price != NULL) {
+		g_autofree gchar *price_string = gs_price_to_string (self->price);
+		g_string_append_printf (str, " with price=%s", price_string);
 	}
 	if (self->auth != NULL) {
 		g_string_append_printf (str, " with auth=%s",
@@ -367,6 +373,20 @@ gs_plugin_job_get_review (GsPluginJob *self)
 	return self->review;
 }
 
+void
+gs_plugin_job_set_price (GsPluginJob *self, GsPrice *price)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->price, price);
+}
+
+GsPrice *
+gs_plugin_job_get_price (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->price;
+}
+
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -408,6 +428,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_REVIEW:
 		g_value_set_object (value, self->review);
+		break;
+	case PROP_PRICE:
+		g_value_set_object (value, self->price);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, self->max_results);
@@ -463,6 +486,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_MAX_RESULTS:
 		gs_plugin_job_set_max_results (self, g_value_get_uint (value));
 		break;
+	case PROP_PRICE:
+		gs_plugin_job_set_price (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -480,6 +506,7 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&self->file);
 	g_clear_object (&self->category);
 	g_clear_object (&self->review);
+	g_clear_object (&self->price);
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
 
@@ -558,6 +585,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   0, G_MAXUINT, 0,
 				   G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_MAX_RESULTS, pspec);
+
+	pspec = g_param_spec_object ("price", NULL, NULL,
+				     GS_TYPE_PRICE,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_PRICE, pspec);
 }
 
 static void

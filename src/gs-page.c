@@ -49,6 +49,7 @@ typedef struct {
 	GtkWidget	*button_install;
 	GsPluginAction	 action;
 	GsShellInteraction interaction;
+	GsPrice		*price;
 } GsPageHelper;
 
 static void
@@ -64,6 +65,8 @@ gs_page_helper_free (GsPageHelper *helper)
 		g_object_unref (helper->cancellable);
 	if (helper->soup_session != NULL)
 		g_object_unref (helper->soup_session);
+	if (helper->price != NULL)
+		g_object_unref (helper->price);
 	g_slice_free (GsPageHelper, helper);
 }
 
@@ -275,6 +278,136 @@ gs_page_set_header_end_widget (GsPage *page, GtkWidget *widget)
 	g_set_object (&priv->header_end_widget, widget);
 }
 
+static void
+gs_page_app_purchased_cb (GObject *source,
+                          GAsyncResult *res,
+                          gpointer user_data);
+
+static void
+gs_page_purchase_authenticate_cb (GtkDialog *dialog,
+				  GtkResponseType response_type,
+				  GsPageHelper *helper)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (response_type != GTK_RESPONSE_OK) {
+		gs_page_helper_free (helper);
+		return;
+	}
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
+					 "app", helper->app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    helper->cancellable,
+					    gs_page_app_purchased_cb,
+					    helper);
+}
+
+static void
+gs_page_app_purchased_cb (GObject *source,
+                          GAsyncResult *res,
+                          gpointer user_data)
+{
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsPage *page = helper->page;
+	GCancellable *cancellable = helper->cancellable;
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	gboolean ret;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GError) error = NULL;
+
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (g_error_matches (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("%s", error->message);
+		return;
+	}
+	if (!ret) {
+		/* try to authenticate then retry */
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
+			g_autoptr(GError) error_local = NULL;
+			GtkWidget *dialog;
+			dialog = gs_auth_dialog_new (priv->plugin_loader,
+						     helper->app,
+						     gs_utils_get_error_value (error),
+						     &error_local);
+			if (dialog == NULL) {
+				g_warning ("%s", error_local->message);
+				return;
+			}
+			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+			g_signal_connect (dialog, "response",
+					  G_CALLBACK (gs_page_purchase_authenticate_cb),
+					  g_steal_pointer (&helper));
+			return;
+		}
+
+		g_warning ("failed to purchase %s: %s",
+		           gs_app_get_id (helper->app),
+		           error->message);
+		return;
+	}
+
+	if (gs_app_get_state (helper->app) != AS_APP_STATE_AVAILABLE) {
+		g_warning ("no plugin purchased %s: %s",
+		           gs_app_get_id (helper->app),
+		           error->message);
+		return;
+	}
+
+	/* now install */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					 "app", helper->app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader,
+					    plugin_job,
+					    cancellable,
+					    gs_page_app_installed_cb,
+					    g_steal_pointer (&helper));
+}
+
+static void
+gs_page_install_purchase_response_cb (GtkDialog *dialog,
+				      gint response,
+				      GsPageHelper *helper)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	/* not agreed */
+	if (response != GTK_RESPONSE_OK) {
+		gs_page_helper_free (helper);
+		return;
+	}
+	g_debug ("purchase %s", gs_app_get_id (helper->app));
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
+					 "app", helper->app,
+					 "price", gs_app_get_price (helper->app),
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader,
+					    plugin_job,
+					    helper->cancellable,
+					    gs_page_app_purchased_cb,
+					    helper);
+}
+
 void
 gs_page_install_app (GsPage *page,
 		     GsApp *app,
@@ -283,11 +416,11 @@ gs_page_install_app (GsPage *page,
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
-	GtkResponseType response;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* probably non-free */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+		GtkResponseType response;
+
 		response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
 		if (response != GTK_RESPONSE_OK)
 			return;
@@ -299,15 +432,52 @@ gs_page_install_app (GsPage *page,
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
 	helper->interaction = interaction;
-	plugin_job = gs_plugin_job_newv (helper->action,
-					 "app", helper->app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					 NULL);
-	gs_plugin_loader_job_process_async (priv->plugin_loader,
-					    plugin_job,
-					    helper->cancellable,
-					    gs_page_app_installed_cb,
-					    helper);
+
+	/* need to purchase first */
+	if (gs_app_get_state (app) == AS_APP_STATE_PURCHASABLE) {
+		GtkWidget *dialog;
+		g_autofree gchar *title = NULL;
+		g_autofree gchar *message = NULL;
+		g_autofree gchar *price_text = NULL;
+
+		/* TRANSLATORS: this is a prompt message, and '%s' is an
+		 * application summary, e.g. 'GNOME Clocks' */
+		title = g_strdup_printf (_("Are you sure you want to purchase %s?"),
+					 gs_app_get_name (app));
+		price_text = gs_price_to_string (gs_app_get_price (app));
+		/* TRANSLATORS: longer dialog text */
+		message = g_strdup_printf (_("%s will be installed, and you will "
+					     "be charged %s."),
+					   gs_app_get_name (app), price_text);
+
+		dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+						 GTK_DIALOG_MODAL,
+						 GTK_MESSAGE_QUESTION,
+						 GTK_BUTTONS_CANCEL,
+						 "%s", title);
+		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+							  "%s", message);
+
+		/* TRANSLATORS: this is button text to purchase the application */
+		gtk_dialog_add_button (GTK_DIALOG (dialog), _("Purchase"), GTK_RESPONSE_OK);
+
+		/* handle this async */
+		g_signal_connect (dialog, "response",
+				  G_CALLBACK (gs_page_install_purchase_response_cb), helper);
+		gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+	} else {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		plugin_job = gs_plugin_job_newv (helper->action,
+						 "app", helper->app,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 NULL);
+		gs_plugin_loader_job_process_async (priv->plugin_loader,
+						    plugin_job,
+						    helper->cancellable,
+						    gs_page_app_installed_cb,
+						    helper);
+	}
 }
 
 static void

@@ -47,6 +47,7 @@ install_headers([
     'gs-plugin-event.h',
     'gs-plugin-types.h',
     'gs-plugin-vfuncs.h',
+    'gs-price.h',
     'gs-utils.h'
   ],
   subdir : 'gnome-software'
@@ -66,6 +67,7 @@ libgnomesoftware = static_library(
     'gs-plugin-job.c',
     'gs-plugin-loader.c',
     'gs-plugin-loader-sync.c',
+    'gs-price.c',
     'gs-test.c',
     'gs-utils.c',
   ],

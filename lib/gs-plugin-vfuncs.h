@@ -40,6 +40,7 @@
 #include "gs-app.h"
 #include "gs-app-list.h"
 #include "gs-category.h"
+#include "gs-price.h"
 
 G_BEGIN_DECLS
 
@@ -557,6 +558,27 @@ gboolean	 gs_plugin_remove_shortcut		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
 							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
+ * gs_plugin_app_purchase:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ * @price: a #GsPrice
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Purchase the application.
+ *
+ * NOTE: Once the action is complete, the plugin must set the new state of @app
+ * to %AS_APP_STATE_AVAILABLE.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_app_purchase			(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsPrice	*price,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
