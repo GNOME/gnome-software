@@ -104,7 +104,7 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 {
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
-	const gchar *status, *icon_url, *launch_name = NULL;
+	const gchar *status, *confinement, *icon_url, *launch_name = NULL;
 	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
 	gint64 size = -1;
 
@@ -146,6 +146,11 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 	}
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+
+	confinement = json_object_get_string_member (package, "confinement");
+	if (g_strcmp0 (confinement, "strict") == 0)
+		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
+
 	icon_url = json_object_get_string_member (package, "icon");
 	if (g_str_has_prefix (icon_url, "/")) {
 		g_autofree gchar *icon_data = NULL;
