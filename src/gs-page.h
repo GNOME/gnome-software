@@ -80,6 +80,11 @@ void		 gs_page_update_app			(GsPage		*page,
 void		 gs_page_launch_app			(GsPage		*page,
 							 GsApp		*app,
 							 GCancellable	*cancellable);
+void		 gs_page_set_app_permission		(GsPage			*page,
+							 GsApp			*app,
+							 GsPermission		*permission,
+							 GsPermissionValue	*value,
+							 GCancellable		*cancellable);
 void		 gs_page_shortcut_add			(GsPage		*page,
 							 GsApp		*app,
 							 GCancellable	*cancellable);

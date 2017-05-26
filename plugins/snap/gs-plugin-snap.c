@@ -1063,6 +1063,170 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_pixbuf (app) == NULL)
 		load_icon (plugin, client, app, gs_app_get_metadata_item (app, "snap::name"), local_snap, store_snap, cancellable);
 
+	if (gs_app_get_permissions (app)->len == 0) {
+		g_autoptr(GPtrArray) plugs = NULL;
+		g_autoptr(GPtrArray) slots = NULL;
+		guint i;
+
+		if (!snapd_client_get_interfaces_sync (client, &plugs, &slots, cancellable, error))
+			return FALSE;
+		for (i = 0; i < plugs->len; i++) {
+			SnapdPlug *plug = plugs->pdata[i];
+			const gchar *interface_name, *label;
+			g_autoptr(GsPermission) permission = NULL;
+			SnapdConnection *connection = NULL;
+			guint j;
+
+			/* skip if not relating to this snap */
+			if (g_strcmp0 (snapd_plug_get_snap (plug), gs_app_get_metadata_item (app, "snap::name")) != 0)
+				continue;
+
+			interface_name = snapd_plug_get_interface (plug);
+			if (strcmp (interface_name, "account-control") == 0) {
+				label = _("Add user accounts and change passwords");
+			} else if (strcmp (interface_name, "alsa") == 0) {
+				label = _("Play and record sound");
+			} else if (strcmp (interface_name, "avahi-observe") == 0) {
+				label = _("Detect network devices using mDNS/DNS-SD (Bonjour/zeroconf)");
+			} else if (strcmp (interface_name, "bluetooth-control") == 0) {
+				label = _("Access bluetooth hardware directly");
+			} else if (strcmp (interface_name, "bluez") == 0) {
+				label = _("Use bluetooth devices");
+			} else if (strcmp (interface_name, "camera") == 0) {
+				label = _("Use your camera");
+			} else if (strcmp (interface_name, "cups-control") == 0) {
+				label = _("Print documents");
+			} else if (strcmp (interface_name, "joystick") == 0) {
+				label = _("Use any connected joystick");
+			} else if (strcmp (interface_name, "docker") == 0) {
+				label = _("Allow connecting to the Docker service");
+			} else if (strcmp (interface_name, "firewall-control") == 0) {
+				label = _("Configure network firewall");
+			} else if (strcmp (interface_name, "fuse-support") == 0) {
+				label = _("Setup and use privileged FUSE filesystems");
+			} else if (strcmp (interface_name, "fwupd") == 0) {
+				label = _("Update firmware on this device");
+			} else if (strcmp (interface_name, "hardware-observe") == 0) {
+				label = _("Access hardware information");
+			} else if (strcmp (interface_name, "hardware-random-control") == 0) {
+				label = _("Provide entropy to hardware random number generator");
+			} else if (strcmp (interface_name, "hardware-random-observe") == 0) {
+				label = _("Use hardware-generated random numbers");
+			} else if (strcmp (interface_name, "home") == 0) {
+				label = _("Access files in your home folder");
+			} else if (strcmp (interface_name, "libvirt") == 0) {
+				label = _("Access libvirt service");
+			} else if (strcmp (interface_name, "locale-control") == 0) {
+				label = _("Change system language and region settings");
+			} else if (strcmp (interface_name, "location-control") == 0) {
+				label = _("Change location settings and providers");
+			} else if (strcmp (interface_name, "location-observe") == 0) {
+				label = _("Access your location");
+			} else if (strcmp (interface_name, "log-observe") == 0) {
+				label = _("Read system and application logs");
+			} else if (strcmp (interface_name, "lxd") == 0) {
+				label = _("Access LXD service");
+			//} else if (strcmp (interface_name, "media-hub") == 0) {
+			//	label = _("access the media-hub service");
+			} else if (strcmp (interface_name, "modem-manager") == 0) {
+				label = _("Use and configure modems");
+			} else if (strcmp (interface_name, "mount-observe") == 0) {
+				label = _("Read system mount information and disk quotas");
+			} else if (strcmp (interface_name, "mpris") == 0) {
+				label = _("Control music and video players");
+			} else if (strcmp (interface_name, "network-control") == 0) {
+				label = _("Change low-level network settings");
+			} else if (strcmp (interface_name, "network-manager") == 0) {
+				label = _("Access the NetworkManager service to read and change network settings");
+			} else if (strcmp (interface_name, "network-observe") == 0) {
+				label = _("Read access to network settings");
+			} else if (strcmp (interface_name, "network-setup-control") == 0) {
+				label = _("Change network settings");
+			} else if (strcmp (interface_name, "network-setup-observe") == 0) {
+				label = _("Read network settings");
+			} else if (strcmp (interface_name, "ofono") == 0) {
+				label = _("Access the ofono service to read and change network settings for mobile telephony");
+			} else if (strcmp (interface_name, "openvtswitch") == 0) {
+				label = _("Control Open vSwitch hardware");
+			} else if (strcmp (interface_name, "optical-drive") == 0) {
+				label = _("Read from CD/DVD");
+			} else if (strcmp (interface_name, "password-manager-service") == 0) {
+				label = _("Read, add, change, or remove saved passwords");
+			} else if (strcmp (interface_name, "ppp") == 0) {
+				label = _("Access pppd and ppp devices for configuring Point-to-Point Protocol connections");
+			} else if (strcmp (interface_name, "process-control") == 0) {
+				label = _("Pause or end any process on the system");
+			} else if (strcmp (interface_name, "pulseaudio") == 0) {
+				label = _("Play and record sound");
+			} else if (strcmp (interface_name, "raw-usb") == 0) {
+				label = _("Access USB hardware directly");
+			} else if (strcmp (interface_name, "removable-media") == 0) {
+				label = _("Read/write files on removable storage devices");
+			} else if (strcmp (interface_name, "screen-inhibit-control") == 0) {
+				label = _("Prevent screen sleep/lock");
+			} else if (strcmp (interface_name, "serial-port") == 0) {
+				label = _("Access serial port hardware");
+			} else if (strcmp (interface_name, "shutdown") == 0) {
+				label = _("Restart or power off the device");
+			} else if (strcmp (interface_name, "snapd-control") == 0) {
+				label = _("Install, remove and configure software");
+			} else if (strcmp (interface_name, "storage-framework-service") == 0) {
+				label = _("Access Storage Framework service");
+			} else if (strcmp (interface_name, "system-observe") == 0) {
+				label = _("Read process and system information");
+			} else if (strcmp (interface_name, "system-trace") == 0) {
+				label = _("Monitor and control any running program");
+			} else if (strcmp (interface_name, "time-control") == 0) {
+				label = _("Change the date and time");
+			} else if (strcmp (interface_name, "timeserver-control") == 0) {
+				label = _("Change time server settings");
+			} else if (strcmp (interface_name, "timezone-control") == 0) {
+				label = _("Change the time zone");
+			} else if (strcmp (interface_name, "udisks2") == 0) {
+				label = _("Access the UDisks2 service for configuring disks and removable media");
+			} else if (strcmp (interface_name, "unity8-calendar") == 0) {
+				label = _("Read/change shared calendar events in Ubuntu Unity 8");
+			} else if (strcmp (interface_name, "unity8-contacts") == 0) {
+				label = _("Read/change shared contacts in Ubuntu Unity 8");
+			} else if (strcmp (interface_name, "upower-observe") == 0) {
+				label = _("Access energy usage data");
+			} else {
+				g_debug ("Skipping plug with interface %s", interface_name);
+				continue;
+			}
+			/* map interfaces to known permissions */
+			permission = gs_permission_new (label);
+			gs_permission_add_metadata (permission, "snap::plug", snapd_plug_get_name (plug));
+
+			if (snapd_plug_get_connections (plug)->len > 0)
+				connection = g_ptr_array_index (snapd_plug_get_connections (plug), 0);
+			for (j = 0; j < slots->len; j++) {
+				SnapdSlot *slot = slots->pdata[j];
+				g_autoptr(GsPermissionValue) value = NULL;
+				g_autofree gchar *value_label = NULL;
+
+				/* skip slots we can't connect to */
+				if (g_strcmp0 (snapd_plug_get_interface (plug), snapd_slot_get_interface (slot)) != 0)
+					continue;
+
+				if (strcmp (snapd_slot_get_snap (slot), "core") == 0)
+					value_label = g_strdup_printf (":%s", snapd_slot_get_name (slot));
+				else
+					value_label = g_strdup_printf ("%s:%s", snapd_slot_get_snap (slot), snapd_slot_get_name (slot));
+				value = gs_permission_value_new (value_label);
+				gs_permission_value_add_metadata (value, "snap::snap", snapd_slot_get_snap (slot));
+				gs_permission_value_add_metadata (value, "snap::slot", snapd_slot_get_name (slot));
+				gs_permission_add_value (permission, value);
+
+				if (connection != NULL &&
+				    g_strcmp0 (snapd_slot_get_snap (slot), snapd_connection_get_snap (connection)) == 0 &&
+				    g_strcmp0 (snapd_slot_get_name (slot), snapd_connection_get_name (connection)) == 0)
+					gs_permission_set_value (permission, value);
+			}
+			gs_app_add_permission (app, permission);
+		}
+	}
+
 	return TRUE;
 }
 
@@ -1271,6 +1435,55 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	return TRUE;
+}
+
+gboolean
+gs_plugin_app_set_permission (GsPlugin *plugin,
+			      GsApp *app,
+			      GsPermission *permission,
+			      GsPermissionValue *value,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	g_autoptr(SnapdClient) client = NULL;
+	const gchar *plug_snap, *plug_name;
+
+	/* We can set permissions on apps we know of */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+		return TRUE;
+
+	client = get_client (plugin, error);
+	if (client == NULL)
+		return FALSE;
+
+	plug_snap = gs_app_get_metadata_item (app, "snap::name");
+	plug_name = gs_permission_get_metadata_item (permission, "snap::plug");
+
+	if (value != NULL) {
+		const gchar *slot_snap, *slot_name;
+
+		slot_snap = gs_permission_value_get_metadata_item (value, "snap::snap");
+		slot_name = gs_permission_value_get_metadata_item (value, "snap::slot");
+		if (!snapd_client_connect_interface_sync (client,
+							  plug_snap,
+							  plug_name,
+							  slot_snap,
+							  slot_name,
+							  NULL, NULL,
+							  cancellable, error))
+			return FALSE;
+	} else {
+		if (!snapd_client_disconnect_interface_sync (client,
+							     plug_snap,
+							     plug_name,
+							     "",
+							     "",
+							     NULL, NULL,
+							     cancellable, error))
+			return FALSE;
+	}
+
 	return TRUE;
 }
 

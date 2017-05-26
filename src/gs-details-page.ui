@@ -367,6 +367,22 @@
                                 <property name="pack-type">end</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkButton" id="button_permissions">
+                                <property name="use_underline">True</property>
+                                <property name="label" translatable="yes">_Permissions</property>
+                                <property name="width_request">105</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="halign">start</property>
+                                <property name="valign">start</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">9</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -568,7 +584,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">0</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                             <child>

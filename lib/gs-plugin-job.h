@@ -29,6 +29,8 @@
 #include "gs-category.h"
 #include "gs-plugin-types.h"
 #include "gs-price.h"
+#include "gs-permission.h"
+#include "gs-permission-value.h"
 
 G_BEGIN_DECLS
 
@@ -72,6 +74,10 @@ void		 gs_plugin_job_set_price		(GsPluginJob	*self,
 							 GsPrice	*price);
 void		 gs_plugin_job_set_channel		(GsPluginJob	*self,
 							 GsChannel	*channel);
+void		 gs_plugin_job_set_permission		(GsPluginJob	*self,
+							 GsPermission	*permission);
+void		 gs_plugin_job_set_permission_value	(GsPluginJob		*self,
+							 GsPermissionValue	*value);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 

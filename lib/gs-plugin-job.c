@@ -49,6 +49,8 @@ struct _GsPluginJob
 	AsReview		*review;
 	GsPrice			*price;
 	GsChannel		*channel;
+	GsPermission		*permission;
+	GsPermissionValue	*permission_value;
 	gint64			 time_created;
 };
 
@@ -70,6 +72,8 @@ enum {
 	PROP_PRICE,
 	PROP_CHANNEL,
 	PROP_TIMEOUT,
+	PROP_PERMISSION,
+	PROP_PERMISSION_VALUE,
 	PROP_LAST
 };
 
@@ -137,6 +141,12 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (self->file);
 		g_string_append_printf (str, " with file=%s", path);
+	}
+	if (self->permission != NULL) {
+		g_string_append_printf (str, " with permission=%s", gs_permission_get_label (self->permission));
+	}
+	if (self->permission_value != NULL) {
+		g_string_append_printf (str, " with permission-value=%s", gs_permission_value_get_label (self->permission_value));
 	}
 	if (self->plugin != NULL) {
 		g_string_append_printf (str, " on plugin=%s",
@@ -454,6 +464,34 @@ gs_plugin_job_get_channel (GsPluginJob *self)
 	return self->channel;
 }
 
+void
+gs_plugin_job_set_permission (GsPluginJob *self, GsPermission *permission)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->permission, permission);
+}
+
+GsPermission *
+gs_plugin_job_get_permission (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->permission;
+}
+
+void
+gs_plugin_job_set_permission_value (GsPluginJob *self, GsPermissionValue *value)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->permission_value, value);
+}
+
+GsPermissionValue *
+gs_plugin_job_get_permission_value (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->permission_value;
+}
+
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -507,6 +545,12 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_TIMEOUT:
 		g_value_set_uint (value, self->timeout);
+		break;
+	case PROP_PERMISSION:
+		g_value_set_object (value, self->permission);
+		break;
+	case PROP_PERMISSION_VALUE:
+		g_value_set_object (value, self->permission_value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
@@ -568,6 +612,12 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_CHANNEL:
 		gs_plugin_job_set_channel (self, g_value_get_object (value));
 		break;
+	case PROP_PERMISSION:
+		gs_plugin_job_set_permission (self, g_value_get_object (value));
+		break;
+	case PROP_PERMISSION_VALUE:
+		gs_plugin_job_set_permission_value (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -588,6 +638,7 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&self->review);
 	g_clear_object (&self->price);
 	g_clear_object (&self->channel);
+	g_clear_object (&self->permission);
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
 
@@ -682,6 +733,16 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     GS_TYPE_CHANNEL,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_CHANNEL, pspec);
+
+	pspec = g_param_spec_object ("permission", NULL, NULL,
+				     GS_TYPE_PERMISSION,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_PERMISSION, pspec);
+
+	pspec = g_param_spec_object ("permission-value", NULL, NULL,
+				     GS_TYPE_PERMISSION_VALUE,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_PERMISSION_VALUE, pspec);
 }
 
 static void

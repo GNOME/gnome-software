@@ -41,6 +41,7 @@
 #include "gs-app-list.h"
 #include "gs-category.h"
 #include "gs-price.h"
+#include "gs-permission.h"
 
 G_BEGIN_DECLS
 
@@ -769,6 +770,26 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+
+/**
+ * gs_plugin_app_set_permission:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ * @permission: a #GsPermission to set
+ * @value: value to set for the permission
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Set an app permission.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_app_set_permission		(GsPlugin		*plugin,
+							 GsApp			*app,
+							 GsPermission		*permission,
+							 GsPermissionValue	*value,
+							 GCancellable		*cancellable,
+							 GError			**error);
 
 /**
  * gs_plugin_review_submit:

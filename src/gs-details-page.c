@@ -39,6 +39,7 @@
 #include "gs-review-histogram.h"
 #include "gs-review-dialog.h"
 #include "gs-review-row.h"
+#include "gs-permission-dialog.h"
 
 /* the number of reviews to show before clicking the 'More Reviews' button */
 #define SHOW_NR_REVIEWS_INITIAL		4
@@ -89,6 +90,7 @@ struct _GsDetailsPage
 	GtkWidget		*button_install;
 	GtkWidget		*button_remove;
 	GtkWidget		*button_cancel;
+	GtkWidget		*button_permissions;
 	GtkWidget		*button_more_reviews;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
@@ -266,6 +268,7 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	g_autofree gchar *text = NULL;
 	GtkStyleContext *sc;
 	GtkAdjustment *adj;
+	GPtrArray *permissions;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_DETAILS) {
 		g_warning ("Called switch_to(details) when in mode %s",
@@ -420,6 +423,19 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 		gtk_widget_set_visible (self->button_install, FALSE);
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 		gtk_widget_set_visible (self->button_remove, FALSE);
+	}
+
+	/* permissions button */
+	switch (gs_app_get_state (self->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		permissions = gs_app_get_permissions (self->app);
+		gtk_widget_set_visible (self->button_permissions, permissions->len > 0);
+		break;
+	default:
+		gtk_widget_set_visible (self->button_permissions, FALSE);
+		break;
 	}
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
@@ -2109,6 +2125,29 @@ gs_details_page_channel_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
+gs_details_page_permission_changed_cb (GsPermissionDialog *dialog, GsPermission *permission, GsPermissionValue *value, GsDetailsPage *self)
+{
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_set_object (&self->cancellable, cancellable);
+	gs_page_set_app_permission (GS_PAGE (self), self->app, permission, value, self->cancellable);
+}
+
+static void
+gs_details_page_app_permissions_button_cb (GtkWidget *widget, GsDetailsPage *self)
+{
+	GtkWidget *dialog;
+
+	dialog = gs_permission_dialog_new (self->app);
+	g_signal_connect (dialog, "permission-changed",
+			  G_CALLBACK (gs_details_page_permission_changed_cb), self);
+	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
+}
+
+static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GList) addons = NULL;
@@ -2557,6 +2596,9 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_cancel, "clicked",
 			  G_CALLBACK (gs_details_page_app_cancel_button_cb),
 			  self);
+	g_signal_connect (self->button_permissions, "clicked",
+			  G_CALLBACK (gs_details_page_app_permissions_button_cb),
+			  self);
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
 			  self);
@@ -2660,6 +2702,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_permissions);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_more_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);

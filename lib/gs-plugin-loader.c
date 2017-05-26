@@ -140,6 +140,12 @@ typedef gboolean	 (*GsPluginSwitchChannelFunc)	(GsPlugin	*plugin,
 							 GsChannel	*channel,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginSetPermissionFunc)	(GsPlugin		*plugin,
+							 GsApp			*app,
+							 GsPermission		*permission,
+							 GsPermissionValue	*value,
+							 GCancellable		*cancellable,
+							 GError			**error);
 typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 AsReview	*review,
@@ -667,6 +673,15 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			GsPluginSwitchChannelFunc plugin_func = func;
 			ret = plugin_func (plugin, app,
 					   gs_plugin_job_get_channel (helper->plugin_job),
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_SET_PERMISSION:
+		{
+			GsPluginSetPermissionFunc plugin_func = func;
+			ret = plugin_func (plugin, app,
+					   gs_plugin_job_get_permission (helper->plugin_job),
+					   gs_plugin_job_get_permission_value (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;

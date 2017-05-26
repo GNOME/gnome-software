@@ -256,6 +256,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_PURCHASE:			Purchase an app
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_SWITCH_CHANNEL:		Switch app channel
+ * @GS_PLUGIN_ACTION_SET_PERMISSION:		Set app permission
  *
  * The plugin action.
  **/
@@ -305,6 +306,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_PURCHASE,
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_SWITCH_CHANNEL,
+	GS_PLUGIN_ACTION_SET_PERMISSION,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;

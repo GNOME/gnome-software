@@ -788,6 +788,35 @@ gs_page_launch_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 }
 
 static void
+gs_page_app_permission_set_cb (GObject *source,
+			       GAsyncResult *res,
+			       gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to set permission on GsApp: %s", error->message);
+		return;
+	}
+}
+
+void
+gs_page_set_app_permission (GsPage *page, GsApp *app, GsPermission *permission, GsPermissionValue *value, GCancellable *cancellable)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SET_PERMISSION,
+					 "app", app,
+					 "permission", permission,
+					 "permission-value", value,
+					 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+					    cancellable,
+					    gs_page_app_permission_set_cb,
+					    NULL);
+}
+
+static void
 gs_page_app_shortcut_added_cb (GObject *source,
 			       GAsyncResult *res,
 			       gpointer user_data)
