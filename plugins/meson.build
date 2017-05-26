@@ -36,6 +36,9 @@ if get_option('enable-packagekit')
   subdir('packagekit')
 endif
 subdir('repos')
+if get_option('enable-rpm-ostree')
+  subdir('rpm-ostree')
+endif
 if get_option('enable-shell-extensions')
   subdir('shell-extensions')
 endif
