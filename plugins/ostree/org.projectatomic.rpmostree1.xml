@@ -1,0 +1,362 @@
+<!DOCTYPE node PUBLIC
+"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node name="/" xmlns:doc="http://www.freedesktop.org/dbus/1.0/doc.dtd">
+
+  <!-- Deployment dictionary keys:
+       'id' (type 's')
+       'osname' (type 's')
+       'serial' (type 'i')
+       'checksum' (type 's')
+       'version' (type 's')
+       'timestamp' (type 't')
+       'origin' (type 's')
+       'signatures' (type 'av')
+       'packages' (type 'as')
+       'booted' (type 'b')
+  -->
+
+  <interface name="org.projectatomic.rpmostree1.Sysroot">
+    <!-- The booted OSName -->
+    <property name="Booted" type="o" access="read"/>
+
+    <!-- The system root path -->
+    <property name="Path" type="s" access="read"/>
+
+    <!-- The values are (method-name, sender-name) -->
+    <property name="ActiveTransaction" type="(sss)" access="read"/>
+
+    <!-- (Currently) optional method to denote the client plans
+         to either invoke methods on the daemon, or monitor status.
+         If no clients are registered, the daemon may exit.
+
+         No options are currently defined.
+    -->
+    <method name="RegisterClient">
+      <arg type="a{sv}" name="options" direction="in"/>
+    </method>
+
+    <!-- You must call this if your process is no longer interested in talking to
+         rpm-ostree, but will remain connected to the bus.
+
+         No options are currently defined.
+    -->
+    <method name="UnregisterClient">
+      <arg type="a{sv}" name="options" direction="in"/>
+    </method>
+
+    <method name="ReloadConfig">
+    </method>
+
+    <method name="CreateOSName">
+      <arg type="s" name="name"/>
+      <arg type="o" name="result" direction="out"/>
+    </method>
+
+    <method name="GetOS">
+      <arg name="name" type="s"/>
+      <arg name="object_path" type="o" direction="out"/>
+    </method>
+
+    <!-- Array of all deployments in boot order -->
+    <property name="Deployments" type="aa{sv}" access="read"/>
+  </interface>
+
+  <interface name="org.projectatomic.rpmostree1.OS">
+    <property name="BootedDeployment" type="a{sv}" access="read"/>
+    <property name="DefaultDeployment" type="a{sv}" access="read"/>
+    <property name="RollbackDeployment" type="a{sv}" access="read"/>
+
+    <!-- CachedUpdate dictionary keys:
+       'osname' (type 's')
+       'checksum' (type 's')
+       'version' (type 's')
+       'timestamp' (type 't')
+       'origin' (type 's')
+       'signatures' (type 'av')
+    -->
+    <property name="CachedUpdate" type="a{sv}" access="read"/>
+    <property name="HasCachedUpdateRpmDiff" type="b" access="read"/>
+
+    <!-- NONE, DIFF, PREPARE, REBOOT -->
+    <property name="AutomaticUpdatePolicy" type="s" access="read"/>
+    <property name="Name" type="s" access="read"/>
+
+    <method name="GetDeploymentsRpmDiff">
+      <arg type="s" name="deployid0"/>
+      <arg type="s" name="deployid1"/>
+      <arg type="a(sua{sv})" name="result" direction="out"/>
+    </method>
+
+    <!-- Revision may be a full checksum or version string.
+
+         Available options:
+         "reboot" (type 'b')
+    -->
+    <method name="Deploy">
+      <arg type="s" name="revision" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+      <annotation name="org.gtk.GDBus.C.UnixFD" value="true"/>
+    </method>
+
+    <!-- details dictionary keys:
+       'osname' (type 's')
+       'checksum' (type 's')
+       'version' (type 's')
+       'timestamp' (type 't')
+       'origin' (type 's')
+       'signatures' (type 'av')
+    -->
+    <method name="GetCachedDeployRpmDiff">
+      <arg type="s" name="revision"/>
+      <arg type="as" name="packages"/>
+      <arg type="a(sua{sv})" name="result" direction="out"/>
+      <arg type="a{sv}" name="details" direction="out"/>
+    </method>
+
+    <method name="DownloadDeployRpmDiff">
+      <arg type="s" name="revision"/>
+      <arg type="as" name="packages"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <!-- Available options:
+         "allow-downgrade" (type 'b')
+         "reboot" (type 'b')
+    -->
+    <method name="Upgrade">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+      <annotation name="org.gtk.GDBus.C.UnixFD" value="true"/>
+    </method>
+
+    <!-- details dictionary keys:
+       'osname' (type 's')
+       'checksum' (type 's')
+       'version' (type 's')
+       'timestamp' (type 't')
+       'origin' (type 's')
+       'signatures' (type 'av')
+    -->
+    <method name="GetCachedUpdateRpmDiff">
+      <arg type="s" name="deployid"/>
+      <arg type="a(sua{sv})" name="result" direction="out"/>
+      <arg type="a{sv}" name="details" direction="out"/>
+    </method>
+
+    <method name="DownloadUpdateRpmDiff">
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <!-- Available options:
+         "reboot" (type 'b')
+    -->
+    <method name="Rollback">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <!-- Available options:
+         "reboot" (type 'b')
+    -->
+    <method name="ClearRollbackTarget">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <!-- Available options:
+         "skip-purge" (type 'b')
+         "reboot" (type 'b')
+         "revision" (type 's')
+    -->
+    <method name="Rebase">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="refspec"/>
+      <arg type="as" name="packages"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+      <annotation name="org.gtk.GDBus.C.UnixFD" value="true"/>
+    </method>
+
+    <!-- details dictionary keys:
+       'osname' (type 's')
+       'checksum' (type 's')
+       'version' (type 's')
+       'timestamp' (type 't')
+       'origin' (type 's')
+       'signatures' (type 'av')
+    -->
+    <method name="GetCachedRebaseRpmDiff">
+      <arg type="s" name="refspec"/>
+      <arg type="as" name="packages"/>
+      <arg type="a(sua{sv})" name="result" direction="out"/>
+      <arg type="a{sv}" name="details" direction="out"/>
+    </method>
+
+    <method name="DownloadRebaseRpmDiff">
+      <arg type="s" name="refspec"/>
+      <arg type="as" name="packages"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <!-- Available options:
+         "reboot" (type 'b')
+         "dry-run" (type 'b')
+    -->
+    <method name="PkgChange">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="as" name="packages_added"/>
+      <arg type="as" name="packages_removed"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+      <annotation name="org.gtk.GDBus.C.UnixFD" value="true"/>
+    </method>
+
+    <method name="SetInitramfsState">
+      <arg type="b" name="regenerate" direction="in"/>
+      <arg type="as" name="args" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <method name="Cleanup">
+      <arg type="as" name="elements" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <!-- Available modifiers:
+         "set-refspec" (type 's')
+         "set-revision" (type 's')
+         "install-packages" (type 'as')
+         "uninstall-packages" (type 'as')
+         "install-local-packages" (type 'ah')
+
+         Available options:
+         "reboot" (type 'b')
+            Initiate a reboot after transaction.
+         "allow-downgrade" (type 'b')
+            Allow newly pulled bases to have older timestamps than the
+            current base. Defaults to TRUE if either "set-refspec" or
+            "set-revision" is specified.
+         "skip-purge" (type 'b')
+            Do not purge the old refspec. Only valid if "set-refspec" is
+            specified.
+         "no-pull-base" (type 'b')
+            Do not pull a base layer from the remote. Not valid if
+            either "set-refspec" or "set-revision" is specified.
+         "dry-run" (type 'b')
+            Stop short of deploying the new tree. If
+            layering packages, the pkg diff is printed.
+    -->
+    <method name="UpdateDeployment">
+      <arg type="a{sv}" name="modifiers" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+      <annotation name="org.gtk.GDBus.C.UnixFD" value="true"/>
+    </method>
+
+  </interface>
+
+  <interface name="org.projectatomic.rpmostree1.OSExperimental">
+
+    <!-- Just a test method -->
+    <method name="Moo">
+      <arg type="b" name="utf8" direction="in"/>
+      <arg type="s" name="result" direction="out"/>
+    </method>
+
+    <method name="LiveFs">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+  </interface>
+
+  <interface name="org.projectatomic.rpmostree1.Transaction">
+
+    <!-- Yes, we can. -->
+    <method name="Cancel"/>
+
+    <!-- For a client to call when ready to receive signals.
+         The return boolean indicates whether the transaction was
+         started by this method call (true) or was already started
+         by another client (false). -->
+    <method name="Start">
+      <arg type="b" name="started" direction="out"/>
+    </method>
+
+    <signal name="Finished">
+      <arg name="success" type="b" direction="out"/>
+      <arg name="error_message" type="s" direction="out"/>
+    </signal>
+
+    <!-- For miscellaneous messages; line-buffered. -->
+    <signal name="Message">
+      <arg name="text" type="s" direction="out"/>
+    </signal>
+
+    <!-- Tasks are notifications that work is being done. -->
+    <signal name="TaskBegin">
+      <arg name="text" type="s" direction="out"/>
+    </signal>
+
+    <signal name="TaskEnd">
+      <arg name="text" type="s" direction="out"/>
+    </signal>
+
+    <!-- Generic percentage progress. -->
+    <signal name="PercentProgress">
+      <arg name="text" type="s" direction="out"/>
+      <arg name="percentage" type="u" direction="out"/>
+    </signal>
+
+    <signal name="DownloadProgress">
+      <!-- time data, format is:
+            start time, elapsed seconds
+      -->
+    	<arg name="time" type="(tt)" direction="out"/>
+
+      <!--
+         outstanding data counts, format is:
+         (outstanding fetches, outstanding writes)
+      -->
+      <arg name="outstanding" type="(uu)" direction="out"/>
+
+      <!--
+         metadata counts, format is:
+         (scanned, fetched, outstanding)
+      -->
+    	<arg name="metadata" type="(uuu)" direction="out"/>
+
+      <!--
+         delta data, format is:
+         (total parts, fetched parts, total super blocks, total size)
+      -->
+    	<arg name="delta" type="(uuut)" direction="out"/>
+
+      <!--
+         content data, format is:
+         (fetched, requested)
+      -->
+    	<arg name="content" type="(uu)" direction="out"/>
+
+      <!--
+         transfer data, format is:
+         (bytes transfered, bytes/s)
+      -->
+    	<arg name="transfer" type="(tt)" direction="out"/>
+    </signal>
+
+    <signal name="SignatureProgress">
+      <!-- An ostree GVariant containing signature data
+           see ostree_gpg_verify_result_get_all.
+      -->
+    	<arg name="signature" type="av" direction="out"/>
+      <!-- The signed commit -->
+    	<arg name="commit" type="s" direction="out"/>
+    </signal>
+
+    <!-- Indicates progress signals are done and subsequent
+         Message signals should be output on separate lines. -->
+    <signal name="ProgressEnd"/>
+  </interface>
+</node>
