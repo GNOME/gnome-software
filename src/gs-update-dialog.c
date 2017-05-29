@@ -34,6 +34,13 @@ typedef struct {
 	GtkWidget	*focus;
 } BackEntry;
 
+typedef enum {
+	GS_UPDATE_DIALOG_SECTION_ADDITIONS,
+	GS_UPDATE_DIALOG_SECTION_REMOVALS,
+	GS_UPDATE_DIALOG_SECTION_UPDATES,
+	GS_UPDATE_DIALOG_SECTION_LAST,
+} GsUpdateDialogSection;
+
 struct _GsUpdateDialog
 {
 	GtkDialog	 parent_instance;
@@ -264,18 +271,12 @@ static GtkWidget *
 create_app_row (GsApp *app)
 {
 	GtkWidget *row, *label;
-	const gchar *sort;
 
 	row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
 	g_object_set_data_full (G_OBJECT (row),
 	                        "app",
 	                        g_object_ref (app),
 	                        g_object_unref);
-	sort = gs_app_get_source_default (app);
-	g_object_set_data_full (G_OBJECT (row),
-	                        "sort",
-	                        g_strdup (sort),
-	                        g_free);
 	label = gtk_label_new (gs_app_get_source_default (app));
 	g_object_set (label,
 	              "margin-start", 20,
@@ -343,14 +344,104 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	}
 }
 
+static GsUpdateDialogSection
+get_app_section (GsApp *app)
+{
+	/* Sections:
+	 * 1. additions
+	 * 2. removals
+	 * 3. updates */
+	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
+		return GS_UPDATE_DIALOG_SECTION_ADDITIONS;
+	} else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+		return GS_UPDATE_DIALOG_SECTION_REMOVALS;
+	} else if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE ||
+	         gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE) {
+		return GS_UPDATE_DIALOG_SECTION_UPDATES;
+	} else {
+		/* XXX: can we reach this with INSTALLING state? */
+		g_assert_not_reached ();
+	}
+}
+
+static gchar *
+get_app_sort_key (GsApp *app)
+{
+	GString *key;
+
+	key = g_string_sized_new (64);
+
+	/* first sort apps by section */
+	g_string_append_printf (key, "%u:", get_app_section (app));
+
+	/* then sort by name */
+	g_string_append (key, gs_app_get_source_default (app));
+	return g_string_free (key, FALSE);
+}
+
+static GtkWidget *
+get_section_header (GsUpdateDialog *dialog, GsUpdateDialogSection section)
+{
+	GtkStyleContext *context;
+	GtkWidget *header;
+	GtkWidget *label;
+
+	/* get labels and buttons for everything */
+	if (section == GS_UPDATE_DIALOG_SECTION_ADDITIONS) {
+		/* TRANSLATORS: This is the header for package additions during
+		 * a system update */
+		label = gtk_label_new (_("Additions"));
+	} else if (section == GS_UPDATE_DIALOG_SECTION_REMOVALS) {
+		/* TRANSLATORS: This is the header for package removals during
+		 * a system update */
+		label = gtk_label_new (_("Removals"));
+	} else if (section == GS_UPDATE_DIALOG_SECTION_UPDATES) {
+		/* TRANSLATORS: This is the header for package removals during
+		 * a system update */
+		label = gtk_label_new (_("Updates"));
+	} else {
+		g_assert_not_reached ();
+	}
+
+	/* create header */
+	header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
+	context = gtk_widget_get_style_context (header);
+	gtk_style_context_add_class (context, "app-listbox-header");
+
+	/* put label into the header */
+	gtk_box_pack_start (GTK_BOX (header), label, TRUE, TRUE, 0);
+	gtk_widget_set_visible (label, TRUE);
+	gtk_widget_set_margin_start (label, 6);
+	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
+	context = gtk_widget_get_style_context (label);
+	gtk_style_context_add_class (context, "app-listbox-header-title");
+
+	/* success */
+	return header;
+}
+
 static void
 list_header_func (GtkListBoxRow *row,
 		  GtkListBoxRow *before,
 		  gpointer user_data)
 {
+	GsUpdateDialog *dialog = (GsUpdateDialog *) user_data;
+	GObject *o = G_OBJECT (gtk_bin_get_child (GTK_BIN (row)));
+	GsApp *app = g_object_get_data (o, "app");
+	GsApp *app_before = NULL;
 	GtkWidget *header = NULL;
-	if (before != NULL)
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+
+	/* get the app before */
+	if (before != NULL) {
+		GObject *o_before = G_OBJECT (gtk_bin_get_child (GTK_BIN (before)));
+		app_before = g_object_get_data (o_before, "app");
+	}
+
+	/* section changed */
+	if (before == NULL ||
+	    (get_app_section (app_before) != get_app_section (app))) {
+		header = get_section_header (dialog, get_app_section (app));
+	}
 	gtk_list_box_row_set_header (row, header);
 }
 
@@ -361,8 +452,11 @@ os_updates_sort_func (GtkListBoxRow *a,
 {
 	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
 	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
-	const gchar *key1 = g_object_get_data (o1, "sort");
-	const gchar *key2 = g_object_get_data (o2, "sort");
+	GsApp *a1 = g_object_get_data (o1, "app");
+	GsApp *a2 = g_object_get_data (o2, "app");
+	g_autofree gchar *key1 = get_app_sort_key (a1);
+	g_autofree gchar *key2 = get_app_sort_key (a2);
+
 	return g_strcmp0 (key1, key2);
 }
 
