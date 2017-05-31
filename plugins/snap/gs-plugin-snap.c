@@ -180,6 +180,8 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 		gs_app_set_size_installed (app, snapd_snap_get_installed_size (snap));
 	if (snapd_snap_get_download_size (snap) > 0)
 		gs_app_set_size_download (app, snapd_snap_get_download_size (snap));
+	if (snapd_snap_get_install_date (snap) != NULL)
+		gs_app_set_install_date (app, g_date_time_to_unix (snapd_snap_get_install_date (snap)));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
