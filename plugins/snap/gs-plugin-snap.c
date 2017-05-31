@@ -252,6 +252,8 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 			image = as_image_new ();
 			as_image_set_url (image, snapd_screenshot_get_url (screenshot));
 			as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
+			as_image_set_width (image, snapd_screenshot_get_width (screenshot));
+			as_image_set_height (image, snapd_screenshot_get_height (screenshot));
 			as_screenshot_add_image (ss, image);
 			gs_app_add_screenshot (app, ss);
 
