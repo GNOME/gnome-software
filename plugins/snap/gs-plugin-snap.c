@@ -144,8 +144,68 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 }
 
 static gboolean
+refine_icon (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
+{
+	const gchar *icon_url;
+
+	icon_url = gs_app_get_metadata_item (app, "snap::icon");
+	if (icon_url == NULL || g_strcmp0 (icon_url, "") == 0) {
+		g_autoptr(AsIcon) icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "package-x-generic");
+		gs_app_add_icon (app, icon);
+		return TRUE;
+	}
+
+	/* icon is optional, either loaded from snapd or from a URL */
+	if (g_str_has_prefix (icon_url, "/")) {
+		g_autoptr(SnapdClient) client = NULL;
+		g_autoptr(SnapdIcon) icon = NULL;
+
+		client = get_client (plugin, cancellable, error);
+		if (client == NULL)
+			return FALSE;
+
+		icon = snapd_client_get_icon_sync (client, gs_app_get_id (app), cancellable, error);
+		if (icon == NULL)
+			return FALSE;
+
+		if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
+							      g_bytes_get_data (snapd_icon_get_data (icon), NULL),
+							      g_bytes_get_size (snapd_icon_get_data (icon)),
+							      error)) {
+			g_prefix_error (error, "Failed to load %s: ", icon_url);
+			return FALSE;
+		}
+	} else {
+		g_autoptr(SoupMessage) message = NULL;
+		g_autoptr(GdkPixbufLoader) loader = NULL;
+		message = soup_message_new (SOUP_METHOD_GET, icon_url);
+		if (message == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Failed to parse icon URL: %s",
+				     icon_url);
+			return FALSE;
+		}
+		soup_session_send_message (gs_plugin_get_soup_session (plugin), message);
+		if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
+					(const gchar *) message->response_body->data,
+					message->response_body->length,
+					error)) {
+			g_prefix_error (error, "Failed to load %s: ", icon_url);
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+static gboolean
 gs_plugin_snap_refine_app (GsPlugin *plugin,
 			   GsApp *app,
+			   GsPluginRefineFlags flags,
 			   SnapdSnap *snap,
 			   gboolean from_search,
 			   GCancellable *cancellable,
@@ -188,57 +248,17 @@ gs_plugin_snap_refine_app (GsPlugin *plugin,
 	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
-	/* icon is optional, either loaded from snapd or from a URL */
 	icon_url = snapd_snap_get_icon (snap);
-	if (icon_url != NULL && g_strcmp0 (icon_url, "") != 0) {
-		if (g_str_has_prefix (icon_url, "/")) {
-			g_autoptr(SnapdClient) client = NULL;
-			g_autoptr(SnapdIcon) icon = NULL;
+	if (icon_url != NULL)
+		gs_app_set_metadata (app, "snap::icon", icon_url);
 
-			client = get_client (plugin, cancellable, error);
-			if (client == NULL)
-				return FALSE;
+	/* assume the origin is where the icon is coming from */
+	if (icon_url != NULL && g_strcmp0 (icon_url, "") != 0 && !g_str_has_prefix (icon_url, "/"))
+		origin_hostname = g_strdup (icon_url);
 
-			icon = snapd_client_get_icon_sync (client, snapd_snap_get_name (snap), cancellable, error);
-			if (icon == NULL)
-				return FALSE;
-
-			if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
-						g_bytes_get_data (snapd_icon_get_data (icon), NULL),
-						g_bytes_get_size (snapd_icon_get_data (icon)),
-						error)) {
-				g_prefix_error (error, "Failed to load %s: ", icon_url);
-				return FALSE;
-			}
-		} else {
-			g_autoptr(SoupMessage) message = NULL;
-			g_autoptr(GdkPixbufLoader) loader = NULL;
-			message = soup_message_new (SOUP_METHOD_GET, icon_url);
-			if (message == NULL) {
-				g_set_error (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "Failed to parse icon URL: %s",
-					     icon_url);
-				return FALSE;
-			}
-			soup_session_send_message (gs_plugin_get_soup_session (plugin), message);
-			if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
-						(const gchar *) message->response_body->data,
-						message->response_body->length,
-						error)) {
-				g_prefix_error (error, "Failed to load %s: ", icon_url);
-				return FALSE;
-			}
-
-			/* assume the origin is where the icon is coming from */
-			origin_hostname = g_strdup (icon_url);
-		}
-	} else {
-		g_autoptr(AsIcon) icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "package-x-generic");
-		gs_app_add_icon (app, icon);
+        if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) {
+		if (!refine_icon (plugin, app, cancellable, error))
+			return FALSE;
 	}
 
 	screenshots = snapd_snap_get_screenshots (snap);
@@ -325,7 +345,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-	if (!gs_plugin_snap_refine_app (plugin, app, snap, TRUE, cancellable, error))
+	if (!gs_plugin_snap_refine_app (plugin, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, snap, TRUE, cancellable, error))
 		return FALSE;
 	gs_app_list_add (list, app);
 
@@ -369,7 +389,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		if (!gs_plugin_snap_refine_app (plugin, app, snap, TRUE, cancellable, error))
+		if (!gs_plugin_snap_refine_app (plugin, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, snap, TRUE, cancellable, error))
 			return FALSE;
 		gs_app_list_add (list, app);
 	}
@@ -407,7 +427,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		if (!gs_plugin_snap_refine_app (plugin, app, snap, TRUE, cancellable, error))
+		if (!gs_plugin_snap_refine_app (plugin, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, snap, TRUE, cancellable, error))
 			return FALSE;
 		gs_app_list_add (list, app);
 	}
@@ -439,7 +459,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	snap = snapd_client_list_one_sync (client, id, cancellable, error);
 	if (snap == NULL)
 		return FALSE;
-	if (!gs_plugin_snap_refine_app (plugin, app, snap, FALSE, cancellable, error))
+	if (!gs_plugin_snap_refine_app (plugin, app, flags, snap, FALSE, cancellable, error))
 		return FALSE;
 
 	return TRUE;
