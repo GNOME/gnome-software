@@ -3106,8 +3106,19 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	/* nothing ran */
-	if (action != GS_PLUGIN_ACTION_REFINE) {
+	/* some functions are really required for proper operation */
+	switch (action) {
+	case GS_PLUGIN_ACTION_DESTROY:
+	case GS_PLUGIN_ACTION_GET_INSTALLED:
+	case GS_PLUGIN_ACTION_GET_UPDATES:
+	case GS_PLUGIN_ACTION_INITIALIZE:
+	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_LAUNCH:
+	case GS_PLUGIN_ACTION_REFRESH:
+	case GS_PLUGIN_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_SEARCH:
+	case GS_PLUGIN_ACTION_SETUP:
+	case GS_PLUGIN_ACTION_UPDATE:
 		if (!helper->anything_ran) {
 			g_set_error (&error,
 				     GS_PLUGIN_ERROR,
@@ -3117,6 +3128,13 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 			return;
 		}
+		break;
+	default:
+		if (!helper->anything_ran) {
+			g_debug ("no plugin could handle %s",
+				 gs_plugin_action_to_string (action));
+		}
+		break;
 	}
 
 	/* unstage addons */
