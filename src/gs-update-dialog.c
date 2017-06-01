@@ -260,12 +260,56 @@ unset_focus (GtkWidget *widget)
 	gtk_window_set_focus (GTK_WINDOW (widget), NULL);
 }
 
+static GtkWidget *
+create_app_row (GsApp *app)
+{
+	GtkWidget *row, *label;
+	const gchar *sort;
+
+	row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+	g_object_set_data_full (G_OBJECT (row),
+	                        "app",
+	                        g_object_ref (app),
+	                        g_object_unref);
+	sort = gs_app_get_source_default (app);
+	g_object_set_data_full (G_OBJECT (row),
+	                        "sort",
+	                        g_strdup (sort),
+	                        g_free);
+	label = gtk_label_new (gs_app_get_source_default (app));
+	g_object_set (label,
+	              "margin-start", 20,
+	              "margin-end", 0,
+	              "margin-top", 6,
+	              "margin-bottom", 6,
+	              "xalign", 0.0,
+	              "ellipsize", PANGO_ELLIPSIZE_END,
+	              NULL);
+	gtk_widget_set_halign (label, GTK_ALIGN_START);
+	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
+	gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
+	label = gtk_label_new (gs_app_get_update_version (app));
+	g_object_set (label,
+	              "margin-start", 0,
+	              "margin-end", 20,
+	              "margin-top", 6,
+	              "margin-bottom", 6,
+	              "xalign", 1.0,
+	              "ellipsize", PANGO_ELLIPSIZE_END,
+	              NULL);
+	gtk_widget_set_halign (label, GTK_ALIGN_END);
+	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
+	gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
+	gtk_widget_show_all (row);
+
+	return row;
+}
+
 void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
 	GsApp *app_related;
 	AsAppKind kind;
-	const gchar *sort;
 
 	kind = gs_app_get_kind (app);
 
@@ -279,48 +323,14 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	/* set update description */
 	if (kind == AS_APP_KIND_OS_UPDATE) {
 		GPtrArray *related;
+		GtkWidget *row;
 		guint i;
-		GtkWidget *row, *label;
 
 		gs_container_remove_all (GTK_CONTAINER (dialog->list_box));
 		related = gs_app_get_related (app);
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
-			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
-			g_object_set_data_full (G_OBJECT (row),
-						"app",
-						g_object_ref (app_related),
-						g_object_unref);
-			sort = gs_app_get_source_default (app_related);
-			g_object_set_data_full (G_OBJECT (row),
-						"sort",
-						g_strdup (sort),
-						g_free);
-			label = gtk_label_new (gs_app_get_source_default (app_related));
-			g_object_set (label,
-				      "margin-start", 20,
-				      "margin-end", 0,
-				      "margin-top", 6,
-				      "margin-bottom", 6,
-				      "xalign", 0.0,
-				      "ellipsize", PANGO_ELLIPSIZE_END,
-				      NULL);
-			gtk_widget_set_halign (label, GTK_ALIGN_START);
-			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-			gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
-			label = gtk_label_new (gs_app_get_update_version (app_related));
-			g_object_set (label,
-				      "margin-start", 0,
-				      "margin-end", 20,
-				      "margin-top", 6,
-				      "margin-bottom", 6,
-				      "xalign", 1.0,
-				      "ellipsize", PANGO_ELLIPSIZE_END,
-				      NULL);
-			gtk_widget_set_halign (label, GTK_ALIGN_END);
-			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-			gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
-			gtk_widget_show_all (row);
+			row = create_app_row (app_related);
 			gtk_list_box_insert (GTK_LIST_BOX (dialog->list_box), row, -1);
 		}
 		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
