@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -44,10 +44,8 @@ struct GsPluginData {
 	GPtrArray		*to_ignore;
 	GsApp			*app_current;
 	GsApp			*cached_origin;
-	gchar			*lvfs_sig_fn;
-	gchar			*lvfs_sig_hash;
+	GHashTable		*remote_asc_hash;
 	gchar			*config_fn;
-	gchar			*download_uri;
 };
 
 static void
@@ -103,6 +101,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->client = fwupd_client_new ();
 	priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
+	priv->remote_asc_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+						       g_free, g_free);
 	priv->config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
 	if (!g_file_test (priv->config_fn, G_FILE_TEST_EXISTS)) {
 		g_free (priv->config_fn);
@@ -124,10 +124,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (priv->cached_origin != NULL)
 		g_object_unref (priv->cached_origin);
-	g_free (priv->lvfs_sig_fn);
-	g_free (priv->lvfs_sig_hash);
+	g_hash_table_unref (priv->remote_asc_hash);
 	g_free (priv->config_fn);
-	g_free (priv->download_uri);
 	g_object_unref (priv->client);
 	g_ptr_array_unref (priv->to_download);
 	g_ptr_array_unref (priv->to_ignore);
@@ -217,33 +215,80 @@ gs_plugin_fwupd_notify_status_cb (GObject *object,
 	}
 }
 
+static gchar *
+gs_plugin_fwupd_get_file_checksum (const gchar *filename,
+				   GChecksumType checksum_type,
+				   GError **error)
+{
+	gsize len;
+	g_autofree gchar *data = NULL;
+
+	if (!g_file_get_contents (filename, &data, &len, error)) {
+		gs_utils_error_convert_gio (error);
+		return NULL;
+	}
+	return g_compute_checksum_for_data (checksum_type, (const guchar *)data, len);
+}
+
+static gboolean
+gs_plugin_fwupd_setup_remote (GsPlugin *plugin, FwupdRemote *remote, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *filename_asc = NULL;
+
+	/* find the name of the signature file in the cache */
+	filename_asc = gs_utils_get_cache_filename ("firmware",
+						    fwupd_remote_get_filename_asc (remote),
+						    GS_UTILS_CACHE_FLAG_WRITEABLE,
+						    error);
+	if (filename_asc == NULL)
+		return FALSE;
+
+	/* if it exists, add the hash */
+	if (g_file_test (filename_asc, G_FILE_TEST_EXISTS)) {
+		g_autofree gchar *hash = NULL;
+		hash = gs_plugin_fwupd_get_file_checksum (filename_asc,
+							  G_CHECKSUM_SHA1,
+							  error);
+		if (hash == NULL)
+			return FALSE;
+		g_hash_table_insert (priv->remote_asc_hash,
+				     g_steal_pointer (&filename_asc),
+				     g_steal_pointer (&hash));
+	}
+
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_fwupd_setup_remotes (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GPtrArray) remotes = NULL;
+
+	/* find all enabled remotes */
+	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
+	if (remotes == NULL)
+		return FALSE;
+	for (guint i = 0; i < remotes->len; i++) {
+		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+		if (!fwupd_remote_get_enabled (remote))
+			continue;
+		if (!gs_plugin_fwupd_setup_remote (plugin, remote, error))
+			return FALSE;
+	}
+	return TRUE;
+}
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	gsize len;
-	g_autofree gchar *data = NULL;
-	g_autoptr(GKeyFile) config = NULL;
-
-	/* read config file */
-	config = g_key_file_new ();
-	if (!g_key_file_load_from_file (config, priv->config_fn,
-					G_KEY_FILE_NONE, error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
-	}
-
-	/* get the download URI */
-	priv->download_uri = g_key_file_get_string (config, "fwupd",
-						    "DownloadURI", error);
-	if (priv->download_uri == NULL)
-		return FALSE;
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
-	gs_app_set_origin_hostname (priv->cached_origin, priv->download_uri);
 
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
@@ -266,26 +311,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_signal_connect (priv->client, "notify::status",
 			  G_CALLBACK (gs_plugin_fwupd_notify_status_cb), plugin);
 
-	/* get the hash of the previously downloaded file */
-	priv->lvfs_sig_fn = gs_utils_get_cache_filename ("firmware",
-							 "firmware.xml.gz.asc",
-							 GS_UTILS_CACHE_FLAG_WRITEABLE,
-							 error);
-	if (priv->lvfs_sig_fn == NULL) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
-	}
-	if (g_file_test (priv->lvfs_sig_fn, G_FILE_TEST_EXISTS)) {
-		if (!g_file_get_contents (priv->lvfs_sig_fn,
-					  &data, &len, error)) {
-			gs_utils_error_convert_gio (error);
-			return FALSE;
-		}
-		priv->lvfs_sig_hash =
-			g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
-	}
-
-	return TRUE;
+	/* get the hashes of the previously downloaded asc files */
+	return gs_plugin_fwupd_setup_remotes (plugin, cancellable, error);
 }
 
 static void
@@ -305,21 +332,6 @@ gs_plugin_fwupd_add_required_location (GsPlugin *plugin, const gchar *location)
 			return;
 	}
 	g_ptr_array_add (priv->to_download, g_strdup (location));
-}
-
-static gchar *
-gs_plugin_fwupd_get_file_checksum (const gchar *filename,
-				   GChecksumType checksum_type,
-				   GError **error)
-{
-	gsize len;
-	g_autofree gchar *data = NULL;
-
-	if (!g_file_get_contents (filename, &data, &len, error)) {
-		gs_utils_error_convert_gio (error);
-		return NULL;
-	}
-	return g_compute_checksum_for_data (checksum_type, (const guchar *)data, len);
 }
 
 static GsApp *
@@ -665,43 +677,44 @@ gs_plugin_add_updates_pending (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
-				     guint cache_age,
-				     GCancellable *cancellable,
-				     GError **error)
+gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
+				FwupdRemote *remote,
+				guint cache_age,
+				GCancellable *cancellable,
+				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *checksum_old;
 	g_autoptr(GError) error_local = NULL;
-	g_autofree gchar *basename_data = NULL;
-	g_autofree gchar *cache_fn_data = NULL;
+	g_autofree gchar *filename = NULL;
+	g_autofree gchar *filename_asc = NULL;
 	g_autofree gchar *checksum = NULL;
-	g_autofree gchar *url_sig = NULL;
+	g_autofree gchar *url = NULL;
+	g_autofree gchar *url_asc = NULL;
 	g_autoptr(GBytes) data = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check cache age */
+	filename_asc = gs_utils_get_cache_filename ("firmware",
+						    fwupd_remote_get_filename_asc (remote),
+						    GS_UTILS_CACHE_FLAG_WRITEABLE,
+						    error);
 	if (cache_age > 0) {
-		guint tmp;
-		g_autoptr(GFile) file = NULL;
-		file = g_file_new_for_path (priv->lvfs_sig_fn);
-		tmp = gs_utils_get_file_age (file);
+		g_autoptr(GFile) file = g_file_new_for_path (filename_asc);
+		guint tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
 			g_debug ("%s is only %u seconds old, so ignoring refresh",
-				 priv->lvfs_sig_fn, tmp);
+				 filename_asc, tmp);
 			return TRUE;
 		}
 	}
 
 	/* download the signature first, it's smaller */
-	url_sig = g_strdup_printf ("%s.asc", priv->download_uri);
+	url_asc = soup_uri_to_string (fwupd_remote_get_uri_asc (remote), FALSE);
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading firmware update signature…"));
-	data = gs_plugin_download_data (plugin,
-					app_dl,
-					url_sig,
-					cancellable,
-					error);
+	data = gs_plugin_download_data (plugin, app_dl, url_asc, cancellable, error);
 	if (data == NULL) {
 		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return FALSE;
@@ -711,58 +724,82 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	checksum = g_compute_checksum_for_data (G_CHECKSUM_SHA1,
 						(const guchar *) g_bytes_get_data (data, NULL),
 						g_bytes_get_size (data));
-	if (g_strcmp0 (checksum, priv->lvfs_sig_hash) == 0) {
-		g_debug ("signature of %s is unchanged", url_sig);
+	checksum_old = g_hash_table_lookup (priv->remote_asc_hash, filename_asc);
+	if (g_strcmp0 (checksum, checksum_old) == 0) {
+		g_debug ("signature of %s is unchanged", url_asc);
 		return TRUE;
 	}
 
 	/* save to a file */
-	g_debug ("saving new LVFS signature to %s:", priv->lvfs_sig_fn);
-	if (!g_file_set_contents (priv->lvfs_sig_fn,
+	g_debug ("saving new remote signature to %s:", filename_asc);
+	if (!g_file_set_contents (filename_asc,
 				  g_bytes_get_data (data, NULL),
 				  (guint) g_bytes_get_size (data),
 				  &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_WRITE_FAILED,
-			     "Failed to save firmware: %s",
+			     "Failed to save firmware signature: %s",
 			     error_local->message);
 		return FALSE;
 	}
 
 	/* save the new checksum so we don't downoad the payload unless it's changed */
-	g_free (priv->lvfs_sig_hash);
-	priv->lvfs_sig_hash = g_strdup (checksum);
+	g_hash_table_insert (priv->remote_asc_hash,
+			     g_strdup (filename_asc),
+			     g_steal_pointer (&checksum));
 
 	/* download the payload and save to file */
-	basename_data = g_path_get_basename (priv->download_uri);
-	cache_fn_data = gs_utils_get_cache_filename ("firmware",
-						     basename_data,
-						     GS_UTILS_CACHE_FLAG_WRITEABLE,
-						     error);
-	if (cache_fn_data == NULL)
+	filename = gs_utils_get_cache_filename ("firmware",
+						fwupd_remote_get_filename (remote),
+						GS_UTILS_CACHE_FLAG_WRITEABLE,
+						error);
+	if (filename == NULL)
 		return FALSE;
-	g_debug ("saving new LVFS data to %s:", cache_fn_data);
+	g_debug ("saving new firmware metadata to %s:", filename);
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading firmware update metadata…"));
-	if (!gs_plugin_download_file (plugin, app_dl,
-				      priv->download_uri,
-				      cache_fn_data,
-				      cancellable,
-				      error)) {
+	url = soup_uri_to_string (fwupd_remote_get_uri (remote), FALSE);
+	if (!gs_plugin_download_file (plugin, app_dl, url, filename,
+				      cancellable, error)) {
 		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return FALSE;
 	}
 
 	/* phew, lets send all this to fwupd */
-	if (!fwupd_client_update_metadata (priv->client,
-					   cache_fn_data,
-					   priv->lvfs_sig_fn,
-					   cancellable,
-					   error)) {
+	if (!fwupd_client_update_metadata_with_id (priv->client,
+						   fwupd_remote_get_id (remote),
+						   filename,
+						   filename_asc,
+						   cancellable,
+						   error)) {
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
+	}
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_fwupd_refresh_remotes (GsPlugin *plugin,
+				 guint cache_age,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GPtrArray) remotes = NULL;
+
+	/* get the list of enabled remotes */
+	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
+	if (remotes == NULL)
+		return FALSE;
+	for (guint i = 0; i < remotes->len; i++) {
+		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+		if (!fwupd_remote_get_enabled (remote))
+			continue;
+		if (!gs_plugin_fwupd_refresh_remote (plugin, remote, cache_age,
+						     cancellable, error))
+			return FALSE;
 	}
 	return TRUE;
 }
@@ -780,10 +817,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* get the metadata and signature file */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
-		if (!gs_plugin_fwupd_check_lvfs_metadata (plugin,
-							  cache_age,
-							  cancellable,
-							  error))
+		if (!gs_plugin_fwupd_refresh_remotes (plugin,
+						      cache_age,
+						      cancellable,
+						      error))
 			return FALSE;
 	}
 
