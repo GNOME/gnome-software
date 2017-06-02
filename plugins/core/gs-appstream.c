@@ -544,6 +544,15 @@ gs_appstream_origin_valid (const gchar *origin)
 	return TRUE;
 }
 
+static gboolean
+gs_appstream_is_valid_project_group (AsApp *item)
+{
+	const gchar *project_group = as_app_get_project_group (item);
+	if (project_group == NULL)
+		return FALSE;
+	return as_utils_is_environment_id (project_group);
+}
+
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,
@@ -730,8 +739,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set project group */
-	if (as_app_get_project_group (item) != NULL &&
-	    gs_app_get_project_group (app) == NULL)
+	if (gs_app_get_project_group (app) == NULL &&
+	    gs_appstream_is_valid_project_group (item))
 		gs_app_set_project_group (app, as_app_get_project_group (item));
 
 	/* set developer name */
