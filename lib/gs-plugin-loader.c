@@ -607,13 +607,20 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		}
 		break;
 	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
 			g_auto(GStrv) tokens = NULL;
 			tokens = as_utils_search_tokenize (gs_plugin_job_get_search (helper->plugin_job));
 			ret = plugin_func (plugin, tokens, list,
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_SEARCH_FILES:
+	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+		{
+			GsPluginSearchFunc plugin_func = func;
+			gchar *search[2] = { gs_plugin_job_get_search (helper->plugin_job), NULL };
+			ret = plugin_func (plugin, search, list,
 					   cancellable, &error_local);
 		}
 		break;

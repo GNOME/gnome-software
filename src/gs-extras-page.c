@@ -722,7 +722,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			g_debug ("searching what provides: '%s'", search_data->search);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
-							 "search", search_data->search_filename,
+							 "search", search_data->search,
 							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
