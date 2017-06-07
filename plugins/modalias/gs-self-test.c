@@ -49,8 +49,8 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "com.hughski.ColorHug2.driver");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DRIVER);
-	g_assert (gs_app_has_category (app, "Addons"));
-	g_assert (gs_app_has_category (app, "Drivers"));
+	g_assert (gs_app_has_category (app, "Addon"));
+	g_assert (gs_app_has_category (app, "Driver"));
 }
 
 int

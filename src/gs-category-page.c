@@ -130,8 +130,8 @@ gs_category_page_reload (GsPage *page)
 	         gs_category_get_id (self->subcategory));
 
 	/* show the shell extensions header */
-	if (g_strcmp0 (gs_category_get_id (self->category), "Addons") == 0 &&
-	    g_strcmp0 (gs_category_get_id (self->subcategory), "ShellExtensions") == 0) {
+	if (g_strcmp0 (gs_category_get_id (self->category), "Addon") == 0 &&
+	    g_strcmp0 (gs_category_get_id (self->subcategory), "ShellExtension") == 0) {
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
 	} else {
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);

@@ -1179,6 +1179,7 @@ void
 gs_appstream_add_extra_info (GsPlugin *plugin, AsApp *app)
 {
 	const gchar *tmp;
+	g_autoptr(AsIcon) icon = NULL;
 
 	/* add more search terms */
 	switch (as_app_get_kind (app)) {
@@ -1193,35 +1194,60 @@ gs_appstream_add_extra_info (GsPlugin *plugin, AsApp *app)
 		break;
 	}
 
-	/* fix up these */
-	if (as_app_get_kind (app) == AS_APP_KIND_LOCALIZATION &&
-	    g_str_has_prefix (as_app_get_id (app),
-			      "org.fedoraproject.LangPack-")) {
-		g_autoptr(AsIcon) icon = NULL;
-
-		/* add icon */
+	/* add the gnome-software-specific 'Addon' group and ensure they
+	 * all have an icon set */
+	switch (as_app_get_kind (app)) {
+	case AS_APP_KIND_FONT:
+		as_app_add_category (app, "Addon");
+		as_app_add_category (app, "Font");
+		break;
+	case AS_APP_KIND_SHELL_EXTENSION:
+		as_app_add_category (app, "Addon");
+		as_app_add_category (app, "ShellExtension");
 		icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "accessories-dictionary-symbolic");
+		as_icon_set_name (icon, "application-x-addon-symbolic");
 		as_app_add_icon (app, icon);
-
-		/* add categories */
-		as_app_add_category (app, "Addons");
-		as_app_add_category (app, "Localization");
-	}
-
-	/* fall back for drivers */
-	if (as_app_get_kind (app) == AS_APP_KIND_DRIVER) {
-		g_autoptr(AsIcon) icon = NULL;
+		break;
+	case AS_APP_KIND_DRIVER:
+		as_app_add_category (app, "Addon");
+		as_app_add_category (app, "Driver");
 		icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		as_icon_set_name (icon, "application-x-firmware-symbolic");
 		as_app_add_icon (app, icon);
-	}
-
-	/* fix up drivers with our nonstandard groups */
-	if (as_app_get_kind (app) == AS_APP_KIND_DRIVER) {
-		as_app_add_category (app, "Addons");
-		as_app_add_category (app, "Drivers");
+		break;
+	case AS_APP_KIND_LOCALIZATION:
+		as_app_add_category (app, "Addon");
+		as_app_add_category (app, "Localization");
+		icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "accessories-dictionary-symbolic");
+		as_app_add_icon (app, icon);
+		break;
+	case AS_APP_KIND_CODEC:
+		as_app_add_category (app, "Addon");
+		as_app_add_category (app, "Codec");
+		icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "application-x-addon");
+		as_app_add_icon (app, icon);
+		break;
+	case AS_APP_KIND_INPUT_METHOD:
+		as_app_add_category (app, "Addon");
+		as_app_add_category (app, "InputSource");
+		icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "system-run-symbolic");
+		as_app_add_icon (app, icon);
+		break;
+	case AS_APP_KIND_FIRMWARE:
+		icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "system-run-symbolic");
+		as_app_add_icon (app, icon);
+		break;
+	default:
+		break;
 	}
 }

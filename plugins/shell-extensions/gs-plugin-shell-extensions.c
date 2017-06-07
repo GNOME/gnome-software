@@ -215,8 +215,8 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 	gs_app_add_icon (app, ic);
 
 	/* add categories */
-	gs_app_add_category (app, "Addons");
-	gs_app_add_category (app, "ShellExtensions");
+	gs_app_add_category (app, "Addon");
+	gs_app_add_category (app, "ShellExtension");
 
 	return TRUE;
 }
@@ -519,8 +519,8 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	}
 
 	/* required to match categories in gnome-software */
-	as_app_add_category (app, "Addons");
-	as_app_add_category (app, "ShellExtensions");
+	as_app_add_category (app, "Addon");
+	as_app_add_category (app, "ShellExtension");
 
 	/* we have no data :/ */
 	as_app_set_comment (app, NULL, "GNOME Shell Extension");

@@ -65,8 +65,8 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 			 "enhance the user experience");
 	g_assert_cmpstr (gs_app_get_license (app), ==, "GPL-2.0+");
 	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "shell-extensions");
-	g_assert (gs_app_has_category (app, "Addons"));
-	g_assert (gs_app_has_category (app, "ShellExtensions"));
+	g_assert (gs_app_has_category (app, "Addon"));
+	g_assert (gs_app_has_category (app, "ShellExtension"));
 	g_assert_cmpstr (gs_app_get_metadata_item (app, "shell-extensions::has-prefs"), ==, "");
 	g_assert_cmpstr (gs_app_get_metadata_item (app, "shell-extensions::uuid"), ==,
 			 "background-logo@fedorahosted.org");
