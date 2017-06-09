@@ -17,7 +17,7 @@ subdir('ubuntuone')
 if get_option('enable-flatpak')
   subdir('flatpak')
 endif
-if get_option('enable-firmware')
+if get_option('enable-fwupd')
   subdir('fwupd')
 endif
 if get_option('enable-limba')

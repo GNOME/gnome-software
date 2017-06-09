@@ -132,7 +132,7 @@ if get_option('enable-packagekit')
                         language : 'c')
 endif
 
-if get_option('enable-firmware')
+if get_option('enable-fwupd')
   fwupd = dependency('fwupd', version : '>= 0.9.3')
 endif
 
