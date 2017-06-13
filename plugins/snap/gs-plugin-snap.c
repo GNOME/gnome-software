@@ -26,6 +26,7 @@
 
 struct GsPluginData {
 	GsAuth		*auth;
+	GHashTable	*store_snaps;
 };
 
 void
@@ -40,6 +41,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	priv->store_snaps = g_hash_table_new_full (g_str_hash, g_str_equal,
+						   g_free, (GDestroyNotify) g_object_unref);
 
 	priv->auth = gs_auth_new ("snapd");
 	gs_auth_set_provider_name (priv->auth, "Snap Store");
@@ -143,12 +147,150 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 	return TRUE;
 }
 
-static gboolean
-refine_icon (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
+static GPtrArray *
+find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *query, GCancellable *cancellable, GError **error)
 {
-	const gchar *icon_url;
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
+	guint i;
 
-	icon_url = gs_app_get_metadata_item (app, "snap::icon");
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	snaps = snapd_client_find_sync (client, flags, query, NULL, cancellable, NULL);
+	if (snaps == NULL)
+		return NULL;
+
+	/* cache results */
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
+		g_hash_table_insert (priv->store_snaps, g_strdup (snapd_snap_get_name (snap)), g_object_ref (snap));
+	}
+
+	return g_steal_pointer (&snaps);
+}
+
+gboolean
+gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsAppList *list,
+		      const gchar *url,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autofree gchar *scheme = NULL;
+	g_autofree gchar *path = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
+	SnapdSnap *snap;
+	g_autoptr(GsApp) app = NULL;
+
+	/* not us */
+	scheme = gs_utils_get_url_scheme (url);
+	if (g_strcmp0 (scheme, "snap") != 0)
+		return TRUE;
+
+	/* create app */
+	path = gs_utils_get_url_path (url);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, path, cancellable, NULL);
+	if (snaps == NULL || snaps->len < 1)
+		return TRUE;
+
+	snap = snaps->pdata[0];
+	app = gs_app_new (snapd_snap_get_name (snap));
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+	gs_app_set_management_plugin (app, "snap");
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
+	gs_app_list_add (list, app);
+
+	return TRUE;
+}
+
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_clear_object (&priv->auth);
+	g_hash_table_unref (priv->store_snaps);
+}
+
+gboolean
+gs_plugin_add_installed (GsPlugin *plugin,
+			 GsAppList *list,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
+	guint i;
+
+	client = get_client (plugin, cancellable, error);
+	if (client == NULL)
+		return FALSE;
+	snaps = snapd_client_list_sync (client, cancellable, error);
+	if (snaps == NULL)
+		return FALSE;
+
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
+		g_autoptr(GsApp) app = NULL;
+
+		if (snapd_snap_get_status (snap) != SNAPD_SNAP_STATUS_ACTIVE)
+			continue;
+
+		/* create a unique ID for deduplication, TODO: branch? */
+		app = gs_app_new (snapd_snap_get_name (snap));
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+		gs_app_set_management_plugin (app, "snap");
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      gchar **values,
+		      GsAppList *list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autofree gchar *query = NULL;
+	g_autoptr(GPtrArray) snaps = NULL;
+	guint i;
+
+	query = g_strjoinv (" ", values);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, query, cancellable, error);
+	if (snaps == NULL)
+		return FALSE;
+
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
+		g_autoptr(GsApp) app = NULL;
+
+		/* create a unique ID for deduplication, TODO: branch? */
+		app = gs_app_new (snapd_snap_get_name (snap));
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+		gs_app_set_management_plugin (app, "snap");
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
+static gboolean
+load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *cancellable, GError **error)
+{
 	if (icon_url == NULL || g_strcmp0 (icon_url, "") == 0) {
 		g_autoptr(AsIcon) icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
@@ -202,237 +344,23 @@ refine_icon (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **e
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_snap_refine_app (GsPlugin *plugin,
-			   GsApp *app,
-			   GsPluginRefineFlags flags,
-			   SnapdSnap *snap,
-			   gboolean from_search,
-			   GCancellable *cancellable,
-			   GError **error)
-{
-	const gchar *icon_url, *launch_name = NULL;
-	const gchar *origin;
-	g_autofree gchar *origin_hostname = NULL;
-	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
-	GPtrArray *screenshots;
-
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-	switch (snapd_snap_get_status (snap)) {
-	case SNAPD_SNAP_STATUS_INSTALLED:
-	case SNAPD_SNAP_STATUS_ACTIVE:
-		if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
-			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		break;
-	case SNAPD_SNAP_STATUS_AVAILABLE:
-	case SNAPD_SNAP_STATUS_PRICED:
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-		break;
-	default:
-		g_warning ("Ignoring snap with unknown state");
-		return TRUE;
-	}
-	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
-	gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_summary (snap));
-	gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_description (snap));
-	gs_app_set_version (app, snapd_snap_get_version (snap));
-	if (snapd_snap_get_installed_size (snap) > 0)
-		gs_app_set_size_installed (app, snapd_snap_get_installed_size (snap));
-	if (snapd_snap_get_download_size (snap) > 0)
-		gs_app_set_size_download (app, snapd_snap_get_download_size (snap));
-	if (snapd_snap_get_install_date (snap) != NULL)
-		gs_app_set_install_date (app, g_date_time_to_unix (snapd_snap_get_install_date (snap)));
-	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
-		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
-		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
-
-	icon_url = snapd_snap_get_icon (snap);
-	if (icon_url != NULL)
-		gs_app_set_metadata (app, "snap::icon", icon_url);
-
-	/* assume the origin is where the icon is coming from */
-	if (icon_url != NULL && g_strcmp0 (icon_url, "") != 0 && !g_str_has_prefix (icon_url, "/"))
-		origin_hostname = g_strdup (icon_url);
-
-        if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) {
-		if (!refine_icon (plugin, app, cancellable, error))
-			return FALSE;
-	}
-
-	screenshots = snapd_snap_get_screenshots (snap);
-	if (screenshots != NULL && screenshots->len > 0) {
-		guint i;
-
-		for (i = 0; i < screenshots->len; i++) {
-			SnapdScreenshot *screenshot = screenshots->pdata[i];
-			g_autoptr(AsScreenshot) ss = NULL;
-			g_autoptr(AsImage) image = NULL;
-
-			ss = as_screenshot_new ();
-			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
-			image = as_image_new ();
-			as_image_set_url (image, snapd_screenshot_get_url (screenshot));
-			as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
-			as_image_set_width (image, snapd_screenshot_get_width (screenshot));
-			as_image_set_height (image, snapd_screenshot_get_height (screenshot));
-			as_screenshot_add_image (ss, image);
-			gs_app_add_screenshot (app, ss);
-
-			/* fall back to the screenshot */
-			if (origin_hostname == NULL)
-				origin_hostname = g_strdup (snapd_screenshot_get_url (screenshot));
-		}
-	}
-
-	/* set the application origin */
-	if (gs_app_get_origin_hostname (app) == NULL) {
-		/* from the snap store */
-		origin = snapd_snap_get_developer (snap);
-		if (g_strcmp0 (origin, "canonical") == 0)
-			gs_app_set_origin_hostname (app, "myapps.developer.ubuntu.com");
-		else if (origin_hostname != NULL)
-			gs_app_set_origin_hostname (app, origin_hostname);
-	}
-
-	if (!from_search) {
-		GPtrArray *apps;
-
-		apps = snapd_snap_get_apps (snap);
-		if (apps->len > 0)
-			launch_name = snapd_app_get_name (apps->pdata[0]);
-
-		if (launch_name != NULL)
-			gs_app_set_metadata (app, "snap::launch-name", launch_name);
-		else
-			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
-	}
-	return TRUE;
-}
-
-gboolean
-gs_plugin_url_to_app (GsPlugin *plugin,
-		      GsAppList *list,
-		      const gchar *url,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	g_autofree gchar *scheme = NULL;
-	g_autoptr(SnapdClient) client = NULL;
-	g_autofree gchar *path = NULL;
-	g_autoptr(GPtrArray) snaps = NULL;
-	SnapdSnap *snap;
-	g_autoptr(GsApp) app = NULL;
-
-	/* not us */
-	scheme = gs_utils_get_url_scheme (url);
-	if (g_strcmp0 (scheme, "snap") != 0)
-		return TRUE;
-
-	/* create app */
-	path = gs_utils_get_url_path (url);
-	client = get_client (plugin, cancellable, error);
-	if (client == NULL)
-		return FALSE;
-	snaps = snapd_client_find_sync (client, SNAPD_FIND_FLAGS_MATCH_NAME, path, NULL, cancellable, NULL);
-	if (snaps == NULL || snaps->len < 1)
-		return TRUE;
-
-	snap = snaps->pdata[0];
-	app = gs_app_new (snapd_snap_get_name (snap));
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-	gs_app_set_management_plugin (app, "snap");
-	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-	if (!gs_plugin_snap_refine_app (plugin, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, snap, TRUE, cancellable, error))
-		return FALSE;
-	gs_app_list_add (list, app);
-
-	return TRUE;
-}
-
-void
-gs_plugin_destroy (GsPlugin *plugin)
+static SnapdSnap *
+get_store_snap (GsPlugin *plugin, const gchar *name, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_clear_object (&priv->auth);
-}
-
-gboolean
-gs_plugin_add_installed (GsPlugin *plugin,
-			 GsAppList *list,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	g_autoptr(SnapdClient) client = NULL;
+	SnapdSnap *snap = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
-	guint i;
 
-	client = get_client (plugin, cancellable, error);
-	if (client == NULL)
-		return FALSE;
-	snaps = snapd_client_list_sync (client, cancellable, error);
-	if (snaps == NULL)
-		return FALSE;
+	/* use cached version if available */
+	snap = g_hash_table_lookup (priv->store_snaps, name);
+	if (snap != NULL)
+		return g_object_ref (snap);
 
-	for (i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = snaps->pdata[i];
-		g_autoptr(GsApp) app = NULL;
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, name, cancellable, error);
+	if (snaps == NULL || snaps->len < 1)
+		return NULL;
 
-		if (snapd_snap_get_status (snap) != SNAPD_SNAP_STATUS_ACTIVE)
-			continue;
-
-		/* create a unique ID for deduplication, TODO: branch? */
-		app = gs_app_new (snapd_snap_get_name (snap));
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_management_plugin (app, "snap");
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		if (!gs_plugin_snap_refine_app (plugin, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, snap, TRUE, cancellable, error))
-			return FALSE;
-		gs_app_list_add (list, app);
-	}
-
-	return TRUE;
-}
-
-gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GsAppList *list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	g_autoptr(SnapdClient) client = NULL;
-	g_autofree gchar *query = NULL;
-	g_autoptr(GPtrArray) snaps = NULL;
-	guint i;
-
-	client = get_client (plugin, cancellable, error);
-	if (client == NULL)
-		return FALSE;
-	query = g_strjoinv (" ", values);
-	snaps = snapd_client_find_sync (client, SNAPD_FIND_FLAGS_NONE, query, NULL, cancellable, error);
-	if (snaps == NULL)
-		return FALSE;
-
-	for (i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = snaps->pdata[i];
-		g_autoptr(GsApp) app = NULL;
-
-		/* create a unique ID for deduplication, TODO: branch? */
-		app = gs_app_new (snapd_snap_get_name (snap));
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_management_plugin (app, "snap");
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		if (!gs_plugin_snap_refine_app (plugin, app, GS_PLUGIN_REFINE_FLAGS_DEFAULT, snap, TRUE, cancellable, error))
-			return FALSE;
-		gs_app_list_add (list, app);
-	}
-
-	return TRUE;
+	return g_object_ref (g_ptr_array_index (snaps, 0));
 }
 
 gboolean
@@ -443,8 +371,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	g_autoptr(SnapdClient) client = NULL;
-	const gchar *id;
-	g_autoptr(SnapdSnap) snap = NULL;
+	const gchar *id, *icon_url = NULL;
+	g_autoptr(SnapdSnap) local_snap = NULL;
+	g_autoptr(SnapdSnap) store_snap = NULL;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -456,11 +385,96 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		id = gs_app_get_source_default (app);
-	snap = snapd_client_list_one_sync (client, id, cancellable, error);
-	if (snap == NULL)
-		return FALSE;
-	if (!gs_plugin_snap_refine_app (plugin, app, flags, snap, FALSE, cancellable, error))
-		return FALSE;
+
+	/* get information from installed snaps */
+	local_snap = snapd_client_list_one_sync (client, id, cancellable, NULL);
+	if (local_snap != NULL) {
+		GPtrArray *apps;
+		const gchar *launch_name = NULL;
+
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_name (local_snap));
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (local_snap));
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (local_snap));
+		gs_app_set_version (app, snapd_snap_get_version (local_snap));
+		gs_app_set_size_installed (app, snapd_snap_get_installed_size (local_snap));
+		gs_app_set_install_date (app, g_date_time_to_unix (snapd_snap_get_install_date (local_snap)));
+		gs_app_set_developer_name (app, snapd_snap_get_developer (local_snap));
+		icon_url = snapd_snap_get_icon (local_snap);
+		if (g_strcmp0 (icon_url, "") == 0)
+			icon_url = NULL;
+
+		apps = snapd_snap_get_apps (local_snap);
+		if (apps->len > 0)
+			launch_name = snapd_app_get_name (apps->pdata[0]);
+		if (launch_name != NULL)
+			gs_app_set_metadata (app, "snap::launch-name", launch_name);
+		else
+			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	}
+
+	/* get information from snap store */
+	store_snap = get_store_snap (plugin, id, cancellable, NULL);
+	if (store_snap != NULL) {
+		GPtrArray *screenshots;
+		const gchar *screenshot_url = NULL;
+
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_name (store_snap));
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (store_snap));
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (store_snap));
+		gs_app_set_version (app, snapd_snap_get_version (store_snap));
+		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
+		gs_app_set_developer_name (app, snapd_snap_get_developer (store_snap));
+		if (icon_url == NULL) {
+			icon_url = snapd_snap_get_icon (store_snap);
+			if (g_strcmp0 (icon_url, "") == 0)
+				icon_url = NULL;
+		}
+		gs_app_set_developer_name (app, snapd_snap_get_developer (store_snap));
+
+		screenshots = snapd_snap_get_screenshots (store_snap);
+		if (screenshots != NULL && screenshots->len > 0) {
+			guint i;
+
+			for (i = 0; i < screenshots->len; i++) {
+				SnapdScreenshot *screenshot = screenshots->pdata[i];
+				g_autoptr(AsScreenshot) ss = NULL;
+				g_autoptr(AsImage) image = NULL;
+
+				ss = as_screenshot_new ();
+				as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
+				image = as_image_new ();
+				as_image_set_url (image, snapd_screenshot_get_url (screenshot));
+				as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
+				as_image_set_width (image, snapd_screenshot_get_width (screenshot));
+				as_image_set_height (image, snapd_screenshot_get_height (screenshot));
+				as_screenshot_add_image (ss, image);
+				gs_app_add_screenshot (app, ss);
+
+				/* fall back to the screenshot */
+				if (screenshot_url == NULL)
+					screenshot_url = snapd_screenshot_get_url (screenshot);
+			}
+		}
+
+		/* use some heuristics to guess the application origin */
+		if (gs_app_get_origin_hostname (app) == NULL) {
+			if (icon_url != NULL && !g_str_has_prefix (icon_url, "/"))
+				gs_app_set_origin_hostname (app, icon_url);
+			else if (screenshot_url != NULL)
+				gs_app_set_origin_hostname (app, screenshot_url);
+		}
+	}
+
+	/* load icon if requested */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) {
+		if (!load_icon (plugin, app, icon_url, cancellable, error))
+			return FALSE;
+	}
 
 	return TRUE;
 }
