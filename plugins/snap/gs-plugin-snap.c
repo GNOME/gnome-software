@@ -148,7 +148,7 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 }
 
 static GPtrArray *
-find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *query, const gchar *section, GCancellable *cancellable, GError **error)
+find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const gchar *query, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
@@ -158,7 +158,7 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *query, const gc
 	client = get_client (plugin, cancellable, error);
 	if (client == NULL)
 		return FALSE;
-	snaps = snapd_client_find_section_sync (client, flags, query, section, NULL, cancellable, NULL);
+	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, NULL);
 	if (snaps == NULL)
 		return NULL;
 
@@ -191,7 +191,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, path, NULL, cancellable, NULL);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, NULL, path, cancellable, NULL);
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
@@ -225,7 +225,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	g_autoptr(GPtrArray) snaps = NULL;
 	guint i;
 
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, NULL, "featured", cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, "featured", NULL, cancellable, error);
 	if (snaps == NULL)
 		return FALSE;
 
@@ -297,7 +297,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	guint i;
 
 	query = g_strjoinv (" ", values);
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, query, NULL, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, NULL, query, cancellable, error);
 	if (snaps == NULL)
 		return FALSE;
 
@@ -412,7 +412,7 @@ get_store_snap (GsPlugin *plugin, const gchar *name, GCancellable *cancellable, 
 	if (snap != NULL)
 		return g_object_ref (snap);
 
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, name, NULL, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, NULL, name, cancellable, error);
 	if (snaps == NULL || snaps->len < 1)
 		return NULL;
 
