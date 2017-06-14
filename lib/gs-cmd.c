@@ -29,6 +29,12 @@
 
 #include "gs-debug.h"
 
+typedef struct {
+	GsPluginLoader	*plugin_loader;
+	guint64		 refine_flags;
+	guint		 max_results;
+} GsCmdSelf;
+
 static void
 gs_cmd_show_results_apps (GsAppList *list)
 {
@@ -185,6 +191,15 @@ gs_cmd_refresh_flag_from_string (const gchar *flag)
 	return GS_PLUGIN_REFRESH_FLAGS_NONE;
 }
 
+static void
+gs_cmd_self_free (GsCmdSelf *self)
+{
+	g_object_unref (self->plugin_loader);
+	g_free (self);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsCmdSelf, gs_cmd_self_free)
+
 int
 main (int argc, char **argv)
 {
@@ -195,10 +210,8 @@ main (int argc, char **argv)
 	gboolean ret;
 	gboolean show_results = FALSE;
 	gboolean verbose = FALSE;
-	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gint i;
 	guint cache_age = 0;
-	guint max_results = 0;
 	gint repeat = 1;
 	int status = 0;
 	g_auto(GStrv) plugin_blacklist = NULL;
@@ -212,7 +225,7 @@ main (int argc, char **argv)
 	g_autofree gchar *refine_flags_str = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GFile) file = NULL;
-	g_autoptr(GsPluginLoader) plugin_loader = NULL;
+	g_autoptr(GsCmdSelf) self = g_new0 (GsCmdSelf, 1);
 	g_autoptr(AsProfileTask) ptask = NULL;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
@@ -223,7 +236,7 @@ main (int argc, char **argv)
 		  "Repeat the action this number of times", NULL },
 		{ "cache-age", '\0', 0, G_OPTION_ARG_INT, &cache_age,
 		  "Use this maximum cache age in seconds", NULL },
-		{ "max-results", '\0', 0, G_OPTION_ARG_INT, &max_results,
+		{ "max-results", '\0', 0, G_OPTION_ARG_INT, &self->max_results,
 		  "Return a maximum number of results", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
@@ -264,24 +277,24 @@ main (int argc, char **argv)
 		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
 
 	/* parse any refine flags */
-	refine_flags = gs_cmd_parse_refine_flags (refine_flags_str, &error);
-	if (refine_flags == G_MAXUINT64) {
+	self->refine_flags = gs_cmd_parse_refine_flags (refine_flags_str, &error);
+	if (self->refine_flags == G_MAXUINT64) {
 		g_print ("Flag unknown: %s\n", error->message);
 		goto out;
 	}
 
 	/* load plugins */
-	plugin_loader = gs_plugin_loader_new ();
-	profile = gs_plugin_loader_get_profile (plugin_loader);
+	self->plugin_loader = gs_plugin_loader_new ();
+	profile = gs_plugin_loader_get_profile (self->plugin_loader);
 	ptask = as_profile_start_literal (profile, "GsCmd");
 	g_assert (ptask != NULL);
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
-		gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR);
+		gs_plugin_loader_add_location (self->plugin_loader, LOCALPLUGINDIR);
 	if (plugin_whitelist_str != NULL)
 		plugin_whitelist = g_strsplit (plugin_whitelist_str, ",", -1);
 	if (plugin_blacklist_str != NULL)
 		plugin_blacklist = g_strsplit (plugin_blacklist_str, ",", -1);
-	ret = gs_plugin_loader_setup (plugin_loader,
+	ret = gs_plugin_loader_setup (self->plugin_loader,
 				      plugin_whitelist,
 				      plugin_blacklist,
 				      GS_PLUGIN_FAILURE_FLAGS_NONE,
@@ -291,7 +304,7 @@ main (int argc, char **argv)
 		g_print ("Failed to setup plugins: %s\n", error->message);
 		goto out;
 	}
-	gs_plugin_loader_dump_state (plugin_loader);
+	gs_plugin_loader_dump_state (self->plugin_loader);
 
 	/* ensure that at least some metadata of any age is present, and also
 	 * spin up the plugins enough as to prime caches */
@@ -301,7 +314,7 @@ main (int argc, char **argv)
 						 "age", G_MAXUINT,
 						 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 						 NULL);
-		ret = gs_plugin_loader_job_action (plugin_loader, plugin_job,
+		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (!ret) {
 			g_print ("Failed to refresh plugins: %s\n", error->message);
@@ -316,10 +329,10 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job,
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
@@ -333,10 +346,10 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 							 "search", argv[2],
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
 				break;
@@ -349,7 +362,7 @@ main (int argc, char **argv)
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 						 "app", app,
 						 NULL);
-		ret = gs_plugin_loader_job_action (plugin_loader, plugin_job,
+		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (ret)
 			gs_app_list_add (list, app);
@@ -360,7 +373,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 							 "app", app,
 							 NULL);
-			ret = gs_plugin_loader_job_action (plugin_loader, plugin_job,
+			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 							    NULL, &error);
 			if (!ret)
 				break;
@@ -374,7 +387,7 @@ main (int argc, char **argv)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
 							 "app", app,
 							 NULL);
-			ret = gs_plugin_loader_job_action (plugin_loader, plugin_job,
+			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 							    NULL, &error);
 			if (!ret)
 				break;
@@ -384,10 +397,10 @@ main (int argc, char **argv)
 		file = g_file_new_for_path (argv[2]);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 						 "file", file,
-						 "refine-flags", refine_flags,
-						 "max-results", max_results,
+						 "refine-flags", self->refine_flags,
+						 "max-results", self->max_results,
 						 NULL);
-		app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job, NULL, &error);
 		if (app == NULL) {
 			ret = FALSE;
 		} else {
@@ -398,10 +411,10 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 						 "search", argv[2],
-						 "refine-flags", refine_flags,
-						 "max-results", max_results,
+						 "refine-flags", self->refine_flags,
+						 "max-results", self->max_results,
 						 NULL);
-		app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job,
+		app = gs_plugin_loader_job_process_app (self->plugin_loader, plugin_job,
 						    NULL, &error);
 		if (app == NULL) {
 			ret = FALSE;
@@ -415,10 +428,10 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job,
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
@@ -431,10 +444,10 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job,
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
@@ -444,10 +457,10 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "sources") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
-						 "refine-flags", refine_flags,
-						 "max-results", max_results,
+						 "refine-flags", self->refine_flags,
+						 "max-results", self->max_results,
 						 NULL);
-		list = gs_plugin_loader_job_process (plugin_loader,
+		list = gs_plugin_loader_job_process (self->plugin_loader,
 						     plugin_job,
 						     NULL,
 						     &error);
@@ -459,10 +472,10 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job,
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
@@ -475,10 +488,10 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job,
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							      NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
@@ -494,10 +507,10 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
 							 "age", cache_age,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job,
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job,
 							     NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
@@ -510,10 +523,10 @@ main (int argc, char **argv)
 			if (categories != NULL)
 				g_ptr_array_unref (categories);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			categories = gs_plugin_loader_job_get_categories (plugin_loader,
+			categories = gs_plugin_loader_job_get_categories (self->plugin_loader,
 									 plugin_job,
 									 NULL, &error);
 			if (categories == NULL) {
@@ -539,10 +552,10 @@ main (int argc, char **argv)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 							 "category", category,
-							 "refine-flags", refine_flags,
-							 "max-results", max_results,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
 							 NULL);
-			list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
 			if (list == NULL) {
 				ret = FALSE;
 				break;
@@ -556,7 +569,7 @@ main (int argc, char **argv)
 						 "age", cache_age,
 						 "refresh-flags", refresh_flags,
 						 NULL);
-		ret = gs_plugin_loader_job_action (plugin_loader, plugin_job,
+		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
 	} else {
 		ret = FALSE;
