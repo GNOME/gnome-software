@@ -493,7 +493,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_set_developer_name (app, snapd_snap_get_developer (store_snap));
 
 		screenshots = snapd_snap_get_screenshots (store_snap);
-		if (screenshots != NULL && screenshots->len > 0) {
+		if (screenshots != NULL && gs_app_get_screenshots (app)->len == 0) {
 			guint i;
 
 			for (i = 0; i < screenshots->len; i++) {
