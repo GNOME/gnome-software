@@ -179,6 +179,109 @@ gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 	return refine_flags;
 }
 
+static guint
+gs_cmd_prompt_for_number (guint maxnum)
+{
+	gint retval;
+	guint answer = 0;
+
+	do {
+		char buffer[64];
+
+		/* swallow the \n at end of line too */
+		if (!fgets (buffer, sizeof (buffer), stdin))
+			break;
+		if (strlen (buffer) == sizeof (buffer) - 1)
+			continue;
+
+		/* get a number */
+		retval = sscanf (buffer, "%u", &answer);
+
+		/* positive */
+		if (retval == 1 && answer > 0 && answer <= maxnum)
+			break;
+
+		/* TRANSLATORS: the user isn't reading the question */
+		g_print (_("Please enter a number from 1 to %u: "), maxnum);
+	} while (TRUE);
+	return answer;
+}
+
+static gboolean
+gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, GError **error)
+{
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) list_filtered = NULL;
+	g_autoptr(GsPluginJob) plugin_job2 = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	gboolean show_installed = TRUE;
+
+	/* ensure set */
+	self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
+	self->refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION;
+
+	/* do search */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", name,
+					 "refine-flags", self->refine_flags,
+					 "max-results", self->max_results,
+					 NULL);
+	list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, error);
+	if (list == NULL)
+		return FALSE;
+	if (gs_app_list_length (list) == 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no components matched '%s'",
+			     name);
+		return FALSE;
+	}
+
+	/* filter */
+	if (action == GS_PLUGIN_ACTION_INSTALL)
+		show_installed = FALSE;
+	list_filtered = gs_app_list_new ();
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app_tmp = gs_app_list_index (list, i);
+		if (gs_app_is_installed (app_tmp) == show_installed)
+			gs_app_list_add (list_filtered, app_tmp);
+	}
+
+	/* nothing */
+	if (gs_app_list_length (list_filtered) == 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no components were in the correct state for '%s %s'",
+			     gs_plugin_action_to_string (action), name);
+		return FALSE;
+	}
+
+	/* get one GsApp */
+	if (gs_app_list_length (list_filtered) == 1) {
+		app = g_object_ref (gs_app_list_index (list_filtered, 0));
+	} else {
+		guint idx;
+		/* TRANSLATORS: asking the user to choose an app from a list */
+		g_print ("%s\n", _("Choose an application:"));
+		for (guint i = 0; i < gs_app_list_length (list_filtered); i++) {
+			GsApp *app_tmp = gs_app_list_index (list_filtered, i);
+			g_print ("%u.\t%s\n",
+				 i + 1,
+				 gs_app_get_unique_id (app_tmp));
+		}
+		idx = gs_cmd_prompt_for_number (gs_app_list_length (list_filtered));
+		app = g_object_ref (gs_app_list_index (list_filtered, idx - 1));
+	}
+
+	/* install */
+	plugin_job2 = gs_plugin_job_newv (action, "app", app, NULL);
+	return gs_plugin_loader_job_action (self->plugin_loader, plugin_job2,
+					    NULL, error);
+}
+
 static GsPluginRefreshFlags
 gs_cmd_refresh_flag_from_string (const gchar *flag)
 {
@@ -354,6 +457,17 @@ main (int argc, char **argv)
 				ret = FALSE;
 				break;
 			}
+		}
+	} else if (argc == 4 && g_strcmp0 (argv[1], "action") == 0) {
+		GsPluginAction action = gs_plugin_action_from_string (argv[2]);
+		if (action == GS_PLUGIN_ACTION_UNKNOWN) {
+			ret = FALSE;
+			g_set_error (&error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Did not recognise action '%s'", argv[2]);
+		} else {
+			ret = gs_cmd_action_exec (self, action, argv[3], &error);
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "action-upgrade-download") == 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -579,6 +693,7 @@ main (int argc, char **argv)
 				     "Did not recognise option, use 'installed', "
 				     "'updates', 'popular', 'get-categories', "
 				     "'get-category-apps', 'filename-to-app', "
+				     "'action install', 'action remove', "
 				     "'sources', 'refresh', 'launch' or 'search'");
 	}
 	if (!ret) {
