@@ -101,8 +101,15 @@ libsoup = dependency('libsoup-2.4', version : '>= 2.51.92')
 sqlite3 = dependency('sqlite3')
 
 if get_option('enable-valgrind')
-  valgrind = dependency('valgrind')
-  conf.set('USE_VALGRIND', 1)
+  message(meson.version())
+  # urgh, meson is broken
+  if meson.version().version_compare('>0.41.0')
+    valgrind = dependency('valgrind')
+    conf.set('USE_VALGRIND', 1)
+  else
+    message('Valgrind integration disabled to work around a meson bug')
+    valgrind = []
+  endif
 else
   message('Valgrind integration disabled')
   valgrind = []
@@ -200,21 +207,23 @@ subdir('po')
 subdir('data')
 subdir('doc')
 
-archiver = find_program('git', required : false)
-if archiver.found()
-  run_target('dist',
-    # git config tar.tar.xz.command "xz -c"
-    command: [
-      'git', 'archive',
-      '--prefix=' + meson.project_name() + '-' + meson.project_version() + '/',
-      'HEAD',
-      '--format=tar.xz',
-      '--output',
-      meson.project_name() + '-' + meson.project_version() + '.tar.xz'
-    ]
-  )
-else
-  message('git not found, you will not be able to run `ninja dist`')
+if meson.version().version_compare('<0.41.0')
+  archiver = find_program('git', required : false)
+  if archiver.found()
+    run_target('dist',
+      # git config tar.tar.xz.command "xz -c"
+      command: [
+        'git', 'archive',
+        '--prefix=' + meson.project_name() + '-' + meson.project_version() + '/',
+        'HEAD',
+        '--format=tar.xz',
+        '--output',
+        meson.project_name() + '-' + meson.project_version() + '.tar.xz'
+      ]
+    )
+  else
+    message('git not found, you will not be able to run `ninja dist`')
+  endif
 endif
 
 appstream_util = find_program('appstream-util', required : false)
