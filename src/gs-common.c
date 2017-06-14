@@ -357,7 +357,7 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
 						   GTK_STYLE_PROVIDER (provider),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data (provider, css, -1, NULL);
+	gtk_css_provider_load_from_data (provider, css, -1);
 	g_object_set_data_full (G_OBJECT (widget),
 				"GnomeSoftware::provider",
 				g_object_ref (provider),
@@ -388,8 +388,8 @@ gs_utils_widget_set_css (GtkWidget *widget, const gchar *css)
 static void
 do_not_expand (GtkWidget *child, gpointer data)
 {
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),
-				 child, "expand", FALSE, "fill", FALSE, NULL);
+	/* TODO: This is useless now. */
+	/*gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),  NULL);*/
 }
 
 static gboolean
@@ -433,8 +433,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	g_assert (GTK_IS_BOX (message_area));
 	/* make the hbox expand */
 	box = gtk_widget_get_parent (message_area);
-	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
-	                         "expand", TRUE, "fill", TRUE, NULL);
+	gtk_widget_set_hexpand (box, TRUE);
 	/* make the labels not expand */
 	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
 
@@ -448,7 +447,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	label = gtk_label_new (_("Details"));
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_visible (label, TRUE);
-	gtk_box_pack_start (GTK_BOX (message_area), label, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (message_area), label);
 
 	sw = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
@@ -469,7 +468,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	gtk_widget_set_visible (tv, TRUE);
 
 	gtk_container_add (GTK_CONTAINER (sw), tv);
-	gtk_box_pack_end (GTK_BOX (message_area), sw, TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (message_area), sw);
 
 	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
 }

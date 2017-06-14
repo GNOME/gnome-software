@@ -14,7 +14,6 @@
         <child>
           <object class="GtkBox" id="box_end_of_life">
             <property name="can_focus">False</property>
-            <property name="border_width">0</property>
             <property name="orientation">horizontal</property>
             <property name="spacing">18</property>
             <style>
@@ -27,7 +26,7 @@
                 <property name="pixel_size">16</property>
                 <property name="icon_name">dialog-warning-symbolic</property>
                 <property name="margin_top">18</property>
-                <property name="margin_left">18</property>
+                <property name="margin_start">18</property>
                 <property name="valign">start</property>
               </object>
             </child>
@@ -41,7 +40,7 @@
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_right">18</property>
+                    <property name="margin_end">18</property>
                     <property name="margin_top">18</property>
                     <property name="label" translatable="yes">Operating System Updates Unavailable</property>
                     <property name="xalign">0</property>
@@ -49,28 +48,18 @@
                       <attribute name="weight" value="bold"/>
                     </attributes>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label_end_of_life">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_right">18</property>
+                    <property name="margin_end">18</property>
                     <property name="margin_bottom">18</property>
                     <property name="label">Your OS is no longer supported. This means that it does not receive security updates. It is recommended that you upgrade to a more recent version.</property>
                     <property name="wrap">True</property>
                     <property name="width_chars">80</property>
                     <property name="xalign">0</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </object>
             </child>
@@ -171,7 +160,7 @@
                     <property name="vexpand">True</property>
                   </object>
                 </child>
-                <child type="center">
+                <child>
                   <object class="GtkBox" id="updates_uptodate_centerbox">
                     <property name="visible">True</property>
                     <property name="orientation">vertical</property>
@@ -263,10 +252,6 @@
                     <property name="hexpand">False</property>
                     <property name="halign">center</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
               </object>
               <packing>
@@ -317,10 +302,6 @@
                     <property name="hexpand">False</property>
                     <property name="halign">center</property>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                  </packing>
                 </child>
               </object>
               <packing>

@@ -567,7 +567,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 				      "max-width-chars", 10,
 				      "wrap", TRUE,
 				      NULL);
-			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), label, FALSE, FALSE, 0);
+			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), label);
 			gtk_widget_set_visible (label, TRUE);
 
 			/* set images */
@@ -578,7 +578,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 						      48);
 			gs_screenshot_image_set_use_desktop_background (GS_SCREENSHOT_IMAGE (ssimg), FALSE);
 			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
-			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
+			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), ssimg);
 			gtk_widget_set_visible (ssimg, TRUE);
 		}
 		return;
@@ -628,7 +628,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 					      AS_IMAGE_NORMAL_HEIGHT);
 	}
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
-	gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), ssimg);
 	gtk_widget_set_visible (ssimg, TRUE);
 
 	/* set all the thumbnails */
@@ -639,7 +639,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 	list = gtk_list_box_new ();
 	gtk_style_context_add_class (gtk_widget_get_style_context (list), "image-list");
 	gtk_widget_show (list);
-	gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_thumbnails), list, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_thumbnails), list);
 	for (i = 0; i < screenshots->len; i++) {
 		ss = g_ptr_array_index (screenshots, i);
 		ssimg = gs_screenshot_image_new (self->session);
@@ -702,7 +702,7 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 		gtk_style_context_add_class (style_context,
 					     "application-details-description");
 
-		gtk_box_pack_start (GTK_BOX (self->box_details_description), para, FALSE, FALSE, 0);
+		gtk_box_pack_start (GTK_BOX (self->box_details_description), para);
 	}
 
 	/* show the webapp warning */
@@ -714,8 +714,7 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 		gtk_label_set_xalign (GTK_LABEL (label), 0.f);
 		gtk_style_context_add_class (gtk_widget_get_style_context (label),
 					     "application-details-webapp-warning");
-		gtk_box_pack_start (GTK_BOX (self->box_details_description),
-				    label, FALSE, FALSE, 0);
+		gtk_box_pack_start (GTK_BOX (self->box_details_description),label);
 	}
 }
 

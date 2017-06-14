@@ -17,10 +17,6 @@
             <property name="margin-start">12</property>
             <property name="valign">center</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-          </packing>
         </child>
         <child>
           <object class="GtkImage" id="image">
@@ -29,10 +25,6 @@
             <property name="margin_start">24</property>
             <property name="valign">center</property>
           </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="name_box">
@@ -56,10 +48,6 @@
                   <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="version_label">
@@ -68,20 +56,12 @@
                 <property name="yalign">0.5</property>
                 <property name="ellipsize">end</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
             </child>
             <child>
               <object class="GsStarWidget" id="star">
                 <property name="visible">False</property>
                 <property name="halign">start</property>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="folder_label">
@@ -95,15 +75,8 @@
                   <class name="folder-label"/>
                 </style>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="fill">True</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="box_description">
@@ -126,8 +99,6 @@
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -136,7 +107,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">4</property>
-                <property name="margin_left">24</property>
+                <property name="margin_start">24</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label_warning">
@@ -150,8 +121,6 @@
                     </attributes>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
@@ -172,19 +141,14 @@
                           <class name="dim-label"/>
                         </style>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                      </packing>
                     </child>
 		    <child>
 		      <object class="GtkBox" id="label_installed">
 			<property name="orientation">horizontal</property>
-			<property name="no_show_all">True</property>
 			<property name="halign">end</property>
 			<property name="valign">end</property>
 			<property name="spacing">6</property>
-			<property name="margin-right">24</property>
+			<property name="margin-end">24</property>
 			<child>
 			  <object class="GtkImage" id="installed-icon">
 			    <property name="visible">True</property>
@@ -198,10 +162,6 @@
 			      <class name="app-row-installed-icon"/>
 			    </style>
 			  </object>
-			  <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-			  </packing>
 			</child>
 			<child>
 			  <object class="GtkLabel" id="installed-label">
@@ -211,35 +171,17 @@
 			      <class name="app-row-installed-label"/>
 			    </style>
 			  </object>
-			  <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-			  </packing>
 			</child>
 		      </object>
-		      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                      </packing>
 		    </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                  </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="vertical_box">
@@ -247,7 +189,7 @@
             <property name="orientation">vertical</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
-	    <property name="margin-right">6</property>
+	    <property name="margin-end">6</property>
             <child>
               <object class="GtkBox" id="button_box">
 		<property name="visible">True</property>
@@ -257,13 +199,11 @@
 		<child>
 		  <object class="GsProgressButton" id="button">
                     <property name="width_request">100</property>
-                    <property name="margin-right">6</property>
+                    <property name="margin-end">6</property>
                     <property name="halign">end</property>
 		  </object>
 		  <packing>
                     <property name="pack_type">end</property>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
 		  </packing>
 		</child>
 		<child>
@@ -274,8 +214,6 @@
 		  </object>
 		  <packing>
                     <property name="pack_type">end</property>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
 		  </packing>
 		</child>
 		<child>
@@ -286,15 +224,11 @@
 		  </object>
 		  <packing>
                     <property name="pack_type">end</property>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
 		  </packing>
 		</child>
               </object>
               <packing>
 		<property name="pack_type">start</property>
-		<property name="expand">False</property>
-		<property name="fill">False</property>
               </packing>
             </child>
 	    <child>
@@ -311,8 +245,6 @@
               </object>
 	      <packing>
 		<property name="pack_type">end</property>
-		<property name="expand">True</property>
-		<property name="fill">True</property>
               </packing>
 	    </child>
 	  </object>

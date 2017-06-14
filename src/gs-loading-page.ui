@@ -17,7 +17,7 @@
         <style>
           <class name="dim-label"/>
         </style>
-        <child type="center">
+        <child>
           <object class="GtkBox" id="centerbox">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
@@ -41,10 +41,6 @@
                   <class name="upgrade-progressbar"/>
                 </style>
               </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label">

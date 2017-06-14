@@ -216,7 +216,7 @@ theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
 	} else {
 		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
 	}
-	gtk_css_provider_load_from_file (app->provider, file, NULL);
+	gtk_css_provider_load_from_file (app->provider, file);
 }
 
 static void

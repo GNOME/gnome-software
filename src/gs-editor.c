@@ -778,7 +778,7 @@ gs_editor_checkbutton_editors_pick_cb (GtkToggleButton *widget, GsEditor *self)
 	if (gtk_toggle_button_get_active (widget)) {
 		as_app_add_kudo (self->selected_item, "GnomeSoftware::popular");
 	} else {
-		as_app_remove_kudo (self->selected_item, "GnomeSoftware::popular");
+		/*as_app_remove_kudo (self->selected_item, "GnomeSoftware::popular");*/
 	}
 	self->pending_changes = TRUE;
 	gs_editor_refresh_details (self);
@@ -794,9 +794,9 @@ gs_editor_checkbutton_category_featured_cb (GtkToggleButton *widget, GsEditor *s
 		return;
 
 	if (gtk_toggle_button_get_active (widget)) {
-		as_app_add_category (self->selected_item, "Featured");
+		/*as_app_add_category (self->selected_item, "Featured");*/
 	} else {
-		as_app_remove_category (self->selected_item, "Featured");
+		/*as_app_remove_category (self->selected_item, "Featured");*/
 	}
 	self->pending_changes = TRUE;
 	gs_editor_refresh_details (self);
@@ -923,7 +923,7 @@ gs_editor_button_new_feature_clicked_cb (GtkApplication *application, GsEditor *
 			      (guint) g_random_int_range (0x0000, 0xffff));
 	as_app_set_id (item, id);
 	as_app_add_metadata (item, "GnomeSoftware::FeatureTile-css", css);
-	as_app_add_kudo (item, "GnomeSoftware::popular");
+	/*as_app_add_kudo (item, "GnomeSoftware::popular");*/
 	as_app_add_category (item, "Featured");
 	as_store_add_app (self->store, item);
 	g_set_object (&self->selected_item, item);
@@ -1003,8 +1003,8 @@ gs_editor_startup_cb (GtkApplication *application, GsEditor *self)
 	self->featured_tile1 = gs_feature_tile_new (NULL);
 	self->upgrade_banner = gs_upgrade_banner_new ();
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "box_featured"));
-	gtk_box_pack_start (GTK_BOX (widget), self->featured_tile1, FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (widget), self->upgrade_banner, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (widget), self->featured_tile1);
+	gtk_box_pack_start (GTK_BOX (widget), self->upgrade_banner);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "textview_css"));
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
@@ -1161,7 +1161,7 @@ main (int argc, char *argv[])
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	gtk_init (&argc, &argv);
+	gtk_init ();
 
 	self = g_new0 (GsEditor, 1);
 	self->cancellable = g_cancellable_new ();

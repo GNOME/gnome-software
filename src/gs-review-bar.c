@@ -45,12 +45,25 @@ gs_review_bar_init (GsReviewBar *bar)
 {
 }
 
-static gboolean
-gs_review_bar_draw (GtkWidget *widget, cairo_t *cr)
+static void
+gs_review_bar_snapshot (GtkWidget *widget, GtkSnapshot *snapshot)
 {
+	GtkAllocation allocation;
 	GtkStyleContext *context;
 	gdouble y_offset, bar_height;
 	GdkRGBA color;
+	cairo_t *cr;
+
+	gtk_widget_get_allocation (widget, &allocation);
+
+	cr = gtk_snapshot_append_cairo (snapshot,
+	                                &GRAPHENE_RECT_INIT (
+	                                  allocation.x,
+	                                  allocation.y,
+	                                  allocation.width,
+	                                  allocation.height
+	                                ),
+	                               "review bar");
 
 	context = gtk_widget_get_style_context (widget);
 
@@ -67,18 +80,21 @@ gs_review_bar_draw (GtkWidget *widget, cairo_t *cr)
 			 0, y_offset,
 			 round (GS_REVIEW_BAR (widget)->fraction * gtk_widget_get_allocated_width (widget)),
 			 bar_height);
-	gtk_style_context_get_color (context, gtk_widget_get_state_flags (widget), &color);
+	gtk_style_context_get_color (context, &color);
 	cairo_set_source_rgba (cr, color.red, color.green, color.blue, color.alpha);
 	cairo_fill (cr);
 
-	return GTK_WIDGET_CLASS (gs_review_bar_parent_class)->draw (widget, cr);
+	cairo_destroy (cr);
+
+	GTK_WIDGET_CLASS (gs_review_bar_parent_class)->snapshot (widget, snapshot);
 }
 
 static void
 gs_review_bar_class_init (GsReviewBarClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-	widget_class->draw = gs_review_bar_draw;
+
+	widget_class->snapshot = gs_review_bar_snapshot;
 }
 
 GtkWidget *

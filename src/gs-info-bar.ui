@@ -2,7 +2,6 @@
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsInfoBar" parent="GtkInfoBar">
-    <property name="app_paintable">True</property>
     <property name="message_type">info</property>
     <style>
       <class name="application-details-infobar"/>
@@ -45,8 +44,6 @@
         </child>
       </object>
       <packing>
-        <property name="expand">False</property>
-        <property name="fill">False</property>
         <property name="position">0</property>
       </packing>
     </child>

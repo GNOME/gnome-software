@@ -377,8 +377,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	switch (self->state) {
 	case GS_UPDATES_PAGE_STATE_ACTION_REFRESH:
 	case GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES:
-		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
-					      "media-playback-stop-symbolic", GTK_ICON_SIZE_MENU);
+		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "media-playback-stop-symbolic");
 		gtk_widget_show (self->button_refresh);
 		break;
 	case GS_UPDATES_PAGE_STATE_STARTUP:
@@ -386,8 +385,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		gtk_widget_hide (self->button_refresh);
 		break;
 	default:
-		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
-					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
+		gtk_button_set_icon_name (GTK_BUTTON (self->button_refresh), "view-refresh-symbolic");
 		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
 			gtk_widget_show (self->button_refresh);
 		} else {
@@ -805,7 +803,7 @@ _get_section_header (GsUpdatesPage *self, GsUpdatePageSection section)
 	gtk_style_context_add_class (context, "app-listbox-header");
 
 	/* put label into the header */
-	gtk_box_pack_start (GTK_BOX (header), label, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (header), label);
 	gtk_widget_set_visible (label, TRUE);
 	gtk_widget_set_margin_start (label, 6);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
@@ -814,7 +812,7 @@ _get_section_header (GsUpdatesPage *self, GsUpdatePageSection section)
 
 	/* add button if one is specified */
 	if (button != NULL) {
-		gtk_box_pack_end (GTK_BOX (header), button, FALSE, FALSE, 0);
+		gtk_box_pack_end (GTK_BOX (header), button);
 		gtk_widget_set_visible (button, TRUE);
 		gtk_widget_set_margin_end (button, 6);
 		gtk_size_group_add_widget (self->sizegroup_button, button);
@@ -881,9 +879,7 @@ _create_listbox_section (GsUpdatesPage *self, GsUpdatePageSection sect)
 	g_signal_connect (self->listboxes[sect], "row-activated",
 			  G_CALLBACK (_app_row_activated_cb), self);
 	gtk_widget_set_visible (GTK_WIDGET (self->listboxes[sect]), TRUE);
-	gtk_box_pack_start (GTK_BOX (self->updates_box),
-			    GTK_WIDGET (self->listboxes[sect]),
-			    TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (self->updates_box),GTK_WIDGET (self->listboxes[sect]));
 	gtk_widget_set_margin_top (GTK_WIDGET (self->listboxes[sect]), 24);
 
 	/* reorder the children */
@@ -1802,14 +1798,14 @@ gs_updates_page_setup (GsPage *page,
 	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
 
 	self->header_spinner_start = gtk_spinner_new ();
-	gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_spinner_start, FALSE, FALSE, 0);
+gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_spinner_start);
 
 	/* setup update details window */
 	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 	accessible = gtk_widget_get_accessible (self->button_refresh);
 	if (accessible != NULL)
 		atk_object_set_name (accessible, _("Check for updates"));
-	gtk_box_pack_start (GTK_BOX (self->header_start_box), self->button_refresh, FALSE, FALSE, 0);
+gtk_box_pack_start (GTK_BOX (self->header_start_box), self->button_refresh);
 	g_signal_connect (self->button_refresh, "clicked",
 			  G_CALLBACK (gs_updates_page_button_refresh_cb),
 			  self);

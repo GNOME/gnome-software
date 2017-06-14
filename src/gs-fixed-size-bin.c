@@ -40,125 +40,76 @@ enum {
 };
 
 static void
-gs_fixed_size_bin_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+gs_fixed_size_bin_size_allocate (GtkWidget           *widget,
+				 const GtkAllocation *allocation,
+				 int                  baseline,
+				 GtkAllocation       *out_clip)
 {
 	GsFixedSizeBin *bin = GS_FIXED_SIZE_BIN (widget);
+
+	/*
+	 * TODO: I'm not exactly sure what this widget does.
+	 */
+
+
 
 	if (bin->preferred_width >= 0 &&
 			bin->preferred_width >= bin->min_width &&
 			allocation->width > bin->preferred_width) {
 		/* Center the contents */
-		allocation->x += (allocation->width - bin->preferred_width) / 2;
-		allocation->width = bin->preferred_width;
+		/*allocation->x += (allocation->width - bin->preferred_width) / 2;*/
+		/*allocation->width = bin->preferred_width;*/
 	}
 	if (bin->preferred_height >= 0 &&
 			bin->preferred_height >= bin->min_height &&
 			allocation->height > bin->preferred_height) {
 		/* Align to the top */
-		allocation->height = bin->preferred_height;
+		/*allocation->height = bin->preferred_height;*/
 	}
 
-	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->size_allocate (widget, allocation);
+	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->size_allocate (widget, allocation, baseline, out_clip);
 }
 
 static void
-gs_fixed_size_bin_get_preferred_width (GtkWidget *widget,
-				       gint *min, gint *nat)
+gs_fixed_size_bin_measure (GtkWidget      *widget,
+                           GtkOrientation  orientation,
+                           int             for_size,
+                           int            *minimum,
+                           int            *natural,
+                           int            *minimum_baseline,
+                           int            *natural_baseline)
 {
 	GsFixedSizeBin *bin = GS_FIXED_SIZE_BIN (widget);
-	gint m, n;
+	int m, n;
 
-	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->get_preferred_width (widget, &m, &n);
-
-	bin->min_width = m;
-	if (bin->preferred_width >= 0 && n > bin->preferred_width)
-		n = MAX (m, bin->preferred_width);
-	if (min)
-		*min = m;
-	if (nat)
-		*nat = n;
-}
-
-static void
-gs_fixed_size_bin_get_preferred_height (GtkWidget *widget,
-					gint *min, gint *nat)
-{
-	GsFixedSizeBin *bin = GS_FIXED_SIZE_BIN (widget);
-	gint m, n;
-
-	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->get_preferred_height (widget, &m, &n);
-
-	bin->min_height = m;
-	if (bin->preferred_height >= 0 && n > bin->preferred_height)
-		n = MAX (m, bin->preferred_height);
-	if (min)
-		*min = m;
-	if (nat)
-		*nat = n;
-}
-
-static void
-gs_fixed_size_bin_get_preferred_width_for_height (GtkWidget *widget,
-						  gint for_height,
-						  gint *min, gint *nat)
-{
-	GsFixedSizeBin *bin = GS_FIXED_SIZE_BIN (widget);
-	gint m, n;
-
-	if (gtk_widget_get_request_mode (widget) == GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH) {
-		GTK_WIDGET_GET_CLASS (widget)->get_preferred_width (widget,
-								    min, nat);
-		return;
+	if (orientation == GTK_ORIENTATION_HORIZONTAL &&
+	    bin->preferred_height >= 0 &&
+	    for_size > bin->preferred_height) {
+		for_size = MAX (bin->min_height, bin->preferred_height);
+	} else if (orientation == GTK_ORIENTATION_VERTICAL &&
+	           bin->preferred_width >= 0 &&
+	           for_size > bin->preferred_width) {
+		for_size = MAX (bin->min_width, bin->preferred_width);
 	}
 
-	if (bin->preferred_height >= 0 &&
-			for_height > bin->preferred_height) {
-		/* The height will be limited */
-		for_height = MAX (bin->min_height, bin->preferred_height);
+	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->measure (widget,
+	                                                            orientation,
+	                                                            for_size,
+	                                                            &m, &n,
+	                                                            NULL, NULL);
+
+	if (orientation == GTK_ORIENTATION_HORIZONTAL) {
+		bin->min_width = m;
+		if (bin->preferred_width >= 0 && n > bin->preferred_width)
+			n = MAX (m, bin->preferred_width);
+	} else {
+		bin->min_height = m;
+		if (bin->preferred_height >= 0 && n > bin->preferred_height)
+			n = MAX (m, bin->preferred_height);
 	}
 
-	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->get_preferred_width_for_height (
-		widget, for_height, &m, &n);
-
-	bin->min_width = m;
-	if (bin->preferred_width >= 0 && n > bin->preferred_width)
-		n = MAX (m, bin->preferred_width);
-	if (min)
-		*min = m;
-	if (nat)
-		*nat = n;
-}
-
-static void
-gs_fixed_size_bin_get_preferred_height_for_width (GtkWidget *widget,
-						  gint for_width,
-						  gint *min, gint *nat)
-{
-	GsFixedSizeBin *bin = GS_FIXED_SIZE_BIN (widget);
-	gint m, n;
-
-	if (gtk_widget_get_request_mode (widget) == GTK_SIZE_REQUEST_WIDTH_FOR_HEIGHT) {
-		GTK_WIDGET_GET_CLASS (widget)->get_preferred_height (widget,
-								     min, nat);
-		return;
-	}
-
-	if (bin->preferred_width >= 0 &&
-			for_width > bin->preferred_width) {
-		/* The width will be limited */
-		for_width = MAX (bin->min_width, bin->preferred_width);
-	}
-
-	GTK_WIDGET_CLASS (gs_fixed_size_bin_parent_class)->get_preferred_height_for_width (
-		widget, for_width, &m, &n);
-
-	bin->min_height = m;
-	if (bin->preferred_height >= 0 && n > bin->preferred_height)
-		n = MAX (m, bin->preferred_height);
-	if (min)
-		*min = m;
-	if (nat)
-		*nat = n;
+	*minimum = m;
+	*natural = n;
 }
 
 static void
@@ -223,10 +174,7 @@ gs_fixed_size_bin_class_init (GsFixedSizeBinClass *class)
 	object_class->set_property = gs_fixed_size_bin_set_property;
 
 	widget_class->size_allocate = gs_fixed_size_bin_size_allocate;
-	widget_class->get_preferred_width = gs_fixed_size_bin_get_preferred_width;
-	widget_class->get_preferred_height = gs_fixed_size_bin_get_preferred_height;
-	widget_class->get_preferred_width_for_height = gs_fixed_size_bin_get_preferred_width_for_height;
-	widget_class->get_preferred_height_for_width = gs_fixed_size_bin_get_preferred_height_for_width;
+	widget_class->measure = gs_fixed_size_bin_measure;
 
 	g_object_class_install_property (object_class, PROP_PREFERRED_WIDTH,
 		g_param_spec_int ("preferred-width",

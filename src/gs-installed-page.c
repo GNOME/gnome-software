@@ -605,7 +605,6 @@ set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 	if (self->selection_mode) {
 		gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), FALSE);
 		gtk_style_context_add_class (context, "selection-mode");
-		gtk_button_set_image (GTK_BUTTON (self->button_select), NULL);
 		gtk_button_set_label (GTK_BUTTON (self->button_select), _("_Cancel"));
 		gtk_button_set_use_underline (GTK_BUTTON (self->button_select), TRUE);
 		gtk_widget_show (self->button_select);
@@ -618,7 +617,6 @@ set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 	} else {
 		gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
 		gtk_style_context_remove_class (context, "selection-mode");
-		gtk_button_set_image (GTK_BUTTON (self->button_select), gtk_image_new_from_icon_name ("object-select-symbolic", GTK_ICON_SIZE_MENU));
 		gtk_button_set_label (GTK_BUTTON (self->button_select), NULL);
 		gtk_widget_show (self->button_select);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));

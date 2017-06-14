@@ -619,31 +619,12 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	}
 }
 
-static gboolean
-gs_screenshot_image_draw (GtkWidget *widget, cairo_t *cr)
-{
-	GtkStyleContext *context;
-
-	context = gtk_widget_get_style_context (widget);
-	gtk_render_background (context, cr,
-			       0, 0,
-			       gtk_widget_get_allocated_width (widget),
-			       gtk_widget_get_allocated_height (widget));
-	gtk_render_frame (context, cr,
-			  0, 0,
-			  gtk_widget_get_allocated_width (widget),
-			  gtk_widget_get_allocated_height (widget));
-
-	return GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->draw (widget, cr);
-}
-
 static void
 gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	widget_class->destroy = gs_screenshot_image_destroy;
-	widget_class->draw = gs_screenshot_image_draw;
 
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/gs-screenshot-image.ui");

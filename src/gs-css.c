@@ -214,7 +214,7 @@ gs_css_validate_part (GsCss *self, const gchar *markup, GError **error)
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
 						   GTK_STYLE_PROVIDER (provider),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data (provider, str->str, -1, NULL);
+	gtk_css_provider_load_from_data (provider, str->str, -1);
 	if (error_parse != NULL) {
 		if (error != NULL)
 			*error = g_error_copy (error_parse);

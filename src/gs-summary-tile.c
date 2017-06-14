@@ -227,24 +227,38 @@ gs_summary_tile_set_property (GObject *object,
 }
 
 static void
-gs_app_get_preferred_width (GtkWidget *widget,
-			    gint *min, gint *nat)
+gs_summary_tile_measure (GtkWidget      *widget,
+                         GtkOrientation  orientation,
+                         int             for_size,
+                         int            *minimum,
+                         int            *natural,
+                         int            *minimum_baseline,
+                         int            *natural_baseline)
 {
-	gint m;
 	GsSummaryTile *app_tile = GS_SUMMARY_TILE (widget);
 
-	if (app_tile->preferred_width < 0) {
-		/* Just retrieve the default values */
-		GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->get_preferred_width (widget, min, nat);
-		return;
+	if (orientation == GTK_ORIENTATION_HORIZONTAL && for_size == -1 && app_tile->preferred_width >= 0) {
+		int m, n;
+
+		GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->measure (widget,
+		                                                          orientation,
+		                                                          for_size,
+		                                                          &m,
+		                                                          &n,
+		                                                          NULL,
+		                                                          NULL);
+
+		*minimum = m;
+		*natural = MAX (m, app_tile->preferred_width);
+	} else {
+		GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->measure (widget,
+		                                                          orientation,
+		                                                          for_size,
+		                                                          minimum,
+		                                                          natural,
+		                                                          minimum_baseline,
+		                                                          natural_baseline);
 	}
-
-	GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->get_preferred_width (widget, &m, NULL);
-
-	if (min != NULL)
-		*min = m;
-	if (nat != NULL)
-		*nat = MAX (m, app_tile->preferred_width);
 }
 
 static void
@@ -257,8 +271,8 @@ gs_summary_tile_class_init (GsSummaryTileClass *klass)
 	object_class->get_property = gs_summary_tile_get_property;
 	object_class->set_property = gs_summary_tile_set_property;
 
+	widget_class->measure = gs_summary_tile_measure;
 	widget_class->destroy = gs_summary_tile_destroy;
-	widget_class->get_preferred_width = gs_app_get_preferred_width;
 
 	tile_class->set_app = gs_summary_tile_set_app;
 	tile_class->get_app = gs_summary_tile_get_app;

@@ -42,7 +42,6 @@
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="can_focus">False</property>
-        <property name="border_width">0</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
@@ -98,8 +97,6 @@
                     <property name="pixel-size">64</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -115,8 +112,6 @@
                     <property name="valign">center</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -133,7 +128,6 @@
                 <property name="margin_end">6</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">9</property>
-                <property name="border_width">5</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">9</property>
                 <child>
@@ -150,8 +144,6 @@
                         <property name="icon_size">0</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -177,8 +169,6 @@
                             </attributes>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">0</property>
                           </packing>
                         </child>
@@ -194,22 +184,16 @@
                             <property name="width_chars">50</property>
                           </object>
                           <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -237,8 +221,6 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -300,8 +282,6 @@
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -309,7 +289,6 @@
     </child>
   </template>
   <object class="GtkSizeGroup" id="sizegroup_update_details">
-    <property name="ignore-hidden">False</property>
     <property name="mode">horizontal</property>
     <widgets>
       <widget name="scrolledwindow"/>

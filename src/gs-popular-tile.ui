@@ -33,7 +33,6 @@
             <property name="valign">fill</property>
             <child type="overlay">
               <object class="GtkEventBox" id="eventbox">
-                <property name="no_show_all">True</property>
                 <property name="visible_window">True</property>
                 <property name="halign">end</property>
                 <property name="valign">start</property>
@@ -44,7 +43,7 @@
 		    <property name="valign">center</property>
 		    <property name="pixel-size">20</property>
                     <property name="margin-top">6</property>
-                    <property name="margin-right">6</property>
+                    <property name="margin-end">6</property>
 		    <property name="icon-name">software-installed-symbolic</property>
 		    <style>
 		      <class name="installed-icon"/>
@@ -73,10 +72,6 @@
                         <property name="visible">True</property>
                         <property name="valign">center</property>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                      </packing>
                     </child>
                     <child>
                       <object class="GtkLabel" id="label">
@@ -87,10 +82,6 @@
                         <property name="width_chars">12</property>
                         <property name="max_width_chars">12</property>
                       </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                      </packing>
                     </child>
                     <child>
                       <object class="GsStarWidget" id="stars">
@@ -100,10 +91,6 @@
                           <class name="onlyjustvisible"/>
                         </style>
                       </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                      </packing>
                     </child>
                   </object>
                 </child>
