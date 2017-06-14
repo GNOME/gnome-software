@@ -2597,7 +2597,8 @@ gs_flatpak_app_install (GsFlatpak *self,
 				gs_utils_error_add_unique_id (error, runtime);
 				return FALSE;
 			}
-			g_debug ("runtime not available, so using %s", tmp);
+			g_debug ("runtime %s not available, so installing RuntimeRepo %s",
+				 gs_app_get_unique_id (runtime), tmp);
 
 			/* download file */
 			cache_basename = g_path_get_basename (tmp);
