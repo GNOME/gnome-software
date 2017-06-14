@@ -171,6 +171,27 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 	return g_steal_pointer (&snaps);
 }
 
+static GsApp *
+snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
+{
+	GsApp *app;
+
+	/* create a unique ID for deduplication, TODO: branch? */
+	app = gs_app_new (snapd_snap_get_name (snap));
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+	gs_app_set_management_plugin (app, "snap");
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
+	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
+		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
+
+	return app;
+}
+
 gboolean
 gs_plugin_url_to_app (GsPlugin *plugin,
 		      GsAppList *list,
@@ -181,8 +202,6 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autofree gchar *scheme = NULL;
 	g_autofree gchar *path = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
-	SnapdSnap *snap;
-	g_autoptr(GsApp) app = NULL;
 
 	/* not us */
 	scheme = gs_utils_get_url_scheme (url);
@@ -195,15 +214,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
-	snap = snaps->pdata[0];
-	app = gs_app_new (snapd_snap_get_name (snap));
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-	gs_app_set_management_plugin (app, "snap");
-	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
-	gs_app_list_add (list, app);
+	gs_app_list_add (list, snap_to_app (plugin, snaps->pdata[0]));
 
 	return TRUE;
 }
@@ -231,17 +242,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 	for (i = 0; i < snaps->len; i++) {
 		SnapdSnap *snap = snaps->pdata[i];
-		g_autoptr(GsApp) app = NULL;
-
-		/* create a unique ID for deduplication, TODO: branch? */
-		app = gs_app_new (snapd_snap_get_name (snap));
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_management_plugin (app, "snap");
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
-		gs_app_list_add (list, app);
+		gs_app_list_add (list, snap_to_app (plugin, snap));
 	}
 
 	return TRUE;
@@ -266,20 +267,11 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	for (i = 0; i < snaps->len; i++) {
 		SnapdSnap *snap = snaps->pdata[i];
-		g_autoptr(GsApp) app = NULL;
 
 		if (snapd_snap_get_status (snap) != SNAPD_SNAP_STATUS_ACTIVE)
 			continue;
 
-		/* create a unique ID for deduplication, TODO: branch? */
-		app = gs_app_new (snapd_snap_get_name (snap));
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_management_plugin (app, "snap");
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
-		gs_app_list_add (list, app);
+		gs_app_list_add (list, snap_to_app (plugin, snap));
 	}
 
 	return TRUE;
@@ -303,17 +295,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	for (i = 0; i < snaps->len; i++) {
 		SnapdSnap *snap = snaps->pdata[i];
-		g_autoptr(GsApp) app = NULL;
-
-		/* create a unique ID for deduplication, TODO: branch? */
-		app = gs_app_new (snapd_snap_get_name (snap));
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_management_plugin (app, "snap");
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
-		gs_app_list_add (list, app);
+		gs_app_list_add (list, snap_to_app (plugin, snap));
 	}
 
 	return TRUE;
