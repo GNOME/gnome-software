@@ -148,7 +148,7 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 }
 
 static GPtrArray *
-find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *query, GCancellable *cancellable, GError **error)
+find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *query, const gchar *section, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
@@ -158,7 +158,7 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *query, GCancell
 	client = get_client (plugin, cancellable, error);
 	if (client == NULL)
 		return FALSE;
-	snaps = snapd_client_find_sync (client, flags, query, NULL, cancellable, NULL);
+	snaps = snapd_client_find_section_sync (client, flags, query, section, NULL, cancellable, NULL);
 	if (snaps == NULL)
 		return NULL;
 
@@ -191,7 +191,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, path, cancellable, NULL);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, path, NULL, cancellable, NULL);
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
@@ -214,6 +214,37 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_clear_object (&priv->auth);
 	g_hash_table_unref (priv->store_snaps);
+}
+
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autoptr(GPtrArray) snaps = NULL;
+	guint i;
+
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, NULL, "featured", cancellable, error);
+	if (snaps == NULL)
+		return FALSE;
+
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
+		g_autoptr(GsApp) app = NULL;
+
+		/* create a unique ID for deduplication, TODO: branch? */
+		app = gs_app_new (snapd_snap_get_name (snap));
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+		gs_app_set_management_plugin (app, "snap");
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
 }
 
 gboolean
@@ -266,7 +297,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	guint i;
 
 	query = g_strjoinv (" ", values);
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, query, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, query, NULL, cancellable, error);
 	if (snaps == NULL)
 		return FALSE;
 
@@ -381,7 +412,7 @@ get_store_snap (GsPlugin *plugin, const gchar *name, GCancellable *cancellable, 
 	if (snap != NULL)
 		return g_object_ref (snap);
 
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, name, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, name, NULL, cancellable, error);
 	if (snaps == NULL || snaps->len < 1)
 		return NULL;
 
