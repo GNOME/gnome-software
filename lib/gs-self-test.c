@@ -212,8 +212,11 @@ gs_plugin_func (void)
 	guint i;
 
 	/* check enums converted */
-	for (i = 0; i < GS_PLUGIN_ACTION_LAST; i++)
-		g_assert (gs_plugin_action_to_string (i) != NULL);
+	for (i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
+		const gchar *tmp = gs_plugin_action_to_string (i);
+		g_assert (tmp != NULL);
+		g_assert_cmpint (gs_plugin_action_from_string (tmp), ==, i);
+	}
 
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");

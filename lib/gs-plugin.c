@@ -1864,6 +1864,106 @@ gs_plugin_action_to_string (GsPluginAction action)
 }
 
 /**
+ * gs_plugin_action_from_string:
+ * @action: a #GsPluginAction, e.g. "install"
+ *
+ * Converts the string to an enumerated action.
+ *
+ * Returns: a GsPluginAction, e.g. %GS_PLUGIN_ACTION_INSTALL
+ *
+ * Since: 3.26
+ **/
+GsPluginAction
+gs_plugin_action_from_string (const gchar *action)
+{
+	if (g_strcmp0 (action, "setup") == 0)
+		return GS_PLUGIN_ACTION_SETUP;
+	if (g_strcmp0 (action, "install") == 0)
+		return GS_PLUGIN_ACTION_INSTALL;
+	if (g_strcmp0 (action, "remove") == 0)
+		return GS_PLUGIN_ACTION_REMOVE;
+	if (g_strcmp0 (action, "update") == 0)
+		return GS_PLUGIN_ACTION_UPDATE;
+	if (g_strcmp0 (action, "set-rating") == 0)
+		return GS_PLUGIN_ACTION_SET_RATING;
+	if (g_strcmp0 (action, "upgrade-download") == 0)
+		return GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD;
+	if (g_strcmp0 (action, "upgrade-trigger") == 0)
+		return GS_PLUGIN_ACTION_UPGRADE_TRIGGER;
+	if (g_strcmp0 (action, "launch") == 0)
+		return GS_PLUGIN_ACTION_LAUNCH;
+	if (g_strcmp0 (action, "update-cancel") == 0)
+		return GS_PLUGIN_ACTION_UPDATE_CANCEL;
+	if (g_strcmp0 (action, "add-shortcut") == 0)
+		return GS_PLUGIN_ACTION_ADD_SHORTCUT;
+	if (g_strcmp0 (action, "remove-shortcut") == 0)
+		return GS_PLUGIN_ACTION_REMOVE_SHORTCUT;
+	if (g_strcmp0 (action, "review-submit") == 0)
+		return GS_PLUGIN_ACTION_REVIEW_SUBMIT;
+	if (g_strcmp0 (action, "review-upvote") == 0)
+		return GS_PLUGIN_ACTION_REVIEW_UPVOTE;
+	if (g_strcmp0 (action, "review-downvote") == 0)
+		return GS_PLUGIN_ACTION_REVIEW_DOWNVOTE;
+	if (g_strcmp0 (action, "review-report") == 0)
+		return GS_PLUGIN_ACTION_REVIEW_REPORT;
+	if (g_strcmp0 (action, "review-remove") == 0)
+		return GS_PLUGIN_ACTION_REVIEW_REMOVE;
+	if (g_strcmp0 (action, "review-dismiss") == 0)
+		return GS_PLUGIN_ACTION_REVIEW_DISMISS;
+	if (g_strcmp0 (action, "get-updates") == 0)
+		return GS_PLUGIN_ACTION_GET_UPDATES;
+	if (g_strcmp0 (action, "get-distro-updates") == 0)
+		return GS_PLUGIN_ACTION_GET_DISTRO_UPDATES;
+	if (g_strcmp0 (action, "get-unvoted-reviews") == 0)
+		return GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS;
+	if (g_strcmp0 (action, "get-sources") == 0)
+		return GS_PLUGIN_ACTION_GET_SOURCES;
+	if (g_strcmp0 (action, "get-installed") == 0)
+		return GS_PLUGIN_ACTION_GET_INSTALLED;
+	if (g_strcmp0 (action, "get-popular") == 0)
+		return GS_PLUGIN_ACTION_GET_POPULAR;
+	if (g_strcmp0 (action, "get-featured") == 0)
+		return GS_PLUGIN_ACTION_GET_FEATURED;
+	if (g_strcmp0 (action, "search") == 0)
+		return GS_PLUGIN_ACTION_SEARCH;
+	if (g_strcmp0 (action, "search-files") == 0)
+		return GS_PLUGIN_ACTION_SEARCH_FILES;
+	if (g_strcmp0 (action, "search-provides") == 0)
+		return GS_PLUGIN_ACTION_SEARCH_PROVIDES;
+	if (g_strcmp0 (action, "get-categories") == 0)
+		return GS_PLUGIN_ACTION_GET_CATEGORIES;
+	if (g_strcmp0 (action, "get-category-apps") == 0)
+		return GS_PLUGIN_ACTION_GET_CATEGORY_APPS;
+	if (g_strcmp0 (action, "refine") == 0)
+		return GS_PLUGIN_ACTION_REFINE;
+	if (g_strcmp0 (action, "refresh") == 0)
+		return GS_PLUGIN_ACTION_REFRESH;
+	if (g_strcmp0 (action, "file-to-app") == 0)
+		return GS_PLUGIN_ACTION_FILE_TO_APP;
+	if (g_strcmp0 (action, "url-to-app") == 0)
+		return GS_PLUGIN_ACTION_URL_TO_APP;
+	if (g_strcmp0 (action, "auth-login") == 0)
+		return GS_PLUGIN_ACTION_AUTH_LOGIN;
+	if (g_strcmp0 (action, "auth-logout") == 0)
+		return GS_PLUGIN_ACTION_AUTH_LOGOUT;
+	if (g_strcmp0 (action, "auth-register") == 0)
+		return GS_PLUGIN_ACTION_AUTH_REGISTER;
+	if (g_strcmp0 (action, "auth-lost-password") == 0)
+		return GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD;
+	if (g_strcmp0 (action, "get-recent") == 0)
+		return GS_PLUGIN_ACTION_GET_RECENT;
+	if (g_strcmp0 (action, "get-updates-historical") == 0)
+		return GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL;
+	if (g_strcmp0 (action, "initialize") == 0)
+		return GS_PLUGIN_ACTION_INITIALIZE;
+	if (g_strcmp0 (action, "destroy") == 0)
+		return GS_PLUGIN_ACTION_DESTROY;
+	if (g_strcmp0 (action, "purchase") == 0)
+		return GS_PLUGIN_ACTION_PURCHASE;
+	return GS_PLUGIN_ACTION_UNKNOWN;
+}
+
+/**
  * gs_plugin_failure_flags_to_string:
  * @action: some #GsPluginFailureFlags, e.g. %GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY
  *
