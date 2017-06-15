@@ -607,6 +607,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_ADDON:
 	case AS_APP_KIND_CODEC:
+	case AS_APP_KIND_DRIVER:
 	case AS_APP_KIND_FIRMWARE:
 	case AS_APP_KIND_FONT:
 	case AS_APP_KIND_GENERIC:
