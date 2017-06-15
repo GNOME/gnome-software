@@ -42,7 +42,9 @@ JsonArray *gs_snapd_list		(const gchar	*macaroon,
 
 JsonArray *gs_snapd_find		(const gchar	*macaroon,
 					 gchar		**discharges,
-					 gchar		**values,
+					 const gchar	*section,
+					 gboolean	 match_name,
+					 gchar		*query,
 					 GCancellable	*cancellable,
 					 GError		**error);
 
@@ -73,5 +75,7 @@ gchar *gs_snapd_get_resource		(const gchar	*macaroon,
 					 gsize		*data_length,
 					 GCancellable	*cancellable,
 					 GError		**error);
+
+GDateTime *gs_snapd_parse_date		(const gchar	*value);
 
 #endif /* __GS_SNAPD_H__ */

@@ -436,12 +436,10 @@ gs_snapd_list (const gchar *macaroon, gchar **discharges,
 
 JsonArray *
 gs_snapd_find (const gchar *macaroon, gchar **discharges,
-	       gchar **values,
+	       const gchar *section, gboolean match_name, gchar *query,
 	       GCancellable *cancellable, GError **error)
 {
 	g_autoptr(GString) path = NULL;
-	g_autofree gchar *query = NULL;
-	g_autofree gchar *escaped = NULL;
 	guint status_code;
 	g_autofree gchar *reason_phrase = NULL;
 	g_autofree gchar *response_type = NULL;
@@ -450,10 +448,22 @@ gs_snapd_find (const gchar *macaroon, gchar **discharges,
 	JsonObject *root;
 	JsonArray *result;
 
-	path = g_string_new ("/v2/find?q=");
-	query = g_strjoinv (" ", values);
-	escaped = soup_uri_encode (query, NULL);
-	g_string_append (path, escaped);
+	path = g_string_new ("/v2/find?");
+	if (section != NULL) {
+		g_string_append_printf (path, "section=%s", section);
+	}
+	if (query != NULL) {
+		g_autofree gchar *escaped = NULL;
+
+		escaped = soup_uri_encode (query, NULL);
+		if (section != NULL)
+			g_string_append (path, "&");
+		if (match_name)
+			g_string_append (path, "name=");
+		else
+			g_string_append (path, "q=");
+		g_string_append (path, escaped);
+	}
 	if (!send_request ("GET", path->str, NULL,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
@@ -708,4 +718,100 @@ gs_snapd_get_resource (const gchar *macaroon, gchar **discharges,
 	}
 
 	return g_steal_pointer (&data);
+}
+
+static gboolean
+parse_date (const gchar *date_string, gint *year, gint *month, gint *day)
+{
+	/* Example: 2016-05-17 */
+	if (strchr (date_string, '-') != NULL) {
+		g_auto(GStrv) tokens = NULL;
+
+		tokens = g_strsplit (date_string, "-", -1);
+		if (g_strv_length (tokens) != 3)
+			return FALSE;
+
+		*year = atoi (tokens[0]);
+		*month = atoi (tokens[1]);
+		*day = atoi (tokens[2]);
+
+		return TRUE;
+	}
+	/* Example: 20160517 */
+	else if (strlen (date_string) == 8) {
+		// FIXME: Implement
+		return FALSE;
+	}
+	else
+		return FALSE;
+}
+
+static gboolean
+parse_time (const gchar *time_string, gint *hour, gint *minute, gdouble *seconds)
+{
+	/* Example: 09:36:53.682 or 09:36:53 or 09:36 */
+	if (strchr (time_string, ':') != NULL) {
+		g_auto(GStrv) tokens = NULL;
+
+		tokens = g_strsplit (time_string, ":", 3);
+		*hour = atoi (tokens[0]);
+		if (tokens[1] == NULL)
+			return FALSE;
+		*minute = atoi (tokens[1]);
+		if (tokens[2] != NULL)
+			*seconds = g_ascii_strtod (tokens[2], NULL);
+		else
+			*seconds = 0.0;
+
+		return TRUE;
+	}
+	/* Example: 093653.682 or 093653 or 0936 */
+	else {
+		// FIXME: Implement
+		return FALSE;
+	}
+}
+
+static gboolean
+is_timezone_prefix (gchar c)
+{
+	return c == '+' || c == '-' || c == 'Z';
+}
+
+GDateTime *
+gs_snapd_parse_date (const gchar *value)
+{
+	g_auto(GStrv) tokens = NULL;
+	g_autoptr(GTimeZone) timezone = NULL;
+	gint year = 0, month = 0, day = 0, hour = 0, minute = 0;
+	gdouble seconds = 0.0;
+
+	if (value == NULL)
+		return NULL;
+
+	/* Example: 2016-05-17T09:36:53+12:00 */
+	tokens = g_strsplit (value, "T", 2);
+	if (!parse_date (tokens[0], &year, &month, &day))
+		return NULL;
+	if (tokens[1] != NULL) {
+		gchar *timezone_start;
+
+		/* Timezone is either Z (UTC) +hh:mm or -hh:mm */
+		timezone_start = tokens[1];
+		while (*timezone_start != '\0' && !is_timezone_prefix (*timezone_start))
+			timezone_start++;
+		if (*timezone_start != '\0')
+			timezone = g_time_zone_new (timezone_start);
+
+		/* Strip off timezone */
+		*timezone_start = '\0';
+
+		if (!parse_time (tokens[1], &hour, &minute, &seconds))
+			return NULL;
+	}
+
+	if (timezone == NULL)
+		timezone = g_time_zone_new_local ();
+
+	return g_date_time_new (timezone, year, month, day, hour, minute, seconds);
 }
