@@ -746,8 +746,13 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 						    GS_UTILS_CACHE_FLAG_WRITEABLE,
 						    error);
 	if (cache_age > 0) {
+#if FWUPD_CHECK_VERSION(0,9,5)
+		guint64 age = fwupd_remote_get_age (remote);
+		guint tmp = age < G_MAXUINT ? (guint) age : G_MAXUINT;
+#else
 		g_autoptr(GFile) file = g_file_new_for_path (filename_asc);
 		guint tmp = gs_utils_get_file_age (file);
+#endif
 		if (tmp < cache_age) {
 			g_debug ("%s is only %u seconds old, so ignoring refresh",
 				 filename_asc, tmp);
