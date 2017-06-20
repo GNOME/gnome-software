@@ -532,8 +532,10 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_printf (str, "price", "%s %.2f",
 				  gs_price_get_currency (app->price),
 				  gs_price_get_amount (app->price));
-	if (app->related->len > 0)
-		gs_app_kv_printf (str, "related", "%u", app->related->len);
+	for (i = 0; i < app->related->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (app->related, i);
+		gs_app_kv_lpad (str, "related", gs_app_get_unique_id (app_tmp));
+	}
 	if (app->history->len > 0)
 		gs_app_kv_printf (str, "history", "%u", app->history->len);
 	for (i = 0; i < app->categories->len; i++) {
