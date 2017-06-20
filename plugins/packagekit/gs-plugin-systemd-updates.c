@@ -198,8 +198,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_update_app (GsPlugin *plugin,
+static gboolean
+_systemd_trigger_app (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -228,7 +228,30 @@ gs_plugin_update_app (GsPlugin *plugin,
 	/* don't rely on the file monitor */
 	gs_plugin_systemd_updates_refresh_is_triggered (plugin, cancellable);
 
-	/* success! */
+	/* success */
+	return TRUE;
+}
+
+gboolean
+gs_plugin_update_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GPtrArray *related = gs_app_get_related (app);
+
+	/* not a proxy, which is somewhat odd... */
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+		return _systemd_trigger_app (plugin, app, cancellable, error);
+
+	/* try to trigger each related app */
+	for (guint i = 0; i < related->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (related, i);
+		if (!_systemd_trigger_app (plugin, app_tmp, cancellable, error))
+			return FALSE;
+	}
+
+	/* success */
 	return TRUE;
 }
 

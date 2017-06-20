@@ -487,6 +487,8 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 typedef struct {
 	GsPlugin	*plugin;
 	GsApp		*app;
+	guint		 job_max;
+	guint		 job_now;
 } GsFlatpakProgressHelper;
 
 static void
@@ -519,8 +521,16 @@ gs_flatpak_progress_cb (const gchar *status,
 {
 	GsFlatpakProgressHelper *phelper = (GsFlatpakProgressHelper *) user_data;
 	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
+
+	/* fix up */
+	if (phelper->job_max == 0)
+		phelper->job_max = 1;
+
 	if (phelper->app != NULL) {
-		gs_app_set_progress (phelper->app, progress);
+		gdouble job_factor = 1.f / phelper->job_max;
+		gdouble offset = 100.f * job_factor * phelper->job_now;
+		gs_app_set_progress (phelper->app, offset + (progress * job_factor));
+
 		switch (gs_app_get_state (phelper->app)) {
 		case AS_APP_STATE_INSTALLING:
 		case AS_APP_STATE_PURCHASING:
@@ -994,83 +1004,12 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	return TRUE;
 }
 
-/* return a new list which contains all the GsApps that are not related to
- * each other */
-static GsAppList *
-gs_flatpak_list_convert_related (GsFlatpak *self, GsAppList *list,
-				 GCancellable *cancellable,
-				 GError **error)
-{
-	g_autoptr(GHashTable) hash_rel = NULL;
-	g_autoptr(GsAppList) list_new = gs_app_list_new ();
-
-	/* use a hash to map the related package back to the main package */
-	hash_rel = g_hash_table_new_full (g_str_hash, g_str_equal,
-					  g_free, (GDestroyNotify) g_object_unref);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		const gchar *remote_name = gs_app_get_origin (app);
-		g_autoptr(GPtrArray) related_xrefs = NULL;
-		g_autofree gchar *ref = NULL;
-
-		/* lookup any related refs for this ref */
-		ref = g_strdup_printf ("%s/%s/%s/%s",
-				       gs_app_get_flatpak_kind_as_str (app),
-				       gs_app_get_flatpak_name (app),
-				       gs_app_get_flatpak_arch (app),
-				       gs_app_get_flatpak_branch (app));
-		related_xrefs = flatpak_installation_list_installed_related_refs_sync (self->installation,
-										       remote_name,
-										       ref,
-										       cancellable,
-										       error);
-		if (related_xrefs == NULL) {
-			gs_plugin_flatpak_error_convert (error);
-			return NULL;
-		}
-		for (guint j = 0; j < related_xrefs->len; j++) {
-			FlatpakRelatedRef *xref_rel = g_ptr_array_index (related_xrefs, j);
-			g_autoptr(GsApp) app_rel = NULL;
-
-			/* not related */
-			if (!flatpak_related_ref_should_download (xref_rel))
-				continue;
-
-			/* keep track of this so we don't add it on its own */
-			app_rel = gs_flatpak_create_app (self, FLATPAK_REF (xref_rel));
-			g_hash_table_insert (hash_rel,
-					     g_strdup (gs_app_get_unique_id (app_rel)),
-					     g_object_ref (app));
-		}
-	}
-
-	/* is this related to something else */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		GsApp *app_parent;
-		app_parent = g_hash_table_lookup (hash_rel, gs_app_get_unique_id (app));
-		if (app_parent != NULL) {
-			g_debug ("adding %s as related to %s",
-				 gs_app_get_unique_id (app),
-				 gs_app_get_unique_id (app_parent));
-			gs_app_add_related (app_parent, app);
-		} else {
-			gs_app_list_add (list_new, app);
-		}
-	}
-
-	/* success */
-	return g_steal_pointer (&list_new);
-}
-
 gboolean
 gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
-	g_autoptr(GsAppList) list_new = NULL;
-	g_autoptr(GsAppList) list_tmp = NULL;
 
 	/* get all the installed apps (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -1082,7 +1021,6 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 	}
 
 	/* look at each installed xref */
-	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		const gchar *commit;
@@ -1118,14 +1056,8 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 		gs_app_set_update_version (app, NULL);
 		gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
 		gs_app_set_size_download (app, 0);
-		gs_app_list_add (list_tmp, app);
+		gs_app_list_add (list, app);
 	}
-
-	/* convert the results to be related */
-	list_new = gs_flatpak_list_convert_related (self, list_tmp, cancellable, error);
-	if (list_new == NULL)
-		return FALSE;
-	gs_app_list_add_list (list, list_new);
 
 	/* success */
 	return TRUE;
@@ -1137,8 +1069,6 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 				GError **error)
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
-	g_autoptr(GsAppList) list_new = gs_app_list_new ();
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
 	/* get all the updatable apps and runtimes (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
@@ -1180,14 +1110,8 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 			}
 		}
 
-		gs_app_list_add (list_tmp, app);
+		gs_app_list_add (list, app);
 	}
-
-	/* convert the results to be related */
-	list_new = gs_flatpak_list_convert_related (self, list_tmp, cancellable, error);
-	if (list_new == NULL)
-		return FALSE;
-	gs_app_list_add_list (list, list_new);
 
 	/* success */
 	return TRUE;
@@ -2254,6 +2178,92 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 	return TRUE;
 }
 
+static GsAppList *
+gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
+				GCancellable *cancellable, GError **error)
+{
+	g_autofree gchar *ref = NULL;
+	g_autoptr(GPtrArray) related = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+
+	/* lookup any related refs for this ref */
+	ref = g_strdup_printf ("%s/%s/%s/%s",
+			       gs_app_get_flatpak_kind_as_str (app),
+			       gs_app_get_flatpak_name (app),
+			       gs_app_get_flatpak_arch (app),
+			       gs_app_get_flatpak_branch (app));
+	related = flatpak_installation_list_installed_related_refs_sync (self->installation,
+								         gs_app_get_origin (app),
+								         ref, cancellable, error);
+	if (related == NULL) {
+		g_prefix_error (error, "using origin %s: ", gs_app_get_origin (app));
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* any extra bits */
+	for (guint i = 0; i < related->len; i++) {
+		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
+		g_autoptr(GsApp) app_tmp = NULL;
+		if (!flatpak_related_ref_should_delete (xref_related))
+			continue;
+		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
+		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		gs_app_set_flatpak_arch (app_tmp, gs_app_get_flatpak_arch (app));
+		gs_app_set_flatpak_branch (app_tmp, gs_app_get_flatpak_branch (app));
+		gs_app_list_add (list, app_tmp);
+	}
+
+	/* add the original app last unless it's a proxy app */
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+		gs_app_list_add (list, app);
+
+	return g_steal_pointer (&list);
+}
+
+static GsAppList *
+gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
+				 GCancellable *cancellable, GError **error)
+{
+	g_autofree gchar *ref = NULL;
+	g_autoptr(GPtrArray) related = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+
+	/* lookup any related refs for this ref */
+	ref = g_strdup_printf ("%s/%s/%s/%s",
+			       gs_app_get_flatpak_kind_as_str (app),
+			       gs_app_get_flatpak_name (app),
+			       gs_app_get_flatpak_arch (app),
+			       gs_app_get_flatpak_branch (app));
+	related = flatpak_installation_list_remote_related_refs_sync (self->installation,
+								      gs_app_get_origin (app),
+								      ref, cancellable, error);
+	if (related == NULL) {
+		g_prefix_error (error, "using origin %s: ", gs_app_get_origin (app));
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* any extra bits */
+	for (guint i = 0; i < related->len; i++) {
+		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
+		g_autoptr(GsApp) app_tmp = NULL;
+		if (!flatpak_related_ref_should_download (xref_related))
+			continue;
+		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
+		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		gs_app_set_flatpak_arch (app_tmp, gs_app_get_flatpak_arch (app));
+		gs_app_set_flatpak_branch (app_tmp, gs_app_get_flatpak_branch (app));
+		gs_app_list_add (list, app_tmp);
+	}
+
+	/* add the original app last unless it's a proxy app */
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+		gs_app_list_add (list, app);
+
+	return g_steal_pointer (&list);
+}
+
 gboolean
 gs_flatpak_app_remove (GsFlatpak *self,
 		       GsApp *app,
@@ -2262,6 +2272,7 @@ gs_flatpak_app_remove (GsFlatpak *self,
 {
 	g_autofree gchar *remote_name = NULL;
 	g_autoptr(FlatpakRemote) xremote = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 	/* refine to get basics */
@@ -2278,19 +2289,32 @@ gs_flatpak_app_remove (GsFlatpak *self,
 						     error);
 	}
 
+	/* get the list of apps to process */
+	list = gs_flatpak_get_list_for_remove (self, app, cancellable, error);
+	if (list == NULL) {
+		g_prefix_error (error, "failed to get related refs: ");
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	phelper = gs_flatpak_progress_helper_new (self->plugin, app);
-	if (!flatpak_installation_uninstall (self->installation,
-					     gs_app_get_flatpak_kind (app),
-					     gs_app_get_flatpak_name (app),
-					     gs_app_get_flatpak_arch (app),
-					     gs_app_get_flatpak_branch (app),
-					     gs_flatpak_progress_cb, phelper,
-					     cancellable, error)) {
-		gs_plugin_flatpak_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+	phelper->job_max = gs_app_list_length (list);
+	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+		g_debug ("removing %s", gs_app_get_flatpak_name (app_tmp));
+		if (!flatpak_installation_uninstall (self->installation,
+						     gs_app_get_flatpak_kind (app_tmp),
+						     gs_app_get_flatpak_name (app_tmp),
+						     gs_app_get_flatpak_arch (app_tmp),
+						     gs_app_get_flatpak_branch (app_tmp),
+						     gs_flatpak_progress_cb, phelper,
+						     cancellable, error)) {
+			gs_plugin_flatpak_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	/* did app also install a noenumerate=True remote */
@@ -2536,8 +2560,6 @@ gs_flatpak_app_install (GsFlatpak *self,
 			GCancellable *cancellable,
 			GError **error)
 {
-	g_autoptr(FlatpakInstalledRef) xref = NULL;
-
 	/* ensure we have metadata and state */
 	if (!gs_flatpak_refine_app (self, app,
 				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
@@ -2685,6 +2707,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 	}
 
 	if (g_strcmp0 (gs_app_get_flatpak_file_type (app), "flatpak") == 0) {
+		g_autoptr(FlatpakInstalledRef) xref = NULL;
 		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 		if (gs_app_get_local_file (app) == NULL) {
 			g_set_error (error,
@@ -2701,8 +2724,15 @@ gs_flatpak_app_install (GsFlatpak *self,
 							    gs_flatpak_progress_cb,
 							    phelper,
 							    cancellable, error);
+		if (xref == NULL) {
+			gs_plugin_flatpak_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	} else {
+		g_autoptr(GsAppList) list = NULL;
 		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
+
 		/* no origin set */
 		if (gs_app_get_origin (app) == NULL) {
 			g_set_error (error,
@@ -2712,21 +2742,36 @@ gs_flatpak_app_install (GsFlatpak *self,
 				     gs_app_get_unique_id (app));
 			return FALSE;
 		}
-		g_debug ("installing %s", gs_app_get_id (app));
+
+		/* get the list of apps to process */
+		list = gs_flatpak_get_list_for_install (self, app, cancellable, error);
+		if (list == NULL) {
+			g_prefix_error (error, "failed to get related refs: ");
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+
+		/* install all the required packages */
 		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
-		xref = flatpak_installation_install (self->installation,
-						     gs_app_get_origin (app),
-						     gs_app_get_flatpak_kind (app),
-						     gs_app_get_flatpak_name (app),
-						     gs_app_get_flatpak_arch (app),
-						     gs_app_get_flatpak_branch (app),
-						     gs_flatpak_progress_cb, phelper,
-						     cancellable, error);
-	}
-	if (xref == NULL) {
-		gs_plugin_flatpak_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+		phelper->job_max = gs_app_list_length (list);
+		for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+			GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+			g_autoptr(FlatpakInstalledRef) xref = NULL;
+			g_debug ("installing %s", gs_app_get_flatpak_name (app_tmp));
+			xref = flatpak_installation_install (self->installation,
+							     gs_app_get_origin (app_tmp),
+							     gs_app_get_flatpak_kind (app_tmp),
+							     gs_app_get_flatpak_name (app_tmp),
+							     gs_app_get_flatpak_arch (app_tmp),
+							     gs_app_get_flatpak_branch (app_tmp),
+							     gs_flatpak_progress_cb, phelper,
+							     cancellable, error);
+			if (xref == NULL) {
+				gs_plugin_flatpak_error_convert (error);
+				gs_app_set_state_recover (app);
+				return FALSE;
+			}
+		}
 	}
 
 	/* state is known */
