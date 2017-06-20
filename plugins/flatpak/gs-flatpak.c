@@ -106,6 +106,17 @@ gs_flatpak_build_id (FlatpakRef *xref)
 	return g_strdup (flatpak_ref_get_name (xref));
 }
 
+static void
+gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
+{
+	if (kind == FLATPAK_REF_KIND_APP)
+		gs_app_set_metadata (app, "flatpak::kind", "app");
+	else if (kind == FLATPAK_REF_KIND_RUNTIME)
+		gs_app_set_metadata (app, "flatpak::kind", "runtime");
+	else
+		g_assert_not_reached ();
+}
+
 static GsApp *
 gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 {
@@ -119,6 +130,8 @@ gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
 	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
+	gs_app_set_flatpak_kind (app, flatpak_ref_get_kind (xref));
+	gs_app_set_flatpak_name (app, flatpak_ref_get_name (xref));
 	if (flatpak_installation_get_is_user (self->installation)) {
 		gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	} else {
@@ -127,13 +140,36 @@ gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
-		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+		/* this is anything that's not an app, including locales
+		 * sources and debuginfo */
+		if (g_str_has_suffix (id, ".Locale")) {
+			gs_app_set_kind (app, AS_APP_KIND_LOCALIZATION);
+		} else if (g_str_has_suffix (id, ".Debug") ||
+			   g_str_has_suffix (id, ".Sources")) {
+			gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+		} else {
+			gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+		}
 	}
 
 	/* we already have one, returned the ref'd cached copy */
 	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
 	if (app_cached != NULL)
 		return app_cached;
+
+	/* fallback values */
+	if (gs_app_get_kind (app) == AS_APP_KIND_RUNTIME) {
+		g_autoptr(AsIcon) icon = NULL;
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
+				 flatpak_ref_get_name (FLATPAK_REF (xref)));
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
+				    "Framework for applications");
+		gs_app_set_version (app, flatpak_ref_get_branch (FLATPAK_REF (xref)));
+		icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		as_icon_set_name (icon, "system-run-symbolic");
+		gs_app_add_icon (app, icon);
+	}
 
 	/* no existing match, just steal the temp object */
 	gs_plugin_cache_add (self->plugin, NULL, app);
@@ -665,17 +701,6 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 }
 
 static void
-gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
-{
-	if (kind == FLATPAK_REF_KIND_APP)
-		gs_app_set_metadata (app, "flatpak::kind", "app");
-	else if (kind == FLATPAK_REF_KIND_RUNTIME)
-		gs_app_set_metadata (app, "flatpak::kind", "runtime");
-	else
-		g_assert_not_reached ();
-}
-
-static void
 gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 {
 	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
@@ -746,7 +771,6 @@ gs_flatpak_create_installed (GsFlatpak *self,
 			     FlatpakInstalledRef *xref,
 			     GError **error)
 {
-	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	g_return_val_if_fail (xref != NULL, NULL);
@@ -772,31 +796,6 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	/* create new object */
 	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
 	gs_flatpak_set_metadata_installed (self, app, xref);
-
-	switch (flatpak_ref_get_kind (FLATPAK_REF(xref))) {
-	case FLATPAK_REF_KIND_APP:
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		break;
-	case FLATPAK_REF_KIND_RUNTIME:
-		gs_app_set_flatpak_kind (app, FLATPAK_REF_KIND_RUNTIME);
-		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 flatpak_ref_get_name (FLATPAK_REF (xref)));
-		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
-				    "Framework for applications");
-		gs_app_set_version (app, flatpak_ref_get_branch (FLATPAK_REF (xref)));
-		icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "system-run-symbolic");
-		gs_app_add_icon (app, icon);
-		break;
-	default:
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "FlatpakRefKind not known");
-		return NULL;
-	}
 	return g_object_ref (app);
 }
 
@@ -3075,7 +3074,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
 	gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
 	gs_app_set_flatpak_file_type (app, "flatpakref");
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 
