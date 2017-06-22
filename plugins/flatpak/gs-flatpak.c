@@ -117,29 +117,37 @@ gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
 		g_assert_not_reached ();
 }
 
-static GsApp *
-gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
+static void
+gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 {
-	GsApp *app_cached;
-	g_autofree gchar *id = NULL;
-	g_autoptr(GsApp) app = NULL;
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
+		gboolean is_user = flatpak_installation_get_is_user (self->installation);
+		gs_app_set_scope (app, is_user ? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM);
+	}
+}
 
-	/* create a temp GsApp */
-	id = gs_flatpak_build_id (xref);
-	app = gs_app_new (id);
+static void
+gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
+{
+	/* core */
+	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
-	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
+	gs_plugin_refine_item_scope (self, app);
+
+	/* flatpak specific */
 	gs_app_set_flatpak_kind (app, flatpak_ref_get_kind (xref));
 	gs_app_set_flatpak_name (app, flatpak_ref_get_name (xref));
-	if (flatpak_installation_get_is_user (self->installation)) {
-		gs_app_set_scope (app, AS_APP_SCOPE_USER);
-	} else {
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	}
+	gs_app_set_flatpak_arch (app, flatpak_ref_get_arch (xref));
+	gs_app_set_flatpak_branch (app, flatpak_ref_get_branch (xref));
+	gs_app_set_flatpak_commit (app, flatpak_ref_get_commit (xref));
+	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
+
+	/* map the flatpak kind to the gnome-software kind */
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
+		const gchar *id = gs_app_get_id (app);
 		/* this is anything that's not an app, including locales
 		 * sources and debuginfo */
 		if (g_str_has_suffix (id, ".Locale")) {
@@ -151,6 +159,19 @@ gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 			gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
 		}
 	}
+}
+
+static GsApp *
+gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
+{
+	GsApp *app_cached;
+	g_autofree gchar *id = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* create a temp GsApp */
+	id = gs_flatpak_build_id (xref);
+	app = gs_app_new (id);
+	gs_flatpak_set_metadata (self, app, xref);
 
 	/* we already have one, returned the ref'd cached copy */
 	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
@@ -708,29 +729,6 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 	}
 
 	return TRUE;
-}
-
-static void
-gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
-{
-	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
-		gboolean is_user = flatpak_installation_get_is_user (self->installation);
-		gs_app_set_scope (app, is_user ? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM);
-	}
-}
-
-static void
-gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
-{
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
-	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
-	gs_app_set_flatpak_kind (app, flatpak_ref_get_kind (xref));
-	gs_app_set_flatpak_name (app, flatpak_ref_get_name (xref));
-	gs_app_set_flatpak_arch (app, flatpak_ref_get_arch (xref));
-	gs_app_set_flatpak_branch (app, flatpak_ref_get_branch (xref));
-	gs_app_set_flatpak_commit (app, flatpak_ref_get_commit (xref));
-	gs_plugin_refine_item_scope (self, app);
 }
 
 static void
@@ -2209,8 +2207,6 @@ gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
 			continue;
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
-		gs_app_set_flatpak_arch (app_tmp, gs_app_get_flatpak_arch (app));
-		gs_app_set_flatpak_branch (app_tmp, gs_app_get_flatpak_branch (app));
 		gs_app_list_add (list, app_tmp);
 	}
 
@@ -2252,8 +2248,6 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 			continue;
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
-		gs_app_set_flatpak_arch (app_tmp, gs_app_get_flatpak_arch (app));
-		gs_app_set_flatpak_branch (app_tmp, gs_app_get_flatpak_branch (app));
 		gs_app_list_add (list, app_tmp);
 	}
 
