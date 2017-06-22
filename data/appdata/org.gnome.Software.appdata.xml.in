@@ -46,6 +46,37 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-06-22" version="3.25.3">
+      <description>
+        <p>
+          This is an unstable release in the 3.25 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add a banner designer utility</li>
+          <li>Add the initial support to support purchasable apps</li>
+          <li>Automatically install flatpak icon themes and GTK themes</li>
+          <li>Restyle the updates panel to have a separate sections</li>
+          <li>Show a notification in the updates page when the OS is end of life</li>
+          <li>Show recently updated applications on the overview page</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Add snap self tests and provide more data to the details panel</li>
+          <li>Allow compiling with newer versions of meson</li>
+          <li>Do not crash when sending progress reports while refreshing</li>
+          <li>Don't trigger systemd for every single offline update</li>
+          <li>Ensure all related flatpak applications get installed</li>
+          <li>Ensure we use the gnome-desktop support if enabled</li>
+          <li>Fix searching for codecs on Ubuntu</li>
+          <li>Show a better status messages when downloading metadata</li>
+          <li>Show a pulsing progressbar if plugins do not report progress</li>
+          <li>Show the PackageKit interactive dialog when required</li>
+          <li>Support updating metadata from multiple fwupd remotes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-05-08" version="3.25.2">
       <description>
         <p>
