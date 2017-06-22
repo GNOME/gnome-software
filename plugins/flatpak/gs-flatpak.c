@@ -2217,6 +2217,38 @@ gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
 	return g_steal_pointer (&list);
 }
 
+static gboolean
+gs_flatpak_related_should_download (GsFlatpak *self, FlatpakRelatedRef *xref_related)
+{
+	const gchar *name = flatpak_ref_get_name (FLATPAK_REF (xref_related));
+
+	/* GTK theme */
+	if (g_str_has_prefix (name, "org.gtk.Gtk3theme.")) {
+		GtkSettings *gtk_settings = gtk_settings_get_default ();
+		g_autofree gchar *name_tmp = NULL;
+		g_object_get (gtk_settings, "gtk-theme-name", &name_tmp, NULL);
+		if (g_strcmp0 (name + 18, name_tmp) == 0) {
+			g_autofree gchar *ref_display = NULL;
+			ref_display = flatpak_ref_format_ref (FLATPAK_REF (xref_related));
+			g_debug ("adding %s as matches GTK theme", ref_display);
+			return TRUE;
+		}
+	}
+
+	/* icon theme */
+	if (g_str_has_prefix (name, "org.freedesktop.Platform.Icontheme.")) {
+		GtkSettings *gtk_settings = gtk_settings_get_default ();
+		g_autofree gchar *name_tmp = NULL;
+		g_object_get (gtk_settings, "gtk-icon-theme-name", &name_tmp, NULL);
+		if (g_strcmp0 (name + 35, name_tmp) == 0) {
+			g_debug ("adding %s as matches icon theme", name);
+			return TRUE;
+		}
+	}
+
+	return flatpak_related_ref_should_download (xref_related);
+}
+
 static GsAppList *
 gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 				 GCancellable *cancellable, GError **error)
@@ -2244,7 +2276,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	for (guint i = 0; i < related->len; i++) {
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
 		g_autoptr(GsApp) app_tmp = NULL;
-		if (!flatpak_related_ref_should_download (xref_related))
+		if (!gs_flatpak_related_should_download (self, xref_related))
 			continue;
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
@@ -2784,11 +2816,28 @@ gs_flatpak_update_app (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	g_autoptr(GHashTable) hash_installed = NULL;
+	g_autoptr(GPtrArray) xrefs_installed = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+	/* get the list of installed things from this remote */
+	xrefs_installed = flatpak_installation_list_installed_refs (self->installation,
+								    cancellable,
+								    error);
+	if (xrefs_installed == NULL) {
+		gs_plugin_flatpak_error_convert (error);
+		return FALSE;
+	}
+	hash_installed = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	for (guint i = 0; i < xrefs_installed->len; i++) {
+		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs_installed, i);
+		g_hash_table_add (hash_installed,
+				  flatpak_ref_format_ref (FLATPAK_REF (xref)));
+	}
 
 	/* install required runtime if not already installed */
 	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
@@ -2810,15 +2859,34 @@ gs_flatpak_update_app (GsFlatpak *self,
 	phelper->job_max = gs_app_list_length (list);
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+		g_autofree gchar *xref_fake_str = NULL;
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
-		xref = flatpak_installation_update (self->installation,
-						    FLATPAK_UPDATE_FLAGS_NONE,
-						    gs_app_get_flatpak_kind (app_tmp),
-						    gs_app_get_flatpak_name (app_tmp),
-						    gs_app_get_flatpak_arch (app_tmp),
-						    gs_app_get_flatpak_branch (app_tmp),
-						    gs_flatpak_progress_cb, phelper,
-						    cancellable, error);
+		g_autoptr (FlatpakRef) xref_fake = NULL;
+
+		/* either install or update the ref */
+		xref_fake = gs_flatpak_create_fake_ref (app_tmp, error);
+		if (xref_fake == NULL)
+			return FALSE;
+		xref_fake_str = flatpak_ref_format_ref (xref_fake);
+		if (!g_hash_table_contains (hash_installed, xref_fake_str)) {
+			xref = flatpak_installation_install (self->installation,
+							     gs_app_get_origin (app_tmp),
+							     gs_app_get_flatpak_kind (app_tmp),
+							     gs_app_get_flatpak_name (app_tmp),
+							     gs_app_get_flatpak_arch (app_tmp),
+							     gs_app_get_flatpak_branch (app_tmp),
+							     gs_flatpak_progress_cb, phelper,
+							     cancellable, error);
+		} else {
+			xref = flatpak_installation_update (self->installation,
+							    FLATPAK_UPDATE_FLAGS_NONE,
+							    gs_app_get_flatpak_kind (app_tmp),
+							    gs_app_get_flatpak_name (app_tmp),
+							    gs_app_get_flatpak_arch (app_tmp),
+							    gs_app_get_flatpak_branch (app_tmp),
+							    gs_flatpak_progress_cb, phelper,
+							    cancellable, error);
+		}
 		if (xref == NULL) {
 			gs_plugin_flatpak_error_convert (error);
 			gs_app_set_state_recover (app);
