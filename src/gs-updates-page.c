@@ -404,6 +404,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	/* headerbar update button */
 	gtk_widget_set_visible (self->button_update_all,
 				self->state == GS_UPDATES_PAGE_STATE_IDLE &&
+				(self->result_flags & GS_UPDATES_PAGE_FLAG_HAS_UPDATES) > 0 &&
 				!_get_has_headers (self));
 
 	/* stack */
