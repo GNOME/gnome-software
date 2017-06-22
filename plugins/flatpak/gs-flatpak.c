@@ -2790,7 +2790,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autoptr(FlatpakInstalledRef) xref = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 
 	/* install */
@@ -2803,19 +2803,33 @@ gs_flatpak_update_app (GsFlatpak *self,
 		return FALSE;
 	}
 
-	phelper = gs_flatpak_progress_helper_new (self->plugin, app);
-	xref = flatpak_installation_update (self->installation,
-					    FLATPAK_UPDATE_FLAGS_NONE,
-					    gs_app_get_flatpak_kind (app),
-					    gs_app_get_flatpak_name (app),
-					    gs_app_get_flatpak_arch (app),
-					    gs_app_get_flatpak_branch (app),
-					    gs_flatpak_progress_cb, phelper,
-					    cancellable, error);
-	if (xref == NULL) {
-		gs_plugin_flatpak_error_convert (error);
+	/* get the list of apps to process */
+	list = gs_flatpak_get_list_for_install (self, app, cancellable, error);
+	if (list == NULL) {
+		g_prefix_error (error, "failed to get related refs: ");
 		gs_app_set_state_recover (app);
 		return FALSE;
+	}
+
+	/* update all the required packages */
+	phelper = gs_flatpak_progress_helper_new (self->plugin, app);
+	phelper->job_max = gs_app_list_length (list);
+	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+		g_autoptr(FlatpakInstalledRef) xref = NULL;
+		xref = flatpak_installation_update (self->installation,
+						    FLATPAK_UPDATE_FLAGS_NONE,
+						    gs_app_get_flatpak_kind (app_tmp),
+						    gs_app_get_flatpak_name (app_tmp),
+						    gs_app_get_flatpak_arch (app_tmp),
+						    gs_app_get_flatpak_branch (app_tmp),
+						    gs_flatpak_progress_cb, phelper,
+						    cancellable, error);
+		if (xref == NULL) {
+			gs_plugin_flatpak_error_convert (error);
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	/* update UI */
