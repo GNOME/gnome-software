@@ -183,6 +183,7 @@ typedef struct {
 	GPtrArray			*catlist;
 	GsPluginJob			*plugin_job;
 	gboolean			 anything_ran;
+	gchar				**tokens;
 } GsPluginLoaderHelper;
 
 static GsPluginLoaderHelper *
@@ -204,6 +205,7 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 		g_object_unref (helper->plugin_job);
 	if (helper->catlist != NULL)
 		g_ptr_array_unref (helper->catlist);
+	g_strfreev (helper->tokens);
 	g_slice_free (GsPluginLoaderHelper, helper);
 }
 
@@ -614,9 +616,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_SEARCH:
 		{
 			GsPluginSearchFunc plugin_func = func;
-			g_auto(GStrv) tokens = NULL;
-			tokens = as_utils_search_tokenize (gs_plugin_job_get_search (helper->plugin_job));
-			ret = plugin_func (plugin, tokens, list,
+			ret = plugin_func (plugin, helper->tokens, list,
 					   cancellable, &error_local);
 		}
 		break;
@@ -3394,6 +3394,19 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
 	gs_plugin_loader_job_debug (helper);
+
+	/* pre-tokenize search */
+	if (action == GS_PLUGIN_ACTION_SEARCH) {
+		const gchar *search = gs_plugin_job_get_search (plugin_job);
+		helper->tokens = as_utils_search_tokenize (search);
+		if (helper->tokens == NULL) {
+			g_task_return_new_error (task,
+						 GS_PLUGIN_ERROR,
+						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						 "failed to tokenize %s", search);
+			return;
+		}
+	}
 
 	/* run in a thread */
 	g_task_run_in_thread (task, gs_plugin_loader_process_thread_cb);

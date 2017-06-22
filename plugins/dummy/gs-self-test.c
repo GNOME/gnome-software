@@ -371,6 +371,23 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugins_dummy_search_invalid_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* get search result based on addon keyword */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", "X",
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
+	g_assert (list == NULL);
+}
+
+static void
 gs_plugins_dummy_url_to_app_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GError) error = NULL;
@@ -688,6 +705,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/search",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_search_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/search{invalid}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_dummy_search_invalid_func);
 	g_test_add_data_func ("/gnome-software/plugins/dummy/url-to-app",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_url_to_app_func);
