@@ -269,6 +269,39 @@ unset_focus (GtkWidget *widget)
 	gtk_window_set_focus (GTK_WINDOW (widget), NULL);
 }
 
+static gchar *
+format_version_update (GsApp *app)
+{
+	const gchar *tmp;
+	const gchar *version_current = NULL;
+	const gchar *version_update = NULL;
+
+	/* current version */
+	tmp = gs_app_get_version (app);
+	if (tmp != NULL && tmp[0] != '\0')
+		version_current = tmp;
+
+	/* update version */
+	tmp = gs_app_get_update_version (app);
+	if (tmp != NULL && tmp[0] != '\0')
+		version_update = tmp;
+
+	/* have both */
+	if (version_current != NULL && version_update != NULL &&
+	    g_strcmp0 (version_current, version_update) != 0) {
+		return g_strdup_printf ("%s ▶ %s",
+					version_current,
+					version_update);
+	}
+
+	/* just update */
+	if (version_update)
+		return g_strdup (version_update);
+
+	/* we have nothing, nada, zilch */
+	return NULL;
+}
+
 static GtkWidget *
 create_app_row (GsApp *app)
 {
@@ -291,7 +324,13 @@ create_app_row (GsApp *app)
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
-	label = gtk_label_new (gs_app_get_update_version (app));
+	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE ||
+	    gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE) {
+		g_autofree gchar *verstr = format_version_update (app);
+		label = gtk_label_new (verstr);
+	} else {
+		label = gtk_label_new (gs_app_get_version (app));
+	}
 	g_object_set (label,
 	              "margin-start", 0,
 	              "margin-end", 20,
