@@ -613,6 +613,46 @@
                           </packing>
                         </child>
                         <child>
+                          <object class="GtkBox" id="box_not_sandboxed_warning">
+                            <property name="visible">False</property>
+                            <property name="can_focus">False</property>
+                            <property name="spacing">30</property>
+                            <child>
+                              <object class="GtkImage" id="image_not_sandboxed_image_icon">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="pixel_size">16</property>
+                                <property name="icon_name">dialog-warning</property>
+                                <property name="icon_size">6</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_not_sandboxed_warning">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">This application is unconfined. It can access all personal files and system resources.</property>
+                                <property name="xalign">0</property>
+                                <property name="yalign">0.5</property>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">12</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkBox" id="box_details_details">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -1162,7 +1202,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">12</property>
+                            <property name="position">13</property>
                           </packing>
                         </child>
                         <child>
@@ -1225,7 +1265,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">13</property>
+                            <property name="position">14</property>
                           </packing>
                         </child>
                         <child>

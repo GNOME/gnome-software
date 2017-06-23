@@ -148,6 +148,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_content_rating_none;
 	GtkWidget		*button_details_rating_value;
 	GtkWidget		*label_details_rating_title;
+	GtkWidget               *box_not_sandboxed_warning;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -1082,6 +1083,18 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
 		break;
 	}
+
+	/* Display a warning about non-sandboxed apps that may come
+	 * from third party sources.  Currently only checking snaps. */
+	ret = FALSE;
+	switch (gs_app_get_bundle_kind (self->app)) {
+	case AS_BUNDLE_KIND_SNAP:
+		ret |= (kudos & GS_APP_KUDO_SANDBOXED) == 0;
+		break;
+	default:
+		break;
+	}
+	gtk_widget_set_visible (self->box_not_sandboxed_warning, ret);
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
@@ -2527,6 +2540,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_none);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_rating_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_not_sandboxed_warning);
 }
 
 static void
