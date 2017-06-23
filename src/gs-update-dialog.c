@@ -34,6 +34,14 @@ typedef struct {
 	GtkWidget	*focus;
 } BackEntry;
 
+typedef enum {
+	GS_UPDATE_DIALOG_SECTION_ADDITIONS,
+	GS_UPDATE_DIALOG_SECTION_REMOVALS,
+	GS_UPDATE_DIALOG_SECTION_UPDATES,
+	GS_UPDATE_DIALOG_SECTION_DOWNGRADES,
+	GS_UPDATE_DIALOG_SECTION_LAST,
+} GsUpdateDialogSection;
+
 struct _GsUpdateDialog
 {
 	GtkDialog	 parent_instance;
@@ -47,8 +55,9 @@ struct _GsUpdateDialog
 	GtkWidget	*label_details;
 	GtkWidget	*label_name;
 	GtkWidget	*label_summary;
-	GtkWidget	*list_box;
+	GtkWidget	*list_boxes[GS_UPDATE_DIALOG_SECTION_LAST];
 	GtkWidget	*list_box_installed_updates;
+	GtkWidget	*os_update_box;
 	GtkWidget	*scrolledwindow;
 	GtkWidget	*scrolledwindow_details;
 	GtkWidget	*spinner;
@@ -264,18 +273,12 @@ static GtkWidget *
 create_app_row (GsApp *app)
 {
 	GtkWidget *row, *label;
-	const gchar *sort;
 
 	row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
 	g_object_set_data_full (G_OBJECT (row),
 	                        "app",
 	                        g_object_ref (app),
 	                        g_object_unref);
-	sort = gs_app_get_source_default (app);
-	g_object_set_data_full (G_OBJECT (row),
-	                        "sort",
-	                        g_strdup (sort),
-	                        g_free);
 	label = gtk_label_new (gs_app_get_source_default (app));
 	g_object_set (label,
 	              "margin-start", 20,
@@ -305,10 +308,164 @@ create_app_row (GsApp *app)
 	return row;
 }
 
+static gboolean
+is_downgrade (const gchar *version_current,
+              const gchar *version_update)
+{
+	gint rc = as_utils_vercmp (version_current, version_update);
+	if (rc == G_MAXINT)
+		return FALSE;
+	return rc > 0;
+}
+
+static GsUpdateDialogSection
+get_app_section (GsApp *app)
+{
+	GsUpdateDialogSection section;
+
+	/* Sections:
+	 * 1. additions
+	 * 2. removals
+	 * 3. updates
+	 * 4. downgrades */
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_AVAILABLE:
+		section = GS_UPDATE_DIALOG_SECTION_ADDITIONS;
+		break;
+	case AS_APP_STATE_UNAVAILABLE:
+		section = GS_UPDATE_DIALOG_SECTION_REMOVALS;
+		break;
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		if (is_downgrade (gs_app_get_version (app),
+		                  gs_app_get_update_version (app)))
+			section = GS_UPDATE_DIALOG_SECTION_DOWNGRADES;
+		else
+			section = GS_UPDATE_DIALOG_SECTION_UPDATES;
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	return section;
+}
+
+static gint
+os_updates_sort_func (GtkListBoxRow *a,
+		      GtkListBoxRow *b,
+		      gpointer user_data)
+{
+	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
+	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
+	GsApp *a1 = g_object_get_data (o1, "app");
+	GsApp *a2 = g_object_get_data (o2, "app");
+	const gchar *key1 = gs_app_get_source_default (a1);
+	const gchar *key2 = gs_app_get_source_default (a2);
+
+	return g_strcmp0 (key1, key2);
+}
+
+static GtkWidget *
+get_section_header (GsUpdateDialog *dialog, GsUpdateDialogSection section)
+{
+	GtkStyleContext *context;
+	GtkWidget *header;
+	GtkWidget *label;
+
+	/* get labels and buttons for everything */
+	if (section == GS_UPDATE_DIALOG_SECTION_ADDITIONS) {
+		/* TRANSLATORS: This is the header for package additions during
+		 * a system update */
+		label = gtk_label_new (_("Additions"));
+	} else if (section == GS_UPDATE_DIALOG_SECTION_REMOVALS) {
+		/* TRANSLATORS: This is the header for package removals during
+		 * a system update */
+		label = gtk_label_new (_("Removals"));
+	} else if (section == GS_UPDATE_DIALOG_SECTION_UPDATES) {
+		/* TRANSLATORS: This is the header for package updates during
+		 * a system update */
+		label = gtk_label_new (_("Updates"));
+	} else if (section == GS_UPDATE_DIALOG_SECTION_DOWNGRADES) {
+		/* TRANSLATORS: This is the header for package downgrades during
+		 * a system update */
+		label = gtk_label_new (_("Downgrades"));
+	} else {
+		g_assert_not_reached ();
+	}
+
+	/* create header */
+	header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
+	context = gtk_widget_get_style_context (header);
+	gtk_style_context_add_class (context, "app-listbox-header");
+
+	/* put label into the header */
+	gtk_box_pack_start (GTK_BOX (header), label, TRUE, TRUE, 0);
+	gtk_widget_set_visible (label, TRUE);
+	gtk_widget_set_margin_start (label, 6);
+	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
+	context = gtk_widget_get_style_context (label);
+	gtk_style_context_add_class (context, "app-listbox-header-title");
+
+	/* success */
+	return header;
+}
+
+static void
+list_header_func (GtkListBoxRow *row,
+		  GtkListBoxRow *before,
+		  gpointer user_data)
+{
+	GsUpdateDialog *dialog = (GsUpdateDialog *) user_data;
+	GObject *o = G_OBJECT (gtk_bin_get_child (GTK_BIN (row)));
+	GsApp *app = g_object_get_data (o, "app");
+	GtkWidget *header = NULL;
+
+	if (before == NULL)
+		header = get_section_header (dialog, get_app_section (app));
+	else
+		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	gtk_list_box_row_set_header (row, header);
+}
+
+static void
+create_section (GsUpdateDialog *dialog, GsUpdateDialogSection section)
+{
+	GtkStyleContext *context;
+
+	dialog->list_boxes[section] = gtk_list_box_new ();
+	gtk_list_box_set_selection_mode (GTK_LIST_BOX (dialog->list_boxes[section]),
+	                                 GTK_SELECTION_NONE);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (dialog->list_boxes[section]),
+				    os_updates_sort_func,
+				    dialog, NULL);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->list_boxes[section]),
+				      list_header_func,
+				      dialog, NULL);
+	g_signal_connect (GTK_LIST_BOX (dialog->list_boxes[section]), "row-activated",
+			  G_CALLBACK (row_activated_cb), dialog);
+	gtk_widget_set_visible (dialog->list_boxes[section], TRUE);
+	gtk_box_pack_start (GTK_BOX (dialog->os_update_box),
+			    dialog->list_boxes[section],
+			    TRUE, TRUE, 0);
+	gtk_widget_set_margin_top (dialog->list_boxes[section], 24);
+
+	/* reorder the children */
+	for (guint i = 0; i < GS_UPDATE_DIALOG_SECTION_LAST; i++) {
+		if (dialog->list_boxes[i] == NULL)
+			continue;
+		gtk_box_reorder_child (GTK_BOX (dialog->os_update_box),
+				       dialog->list_boxes[i], i);
+	}
+
+	/* make rounded edges */
+	context = gtk_widget_get_style_context (dialog->list_boxes[section]);
+	gtk_style_context_add_class (context, "app-updates-section");
+}
+
 void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
-	GsApp *app_related;
 	AsAppKind kind;
 
 	kind = gs_app_get_kind (app);
@@ -323,15 +480,28 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	/* set update description */
 	if (kind == AS_APP_KIND_OS_UPDATE) {
 		GPtrArray *related;
+		GsApp *app_related;
+		GsUpdateDialogSection section;
 		GtkWidget *row;
-		guint i;
 
-		gs_container_remove_all (GTK_CONTAINER (dialog->list_box));
+		/* clear existing data */
+		for (guint i = 0; i < GS_UPDATE_DIALOG_SECTION_LAST; i++) {
+			if (dialog->list_boxes[i] == NULL)
+				continue;
+			gs_container_remove_all (GTK_CONTAINER (dialog->list_boxes[i]));
+		}
+
+		/* add new apps */
 		related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
+		for (guint i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
+
+			section = get_app_section (app_related);
+			if (dialog->list_boxes[section] == NULL)
+				create_section (dialog, section);
+
 			row = create_app_row (app_related);
-			gtk_list_box_insert (GTK_LIST_BOX (dialog->list_box), row, -1);
+			gtk_list_box_insert (GTK_LIST_BOX (dialog->list_boxes[section]), row, -1);
 		}
 		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "os-update-list");
@@ -341,29 +511,6 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "package-details");
 		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_NONE);
 	}
-}
-
-static void
-list_header_func (GtkListBoxRow *row,
-		  GtkListBoxRow *before,
-		  gpointer user_data)
-{
-	GtkWidget *header = NULL;
-	if (before != NULL)
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
-static gint
-os_updates_sort_func (GtkListBoxRow *a,
-		      GtkListBoxRow *b,
-		      gpointer user_data)
-{
-	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
-	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
-	const gchar *key1 = g_object_get_data (o1, "sort");
-	const gchar *key2 = g_object_get_data (o2, "sort");
-	return g_strcmp0 (key1, key2);
 }
 
 static void
@@ -480,15 +627,6 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	dialog->back_entry_stack = g_queue_new ();
 	dialog->cancellable = g_cancellable_new ();
 
-	g_signal_connect (GTK_LIST_BOX (dialog->list_box), "row-activated",
-			  G_CALLBACK (row_activated_cb), dialog);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->list_box),
-				      list_header_func,
-				      dialog, NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (dialog->list_box),
-				    os_updates_sort_func,
-				    dialog, NULL);
-
 	g_signal_connect (GTK_LIST_BOX (dialog->list_box_installed_updates), "row-activated",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
@@ -525,8 +663,8 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_details);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_name);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_summary);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, os_update_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
