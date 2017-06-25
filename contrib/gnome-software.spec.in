@@ -1,16 +1,23 @@
 %global glib2_version 2.46.0
-%global gtk3_version 3.20.0
+%global gtk3_version 3.22.4
 %global json_glib_version 1.1.1
 %global packagekit_version 1.1.1
-%global appstream_glib_version 0.6.2
+%global appstream_glib_version 0.7.0
 %global libsoup_version 2.51.92
 %global gsettings_desktop_schemas_version 3.11.5
 %global gnome_desktop_version 3.17.92
-%global fwupd_version 0.7.0
-%global flatpak_version 0.5.2
+%global fwupd_version 0.9.3
+%global flatpak_version 0.8.0
 
 %define alphatag                        #ALPHATAG#
 %define distrotag                       23
+
+# verified arches from snapd upstream
+%global snap_archs %{ix86} x86_64 %{arm} aarch64 ppc64le s390x
+
+%ifarch %{snap_archs}
+%global have_snap 1
+%endif
 
 # this should be set using "--without packagekit" when atomic
 %bcond_without packagekit
@@ -19,9 +26,10 @@ Name:      gnome-software
 Version:   #VERSION#
 Release:   0.#BUILD#%{?alphatag}%{?dist}
 Summary:   A software center for GNOME
+
 License:   GPLv2+
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   https://download.gnome.org/sources/gnome-software/3.23/%{name}-%{version}.tar.xz
+Source0:   https://download.gnome.org/sources/gnome-software/3.25/%{name}-%{version}.tar.xz
 
 BuildRequires: gettext
 BuildRequires: libxslt
@@ -32,10 +40,12 @@ BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: gnome-desktop3-devel
 BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
 BuildRequires: gtk3-devel >= %{gtk3_version}
+BuildRequires: gtk-doc
 BuildRequires: gtkspell3-devel
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
 BuildRequires: libsoup-devel
+BuildRequires: meson
 %if %{with packagekit}
 BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
 %endif
@@ -46,8 +56,10 @@ BuildRequires: ostree-devel
 BuildRequires: rpm-devel
 BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
+%ifarch %{snap_archs}
 BuildRequires: liboauth-devel
 BuildRequires: snapd-glib-devel
+%endif
 
 Requires: appstream-data
 %if 0%{?fedora}
@@ -85,6 +97,14 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 These development files are for building gnome-software plugins outside
 the source tree. Most users do not need this subpackage installed.
 
+%package editor
+Summary: Banner designer for GNOME Software
+Requires: %{name}%{?_isa} = %{version}-%{release}
+
+%description editor
+Editor for designing banners for GNOME Software.
+
+%ifarch %{snap_archs}
 %package snap
 Summary: Support for Ubuntu Snap packages
 Requires: %{name}%{?_isa} = %{version}-%{release}
@@ -92,28 +112,32 @@ Requires: snapd-login-service
 
 %description snap
 Adds support for Snap packages from the Ubuntu store.
+%endif
 
 %prep
 %setup -q
 
 %build
 %meson \
-    -Denable-tests=false \
+%if 0%{?have_snap}
     -Denable-snap=true \
-    -Denable-ubuntu-reviews=false \
+%else
+    -Denable-snap=false \
+%endif
     -Denable-gudev=true \
 %if %{with packagekit}
     -Denable-packagekit=true \
 %else
     -Denable-packagekit=false \
 %endif
-    -Ddisable-external-appstream=false
+    -Denable-external-appstream=false \
+    -Denable-rpm-ostree=true \
+    -Denable-tests=false \
+    -Denable-ubuntu-reviews=false
 %meson_build
 
 %install
 %meson_install
-
-#rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 
 # make the software center load faster
 desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.desktop \
@@ -129,7 +153,6 @@ FOE
 %find_lang %name --with-gnome
 
 %check
-#make check VERBOSE=1
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 DESTDIR=%{buildroot} appstream-util check-root
 
@@ -147,10 +170,6 @@ fi
 gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
-%files snap
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
-%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
-
 %files -f %{name}.lang
 %doc AUTHORS README
 %license COPYING
@@ -159,11 +178,11 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/applications/org.gnome.Software.desktop
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
-%{_datadir}/metainfo/*.appdata.xml
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured-*.svg
 %{_datadir}/gnome-software/featured-*.jpg
+%{_datadir}/metainfo/org.gnome.Software.appdata.xml
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Epiphany.metainfo.xml
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Flatpak.metainfo.xml
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Fwupd.metainfo.xml
@@ -185,8 +204,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_hardcoded-featured.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_hardcoded-popular.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_icons.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_key-colors.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_key-colors-metadata.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_key-colors.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_modalias.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_odrs.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_os-release.so
@@ -205,6 +224,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_provenance.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_repos.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rewrite-resource.so
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm-ostree.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_shell-extensions.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_steam.so
@@ -220,20 +240,26 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override
-%{_datadir}/app-info/xmls/org.gnome.Software.Featured.xml
 %{_libexecdir}/gnome-software-cmd
 %{_libexecdir}/gnome-software-restarter
 
-# optional editor
-%{_datadir}/applications/org.gnome.Software.Editor.desktop
-%{_bindir}/gnome-software-editor
-%{_mandir}/man1/gnome-software-editor.1.gz
+%ifarch %{snap_archs}
+%files snap
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
+%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
+%endif
 
 %files devel
 %{_libdir}/pkgconfig/gnome-software.pc
 %dir %{_includedir}/gnome-software
 %{_includedir}/gnome-software/*.h
 %{_datadir}/gtk-doc/html/gnome-software
+
+%files editor
+%{_bindir}/gnome-software-editor
+%{_datadir}/app-info/xmls/org.gnome.Software.Featured.xml
+%{_datadir}/applications/org.gnome.Software.Editor.desktop
+%{_mandir}/man1/gnome-software-editor.1*
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
