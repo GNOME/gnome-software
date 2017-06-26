@@ -126,7 +126,7 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 	g_autoptr(GError) error_local = NULL;
 
 	loader = gdk_pixbuf_loader_new ();
-	if (!gdk_pixbuf_loader_write (loader, buf, count, &error_local)) {
+	if (!gdk_pixbuf_loader_write (loader, (const guchar *) buf, count, &error_local)) {
 		g_debug ("icon_data[%" G_GSIZE_FORMAT "]=%s", count, buf);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
