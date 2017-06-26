@@ -470,7 +470,8 @@ gs_page_install_app (GsPage *page,
 
 		plugin_job = gs_plugin_job_newv (helper->action,
 						 "app", helper->app,
-						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+								  GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
 						    plugin_job,
