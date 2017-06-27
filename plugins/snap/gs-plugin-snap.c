@@ -158,7 +158,7 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 	client = get_client (plugin, cancellable, error);
 	if (client == NULL)
 		return FALSE;
-	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, NULL);
+	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, error);
 	if (snaps == NULL)
 		return NULL;
 
