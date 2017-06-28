@@ -178,7 +178,20 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 
 	/* create a unique ID for deduplication, TODO: branch? */
 	app = gs_app_new (snapd_snap_get_name (snap));
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	switch (snapd_snap_get_snap_type (snap)) {
+	case SNAPD_SNAP_TYPE_APP:
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		break;
+	case SNAPD_SNAP_TYPE_KERNEL:
+	case SNAPD_SNAP_TYPE_GADGET:
+	case SNAPD_SNAP_TYPE_OS:
+		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		break;
+        default:
+	case SNAPD_SNAP_TYPE_UNKNOWN:
+                break;
+	}
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
