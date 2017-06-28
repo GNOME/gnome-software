@@ -111,8 +111,10 @@ get_client (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_autoptr(SnapdAuthData) auth_data = NULL;
 
 	client = snapd_client_new ();
-	if (!snapd_client_connect_sync (client, cancellable, error))
+	if (!snapd_client_connect_sync (client, cancellable, error)) {
+		gs_utils_error_convert_gio (error);
 		return NULL;
+	}
 	auth_data = get_auth (plugin);
 	snapd_client_set_auth_data (client, auth_data);
 
@@ -156,11 +158,15 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 	guint i;
 
 	client = get_client (plugin, cancellable, error);
-	if (client == NULL)
+	if (client == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, error);
-	if (snaps == NULL)
+	if (snaps == NULL) {
+		gs_utils_error_convert_gio (error);
 		return NULL;
+	}
 
 	/* cache results */
 	for (i = 0; i < snaps->len; i++) {
@@ -275,8 +281,10 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	if (client == NULL)
 		return FALSE;
 	snaps = snapd_client_list_sync (client, cancellable, error);
-	if (snaps == NULL)
+	if (snaps == NULL) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
+	}
 
 	for (i = 0; i < snaps->len; i++) {
 		SnapdSnap *snap = snaps->pdata[i];
@@ -335,8 +343,10 @@ load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *ca
 			return FALSE;
 
 		icon = snapd_client_get_icon_sync (client, gs_app_get_id (app), cancellable, error);
-		if (icon == NULL)
+		if (icon == NULL) {
+			gs_utils_error_convert_gio (error);
 			return FALSE;
+		}
 
 		if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
 							      g_bytes_get_data (snapd_icon_get_data (icon), NULL),
@@ -522,8 +532,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* load icon if requested */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) {
-		if (!load_icon (plugin, app, icon_url, cancellable, error))
+		if (!load_icon (plugin, app, icon_url, cancellable, error)) {
+			gs_utils_error_convert_gio (error);
 			return FALSE;
+		}
 	}
 
 	return TRUE;
@@ -670,6 +682,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	if (!snapd_client_remove_sync (client, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
+		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
