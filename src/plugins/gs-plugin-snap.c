@@ -179,10 +179,17 @@ snap_to_app (GsPlugin *plugin, JsonObject *snap)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app;
+	const gchar *type;
 
 	/* create a unique ID for deduplication, TODO: branch? */
 	app = gs_app_new (json_object_get_string_member (snap, "name"));
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	type = json_object_get_string_member (snap, "type");
+	if (g_strcmp0 (type, "app") == 0) {
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	} else if (g_strcmp0 (type, "gadget") == 0 || g_strcmp0 (type, "os") == 0) {
+		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	}
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
