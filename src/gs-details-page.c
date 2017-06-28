@@ -595,6 +595,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 	case AS_APP_KIND_DRIVER:
 	case AS_APP_KIND_INPUT_METHOD:
 	case AS_APP_KIND_LOCALIZATION:
+	case AS_APP_KIND_RUNTIME:
 		gtk_widget_set_visible (self->box_details_screenshot_fallback, FALSE);
 		break;
 	default:
