@@ -506,6 +506,9 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (list == NULL)
 		list = gs_plugin_job_get_list (helper->plugin_job);
 
+	/* set what plugin is running on the job */
+	gs_plugin_job_set_plugin (helper->plugin_job, plugin);
+
 	/* run the correct vfunc */
 	gs_plugin_loader_action_start (helper->plugin_loader, plugin, FALSE);
 	switch (action) {

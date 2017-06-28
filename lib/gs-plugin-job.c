@@ -34,6 +34,7 @@ struct _GsPluginJob
 	GsPluginFailureFlags	 failure_flags;
 	guint			 max_results;
 	guint64			 age;
+	GsPlugin		*plugin;
 	GsPluginAction		 action;
 	GsAppListSortFunc	 sort_func;
 	gpointer		 sort_func_data;
@@ -120,6 +121,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (self->file);
 		g_string_append_printf (str, " with file=%s", path);
+	}
+	if (self->plugin != NULL) {
+		g_string_append_printf (str, " on plugin=%s",
+					gs_plugin_get_name (self->plugin));
 	}
 	if (self->list != NULL && gs_app_list_length (self->list) > 0) {
 		g_autofree const gchar **unique_ids = NULL;
@@ -346,6 +351,20 @@ gs_plugin_job_get_file (GsPluginJob *self)
 }
 
 void
+gs_plugin_job_set_plugin (GsPluginJob *self, GsPlugin *plugin)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->plugin, plugin);
+}
+
+GsPlugin *
+gs_plugin_job_get_plugin (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->plugin;
+}
+
+void
 gs_plugin_job_set_category (GsPluginJob *self, GsCategory *category)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
@@ -504,6 +523,7 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&self->app);
 	g_clear_object (&self->list);
 	g_clear_object (&self->file);
+	g_clear_object (&self->plugin);
 	g_clear_object (&self->category);
 	g_clear_object (&self->review);
 	g_clear_object (&self->price);

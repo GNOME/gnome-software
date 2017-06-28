@@ -47,6 +47,7 @@ GsAuth			*gs_plugin_job_get_auth			(GsPluginJob	*self);
 GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
 GsAppList		*gs_plugin_job_get_list			(GsPluginJob	*self);
 GFile			*gs_plugin_job_get_file			(GsPluginJob	*self);
+GsPlugin		*gs_plugin_job_get_plugin		(GsPluginJob	*self);
 GsCategory		*gs_plugin_job_get_category		(GsPluginJob	*self);
 AsReview		*gs_plugin_job_get_review		(GsPluginJob	*self);
 GsPrice			*gs_plugin_job_get_price		(GsPluginJob	*self);

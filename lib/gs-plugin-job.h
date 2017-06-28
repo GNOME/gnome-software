@@ -60,6 +60,8 @@ void		 gs_plugin_job_set_list			(GsPluginJob	*self,
 							 GsAppList	*list);
 void		 gs_plugin_job_set_file			(GsPluginJob	*self,
 							 GFile		*file);
+void		 gs_plugin_job_set_plugin		(GsPluginJob	*self,
+							 GsPlugin	*plugin);
 void		 gs_plugin_job_set_category		(GsPluginJob	*self,
 							 GsCategory	*category);
 void		 gs_plugin_job_set_review		(GsPluginJob	*self,
