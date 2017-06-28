@@ -209,13 +209,18 @@ gs_plugin_func (void)
 	GsAppList *list_dup;
 	GsAppList *list_remove;
 	GsApp *app;
-	guint i;
 
 	/* check enums converted */
-	for (i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
+	for (guint i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
 		const gchar *tmp = gs_plugin_action_to_string (i);
-		g_assert (tmp != NULL);
+		if (tmp == NULL)
+			g_critical ("failed to convert %u", i);
 		g_assert_cmpint (gs_plugin_action_from_string (tmp), ==, i);
+	}
+	for (guint i = 1; i < GS_PLUGIN_ACTION_LAST; i++) {
+		const gchar *tmp = gs_plugin_action_to_function_name (i);
+		if (tmp == NULL)
+			g_critical ("failed to convert %u", i);
 	}
 
 	/* add a couple of duplicate IDs */

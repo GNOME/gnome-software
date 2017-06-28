@@ -1722,6 +1722,8 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_distro_upgrades";
 	if (action == GS_PLUGIN_ACTION_GET_SOURCES)
 		return "gs_plugin_add_sources";
+	if (action == GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS)
+		return "gs_plugin_add_unvoted_reviews";
 	if (action == GS_PLUGIN_ACTION_GET_INSTALLED)
 		return "gs_plugin_add_installed";
 	if (action == GS_PLUGIN_ACTION_GET_FEATURED)
