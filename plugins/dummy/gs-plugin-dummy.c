@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2011-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2011-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -224,6 +224,64 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+typedef struct {
+	GMainLoop	*loop;
+	GCancellable	*cancellable;
+	guint		 timer_id;
+	gulong		 cancellable_id;
+} GsPluginDummyTimeoutHelper;
+
+static gboolean
+gs_plugin_dummy_timeout_hang_cb (gpointer user_data)
+{
+	GsPluginDummyTimeoutHelper *helper = (GsPluginDummyTimeoutHelper *) user_data;
+	helper->timer_id = 0;
+	g_debug ("timeout hang");
+	g_main_loop_quit (helper->loop);
+	return FALSE;
+}
+
+static void
+gs_plugin_dummy_timeout_cancelled_cb (GCancellable *cancellable, gpointer user_data)
+{
+	GsPluginDummyTimeoutHelper *helper = (GsPluginDummyTimeoutHelper *) user_data;
+	g_debug ("calling cancel");
+	g_main_loop_quit (helper->loop);
+}
+
+static void
+gs_plugin_dummy_timeout_helper_free (GsPluginDummyTimeoutHelper *helper)
+{
+	if (helper->cancellable_id != 0)
+		g_signal_handler_disconnect (helper->cancellable, helper->cancellable_id);
+	if (helper->timer_id != 0)
+		g_source_remove (helper->timer_id);
+	if (helper->cancellable != NULL)
+		g_object_unref (helper->cancellable);
+	g_main_loop_unref (helper->loop);
+	g_free (helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginDummyTimeoutHelper, gs_plugin_dummy_timeout_helper_free)
+
+static void
+gs_plugin_dummy_timeout_add (guint timeout_ms, GCancellable *cancellable)
+{
+	g_autoptr(GsPluginDummyTimeoutHelper) helper = g_new0 (GsPluginDummyTimeoutHelper, 1);
+	helper->loop = g_main_loop_new (NULL, TRUE);
+	if (cancellable != NULL) {
+		helper->cancellable = g_object_ref (cancellable);
+		helper->cancellable_id =
+			g_signal_connect (cancellable, "cancelled",
+					  G_CALLBACK (gs_plugin_dummy_timeout_cancelled_cb),
+					  helper);
+	}
+	helper->timer_id = g_timeout_add (timeout_ms,
+					  gs_plugin_dummy_timeout_hang_cb,
+					  helper);
+	g_main_loop_run (helper->loop);
+}
+
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
@@ -234,6 +292,16 @@ gs_plugin_add_search (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(AsIcon) ic = NULL;
+
+	/* hang the plugin for 5 seconds */
+	if (g_strcmp0 (values[0], "hang") == 0) {
+		gs_plugin_dummy_timeout_add (5000, cancellable);
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+		return TRUE;
+	}
 
 	/* we're very specific */
 	if (g_strcmp0 (values[0], "chiron") != 0)

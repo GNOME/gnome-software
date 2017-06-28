@@ -178,11 +178,16 @@ typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 /* async helper */
 typedef struct {
 	GsPluginLoader			*plugin_loader;
+	GCancellable			*cancellable;
+	GCancellable			*cancellable_caller;
+	gulong				 cancellable_id;
 	const gchar			*function_name;
 	const gchar			*function_name_parent;
 	GPtrArray			*catlist;
 	GsPluginJob			*plugin_job;
 	gboolean			 anything_ran;
+	guint				 timeout_id;
+	gboolean			 timeout_triggered;
 	gchar				**tokens;
 } GsPluginLoaderHelper;
 
@@ -200,9 +205,19 @@ gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader, GsPluginJob *plugin_
 static void
 gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
+	if (helper->cancellable_id > 0) {
+		g_cancellable_disconnect (helper->cancellable_caller,
+					  helper->cancellable_id);
+	}
 	g_object_unref (helper->plugin_loader);
+	if (helper->timeout_id != 0)
+		g_source_remove (helper->timeout_id);
 	if (helper->plugin_job != NULL)
 		g_object_unref (helper->plugin_job);
+	if (helper->cancellable != NULL)
+		g_object_unref (helper->cancellable);
+	if (helper->cancellable_caller != NULL)
+		g_object_unref (helper->cancellable_caller);
 	if (helper->catlist != NULL)
 		g_ptr_array_unref (helper->catlist);
 	g_strfreev (helper->tokens);
@@ -359,6 +374,8 @@ gs_plugin_loader_is_error_fatal (GsPluginFailureFlags failure_flags,
 		if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID))
 			return TRUE;
 	}
+	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT))
+		return TRUE;
 	return FALSE;
 }
 
@@ -378,21 +395,21 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 		return TRUE;
 	}
 
-	/* abort early to allow main thread to process */
-	flags = gs_plugin_job_get_failure_flags (helper->plugin_job);
-	if (gs_plugin_loader_is_error_fatal (flags, error_local)) {
-		if (error != NULL)
-			*error = g_error_copy (error_local);
-		return FALSE;
-	}
-
 	/* create event which is handled by the GsShell */
+	flags = gs_plugin_job_get_failure_flags (helper->plugin_job);
 	if (flags & GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS) {
 		gs_plugin_loader_create_event_from_error (helper->plugin_loader,
 							  gs_plugin_job_get_action (helper->plugin_job),
 							  plugin,
 							  gs_plugin_job_get_app (helper->plugin_job),
 							  error_local);
+	}
+
+	/* abort early to allow main thread to process */
+	if (gs_plugin_loader_is_error_fatal (flags, error_local)) {
+		if (error != NULL)
+			*error = g_error_copy (error_local);
+		return FALSE;
 	}
 
 	/* fallback to console warning */
@@ -689,7 +706,29 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		break;
 	}
 	gs_plugin_loader_action_stop (helper->plugin_loader, plugin);
+
+	/* plugin did not return error on cancellable abort */
+	if (ret && g_cancellable_set_error_if_cancelled (cancellable, &error_local)) {
+		g_debug ("plugin did not return error with cancellable set");
+		gs_utils_error_convert_gio (&error_local);
+		ret = FALSE;
+	}
+
+	/* failed */
 	if (!ret) {
+		/* we returned cancelled, but this was because of a timeout,
+		 * so re-create error, throwing the plugin under the bus */
+		if (helper->timeout_triggered &&
+		    g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+			g_debug ("converting cancelled to timeout");
+			g_clear_error (&error_local);
+			g_set_error (&error_local,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_TIMED_OUT,
+				     "Timeout was reached as %s took "
+				     "too long to return results",
+				     gs_plugin_get_name (plugin));
+		}
 		return gs_plugin_error_handle_failure (helper,
 							plugin,
 							error_local,
@@ -2999,6 +3038,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 				gs_app_set_state_recover (gs_plugin_job_get_app (helper->plugin_job));
 				gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
 			}
+			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			return;
 		}
@@ -3009,6 +3049,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		helper->function_name = "gs_plugin_update_app";
 		if (!gs_plugin_loader_generic_update (plugin_loader, helper,
 						      cancellable, &error)) {
+			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			return;
 		}
@@ -3023,6 +3064,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	    !g_settings_get_boolean (priv->settings, "download-updates")) {
 		helper->function_name = "gs_plugin_add_updates_pending";
 		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
+			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			return;
 		}
@@ -3106,6 +3148,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* run refine() on each one if required */
 	if (gs_plugin_job_get_refine_flags (helper->plugin_job) != 0) {
 		if (!gs_plugin_loader_run_refine (helper, list, cancellable, &error)) {
+			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			return;
 		}
@@ -3145,6 +3188,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_plugin_job_set_refine_flags (helper->plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
 		if (!gs_plugin_loader_run_refine (helper, list, cancellable, &error)) {
+			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			return;
 		}
@@ -3248,6 +3292,29 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 }
 
+static gboolean
+gs_plugin_loader_job_timeout_cb (gpointer user_data)
+{
+	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
+
+	/* call the cancellable */
+	g_debug ("cancelling job as it took too long");
+	if (!g_cancellable_is_cancelled (helper->cancellable))
+		g_cancellable_cancel (helper->cancellable);
+
+	/* failed */
+	helper->timeout_triggered = TRUE;
+	helper->timeout_id = 0;
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_plugin_loader_cancelled_cb (GCancellable *cancellable, GsPluginLoaderHelper *helper)
+{
+	/* just proxy this forward */
+	g_cancellable_cancel (helper->cancellable);
+}
+
 /**
  * gs_plugin_loader_job_process_async:
  *
@@ -3264,6 +3331,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	GsPluginLoaderHelper *helper;
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GTask) task = NULL;
+	g_autoptr(GCancellable) cancellable_job = g_cancellable_new ();
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
@@ -3337,7 +3405,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* check required args */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
@@ -3398,6 +3466,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
 	gs_plugin_loader_job_debug (helper);
 
+	/* let the task cancel itself */
+	g_task_set_check_cancellable (task, FALSE);
+	g_task_set_return_on_cancel (task, FALSE);
+
 	/* pre-tokenize search */
 	if (action == GS_PLUGIN_ACTION_SEARCH) {
 		const gchar *search = gs_plugin_job_get_search (plugin_job);
@@ -3409,6 +3481,36 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						 "failed to tokenize %s", search);
 			return;
 		}
+	}
+
+	/* jobs always have a valid cancellable, so proxy the caller */
+	helper->cancellable = g_object_ref (cancellable_job);
+	if (cancellable != NULL) {
+		helper->cancellable_caller = g_object_ref (cancellable);
+		helper->cancellable_id =
+			g_cancellable_connect (helper->cancellable_caller,
+					       G_CALLBACK (gs_plugin_loader_cancelled_cb),
+					       helper, NULL);
+	}
+
+	/* set up a hang handler */
+	switch (action) {
+	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
+	case GS_PLUGIN_ACTION_GET_FEATURED:
+	case GS_PLUGIN_ACTION_GET_INSTALLED:
+	case GS_PLUGIN_ACTION_GET_POPULAR:
+	case GS_PLUGIN_ACTION_GET_RECENT:
+	case GS_PLUGIN_ACTION_GET_UPDATES:
+	case GS_PLUGIN_ACTION_SEARCH:
+	case GS_PLUGIN_ACTION_SEARCH_FILES:
+	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+		helper->timeout_id =
+			g_timeout_add_seconds (gs_plugin_job_get_timeout (plugin_job),
+					       gs_plugin_loader_job_timeout_cb,
+					       helper);
+		break;
+	default:
+		break;
 	}
 
 	/* run in a thread */

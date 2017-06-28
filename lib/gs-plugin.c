@@ -1664,6 +1664,8 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "restart-required";
 	if (error == GS_PLUGIN_ERROR_AC_POWER_REQUIRED)
 		return "ac-power-required";
+	if (error == GS_PLUGIN_ERROR_TIMED_OUT)
+		return "timed-out";
 	return NULL;
 }
 

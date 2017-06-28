@@ -44,6 +44,8 @@ void		 gs_plugin_job_set_failure_flags	(GsPluginJob	*self,
 							 GsPluginFailureFlags failure_flags);
 void		 gs_plugin_job_set_max_results		(GsPluginJob	*self,
 							 guint		 max_results);
+void		 gs_plugin_job_set_timeout		(GsPluginJob	*self,
+							 guint		 timeout);
 void		 gs_plugin_job_set_age			(GsPluginJob	*self,
 							 guint64	 age);
 void		 gs_plugin_job_set_sort_func		(GsPluginJob	*self,

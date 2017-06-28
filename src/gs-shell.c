@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -1497,6 +1497,13 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	error = gs_plugin_event_get_error (event);
 	if (error == NULL)
 		return FALSE;
+
+	/* name and shame the plugin */
+	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT)) {
+		gs_shell_show_event_app_notify (shell, error->message,
+						GS_SHELL_EVENT_BUTTON_NONE);
+		return TRUE;
+	}
 
 	/* split up the events by action */
 	action = gs_plugin_event_get_action (event);

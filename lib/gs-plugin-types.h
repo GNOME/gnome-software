@@ -91,6 +91,7 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_DELETE_FAILED:		The delete action failed
  * @GS_PLUGIN_ERROR_RESTART_REQUIRED:		A restart is required
  * @GS_PLUGIN_ERROR_AC_POWER_REQUIRED:		AC power is required
+ * @GS_PLUGIN_ERROR_TIMED_OUT:			The job timed out
  *
  * The failure error types.
  **/
@@ -113,6 +114,7 @@ typedef enum {
 	GS_PLUGIN_ERROR_DELETE_FAILED,
 	GS_PLUGIN_ERROR_RESTART_REQUIRED,
 	GS_PLUGIN_ERROR_AC_POWER_REQUIRED,
+	GS_PLUGIN_ERROR_TIMED_OUT,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;

@@ -271,6 +271,7 @@ gs_search_page_load (GsSearchPage *self)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", self->value,
 					 "max-results", GS_SEARCH_PAGE_MAX_RESULTS,
+					 "timeout", 10,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |

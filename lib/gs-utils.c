@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -678,10 +678,12 @@ gs_utils_error_convert_gio (GError **perror)
 		return FALSE;
 	switch (error->code) {
 	case G_IO_ERROR_FAILED:
-	case G_IO_ERROR_TIMED_OUT:
 	case G_IO_ERROR_NOT_FOUND:
 	case G_IO_ERROR_EXISTS:
 		error->code = GS_PLUGIN_ERROR_FAILED;
+		break;
+	case G_IO_ERROR_TIMED_OUT:
+		error->code = GS_PLUGIN_ERROR_TIMED_OUT;
 		break;
 	case G_IO_ERROR_NOT_SUPPORTED:
 		error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
