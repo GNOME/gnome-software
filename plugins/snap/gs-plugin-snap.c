@@ -567,7 +567,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	g_autoptr(SnapdClient) client = NULL;
 
-	g_autoptr (GError) local_error = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	/* We can only install apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -578,7 +578,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (client == NULL)
 		return FALSE;
 	if (!snapd_client_install_sync (client, gs_app_get_id (app), NULL, progress_cb, app, cancellable, &local_error)) {
-		if (local_error && local_error->code == SNAPD_ERROR_AUTH_DATA_REQUIRED) {
+		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_AUTH_DATA_REQUIRED)) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_AUTH_REQUIRED,
