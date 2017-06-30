@@ -131,8 +131,10 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 					   cancellable,
 					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to get sources related: ");
 		return FALSE;
+	}
 	ret = gs_plugin_packagekit_add_results (plugin,
 						installed,
 						results,

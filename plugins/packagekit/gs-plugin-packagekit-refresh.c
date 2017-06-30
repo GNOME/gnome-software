@@ -123,8 +123,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 						 cancellable,
 						 gs_plugin_packagekit_progress_cb, &data,
 						 error);
-		if (!gs_plugin_packagekit_results_valid (results, error))
+		if (!gs_plugin_packagekit_results_valid (results, error)) {
+			g_prefix_error (error, "failed to get updates for refresh: ");
 			return FALSE;
+		}
 	}
 
 	/* download all the packages themselves */

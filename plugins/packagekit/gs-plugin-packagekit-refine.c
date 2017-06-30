@@ -275,8 +275,10 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, &data,
 				     error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to resolve package_ids: ");
 		return FALSE;
+	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
@@ -314,8 +316,10 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  cancellable,
 					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to search file %s: ", filename);
 		return FALSE;
+	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
@@ -367,7 +371,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	const gchar *package_id;
 	guint j;
 	GsApp *app;
-	guint i = 0;
+	guint cnt = 0;
 	PkUpdateDetail *update_detail;
 	ProgressData data;
 	g_autofree const gchar **package_ids = NULL;
@@ -375,11 +379,16 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = NULL;
 
 	package_ids = g_new0 (const gchar *, gs_app_list_length (list) + 1);
-	for (i = 0; i < gs_app_list_length (list); i++) {
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		package_id = gs_app_get_source_id_default (app);
-		package_ids[i] = package_id;
+		if (package_id != NULL)
+			package_ids[cnt++] = package_id;
 	}
+
+	/* nothing to do */
+	if (cnt == 0)
+		return TRUE;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -392,15 +401,18 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to get update details for %s: ",
+				package_ids[0]);
 		return FALSE;
+	}
 
 	/* set the update details for the update */
 	array = pk_results_get_update_detail_array (results);
 	for (j = 0; j < gs_app_list_length (list); j++) {
 		app = gs_app_list_index (list, j);
 		package_id = gs_app_get_source_id_default (app);
-		for (i = 0; i < array->len; i++) {
+		for (guint i = 0; i < array->len; i++) {
 			const gchar *tmp;
 			g_autofree gchar *desc = NULL;
 			/* right package? */
@@ -532,8 +544,11 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to get details for %s: ",
+				data.profile_id);
 		return FALSE;
+	}
 
 	/* set the update details for the update */
 	array = pk_results_get_details_array (results);
@@ -571,8 +586,10 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to get updates for urgency: ");
 		return FALSE;
+	}
 
 	/* set the update severity for the app */
 	sack = pk_results_get_package_sack (results);
@@ -762,8 +779,10 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    error);
 	pk_client_set_cache_age (priv->client, cache_age_save);
 
-	if (!gs_plugin_packagekit_results_valid (results, error))
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to refine distro upgrade: ");
 		return FALSE;
+	}
 	list = gs_app_list_new ();
 	if (!gs_plugin_packagekit_add_results (plugin, list, results, error))
 		return FALSE;
@@ -911,6 +930,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
 			continue;
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+			continue;
+		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
 		tmp = gs_app_get_management_plugin (app);
 		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
