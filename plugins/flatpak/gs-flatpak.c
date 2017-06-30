@@ -2754,6 +2754,14 @@ gs_flatpak_app_install (GsFlatpak *self,
 			return FALSE;
 		}
 
+		/* the installation of the ref file above will not create a new remote for
+		 * the app if its URL is already configured as another remote, thus we
+		 * need to update the app origin to match that or it may end up with
+		 * an nonexistent origin; and we first need to set the origin to NULL to
+		 * circumvent the safety check... */
+		gs_app_set_origin (app, NULL);
+		gs_app_set_origin (app, flatpak_remote_ref_get_remote_name (xref2));
+
 		/* update search tokens for new remote */
 		if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0, cancellable, error)) {
 			gs_app_set_state_recover (app);
