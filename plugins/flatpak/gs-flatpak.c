@@ -2782,7 +2782,8 @@ gs_flatpak_app_install (GsFlatpak *self,
 			}
 
 			/* install the flatpakrepo */
-			if (!gs_flatpak_app_install_source (self,
+			if (!gs_app_is_installed (app_src) &&
+			    !gs_flatpak_app_install_source (self,
 							    app_src,
 							    cancellable,
 							    error)) {
