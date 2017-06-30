@@ -3093,6 +3093,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			return;
 		}
 		break;
+	case GS_PLUGIN_ACTION_REFINE:
+		break;
 	default:
 		if (!helper->anything_ran) {
 			g_debug ("no plugin could handle %s",
@@ -3152,6 +3154,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 			return;
 		}
+	} else {
+		g_debug ("no refine flags set for transaction");
 	}
 
 	/* convert any unavailable codecs */

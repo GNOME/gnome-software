@@ -297,7 +297,8 @@ gs_cmd_refresh_flag_from_string (const gchar *flag)
 static void
 gs_cmd_self_free (GsCmdSelf *self)
 {
-	g_object_unref (self->plugin_loader);
+	if (self->plugin_loader != NULL)
+		g_object_unref (self->plugin_loader);
 	g_free (self);
 }
 
@@ -486,6 +487,7 @@ main (int argc, char **argv)
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 							 "app", app,
+							 "refine-flags", self->refine_flags,
 							 NULL);
 			ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 							    NULL, &error);
