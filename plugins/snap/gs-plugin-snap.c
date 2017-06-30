@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <gio/gdesktopappinfo.h>
 #include <snapd-glib/snapd-glib.h>
 #include <gnome-software.h>
 
@@ -423,6 +424,51 @@ get_store_snap (GsPlugin *plugin, const gchar *name, GCancellable *cancellable, 
 	return g_object_ref (g_ptr_array_index (snaps, 0));
 }
 
+static void
+find_launch_app (GsApp *app, SnapdSnap *local_snap)
+{
+	const char *snap_name;
+	GPtrArray *apps;
+	guint i;
+	const char *launch_name = NULL;
+	const char *launch_desktop = NULL;
+
+	snap_name = snapd_snap_get_name (local_snap);
+	apps = snapd_snap_get_apps (local_snap);
+
+	/* Pick the "main" app from the snap.  In order of
+	 * preference, we want to pick:
+	 *
+	 *   1. the main app, provided it has a desktop file
+	 *   2. the first app with a desktop file
+	 *   3. the main app
+	 *   4. the first app
+	 *
+	 * The "main app" is one whose name matches the snap name.
+	 */
+	for (i = 0; i < apps->len; i++) {
+		SnapdApp *snap_app = apps->pdata[i];
+		const char *app_name = snapd_app_get_name (snap_app);
+		const char *app_desktop = snapd_app_get_desktop_file (snap_app);
+		gboolean is_main_app = !g_strcmp0(snap_name, app_name);
+
+		if (launch_name == NULL || is_main_app) {
+			launch_name = app_name;
+		}
+		if (launch_desktop == NULL || is_main_app) {
+			if (app_desktop != NULL) {
+				launch_desktop = app_desktop;
+			}
+		}
+	}
+
+	gs_app_set_metadata (app, "snap::launch-name", launch_name);
+	gs_app_set_metadata (app, "snap::launch-desktop", launch_desktop);
+
+	if (!launch_name)
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+}
+
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -449,9 +495,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* get information from installed snaps */
 	local_snap = snapd_client_list_one_sync (client, id, cancellable, NULL);
 	if (local_snap != NULL) {
-		GPtrArray *apps;
-		const gchar *name, *launch_name = NULL;
-
+		const gchar *name;
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		name = snapd_snap_get_title (local_snap);
@@ -468,13 +512,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		if (g_strcmp0 (icon_url, "") == 0)
 			icon_url = NULL;
 
-		apps = snapd_snap_get_apps (local_snap);
-		if (apps->len > 0)
-			launch_name = snapd_app_get_name (apps->pdata[0]);
-		if (launch_name != NULL)
-			gs_app_set_metadata (app, "snap::launch-name", launch_name);
-		else
-			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		find_launch_app (app, local_snap);
 	}
 
 	/* get information from snap store */
@@ -643,8 +681,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	const gchar *launch_name;
-	g_autofree gchar *binary_name = NULL;
-	GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
+	const gchar *launch_desktop;
 	g_autoptr(GAppInfo) info = NULL;
 
 	/* We can only launch apps we know of */
@@ -652,17 +689,26 @@ gs_plugin_launch (GsPlugin *plugin,
 		return TRUE;
 
 	launch_name = gs_app_get_metadata_item (app, "snap::launch-name");
+	launch_desktop = gs_app_get_metadata_item (app, "snap::launch-desktop");
 	if (!launch_name)
 		return TRUE;
 
-	if (g_strcmp0 (launch_name, gs_app_get_id (app)) == 0)
-		binary_name = g_strdup_printf ("/snap/bin/%s", launch_name);
-	else
-		binary_name = g_strdup_printf ("/snap/bin/%s.%s", gs_app_get_id (app), launch_name);
+	if (launch_desktop) {
+		info = (GAppInfo *)g_desktop_app_info_new_from_filename (launch_desktop);
+	} else {
+		g_autofree gchar *binary_name = NULL;
+		GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
 
-	if (!is_graphical (plugin, app, cancellable))
-		flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
-	info = g_app_info_create_from_commandline (binary_name, NULL, flags, error);
+		if (g_strcmp0 (launch_name, gs_app_get_id (app)) == 0)
+			binary_name = g_strdup_printf ("/snap/bin/%s", launch_name);
+		else
+			binary_name = g_strdup_printf ("/snap/bin/%s.%s", gs_app_get_id (app), launch_name);
+
+		if (!is_graphical (plugin, app, cancellable))
+			flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
+		info = g_app_info_create_from_commandline (binary_name, NULL, flags, error);
+	}
+
 	if (info == NULL)
 		return FALSE;
 
