@@ -470,7 +470,7 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("Refreshing for metadata only");
 	}
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UNKNOWN,
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refresh-flags", refresh_flags,
 					 "age", 60 * 60 * 24,

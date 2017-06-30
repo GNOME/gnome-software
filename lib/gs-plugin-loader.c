@@ -3341,6 +3341,17 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
+	/* check job has valid action */
+	if (gs_plugin_job_get_action (plugin_job) == GS_PLUGIN_ACTION_UNKNOWN) {
+		g_autofree gchar *job_str = gs_plugin_job_to_string (plugin_job);
+		task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "job has no valid action: %s", job_str);
+		return;
+	}
+
 	/* deal with the install queue */
 	action = gs_plugin_job_get_action (plugin_job);
 	if (action == GS_PLUGIN_ACTION_REMOVE) {
