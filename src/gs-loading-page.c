@@ -67,7 +67,8 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 
 	/* update label */
 	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
-		str = gs_app_get_summary_missing (app);
+		if (app != NULL)
+			str = gs_app_get_summary_missing (app);
 		if (str == NULL) {
 			/* TRANSLATORS: initial start */
 			str = _("Software catalog is being downloaded");
