@@ -2479,6 +2479,86 @@ install_runtime_for_app (GsFlatpak *self,
 	return TRUE;
 }
 
+static gboolean
+gs_flatpak_app_source_equals_remote (GsApp *source, FlatpakRemote *remote)
+{
+	const gchar *source_url = gs_app_get_metadata_item (source, "flatpak::url");
+	g_autofree gchar *remote_url = flatpak_remote_get_url (remote);
+	return g_strcmp0 (source_url, remote_url) == 0;
+}
+
+static FlatpakRemote *
+gs_flatpak_get_remote_for_source (GsFlatpak *self,
+				  GsApp *app,
+				  gboolean *same_name_remote_exists,
+				  GCancellable *cancellable)
+{
+	FlatpakRemote *remote = NULL;
+	g_autoptr(GPtrArray) remotes = NULL;
+
+	/* check an eventual remote with the same name */
+	remote = flatpak_installation_get_remote_by_name (self->installation,
+							  gs_app_get_id (app),
+							  cancellable, NULL);
+
+	if (remote != NULL) {
+		if (gs_flatpak_app_source_equals_remote (app, remote))
+			return remote;
+
+		g_object_unref (remote);
+		*same_name_remote_exists = TRUE;
+		return NULL;
+	}
+
+	remotes = flatpak_installation_list_remotes (self->installation,
+						     cancellable,
+						     NULL);
+	if (remotes == NULL) {
+		return NULL;
+	}
+
+	for (guint i = 0; i < remotes->len; ++i) {
+		remote = g_ptr_array_index (remotes, i);
+		if (gs_flatpak_app_source_equals_remote (app, remote))
+			return g_object_ref (remote);
+	}
+
+	return NULL;
+}
+
+static void
+gs_flatpak_setup_source_from_remote (GsApp *source,
+				     FlatpakRemote *remote)
+{
+	g_autofree gchar *remote_title = flatpak_remote_get_title (remote);
+	g_autofree gchar *remote_url = flatpak_remote_get_url (remote);
+
+	gs_app_set_id (source, remote_title);
+	gs_app_set_metadata (source, "flatpak::url", remote_url);
+}
+
+static void
+gs_flatpak_set_unique_name_for_source (GsFlatpak *self,
+				       GsApp *source,
+				       GCancellable *cancellable)
+{
+	const gchar *base_name = gs_app_get_id (source);
+
+	for (guint i = 1; i < G_MAXUINT; ++i) {
+		g_autoptr(FlatpakRemote) remote = NULL;
+		g_autofree gchar *new_name = g_strdup_printf ("%s_%u", base_name, i);
+
+		remote = flatpak_installation_get_remote_by_name (self->installation,
+								  new_name, cancellable,
+								  NULL);
+
+		if (remote == NULL) {
+			gs_app_set_id (source, new_name);
+			return;
+		}
+	}
+}
+
 static GsApp *
 gs_flatpak_create_app_from_repo_file (GsFlatpak *self,
 				      GFile *file,
@@ -2499,6 +2579,8 @@ gs_flatpak_create_app_from_repo_file (GsFlatpak *self,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(FlatpakRemote) remote = NULL;
+	gboolean same_name_remote_exists = FALSE;
 
 	/* read the file */
 	kf = g_key_file_new ();
@@ -2588,6 +2670,15 @@ gs_flatpak_create_app_from_repo_file (GsFlatpak *self,
 		as_icon_set_url (ic, repo_icon);
 		gs_app_add_icon (app, ic);
 	}
+
+	remote = gs_flatpak_get_remote_for_source (self, app, &same_name_remote_exists,
+						   cancellable);
+	if (remote != NULL) {
+		gs_flatpak_setup_source_from_remote (app, remote);
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	} else if (same_name_remote_exists)
+		gs_flatpak_set_unique_name_for_source (self, app, cancellable);
 
 	/* success */
 	return g_steal_pointer (&app);
@@ -3084,18 +3175,6 @@ gs_flatpak_file_to_app_repo (GsFlatpak *self,
 	app = gs_flatpak_create_app_from_repo_file (self, file, cancellable, error);
 	if (app == NULL)
 		return FALSE;
-
-	/* check to see if the repo ID already exists */
-	xremote = flatpak_installation_get_remote_by_name (self->installation,
-							   gs_app_get_id (app),
-							   cancellable, NULL);
-	if (xremote != NULL) {
-		g_debug ("repo %s already exists", gs_app_get_id (app));
-		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	} else {
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	}
 
 	/* save to the cache */
 	gs_plugin_cache_add (self->plugin, NULL, app);
