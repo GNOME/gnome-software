@@ -78,6 +78,7 @@ typedef struct
 	gchar			*events_info_uri;
 	gboolean		 profile_mode;
 	gboolean		 in_mode_change;
+	gboolean		 show_detailed_error;
 	GsPage			*page_last;
 } GsShellPrivate;
 
@@ -918,6 +919,10 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		}
 	}
 
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
+
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
 	return TRUE;
@@ -1068,6 +1073,10 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		}
 	}
 
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
+
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
 	return TRUE;
@@ -1168,6 +1177,10 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		}
 	}
 
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
+
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
 	return TRUE;
@@ -1266,6 +1279,10 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		}
 	}
 
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
+
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
 	return TRUE;
@@ -1330,6 +1347,10 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		}
 	}
 
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
+
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
 	return TRUE;
@@ -1382,6 +1403,10 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
+
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1481,6 +1506,10 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
+
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1963,6 +1992,7 @@ gs_shell_init (GsShell *shell)
 	priv->pages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	priv->back_entry_stack = g_queue_new ();
 	priv->ignore_primary_buttons = FALSE;
+	priv->show_detailed_error = TRUE;
 	priv->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
 }
 
