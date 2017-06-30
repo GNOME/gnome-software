@@ -562,12 +562,58 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 }
 
 static void
+gs_plugins_flatpak_create_flatpak_ref (const gchar *app_id,
+				       const gchar *app_url,
+				       const gchar *repo_url,
+				       const gchar *fn_ref)
+{
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	g_string_append (str, "[Flatpak Ref]\n");
+	g_string_append_printf (str, "Title=%s\n", app_id);
+	g_string_append_printf (str, "Name=%s\n", app_id);
+	g_string_append (str, "Branch=master\n");
+	g_string_append_printf (str, "Url=%s\n", app_url);
+	g_string_append (str, "IsRuntime=False\n");
+	g_string_append (str, "Comment=Single line synopsis\n");
+	g_string_append (str, "Description=A Testing Application\n");
+	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
+	g_string_append (str, "Icon=RuntimeRepo=https://sdk.gnome.org/gnome-nightly.flatpakrepo\n");
+	g_string_append_printf (str, "RuntimeRepo=%s\n", repo_url);
+	ret = g_file_set_contents (fn_ref, str->str, -1, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+}
+
+static void
+gs_plugins_flatpak_create_flatpak_repo (const gchar *repo_title,
+					const gchar *repo_url,
+					const gchar *fn_repo)
+{
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	g_string_append (str, "[Flatpak Repo]\n");
+	g_string_append_printf (str, "Title=%s\n", repo_title);
+	g_string_append (str, "DefaultBranch=master\n");
+	g_string_append_printf (str, "Url=%s\n", repo_url);
+	g_string_append (str, "GPGKey=FOOBAR==\n");
+	ret = g_file_set_contents (fn_repo, str->str, -1, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+}
+
+static void
 gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app_source;
 	GsApp *runtime;
 	const gchar *fn_ref = "/var/tmp/self-test/test.flatpakref";
 	const gchar *fn_repo = "/var/tmp/self-test/test.flatpakrepo";
+	const gchar *fn_app_repo = "/var/tmp/self-test/test-app.flatpakrepo";
 	gboolean ret;
 	g_autofree gchar *fn_repourl = NULL;
 	g_autofree gchar *testdir2 = NULL;
@@ -582,6 +628,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GString) str2 = g_string_new (NULL);
 	g_autoptr(GString) str = g_string_new (NULL);
+	g_autoptr(GFile) repo_file = NULL;
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -591,14 +638,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	if (testdir == NULL)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
-	g_string_append (str, "[Flatpak Repo]\n");
-	g_string_append (str, "Title=foo-bar\n");
-	g_string_append (str, "DefaultBranch=master\n");
-	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
-	g_string_append (str, "GPGKey=FOOBAR==\n");
-	ret = g_file_set_contents (fn_repo, str->str, -1, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
+	gs_plugins_flatpak_create_flatpak_repo ("foo-bar", testdir_repourl, fn_repo);
 
 	/* write a flatpakref file */
 	fn_repourl = g_strdup_printf ("file://%s", fn_repo);
@@ -606,20 +646,9 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	g_string_append (str2, "[Flatpak Ref]\n");
-	g_string_append (str2, "Title=Chiron\n");
-	g_string_append (str2, "Name=org.test.Chiron\n");
-	g_string_append (str2, "Branch=master\n");
-	g_string_append_printf (str2, "Url=%s\n", testdir2_repourl);
-	g_string_append (str2, "IsRuntime=False\n");
-	g_string_append (str2, "Comment=Single line synopsis\n");
-	g_string_append (str2, "Description=A Testing Application\n");
-	g_string_append (str2, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
-	g_string_append (str2, "Icon=RuntimeRepo=https://sdk.gnome.org/gnome-nightly.flatpakrepo\n");
-	g_string_append_printf (str2, "RuntimeRepo=%s\n", fn_repourl);
-	ret = g_file_set_contents (fn_ref, str2->str, -1, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
+
+	gs_plugins_flatpak_create_flatpak_ref ("org.test.Chiron", testdir2_repourl,
+					       fn_repourl, fn_ref);
 
 	/* convert it to a GsApp */
 	file = g_file_new_for_path (fn_ref);
@@ -699,6 +728,80 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	app_source = gs_app_list_index (sources2, 0);
 	g_assert (app_source != NULL);
 	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/*/*/source/test/*");
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app_source,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
+
+	/* install the repo directly */
+	gs_plugins_flatpak_create_flatpak_repo ("test-apps", testdir2_repourl,
+						fn_app_repo);
+
+	gs_plugin_loader_clear_caches (plugin_loader);
+	repo_file = g_file_new_for_path (fn_app_repo);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", repo_file,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					 NULL);
+	g_object_unref (app_source);
+	app_source = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
+
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					 "app", app_source,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
+	gs_plugin_loader_clear_caches (plugin_loader);
+	gs_test_flush_main_context ();
+
+	/* install the app when it's already available in the repo */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
+
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					 "app", app,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+			"user/flatpak/test-app/desktop/org.test.Chiron.desktop/master"));
+
+	/* remove the app */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+
+	/* remove the repo */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 					 "app", app_source,
