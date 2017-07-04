@@ -153,7 +153,9 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 		if (g_str_has_suffix (id, ".Locale")) {
 			gs_app_set_kind (app, AS_APP_KIND_LOCALIZATION);
 		} else if (g_str_has_suffix (id, ".Debug") ||
-			   g_str_has_suffix (id, ".Sources")) {
+			   g_str_has_suffix (id, ".Sources") ||
+			   g_str_has_prefix (id, "org.freedesktop.Platform.Icontheme.") ||
+			   g_str_has_prefix (id, "org.gtk.Gtk3theme.")) {
 			gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		} else {
 			gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
