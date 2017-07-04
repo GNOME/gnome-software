@@ -2220,9 +2220,18 @@ gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
 }
 
 static gboolean
-gs_flatpak_related_should_download (GsFlatpak *self, FlatpakRelatedRef *xref_related)
+gs_flatpak_related_should_download (GsFlatpak *self, GsApp *app, FlatpakRelatedRef *xref_related)
 {
 	const gchar *name = flatpak_ref_get_name (FLATPAK_REF (xref_related));
+
+	/* architecture is different */
+	if (g_strcmp0 (gs_app_get_flatpak_arch (app),
+	    flatpak_ref_get_arch (FLATPAK_REF (xref_related))) != 0) {
+		g_autofree gchar *ref_display = NULL;
+		ref_display = flatpak_ref_format_ref (FLATPAK_REF (xref_related));
+		g_debug ("not using %s as architecture wrong!", ref_display);
+		return FALSE;
+	}
 
 	/* GTK theme */
 	if (g_str_has_prefix (name, "org.gtk.Gtk3theme.")) {
@@ -2278,10 +2287,12 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	for (guint i = 0; i < related->len; i++) {
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
 		g_autoptr(GsApp) app_tmp = NULL;
-		if (!gs_flatpak_related_should_download (self, xref_related))
+		if (!gs_flatpak_related_should_download (self, app, xref_related))
 			continue;
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		g_debug ("adding related app for install: %s",
+			 gs_app_get_unique_id (app_tmp));
 		gs_app_list_add (list, app_tmp);
 	}
 
@@ -2871,6 +2882,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 			return FALSE;
 		xref_fake_str = flatpak_ref_format_ref (xref_fake);
 		if (!g_hash_table_contains (hash_installed, xref_fake_str)) {
+			g_debug ("installing %s", xref_fake_str);
 			xref = flatpak_installation_install (self->installation,
 							     gs_app_get_origin (app_tmp),
 							     gs_app_get_flatpak_kind (app_tmp),
@@ -2880,6 +2892,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 							     gs_flatpak_progress_cb, phelper,
 							     cancellable, error);
 		} else {
+			g_debug ("updating %s", xref_fake_str);
 			xref = flatpak_installation_update (self->installation,
 							    FLATPAK_UPDATE_FLAGS_NONE,
 							    gs_app_get_flatpak_kind (app_tmp),
