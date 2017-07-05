@@ -477,6 +477,30 @@ gs_plugin_odrs_json_post (SoupSession *session,
 					     error);
 }
 
+static GPtrArray *
+_gs_app_get_reviewable_ids (GsApp *app)
+{
+	GPtrArray *ids = g_ptr_array_new_with_free_func (g_free);
+#if AS_CHECK_VERSION(0,7,1)
+	GPtrArray *provides = gs_app_get_provides (app);
+#endif
+
+	/* add the main component id */
+	g_ptr_array_add (ids, g_strdup (gs_app_get_id (app)));
+
+#if AS_CHECK_VERSION(0,7,1)
+	/* add any ID provides */
+	for (guint i = 0; i < provides->len; i++) {
+		AsProvide *provide = g_ptr_array_index (provides, i);
+		if (as_provide_get_kind (provide) == AS_PROVIDE_KIND_ID &&
+		    as_provide_get_value (provide) != NULL) {
+			g_ptr_array_add (ids, g_strdup (as_provide_get_value (provide)));
+		}
+	}
+#endif
+	return ids;
+}
+
 static gboolean
 gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 			       GsApp *app,
@@ -484,20 +508,40 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 			       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GArray *review_ratings;
 	gint rating;
+	guint32 ratings_raw[6] = { 0, 0, 0, 0, 0, 0 };
+	guint cnt = 0;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GArray) review_ratings = NULL;
+	g_autoptr(GPtrArray) reviewable_ids = NULL;
 
 	/* profile */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "odrs::refine-ratings");
 	g_assert (ptask != NULL);
 
-	/* get ratings */
-	review_ratings = g_hash_table_lookup (priv->ratings,
-					      gs_app_get_id (app));
-	if (review_ratings == NULL)
+	/* get ratings for each reviewable ID */
+	reviewable_ids = _gs_app_get_reviewable_ids (app);
+	for (guint i = 0; i < reviewable_ids->len; i++) {
+		const gchar *id = g_ptr_array_index (reviewable_ids, i);
+		GArray *ratings_tmp = g_hash_table_lookup (priv->ratings, id);
+		if (ratings_tmp == NULL) {
+			g_debug ("no ratings results for %s", id);
+			continue;
+		}
+		/* copy into accumulator array */
+		g_debug ("using ratings results for %s", id);
+		for (guint j = 0; j < 6; j++)
+			ratings_raw[j] += g_array_index (ratings_tmp, guint32, j);
+		cnt++;
+	}
+	if (cnt == 0)
 		return TRUE;
+
+	/* merge to accumulator array back to one GArray blob */
+	review_ratings = g_array_sized_new (FALSE, TRUE, sizeof(guint32), 6);
+	for (guint i = 0; i < 6; i++)
+		g_array_append_val (review_ratings, ratings_raw[i]);
 	gs_app_set_review_ratings (app, review_ratings);
 
 	/* find the wilson rating */
@@ -509,6 +553,30 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 	if (rating > 0)
 		gs_app_set_rating (app, rating);
 	return TRUE;
+}
+
+static JsonNode *
+gs_plugin_odrs_get_compat_ids (GsApp *app)
+{
+#if AS_CHECK_VERSION(0,7,1)
+	GPtrArray *provides = gs_app_get_provides (app);
+	g_autoptr(JsonArray) json_array = json_array_new ();
+	g_autoptr(JsonNode) json_node = json_node_new (JSON_NODE_ARRAY);
+	for (guint i = 0; i < provides->len; i++) {
+		AsProvide *provide = g_ptr_array_index (provides, i);
+		if (as_provide_get_kind (provide) != AS_PROVIDE_KIND_ID)
+			continue;
+		if (as_provide_get_value (provide) == NULL)
+			continue;
+		json_array_add_string_element (json_array, as_provide_get_value (provide));
+	}
+	if (json_array_get_length (json_array) == 0)
+		return NULL;
+	json_node_set_array (json_node, json_array);
+	return g_steal_pointer (&json_node);
+#else
+	return NULL;
+#endif
 }
 
 static GPtrArray *
@@ -525,6 +593,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	g_autoptr(GPtrArray) reviews = NULL;
 	g_autoptr(JsonBuilder) builder = NULL;
 	g_autoptr(JsonGenerator) json_generator = NULL;
+	g_autoptr(JsonNode) json_compat_ids = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 
@@ -568,6 +637,11 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "limit");
 	json_builder_add_int_value (builder, ODRS_REVIEW_NUMBER_RESULTS_MAX);
+	json_compat_ids = gs_plugin_odrs_get_compat_ids (app);
+	if (json_compat_ids != NULL) {
+		json_builder_set_member_name (builder, "compat_ids");
+		json_builder_add_value (builder, json_compat_ids);
+	}
 	json_builder_end_object (builder);
 
 	/* export as a string */
