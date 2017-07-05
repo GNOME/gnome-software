@@ -206,7 +206,8 @@ static void
 gs_moderate_page_reload (GsPage *page)
 {
 	GsModeratePage *self = GS_MODERATE_PAGE (page);
-	gs_moderate_page_load (self);
+	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_MODERATE)
+		gs_moderate_page_load (self);
 }
 
 static void
