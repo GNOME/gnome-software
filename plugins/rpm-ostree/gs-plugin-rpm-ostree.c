@@ -44,7 +44,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		return;
 	}
 
-	/* ostree can't install packages live */
+	/* rpm-ostree is already a daemon with a DBus API; hence it makes
+	 * more sense to use a custom plugin instead of using PackageKit.
+	 */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-history");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-offline");

@@ -42,7 +42,11 @@ gs_plugin_initialize (GsPlugin *plugin)
 		return;
 	}
 
-	/* ostree can't install packages live */
+	/* ostree doesn't have packages; rpm-ostree does (see the rpm-ostree
+	 * plugin), but the current plan is to make a custom plugin for that
+	 * instead of using PackageKit. See the the rpm-ostree plugin for more
+	 * info.
+	 */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-history");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-offline");
