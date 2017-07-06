@@ -339,6 +339,48 @@ parse_result (const gchar *response, const gchar *response_type, GError **error)
 }
 
 JsonObject *
+gs_snapd_get_system_info (GCancellable *cancellable, GError **error)
+{
+	guint status_code;
+	g_autofree gchar *reason_phrase = NULL;
+	g_autofree gchar *response_type = NULL;
+	g_autofree gchar *response = NULL;
+	g_autoptr(JsonParser) parser = NULL;
+	JsonObject *root, *result;
+
+	if (!send_request ("GET", "/v2/system-info", NULL,
+			   NULL, NULL,
+			   &status_code, &reason_phrase,
+			   &response_type, &response, NULL,
+			   cancellable, error))
+		return NULL;
+
+	if (status_code != SOUP_STATUS_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "snapd returned status code %u: %s",
+			     status_code, reason_phrase);
+		return NULL;
+	}
+
+	parser = parse_result (response, response_type, error);
+	if (parser == NULL)
+		return NULL;
+	root = json_node_get_object (json_parser_get_root (parser));
+	result = json_object_get_object_member (root, "result");
+	if (result == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "snapd returned no system information");
+		return NULL;
+	}
+
+	return json_object_ref (result);
+}
+
+JsonObject *
 gs_snapd_list_one (const gchar *macaroon, gchar **discharges,
 		   const gchar *name,
 		   GCancellable *cancellable, GError **error)
