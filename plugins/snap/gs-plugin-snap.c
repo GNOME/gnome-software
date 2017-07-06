@@ -26,8 +26,9 @@
 #include <gnome-software.h>
 
 struct GsPluginData {
-	GsAuth		*auth;
-	GHashTable	*store_snaps;
+	SnapdSystemConfinement	 system_confinement;
+	GsAuth			*auth;
+	GHashTable		*store_snaps;
 };
 
 void
@@ -64,6 +65,16 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(SnapdSystemInformation) system_information = NULL;
+
+	client = snapd_client_new ();
+	if (!snapd_client_connect_sync (client, cancellable, error))
+		return FALSE;
+	system_information = snapd_client_get_system_information_sync (client, cancellable, error);
+	if (system_information == NULL)
+		return FALSE;
+	priv->system_confinement = snapd_system_information_get_confinement (system_information);
 
 	/* load from disk */
 	gs_auth_add_metadata (priv->auth, "macaroon", NULL);
@@ -181,6 +192,7 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 static GsApp *
 snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app;
 
 	/* create a unique ID for deduplication, TODO: branch? */
@@ -205,7 +217,7 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
+	if (priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT && snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	return app;
