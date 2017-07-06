@@ -582,7 +582,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	client = get_client (plugin, cancellable, error);
 	if (client == NULL)
 		return FALSE;
-	if (!snapd_client_install_sync (client, gs_app_get_id (app), NULL, progress_cb, app, cancellable, &local_error)) {
+	if (!snapd_client_install2_sync (client, SNAPD_INSTALL_FLAGS_NONE, gs_app_get_id (app), NULL, NULL, progress_cb, app, cancellable, &local_error)) {
 		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_AUTH_DATA_REQUIRED)) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
