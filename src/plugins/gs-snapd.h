@@ -29,6 +29,9 @@ typedef void (*GsSnapdProgressCallback) (JsonObject *object, gpointer user_data)
 
 gboolean gs_snapd_exists		(void);
 
+JsonObject *gs_snapd_get_system_info	(GCancellable	*cancellable,
+					 GError		**error);
+
 JsonObject *gs_snapd_list_one		(const gchar	*macaroon,
 					 gchar		**discharges,
 					 const gchar	*name,

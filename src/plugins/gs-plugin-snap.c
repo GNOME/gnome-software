@@ -28,6 +28,7 @@
 #include "gs-snapd.h"
 
 struct GsPluginData {
+	gboolean	 system_is_confined;
 	GsAuth		*auth;
 	GHashTable	*store_snaps;
 };
@@ -63,6 +64,12 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(JsonObject) system_information = NULL;
+
+	system_information = gs_snapd_get_system_info (cancellable, error);
+	if (system_information == NULL)
+		return FALSE;
+	priv->system_is_confined = g_strcmp0 (json_object_get_string_member (system_information, "confinement"), "strict") == 0;
 
 	/* load from disk */
 	gs_auth_add_metadata (priv->auth, "macaroon", NULL);
@@ -170,6 +177,7 @@ get_snap_title (JsonObject *snap)
 static GsApp *
 snap_to_app (GsPlugin *plugin, JsonObject *snap)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app;
 
 	/* create a unique ID for deduplication, TODO: branch? */
@@ -182,7 +190,7 @@ snap_to_app (GsPlugin *plugin, JsonObject *snap)
 	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, get_snap_title (snap));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	if (g_strcmp0 (json_object_get_string_member (snap, "confinement"), "strict") == 0)
+	if (priv->system_is_confined && g_strcmp0 (json_object_get_string_member (snap, "confinement"), "strict") == 0)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	return app;
