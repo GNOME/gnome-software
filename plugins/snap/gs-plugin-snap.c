@@ -202,7 +202,6 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, snapd_snap_get_name (snap));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	if (snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
@@ -451,11 +450,14 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	local_snap = snapd_client_list_one_sync (client, id, cancellable, NULL);
 	if (local_snap != NULL) {
 		GPtrArray *apps;
-		const gchar *launch_name = NULL;
+		const gchar *name, *launch_name = NULL;
 
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_name (local_snap));
+		name = snapd_snap_get_title (local_snap);
+		if (name == NULL || g_strcmp0 (name, "") == 0)
+			name = snapd_snap_get_name (local_snap);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (local_snap));
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (local_snap));
 		gs_app_set_version (app, snapd_snap_get_version (local_snap));
@@ -479,12 +481,15 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	store_snap = get_store_snap (plugin, id, cancellable, NULL);
 	if (store_snap != NULL) {
 		GPtrArray *screenshots;
-		const gchar *screenshot_url = NULL;
+		const gchar *name, *screenshot_url = NULL;
 
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_name (store_snap));
+		name = snapd_snap_get_title (store_snap);
+		if (name == NULL || g_strcmp0 (name, "") == 0)
+			name = snapd_snap_get_name (store_snap);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (store_snap));
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (store_snap));
 		gs_app_set_version (app, snapd_snap_get_version (store_snap));
