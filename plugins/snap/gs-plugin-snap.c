@@ -61,6 +61,64 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Snap");
 }
 
+static void
+snapd_error_convert (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return;
+
+	/* this are allowed for low-level errors */
+	if (gs_utils_error_convert_gio (perror))
+		return;
+
+	/* custom to this plugin */
+	if (error->domain == SNAPD_ERROR) {
+		switch (error->code) {
+		case SNAPD_ERROR_AUTH_DATA_REQUIRED:
+			g_set_error_literal (perror,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_AUTH_REQUIRED,
+					     "Requires authentication with @snapd");
+			break;
+		case SNAPD_ERROR_TWO_FACTOR_REQUIRED:
+			error->code = GS_PLUGIN_ERROR_PIN_REQUIRED;
+			break;
+		case SNAPD_ERROR_AUTH_DATA_INVALID:
+		case SNAPD_ERROR_TWO_FACTOR_INVALID:
+			error->code = GS_PLUGIN_ERROR_AUTH_INVALID;
+			break;
+		case SNAPD_ERROR_CONNECTION_FAILED:
+		case SNAPD_ERROR_WRITE_FAILED:
+		case SNAPD_ERROR_READ_FAILED:
+		case SNAPD_ERROR_BAD_REQUEST:
+		case SNAPD_ERROR_BAD_RESPONSE:
+		case SNAPD_ERROR_PERMISSION_DENIED:
+		case SNAPD_ERROR_FAILED:
+		case SNAPD_ERROR_TERMS_NOT_ACCEPTED:
+		case SNAPD_ERROR_PAYMENT_NOT_SETUP:
+		case SNAPD_ERROR_PAYMENT_DECLINED:
+		case SNAPD_ERROR_ALREADY_INSTALLED:
+		case SNAPD_ERROR_NOT_INSTALLED:
+		case SNAPD_ERROR_NO_UPDATE_AVAILABLE:
+		case SNAPD_ERROR_PASSWORD_POLICY_ERROR:
+		case SNAPD_ERROR_NEEDS_DEVMODE:
+		case SNAPD_ERROR_NEEDS_CLASSIC:
+		case SNAPD_ERROR_NEEDS_CLASSIC_SYSTEM:
+		default:
+			error->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
+	} else {
+		g_warning ("can't reliably fixup error from domain %s",
+			   g_quark_to_string (error->domain));
+		error->code = GS_PLUGIN_ERROR_FAILED;
+	}
+	error->domain = GS_PLUGIN_ERROR;
+}
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -124,7 +182,7 @@ get_client (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	client = snapd_client_new ();
 	if (!snapd_client_connect_sync (client, cancellable, error)) {
-		gs_utils_error_convert_gio (error);
+		snapd_error_convert (error);
 		return NULL;
 	}
 	auth_data = get_auth (plugin);
@@ -171,12 +229,12 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 
 	client = get_client (plugin, cancellable, error);
 	if (client == NULL) {
-		gs_utils_error_convert_gio (error);
+		snapd_error_convert (error);
 		return FALSE;
 	}
 	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, error);
 	if (snaps == NULL) {
-		gs_utils_error_convert_gio (error);
+		snapd_error_convert (error);
 		return NULL;
 	}
 
@@ -294,7 +352,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		return FALSE;
 	snaps = snapd_client_list_sync (client, cancellable, error);
 	if (snaps == NULL) {
-		gs_utils_error_convert_gio (error);
+		snapd_error_convert (error);
 		return FALSE;
 	}
 
@@ -356,7 +414,7 @@ load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *ca
 
 		icon = snapd_client_get_icon_sync (client, gs_app_get_id (app), cancellable, error);
 		if (icon == NULL) {
-			gs_utils_error_convert_gio (error);
+			snapd_error_convert (error);
 			return FALSE;
 		}
 
@@ -588,7 +646,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* load icon if requested */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) {
 		if (!load_icon (plugin, app, icon_url, cancellable, error)) {
-			gs_utils_error_convert_gio (error);
+			snapd_error_convert (error);
 			return FALSE;
 		}
 	}
@@ -622,8 +680,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	g_autoptr(SnapdClient) client = NULL;
 
-	g_autoptr(GError) local_error = NULL;
-
 	/* We can only install apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
@@ -632,14 +688,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 	client = get_client (plugin, cancellable, error);
 	if (client == NULL)
 		return FALSE;
-	if (!snapd_client_install2_sync (client, SNAPD_INSTALL_FLAGS_NONE, gs_app_get_id (app), NULL, NULL, progress_cb, app, cancellable, &local_error)) {
-		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_AUTH_DATA_REQUIRED)) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_AUTH_REQUIRED,
-					     "Requires authentication with @snapd");
-		}
+	if (!snapd_client_install2_sync (client, SNAPD_INSTALL_FLAGS_NONE, gs_app_get_id (app), NULL, NULL, progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
+		snapd_error_convert (error);
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -745,7 +796,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	if (!snapd_client_remove_sync (client, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
-		gs_utils_error_convert_gio (error);
+		snapd_error_convert (error);
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -760,31 +811,13 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	g_autoptr(SnapdAuthData) auth_data = NULL;
 	g_autoptr(GVariant) macaroon_variant = NULL;
 	g_autofree gchar *serialized_macaroon = NULL;
-	g_autoptr(GError) local_error = NULL;
 
 	if (auth != priv->auth)
 		return TRUE;
 
-	auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, &local_error);
+	auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
 	if (auth_data == NULL) {
-		if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_TWO_FACTOR_REQUIRED)) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_PIN_REQUIRED,
-					     local_error->message);
-		} else if (g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_AUTH_DATA_INVALID) ||
-			   g_error_matches (local_error, SNAPD_ERROR, SNAPD_ERROR_TWO_FACTOR_INVALID)) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_AUTH_INVALID,
-					     local_error->message);
-		} else {
-			g_dbus_error_strip_remote_error (local_error);
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     local_error->message);
-		}
+		snapd_error_convert (error);
 		return FALSE;
 	}
 
