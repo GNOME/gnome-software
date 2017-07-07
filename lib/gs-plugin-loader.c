@@ -2539,6 +2539,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 
 	/* run setup */
 	gs_plugin_job_set_action (helper->plugin_job, GS_PLUGIN_ACTION_SETUP);
+	gs_plugin_job_set_failure_flags (helper->plugin_job,
+					 GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY);
 	helper->function_name = "gs_plugin_setup";
 	for (i = 0; i < priv->plugins->len; i++) {
 		g_autoptr(GError) error_local = NULL;
