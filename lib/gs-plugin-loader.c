@@ -1038,8 +1038,9 @@ gs_plugin_loader_job_sorted_truncation (GsPluginLoaderHelper *helper)
 		 max_results, gs_app_list_length (list));
 	sort_func = gs_plugin_job_get_sort_func (helper->plugin_job);
 	if (sort_func == NULL) {
-		g_warning ("no ->sort_func() set for %s, using random!",
-			   gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)));
+		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
+		g_debug ("no ->sort_func() set for %s, using random!",
+			 gs_plugin_action_to_string (action));
 		gs_app_list_randomize (list);
 	} else {
 		gpointer sort_func_data;
