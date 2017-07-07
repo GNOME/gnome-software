@@ -47,6 +47,7 @@ struct _GsPluginJob
 	GsCategory		*category;
 	AsReview		*review;
 	GsPrice			*price;
+	gint64			 time_created;
 };
 
 enum {
@@ -75,6 +76,7 @@ gchar *
 gs_plugin_job_to_string (GsPluginJob *self)
 {
 	GString *str = g_string_new (NULL);
+	gint64 time_now = g_get_monotonic_time ();
 	g_string_append_printf (str, "running %s",
 				gs_plugin_action_to_string (self->action));
 	if (self->refine_flags > 0) {
@@ -140,6 +142,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		}
 		unique_ids_str = g_strjoinv (",", (gchar**) unique_ids);
 		g_string_append_printf (str, " on apps %s", unique_ids_str);
+	}
+	if (time_now - self->time_created > 1000) {
+		g_string_append_printf (str, " took %" G_GINT64_FORMAT "ms",
+					(time_now - self->time_created) / 1000);
 	}
 	return g_string_free (str, FALSE);
 }
@@ -648,6 +654,7 @@ gs_plugin_job_init (GsPluginJob *self)
 	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	self->refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
 	self->list = gs_app_list_new ();
+	self->time_created = g_get_monotonic_time ();
 }
 
 /* vim: set noexpandtab: */

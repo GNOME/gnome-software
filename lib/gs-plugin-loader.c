@@ -1563,6 +1563,9 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 		return;
 	}
 
+	/* show elapsed time */
+	gs_plugin_loader_job_debug (helper);
+
 	/* success */
 	g_task_return_pointer (task, g_ptr_array_ref (helper->catlist), (GDestroyNotify) g_ptr_array_unref);
 }
@@ -1590,7 +1593,6 @@ gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 	/* save helper */
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	helper->catlist = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	gs_plugin_loader_job_debug (helper);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -3295,6 +3297,9 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* sort these again as the refine may have added useful metadata */
 	gs_plugin_loader_job_sorted_truncation_again (helper);
 
+	/* show elapsed time */
+	gs_plugin_loader_job_debug (helper);
+
 	/* success */
 	g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 }
@@ -3482,7 +3487,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	/* save helper */
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
-	gs_plugin_loader_job_debug (helper);
 
 	/* let the task cancel itself */
 	g_task_set_check_cancellable (task, FALSE);
