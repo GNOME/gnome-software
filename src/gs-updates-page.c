@@ -1486,7 +1486,7 @@ upgrade_reboot_failed_cb (GObject *source,
 	GsUpdatesPage *self = (GsUpdatesPage *) user_data;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsPluginJob) plugin_job;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
