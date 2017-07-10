@@ -64,6 +64,39 @@ gs_moderate_page_app_set_review_cb (GObject *source,
 }
 
 static void
+gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
+{
+	GList *children;
+	GsAppRow *app_row = NULL;
+	gboolean is_visible = FALSE;
+
+	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
+	for (GList *l = children; l != NULL; l = l->next) {
+		GtkWidget *w = GTK_WIDGET (l->data);
+		if (!gtk_widget_get_visible (w))
+			continue;
+		if (GS_IS_APP_ROW (w)) {
+			GsApp *app_tmp = gs_app_row_get_app (GS_APP_ROW (w));
+			if (g_strcmp0 (gs_app_get_id (app),
+				       gs_app_get_id (app_tmp)) == 0) {
+				app_row = GS_APP_ROW (w);
+				continue;
+			}
+		}
+		if (GS_IS_REVIEW_ROW (w)) {
+			GsApp *app_tmp = g_object_get_data (G_OBJECT (w), "GsApp");
+			if (g_strcmp0 (gs_app_get_id (app),
+				       gs_app_get_id (app_tmp)) == 0) {
+				is_visible = TRUE;
+				break;
+			}
+		}
+	}
+	if (!is_visible && app_row != NULL)
+		gs_app_row_unreveal (app_row);
+}
+
+static void
 gs_moderate_page_review_clicked_cb (GsReviewRow *row,
                                     GsPluginAction action,
                                     GsModeratePage *self)
@@ -81,6 +114,9 @@ gs_moderate_page_review_clicked_cb (GsReviewRow *row,
 					    gs_moderate_page_app_set_review_cb,
 					    self);
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
+
+	/* if there are no more visble rows, hide the app */
+	gs_moderate_page_perhaps_hide_app_row (self, app);
 }
 
 static void
