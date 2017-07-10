@@ -70,6 +70,18 @@
 	color: #ffffff;
 }
 
+.details-license-free label,
+.details-license-free:backdrop label,
+.details-license-free:hover label,
+.details-license-nonfree label,
+.details-license-nonfree:backdrop label,
+.details-license-nonfree:hover label,
+.details-license-unknown label,
+.details-license-unknown:backdrop label,
+.details-license-unknown:hover label {
+	color: #fff;
+}
+
 .content-rating {
 	outline-offset: 0;
 	background-image: none;
@@ -82,29 +94,42 @@
 	text-shadow: none;
 }
 
-.details-license-free, 
-.details-license-free label,
-.details-license-free:backdrop label {
-	color: #ffffff;
+.details-license-free {
 	background-color: #4e9a06;
 	border-color: #3e7905;
 }
+.details-license-free:hover {
+	background-color: #5db807;
+	border-color: #4d9606;
+}
+.details-license-free:backdrop {
+	border-color: #4e9a06;
+}
 
-.details-license-nonfree,
-.details-license-nonfree label,
-.details-license-nonfree:backdrop label {
-	color: #ffffff;
+.details-license-nonfree {
 	background-color: #ee2222;
 	border-color: #c20f0f;
 }
-
-.details-license-unknown, 
-.details-license-unknown label,
-.details-license-unknown:backdrop label {
-  color: #000000;
-	background-color: #dbdbdb;
-	border-color: #d0d0d0;
+.details-license-nonfree:hover {
+	background-color: #f25959;
+	border-color: #ed1b1b;
 }
+.details-license-nonfree:backdrop {
+	border-color: #ee2222;
+}
+
+.details-license-unknown {
+	background-color: #dbdbdb;
+	border-color: #bbbbbb;
+}
+.details-license-nonfree:hover {
+	background-color: #eeeeee;
+	border-color: #d5d5d5;
+}
+.details-license-nonfree:backdrop {
+	border-color: #dbdbdb;
+}
+
 
 .kudo-pill {
 	color: @theme_selected_fg_color;
