@@ -1534,6 +1534,8 @@ gs_details_page_file_to_app_cb (GObject *source,
 						    &error);
 	if (list == NULL) {
 		g_warning ("failed to convert file to GsApp: %s", error->message);
+		/* go back to the overview */
+		gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
 		set_app (self, app);
@@ -1555,6 +1557,8 @@ gs_details_page_url_to_app_cb (GObject *source,
 						    &error);
 	if (list == NULL) {
 		g_warning ("failed to convert URL to GsApp: %s", error->message);
+		/* go back to the overview */
+		gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 	} else {
 		GsApp *app = gs_app_list_index (list, 0);
 		set_app (self, app);
