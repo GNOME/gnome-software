@@ -126,6 +126,7 @@ endif
 
 if get_option('enable-polkit')
   polkit = dependency('polkit-gobject-1')
+  conf.set('HAVE_POLKIT', 1)
 endif
 
 if get_option('enable-ostree')

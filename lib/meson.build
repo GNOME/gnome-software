@@ -53,6 +53,22 @@ install_headers([
   subdir : 'gnome-software'
 )
 
+librarydeps = [
+  appstream_glib,
+  gio_unix,
+  gmodule,
+  gtk,
+  json_glib,
+  libm,
+  libsecret,
+  libsoup,
+  valgrind,
+]
+
+if get_option('enable-polkit')
+  librarydeps += polkit
+endif
+
 libgnomesoftware = static_library(
   'libgnomesoftware',
   sources : [
@@ -74,17 +90,7 @@ libgnomesoftware = static_library(
   include_directories : [
     include_directories('..'),
   ],
-  dependencies : [
-    appstream_glib,
-    gio_unix,
-    gmodule,
-    gtk,
-    json_glib,
-    libm,
-    libsecret,
-    libsoup,
-    valgrind,
-  ],
+  dependencies : librarydeps,
   c_args : cargs,
 )
 
