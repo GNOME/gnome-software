@@ -2588,6 +2588,7 @@ gs_flatpak_create_app_from_repo_file (GsFlatpak *self,
 		as_icon_set_url (ic, repo_icon);
 		gs_app_add_icon (app, ic);
 	}
+	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
 
 	/* success */
 	return g_steal_pointer (&app);
