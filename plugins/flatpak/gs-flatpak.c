@@ -2233,7 +2233,24 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 {
 	g_autofree gchar *ref = NULL;
 	g_autoptr(GPtrArray) related = NULL;
+	g_autoptr(GPtrArray) xrefs_installed = NULL;
+	g_autoptr(GHashTable) hash_installed = NULL;
 	g_autoptr(GsAppList) list = gs_app_list_new ();
+
+	/* get the list of installed apps */
+	xrefs_installed = flatpak_installation_list_installed_refs (self->installation,
+								    cancellable,
+								    error);
+	if (xrefs_installed == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	hash_installed = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	for (guint i = 0; i < xrefs_installed->len; i++) {
+		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs_installed, i);
+		g_hash_table_add (hash_installed,
+				  flatpak_ref_format_ref (FLATPAK_REF (xref)));
+	}
 
 	/* lookup any related refs for this ref */
 	ref = g_strdup_printf ("%s/%s/%s/%s",
@@ -2253,14 +2270,23 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	/* any extra bits */
 	for (guint i = 0; i < related->len; i++) {
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
+		const gchar *xref_fake_str;
 		g_autoptr(GsApp) app_tmp = NULL;
+
+		/* not included */
 		if (!gs_flatpak_related_should_download (self, app, xref_related))
 			continue;
+
+		/* already installed? */
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
-		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
-		g_debug ("adding related app for install: %s",
-			 gs_app_get_unique_id (app_tmp));
-		gs_app_list_add (list, app_tmp);
+		xref_fake_str = gs_app_get_flatpak_ref_display (app_tmp);
+		if (g_hash_table_contains (hash_installed, xref_fake_str)) {
+			g_debug ("not adding related %s as already installed", xref_fake_str);
+		} else {
+			gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+			g_debug ("adding related %s for install", xref_fake_str);
+			gs_app_list_add (list, app_tmp);
+		}
 	}
 
 	/* add the original app last unless it's a proxy app */
