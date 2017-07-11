@@ -440,7 +440,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	switch (state) {
 	case AS_APP_STATE_INSTALLING:
 		percentage = gs_app_get_progress (self->app);
-		if (percentage > 0) {
+		if (percentage <= 100) {
 			g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
 			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
 			gtk_widget_set_visible (self->label_progress_percentage, TRUE);
