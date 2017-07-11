@@ -166,6 +166,15 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			}
 		} else if (g_error_matches (error_local,
 					    G_IO_ERROR,
+					    G_IO_ERROR_CANCELLED)) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED,
+				     "Failed to get history: %s",
+				     error_local->message);
+			return FALSE;
+		} else if (g_error_matches (error_local,
+					    G_IO_ERROR,
 					    G_IO_ERROR_TIMED_OUT)) {
 			g_debug ("No history as PackageKit took too long: %s",
 				 error_local->message);
