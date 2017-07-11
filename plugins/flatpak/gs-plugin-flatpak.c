@@ -459,6 +459,212 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return gs_flatpak_update_app (flatpak, app, cancellable, error);
 }
 
+static gboolean
+gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
+				    GsAppList *list,
+				    GFile *file,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsApp) app_tmp = NULL;
+	g_autoptr(GsAppList) list_tmp = NULL;
+
+	/* parse the repo file */
+	app_tmp = gs_flatpak_app_new_from_repo_file (file, cancellable, error);
+	if (app_tmp == NULL)
+		return FALSE;
+
+	/* does already exist in either the user or system scope */
+	list_tmp = gs_app_list_new ();
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			continue;
+		if (!gs_flatpak_find_source_by_url (flatpak,
+						    gs_app_get_metadata_item (app_tmp, "flatpak::url"),
+						    list_tmp, cancellable, error))
+			return FALSE;
+	}
+	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+		GsApp *app_old = gs_app_list_index (list_tmp, i);
+		if (gs_app_get_state (app_old) == AS_APP_STATE_INSTALLED) {
+			g_debug ("already have %s, using instead of %s",
+				 gs_app_get_unique_id (app_old),
+				 gs_app_get_unique_id (app_tmp));
+			gs_app_list_add (list, app_old);
+			return TRUE;
+		} else {
+			g_warning ("non-installed source %s : %s",
+				   gs_app_get_name (app_old),
+				   as_app_state_to_string (gs_app_get_state (app_old)));
+		}
+	}
+
+	/* this is new */
+	gs_app_list_add (list, app_tmp);
+	gs_app_set_management_plugin (app_tmp, gs_plugin_get_name (plugin));
+	return TRUE;
+}
+
+static GsFlatpak *
+gs_plugin_flatpak_find_temporary (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			return flatpak;
+	}
+	return NULL;
+}
+
+static gboolean
+gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
+				      GsAppList *list,
+				      GFile *file,
+				      GCancellable *cancellable,
+				      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsFlatpak *flatpak_tmp;
+	g_autoptr(GsApp) app_tmp = NULL;
+	g_autoptr(GsAppList) list_tmp = NULL;
+
+	/* only use the temporary GsFlatpak to avoid the auth dialog */
+	flatpak_tmp = gs_plugin_flatpak_find_temporary (plugin);
+	if (flatpak_tmp == NULL) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no temporary scope for bundle install");
+		return FALSE;
+	}
+
+	/* add object */
+	app_tmp = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, cancellable, error);
+	if (app_tmp == NULL)
+		return FALSE;
+
+	/* does already exist in either the user or system scope */
+	list_tmp = gs_app_list_new ();
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			continue;
+		if (!gs_flatpak_find_app_by_ref_display (flatpak,
+							 gs_app_get_flatpak_ref_display (app_tmp),
+							 list_tmp, cancellable, error))
+			return FALSE;
+	}
+	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+		GsApp *app_old = gs_app_list_index (list_tmp, i);
+		if (gs_app_get_state (app_old) == AS_APP_STATE_INSTALLED) {
+			g_debug ("already have %s, using instead of %s",
+				 gs_app_get_unique_id (app_old),
+				 gs_app_get_unique_id (app_tmp));
+			gs_app_list_add (list, app_old);
+			return TRUE;
+		}
+	}
+
+	/* force this to be 'any' scope for installation */
+	gs_app_set_scope (app_tmp, AS_APP_SCOPE_UNKNOWN);
+
+	/* this is new */
+	gs_app_list_add (list, app_tmp);
+	gs_app_set_management_plugin (app_tmp, gs_plugin_get_name (plugin));
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
+				   GsAppList *list,
+				   GFile *file,
+				   GCancellable *cancellable,
+				   GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsApp *runtime_app;
+	GsFlatpak *flatpak_tmp;
+	g_autoptr(GsApp) app_tmp = NULL;
+	g_autoptr(GsAppList) list_tmp = NULL;
+
+	/* only use the temporary GsFlatpak to avoid the auth dialog */
+	flatpak_tmp = gs_plugin_flatpak_find_temporary (plugin);
+	if (flatpak_tmp == NULL) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no temporary scope for bundle install");
+		return FALSE;
+	}
+
+	/* add object */
+	app_tmp = gs_flatpak_file_to_app_ref (flatpak_tmp, file, cancellable, error);
+	if (app_tmp == NULL)
+		return FALSE;
+
+	/* does already exist in either the user or system scope */
+	list_tmp = gs_app_list_new ();
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+			continue;
+		if (!gs_flatpak_find_app_by_ref_display (flatpak,
+							 gs_app_get_flatpak_ref_display (app_tmp),
+							 list_tmp, cancellable, error))
+			return FALSE;
+	}
+	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+		GsApp *app_old = gs_app_list_index (list_tmp, i);
+		if (gs_app_get_state (app_old) == AS_APP_STATE_INSTALLED) {
+			g_debug ("already have %s, using instead of %s",
+				 gs_app_get_unique_id (app_old),
+				 gs_app_get_unique_id (app_tmp));
+			gs_app_list_add (list, app_old);
+			return TRUE;
+		}
+	}
+
+	/* force this to be 'any' scope for installation */
+	gs_app_set_scope (app_tmp, AS_APP_SCOPE_UNKNOWN);
+
+	/* do we have a system runtime available */
+	runtime_app = gs_app_get_runtime (app_tmp);
+	if (runtime_app != NULL &&
+	    gs_app_get_state (runtime_app) != AS_APP_STATE_INSTALLED) {
+		g_autoptr(GsAppList) list_system_runtimes = NULL;
+		for (guint i = 0; i < priv->flatpaks->len; i++) {
+			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+			if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
+				continue;
+			if (gs_flatpak_get_scope (flatpak) != AS_APP_SCOPE_SYSTEM)
+				continue;
+			if (!gs_flatpak_find_app_by_ref_display (flatpak,
+								 gs_app_get_flatpak_ref_display (runtime_app),
+								 list_system_runtimes,
+								 cancellable, error))
+				return FALSE;
+		}
+		for (guint i = 0; i < gs_app_list_length (list_system_runtimes); i++) {
+			GsApp *runtime_old = gs_app_list_index (list_system_runtimes, i);
+			if (gs_app_get_state (runtime_old) == AS_APP_STATE_INSTALLED) {
+				g_error ("already have %s, using instead of %s",
+					 gs_app_get_unique_id (runtime_old),
+					 gs_app_get_unique_id (runtime_app));
+				gs_app_set_runtime (app_tmp, runtime_old);
+				break;;
+			}
+		}
+	}
+
+	/* this is new */
+	gs_app_list_add (list, app_tmp);
+	gs_app_set_management_plugin (app_tmp, gs_plugin_get_name (plugin));
+	return TRUE;
+}
+
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,
@@ -466,43 +672,42 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GsAppList) list_new = gs_app_list_new ();
+	g_autofree gchar *content_type = NULL;
+	const gchar *mimetypes_bundle[] = {
+		"application/vnd.flatpak",
+		NULL };
+	const gchar *mimetypes_repo[] = {
+		"application/vnd.flatpak.repo",
+		NULL };
+	const gchar *mimetypes_ref[] = {
+		"application/vnd.flatpak.ref",
+		NULL };
 
-	/* only use the temporary GsFlatpak to avoid the auth dialog */
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY) {
-			if (!gs_flatpak_file_to_app (flatpak, list_new, file,
-						     cancellable, error)) {
-				return FALSE;
-			}
-		}
+	/* does this match any of the mimetypes_bundle we support */
+	content_type = gs_utils_get_content_type (file, cancellable, error);
+	if (content_type == NULL)
+		return FALSE;
+	if (g_strv_contains (mimetypes_bundle, content_type)) {
+		return gs_plugin_flatpak_file_to_app_bundle (plugin,
+							     list,
+							     file,
+							     cancellable,
+							     error);
 	}
-
-	/* force these to be 'any' scope for installation */
-	for (guint i = 0; i < gs_app_list_length (list_new); i++) {
-		GsApp *app_tmp = gs_app_list_index (list_new, i);
-		gs_app_set_scope (app_tmp, AS_APP_SCOPE_UNKNOWN);
+	if (g_strv_contains (mimetypes_repo, content_type)) {
+		return gs_plugin_flatpak_file_to_app_repo (plugin,
+							   list,
+							   file,
+							   cancellable,
+							   error);
 	}
-
-	/* are any of the new list already installed? */
-	for (guint i = 0; i < gs_app_list_length (list_new); i++) {
-		GsApp *app_tmp = gs_app_list_index (list_new, i);
-		g_autoptr(GsApp) app = NULL;
-		app = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app_tmp));
-		if (app != NULL) {
-			g_debug ("found existing %s for %s, using",
-				 gs_app_get_unique_id (app),
-				 gs_app_get_unique_id (app_tmp));
-			gs_app_list_add (list, app);
-		} else {
-			g_debug ("no existing %s in plugin cache",
-				 gs_app_get_unique_id (app_tmp));
-			gs_app_list_add (list, app_tmp);
-		}
+	if (g_strv_contains (mimetypes_ref, content_type)) {
+		return gs_plugin_flatpak_file_to_app_ref (plugin,
+							  list,
+							  file,
+							  cancellable,
+							  error);
 	}
-
 	return TRUE;
 }
 

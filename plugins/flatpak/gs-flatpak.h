@@ -97,9 +97,22 @@ gboolean	gs_flatpak_update_app		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_file_to_app		(GsFlatpak		*self,
-						 GsAppList		*list,
+GsApp		*gs_flatpak_file_to_app_ref	(GsFlatpak		*self,
 						 GFile			*file,
+						 GCancellable		*cancellable,
+						 GError			**error);
+GsApp		*gs_flatpak_file_to_app_bundle	(GsFlatpak		*self,
+						 GFile			*file,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	 gs_flatpak_find_source_by_url	(GsFlatpak		*self,
+						 const gchar		*name,
+						 GsAppList		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	 gs_flatpak_find_app_by_ref_display	(GsFlatpak		*self,
+						 const gchar		*ref_display,
+						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_search		(GsFlatpak		*self,
