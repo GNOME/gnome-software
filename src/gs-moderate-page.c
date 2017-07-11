@@ -66,9 +66,9 @@ gs_moderate_page_app_set_review_cb (GObject *source,
 static void
 gs_moderate_page_perhaps_hide_app_row (GsModeratePage *self, GsApp *app)
 {
-	GList *children;
 	GsAppRow *app_row = NULL;
 	gboolean is_visible = FALSE;
+	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
 	for (GList *l = children; l != NULL; l = l->next) {
