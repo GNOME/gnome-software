@@ -34,12 +34,14 @@ G_BEGIN_DECLS
 #define	gs_app_get_flatpak_commit(app)		gs_app_get_metadata_item(app,"flatpak::commit")
 #define	gs_app_get_flatpak_file_type(app)	gs_app_get_metadata_item(app,"flatpak::file-type")
 #define	gs_app_get_flatpak_object_id(app)	gs_app_get_metadata_item(app,"flatpak::object-id")
+#define	gs_app_get_flatpak_ref_display(app)	gs_app_get_metadata_item(app,"flatpak::ref-display")
 #define	gs_app_set_flatpak_name(app,val)	gs_app_set_metadata(app,"flatpak::name",val)
 #define	gs_app_set_flatpak_arch(app,val)	gs_app_set_metadata(app,"flatpak::arch",val)
 #define	gs_app_set_flatpak_branch(app,val)	gs_app_set_metadata(app,"flatpak::branch",val)
 #define	gs_app_set_flatpak_commit(app,val)	gs_app_set_metadata(app,"flatpak::commit",val)
 #define	gs_app_set_flatpak_file_type(app,val)	gs_app_set_metadata(app,"flatpak::file-type",val)
 #define	gs_app_set_flatpak_object_id(app,val)	gs_app_set_metadata(app,"flatpak::object-id",val)
+#define	gs_app_set_flatpak_ref_display(app,val)	gs_app_set_metadata(app,"flatpak::ref-display",val)
 
 void		 gs_flatpak_error_convert		(GError		**perror);
 

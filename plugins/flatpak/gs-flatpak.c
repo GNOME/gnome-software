@@ -89,6 +89,8 @@ gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
+	g_autofree gchar *ref_display = NULL;
+
 	/* core */
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
@@ -102,6 +104,10 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_app_set_flatpak_branch (app, flatpak_ref_get_branch (xref));
 	gs_app_set_flatpak_commit (app, flatpak_ref_get_commit (xref));
 	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
+
+	/* do this once for all objects */
+	ref_display = flatpak_ref_format_ref (xref);
+	gs_app_set_flatpak_ref_display (app, ref_display);
 
 	/* map the flatpak kind to the gnome-software kind */
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
@@ -2833,15 +2839,11 @@ gs_flatpak_update_app (GsFlatpak *self,
 	phelper->job_max = gs_app_list_length (list);
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
-		g_autofree gchar *xref_fake_str = NULL;
+		const gchar *xref_fake_str = NULL;
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
-		g_autoptr (FlatpakRef) xref_fake = NULL;
 
 		/* either install or update the ref */
-		xref_fake = gs_flatpak_create_fake_ref (app_tmp, error);
-		if (xref_fake == NULL)
-			return FALSE;
-		xref_fake_str = flatpak_ref_format_ref (xref_fake);
+		xref_fake_str = gs_app_get_flatpak_ref_display (app_tmp);
 		if (!g_hash_table_contains (hash_installed, xref_fake_str)) {
 			g_debug ("installing %s", xref_fake_str);
 			xref = flatpak_installation_install (self->installation,
