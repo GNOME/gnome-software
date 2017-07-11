@@ -113,6 +113,10 @@ gs_plugin_packagekit_error_convert (GError **error)
 		case PK_CLIENT_ERROR_NOT_SUPPORTED:
 			error_tmp->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
+		/* this is working around a bug in libpackagekit-glib */
+		case PK_ERROR_ENUM_TRANSACTION_CANCELLED:
+			error_tmp->code = GS_PLUGIN_ERROR_CANCELLED;
+			break;
 		default:
 			error_tmp->code = GS_PLUGIN_ERROR_FAILED;
 			break;
