@@ -44,6 +44,10 @@ G_BEGIN_DECLS
 #define	gs_app_set_flatpak_ref_display(app,val)	gs_app_set_metadata(app,"flatpak::ref-display",val)
 
 void		 gs_flatpak_error_convert		(GError		**perror);
+GsApp		*gs_flatpak_app_new_from_remote		(FlatpakRemote	*xremote);
+GsApp		*gs_flatpak_app_new_from_repo_file	(GFile		*file,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 
