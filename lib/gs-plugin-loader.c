@@ -709,7 +709,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* plugin did not return error on cancellable abort */
 	if (ret && g_cancellable_set_error_if_cancelled (cancellable, &error_local)) {
-		g_debug ("plugin did not return error with cancellable set");
+		g_debug ("plugin %s did not return error with cancellable set",
+			 gs_plugin_get_name (plugin));
 		gs_utils_error_convert_gio (&error_local);
 		ret = FALSE;
 	}
