@@ -1389,6 +1389,8 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	default:
+		/* TRANSLATORS: we failed to get a proper error code */
+		g_string_append (str, _("Sorry, something went wrong"));
 		break;
 	}
 	if (str->len == 0)
@@ -1417,6 +1419,7 @@ static gboolean
 gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 {
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const GError *error = gs_plugin_event_get_error (event);
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -1433,10 +1436,16 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	default:
+		/* TRANSLATORS: we failed to get a proper error code */
+		g_string_append (str, _("Sorry, something went wrong"));
 		break;
 	}
 	if (str->len == 0)
 		return FALSE;
+
+	/* add extra debugging for debug builds */
+	if (priv->show_detailed_error)
+		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1492,6 +1501,8 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("AC power is required"));
 		break;
 	default:
+		/* TRANSLATORS: we failed to get a proper error code */
+		g_string_append (str, _("Sorry, something went wrong"));
 		break;
 	}
 	if (str->len == 0)
