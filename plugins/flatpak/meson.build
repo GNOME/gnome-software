@@ -8,6 +8,7 @@ shared_module(
     'gs-appstream.c',
     'gs-flatpak.c',
     'gs-flatpak-symlinks.c',
+    'gs-flatpak-utils.c',
     'gs-plugin-flatpak.c'
   ],
   include_directories : [

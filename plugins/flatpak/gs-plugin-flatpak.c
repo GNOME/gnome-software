@@ -34,6 +34,7 @@
 
 #include "gs-appstream.h"
 #include "gs-flatpak.h"
+#include "gs-flatpak-utils.h"
 
 struct GsPluginData {
 	GPtrArray		*flatpaks; /* of GsFlatpak */
@@ -142,7 +143,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		g_autoptr(GPtrArray) installations = NULL;
 		installations = flatpak_get_system_installations (cancellable, error);
 		if (installations == NULL) {
-			gs_plugin_flatpak_error_convert (error);
+			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
 		for (guint i = 0; i < installations->len; i++) {
@@ -167,7 +168,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 								  cancellable,
 								  error);
 		if (installation == NULL) {
-			gs_plugin_flatpak_error_convert (error);
+			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
@@ -182,7 +183,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		g_autoptr(FlatpakInstallation) installation = NULL;
 		installation = flatpak_installation_new_user (cancellable, error);
 		if (installation == NULL) {
-			gs_plugin_flatpak_error_convert (error);
+			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
@@ -209,7 +210,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 								  cancellable,
 								  error);
 		if (installation == NULL) {
-			gs_plugin_flatpak_error_convert (error);
+			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
