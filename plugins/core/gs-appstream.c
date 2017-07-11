@@ -583,12 +583,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_kind (app, as_app_get_kind (item));
 	}
 
-	/* is installed already */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
-	    as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
-		gs_app_set_state (app, as_app_get_state (item));
-	}
-
 	/* is compatible */
 	req = as_app_get_require_by_value (item,
 					   AS_REQUIRE_KIND_ID,
