@@ -634,7 +634,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	runtime_app = gs_app_get_runtime (app_tmp);
 	if (runtime_app != NULL &&
 	    gs_app_get_state (runtime_app) != AS_APP_STATE_INSTALLED) {
-		g_autoptr(GsAppList) list_system_runtimes = NULL;
+		g_autoptr(GsAppList) list_system_runtimes = gs_app_list_new ();
 		for (guint i = 0; i < priv->flatpaks->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 			if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
