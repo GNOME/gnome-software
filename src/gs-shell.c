@@ -901,6 +901,8 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("Unable to download updates: you do not have"
 				        " permission to install software"));
 		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to get list of updates"));
@@ -1054,6 +1056,8 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					       "AC power is required"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
@@ -1158,6 +1162,8 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 					       "AC power is required"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
@@ -1260,6 +1266,8 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 					       "AC power is required"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the distro name (e.g. "Fedora 25") */
@@ -1328,6 +1336,8 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 					       "AC power is required"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
 	default:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
@@ -1388,6 +1398,8 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 					"and try again"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
 	default:
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
@@ -1434,6 +1446,8 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 		g_string_append (str, _("Not enough disk space — free up some space "
 					"and try again"));
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
 		/* TRANSLATORS: we failed to get a proper error code */
@@ -1499,6 +1513,8 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
 		/* TRANSLATORS: need to be connected to the AC power */
 		g_string_append (str, _("AC power is required"));
+		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
 		/* TRANSLATORS: we failed to get a proper error code */
