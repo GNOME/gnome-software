@@ -615,7 +615,6 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_string_append (str2, "Comment=Single line synopsis\n");
 	g_string_append (str2, "Description=A Testing Application\n");
 	g_string_append (str2, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
-	g_string_append (str2, "Icon=RuntimeRepo=https://sdk.gnome.org/gnome-nightly.flatpakrepo\n");
 	g_string_append_printf (str2, "RuntimeRepo=%s\n", fn_repourl);
 	ret = g_file_set_contents (fn_ref, str2->str, -1, &error);
 	g_assert_no_error (error);
