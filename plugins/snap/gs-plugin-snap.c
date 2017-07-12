@@ -442,7 +442,7 @@ load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *ca
 			if (g_file_get_contents (cache_fn, &data, &data_len, &local_error) &&
 			    gs_plugin_snap_set_app_pixbuf_from_data (app,
 								     data, data_len,
-								     error))
+								     &local_error))
 				return TRUE;
 
 			g_warning ("Failed to load cached icon: %s", local_error->message);
