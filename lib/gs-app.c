@@ -54,7 +54,7 @@
 #include "gs-plugin.h"
 #include "gs-utils.h"
 
-struct _GsApp
+typedef struct
 {
 	GObject			 parent_instance;
 
@@ -123,7 +123,7 @@ struct _GsApp
 	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;
 	GsPrice			*price;
-};
+} GsAppPrivate;
 
 enum {
 	PROP_0,
@@ -141,7 +141,7 @@ enum {
 	PROP_LAST
 };
 
-G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
 static gboolean
 _g_set_str (gchar **str_ptr, const gchar *new_str)
@@ -251,23 +251,25 @@ _as_app_quirk_flag_to_string (AsAppQuirk quirk)
 static const gchar *
 gs_app_get_unique_id_unlocked (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	/* invalid */
-	if (app->id == NULL)
+	if (priv->id == NULL)
 		return NULL;
 
 	/* hmm, do what we can */
-	if (app->unique_id == NULL || !app->unique_id_valid) {
-		g_debug ("autogenerating unique-id for %s", app->id);
-		g_free (app->unique_id);
-		app->unique_id = as_utils_unique_id_build (app->scope,
-							   app->bundle_kind,
-							   app->origin,
-							   app->kind,
-							   app->id,
-							   app->branch);
-		app->unique_id_valid = TRUE;
+	if (priv->unique_id == NULL || !priv->unique_id_valid) {
+		g_debug ("autogenerating unique-id for %s", priv->id);
+		g_free (priv->unique_id);
+		priv->unique_id = as_utils_unique_id_build (priv->scope,
+							    priv->bundle_kind,
+							    priv->origin,
+							    priv->kind,
+							    priv->id,
+							    priv->branch);
+		priv->unique_id_valid = TRUE;
 	}
-	return app->unique_id;
+	return priv->unique_id;
 }
 
 /**
@@ -364,6 +366,7 @@ gs_app_kudos_to_string (guint64 kudos)
 gchar *
 gs_app_to_string (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	AsImage *im;
 	AsScreenshot *ss;
 	GList *keys;
@@ -376,37 +379,37 @@ gs_app_to_string (GsApp *app)
 
 	str = g_string_new ("GsApp:");
 	g_string_append_printf (str, " [%p]\n", app);
-	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (app->kind));
-	gs_app_kv_lpad (str, "state", as_app_state_to_string (app->state));
-	if (app->quirk > 0) {
-		g_autofree gchar *qstr = _as_app_quirk_to_string (app->quirk);
+	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (priv->kind));
+	gs_app_kv_lpad (str, "state", as_app_state_to_string (priv->state));
+	if (priv->quirk > 0) {
+		g_autofree gchar *qstr = _as_app_quirk_to_string (priv->quirk);
 		gs_app_kv_lpad (str, "quirk", qstr);
 	}
-	if (app->progress > 0)
-		gs_app_kv_printf (str, "progress", "%u%%", app->progress);
-	if (app->id != NULL)
-		gs_app_kv_lpad (str, "id", app->id);
-	if (app->unique_id != NULL)
-		gs_app_kv_lpad (str, "unique-id", app->unique_id);
-	if (app->scope != AS_APP_SCOPE_UNKNOWN)
-		gs_app_kv_lpad (str, "scope", as_app_scope_to_string (app->scope));
-	if (app->bundle_kind != AS_BUNDLE_KIND_UNKNOWN) {
+	if (priv->progress > 0)
+		gs_app_kv_printf (str, "progress", "%u%%", priv->progress);
+	if (priv->id != NULL)
+		gs_app_kv_lpad (str, "id", priv->id);
+	if (priv->unique_id != NULL)
+		gs_app_kv_lpad (str, "unique-id", priv->unique_id);
+	if (priv->scope != AS_APP_SCOPE_UNKNOWN)
+		gs_app_kv_lpad (str, "scope", as_app_scope_to_string (priv->scope));
+	if (priv->bundle_kind != AS_BUNDLE_KIND_UNKNOWN) {
 		gs_app_kv_lpad (str, "bundle-kind",
-				as_bundle_kind_to_string (app->bundle_kind));
+				as_bundle_kind_to_string (priv->bundle_kind));
 	}
-	if (app->kudos > 0) {
+	if (priv->kudos > 0) {
 		g_autofree gchar *kudo_str = NULL;
-		kudo_str = gs_app_kudos_to_string (app->kudos);
+		kudo_str = gs_app_kudos_to_string (priv->kudos);
 		gs_app_kv_lpad (str, "kudos", kudo_str);
 	}
 	gs_app_kv_printf (str, "kudo-percentage", "%u",
 			  gs_app_get_kudos_percentage (app));
-	if (app->name != NULL)
-		gs_app_kv_lpad (str, "name", app->name);
-	if (app->pixbuf != NULL)
-		gs_app_kv_printf (str, "pixbuf", "%p", app->pixbuf);
-	for (i = 0; i < app->icons->len; i++) {
-		AsIcon *icon = g_ptr_array_index (app->icons, i);
+	if (priv->name != NULL)
+		gs_app_kv_lpad (str, "name", priv->name);
+	if (priv->pixbuf != NULL)
+		gs_app_kv_printf (str, "pixbuf", "%p", priv->pixbuf);
+	for (i = 0; i < priv->icons->len; i++) {
+		AsIcon *icon = g_ptr_array_index (priv->icons, i);
 		gs_app_kv_lpad (str, "icon-kind",
 				as_icon_kind_to_string (as_icon_get_kind (icon)));
 		if (as_icon_get_pixbuf (icon) != NULL) {
@@ -423,31 +426,31 @@ gs_app_to_string (GsApp *app)
 			gs_app_kv_lpad (str, "icon-filename",
 					as_icon_get_filename (icon));
 	}
-	if (app->match_value != 0)
-		gs_app_kv_printf (str, "match-value", "%05x", app->match_value);
-	if (app->priority != 0)
-		gs_app_kv_printf (str, "priority", "%u", app->priority);
-	if (app->version != NULL)
-		gs_app_kv_lpad (str, "version", app->version);
-	if (app->version_ui != NULL)
-		gs_app_kv_lpad (str, "version-ui", app->version_ui);
-	if (app->update_version != NULL)
-		gs_app_kv_lpad (str, "update-version", app->update_version);
-	if (app->update_version_ui != NULL)
-		gs_app_kv_lpad (str, "update-version-ui", app->update_version_ui);
-	if (app->update_details != NULL)
-		gs_app_kv_lpad (str, "update-details", app->update_details);
-	if (app->update_urgency != AS_URGENCY_KIND_UNKNOWN) {
+	if (priv->match_value != 0)
+		gs_app_kv_printf (str, "match-value", "%05x", priv->match_value);
+	if (priv->priority != 0)
+		gs_app_kv_printf (str, "priority", "%u", priv->priority);
+	if (priv->version != NULL)
+		gs_app_kv_lpad (str, "version", priv->version);
+	if (priv->version_ui != NULL)
+		gs_app_kv_lpad (str, "version-ui", priv->version_ui);
+	if (priv->update_version != NULL)
+		gs_app_kv_lpad (str, "update-version", priv->update_version);
+	if (priv->update_version_ui != NULL)
+		gs_app_kv_lpad (str, "update-version-ui", priv->update_version_ui);
+	if (priv->update_details != NULL)
+		gs_app_kv_lpad (str, "update-details", priv->update_details);
+	if (priv->update_urgency != AS_URGENCY_KIND_UNKNOWN) {
 		gs_app_kv_printf (str, "update-urgency", "%u",
-				  app->update_urgency);
+				  priv->update_urgency);
 	}
-	if (app->summary != NULL)
-		gs_app_kv_lpad (str, "summary", app->summary);
-	if (app->description != NULL)
-		gs_app_kv_lpad (str, "description", app->description);
-	for (i = 0; i < app->screenshots->len; i++) {
+	if (priv->summary != NULL)
+		gs_app_kv_lpad (str, "summary", priv->summary);
+	if (priv->description != NULL)
+		gs_app_kv_lpad (str, "description", priv->description);
+	for (i = 0; i < priv->screenshots->len; i++) {
 		g_autofree gchar *key = NULL;
-		ss = g_ptr_array_index (app->screenshots, i);
+		ss = g_ptr_array_index (priv->screenshots, i);
 		tmp = as_screenshot_get_caption (ss, NULL);
 		im = as_screenshot_get_image (ss, 0, 0);
 		if (im == NULL)
@@ -457,93 +460,93 @@ gs_app_to_string (GsApp *app)
 				  as_image_get_url (im),
 				  tmp != NULL ? tmp : "<none>");
 	}
-	for (i = 0; i < app->sources->len; i++) {
+	for (i = 0; i < priv->sources->len; i++) {
 		g_autofree gchar *key = NULL;
-		tmp = g_ptr_array_index (app->sources, i);
+		tmp = g_ptr_array_index (priv->sources, i);
 		key = g_strdup_printf ("source-%02u", i);
 		gs_app_kv_lpad (str, key, tmp);
 	}
-	for (i = 0; i < app->source_ids->len; i++) {
+	for (i = 0; i < priv->source_ids->len; i++) {
 		g_autofree gchar *key = NULL;
-		tmp = g_ptr_array_index (app->source_ids, i);
+		tmp = g_ptr_array_index (priv->source_ids, i);
 		key = g_strdup_printf ("source-id-%02u", i);
 		gs_app_kv_lpad (str, key, tmp);
 	}
-	if (app->local_file != NULL) {
-		g_autofree gchar *fn = g_file_get_path (app->local_file);
+	if (priv->local_file != NULL) {
+		g_autofree gchar *fn = g_file_get_path (priv->local_file);
 		gs_app_kv_lpad (str, "local-filename", fn);
 	}
-	if (app->content_rating != NULL) {
-		guint age = as_content_rating_get_minimum_age (app->content_rating);
+	if (priv->content_rating != NULL) {
+		guint age = as_content_rating_get_minimum_age (priv->content_rating);
 		if (age != G_MAXUINT) {
 			g_autofree gchar *value = g_strdup_printf ("%u", age);
 			gs_app_kv_lpad (str, "content-age", value);
 		}
 		gs_app_kv_lpad (str, "content-rating",
-				as_content_rating_get_kind (app->content_rating));
+				as_content_rating_get_kind (priv->content_rating));
 	}
-	tmp = g_hash_table_lookup (app->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
+	tmp = g_hash_table_lookup (priv->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
-	if (app->license != NULL) {
-		gs_app_kv_lpad (str, "license", app->license);
+	if (priv->license != NULL) {
+		gs_app_kv_lpad (str, "license", priv->license);
 		gs_app_kv_lpad (str, "license-is-free",
 				gs_app_get_license_is_free (app) ? "yes" : "no");
 	}
-	if (app->management_plugin != NULL)
-		gs_app_kv_lpad (str, "management-plugin", app->management_plugin);
-	if (app->summary_missing != NULL)
-		gs_app_kv_lpad (str, "summary-missing", app->summary_missing);
-	if (app->menu_path != NULL &&
-	    app->menu_path[0] != NULL &&
-	    app->menu_path[0][0] != '\0') {
-		g_autofree gchar *path = g_strjoinv (" → ", app->menu_path);
+	if (priv->management_plugin != NULL)
+		gs_app_kv_lpad (str, "management-plugin", priv->management_plugin);
+	if (priv->summary_missing != NULL)
+		gs_app_kv_lpad (str, "summary-missing", priv->summary_missing);
+	if (priv->menu_path != NULL &&
+	    priv->menu_path[0] != NULL &&
+	    priv->menu_path[0][0] != '\0') {
+		g_autofree gchar *path = g_strjoinv (" → ", priv->menu_path);
 		gs_app_kv_lpad (str, "menu-path", path);
 	}
-	if (app->branch != NULL)
-		gs_app_kv_lpad (str, "branch", app->branch);
-	if (app->origin != NULL && app->origin[0] != '\0')
-		gs_app_kv_lpad (str, "origin", app->origin);
-	if (app->origin_hostname != NULL && app->origin_hostname[0] != '\0')
-		gs_app_kv_lpad (str, "origin-hostname", app->origin_hostname);
-	if (app->rating != -1)
-		gs_app_kv_printf (str, "rating", "%i", app->rating);
-	if (app->review_ratings != NULL) {
-		for (i = 0; i < app->review_ratings->len; i++) {
-			gint rat = g_array_index (app->review_ratings, gint, i);
+	if (priv->branch != NULL)
+		gs_app_kv_lpad (str, "branch", priv->branch);
+	if (priv->origin != NULL && priv->origin[0] != '\0')
+		gs_app_kv_lpad (str, "origin", priv->origin);
+	if (priv->origin_hostname != NULL && priv->origin_hostname[0] != '\0')
+		gs_app_kv_lpad (str, "origin-hostname", priv->origin_hostname);
+	if (priv->rating != -1)
+		gs_app_kv_printf (str, "rating", "%i", priv->rating);
+	if (priv->review_ratings != NULL) {
+		for (i = 0; i < priv->review_ratings->len; i++) {
+			gint rat = g_array_index (priv->review_ratings, gint, i);
 			gs_app_kv_printf (str, "review-rating", "[%u:%i]",
 					  i, rat);
 		}
 	}
-	if (app->reviews != NULL)
-		gs_app_kv_printf (str, "reviews", "%u", app->reviews->len);
-	if (app->provides != NULL)
-		gs_app_kv_printf (str, "provides", "%u", app->provides->len);
-	if (app->install_date != 0) {
+	if (priv->reviews != NULL)
+		gs_app_kv_printf (str, "reviews", "%u", priv->reviews->len);
+	if (priv->provides != NULL)
+		gs_app_kv_printf (str, "provides", "%u", priv->provides->len);
+	if (priv->install_date != 0) {
 		gs_app_kv_printf (str, "install-date", "%"
 				  G_GUINT64_FORMAT "",
-				  app->install_date);
+				  priv->install_date);
 	}
-	if (app->size_installed != 0)
-		gs_app_kv_size (str, "size-installed", app->size_installed);
-	if (app->size_download != 0)
-		gs_app_kv_size (str, "size-download", app->size_download);
-	if (app->price != NULL)
+	if (priv->size_installed != 0)
+		gs_app_kv_size (str, "size-installed", priv->size_installed);
+	if (priv->size_download != 0)
+		gs_app_kv_size (str, "size-download", priv->size_download);
+	if (priv->price != NULL)
 		gs_app_kv_printf (str, "price", "%s %.2f",
-				  gs_price_get_currency (app->price),
-				  gs_price_get_amount (app->price));
-	for (i = 0; i < app->related->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (app->related, i);
+				  gs_price_get_currency (priv->price),
+				  gs_price_get_amount (priv->price));
+	for (i = 0; i < priv->related->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (priv->related, i);
 		gs_app_kv_lpad (str, "related", gs_app_get_unique_id (app_tmp));
 	}
-	if (app->history->len > 0)
-		gs_app_kv_printf (str, "history", "%u", app->history->len);
-	for (i = 0; i < app->categories->len; i++) {
-		tmp = g_ptr_array_index (app->categories, i);
+	if (priv->history->len > 0)
+		gs_app_kv_printf (str, "history", "%u", priv->history->len);
+	for (i = 0; i < priv->categories->len; i++) {
+		tmp = g_ptr_array_index (priv->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
 	}
-	for (i = 0; i < app->key_colors->len; i++) {
-		GdkRGBA *color = g_ptr_array_index (app->key_colors, i);
+	for (i = 0; i < priv->key_colors->len; i++) {
+		GdkRGBA *color = g_ptr_array_index (priv->key_colors, i);
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("key-color-%02u", i);
 		gs_app_kv_printf (str, key, "%.0f,%.0f,%.0f",
@@ -551,28 +554,28 @@ gs_app_to_string (GsApp *app)
 				  color->green * 255.f,
 				  color->blue * 255.f);
 	}
-	if (app->keywords != NULL) {
-		for (i = 0; i < app->keywords->len; i++) {
-			tmp = g_ptr_array_index (app->keywords, i);
+	if (priv->keywords != NULL) {
+		for (i = 0; i < priv->keywords->len; i++) {
+			tmp = g_ptr_array_index (priv->keywords, i);
 			gs_app_kv_lpad (str, "keyword", tmp);
 		}
 	}
-	keys = g_hash_table_get_keys (app->metadata);
+	keys = g_hash_table_get_keys (priv->metadata);
 	for (l = keys; l != NULL; l = l->next) {
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("{%s}", (const gchar *) l->data);
-		tmp = g_hash_table_lookup (app->metadata, l->data);
+		tmp = g_hash_table_lookup (priv->metadata, l->data);
 		gs_app_kv_lpad (str, key, tmp);
 	}
 	g_list_free (keys);
 
 	/* print runtime data too */
-	if (app->runtime != NULL) {
-		g_autofree gchar *runtime = gs_app_to_string (app->runtime);
+	if (priv->runtime != NULL) {
+		g_autofree gchar *runtime = gs_app_to_string (priv->runtime);
 		g_string_append_printf (str, "\n\tRuntime:\n\t%s\n", runtime);
 	}
-	if (app->update_runtime != NULL) {
-		g_autofree gchar *runtime = gs_app_to_string (app->update_runtime);
+	if (priv->update_runtime != NULL) {
+		g_autofree gchar *runtime = gs_app_to_string (priv->update_runtime);
 		g_string_append_printf (str, "\n\tUpdate Runtime:\n\t%s\n", runtime);
 	}
 
@@ -624,8 +627,9 @@ gs_app_queue_notify (GsApp *app, const gchar *property_name)
 const gchar *
 gs_app_get_id (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->id;
+	return priv->id;
 }
 
 /**
@@ -638,10 +642,11 @@ gs_app_get_id (GsApp *app)
 void
 gs_app_set_id (GsApp *app, const gchar *id)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (_g_set_str (&app->id, id))
-		app->unique_id_valid = FALSE;
+	if (_g_set_str (&priv->id, id))
+		priv->unique_id_valid = FALSE;
 }
 
 /**
@@ -657,8 +662,9 @@ gs_app_set_id (GsApp *app, const gchar *id)
 AsAppScope
 gs_app_get_scope (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), AS_APP_SCOPE_UNKNOWN);
-	return app->scope;
+	return priv->scope;
 }
 
 /**
@@ -673,16 +679,18 @@ gs_app_get_scope (GsApp *app)
 void
 gs_app_set_scope (GsApp *app, AsAppScope scope)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* same */
-	if (scope == app->scope)
+	if (scope == priv->scope)
 		return;
 
-	app->scope = scope;
+	priv->scope = scope;
 
 	/* no longer valid */
-	app->unique_id_valid = FALSE;
+	priv->unique_id_valid = FALSE;
 }
 
 /**
@@ -698,8 +706,9 @@ gs_app_set_scope (GsApp *app, AsAppScope scope)
 AsBundleKind
 gs_app_get_bundle_kind (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), AS_BUNDLE_KIND_UNKNOWN);
-	return app->bundle_kind;
+	return priv->bundle_kind;
 }
 
 /**
@@ -714,16 +723,18 @@ gs_app_get_bundle_kind (GsApp *app)
 void
 gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* same */
-	if (bundle_kind == app->bundle_kind)
+	if (bundle_kind == priv->bundle_kind)
 		return;
 
-	app->bundle_kind = bundle_kind;
+	priv->bundle_kind = bundle_kind;
 
 	/* no longer valid */
-	app->unique_id_valid = FALSE;
+	priv->unique_id_valid = FALSE;
 }
 
 /**
@@ -739,8 +750,9 @@ gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
 AsAppState
 gs_app_get_state (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), AS_APP_STATE_UNKNOWN);
-	return app->state;
+	return priv->state;
 }
 
 /**
@@ -756,8 +768,9 @@ gs_app_get_state (GsApp *app)
 guint
 gs_app_get_progress (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
-	return app->progress;
+	return priv->progress;
 }
 
 /**
@@ -772,21 +785,22 @@ gs_app_get_progress (GsApp *app)
 void
 gs_app_set_state_recover (GsApp *app)
 {
-	if (app->state_recover == AS_APP_STATE_UNKNOWN)
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	if (priv->state_recover == AS_APP_STATE_UNKNOWN)
 		return;
-	if (app->state_recover == app->state)
+	if (priv->state_recover == priv->state)
 		return;
 
 	g_debug ("recovering state on %s from %s to %s",
-		 app->id,
-		 as_app_state_to_string (app->state),
-		 as_app_state_to_string (app->state_recover));
+		 priv->id,
+		 as_app_state_to_string (priv->state),
+		 as_app_state_to_string (priv->state_recover));
 
 	/* make sure progress gets reset when recovering state, to prevent
 	 * confusing initial states when going through more than one attempt */
 	gs_app_set_progress (app, 0);
 
-	app->state = app->state_recover;
+	priv->state = priv->state_recover;
 	gs_app_queue_notify (app, "state");
 }
 
@@ -794,14 +808,15 @@ gs_app_set_state_recover (GsApp *app)
 static gboolean
 gs_app_set_state_internal (GsApp *app, AsAppState state)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	gboolean state_change_ok = FALSE;
 
 	/* same */
-	if (app->state == state)
+	if (priv->state == state)
 		return FALSE;
 
 	/* check the state change is allowed */
-	switch (app->state) {
+	switch (priv->state) {
 	case AS_APP_STATE_UNKNOWN:
 		/* unknown has to go into one of the stable states */
 		if (state == AS_APP_STATE_INSTALLED ||
@@ -894,7 +909,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		break;
 	default:
 		g_warning ("state %s unhandled",
-			   as_app_state_to_string (app->state));
+			   as_app_state_to_string (priv->state));
 		g_assert_not_reached ();
 	}
 
@@ -902,17 +917,17 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	if (!state_change_ok) {
 		g_warning ("State change on %s from %s to %s is not OK",
 			   gs_app_get_unique_id_unlocked (app),
-			   as_app_state_to_string (app->state),
+			   as_app_state_to_string (priv->state),
 			   as_app_state_to_string (state));
 		return FALSE;
 	}
 
-	app->state = state;
+	priv->state = state;
 
 	if (state == AS_APP_STATE_UNKNOWN ||
 	    state == AS_APP_STATE_AVAILABLE_LOCAL ||
 	    state == AS_APP_STATE_AVAILABLE)
-		app->install_date = 0;
+		priv->install_date = 0;
 
 	/* save this to simplify error handling in the plugins */
 	switch (state) {
@@ -921,11 +936,11 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* transient, so ignore */
 		break;
 	default:
-		if (app->state_recover != state) {
+		if (priv->state_recover != state) {
 			g_debug ("%s non-transient state now %s",
 				 gs_app_get_unique_id_unlocked (app),
 				 as_app_state_to_string (state));
-			app->state_recover = state;
+			priv->state_recover = state;
 		}
 		break;
 	}
@@ -947,16 +962,17 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 void
 gs_app_set_progress (GsApp *app, guint percentage)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (app->progress == percentage)
+	if (priv->progress == percentage)
 		return;
 	if (percentage > 100) {
 		g_debug ("cannot set %u%% for %s, setting instead: 100%%",
 			 percentage, gs_app_get_unique_id_unlocked (app));
 		percentage = 100;
 	}
-	app->progress = percentage;
+	priv->progress = percentage;
 	gs_app_queue_notify (app, "progress");
 }
 
@@ -987,7 +1003,8 @@ gs_app_set_progress (GsApp *app, guint percentage)
 void
 gs_app_set_state (GsApp *app, AsAppState state)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	if (gs_app_set_state_internal (app, state))
@@ -1007,8 +1024,9 @@ gs_app_set_state (GsApp *app, AsAppState state)
 AsAppKind
 gs_app_get_kind (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), AS_APP_KIND_UNKNOWN);
-	return app->kind;
+	return priv->kind;
 }
 
 /**
@@ -1031,28 +1049,29 @@ gs_app_get_kind (GsApp *app)
 void
 gs_app_set_kind (GsApp *app, AsAppKind kind)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	gboolean state_change_ok = FALSE;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* same */
-	if (app->kind == kind)
+	if (priv->kind == kind)
 		return;
 
 	/* trying to change */
-	if (app->kind != AS_APP_KIND_UNKNOWN &&
+	if (priv->kind != AS_APP_KIND_UNKNOWN &&
 	    kind == AS_APP_KIND_UNKNOWN) {
 		g_warning ("automatically prevented from changing "
 			   "kind on %s from %s to %s!",
 			   gs_app_get_unique_id_unlocked (app),
-			   as_app_kind_to_string (app->kind),
+			   as_app_kind_to_string (priv->kind),
 			   as_app_kind_to_string (kind));
 		return;
 	}
 
 	/* check the state change is allowed */
-	switch (app->kind) {
+	switch (priv->kind) {
 	case AS_APP_KIND_UNKNOWN:
 	case AS_APP_KIND_GENERIC:
 		/* all others derive from generic */
@@ -1071,17 +1090,17 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 	/* this state change was unexpected */
 	if (!state_change_ok) {
 		g_warning ("Kind change on %s from %s to %s is not OK",
-			   app->id,
-			   as_app_kind_to_string (app->kind),
+			   priv->id,
+			   as_app_kind_to_string (priv->kind),
 			   as_app_kind_to_string (kind));
 		return;
 	}
 
-	app->kind = kind;
+	priv->kind = kind;
 	gs_app_queue_notify (app, "kind");
 
 	/* no longer valid */
-	app->unique_id_valid = FALSE;
+	priv->unique_id_valid = FALSE;
 }
 
 /**
@@ -1098,7 +1117,8 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 const gchar *
 gs_app_get_unique_id (GsApp *app)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return gs_app_get_unique_id_unlocked (app);
 }
@@ -1115,16 +1135,17 @@ gs_app_get_unique_id (GsApp *app)
 void
 gs_app_set_unique_id (GsApp *app, const gchar *unique_id)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* check for sanity */
 	if (!as_utils_unique_id_valid (unique_id))
 		g_warning ("unique_id %s not valid", unique_id);
 
-	g_free (app->unique_id);
-	app->unique_id = g_strdup (unique_id);
-	app->unique_id_valid = TRUE;
+	g_free (priv->unique_id);
+	priv->unique_id = g_strdup (unique_id);
+	priv->unique_id_valid = TRUE;
 }
 
 /**
@@ -1140,8 +1161,9 @@ gs_app_set_unique_id (GsApp *app, const gchar *unique_id)
 const gchar *
 gs_app_get_name (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->name;
+	return priv->name;
 }
 
 /**
@@ -1157,14 +1179,15 @@ gs_app_get_name (GsApp *app)
 void
 gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= app->name_quality)
+	if (quality <= priv->name_quality)
 		return;
-	app->name_quality = quality;
-	if (_g_set_str (&app->name, name))
+	priv->name_quality = quality;
+	if (_g_set_str (&priv->name, name))
 		g_object_notify (G_OBJECT (app), "name");
 }
 
@@ -1181,8 +1204,9 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 const gchar *
 gs_app_get_branch (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->branch;
+	return priv->branch;
 }
 
 /**
@@ -1197,10 +1221,11 @@ gs_app_get_branch (GsApp *app)
 void
 gs_app_set_branch (GsApp *app, const gchar *branch)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (_g_set_str (&app->branch, branch))
-		app->unique_id_valid = FALSE;
+	if (_g_set_str (&priv->branch, branch))
+		priv->unique_id_valid = FALSE;
 }
 
 /**
@@ -1216,10 +1241,11 @@ gs_app_set_branch (GsApp *app, const gchar *branch)
 const gchar *
 gs_app_get_source_default (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	if (app->sources->len == 0)
+	if (priv->sources->len == 0)
 		return NULL;
-	return g_ptr_array_index (app->sources, 0);
+	return g_ptr_array_index (priv->sources, 0);
 }
 
 /**
@@ -1234,20 +1260,21 @@ gs_app_get_source_default (GsApp *app)
 void
 gs_app_add_source (GsApp *app, const gchar *source)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	const gchar *tmp;
 	guint i;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (source != NULL);
 
 	/* check source doesn't already exist */
-	for (i = 0; i < app->sources->len; i++) {
-		tmp = g_ptr_array_index (app->sources, i);
+	for (i = 0; i < priv->sources->len; i++) {
+		tmp = g_ptr_array_index (priv->sources, i);
 		if (g_strcmp0 (tmp, source) == 0)
 			return;
 	}
-	g_ptr_array_add (app->sources, g_strdup (source));
+	g_ptr_array_add (priv->sources, g_strdup (source));
 }
 
 /**
@@ -1263,8 +1290,9 @@ gs_app_add_source (GsApp *app, const gchar *source)
 GPtrArray *
 gs_app_get_sources (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->sources;
+	return priv->sources;
 }
 
 /**
@@ -1281,9 +1309,10 @@ gs_app_get_sources (GsApp *app)
 void
 gs_app_set_sources (GsApp *app, GPtrArray *sources)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_ptr_array (&app->sources, sources);
+	_g_set_ptr_array (&priv->sources, sources);
 }
 
 /**
@@ -1299,10 +1328,11 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
 const gchar *
 gs_app_get_source_id_default (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	if (app->source_ids->len == 0)
+	if (priv->source_ids->len == 0)
 		return NULL;
-	return g_ptr_array_index (app->source_ids, 0);
+	return g_ptr_array_index (priv->source_ids, 0);
 }
 
 /**
@@ -1318,8 +1348,9 @@ gs_app_get_source_id_default (GsApp *app)
 GPtrArray *
 gs_app_get_source_ids (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->source_ids;
+	return priv->source_ids;
 }
 
 /**
@@ -1333,9 +1364,10 @@ gs_app_get_source_ids (GsApp *app)
 void
 gs_app_clear_source_ids (GsApp *app)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_ptr_array_set_size (app->source_ids, 0);
+	g_ptr_array_set_size (priv->source_ids, 0);
 }
 
 /**
@@ -1351,9 +1383,10 @@ gs_app_clear_source_ids (GsApp *app)
 void
 gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_ptr_array (&app->source_ids, source_ids);
+	_g_set_ptr_array (&priv->source_ids, source_ids);
 }
 
 /**
@@ -1368,18 +1401,19 @@ gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
 void
 gs_app_add_source_id (GsApp *app, const gchar *source_id)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	const gchar *tmp;
 	guint i;
 
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only add if not already present */
-	for (i = 0; i < app->source_ids->len; i++) {
-		tmp = g_ptr_array_index (app->source_ids, i);
+	for (i = 0; i < priv->source_ids->len; i++) {
+		tmp = g_ptr_array_index (priv->source_ids, i);
 		if (g_strcmp0 (tmp, source_id) == 0)
 			return;
 	}
-	g_ptr_array_add (app->source_ids, g_strdup (source_id));
+	g_ptr_array_add (priv->source_ids, g_strdup (source_id));
 }
 
 /**
@@ -1397,8 +1431,9 @@ gs_app_add_source_id (GsApp *app, const gchar *source_id)
 const gchar *
 gs_app_get_project_group (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->project_group;
+	return priv->project_group;
 }
 
 /**
@@ -1414,8 +1449,9 @@ gs_app_get_project_group (GsApp *app)
 const gchar *
 gs_app_get_developer_name (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->developer_name;
+	return priv->developer_name;
 }
 
 /**
@@ -1430,9 +1466,10 @@ gs_app_get_developer_name (GsApp *app)
 void
 gs_app_set_project_group (GsApp *app, const gchar *project_group)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_str (&app->project_group, project_group);
+	_g_set_str (&priv->project_group, project_group);
 }
 
 /**
@@ -1447,9 +1484,10 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 void
 gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_str (&app->developer_name, developer_name);
+	_g_set_str (&priv->developer_name, developer_name);
 }
 
 /**
@@ -1465,8 +1503,9 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->pixbuf;
+	return priv->pixbuf;
 }
 
 /**
@@ -1482,8 +1521,9 @@ gs_app_get_pixbuf (GsApp *app)
 GPtrArray *
 gs_app_get_icons (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->icons;
+	return priv->icons;
 }
 
 /**
@@ -1499,13 +1539,14 @@ gs_app_get_icons (GsApp *app)
 void
 gs_app_add_icon (GsApp *app, AsIcon *icon)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	if (icon == NULL) {
-		g_ptr_array_set_size (app->icons, 0);
+		g_ptr_array_set_size (priv->icons, 0);
 		return;
 	}
-	g_ptr_array_add (app->icons, g_object_ref (icon));
+	g_ptr_array_add (priv->icons, g_object_ref (icon));
 }
 
 /**
@@ -1522,8 +1563,9 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 GFile *
 gs_app_get_local_file (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->local_file;
+	return priv->local_file;
 }
 
 /**
@@ -1539,9 +1581,10 @@ gs_app_get_local_file (GsApp *app)
 void
 gs_app_set_local_file (GsApp *app, GFile *local_file)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_set_object (&app->local_file, local_file);
+	g_set_object (&priv->local_file, local_file);
 }
 
 /**
@@ -1557,8 +1600,9 @@ gs_app_set_local_file (GsApp *app, GFile *local_file)
 AsContentRating *
 gs_app_get_content_rating (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->content_rating;
+	return priv->content_rating;
 }
 
 /**
@@ -1573,9 +1617,10 @@ gs_app_get_content_rating (GsApp *app)
 void
 gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_set_object (&app->content_rating, content_rating);
+	g_set_object (&priv->content_rating, content_rating);
 }
 
 /**
@@ -1592,10 +1637,11 @@ gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
 GsApp *
 gs_app_get_runtime (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	if (gs_app_is_installed (app))
-		return app->runtime;
-	return app->update_runtime;
+		return priv->runtime;
+	return priv->update_runtime;
 }
 
 /**
@@ -1610,11 +1656,11 @@ gs_app_get_runtime (GsApp *app)
 void
 gs_app_set_runtime (GsApp *app, GsApp *runtime)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (app != runtime);
-	g_return_if_fail (runtime->kind == AS_APP_KIND_RUNTIME);
-	g_set_object (&app->runtime, runtime);
+	g_set_object (&priv->runtime, runtime);
 }
 
 /**
@@ -1630,8 +1676,9 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 GsApp *
 gs_app_get_update_runtime (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->update_runtime;
+	return priv->update_runtime;
 }
 
 /**
@@ -1646,11 +1693,11 @@ gs_app_get_update_runtime (GsApp *app)
 void
 gs_app_set_update_runtime (GsApp *app, GsApp *runtime)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (app != runtime);
-	g_return_if_fail (runtime->kind == AS_APP_KIND_RUNTIME);
-	g_set_object (&app->update_runtime, runtime);
+	g_set_object (&priv->update_runtime, runtime);
 }
 
 /**
@@ -1665,9 +1712,10 @@ gs_app_set_update_runtime (GsApp *app, GsApp *runtime)
 void
 gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_set_object (&app->pixbuf, pixbuf);
+	g_set_object (&priv->pixbuf, pixbuf);
 }
 
 /**
@@ -1683,8 +1731,9 @@ gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 GsPrice *
 gs_app_get_price (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->price;
+	return priv->price;
 }
 
 /**
@@ -1700,11 +1749,12 @@ gs_app_get_price (GsApp *app)
 void
 gs_app_set_price (GsApp *app, gdouble amount, const gchar *currency)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (app->price != NULL)
-		g_object_unref (app->price);
-	app->price = gs_price_new (amount, currency);
+	if (priv->price != NULL)
+		g_object_unref (priv->price);
+	priv->price = gs_price_new (amount, currency);
 }
 
 typedef enum {
@@ -1774,15 +1824,17 @@ gs_app_get_ui_version (const gchar *version, guint64 flags)
 static void
 gs_app_ui_versions_invalidate (GsApp *app)
 {
-	g_free (app->version_ui);
-	g_free (app->update_version_ui);
-	app->version_ui = NULL;
-	app->update_version_ui = NULL;
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_free (priv->version_ui);
+	g_free (priv->update_version_ui);
+	priv->version_ui = NULL;
+	priv->update_version_ui = NULL;
 }
 
 static void
 gs_app_ui_versions_populate (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	guint i;
 	guint64 flags[] = { GS_APP_VERSION_FIXUP_RELEASE |
 			    GS_APP_VERSION_FIXUP_DISTRO_SUFFIX |
@@ -1794,9 +1846,9 @@ gs_app_ui_versions_populate (GsApp *app)
 
 	/* try each set of bitfields in order */
 	for (i = 0; flags[i] != 0; i++) {
-		app->version_ui = gs_app_get_ui_version (app->version, flags[i]);
-		app->update_version_ui = gs_app_get_ui_version (app->update_version, flags[i]);
-		if (g_strcmp0 (app->version_ui, app->update_version_ui) != 0) {
+		priv->version_ui = gs_app_get_ui_version (priv->version, flags[i]);
+		priv->update_version_ui = gs_app_get_ui_version (priv->update_version, flags[i]);
+		if (g_strcmp0 (priv->version_ui, priv->update_version_ui) != 0) {
 			gs_app_queue_notify (app, "version");
 			return;
 		}
@@ -1804,8 +1856,8 @@ gs_app_ui_versions_populate (GsApp *app)
 	}
 
 	/* we tried, but failed */
-	app->version_ui = g_strdup (app->version);
-	app->update_version_ui = g_strdup (app->update_version);
+	priv->version_ui = g_strdup (priv->version);
+	priv->update_version_ui = g_strdup (priv->update_version);
 }
 
 /**
@@ -1821,8 +1873,9 @@ gs_app_ui_versions_populate (GsApp *app)
 const gchar *
 gs_app_get_version (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->version;
+	return priv->version;
 }
 
 /**
@@ -1838,15 +1891,16 @@ gs_app_get_version (GsApp *app)
 const gchar *
 gs_app_get_version_ui (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* work out the two version numbers */
-	if (app->version != NULL &&
-	    app->version_ui == NULL) {
+	if (priv->version != NULL &&
+	    priv->version_ui == NULL) {
 		gs_app_ui_versions_populate (app);
 	}
 
-	return app->version_ui;
+	return priv->version_ui;
 }
 
 /**
@@ -1862,10 +1916,11 @@ gs_app_get_version_ui (GsApp *app)
 void
 gs_app_set_version (GsApp *app, const gchar *version)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
-	if (_g_set_str (&app->version, version)) {
+	if (_g_set_str (&priv->version, version)) {
 		gs_app_ui_versions_invalidate (app);
 		gs_app_queue_notify (app, "version");
 	}
@@ -1884,8 +1939,9 @@ gs_app_set_version (GsApp *app, const gchar *version)
 const gchar *
 gs_app_get_summary (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->summary;
+	return priv->summary;
 }
 
 /**
@@ -1901,14 +1957,15 @@ gs_app_get_summary (GsApp *app)
 void
 gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= app->summary_quality)
+	if (quality <= priv->summary_quality)
 		return;
-	app->summary_quality = quality;
-	if (_g_set_str (&app->summary, summary))
+	priv->summary_quality = quality;
+	if (_g_set_str (&priv->summary, summary))
 		g_object_notify (G_OBJECT (app), "summary");
 }
 
@@ -1925,8 +1982,9 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 const gchar *
 gs_app_get_description (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->description;
+	return priv->description;
 }
 
 /**
@@ -1942,14 +2000,15 @@ gs_app_get_description (GsApp *app)
 void
 gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *description)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= app->description_quality)
+	if (quality <= priv->description_quality)
 		return;
-	app->description_quality = quality;
-	_g_set_str (&app->description, description);
+	priv->description_quality = quality;
+	_g_set_str (&priv->description, description);
 }
 
 /**
@@ -1966,8 +2025,9 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 const gchar *
 gs_app_get_url (GsApp *app, AsUrlKind kind)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return g_hash_table_lookup (app->urls, as_url_kind_to_string (kind));
+	return g_hash_table_lookup (priv->urls, as_url_kind_to_string (kind));
 }
 
 /**
@@ -1983,9 +2043,10 @@ gs_app_get_url (GsApp *app, AsUrlKind kind)
 void
 gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_hash_table_insert (app->urls,
+	g_hash_table_insert (priv->urls,
 			     g_strdup (as_url_kind_to_string (kind)),
 			     g_strdup (url));
 }
@@ -2003,8 +2064,9 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 const gchar *
 gs_app_get_license (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->license;
+	return priv->license;
 }
 
 /**
@@ -2020,8 +2082,9 @@ gs_app_get_license (GsApp *app)
 gboolean
 gs_app_get_license_is_free (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	return app->license_is_free;
+	return priv->license_is_free;
 }
 
 static gboolean
@@ -2054,21 +2117,22 @@ gs_app_get_license_token_is_nonfree (const gchar *token)
 void
 gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	guint i;
 	g_auto(GStrv) tokens = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= app->license_quality)
+	if (quality <= priv->license_quality)
 		return;
 	if (license == NULL)
 		return;
-	app->license_quality = quality;
+	priv->license_quality = quality;
 
 	/* assume free software until we find a nonfree SPDX token */
-	app->license_is_free = TRUE;
+	priv->license_is_free = TRUE;
 	tokens = as_utils_spdx_license_tokenize (license);
 	for (i = 0; tokens[i] != NULL; i++) {
 		if (g_strcmp0 (tokens[i], "&") == 0 ||
@@ -2077,11 +2141,11 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
 			g_debug ("nonfree license from %s: '%s'",
 				 gs_app_get_id (app), tokens[i]);
-			app->license_is_free = FALSE;
+			priv->license_is_free = FALSE;
 			break;
 		}
 	}
-	_g_set_str (&app->license, license);
+	_g_set_str (&priv->license, license);
 }
 
 /**
@@ -2097,8 +2161,9 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 const gchar *
 gs_app_get_summary_missing (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->summary_missing;
+	return priv->summary_missing;
 }
 
 /**
@@ -2113,9 +2178,10 @@ gs_app_get_summary_missing (GsApp *app)
 void
 gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_str (&app->summary_missing, summary_missing);
+	_g_set_str (&priv->summary_missing, summary_missing);
 }
 
 /**
@@ -2133,8 +2199,9 @@ gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 gchar **
 gs_app_get_menu_path (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->menu_path;
+	return priv->menu_path;
 }
 
 /**
@@ -2150,9 +2217,10 @@ gs_app_get_menu_path (GsApp *app)
 void
 gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_strv (&app->menu_path, menu_path);
+	_g_set_strv (&priv->menu_path, menu_path);
 }
 
 /**
@@ -2168,8 +2236,9 @@ gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 const gchar *
 gs_app_get_origin (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->origin;
+	return priv->origin;
 }
 
 /**
@@ -2184,27 +2253,28 @@ gs_app_get_origin (GsApp *app)
 void
 gs_app_set_origin (GsApp *app, const gchar *origin)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* same */
-	if (g_strcmp0 (origin, app->origin) == 0)
+	if (g_strcmp0 (origin, priv->origin) == 0)
 		return;
 
 	/* trying to change */
-	if (app->origin != NULL && origin != NULL) {
+	if (priv->origin != NULL && origin != NULL) {
 		g_warning ("automatically prevented from changing "
 			   "origin on %s from %s to %s!",
 			   gs_app_get_unique_id_unlocked (app),
-			   app->origin, origin);
+			   priv->origin, origin);
 		return;
 	}
 
-	g_free (app->origin);
-	app->origin = g_strdup (origin);
+	g_free (priv->origin);
+	priv->origin = g_strdup (origin);
 
 	/* no longer valid */
-	app->unique_id_valid = FALSE;
+	priv->unique_id_valid = FALSE;
 }
 
 /**
@@ -2221,8 +2291,9 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 const gchar *
 gs_app_get_origin_hostname (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->origin_hostname;
+	return priv->origin_hostname;
 }
 
 /**
@@ -2242,7 +2313,8 @@ gs_app_get_origin_hostname (GsApp *app)
 void
 gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_autoptr(SoupURI) uri = NULL;
 	guint i;
 	const gchar *prefixes[] = { "download.", "mirrors.", NULL };
@@ -2250,9 +2322,9 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* same */
-	if (g_strcmp0 (origin_hostname, app->origin_hostname) == 0)
+	if (g_strcmp0 (origin_hostname, priv->origin_hostname) == 0)
 		return;
-	g_free (app->origin_hostname);
+	g_free (priv->origin_hostname);
 
 	/* use libsoup to convert a URL */
 	uri = soup_uri_new (origin_hostname);
@@ -2270,7 +2342,7 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 		origin_hostname = "localhost";
 
 	/* success */
-	app->origin_hostname = g_strdup (origin_hostname);
+	priv->origin_hostname = g_strdup (origin_hostname);
 }
 
 /**
@@ -2285,9 +2357,10 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
 void
 gs_app_add_screenshot (GsApp *app, AsScreenshot *screenshot)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (AS_IS_SCREENSHOT (screenshot));
-	g_ptr_array_add (app->screenshots, g_object_ref (screenshot));
+	g_ptr_array_add (priv->screenshots, g_object_ref (screenshot));
 }
 
 /**
@@ -2303,8 +2376,9 @@ gs_app_add_screenshot (GsApp *app, AsScreenshot *screenshot)
 GPtrArray *
 gs_app_get_screenshots (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->screenshots;
+	return priv->screenshots;
 }
 
 /**
@@ -2320,8 +2394,9 @@ gs_app_get_screenshots (GsApp *app)
 const gchar *
 gs_app_get_update_version (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->update_version;
+	return priv->update_version;
 }
 
 /**
@@ -2337,21 +2412,23 @@ gs_app_get_update_version (GsApp *app)
 const gchar *
 gs_app_get_update_version_ui (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* work out the two version numbers */
-	if (app->update_version != NULL &&
-	    app->update_version_ui == NULL) {
+	if (priv->update_version != NULL &&
+	    priv->update_version_ui == NULL) {
 		gs_app_ui_versions_populate (app);
 	}
 
-	return app->update_version_ui;
+	return priv->update_version_ui;
 }
 
 static void
 gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 {
-	if (_g_set_str (&app->update_version, update_version))
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	if (_g_set_str (&priv->update_version, update_version))
 		gs_app_ui_versions_invalidate (app);
 }
 
@@ -2367,7 +2444,8 @@ gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 void
 gs_app_set_update_version (GsApp *app, const gchar *update_version)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	gs_app_set_update_version_internal (app, update_version);
 	gs_app_queue_notify (app, "version");
@@ -2386,8 +2464,9 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 const gchar *
 gs_app_get_update_details (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->update_details;
+	return priv->update_details;
 }
 
 /**
@@ -2402,9 +2481,10 @@ gs_app_get_update_details (GsApp *app)
 void
 gs_app_set_update_details (GsApp *app, const gchar *update_details)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_str (&app->update_details, update_details);
+	_g_set_str (&priv->update_details, update_details);
 }
 
 /**
@@ -2420,8 +2500,9 @@ gs_app_set_update_details (GsApp *app, const gchar *update_details)
 AsUrgencyKind
 gs_app_get_update_urgency (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), AS_URGENCY_KIND_UNKNOWN);
-	return app->update_urgency;
+	return priv->update_urgency;
 }
 
 /**
@@ -2436,10 +2517,11 @@ gs_app_get_update_urgency (GsApp *app)
 void
 gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	if (update_urgency == app->update_urgency)
+	if (update_urgency == priv->update_urgency)
 		return;
-	app->update_urgency = update_urgency;
+	priv->update_urgency = update_urgency;
 }
 
 /**
@@ -2460,8 +2542,9 @@ gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 const gchar *
 gs_app_get_management_plugin (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->management_plugin;
+	return priv->management_plugin;
 }
 
 /**
@@ -2481,7 +2564,8 @@ gs_app_get_management_plugin (GsApp *app)
 void
 gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* plugins cannot adopt wildcard packages */
@@ -2494,21 +2578,21 @@ gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 	}
 
 	/* same */
-	if (g_strcmp0 (app->management_plugin, management_plugin) == 0)
+	if (g_strcmp0 (priv->management_plugin, management_plugin) == 0)
 		return;
 
 	/* trying to change */
-	if (app->management_plugin != NULL && management_plugin != NULL) {
+	if (priv->management_plugin != NULL && management_plugin != NULL) {
 		g_warning ("automatically prevented from changing "
 			   "management plugin on %s from %s to %s!",
 			   gs_app_get_unique_id_unlocked (app),
-			   app->management_plugin,
+			   priv->management_plugin,
 			   management_plugin);
 		return;
 	}
 
-	g_free (app->management_plugin);
-	app->management_plugin = g_strdup (management_plugin);
+	g_free (priv->management_plugin);
+	priv->management_plugin = g_strdup (management_plugin);
 }
 
 /**
@@ -2524,8 +2608,9 @@ gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 gint
 gs_app_get_rating (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), -1);
-	return app->rating;
+	return priv->rating;
 }
 
 /**
@@ -2540,11 +2625,12 @@ gs_app_get_rating (GsApp *app)
 void
 gs_app_set_rating (GsApp *app, gint rating)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	if (rating == app->rating)
+	if (rating == priv->rating)
 		return;
-	app->rating = rating;
+	priv->rating = rating;
 	gs_app_queue_notify (app, "rating");
 }
 
@@ -2561,8 +2647,9 @@ gs_app_set_rating (GsApp *app, gint rating)
 GArray *
 gs_app_get_review_ratings (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->review_ratings;
+	return priv->review_ratings;
 }
 
 /**
@@ -2577,9 +2664,10 @@ gs_app_get_review_ratings (GsApp *app)
 void
 gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	_g_set_array (&app->review_ratings, review_ratings);
+	_g_set_array (&priv->review_ratings, review_ratings);
 }
 
 /**
@@ -2595,8 +2683,9 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 GPtrArray *
 gs_app_get_reviews (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->reviews;
+	return priv->reviews;
 }
 
 /**
@@ -2611,9 +2700,10 @@ gs_app_get_reviews (GsApp *app)
 void
 gs_app_add_review (GsApp *app, AsReview *review)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (AS_IS_REVIEW (review));
-	g_ptr_array_add (app->reviews, g_object_ref (review));
+	g_ptr_array_add (priv->reviews, g_object_ref (review));
 }
 
 /**
@@ -2628,8 +2718,9 @@ gs_app_add_review (GsApp *app, AsReview *review)
 void
 gs_app_remove_review (GsApp *app, AsReview *review)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	g_ptr_array_remove (app->reviews, review);
+	g_ptr_array_remove (priv->reviews, review);
 }
 
 /**
@@ -2645,8 +2736,9 @@ gs_app_remove_review (GsApp *app, AsReview *review)
 GPtrArray *
 gs_app_get_provides (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->provides;
+	return priv->provides;
 }
 
 /**
@@ -2661,9 +2753,10 @@ gs_app_get_provides (GsApp *app)
 void
 gs_app_add_provide (GsApp *app, AsProvide *provide)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (AS_IS_PROVIDE (provide));
-	g_ptr_array_add (app->provides, g_object_ref (provide));
+	g_ptr_array_add (priv->provides, g_object_ref (provide));
 }
 
 /**
@@ -2682,25 +2775,26 @@ gs_app_add_provide (GsApp *app, AsProvide *provide)
 guint64
 gs_app_get_size_download (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	guint64 sz;
 
 	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
 
 	/* this app */
-	sz = app->size_download;
+	sz = priv->size_download;
 
 	/* add the runtime if this is not installed */
-	if (app->update_runtime != NULL) {
-		if (gs_app_get_state (app->update_runtime) == AS_APP_STATE_AVAILABLE)
-			sz += gs_app_get_size_installed (app->update_runtime);
-	} else if (app->runtime != NULL) {
-		if (gs_app_get_state (app->runtime) == AS_APP_STATE_AVAILABLE)
-			sz += gs_app_get_size_installed (app->runtime);
+	if (priv->update_runtime != NULL) {
+		if (gs_app_get_state (priv->update_runtime) == AS_APP_STATE_AVAILABLE)
+			sz += gs_app_get_size_installed (priv->update_runtime);
+	} else if (priv->runtime != NULL) {
+		if (gs_app_get_state (priv->runtime) == AS_APP_STATE_AVAILABLE)
+			sz += gs_app_get_size_installed (priv->runtime);
 	}
 
 	/* add related apps */
-	for (guint i = 0; i < app->related->len; i++) {
-		GsApp *app_related = g_ptr_array_index (app->related, i);
+	for (guint i = 0; i < priv->related->len; i++) {
+		GsApp *app_related = g_ptr_array_index (priv->related, i);
 		sz += gs_app_get_size_download (app_related);
 	}
 
@@ -2720,10 +2814,11 @@ gs_app_get_size_download (GsApp *app)
 void
 gs_app_set_size_download (GsApp *app, guint64 size_download)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	if (size_download == app->size_download)
+	if (size_download == priv->size_download)
 		return;
-	app->size_download = size_download;
+	priv->size_download = size_download;
 }
 
 /**
@@ -2740,16 +2835,17 @@ gs_app_set_size_download (GsApp *app, guint64 size_download)
 guint64
 gs_app_get_size_installed (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	guint64 sz;
 
 	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
 
 	/* this app */
-	sz = app->size_installed;
+	sz = priv->size_installed;
 
 	/* add related apps */
-	for (guint i = 0; i < app->related->len; i++) {
-		GsApp *app_related = g_ptr_array_index (app->related, i);
+	for (guint i = 0; i < priv->related->len; i++) {
+		GsApp *app_related = g_ptr_array_index (priv->related, i);
 		sz += gs_app_get_size_installed (app_related);
 	}
 
@@ -2768,10 +2864,11 @@ gs_app_get_size_installed (GsApp *app)
 void
 gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	if (size_installed == app->size_installed)
+	if (size_installed == priv->size_installed)
 		return;
-	app->size_installed = size_installed;
+	priv->size_installed = size_installed;
 }
 
 /**
@@ -2790,9 +2887,10 @@ gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 const gchar *
 gs_app_get_metadata_item (GsApp *app, const gchar *key)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (key != NULL, NULL);
-	return g_hash_table_lookup (app->metadata, key);
+	return g_hash_table_lookup (priv->metadata, key);
 }
 
 /**
@@ -2810,27 +2908,28 @@ gs_app_get_metadata_item (GsApp *app, const gchar *key)
 void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	const gchar *found;
 
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* if no value, then remove the key */
 	if (value == NULL) {
-		g_hash_table_remove (app->metadata, key);
+		g_hash_table_remove (priv->metadata, key);
 		return;
 	}
 
 	/* check we're not overwriting */
-	found = g_hash_table_lookup (app->metadata, key);
+	found = g_hash_table_lookup (priv->metadata, key);
 	if (found != NULL) {
 		if (g_strcmp0 (found, value) == 0)
 			return;
 		g_warning ("tried overwriting %s key %s from %s to %s",
-			   app->id, key, found, value);
+			   priv->id, key, found, value);
 		return;
 	}
-	g_hash_table_insert (app->metadata, g_strdup (key), g_strdup (value));
+	g_hash_table_insert (priv->metadata, g_strdup (key), g_strdup (value));
 }
 
 /**
@@ -2846,8 +2945,9 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 GPtrArray *
 gs_app_get_addons (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->addons;
+	return priv->addons;
 }
 
 /**
@@ -2862,20 +2962,21 @@ gs_app_get_addons (GsApp *app)
 void
 gs_app_add_addon (GsApp *app, GsApp *addon)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	gpointer found;
 	const gchar *id;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (addon));
 
 	id = gs_app_get_id (addon);
-	found = g_hash_table_lookup (app->addons_hash, id);
+	found = g_hash_table_lookup (priv->addons_hash, id);
 	if (found != NULL)
 		return;
-	g_hash_table_insert (app->addons_hash, g_strdup (id), GINT_TO_POINTER (1));
+	g_hash_table_insert (priv->addons_hash, g_strdup (id), GINT_TO_POINTER (1));
 
-	g_ptr_array_add (app->addons, g_object_ref (addon));
+	g_ptr_array_add (priv->addons, g_object_ref (addon));
 }
 
 /**
@@ -2890,11 +2991,12 @@ gs_app_add_addon (GsApp *app, GsApp *addon)
 void
 gs_app_remove_addon (GsApp *app, GsApp *addon)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (addon));
-	g_hash_table_remove (app->addons_hash, gs_app_get_id (addon));
-	g_ptr_array_remove (app->addons, addon);
+	g_hash_table_remove (priv->addons_hash, gs_app_get_id (addon));
+	g_ptr_array_remove (priv->addons, addon);
 }
 
 /**
@@ -2910,8 +3012,9 @@ gs_app_remove_addon (GsApp *app, GsApp *addon)
 GPtrArray *
 gs_app_get_related (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->related;
+	return priv->related;
 }
 
 /**
@@ -2926,30 +3029,32 @@ gs_app_get_related (GsApp *app)
 void
 gs_app_add_related (GsApp *app, GsApp *app2)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	GsAppPrivate *priv2 = gs_app_get_instance_private (app2);
 	gchar *key;
 	gpointer found;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* if the app is updatable-live and any related app is not then
 	 * degrade to the offline state */
-	if (app->state == AS_APP_STATE_UPDATABLE_LIVE &&
-	    app2->state == AS_APP_STATE_UPDATABLE) {
-		app->state = app2->state;
+	if (priv->state == AS_APP_STATE_UPDATABLE_LIVE &&
+	    priv2->state == AS_APP_STATE_UPDATABLE) {
+		priv->state = priv2->state;
 	}
 
 	key = g_strdup_printf ("%s-%s",
 			       gs_app_get_id (app2),
 			       gs_app_get_source_default (app2));
-	found = g_hash_table_lookup (app->related_hash, key);
+	found = g_hash_table_lookup (priv->related_hash, key);
 	if (found != NULL) {
 		g_debug ("Already added %s as a related item", key);
 		g_free (key);
 		return;
 	}
-	g_hash_table_insert (app->related_hash, key, GINT_TO_POINTER (1));
-	g_ptr_array_add (app->related, g_object_ref (app2));
+	g_hash_table_insert (priv->related_hash, key, GINT_TO_POINTER (1));
+	g_ptr_array_add (priv->related, g_object_ref (app2));
 }
 
 /**
@@ -2965,8 +3070,9 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 GPtrArray *
 gs_app_get_history (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->history;
+	return priv->history;
 }
 
 /**
@@ -2981,9 +3087,10 @@ gs_app_get_history (GsApp *app)
 void
 gs_app_add_history (GsApp *app, GsApp *app2)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_ptr_array_add (app->history, g_object_ref (app2));
+	g_ptr_array_add (priv->history, g_object_ref (app2));
 }
 
 /**
@@ -2999,8 +3106,9 @@ gs_app_add_history (GsApp *app, GsApp *app2)
 guint64
 gs_app_get_install_date (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
-	return app->install_date;
+	return priv->install_date;
 }
 
 /**
@@ -3015,10 +3123,11 @@ gs_app_get_install_date (GsApp *app)
 void
 gs_app_set_install_date (GsApp *app, guint64 install_date)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	if (install_date == app->install_date)
+	if (install_date == priv->install_date)
 		return;
-	app->install_date = install_date;
+	priv->install_date = install_date;
 }
 
 /**
@@ -3034,11 +3143,12 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
 gboolean
 gs_app_is_installed (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	return (app->state == AS_APP_STATE_INSTALLED) ||
-	       (app->state == AS_APP_STATE_UPDATABLE) ||
-	       (app->state == AS_APP_STATE_UPDATABLE_LIVE) ||
-	       (app->state == AS_APP_STATE_REMOVING);
+	return (priv->state == AS_APP_STATE_INSTALLED) ||
+	       (priv->state == AS_APP_STATE_UPDATABLE) ||
+	       (priv->state == AS_APP_STATE_UPDATABLE_LIVE) ||
+	       (priv->state == AS_APP_STATE_REMOVING);
 }
 
 /**
@@ -3054,11 +3164,12 @@ gs_app_is_installed (GsApp *app)
 gboolean
 gs_app_is_updatable (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	if (app->kind == AS_APP_KIND_OS_UPGRADE)
+	if (priv->kind == AS_APP_KIND_OS_UPGRADE)
 		return TRUE;
-	return (app->state == AS_APP_STATE_UPDATABLE) ||
-	       (app->state == AS_APP_STATE_UPDATABLE_LIVE);
+	return (priv->state == AS_APP_STATE_UPDATABLE) ||
+	       (priv->state == AS_APP_STATE_UPDATABLE_LIVE);
 }
 
 /**
@@ -3074,8 +3185,9 @@ gs_app_is_updatable (GsApp *app)
 GPtrArray *
 gs_app_get_categories (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->categories;
+	return priv->categories;
 }
 
 /**
@@ -3092,14 +3204,15 @@ gs_app_get_categories (GsApp *app)
 gboolean
 gs_app_has_category (GsApp *app, const gchar *category)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	const gchar *tmp;
 	guint i;
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
 	/* find the category */
-	for (i = 0; i < app->categories->len; i++) {
-		tmp = g_ptr_array_index (app->categories, i);
+	for (i = 0; i < priv->categories->len; i++) {
+		tmp = g_ptr_array_index (priv->categories, i);
 		if (g_strcmp0 (tmp, category) == 0)
 			return TRUE;
 	}
@@ -3118,10 +3231,11 @@ gs_app_has_category (GsApp *app, const gchar *category)
 void
 gs_app_set_categories (GsApp *app, GPtrArray *categories)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (categories != NULL);
-	_g_set_ptr_array (&app->categories, categories);
+	_g_set_ptr_array (&priv->categories, categories);
 }
 
 /**
@@ -3136,12 +3250,13 @@ gs_app_set_categories (GsApp *app, GPtrArray *categories)
 void
 gs_app_add_category (GsApp *app, const gchar *category)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (category != NULL);
 	if (gs_app_has_category (app, category))
 		return;
-	g_ptr_array_add (app->categories, g_strdup (category));
+	g_ptr_array_add (priv->categories, g_strdup (category));
 }
 
 /**
@@ -3158,17 +3273,18 @@ gs_app_add_category (GsApp *app, const gchar *category)
 gboolean
 gs_app_remove_category (GsApp *app, const gchar *category)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	const gchar *tmp;
 	guint i;
 
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
-	for (i = 0; i < app->categories->len; i++) {
-		tmp = g_ptr_array_index (app->categories, i);
+	for (i = 0; i < priv->categories->len; i++) {
+		tmp = g_ptr_array_index (priv->categories, i);
 		if (g_strcmp0 (tmp, category) != 0)
 			continue;
-		g_ptr_array_remove_index_fast (app->categories, i);
+		g_ptr_array_remove_index_fast (priv->categories, i);
 		return TRUE;
 	}
 	return FALSE;
@@ -3187,8 +3303,9 @@ gs_app_remove_category (GsApp *app, const gchar *category)
 GPtrArray *
 gs_app_get_key_colors (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->key_colors;
+	return priv->key_colors;
 }
 
 /**
@@ -3203,10 +3320,11 @@ gs_app_get_key_colors (GsApp *app)
 void
 gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_colors != NULL);
-	_g_set_ptr_array (&app->key_colors, key_colors);
+	_g_set_ptr_array (&priv->key_colors, key_colors);
 }
 
 /**
@@ -3221,9 +3339,10 @@ gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 void
 gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_color != NULL);
-	g_ptr_array_add (app->key_colors, gdk_rgba_copy (key_color));
+	g_ptr_array_add (priv->key_colors, gdk_rgba_copy (key_color));
 }
 
 /**
@@ -3239,8 +3358,9 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 GPtrArray *
 gs_app_get_keywords (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->keywords;
+	return priv->keywords;
 }
 
 /**
@@ -3255,10 +3375,11 @@ gs_app_get_keywords (GsApp *app)
 void
 gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (keywords != NULL);
-	_g_set_ptr_array (&app->keywords, keywords);
+	_g_set_ptr_array (&priv->keywords, keywords);
 }
 
 /**
@@ -3273,10 +3394,11 @@ gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 void
 gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 	if (kudo & GS_APP_KUDO_SANDBOXED_SECURE)
 		kudo |= GS_APP_KUDO_SANDBOXED;
-	app->kudos |= kudo;
+	priv->kudos |= kudo;
 }
 
 /**
@@ -3293,8 +3415,9 @@ gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 gboolean
 gs_app_has_kudo (GsApp *app, GsAppKudo kudo)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	return (app->kudos & kudo) > 0;
+	return (priv->kudos & kudo) > 0;
 }
 
 /**
@@ -3310,8 +3433,9 @@ gs_app_has_kudo (GsApp *app, GsAppKudo kudo)
 guint64
 gs_app_get_kudos (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
-	return app->kudos;
+	return priv->kudos;
 }
 
 /**
@@ -3327,43 +3451,44 @@ gs_app_get_kudos (GsApp *app)
 guint
 gs_app_get_kudos_percentage (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	guint percentage = 0;
 
 	g_return_val_if_fail (GS_IS_APP (app), 0);
 
-	if ((app->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
+	if ((priv->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
+	if ((priv->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
+	if ((priv->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
+	if ((priv->kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
+	if ((priv->kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
 		percentage += 10;
-	if ((app->kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
+	if ((priv->kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
 		percentage += 10;
-	if ((app->kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
+	if ((priv->kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
+	if ((priv->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
 		percentage += 5;
-	if ((app->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
+	if ((priv->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
 		percentage += 10;
-	if ((app->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
+	if ((priv->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
+	if ((priv->kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
+	if ((priv->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
+	if ((priv->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_SANDBOXED) > 0)
+	if ((priv->kudos & GS_APP_KUDO_SANDBOXED) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
+	if ((priv->kudos & GS_APP_KUDO_SANDBOXED_SECURE) > 0)
 		percentage += 20;
 
 	/* popular apps should be at *least* 50% */
-	if ((app->kudos & GS_APP_KUDO_POPULAR) > 0)
+	if ((priv->kudos & GS_APP_KUDO_POPULAR) > 0)
 		percentage = MAX (percentage, 50);
 
 	return MIN (percentage, 100);
@@ -3388,9 +3513,10 @@ gs_app_get_kudos_percentage (GsApp *app)
 gboolean
 gs_app_get_to_be_installed (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
-	return app->to_be_installed;
+	return priv->to_be_installed;
 }
 
 /**
@@ -3405,9 +3531,10 @@ gs_app_get_to_be_installed (GsApp *app)
 void
 gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
 
-	app->to_be_installed = to_be_installed;
+	priv->to_be_installed = to_be_installed;
 }
 
 /**
@@ -3424,9 +3551,10 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 gboolean
 gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
-	return (app->quirk & quirk) > 0;
+	return (priv->quirk & quirk) > 0;
 }
 
 /**
@@ -3441,10 +3569,11 @@ gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 void
 gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
-	app->quirk |= quirk;
+	priv->quirk |= quirk;
 	gs_app_queue_notify (app, "quirk");
 }
 
@@ -3460,10 +3589,11 @@ gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 void
 gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&app->mutex);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
 
-	app->quirk &= ~quirk;
+	priv->quirk &= ~quirk;
 	gs_app_queue_notify (app, "quirk");
 }
 
@@ -3480,8 +3610,9 @@ gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
 void
 gs_app_set_match_value (GsApp *app, guint match_value)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	app->match_value = match_value;
+	priv->match_value = match_value;
 }
 
 /**
@@ -3502,8 +3633,9 @@ gs_app_set_match_value (GsApp *app, guint match_value)
 guint
 gs_app_get_match_value (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
-	return app->match_value;
+	return priv->match_value;
 }
 
 /**
@@ -3518,8 +3650,9 @@ gs_app_get_match_value (GsApp *app)
 void
 gs_app_set_priority (GsApp *app, guint priority)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_if_fail (GS_IS_APP (app));
-	app->priority = priority;
+	priv->priority = priority;
 }
 
 /**
@@ -3536,48 +3669,50 @@ gs_app_set_priority (GsApp *app, guint priority)
 guint
 gs_app_get_priority (GsApp *app)
 {
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), 0);
-	return app->priority;
+	return priv->priority;
 }
 
 static void
 gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
 	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
 	switch (prop_id) {
 	case PROP_ID:
-		g_value_set_string (value, app->id);
+		g_value_set_string (value, priv->id);
 		break;
 	case PROP_NAME:
-		g_value_set_string (value, app->name);
+		g_value_set_string (value, priv->name);
 		break;
 	case PROP_VERSION:
-		g_value_set_string (value, app->version);
+		g_value_set_string (value, priv->version);
 		break;
 	case PROP_SUMMARY:
-		g_value_set_string (value, app->summary);
+		g_value_set_string (value, priv->summary);
 		break;
 	case PROP_DESCRIPTION:
-		g_value_set_string (value, app->description);
+		g_value_set_string (value, priv->description);
 		break;
 	case PROP_RATING:
-		g_value_set_int (value, app->rating);
+		g_value_set_int (value, priv->rating);
 		break;
 	case PROP_KIND:
-		g_value_set_uint (value, app->kind);
+		g_value_set_uint (value, priv->kind);
 		break;
 	case PROP_STATE:
-		g_value_set_uint (value, app->state);
+		g_value_set_uint (value, priv->state);
 		break;
 	case PROP_PROGRESS:
-		g_value_set_uint (value, app->progress);
+		g_value_set_uint (value, priv->progress);
 		break;
 	case PROP_INSTALL_DATE:
-		g_value_set_uint64 (value, app->install_date);
+		g_value_set_uint64 (value, priv->install_date);
 		break;
 	case PROP_QUIRK:
-		g_value_set_uint64 (value, app->quirk);
+		g_value_set_uint64 (value, priv->quirk);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -3589,6 +3724,7 @@ static void
 gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
 	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
 	switch (prop_id) {
 	case PROP_ID:
@@ -3622,13 +3758,13 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_state_internal (app, g_value_get_uint (value));
 		break;
 	case PROP_PROGRESS:
-		app->progress = g_value_get_uint (value);
+		priv->progress = g_value_get_uint (value);
 		break;
 	case PROP_INSTALL_DATE:
 		gs_app_set_install_date (app, g_value_get_uint64 (value));
 		break;
 	case PROP_QUIRK:
-		app->quirk = g_value_get_uint64 (value);
+		priv->quirk = g_value_get_uint64 (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -3640,17 +3776,18 @@ static void
 gs_app_dispose (GObject *object)
 {
 	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	g_clear_object (&app->runtime);
-	g_clear_object (&app->update_runtime);
+	g_clear_object (&priv->runtime);
+	g_clear_object (&priv->update_runtime);
 
-	g_clear_pointer (&app->addons, g_ptr_array_unref);
-	g_clear_pointer (&app->history, g_ptr_array_unref);
-	g_clear_pointer (&app->related, g_ptr_array_unref);
-	g_clear_pointer (&app->screenshots, g_ptr_array_unref);
-	g_clear_pointer (&app->reviews, g_ptr_array_unref);
-	g_clear_pointer (&app->provides, g_ptr_array_unref);
-	g_clear_pointer (&app->icons, g_ptr_array_unref);
+	g_clear_pointer (&priv->addons, g_ptr_array_unref);
+	g_clear_pointer (&priv->history, g_ptr_array_unref);
+	g_clear_pointer (&priv->related, g_ptr_array_unref);
+	g_clear_pointer (&priv->screenshots, g_ptr_array_unref);
+	g_clear_pointer (&priv->reviews, g_ptr_array_unref);
+	g_clear_pointer (&priv->provides, g_ptr_array_unref);
+	g_clear_pointer (&priv->icons, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
@@ -3659,45 +3796,46 @@ static void
 gs_app_finalize (GObject *object)
 {
 	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
-	g_mutex_clear (&app->mutex);
-	g_free (app->id);
-	g_free (app->unique_id);
-	g_free (app->branch);
-	g_free (app->name);
-	g_hash_table_unref (app->urls);
-	g_free (app->license);
-	g_strfreev (app->menu_path);
-	g_free (app->origin);
-	g_free (app->origin_hostname);
-	g_ptr_array_unref (app->sources);
-	g_ptr_array_unref (app->source_ids);
-	g_free (app->project_group);
-	g_free (app->developer_name);
-	g_free (app->version);
-	g_free (app->version_ui);
-	g_free (app->summary);
-	g_free (app->summary_missing);
-	g_free (app->description);
-	g_free (app->update_version);
-	g_free (app->update_version_ui);
-	g_free (app->update_details);
-	g_free (app->management_plugin);
-	g_hash_table_unref (app->metadata);
-	g_hash_table_unref (app->addons_hash);
-	g_hash_table_unref (app->related_hash);
-	g_ptr_array_unref (app->categories);
-	g_ptr_array_unref (app->key_colors);
-	if (app->keywords != NULL)
-		g_ptr_array_unref (app->keywords);
-	if (app->local_file != NULL)
-		g_object_unref (app->local_file);
-	if (app->content_rating != NULL)
-		g_object_unref (app->content_rating);
-	if (app->pixbuf != NULL)
-		g_object_unref (app->pixbuf);
-	if (app->price != NULL)
-		g_object_unref (app->price);
+	g_mutex_clear (&priv->mutex);
+	g_free (priv->id);
+	g_free (priv->unique_id);
+	g_free (priv->branch);
+	g_free (priv->name);
+	g_hash_table_unref (priv->urls);
+	g_free (priv->license);
+	g_strfreev (priv->menu_path);
+	g_free (priv->origin);
+	g_free (priv->origin_hostname);
+	g_ptr_array_unref (priv->sources);
+	g_ptr_array_unref (priv->source_ids);
+	g_free (priv->project_group);
+	g_free (priv->developer_name);
+	g_free (priv->version);
+	g_free (priv->version_ui);
+	g_free (priv->summary);
+	g_free (priv->summary_missing);
+	g_free (priv->description);
+	g_free (priv->update_version);
+	g_free (priv->update_version_ui);
+	g_free (priv->update_details);
+	g_free (priv->management_plugin);
+	g_hash_table_unref (priv->metadata);
+	g_hash_table_unref (priv->addons_hash);
+	g_hash_table_unref (priv->related_hash);
+	g_ptr_array_unref (priv->categories);
+	g_ptr_array_unref (priv->key_colors);
+	if (priv->keywords != NULL)
+		g_ptr_array_unref (priv->keywords);
+	if (priv->local_file != NULL)
+		g_object_unref (priv->local_file);
+	if (priv->content_rating != NULL)
+		g_object_unref (priv->content_rating);
+	if (priv->pixbuf != NULL)
+		g_object_unref (priv->pixbuf);
+	if (priv->price != NULL)
+		g_object_unref (priv->price);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
@@ -3807,35 +3945,36 @@ gs_app_class_init (GsAppClass *klass)
 static void
 gs_app_init (GsApp *app)
 {
-	app->rating = -1;
-	app->sources = g_ptr_array_new_with_free_func (g_free);
-	app->source_ids = g_ptr_array_new_with_free_func (g_free);
-	app->categories = g_ptr_array_new_with_free_func (g_free);
-	app->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
-	app->addons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->provides = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	app->metadata = g_hash_table_new_full (g_str_hash,
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	priv->rating = -1;
+	priv->sources = g_ptr_array_new_with_free_func (g_free);
+	priv->source_ids = g_ptr_array_new_with_free_func (g_free);
+	priv->categories = g_ptr_array_new_with_free_func (g_free);
+	priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+	priv->addons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->provides = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->metadata = g_hash_table_new_full (g_str_hash,
 	                                        g_str_equal,
 	                                        g_free,
 	                                        g_free);
-	app->addons_hash = g_hash_table_new_full (g_str_hash,
+	priv->addons_hash = g_hash_table_new_full (g_str_hash,
 	                                           g_str_equal,
 	                                           g_free,
 	                                           NULL);
-	app->related_hash = g_hash_table_new_full (g_str_hash,
+	priv->related_hash = g_hash_table_new_full (g_str_hash,
 	                                            g_str_equal,
 	                                            g_free,
 	                                            NULL);
-	app->urls = g_hash_table_new_full (g_str_hash,
+	priv->urls = g_hash_table_new_full (g_str_hash,
 	                                    g_str_equal,
 	                                    g_free,
 	                                    g_free);
-	g_mutex_init (&app->mutex);
+	g_mutex_init (&priv->mutex);
 }
 
 /**

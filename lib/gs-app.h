@@ -33,7 +33,13 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_APP (gs_app_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsApp, gs_app, GS, APP, GObject)
+G_DECLARE_DERIVABLE_TYPE (GsApp, gs_app, GS, APP, GObject)
+
+struct _GsAppClass
+{
+	GObjectClass		 parent_class;
+	gpointer		 padding[31];
+};
 
 /**
  * GsAppKudo:
