@@ -38,6 +38,7 @@ struct _GsFlatpakApp
 	gchar			*repo_gpgkey;
 	gchar			*repo_url;
 	GsFlatpakAppFileKind	 file_kind;
+	GsApp			*runtime_repo;
 };
 
 G_DEFINE_TYPE (GsFlatpakApp, gs_flatpak_app, GS_TYPE_APP)
@@ -105,6 +106,10 @@ gs_flatpak_app_to_string (GsApp *app, GString *str)
 		gs_utils_append_key_value (str, 20, "flatpak::file-kind",
 					   gs_flatpak_app_file_kind_to_string (flatpak_app->file_kind));
 	}
+	if (flatpak_app->runtime_repo != NULL) {
+		g_string_append (str, "\n\tRuntimeRepo:\n\t");
+		gs_app_to_string_append (flatpak_app->runtime_repo, str);
+	}
 }
 
 const gchar *
@@ -140,6 +145,13 @@ gs_flatpak_app_get_file_kind (GsApp *app)
 {
 	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
 	return flatpak_app->file_kind;
+}
+
+GsApp *
+gs_flatpak_app_get_runtime_repo (GsApp *app)
+{
+	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
+	return flatpak_app->runtime_repo;
 }
 
 FlatpakRefKind
@@ -224,6 +236,13 @@ gs_flatpak_app_set_file_kind (GsApp *app, GsFlatpakAppFileKind file_kind)
 }
 
 void
+gs_flatpak_app_set_runtime_repo (GsApp *app, GsApp *runtime_repo)
+{
+	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
+	g_set_object (&flatpak_app->runtime_repo, runtime_repo);
+}
+
+void
 gs_flatpak_app_set_ref_kind (GsApp *app, FlatpakRefKind ref_kind)
 {
 	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
@@ -262,6 +281,8 @@ static void
 gs_flatpak_app_finalize (GObject *object)
 {
 	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (object);
+	if (flatpak_app->runtime_repo != NULL)
+		g_object_unref (flatpak_app->runtime_repo);
 	g_free (flatpak_app->ref_arch);
 	g_free (flatpak_app->ref_branch);
 	g_free (flatpak_app->ref_display);

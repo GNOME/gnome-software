@@ -53,6 +53,7 @@ const gchar		*gs_flatpak_app_get_object_id		(GsApp		*app);
 const gchar		*gs_flatpak_app_get_repo_gpgkey		(GsApp		*app);
 const gchar		*gs_flatpak_app_get_repo_url		(GsApp		*app);
 GsFlatpakAppFileKind	 gs_flatpak_app_get_file_kind		(GsApp		*app);
+GsApp			*gs_flatpak_app_get_runtime_repo	(GsApp		*app);
 
 void			 gs_flatpak_app_set_ref_name		(GsApp		*app,
 								 const gchar	*val);
@@ -75,6 +76,8 @@ void			 gs_flatpak_app_set_repo_url		(GsApp		*app,
 								 const gchar	*val);
 void			 gs_flatpak_app_set_file_kind		(GsApp		*app,
 								 GsFlatpakAppFileKind	file_kind);
+void			 gs_flatpak_app_set_runtime_repo	(GsApp		*app,
+								 GsApp		*runtime_repo);
 
 G_END_DECLS
 

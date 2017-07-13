@@ -644,8 +644,8 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* get runtime */
 	runtime = gs_app_get_runtime (app);
-	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/*/runtime/org.test.Runtime/master");
-	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_UNKNOWN);
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
+	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* check the number of sources */
 	g_object_unref (plugin_job);
