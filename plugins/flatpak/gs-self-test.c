@@ -25,6 +25,26 @@
 
 #include "gs-test.h"
 
+static gboolean
+gs_flatpak_test_write_repo_file (const gchar *fn, const gchar *testdir, GError **error)
+{
+	g_autofree gchar *testdir_repourl = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	/* create file */
+	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
+	g_string_append (str, "[Flatpak Repo]\n");
+	g_string_append (str, "Title=foo-bar\n");
+	g_string_append (str, "Comment=Longer one line comment\n");
+	g_string_append (str, "Description=Longer multiline comment that "
+			      "does into detail.\n");
+	g_string_append (str, "DefaultBranch=stable\n");
+	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
+	g_string_append (str, "Homepage=http://foo.bar\n");
+	g_string_append (str, "GPGKey=FOOBAR==\n");
+	return g_file_set_contents (fn, str->str, -1, error);
+}
+
 static void
 gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
@@ -42,7 +62,6 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* no flatpak, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
@@ -55,16 +74,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 
 	/* create file */
-	g_string_append (str, "[Flatpak Repo]\n");
-	g_string_append (str, "Title=foo-bar\n");
-	g_string_append (str, "Comment=Longer one line comment\n");
-	g_string_append (str, "Description=Longer multiline comment that "
-			      "does into detail.\n");
-	g_string_append (str, "DefaultBranch=stable\n");
-	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
-	g_string_append (str, "Homepage=http://foo.bar\n");
-	g_string_append (str, "GPGKey=FOOBAR==\n");
-	ret = g_file_set_contents (fn, str->str, -1, &error);
+	ret = gs_flatpak_test_write_repo_file (fn, testdir, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -573,7 +583,6 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *testdir2 = NULL;
 	g_autofree gchar *testdir2_repourl = NULL;
 	g_autofree gchar *testdir = NULL;
-	g_autofree gchar *testdir_repourl = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -581,7 +590,6 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GString) str2 = g_string_new (NULL);
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -590,13 +598,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
 	if (testdir == NULL)
 		return;
-	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
-	g_string_append (str, "[Flatpak Repo]\n");
-	g_string_append (str, "Title=foo-bar\n");
-	g_string_append (str, "DefaultBranch=master\n");
-	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
-	g_string_append (str, "GPGKey=FOOBAR==\n");
-	ret = g_file_set_contents (fn_repo, str->str, -1, &error);
+	ret = gs_flatpak_test_write_repo_file (fn_repo, testdir, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
