@@ -313,7 +313,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_clear_object (&priv->auth);
-	g_hash_table_unref (priv->store_snaps);
+	g_clear_pointer (&priv->store_snaps, g_hash_table_unref);
 }
 
 gboolean
