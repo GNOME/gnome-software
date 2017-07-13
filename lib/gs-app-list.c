@@ -110,10 +110,8 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 	/* does not exist */
 	id = gs_app_get_unique_id (app);
 	app_old = g_hash_table_lookup (list->hash_by_id, id);
-	if (app_old == NULL) {
-		g_debug ("adding %s as nothing matched hash", id);
+	if (app_old == NULL)
 		return TRUE;
-	}
 
 	/* existing app is a wildcard */
 	id_old = gs_app_get_unique_id (app_old);
