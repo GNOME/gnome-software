@@ -203,6 +203,11 @@ gs_utils_get_cache_filename (const gchar *kind,
 				     kind,
 				     NULL);
 	cachedir_file = g_file_new_for_path (cachedir);
+	if (g_file_query_exists (cachedir_file, NULL) &&
+	    flags & GS_UTILS_CACHE_FLAG_ENSURE_EMPTY) {
+		if (!gs_utils_rmtree (cachedir, error))
+			return FALSE;
+	}
 	if (!g_file_query_exists (cachedir_file, NULL) &&
 	    !g_file_make_directory_with_parents (cachedir_file, NULL, error))
 		return NULL;
