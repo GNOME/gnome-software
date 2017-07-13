@@ -1645,8 +1645,7 @@ gs_app_set_content_rating (GsApp *app, AsContentRating *content_rating)
  * gs_app_get_runtime:
  * @app: a #GsApp
  *
- * Gets the runtime for the installed application if the application is already
- * installed, or the runtime for the available application otherwise.
+ * Gets the runtime for the installed application.
  *
  * Returns: (transfer none): a #GsApp, or %NULL for unset
  *
@@ -1657,7 +1656,7 @@ gs_app_get_runtime (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	if (gs_app_is_installed (app))
+	if (priv->runtime != NULL)
 		return priv->runtime;
 	return priv->update_runtime;
 }
@@ -1696,7 +1695,9 @@ gs_app_get_update_runtime (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->update_runtime;
+	if (priv->update_runtime != NULL)
+		return priv->update_runtime;
+	return priv->runtime;
 }
 
 /**
