@@ -390,7 +390,7 @@ gs_app_to_string (GsApp *app)
 	if (priv->id != NULL)
 		gs_app_kv_lpad (str, "id", priv->id);
 	if (priv->unique_id != NULL)
-		gs_app_kv_lpad (str, "unique-id", priv->unique_id);
+		gs_app_kv_lpad (str, "unique-id", gs_app_get_unique_id (app));
 	if (priv->scope != AS_APP_SCOPE_UNKNOWN)
 		gs_app_kv_lpad (str, "scope", as_app_scope_to_string (priv->scope));
 	if (priv->bundle_kind != AS_BUNDLE_KIND_UNKNOWN) {
