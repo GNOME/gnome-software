@@ -6,6 +6,7 @@ shared_module(
   'gs_plugin_flatpak',
   sources : [
     'gs-appstream.c',
+    'gs-flatpak-app.c',
     'gs-flatpak.c',
     'gs-flatpak-symlinks.c',
     'gs-flatpak-utils.c',
@@ -37,6 +38,7 @@ if get_option('enable-tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
   e = executable('gs-self-test-flatpak',
     sources : [
+      'gs-flatpak-app.c',
       'gs-self-test.c'
     ],
     include_directories : [
@@ -45,6 +47,7 @@ if get_option('enable-tests')
     ],
     dependencies : [
       plugin_libs,
+      flatpak,
     ],
     link_with : [
       libgnomesoftware

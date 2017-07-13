@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
 #include "gs-flatpak-utils.h"
 
@@ -71,7 +72,7 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 	g_autofree gchar *url = NULL;
 	g_autoptr(GsApp) app = NULL;
 
-	app = gs_app_new (flatpak_remote_get_name (xremote));
+	app = gs_flatpak_app_new (flatpak_remote_get_name (xremote));
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_set_state (app, flatpak_remote_get_disabled (xremote) ?
 			  AS_APP_STATE_AVAILABLE : AS_APP_STATE_INSTALLED);
@@ -170,14 +171,14 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	}
 
 	/* create source */
-	app = gs_app_new (repo_id);
-	gs_app_set_flatpak_file_type (app, "flatpakrepo");
+	app = gs_flatpak_app_new (repo_id);
+	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REPO);
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
-	gs_app_set_metadata (app, "flatpak::gpg-key", repo_gpgkey);
-	gs_app_set_metadata (app, "flatpak::url", repo_url);
+	gs_flatpak_app_set_repo_gpgkey (app, repo_gpgkey);
+	gs_flatpak_app_set_repo_url (app, repo_url);
 	gs_app_set_origin_hostname (app, repo_url);
 
 	/* optional data */

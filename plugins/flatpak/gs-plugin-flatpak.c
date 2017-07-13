@@ -33,6 +33,7 @@
 #include <gnome-software.h>
 
 #include "gs-appstream.h"
+#include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
 #include "gs-flatpak-utils.h"
 
@@ -74,6 +75,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		priv->has_system_helper = g_permission_get_allowed (permission) ||
 					  g_permission_get_can_acquire (permission);
 	}
+
+	/* unique to us */
+	gs_plugin_set_app_gtype (plugin, GS_TYPE_FLATPAK_APP);
 
 	/* used for self tests */
 	priv->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
@@ -284,7 +288,7 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	}
 
 	/* specified an explicit name */
-	object_id = gs_app_get_flatpak_object_id (app);
+	object_id = gs_flatpak_app_get_object_id (app);
 	if (object_id != NULL) {
 		for (guint i = 0; i < priv->flatpaks->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
@@ -430,7 +434,7 @@ gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 		if (!gs_flatpak_find_source_by_url (flatpak,
-						    gs_app_get_metadata_item (app_tmp, "flatpak::url"),
+						    gs_flatpak_app_get_repo_url (app_tmp),
 						    list_tmp, cancellable, error))
 			return FALSE;
 	}
@@ -509,7 +513,7 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 		if (!gs_flatpak_find_app_by_ref_display (flatpak,
-							 gs_app_get_flatpak_ref_display (app_tmp),
+							 gs_flatpak_app_get_ref_display (app_tmp),
 							 list_tmp, cancellable, error))
 			return FALSE;
 	}
@@ -561,7 +565,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 		if (!gs_flatpak_find_app_by_ref_display (flatpak,
-							 gs_app_get_flatpak_ref_display (app_tmp),
+							 gs_flatpak_app_get_ref_display (app_tmp),
 							 list_tmp, cancellable, error))
 			return FALSE;
 	}
@@ -589,7 +593,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 			if (gs_flatpak_get_scope (flatpak) != AS_APP_SCOPE_SYSTEM)
 				continue;
 			if (!gs_flatpak_find_app_by_ref_display (flatpak,
-								 gs_app_get_flatpak_ref_display (runtime_app),
+								 gs_flatpak_app_get_ref_display (runtime_app),
 								 list_system_runtimes,
 								 cancellable, error))
 				return FALSE;

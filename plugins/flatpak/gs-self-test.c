@@ -23,6 +23,8 @@
 
 #include "gnome-software-private.h"
 
+#include "gs-flatpak-app.h"
+
 #include "gs-test.h"
 
 static gboolean
@@ -210,7 +212,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (kf_remote_repo_version, ==, 1);
 
 	/* add a remote */
-	app_source = gs_app_new ("test");
+	app_source = gs_flatpak_app_new ("test");
 	testdir = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
 	if (testdir == NULL)
 		return;
@@ -218,7 +220,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
+	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app_source,
 					 NULL);
@@ -458,7 +460,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* add a remote */
-	app_source = gs_app_new ("test");
+	app_source = gs_flatpak_app_new ("test");
 	testdir = gs_test_get_filename (TESTDATADIR, "app-missing-runtime");
 	if (testdir == NULL)
 		return;
@@ -466,7 +468,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
+	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app_source,
 					 NULL);
@@ -741,7 +743,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 		return;
 
 	/* add a remote with only the runtime in */
-	app_source = gs_app_new ("test");
+	app_source = gs_flatpak_app_new ("test");
 	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
 	if (testdir == NULL)
 		return;
@@ -749,7 +751,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_app_set_metadata (app_source, "flatpak::url", testdir_repourl);
+	gs_flatpak_app_set_repo_url (app_source, testdir_repourl);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app_source,
 					 NULL);
@@ -972,11 +974,11 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert (symlink (repodir1_fn, "/var/tmp/self-test/repo") == 0);
 
 	/* add a remote */
-	app_source = gs_app_new ("test");
+	app_source = gs_flatpak_app_new ("test");
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_app_set_metadata (app_source, "flatpak::url", "file:///var/tmp/self-test/repo");
+	gs_flatpak_app_set_repo_url (app_source, "file:///var/tmp/self-test/repo");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app_source,
 					 NULL);
