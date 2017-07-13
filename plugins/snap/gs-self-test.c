@@ -27,12 +27,25 @@
 
 #include "gs-test.h"
 
+static gboolean snap_installed = FALSE;
+
+SnapdAuthData *
+snapd_login_sync (const gchar *username, const gchar *password, const gchar *otp,
+		  GCancellable *cancellable, GError **error)
+{
+	return snapd_auth_data_new ("macaroon", NULL);
+}
+
 SnapdClient *
 snapd_client_new (void)
 {
-	/* use a dummy socket */
-	g_autoptr(GSocket) socket = g_socket_new (G_SOCKET_FAMILY_UNIX, G_SOCKET_TYPE_STREAM, G_SOCKET_PROTOCOL_DEFAULT, NULL);
-	return snapd_client_new_from_socket (socket);
+	/* use a dummy object - we intercept all snapd-glib calls */
+	return g_object_new (G_TYPE_OBJECT, NULL);
+}
+
+void
+snapd_client_set_auth_data (SnapdClient *client, SnapdAuthData *auth_data)
+{
 }
 
 gboolean
@@ -42,12 +55,10 @@ snapd_client_connect_sync (SnapdClient *client, GCancellable *cancellable, GErro
 	return TRUE;
 }
 
-SnapdAuthData *
-snapd_client_login_sync (SnapdClient *client,
-			 const gchar *username, const gchar *password, const gchar *otp,
-			 GCancellable *cancellable, GError **error)
+SnapdSystemInformation *
+snapd_client_get_system_information_sync (SnapdClient *client, GCancellable *cancellable, GError **error)
 {
-	return snapd_auth_data_new ("macaroon", NULL);
+	return g_object_new (SNAPD_TYPE_SYSTEM_INFORMATION, NULL);
 }
 
 static SnapdSnap *
@@ -77,16 +88,17 @@ make_snap (const gchar *name, SnapdSnapStatus status)
 	g_ptr_array_add (screenshots, screenshot);
 
 	return g_object_new (SNAPD_TYPE_SNAP,
-			     "apps", apps,
+			     "apps", status == SNAPD_SNAP_STATUS_INSTALLED ? apps : NULL,
 			     "description", "DESCRIPTION",
-			     "download-size", 500,
+			     "download-size", status == SNAPD_SNAP_STATUS_AVAILABLE ? 500 : 0,
 			     "icon", "/icon",
 			     "id", name,
-			     "install-date", install_date,
-			     "installed-size", 1000,
+			     "install-date", status == SNAPD_SNAP_STATUS_INSTALLED ? install_date : NULL,
+			     "installed-size", status == SNAPD_SNAP_STATUS_INSTALLED ? 1000 : 0,
 			     "name", name,
-			     "screenshots", screenshots,
+			     "screenshots", status == SNAPD_SNAP_STATUS_AVAILABLE ? screenshots : NULL,
 			     "status", status,
+			     "snap-type", SNAPD_SNAP_TYPE_APP,
 			     "summary", "SUMMARY",
 			     "version", "VERSION",
 			     NULL);
@@ -99,7 +111,8 @@ snapd_client_list_sync (SnapdClient *client,
 	GPtrArray *snaps;
 
 	snaps = g_ptr_array_new_with_free_func (g_object_unref);
-	g_ptr_array_add (snaps, make_snap ("snap", SNAPD_SNAP_STATUS_INSTALLED));
+	if (snap_installed)
+		g_ptr_array_add (snaps, make_snap ("snap", SNAPD_SNAP_STATUS_INSTALLED));
 
 	return snaps;
 }
@@ -109,7 +122,12 @@ snapd_client_list_one_sync (SnapdClient *client,
 			    const gchar *name,
 			    GCancellable *cancellable, GError **error)
 {
-	return make_snap (name, SNAPD_SNAP_STATUS_INSTALLED);
+	if (snap_installed) {
+		return make_snap ("snap", SNAPD_SNAP_STATUS_INSTALLED);
+	} else {
+		g_set_error_literal (error, SNAPD_ERROR, SNAPD_ERROR_NOT_INSTALLED, "not installed");
+		return NULL;
+	}
 }
 
 SnapdIcon *
@@ -149,10 +167,11 @@ snapd_client_get_interfaces_sync (SnapdClient *client,
 }
 
 GPtrArray *
-snapd_client_find_sync (SnapdClient *client,
-			SnapdFindFlags flags, const gchar *query,
-			gchar **suggested_currency,
-			GCancellable *cancellable, GError **error)
+snapd_client_find_section_sync (SnapdClient *client,
+				SnapdFindFlags flags,
+				const gchar *section, const gchar *query,
+				gchar **suggested_currency,
+				GCancellable *cancellable, GError **error)
 {
 	GPtrArray *snaps;
 
@@ -163,13 +182,15 @@ snapd_client_find_sync (SnapdClient *client,
 }
 
 gboolean
-snapd_client_install_sync (SnapdClient *client,
-			   const gchar *name, const gchar *channel,
-			   SnapdProgressCallback progress_callback, gpointer progress_callback_data,
-			   GCancellable *cancellable, GError **error)
+snapd_client_install2_sync (SnapdClient *client,
+			    SnapdInstallFlags flags,
+			    const gchar *name, const gchar *channel, const gchar *revision,
+			    SnapdProgressCallback progress_callback, gpointer progress_callback_data,
+			    GCancellable *cancellable, GError **error)
 {
 	g_assert_cmpstr (name, ==, "snap");
 	g_assert (channel == NULL);
+	snap_installed = TRUE;
 	return TRUE;
 }
 
@@ -204,6 +225,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "snap",
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	apps = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
@@ -234,9 +256,9 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	pixbuf = gs_app_get_pixbuf (app);
 	g_assert_cmpint (gdk_pixbuf_get_width (pixbuf), ==, 1);
 	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 1);
-	g_assert_cmpint (gs_app_get_size_installed (app), ==, 1000);
+	g_assert_cmpint (gs_app_get_size_installed (app), ==, 0);
 	g_assert_cmpint (gs_app_get_size_download (app), ==, 500);
-	g_assert_cmpint (gs_app_get_install_date (app), ==, g_date_time_to_unix (g_date_time_new_utc (2017, 1, 2, 11, 23, 58)));
+	g_assert_cmpint (gs_app_get_install_date (app), ==, 0);
 
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
@@ -247,6 +269,8 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_size_installed (app), ==, 1000);
+	g_assert_cmpint (gs_app_get_install_date (app), ==, g_date_time_to_unix (g_date_time_new_utc (2017, 1, 2, 11, 23, 58)));
 
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
