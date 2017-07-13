@@ -814,13 +814,7 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 	for (i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		g_autoptr(GError) error_local = NULL;
-		g_autoptr(GsApp) app = NULL;
-
-		/* only apps */
-		if (flatpak_ref_get_kind (FLATPAK_REF (xref)) != FLATPAK_REF_KIND_APP)
-			continue;
-
-		app = gs_flatpak_create_installed (self, xref, &error_local);
+		g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref, &error_local);
 		if (app == NULL) {
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
