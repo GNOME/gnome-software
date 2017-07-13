@@ -366,18 +366,37 @@ gs_app_kudos_to_string (guint64 kudos)
 gchar *
 gs_app_to_string (GsApp *app)
 {
+	GString *str = g_string_new ("GsApp:");
+	gs_app_to_string_append (app, str);
+	if (str->len > 0)
+		g_string_truncate (str, str->len - 1);
+	return g_string_free (str, FALSE);
+}
+
+/**
+ * gs_app_to_string_append:
+ * @app: a #GsApp
+ * @str: a #GString
+ *
+ * Appends the application to an existing string.
+ *
+ * Since: 3.26
+ **/
+void
+gs_app_to_string_append (GsApp *app, GString *str)
+{
+	GsAppClass *klass = GS_APP_GET_CLASS (app);
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	AsImage *im;
 	AsScreenshot *ss;
 	GList *keys;
 	GList *l;
-	GString *str;
 	const gchar *tmp;
 	guint i;
 
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (str != NULL);
 
-	str = g_string_new ("GsApp:");
 	g_string_append_printf (str, " [%p]\n", app);
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (priv->kind));
 	gs_app_kv_lpad (str, "state", as_app_state_to_string (priv->state));
@@ -569,17 +588,20 @@ gs_app_to_string (GsApp *app)
 	}
 	g_list_free (keys);
 
+	/* add subclassed info */
+	if (klass->to_string != NULL)
+		klass->to_string (app, str);
+
 	/* print runtime data too */
 	if (priv->runtime != NULL) {
-		g_autofree gchar *runtime = gs_app_to_string (priv->runtime);
-		g_string_append_printf (str, "\n\tRuntime:\n\t%s\n", runtime);
+		g_string_append (str, "\n\tRuntime:\n\t");
+		gs_app_to_string_append (priv->runtime, str);
 	}
 	if (priv->update_runtime != NULL) {
-		g_autofree gchar *runtime = gs_app_to_string (priv->update_runtime);
-		g_string_append_printf (str, "\n\tUpdate Runtime:\n\t%s\n", runtime);
+		g_string_append (str, "\n\tUpdate Runtime:\n\t");
+		gs_app_to_string_append (priv->update_runtime, str);
 	}
-
-	return g_string_free (str, FALSE);
+	g_string_append_printf (str, "\n");
 }
 
 typedef struct {

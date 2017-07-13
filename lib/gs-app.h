@@ -38,7 +38,9 @@ G_DECLARE_DERIVABLE_TYPE (GsApp, gs_app, GS, APP, GObject)
 struct _GsAppClass
 {
 	GObjectClass		 parent_class;
-	gpointer		 padding[31];
+	void			 (*to_string)	(GsApp		*app,
+						 GString	*str);
+	gpointer		 padding[30];
 };
 
 /**
@@ -111,6 +113,8 @@ GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
 void		 gs_app_set_from_unique_id	(GsApp		*app,
 						 const gchar	*unique_id);
 gchar		*gs_app_to_string		(GsApp		*app);
+void		 gs_app_to_string_append	(GsApp		*app,
+						 GString	*str);
 
 const gchar	*gs_app_get_id			(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
