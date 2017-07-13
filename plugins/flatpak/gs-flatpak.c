@@ -890,6 +890,9 @@ gs_flatpak_find_source_by_url (GsFlatpak *self,
 			       GError **error)
 {
 	g_autoptr(GPtrArray) xremotes = NULL;
+
+	g_return_val_if_fail (url != NULL, FALSE);
+
 	xremotes = flatpak_installation_list_remotes (self->installation, cancellable, error);
 	if (xremotes == NULL)
 		return FALSE;
@@ -905,13 +908,17 @@ gs_flatpak_find_source_by_url (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_find_app_by_ref_display (GsFlatpak *self,
-				const gchar *ref_display,
-				GsAppList *list,
-				GCancellable *cancellable,
-				GError **error)
+gs_flatpak_find_app_by_name_branch (GsFlatpak *self,
+				    const gchar *name,
+				    const gchar *branch,
+				    GsAppList *list,
+				    GCancellable *cancellable,
+				    GError **error)
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
+
+	g_return_val_if_fail (name != NULL, FALSE);
+	g_return_val_if_fail (branch != NULL, FALSE);
 
 	/* get all the installed apps (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -924,10 +931,12 @@ gs_flatpak_find_app_by_ref_display (GsFlatpak *self,
 
 	/* look at each installed xref */
 	for (guint i = 0; i < xrefs->len; i++) {
-		FlatpakRef *xref = g_ptr_array_index (xrefs, i);
-		g_autofree gchar *ref_tmp = flatpak_ref_format_ref (xref);
-		if (g_strcmp0 (ref_tmp, ref_display) == 0) {
-			g_autoptr(GsApp) app = gs_flatpak_create_app (self, xref);
+		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
+		if (g_strcmp0 (flatpak_ref_get_name (FLATPAK_REF (xref)), name) == 0 &&
+		    g_strcmp0 (flatpak_ref_get_branch (FLATPAK_REF (xref)), branch) == 0) {
+			g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref, error);
+			if (app == NULL)
+				return FALSE;
 			gs_app_list_add (list, app);
 		}
 	}
@@ -2847,6 +2856,11 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_flatpak_create_app (self, FLATPAK_REF (xref_bundle));
+	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+		if (gs_flatpak_app_get_ref_name (app) == NULL)
+			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
+		return g_steal_pointer (&app);
+	}
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_BUNDLE);
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
@@ -3040,6 +3054,11 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
+	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+		if (gs_flatpak_app_get_ref_name (app) == NULL)
+			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
+		return g_steal_pointer (&app);
+	}
 	gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);

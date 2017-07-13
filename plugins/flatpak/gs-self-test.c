@@ -870,6 +870,20 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	app_tmp = gs_app_list_index (search1, 0);
 	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "org.test.Chiron.desktop");
 
+	/* convert it to a GsApp again, and get the installed thing */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+		  "user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron.desktop/master"));
+
 	/* remove app */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,

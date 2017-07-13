@@ -512,8 +512,9 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_app_by_ref_display (flatpak,
-							 gs_flatpak_app_get_ref_display (app_tmp),
+		if (!gs_flatpak_find_app_by_name_branch (flatpak,
+							 gs_flatpak_app_get_ref_name (app_tmp),
+							 gs_flatpak_app_get_ref_branch (app_tmp),
 							 list_tmp, cancellable, error))
 			return FALSE;
 	}
@@ -564,8 +565,9 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_app_by_ref_display (flatpak,
-							 gs_flatpak_app_get_ref_display (app_tmp),
+		if (!gs_flatpak_find_app_by_name_branch (flatpak,
+							 gs_flatpak_app_get_ref_name (app_tmp),
+							 gs_flatpak_app_get_ref_branch (app_tmp),
 							 list_tmp, cancellable, error))
 			return FALSE;
 	}
@@ -592,8 +594,13 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 			if (gs_flatpak_get_scope (flatpak) != AS_APP_SCOPE_SYSTEM)
 				continue;
-			if (!gs_flatpak_find_app_by_ref_display (flatpak,
-								 gs_flatpak_app_get_ref_display (runtime_app),
+			g_debug ("looking for %s//%s in %s",
+				 gs_flatpak_app_get_ref_name (runtime_app),
+				 gs_flatpak_app_get_ref_branch (runtime_app),
+				 gs_flatpak_get_id (flatpak));
+			if (!gs_flatpak_find_app_by_name_branch (flatpak,
+								 gs_flatpak_app_get_ref_name (runtime_app),
+								 gs_flatpak_app_get_ref_branch (runtime_app),
 								 list_system_runtimes,
 								 cancellable, error))
 				return FALSE;
@@ -601,11 +608,12 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 		for (guint i = 0; i < gs_app_list_length (list_system_runtimes); i++) {
 			GsApp *runtime_old = gs_app_list_index (list_system_runtimes, i);
 			if (gs_app_get_state (runtime_old) == AS_APP_STATE_INSTALLED) {
-				g_error ("already have %s, using instead of %s",
+				g_debug ("already have %s, using instead of %s",
 					 gs_app_get_unique_id (runtime_old),
 					 gs_app_get_unique_id (runtime_app));
 				gs_app_set_runtime (app_tmp, runtime_old);
-				break;;
+				gs_app_set_update_runtime (app_tmp, runtime_old);
+				break;
 			}
 		}
 	}

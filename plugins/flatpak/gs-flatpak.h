@@ -108,8 +108,9 @@ gboolean	 gs_flatpak_find_source_by_url	(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	 gs_flatpak_find_app_by_ref_display	(GsFlatpak		*self,
-						 const gchar		*ref_display,
+gboolean	 gs_flatpak_find_app_by_name_branch (GsFlatpak		*self,
+						 const gchar		*id,
+						 const gchar		*branch,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
