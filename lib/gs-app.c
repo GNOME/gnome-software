@@ -4009,6 +4009,44 @@ gs_app_new (const gchar *id)
 }
 
 /**
+ * gs_app_set_from_unique_id:
+ * @app: a #GsApp
+ * @unique_id: an application unique ID, e.g.
+ *	`system/flatpak/gnome/desktop/org.gnome.Software.desktop/master`
+ *
+ * Sets details on an application object.
+ *
+ * The unique ID will be parsed to set some information in the application such
+ * as the scope, bundle kind, id, etc.
+ *
+ * Since: 3.26
+ **/
+void
+gs_app_set_from_unique_id (GsApp *app, const gchar *unique_id)
+{
+	g_auto(GStrv) split = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (unique_id != NULL);
+
+	split = g_strsplit (unique_id, "/", -1);
+	if (g_strv_length (split) != 6)
+		return;
+	if (g_strcmp0 (split[0], "*") != 0)
+		gs_app_set_scope (app, as_app_scope_from_string (split[0]));
+	if (g_strcmp0 (split[1], "*") != 0)
+		gs_app_set_bundle_kind (app, as_bundle_kind_from_string (split[1]));
+	if (g_strcmp0 (split[2], "*") != 0)
+		gs_app_set_origin (app, split[2]);
+	if (g_strcmp0 (split[3], "*") != 0)
+		gs_app_set_kind (app, as_app_kind_from_string (split[3]));
+	if (g_strcmp0 (split[4], "*") != 0)
+		gs_app_set_id (app, split[4]);
+	if (g_strcmp0 (split[5], "*") != 0)
+		gs_app_set_branch (app, split[5]);
+}
+
+/**
  * gs_app_new_from_unique_id:
  * @unique_id: an application unique ID, e.g.
  *	`system/flatpak/gnome/desktop/org.gnome.Software.desktop/master`
@@ -4027,27 +4065,9 @@ GsApp *
 gs_app_new_from_unique_id (const gchar *unique_id)
 {
 	GsApp *app;
-	g_auto(GStrv) split = NULL;
-
 	g_return_val_if_fail (unique_id != NULL, NULL);
-
-	split = g_strsplit (unique_id, "/", -1);
-	if (g_strv_length (split) != 6)
-		return NULL;
-
 	app = gs_app_new (NULL);
-	if (g_strcmp0 (split[0], "*") != 0)
-		gs_app_set_scope (app, as_app_scope_from_string (split[0]));
-	if (g_strcmp0 (split[1], "*") != 0)
-		gs_app_set_bundle_kind (app, as_bundle_kind_from_string (split[1]));
-	if (g_strcmp0 (split[2], "*") != 0)
-		gs_app_set_origin (app, split[2]);
-	if (g_strcmp0 (split[3], "*") != 0)
-		gs_app_set_kind (app, as_app_kind_from_string (split[3]));
-	if (g_strcmp0 (split[4], "*") != 0)
-		gs_app_set_id (app, split[4]);
-	if (g_strcmp0 (split[5], "*") != 0)
-		gs_app_set_branch (app, split[5]);
+	gs_app_set_from_unique_id (app, unique_id);
 	return app;
 }
 

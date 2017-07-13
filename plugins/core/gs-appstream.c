@@ -47,7 +47,8 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 	}
 
 	if (app == NULL) {
-		app = gs_app_new_from_unique_id (unique_id);
+		app = gs_plugin_app_new (plugin, NULL);
+		gs_app_set_from_unique_id (app, unique_id);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
 		if (!gs_appstream_refine_app (plugin, app, item, error)) {
@@ -333,7 +334,7 @@ gs_appstream_create_runtime (GsPlugin *plugin,
 		return NULL;
 
 	/* create the complete GsApp from the single string */
-	app = gs_app_new (split[0]);
+	app = gs_plugin_app_new (plugin, split[0]);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);

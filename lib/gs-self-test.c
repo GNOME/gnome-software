@@ -483,11 +483,11 @@ gs_app_thread_func (void)
 static void
 gs_app_unique_id_func (void)
 {
-	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsApp) app = gs_app_new (NULL);
 	const gchar *unique_id;
 
 	unique_id = "system/flatpak/gnome/desktop/org.gnome.Software.desktop/master";
-	app = gs_app_new_from_unique_id (unique_id);
+	gs_app_set_from_unique_id (app, unique_id);
 	g_assert (GS_IS_APP (app));
 	g_assert_cmpint (gs_app_get_scope (app), ==, AS_APP_SCOPE_SYSTEM);
 	g_assert_cmpint (gs_app_get_bundle_kind (app), ==, AS_BUNDLE_KIND_FLATPAK);

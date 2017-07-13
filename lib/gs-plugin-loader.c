@@ -3581,7 +3581,8 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 		return g_object_ref (app);
 
 	/* create and add */
-	app = gs_app_new_from_unique_id (unique_id);
+	app = gs_app_new (NULL);
+	gs_app_set_from_unique_id (app, unique_id);
 	gs_app_list_add (priv->global_cache, app);
 	return app;
 }
