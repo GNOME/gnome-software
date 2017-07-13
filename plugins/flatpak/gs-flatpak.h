@@ -40,10 +40,8 @@ typedef enum {
 } GsFlatpakFlags;
 
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation);
-void		gs_flatpak_set_flags		(GsFlatpak		*self,
+						 FlatpakInstallation	*installation,
 						 GsFlatpakFlags		 flags);
-GsFlatpakFlags	gs_flatpak_get_flags		(GsFlatpak		*self);
 AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 const gchar	*gs_flatpak_get_id		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,

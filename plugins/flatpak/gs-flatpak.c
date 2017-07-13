@@ -103,7 +103,10 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_app_set_flatpak_arch (app, flatpak_ref_get_arch (xref));
 	gs_app_set_flatpak_branch (app, flatpak_ref_get_branch (xref));
 	gs_app_set_flatpak_commit (app, flatpak_ref_get_commit (xref));
-	gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
+
+	/* ony when we have a non-temp object */
+	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0)
+		gs_app_set_flatpak_object_id (app, gs_flatpak_get_id (self));
 
 	/* do this once for all objects */
 	ref_display = flatpak_ref_format_ref (xref);
@@ -624,10 +627,6 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 				  "%s::refresh-appstream",
 				  gs_flatpak_get_id (self));
 	g_assert (ptask != NULL);
-
-	/* do not care */
-	if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY)
-		return TRUE;
 
 	/* get remotes */
 	xremotes = flatpak_installation_list_remotes (self->installation,
@@ -3051,34 +3050,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		return NULL;
 	}
 
-	/* remove old version from the remote config */
-	if (self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) {
-		g_autofree gchar *remote_id_tmp = NULL;
-		g_autofree gchar *remote_name_tmp = NULL;
-		g_autoptr(FlatpakRemote) xremote_tmp = NULL;
-		remote_name_tmp = g_strdup_printf ("%s-origin", ref_name);
-		xremote_tmp = flatpak_installation_get_remote_by_name (self->installation,
-								       remote_name_tmp,
-								       cancellable,
-								       NULL);
-		if (xremote_tmp != NULL) {
-			g_debug ("removing previous remote %s", remote_name_tmp);
-			if (!flatpak_installation_remove_remote (self->installation,
-								 remote_name_tmp,
-								 cancellable,
-								 error)) {
-				gs_flatpak_error_convert (error);
-				return NULL;
-			}
-		} else {
-			g_debug ("no previous %s remote to remove", remote_name_tmp);
-		}
-
-		/* remove from the store */
-		remote_id_tmp = g_strdup_printf ("%s.desktop", ref_name);
-		as_store_remove_app_by_id (self->store, remote_id_tmp);
-	}
-
 	/* install the remote, but not the app */
 	ref_file_data = g_bytes_new (contents, len);
 	xref = flatpak_installation_install_ref_file (self->installation,
@@ -3162,6 +3133,10 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	/* parse it */
 	if (!gs_flatpak_add_apps_from_xremote (self, xremote, cancellable, error))
 		return NULL;
+
+	/* get extra AppStream data if available */
+	if (!gs_flatpak_refine_appstream (self, app, error))
+		return FALSE;
 
 	/* success */
 	return g_steal_pointer (&app);
@@ -3269,18 +3244,6 @@ gs_flatpak_get_scope (GsFlatpak *self)
 	return self->scope;
 }
 
-void
-gs_flatpak_set_flags (GsFlatpak *self, GsFlatpakFlags flags)
-{
-	self->flags = flags;
-}
-
-GsFlatpakFlags
-gs_flatpak_get_flags (GsFlatpak *self)
-{
-	return self->flags;
-}
-
 static void
 gs_flatpak_finalize (GObject *object)
 {
@@ -3333,7 +3296,7 @@ gs_flatpak_init (GsFlatpak *self)
 }
 
 GsFlatpak *
-gs_flatpak_new (GsPlugin *plugin, FlatpakInstallation *installation)
+gs_flatpak_new (GsPlugin *plugin, FlatpakInstallation *installation, GsFlatpakFlags flags)
 {
 	GsFlatpak *self;
 	self = g_object_new (GS_TYPE_FLATPAK, NULL);
@@ -3341,5 +3304,6 @@ gs_flatpak_new (GsPlugin *plugin, FlatpakInstallation *installation)
 	self->scope = flatpak_installation_get_is_user (installation)
 				? AS_APP_SCOPE_USER : AS_APP_SCOPE_SYSTEM;
 	self->plugin = g_object_ref (plugin);
+	self->flags = flags;
 	return GS_FLATPAK (self);
 }

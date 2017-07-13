@@ -106,7 +106,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 static gboolean
 gs_plugin_flatpak_add_installation (GsPlugin *plugin,
 				    FlatpakInstallation *installation,
-				    GsFlatpakFlags flags,
 				    GCancellable *cancellable,
 				    GError **error)
 {
@@ -119,8 +118,7 @@ gs_plugin_flatpak_add_installation (GsPlugin *plugin,
 	g_assert (ptask != NULL);
 
 	/* create and set up */
-	flatpak = gs_flatpak_new (plugin, installation);
-	gs_flatpak_set_flags (flatpak, flags);
+	flatpak = gs_flatpak_new (plugin, installation, GS_FLATPAK_FLAG_NONE);
 	if (!gs_flatpak_setup (flatpak, cancellable, error))
 		return FALSE;
 	g_debug ("successfully set up %s", gs_flatpak_get_id (flatpak));
@@ -149,7 +147,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		for (guint i = 0; i < installations->len; i++) {
 			FlatpakInstallation *installation = g_ptr_array_index (installations, i);
 			if (!gs_plugin_flatpak_add_installation (plugin, installation,
-								 GS_FLATPAK_FLAG_NONE,
 								 cancellable, error)) {
 				return FALSE;
 			}
@@ -172,7 +169,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
-							 GS_FLATPAK_FLAG_NONE,
 							 cancellable, error)) {
 			return FALSE;
 		}
@@ -187,34 +183,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 		}
 		if (!gs_plugin_flatpak_add_installation (plugin, installation,
-							 GS_FLATPAK_FLAG_NONE,
-							 cancellable, error)) {
-			return FALSE;
-		}
-	}
-
-	/* add temporary installation for flatpakref files */
-	if (TRUE) {
-		g_autofree gchar *installation_path = NULL;
-		g_autoptr(FlatpakInstallation) installation = NULL;
-		g_autoptr(GFile) installation_file = NULL;
-		installation_path = gs_utils_get_cache_filename ("flatpak",
-								 "installation-tmp",
-								 GS_UTILS_CACHE_FLAG_WRITEABLE,
-								 error);
-		if (installation_path == NULL)
-			return FALSE;
-		installation_file = g_file_new_for_path (installation_path);
-		installation = flatpak_installation_new_for_path (installation_file,
-								  TRUE, /* user */
-								  cancellable,
-								  error);
-		if (installation == NULL) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
-		}
-		if (!gs_plugin_flatpak_add_installation (plugin, installation,
-							 GS_FLATPAK_FLAG_IS_TEMPORARY,
 							 cancellable, error)) {
 			return FALSE;
 		}
@@ -232,8 +200,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_installed (flatpak, list, cancellable, error))
 			return FALSE;
 	}
@@ -249,8 +215,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_sources (flatpak, list, cancellable, error))
 			return FALSE;
 	}
@@ -266,8 +230,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_updates (flatpak, list, cancellable, error))
 			return FALSE;
 	}
@@ -283,8 +245,6 @@ gs_plugin_add_updates_pending (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_updates_pending (flatpak, list,
 						     cancellable, error)) {
 			return FALSE;
@@ -303,8 +263,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_refresh (flatpak, cache_age, flags,
 					 cancellable, error)) {
 			return FALSE;
@@ -374,8 +332,6 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_refine_wildcard (flatpak, app, list, flags,
 						 cancellable, error)) {
 			return FALSE;
@@ -415,17 +371,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-	if (flatpak == NULL)
-		return TRUE;
+	GsFlatpak *flatpak;
 
-	/* reset the temporary GsFlatpak object ID */
-	if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY) {
+	/* set the app scope */
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
 		g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
-
-		/* no longer valid */
-		g_debug ("resetting temporary object ID");
-		gs_app_set_flatpak_object_id (app, NULL);
 
 		/* get the new GsFlatpak for handling of local files */
 		gs_app_set_scope (app, g_settings_get_boolean (settings, "install-bundles-system-wide") ?
@@ -438,12 +388,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 			g_debug ("in self tests, using user");
 			gs_app_set_scope (app, AS_APP_SCOPE_USER);
 		}
-		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-		if (flatpak == NULL)
-			return TRUE;
 	}
 
 	/* actually install */
+	flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
 	return gs_flatpak_app_install (flatpak, app, cancellable, error);
 }
 
@@ -479,8 +429,6 @@ gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_find_source_by_url (flatpak,
 						    gs_app_get_metadata_item (app_tmp, "flatpak::url"),
 						    list_tmp, cancellable, error))
@@ -508,15 +456,30 @@ gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 }
 
 static GsFlatpak *
-gs_plugin_flatpak_find_temporary (GsPlugin *plugin)
+gs_plugin_flatpak_create_temporary (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			return flatpak;
+	g_autofree gchar *installation_path = NULL;
+	g_autoptr(FlatpakInstallation) installation = NULL;
+	g_autoptr(GFile) installation_file = NULL;
+
+	/* create new per-user installation in a cache dir */
+	installation_path = gs_utils_get_cache_filename ("flatpak",
+							 "installation-tmp",
+							 GS_UTILS_CACHE_FLAG_WRITEABLE |
+							 GS_UTILS_CACHE_FLAG_ENSURE_EMPTY,
+							 error);
+	if (installation_path == NULL)
+		return NULL;
+	installation_file = g_file_new_for_path (installation_path);
+	installation = flatpak_installation_new_for_path (installation_file,
+							  TRUE, /* user */
+							  cancellable,
+							  error);
+	if (installation == NULL) {
+		gs_flatpak_error_convert (error);
+		return NULL;
 	}
-	return NULL;
+	return gs_flatpak_new (plugin, installation, GS_FLATPAK_FLAG_IS_TEMPORARY);
 }
 
 static gboolean
@@ -532,14 +495,9 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	g_autoptr(GsAppList) list_tmp = NULL;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
-	flatpak_tmp = gs_plugin_flatpak_find_temporary (plugin);
-	if (flatpak_tmp == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no temporary scope for bundle install");
+	flatpak_tmp = gs_plugin_flatpak_create_temporary (plugin, cancellable, error);
+	if (flatpak_tmp == NULL)
 		return FALSE;
-	}
 
 	/* add object */
 	app_tmp = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, cancellable, error);
@@ -550,8 +508,6 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_find_app_by_ref_display (flatpak,
 							 gs_app_get_flatpak_ref_display (app_tmp),
 							 list_tmp, cancellable, error))
@@ -591,14 +547,9 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	g_autoptr(GsAppList) list_tmp = NULL;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
-	flatpak_tmp = gs_plugin_flatpak_find_temporary (plugin);
-	if (flatpak_tmp == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no temporary scope for bundle install");
+	flatpak_tmp = gs_plugin_flatpak_create_temporary (plugin, cancellable, error);
+	if (flatpak_tmp == NULL)
 		return FALSE;
-	}
 
 	/* add object */
 	app_tmp = gs_flatpak_file_to_app_ref (flatpak_tmp, file, cancellable, error);
@@ -609,8 +560,6 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_find_app_by_ref_display (flatpak,
 							 gs_app_get_flatpak_ref_display (app_tmp),
 							 list_tmp, cancellable, error))
@@ -637,8 +586,6 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 		g_autoptr(GsAppList) list_system_runtimes = gs_app_list_new ();
 		for (guint i = 0; i < priv->flatpaks->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-			if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-				continue;
 			if (gs_flatpak_get_scope (flatpak) != AS_APP_SCOPE_SYSTEM)
 				continue;
 			if (!gs_flatpak_find_app_by_ref_display (flatpak,
@@ -721,8 +668,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_search (flatpak, values, list,
 					cancellable, error)) {
 			return FALSE;
@@ -740,8 +685,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_categories (flatpak, list, cancellable, error))
 			return FALSE;
 	}
@@ -758,8 +701,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_category_apps (flatpak,
 						   category,
 						   list,
@@ -780,8 +721,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_popular (flatpak, list, cancellable, error))
 			return FALSE;
 	}
@@ -797,8 +736,6 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_featured (flatpak, list, cancellable, error))
 			return FALSE;
 	}
@@ -815,8 +752,6 @@ gs_plugin_add_recent (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (gs_flatpak_get_flags (flatpak) & GS_FLATPAK_FLAG_IS_TEMPORARY)
-			continue;
 		if (!gs_flatpak_add_recent (flatpak, list, age, cancellable, error))
 			return FALSE;
 	}
