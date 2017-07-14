@@ -1471,12 +1471,15 @@ gs_plugin_loader_job_action_finish (GsPluginLoader *plugin_loader,
 				     GAsyncResult *res,
 				     GError **error)
 {
+	g_autoptr(GsAppList) list = NULL;
+
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
 	g_return_val_if_fail (G_IS_TASK (res), FALSE);
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-	return g_task_propagate_pointer (G_TASK (res), error) != NULL;
+	list = g_task_propagate_pointer (G_TASK (res), error);
+	return list != NULL;
 }
 
 /******************************************************************************/
