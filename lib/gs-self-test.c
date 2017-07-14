@@ -89,6 +89,31 @@ gs_os_release_func (void)
 }
 
 static void
+gs_utils_append_kv_func (void)
+{
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	/* normal */
+	gs_utils_append_key_value (str, 5, "key", "val");
+	g_assert_cmpstr (str->str, ==, "key:  val\n");
+
+	/* oversize */
+	g_string_truncate (str, 0);
+	gs_utils_append_key_value (str, 5, "longkey", "val");
+	g_assert_cmpstr (str->str, ==, "longkey: val\n");
+
+	/* null key */
+	g_string_truncate (str, 0);
+	gs_utils_append_key_value (str, 5, NULL, "val");
+	g_assert_cmpstr (str->str, ==, "      val\n");
+
+	/* zero align key */
+	g_string_truncate (str, 0);
+	gs_utils_append_key_value (str, 0, "key", "val");
+	g_assert_cmpstr (str->str, ==, "key: val\n");
+}
+
+static void
 gs_utils_cache_func (void)
 {
 	g_autofree gchar *fn1 = NULL;
@@ -617,6 +642,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/utils{wilson}", gs_utils_wilson_func);
 	g_test_add_func ("/gnome-software/lib/utils{error}", gs_utils_error_func);
 	g_test_add_func ("/gnome-software/lib/utils{cache}", gs_utils_cache_func);
+	g_test_add_func ("/gnome-software/lib/utils{append-kv}", gs_utils_append_kv_func);
 	g_test_add_func ("/gnome-software/lib/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/lib/app", gs_app_func);
 	g_test_add_func ("/gnome-software/lib/app{addons}", gs_app_addons_func);

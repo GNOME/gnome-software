@@ -968,4 +968,35 @@ gs_user_agent (void)
 	return PACKAGE_NAME "/" PACKAGE_VERSION;
 }
 
+/**
+ * gs_utils_append_key_value:
+ * @str: A #GString
+ * @align_len: The alignment of the @value compared to the @key
+ * @key: The text to use as a title
+ * @value: The text to use as a value
+ *
+ * Adds a line to an existing string, padding the key to a set number of spaces.
+ *
+ * Since: 3.26
+ */
+void
+gs_utils_append_key_value (GString *str, gsize align_len,
+			   const gchar *key, const gchar *value)
+{
+	gsize len = 0;
+
+	g_return_if_fail (str != NULL);
+	g_return_if_fail (value != NULL);
+
+	if (key != NULL) {
+		len = strlen (key) + 2;
+		g_string_append (str, key);
+		g_string_append (str, ": ");
+	}
+	for (gsize i = len; i < align_len + 1; i++)
+		g_string_append (str, " ");
+	g_string_append (str, value);
+	g_string_append (str, "\n");
+}
+
 /* vim: set noexpandtab: */

@@ -188,11 +188,7 @@ _g_set_array (GArray **array_ptr, GArray *new_array)
 static void
 gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 {
-	gsize i;
-	g_string_append_printf (str, "  %s:", key);
-	for (i = strlen (key); i < 18; i++)
-		g_string_append (str, " ");
-	g_string_append_printf (str, " %s\n", value);
+	gs_utils_append_key_value (str, 20, key, value);
 }
 
 static void
