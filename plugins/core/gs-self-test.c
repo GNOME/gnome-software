@@ -30,10 +30,12 @@ static void
 gs_plugins_core_app_creation_func (GsPluginLoader *plugin_loader)
 {
 	AsApp *as_app = NULL;
-	GsApp *cached_app = NULL;
 	GsPlugin *plugin;
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsApp) cached_app = NULL;
+	g_autoptr(GsApp) cached_app2 = NULL;
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GError) error = NULL;
 	const gchar *test_icon_root = g_getenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT");
@@ -74,16 +76,14 @@ gs_plugins_core_app_creation_func (GsPluginLoader *plugin_loader)
 	plugin = gs_plugin_loader_find_plugin (plugin_loader, "appstream");
 	g_assert (plugin != NULL);
 
-	g_clear_object (&app);
-	app = gs_appstream_create_app (plugin, as_app, NULL);
-	g_assert (app != NULL);
-	g_assert (cached_app != app);
-	g_assert (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX));
+	app2 = gs_appstream_create_app (plugin, as_app, NULL);
+	g_assert (app2 != NULL);
+	g_assert (cached_app != app2);
+	g_assert (!gs_app_has_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX));
 
-	g_clear_object (&cached_app);
-	cached_app = gs_plugin_loader_app_create (plugin_loader,
-						  "*/*/*/desktop/demeter.desktop/*");
-	g_assert (cached_app == app);
+	cached_app2 = gs_plugin_loader_app_create (plugin_loader,
+						   "*/*/*/desktop/demeter.desktop/*");
+	g_assert (cached_app2 == app2);
 }
 
 static void
