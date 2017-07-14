@@ -915,6 +915,7 @@ gs_flatpak_find_app_by_name_branch (GsFlatpak *self,
 				    GCancellable *cancellable,
 				    GError **error)
 {
+	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
 	g_return_val_if_fail (name != NULL, FALSE);
@@ -940,6 +941,49 @@ gs_flatpak_find_app_by_name_branch (GsFlatpak *self,
 			gs_app_list_add (list, app);
 		}
 	}
+
+	/* look at each remote xref */
+	xremotes = flatpak_installation_list_remotes (self->installation, cancellable, error);
+	if (xremotes == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	for (guint i = 0; i < xremotes->len; i++) {
+		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
+		g_autoptr(GPtrArray) refs_remote = NULL;
+		refs_remote = flatpak_installation_list_remote_refs_sync (self->installation,
+									  flatpak_remote_get_name (xremote),
+									  cancellable, error);
+		if (refs_remote == NULL) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+		for (guint j = 0; j < refs_remote->len; j++) {
+			FlatpakRef *xref = g_ptr_array_index (refs_remote, j);
+			if (g_strcmp0 (flatpak_ref_get_name (xref), name) == 0 &&
+			    g_strcmp0 (flatpak_ref_get_branch (xref), branch) == 0) {
+				g_autoptr(GsApp) app = gs_flatpak_create_app (self, xref);
+
+				/* don't 'overwrite' installed apps */
+				if (gs_app_list_lookup (list, gs_app_get_unique_id (app)) != NULL) {
+					g_debug ("ignoring installed %s",
+						 gs_app_get_unique_id (app));
+					continue;
+				}
+
+				/* if we added a LOCAL runtime, and then we found
+				 * an already installed remote that provides the
+				 * exact same thing */
+				if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
+					gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
+				gs_app_set_origin (app, flatpak_remote_get_name (xremote));
+				gs_app_list_add (list, app);
+			}
+		}
+	}
+
 	return TRUE;
 }
 
@@ -2657,14 +2701,16 @@ gs_flatpak_app_install (GsFlatpak *self,
 			gs_app_set_state (app_src, AS_APP_STATE_UNKNOWN);
 			gs_app_set_state (app_src, AS_APP_STATE_AVAILABLE);
 
-			/* install the flatpakrepo */
-			if (!gs_flatpak_app_install_source (self,
-							    app_src,
-							    cancellable,
-							    error)) {
-				g_prefix_error (error, "cannot install source from %s: ",
-						gs_flatpak_app_get_repo_url (app_src));
-				return FALSE;
+			/* install the flatpakrepo if not already installed */
+			if (gs_app_get_state (app_src) != AS_APP_STATE_INSTALLED) {
+				if (!gs_flatpak_app_install_source (self,
+								    app_src,
+								    cancellable,
+								    error)) {
+					g_prefix_error (error, "cannot install source from %s: ",
+							gs_flatpak_app_get_repo_url (app_src));
+					return FALSE;
+				}
 			}
 
 			/* get the new state */
