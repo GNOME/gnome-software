@@ -3,7 +3,10 @@ cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
 
 shared_module(
   'gs_plugin_fwupd',
-  sources : 'gs-plugin-fwupd.c',
+  sources : [
+    'gs-fwupd-app.c',
+    'gs-plugin-fwupd.c',
+  ],
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),

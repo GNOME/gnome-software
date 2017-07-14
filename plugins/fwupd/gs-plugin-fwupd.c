@@ -30,6 +30,8 @@
 
 #include <gnome-software.h>
 
+#include "gs-fwupd-app.h"
+
 /*
  * SECTION:
  * Queries for new firmware and schedules it to be installed as required.
@@ -113,6 +115,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	/* unique to us */
+	gs_plugin_set_app_gtype (plugin, GS_TYPE_FWUPD_APP);
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
@@ -351,7 +356,7 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	id = fwupd_result_get_unique_id (res);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
-		app = gs_app_new (id);
+		app = gs_plugin_app_new (plugin, id);
 		gs_plugin_cache_add (plugin, id, app);
 	}
 
@@ -360,8 +365,7 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_add_category (app, "System");
-	gs_app_set_metadata (app, "fwupd::DeviceID",
-			     fwupd_device_get_id (dev));
+	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
 
 	/* something can be done */
 	flags = fwupd_device_get_flags (dev);
@@ -426,8 +430,7 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	if (fwupd_release_get_uri (rel) != NULL) {
 		gs_app_set_origin_hostname (app,
 					    fwupd_release_get_uri (rel));
-		gs_app_set_metadata (app, "fwupd::UpdateURI",
-				     fwupd_release_get_uri (rel));
+		gs_fwupd_app_set_update_uri (app, fwupd_release_get_uri (rel));
 	}
 	if (fwupd_device_get_description (dev) != NULL) {
 		g_autofree gchar *tmp = NULL;
@@ -690,7 +693,7 @@ gs_plugin_fwupd_add_updates (GsPlugin *plugin,
 			if (!is_downloaded)
 				continue;
 			app = gs_plugin_fwupd_new_app_from_results (plugin, res);
-			gs_app_set_metadata (app, "fwupd::IsLocked", "");
+			gs_fwupd_app_set_is_locked (app, TRUE);
 			gs_app_list_add (list, app);
 			continue;
 		}
@@ -941,7 +944,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	/* file does not yet exist */
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
-		const gchar *uri = gs_app_get_metadata_item (app, "fwupd::UpdateURI");
+		const gchar *uri = gs_fwupd_app_get_update_uri (app);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
@@ -949,7 +952,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	}
 
 	/* limit to single device? */
-	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
+	device_id = gs_fwupd_app_get_device_id (app);
 	if (device_id == NULL)
 		device_id = FWUPD_DEVICE_ID_ANY;
 
@@ -999,9 +1002,9 @@ gs_plugin_update_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* locked devices need unlocking, rather than installing */
-	if (gs_app_get_metadata_item (app, "fwupd::IsLocked") != NULL) {
+	if (gs_fwupd_app_get_is_locked (app)) {
 		const gchar *device_id;
-		device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
+		device_id = gs_fwupd_app_get_device_id (app);
 		if (device_id == NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
