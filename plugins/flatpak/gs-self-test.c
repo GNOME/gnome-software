@@ -92,7 +92,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (app != NULL);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_SOURCE);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "example");
 	g_assert_cmpstr (gs_app_get_management_plugin (app), ==, "flatpak");
 	g_assert_cmpstr (gs_app_get_origin_hostname (app), ==, "localhost");
