@@ -1589,6 +1589,54 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 }
 
 static GsApp *
+gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime)
+{
+	g_autofree gchar *source = NULL;
+	g_auto(GStrv) split = NULL;
+	g_autoptr(GsApp) app_cache = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* get the name/arch/branch */
+	split = g_strsplit (runtime, "/", -1);
+	if (g_strv_length (split) != 3)
+		return NULL;
+
+	/* create the complete GsApp from the single string */
+	app = gs_plugin_app_new (plugin, split[0]);
+	source = g_strdup_printf ("runtime/%s", runtime);
+	gs_app_add_source (app, source);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+	gs_app_set_branch (app, split[2]);
+	gs_app_set_scope (app, gs_app_get_scope (parent));
+
+	/* search in the cache */
+	app_cache = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app));
+	if (app_cache != NULL) {
+		/* since the cached runtime can have been created somewhere else
+		 * (we're using a global cache), we need to make sure that a
+		 * source is set */
+		if (gs_app_get_source_default (app_cache) == NULL)
+			gs_app_add_source (app_cache, source);
+		return g_steal_pointer (&app_cache);
+	}
+
+
+	/* set superclassed app properties */
+	gs_flatpak_app_set_ref_kind (app, FLATPAK_REF_KIND_RUNTIME);
+	gs_flatpak_app_set_ref_name (app, split[0]);
+	gs_flatpak_app_set_ref_arch (app, split[1]);
+	gs_flatpak_app_set_ref_branch (app, split[2]);
+
+	/* we own this */
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+
+	/* save in the cache */
+	gs_plugin_cache_add (plugin, NULL, app);
+	return g_steal_pointer (&app);
+}
+
+static GsApp *
 gs_flatpak_create_runtime_from_metadata (GsFlatpak *self,
 					 const GsApp *app,
 					 const gchar *data,
@@ -1608,7 +1656,7 @@ gs_flatpak_create_runtime_from_metadata (GsFlatpak *self,
 		gs_utils_error_convert_gio (error);
 		return NULL;
 	}
-	return gs_appstream_create_runtime (self->plugin, app, runtime);
+	return gs_flatpak_create_runtime (self->plugin, app, runtime);
 }
 
 static gboolean
@@ -1673,7 +1721,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 
 	/* create runtime */
 	if (gs_app_get_runtime (app) == NULL) {
-		app_runtime = gs_appstream_create_runtime (self->plugin, app, runtime);
+		app_runtime = gs_flatpak_create_runtime (self->plugin, app, runtime);
 		if (app_runtime != NULL) {
 			gs_plugin_refine_item_scope (self, app_runtime);
 			gs_app_set_runtime (app, app_runtime);

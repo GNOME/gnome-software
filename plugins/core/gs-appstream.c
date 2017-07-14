@@ -318,53 +318,11 @@ gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 	}
 }
 
-GsApp *
-gs_appstream_create_runtime (GsPlugin *plugin,
-			     GsApp *parent,
-			     const gchar *runtime)
-{
-	g_autofree gchar *source = NULL;
-	g_auto(GStrv) split = NULL;
-	g_autoptr(GsApp) app_cache = NULL;
-	g_autoptr(GsApp) app = NULL;
-
-	/* get the name/arch/branch */
-	split = g_strsplit (runtime, "/", -1);
-	if (g_strv_length (split) != 3)
-		return NULL;
-
-	/* create the complete GsApp from the single string */
-	app = gs_plugin_app_new (plugin, split[0]);
-	source = g_strdup_printf ("runtime/%s", runtime);
-	gs_app_add_source (app, source);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
-	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
-	gs_app_set_branch (app, split[2]);
-	gs_app_set_scope (app, gs_app_get_scope (parent));
-
-	/* search in the cache */
-	app_cache = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app));
-	if (app_cache != NULL) {
-		/* since the cached runtime can have been created somewhere else
-		 * (we're using a global cache), we need to make sure that a
-		 * source is set */
-		if (gs_app_get_source_default (app_cache) == NULL)
-			gs_app_add_source (app_cache, source);
-		return g_steal_pointer (&app_cache);
-	}
-
-	/* save in the cache */
-	gs_plugin_cache_add (plugin, NULL, app);
-	return g_steal_pointer (&app);
-}
-
 static void
 gs_refine_item_management_plugin (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	GPtrArray *bundles;
 	const gchar *management_plugin = NULL;
-	const gchar *runtime = NULL;
-	guint i;
 
 	/* allow override */
 	management_plugin = as_app_get_metadata_item (item, "GnomeSoftware::Plugin");
@@ -373,33 +331,9 @@ gs_refine_item_management_plugin (GsPlugin *plugin, GsApp *app, AsApp *item)
 
 	/* find the default bundle kind */
 	bundles = as_app_get_bundles (item);
-	for (i = 0; i < bundles->len; i++) {
+	for (guint i = 0; i < bundles->len; i++) {
 		AsBundle *bundle = g_ptr_array_index (bundles, i);
-		AsBundleKind kind = as_bundle_get_kind (bundle);
-
 		gs_app_add_source (app, as_bundle_get_id (bundle));
-
-		/* automatically add runtime */
-		if (kind == AS_BUNDLE_KIND_FLATPAK &&
-		    gs_app_get_kind (app) != AS_APP_KIND_RUNTIME) {
-			runtime = as_bundle_get_runtime (bundle);
-			if (runtime != NULL) {
-				g_autoptr(GsApp) app2 = NULL;
-				app2 = gs_appstream_create_runtime (plugin, app, runtime);
-				if (app2 != NULL) {
-					if (app == app2) {
-						g_warning ("%s runtime cannot have runtime!",
-							   gs_app_get_unique_id (app));
-						break;
-					}
-					g_debug ("runtime for %s is %s",
-						 gs_app_get_unique_id (app),
-						 runtime);
-					gs_app_set_update_runtime (app, app2);
-				}
-			}
-			break;
-		}
 	}
 }
 
