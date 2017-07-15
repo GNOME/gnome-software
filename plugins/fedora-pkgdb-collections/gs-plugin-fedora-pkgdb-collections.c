@@ -300,7 +300,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 			    /* TRANSLATORS: this is a title for Fedora distro upgrades */
-			    _("A major upgrade, with new features and added polish."));
+			    _("Upgrade your Fedora system to the latest features and improvements."));
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
 				"Fedora Workstation is a polished, "
 				"easy to use operating system for "
