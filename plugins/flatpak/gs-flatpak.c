@@ -2344,10 +2344,74 @@ gs_flatpak_related_should_download (GsFlatpak *self, GsApp *app, FlatpakRelatedR
 	return flatpak_related_ref_should_download (xref_related);
 }
 
+static gboolean
+gs_flatpak_refine_runtime_for_install (GsFlatpak *self,
+				       GsApp *app,
+				       GCancellable *cancellable,
+				       GError **error)
+{
+	GsApp *runtime;
+
+	/* only required for ostree-based flatpak apps */
+	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
+		gsize len;
+		const gchar *str;
+		g_autoptr(GBytes) data = NULL;
+		g_autoptr(GsApp) runtime_new = NULL;
+
+		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable, error);
+		if (data == NULL) {
+			gs_utils_error_add_unique_id (error, app);
+			return FALSE;
+		}
+
+		str = g_bytes_get_data (data, &len);
+		runtime_new = gs_flatpak_create_runtime_from_metadata (self, app,
+								       str, len,
+								       error);
+		if (runtime_new == NULL)
+			return FALSE;
+		gs_app_set_update_runtime (app, runtime_new);
+	}
+
+	/* no runtime required */
+	runtime = gs_app_get_update_runtime (app);
+	if (runtime == NULL)
+		return TRUE;
+
+	/* the runtime could come from a different remote to the app */
+	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
+		gs_utils_error_add_unique_id (error, runtime);
+		return FALSE;
+	}
+	if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
+		gs_utils_error_add_unique_id (error, runtime);
+		return FALSE;
+	}
+	if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
+		gs_utils_error_add_unique_id (error, runtime);
+		return FALSE;
+	}
+	if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "Failed to find runtime %s",
+			     gs_app_get_source_default (runtime));
+		gs_utils_error_add_unique_id (error, runtime);
+		return FALSE;
+	}
+
+	gs_app_set_runtime (app, runtime);
+
+	return TRUE;
+}
+
 static GsAppList *
 gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 				 GCancellable *cancellable, GError **error)
 {
+	GsApp *runtime;
 	g_autofree gchar *ref = NULL;
 	g_autoptr(GPtrArray) related = NULL;
 	g_autoptr(GPtrArray) xrefs_installed = NULL;
@@ -2367,6 +2431,24 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs_installed, i);
 		g_hash_table_add (hash_installed,
 				  flatpak_ref_format_ref (FLATPAK_REF (xref)));
+	}
+
+	/* add runtime */
+	runtime = gs_app_get_runtime (app);
+	if (runtime != NULL) {
+		g_autofree gchar *ref_display = NULL;
+		if (!gs_flatpak_refine_runtime_for_install (self, app, cancellable, error))
+			return FALSE;
+		ref_display = gs_flatpak_app_get_ref_display (runtime);
+		if (g_hash_table_contains (hash_installed, ref_display)) {
+			g_debug ("%s is already installed, so skipping",
+				 gs_app_get_id (runtime));
+		} else {
+			g_debug ("%s/%s is not already installed, so installing",
+				 gs_flatpak_app_get_ref_name (runtime),
+				 gs_flatpak_app_get_ref_branch (runtime));
+			gs_app_list_add (list, runtime);
+		}
 	}
 
 	/* lookup any related refs for this ref */
@@ -2497,98 +2579,6 @@ gs_flatpak_app_remove (GsFlatpak *self,
 	return TRUE;
 }
 
-static gboolean
-install_runtime_for_app (GsFlatpak *self,
-			 GsApp *app,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	GsApp *runtime;
-
-	/* only required for ostree-based flatpak apps */
-	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
-		gsize len;
-		const gchar *str;
-		g_autoptr(GBytes) data = NULL;
-		g_autoptr(GsApp) runtime_new = NULL;
-
-		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable, error);
-		if (data == NULL) {
-			gs_utils_error_add_unique_id (error, app);
-			return FALSE;
-		}
-
-		str = g_bytes_get_data (data, &len);
-		runtime_new = gs_flatpak_create_runtime_from_metadata (self, app,
-								       str, len,
-								       error);
-		if (runtime_new == NULL)
-			return FALSE;
-		gs_app_set_update_runtime (app, runtime_new);
-	}
-
-	/* no runtime required */
-	runtime = gs_app_get_update_runtime (app);
-	if (runtime == NULL)
-		return TRUE;
-
-	/* the runtime could come from a different remote to the app */
-	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
-		gs_utils_error_add_unique_id (error, runtime);
-		return FALSE;
-	}
-	if (!gs_plugin_refine_item_origin (self, runtime, cancellable, error)) {
-		gs_utils_error_add_unique_id (error, runtime);
-		return FALSE;
-	}
-	if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
-		gs_utils_error_add_unique_id (error, runtime);
-		return FALSE;
-	}
-	if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "Failed to find runtime %s",
-			     gs_app_get_source_default (runtime));
-		gs_utils_error_add_unique_id (error, runtime);
-		return FALSE;
-	}
-
-	/* not installed */
-	if (gs_app_get_state (runtime) != AS_APP_STATE_INSTALLED) {
-		g_autoptr(FlatpakInstalledRef) xref = NULL;
-		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
-
-		g_debug ("%s/%s is not already installed, so installing",
-			 gs_app_get_id (runtime),
-			 gs_flatpak_app_get_ref_branch (runtime));
-		gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
-		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
-		xref = flatpak_installation_install (self->installation,
-						     gs_app_get_origin (runtime),
-						     gs_flatpak_app_get_ref_kind (runtime),
-						     gs_flatpak_app_get_ref_name (runtime),
-						     gs_flatpak_app_get_ref_arch (runtime),
-						     gs_flatpak_app_get_ref_branch (runtime),
-						     gs_flatpak_progress_cb, phelper,
-						     cancellable, error);
-		if (xref == NULL) {
-			gs_flatpak_error_convert (error);
-			gs_app_set_state_recover (runtime);
-			return FALSE;
-		}
-		gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
-	} else {
-		g_debug ("%s is already installed, so skipping",
-			 gs_app_get_id (runtime));
-	}
-
-	gs_app_set_runtime (app, runtime);
-
-	return TRUE;
-}
-
 static GsApp *
 gs_flatpak_create_runtime_repo (GsFlatpak *self,
 				const gchar *uri,
@@ -2639,9 +2629,6 @@ gs_flatpak_app_install (GsFlatpak *self,
 				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 				    cancellable, error))
 		return FALSE;
-
-	/* install */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 
 	/* add a source */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
@@ -2728,6 +2715,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 
 		/* now install actual app */
 		data = g_bytes_new (contents, len);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		xref2 = flatpak_installation_install_ref_file (self->installation,
 							      data,
 							      cancellable,
@@ -2743,13 +2731,6 @@ gs_flatpak_app_install (GsFlatpak *self,
 			return FALSE;
 	}
 
-	/* install required runtime if not already installed */
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
-	    !install_runtime_for_app (self, app, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
-
 	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
 		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
@@ -2763,6 +2744,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 		}
 		g_debug ("installing bundle %s", gs_app_get_unique_id (app));
 		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		xref = flatpak_installation_install_bundle (self->installation,
 							    gs_app_get_local_file (app),
 							    gs_flatpak_progress_cb,
@@ -2802,6 +2784,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 			GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 			g_autoptr(FlatpakInstalledRef) xref = NULL;
 			g_debug ("installing %s", gs_flatpak_app_get_ref_name (app_tmp));
+			gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
 			xref = flatpak_installation_install (self->installation,
 							     gs_app_get_origin (app_tmp),
 							     gs_flatpak_app_get_ref_kind (app_tmp),
@@ -2812,14 +2795,14 @@ gs_flatpak_app_install (GsFlatpak *self,
 							     cancellable, error);
 			if (xref == NULL) {
 				gs_flatpak_error_convert (error);
-				gs_app_set_state_recover (app);
+				gs_app_set_state_recover (app_tmp);
 				return FALSE;
 			}
+
+			/* state is known */
+			gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
 		}
 	}
-
-	/* state is known */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 
 	/* set new version */
 	if (!gs_flatpak_refine_appstream (self, app, error))
@@ -2855,13 +2838,6 @@ gs_flatpak_update_app (GsFlatpak *self,
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs_installed, i);
 		g_hash_table_add (hash_installed,
 				  flatpak_ref_format_ref (FLATPAK_REF (xref)));
-	}
-
-	/* install required runtime if not already installed */
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
-	    !install_runtime_for_app (self, app, cancellable, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
 	}
 
 	/* get the list of apps to process */
