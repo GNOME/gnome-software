@@ -902,12 +902,14 @@ gs_flatpak_find_source_by_url (GsFlatpak *self,
 }
 
 gboolean
-gs_flatpak_find_app_by_name_branch (GsFlatpak *self,
-				    const gchar *name,
-				    const gchar *branch,
-				    GsAppList *list,
-				    GCancellable *cancellable,
-				    GError **error)
+gs_flatpak_find_app (GsFlatpak *self,
+		     FlatpakRefKind kind,
+		     const gchar *name,
+		     const gchar *arch,
+		     const gchar *branch,
+		     GsAppList *list,
+		     GCancellable *cancellable,
+		     GError **error)
 {
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(GPtrArray) xrefs = NULL;
@@ -927,7 +929,9 @@ gs_flatpak_find_app_by_name_branch (GsFlatpak *self,
 	/* look at each installed xref */
 	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		if (g_strcmp0 (flatpak_ref_get_name (FLATPAK_REF (xref)), name) == 0 &&
+		if (flatpak_ref_get_kind (FLATPAK_REF (xref)) == kind &&
+		    g_strcmp0 (flatpak_ref_get_name (FLATPAK_REF (xref)), name) == 0 &&
+		    g_strcmp0 (flatpak_ref_get_arch (FLATPAK_REF (xref)), arch) == 0 &&
 		    g_strcmp0 (flatpak_ref_get_branch (FLATPAK_REF (xref)), branch) == 0) {
 			g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref, error);
 			if (app == NULL)
@@ -954,7 +958,9 @@ gs_flatpak_find_app_by_name_branch (GsFlatpak *self,
 		}
 		for (guint j = 0; j < refs_remote->len; j++) {
 			FlatpakRef *xref = g_ptr_array_index (refs_remote, j);
-			if (g_strcmp0 (flatpak_ref_get_name (xref), name) == 0 &&
+			if (flatpak_ref_get_kind (FLATPAK_REF (xref)) == kind &&
+			    g_strcmp0 (flatpak_ref_get_name (xref), name) == 0 &&
+			    g_strcmp0 (flatpak_ref_get_arch (xref), arch) == 0 &&
 			    g_strcmp0 (flatpak_ref_get_branch (xref), branch) == 0) {
 				g_autoptr(GsApp) app = gs_flatpak_create_app (self, xref);
 
@@ -1394,6 +1400,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	g_autofree gchar *ref_display = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GError) local_error = NULL;
 
@@ -1414,10 +1421,8 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		return FALSE;
 
 	/* find list of remotes */
-	g_debug ("looking for a remote for %s/%s/%s",
-		 gs_flatpak_app_get_ref_name (app),
-		 gs_flatpak_app_get_ref_arch (app),
-		 gs_flatpak_app_get_ref_branch (app));
+	ref_display = gs_flatpak_app_get_ref_display (app);
+	g_debug ("looking for a remote for %s", ref_display);
 
 	/* first check the plugin's own flatpak installation */
 	if (!gs_flatpak_refine_origin_from_installation (self,
@@ -2217,8 +2222,8 @@ gs_flatpak_launch (GsFlatpak *self,
 	/* launch the app */
 	if (!flatpak_installation_launch (self->installation,
 					  gs_flatpak_app_get_ref_name (app),
-					  NULL,
-					  branch,
+					  gs_flatpak_app_get_ref_arch (app),
+					  gs_flatpak_app_get_ref_branch (app),
 					  NULL,
 					  cancellable,
 					  error)) {

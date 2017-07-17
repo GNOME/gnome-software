@@ -512,10 +512,12 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_app_by_name_branch (flatpak,
-							 gs_flatpak_app_get_ref_name (app_tmp),
-							 gs_flatpak_app_get_ref_branch (app_tmp),
-							 list_tmp, cancellable, error))
+		if (!gs_flatpak_find_app (flatpak,
+					  gs_flatpak_app_get_ref_kind (app_tmp),
+					  gs_flatpak_app_get_ref_name (app_tmp),
+					  gs_flatpak_app_get_ref_arch (app_tmp),
+					  gs_flatpak_app_get_ref_branch (app_tmp),
+					  list_tmp, cancellable, error))
 			return FALSE;
 	}
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
@@ -565,10 +567,12 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	list_tmp = gs_app_list_new ();
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_app_by_name_branch (flatpak,
-							 gs_flatpak_app_get_ref_name (app_tmp),
-							 gs_flatpak_app_get_ref_branch (app_tmp),
-							 list_tmp, cancellable, error))
+		if (!gs_flatpak_find_app (flatpak,
+					  gs_flatpak_app_get_ref_kind (app_tmp),
+					  gs_flatpak_app_get_ref_name (app_tmp),
+					  gs_flatpak_app_get_ref_arch (app_tmp),
+					  gs_flatpak_app_get_ref_branch (app_tmp),
+					  list_tmp, cancellable, error))
 			return FALSE;
 	}
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
@@ -589,18 +593,19 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	runtime_app = gs_app_get_runtime (app_tmp);
 	if (runtime_app != NULL &&
 	    gs_app_get_state (runtime_app) != AS_APP_STATE_INSTALLED) {
+		g_autofree gchar *ref_display = gs_flatpak_app_get_ref_display (runtime_app);
 		g_autoptr(GsAppList) list_runtimes = gs_app_list_new ();
 		for (guint i = 0; i < priv->flatpaks->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-			g_debug ("looking for %s//%s in %s",
-				 gs_flatpak_app_get_ref_name (runtime_app),
-				 gs_flatpak_app_get_ref_branch (runtime_app),
-				 gs_flatpak_get_id (flatpak));
-			if (!gs_flatpak_find_app_by_name_branch (flatpak,
-								 gs_flatpak_app_get_ref_name (runtime_app),
-								 gs_flatpak_app_get_ref_branch (runtime_app),
-								 list_runtimes,
-								 cancellable, error))
+			g_debug ("looking for %s in %s",
+				 ref_display, gs_flatpak_get_id (flatpak));
+			if (!gs_flatpak_find_app (flatpak,
+						  gs_flatpak_app_get_ref_kind (runtime_app),
+						  gs_flatpak_app_get_ref_name (runtime_app),
+						  gs_flatpak_app_get_ref_arch (runtime_app),
+						  gs_flatpak_app_get_ref_branch (runtime_app),
+						  list_runtimes,
+						  cancellable, error))
 				return FALSE;
 		}
 		for (guint i = 0; i < gs_app_list_length (list_runtimes); i++) {
