@@ -78,10 +78,9 @@ snapd_error_convert (GError **perror)
 	if (error->domain == SNAPD_ERROR) {
 		switch (error->code) {
 		case SNAPD_ERROR_AUTH_DATA_REQUIRED:
-			g_set_error_literal (perror,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_AUTH_REQUIRED,
-					     "Requires authentication with @snapd");
+			error->code = GS_PLUGIN_ERROR_AUTH_REQUIRED;
+			g_free (error->message);
+			error->message = g_strdup ("Requires authentication with @snapd");
 			break;
 		case SNAPD_ERROR_TWO_FACTOR_REQUIRED:
 			error->code = GS_PLUGIN_ERROR_PIN_REQUIRED;
