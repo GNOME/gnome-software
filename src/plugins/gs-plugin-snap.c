@@ -154,6 +154,19 @@ find_snaps (GsPlugin *plugin, const gchar *section, gboolean match_name, const g
 	return g_steal_pointer (&snaps);
 }
 
+static const gchar *
+get_snap_title (JsonObject *snap)
+{
+	const gchar *name = NULL;
+
+	if (json_object_has_member (snap, "title"))
+		name = json_object_get_string_member (snap, "title");
+	if (name == NULL || g_strcmp0 (name, "") == 0)
+		name = json_object_get_string_member (snap, "name");
+
+	return name;
+}
+
 static GsApp *
 snap_to_app (GsPlugin *plugin, JsonObject *snap)
 {
@@ -166,7 +179,7 @@ snap_to_app (GsPlugin *plugin, JsonObject *snap)
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, json_object_get_string_member (snap, "name"));
+	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, get_snap_title (snap));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	if (g_strcmp0 (json_object_get_string_member (snap, "confinement"), "strict") == 0)
@@ -395,7 +408,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, json_object_get_string_member (local_snap, "name"));
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, get_snap_title (local_snap));
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, json_object_get_string_member (local_snap, "summary"));
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, json_object_get_string_member (local_snap, "description"));
 		gs_app_set_version (app, json_object_get_string_member (local_snap, "version"));
@@ -427,7 +440,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, json_object_get_string_member (store_snap, "name"));
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, get_snap_title (store_snap));
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, json_object_get_string_member (store_snap, "summary"));
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, json_object_get_string_member (store_snap, "description"));
 		gs_app_set_version (app, json_object_get_string_member (store_snap, "version"));
