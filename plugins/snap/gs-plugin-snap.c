@@ -36,6 +36,8 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	const gchar *old_user_agent;
+	g_autofree gchar *user_agent = NULL;
 	g_autoptr (GError) error = NULL;
 
 	priv->client = snapd_client_new ();
@@ -43,6 +45,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+	old_user_agent = snapd_client_get_user_agent (priv->client);
+	user_agent = g_strdup_printf ("%s %s", gs_user_agent (), old_user_agent);
+	snapd_client_set_user_agent (priv->client, user_agent);
 
 	priv->store_snaps = g_hash_table_new_full (g_str_hash, g_str_equal,
 						   g_free, (GDestroyNotify) g_object_unref);
