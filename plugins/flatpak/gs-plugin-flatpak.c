@@ -494,9 +494,9 @@ gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
 				      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsFlatpak *flatpak_tmp;
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsAppList) list_tmp = NULL;
+	g_autoptr(GsFlatpak) flatpak_tmp = NULL;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
 	flatpak_tmp = gs_plugin_flatpak_create_temporary (plugin, cancellable, error);
@@ -547,9 +547,9 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *runtime_app;
-	GsFlatpak *flatpak_tmp;
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsAppList) list_tmp = NULL;
+	g_autoptr(GsFlatpak) flatpak_tmp = NULL;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
 	flatpak_tmp = gs_plugin_flatpak_create_temporary (plugin, cancellable, error);
