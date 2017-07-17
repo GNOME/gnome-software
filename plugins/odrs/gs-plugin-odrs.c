@@ -234,6 +234,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_free (priv->user_hash);
 	g_free (priv->distro);
+	g_free (priv->review_server);
 	g_hash_table_unref (priv->ratings);
 	g_object_unref (priv->settings);
 	g_object_unref (priv->cached_origin);
