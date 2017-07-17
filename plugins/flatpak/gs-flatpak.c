@@ -78,8 +78,6 @@ gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
-	g_autofree gchar *ref_display = NULL;
-
 	/* core */
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
@@ -96,10 +94,6 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	/* ony when we have a non-temp object */
 	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0)
 		gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
-
-	/* do this once for all objects */
-	ref_display = flatpak_ref_format_ref (xref);
-	gs_flatpak_app_set_ref_display (app, ref_display);
 
 	/* map the flatpak kind to the gnome-software kind */
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
@@ -2393,7 +2387,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	/* any extra bits */
 	for (guint i = 0; i < related->len; i++) {
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
-		const gchar *xref_fake_str;
+		g_autofree gchar *ref_display = NULL;
 		g_autoptr(GsApp) app_tmp = NULL;
 
 		/* not included */
@@ -2402,12 +2396,12 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 
 		/* already installed? */
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
-		xref_fake_str = gs_flatpak_app_get_ref_display (app_tmp);
-		if (g_hash_table_contains (hash_installed, xref_fake_str)) {
-			g_debug ("not adding related %s as already installed", xref_fake_str);
+		ref_display = gs_flatpak_app_get_ref_display (app_tmp);
+		if (g_hash_table_contains (hash_installed, ref_display)) {
+			g_debug ("not adding related %s as already installed", ref_display);
 		} else {
 			gs_app_set_origin (app_tmp, gs_app_get_origin (app));
-			g_debug ("adding related %s for install", xref_fake_str);
+			g_debug ("adding related %s for install", ref_display);
 			gs_app_list_add (list, app_tmp);
 		}
 	}
@@ -2883,13 +2877,13 @@ gs_flatpak_update_app (GsFlatpak *self,
 	phelper->job_max = gs_app_list_length (list);
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
-		const gchar *xref_fake_str = NULL;
+		g_autofree gchar *ref_display = NULL;
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
 
 		/* either install or update the ref */
-		xref_fake_str = gs_flatpak_app_get_ref_display (app_tmp);
-		if (!g_hash_table_contains (hash_installed, xref_fake_str)) {
-			g_debug ("installing %s", xref_fake_str);
+		ref_display = gs_flatpak_app_get_ref_display (app_tmp);
+		if (!g_hash_table_contains (hash_installed, ref_display)) {
+			g_debug ("installing %s", ref_display);
 			xref = flatpak_installation_install (self->installation,
 							     gs_app_get_origin (app_tmp),
 							     gs_flatpak_app_get_ref_kind (app_tmp),
@@ -2899,7 +2893,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 							     gs_flatpak_progress_cb, phelper,
 							     cancellable, error);
 		} else {
-			g_debug ("updating %s", xref_fake_str);
+			g_debug ("updating %s", ref_display);
 			xref = flatpak_installation_update (self->installation,
 							    FLATPAK_UPDATE_FLAGS_NONE,
 							    gs_flatpak_app_get_ref_kind (app_tmp),

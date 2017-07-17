@@ -31,7 +31,6 @@ struct _GsFlatpakApp
 	FlatpakRefKind		 ref_kind;
 	gchar			*ref_arch;
 	gchar			*ref_branch;
-	gchar			*ref_display;
 	gchar			*ref_name;
 	gchar			*commit;
 	gchar			*object_id;
@@ -82,10 +81,6 @@ gs_flatpak_app_to_string (GsApp *app, GString *str)
 	if (flatpak_app->ref_branch != NULL) {
 		gs_utils_append_key_value (str, 20, "flatpak::ref-branch",
 					   flatpak_app->ref_branch);
-	}
-	if (flatpak_app->ref_display != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::ref-display",
-					   flatpak_app->ref_display);
 	}
 	if (flatpak_app->commit != NULL)
 		gs_utils_append_key_value (str, 20, "flatpak::commit",
@@ -193,11 +188,15 @@ gs_flatpak_app_get_repo_url (GsApp *app)
 	return flatpak_app->repo_url;
 }
 
-const gchar *
+gchar *
 gs_flatpak_app_get_ref_display (GsApp *app)
 {
 	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->ref_display;
+	return g_strdup_printf ("%s/%s/%s/%s",
+				gs_flatpak_app_get_ref_kind_as_str (app),
+				flatpak_app->ref_name,
+				flatpak_app->ref_arch,
+				flatpak_app->ref_branch);
 }
 
 void
@@ -270,13 +269,6 @@ gs_flatpak_app_set_repo_url (GsApp *app, const gchar *val)
 	_g_set_str (&flatpak_app->repo_url, val);
 }
 
-void
-gs_flatpak_app_set_ref_display (GsApp *app, const gchar *val)
-{
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->ref_display, val);
-}
-
 static void
 gs_flatpak_app_finalize (GObject *object)
 {
@@ -285,7 +277,6 @@ gs_flatpak_app_finalize (GObject *object)
 		g_object_unref (flatpak_app->runtime_repo);
 	g_free (flatpak_app->ref_arch);
 	g_free (flatpak_app->ref_branch);
-	g_free (flatpak_app->ref_display);
 	g_free (flatpak_app->ref_name);
 	g_free (flatpak_app->commit);
 	g_free (flatpak_app->object_id);
