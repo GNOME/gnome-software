@@ -598,6 +598,17 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 	g_timeout_add_seconds (5, update_app_action_delay_cb, user_data);
 }
 
+static gboolean
+gs_plugins_flatpak_check_app_installing_cb (gpointer user_data)
+{
+	GsApp *app = GS_APP (user_data);
+	if (gs_app_get_state (app) != AS_APP_STATE_INSTALLING) {
+		g_autofree gchar *str = gs_app_to_string (app);
+		g_warning ("expected to be installing: %s", str);
+	}
+	return G_SOURCE_REMOVE;
+}
+
 static void
 gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 {
@@ -612,6 +623,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *testdir = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsAppList) sources2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
@@ -675,10 +687,13 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app,
 					 NULL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	g_timeout_add (10, gs_plugins_flatpak_check_app_installing_cb, app);
+	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+					    NULL,
+					    update_app_action_finish_sync,
+					    loop);
+	g_main_loop_run (loop);
 	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
 

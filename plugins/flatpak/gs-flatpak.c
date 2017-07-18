@@ -2542,9 +2542,12 @@ gs_flatpak_app_remove (GsFlatpak *self,
 	}
 
 	/* remove */
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	phelper = gs_flatpak_progress_helper_new (self->plugin, app);
 	phelper->job_max = gs_app_list_length (list);
+	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+		gs_app_set_state (app_tmp, AS_APP_STATE_REMOVING);
+	}
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 		g_debug ("removing %s", gs_flatpak_app_get_ref_name (app_tmp));
@@ -2559,6 +2562,9 @@ gs_flatpak_app_remove (GsFlatpak *self,
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
+
+		/* state is not known: we don't know if we can re-install this app */
+		gs_app_set_state (app_tmp, AS_APP_STATE_UNKNOWN);
 	}
 
 	/* did app also install a noenumerate=True remote */
@@ -2580,9 +2586,6 @@ gs_flatpak_app_remove (GsFlatpak *self,
 		if (!gs_flatpak_rescan_appstream_store (self, cancellable, error))
 			return FALSE;
 	}
-
-	/* state is not known: we don't know if we can re-install this app */
-	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 
 	/* refresh the state */
 	if (!gs_plugin_refine_item_state (self, app, cancellable, error))
@@ -2651,6 +2654,9 @@ gs_flatpak_app_install (GsFlatpak *self,
 						      error);
 	}
 
+	/* update the UI */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
 	/* flatpakref has to be done in two phases */
 	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF) {
 		GsApp *runtime;
@@ -2688,6 +2694,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 					     "no runtime available for %s",
 					     gs_app_get_unique_id (app));
 				gs_utils_error_add_unique_id (error, runtime);
+				gs_app_set_state_recover (app);
 				return FALSE;
 			}
 
@@ -2703,6 +2710,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 								    error)) {
 					g_prefix_error (error, "cannot install source from %s: ",
 							gs_flatpak_app_get_repo_url (app_src));
+					gs_app_set_state_recover (app);
 					return FALSE;
 				}
 			}
@@ -2711,6 +2719,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 			if (!gs_plugin_refine_item_state (self, runtime, cancellable, error)) {
 				g_prefix_error (error, "cannot refine runtime using %s: ",
 						gs_flatpak_app_get_repo_url (app_src));
+				gs_app_set_state_recover (app);
 				return FALSE;
 			}
 
@@ -2722,13 +2731,13 @@ gs_flatpak_app_install (GsFlatpak *self,
 					     "no runtime available for %s",
 					     gs_app_get_unique_id (app));
 				gs_utils_error_add_unique_id (error, runtime);
+				gs_app_set_state_recover (app);
 				return FALSE;
 			}
 		}
 
 		/* now install actual app */
 		data = g_bytes_new (contents, len);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		xref2 = flatpak_installation_install_ref_file (self->installation,
 							      data,
 							      cancellable,
@@ -2740,8 +2749,10 @@ gs_flatpak_app_install (GsFlatpak *self,
 		}
 
 		/* update search tokens for new remote */
-		if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0, cancellable, error))
+		if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0, cancellable, error)) {
+			gs_app_set_state_recover (app);
 			return FALSE;
+		}
 	}
 
 	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
@@ -2753,11 +2764,11 @@ gs_flatpak_app_install (GsFlatpak *self,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "no local file set for bundle %s",
 				     gs_app_get_unique_id (app));
+			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 		g_debug ("installing bundle %s", gs_app_get_unique_id (app));
 		phelper = gs_flatpak_progress_helper_new (self->plugin, app);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		xref = flatpak_installation_install_bundle (self->installation,
 							    gs_app_get_local_file (app),
 							    gs_flatpak_progress_cb,
@@ -2779,6 +2790,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "no origin set for remote %s",
 				     gs_app_get_unique_id (app));
+			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 
@@ -2795,6 +2807,10 @@ gs_flatpak_app_install (GsFlatpak *self,
 		phelper->job_max = gs_app_list_length (list);
 		for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 			GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+			gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
+		}
+		for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+			GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 			g_autoptr(FlatpakInstalledRef) xref = NULL;
 			g_debug ("installing %s", gs_flatpak_app_get_ref_name (app_tmp));
 			gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
@@ -2808,6 +2824,7 @@ gs_flatpak_app_install (GsFlatpak *self,
 							     cancellable, error);
 			if (xref == NULL) {
 				gs_flatpak_error_convert (error);
+				gs_app_set_state_recover (app);
 				gs_app_set_state_recover (app_tmp);
 				return FALSE;
 			}
@@ -2866,6 +2883,10 @@ gs_flatpak_update_app (GsFlatpak *self,
 	phelper->job_max = gs_app_list_length (list);
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
+		gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
+	}
+	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
+		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 		g_autofree gchar *ref_display = NULL;
 		g_autoptr(FlatpakInstalledRef) xref = NULL;
 
@@ -2897,6 +2918,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
+		gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
 	}
 
 	/* update UI */
