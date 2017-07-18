@@ -948,13 +948,21 @@ gs_flatpak_find_app (GsFlatpak *self,
 	}
 	for (guint i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
+		g_autoptr(GError) error_local = NULL;
 		g_autoptr(GPtrArray) refs_remote = NULL;
+
+		/* disabled */
+		if (flatpak_remote_get_disabled (xremote))
+			continue;
 		refs_remote = flatpak_installation_list_remote_refs_sync (self->installation,
 									  flatpak_remote_get_name (xremote),
-									  cancellable, error);
+									  cancellable,
+									  &error_local);
 		if (refs_remote == NULL) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
+			g_debug ("failed to list refs in '%s': %s",
+				 flatpak_remote_get_name (xremote),
+				 error_local->message);
+			continue;
 		}
 		for (guint j = 0; j < refs_remote->len; j++) {
 			FlatpakRef *xref = g_ptr_array_index (refs_remote, j);

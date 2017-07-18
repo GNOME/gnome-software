@@ -572,8 +572,10 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 					  gs_flatpak_app_get_ref_name (app_tmp),
 					  gs_flatpak_app_get_ref_arch (app_tmp),
 					  gs_flatpak_app_get_ref_branch (app_tmp),
-					  list_tmp, cancellable, error))
+					  list_tmp, cancellable, error)) {
+			g_prefix_error (error, "failed to find in existing remotes: ");
 			return FALSE;
+		}
 	}
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 		GsApp *app_old = gs_app_list_index (list_tmp, i);

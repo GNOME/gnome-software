@@ -890,6 +890,86 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	const gchar *fn = "/tmp/test.flatpakref";
+	g_autofree gchar *testdir2 = NULL;
+	g_autofree gchar *testdir2_repourl = NULL;
+	g_autofree gchar *testdir = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsApp) app_source = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* no flatpak, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
+		return;
+
+	/* add a remote with only the runtime in */
+	app_source = gs_flatpak_app_new ("test");
+	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
+	if (testdir == NULL)
+		return;
+	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
+	gs_app_set_management_plugin (app_source, "flatpak");
+	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
+	gs_flatpak_app_set_repo_url (app_source, "file:///wont/work");
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					 "app", app_source,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
+
+	/* write a flatpakref file */
+	testdir2 = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
+	if (testdir2 == NULL)
+		return;
+	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
+	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* convert it to a GsApp */
+	file = g_file_new_for_path (fn);
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron.desktop");
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+			"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron.desktop/master"));
+	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
+	g_assert_cmpstr (gs_app_get_description (app), ==, "Long description.");
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
+	g_assert (gs_app_get_local_file (app) != NULL);
+
+	/* remove source */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app_source,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+}
+
+static void
 gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app_tmp;
@@ -1398,6 +1478,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/ref",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_ref_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/broken-remote",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_flatpak_broken_remote_func);
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_runtime_repo_func);
