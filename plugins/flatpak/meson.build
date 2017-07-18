@@ -54,5 +54,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-flatpak', e)
+  test('gs-self-test-flatpak', e, timeout : 120)
 endif
