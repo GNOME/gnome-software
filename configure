@@ -78,6 +78,8 @@ while (($# > 0)); do
 	--disable-man) enable_man='-Denable-man=false';;
 	--enable-introspection) enable_introspection='';;
 	--disable-introspection) enable_introspection='-Ddisable_introspection=true';;
+	--disable-fwupd) enable_fwupd='-Denable-fwupd=false';;
+	--disable-packagekit) enable_packagekit='-Denable-packagekit=false';;
 	*) echo -e "\e[1;33mINFO\e[0m: Ignoring unknown option '$1'";;
     esac
     shift
@@ -123,7 +125,7 @@ echo "  libdir:...... ${libdir}"
 echo "  mandir:...... ${mandir}"
 echo "  includedir:.. ${includedir}"
 echo "  additional:.."
-echo "    - ${enable_docs} ${enable_man} ${enable_introspection}"
+echo "    - ${enable_docs} ${enable_man} ${enable_introspection} ${enable_fwupd} ${enable_packagekit}"
 
 exec ${MESON} \
 	--prefix=${prefix} \
@@ -138,6 +140,8 @@ exec ${MESON} \
 	${enable_docs} \
 	${enable_man} \
 	${enable_introspection} \
+	${enable_fwupd} \
+	${enable_packagekit} \
 	${srcdir}
 
 # vim: ai ts=8 noet sts=2 ft=sh
