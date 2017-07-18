@@ -47,6 +47,24 @@ gs_flatpak_test_write_repo_file (const gchar *fn, const gchar *testdir, GError *
 	return g_file_set_contents (fn, str->str, -1, error);
 }
 
+static gboolean
+gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const gchar *runtimerepo, GError **error)
+{
+	g_autoptr(GString) str = g_string_new (NULL);
+	g_string_append (str, "[Flatpak Ref]\n");
+	g_string_append (str, "Title=Chiron\n");
+	g_string_append (str, "Name=org.test.Chiron\n");
+	g_string_append (str, "Branch=master\n");
+	g_string_append_printf (str, "Url=%s\n", url);
+	g_string_append (str, "IsRuntime=False\n");
+	g_string_append (str, "Comment=Single line synopsis\n");
+	g_string_append (str, "Description=A Testing Application\n");
+	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
+	if (runtimerepo != NULL)
+		g_string_append_printf (str, "RuntimeRepo=%s\n", runtimerepo);
+	return g_file_set_contents (filename, str->str, -1, error);
+}
+
 static void
 gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
@@ -598,7 +616,6 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GString) str2 = g_string_new (NULL);
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -617,17 +634,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	g_string_append (str2, "[Flatpak Ref]\n");
-	g_string_append (str2, "Title=Chiron\n");
-	g_string_append (str2, "Name=org.test.Chiron\n");
-	g_string_append (str2, "Branch=master\n");
-	g_string_append_printf (str2, "Url=%s\n", testdir2_repourl);
-	g_string_append (str2, "IsRuntime=False\n");
-	g_string_append (str2, "Comment=Single line synopsis\n");
-	g_string_append (str2, "Description=A Testing Application\n");
-	g_string_append (str2, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
-	g_string_append_printf (str2, "RuntimeRepo=%s\n", fn_repourl);
-	ret = g_file_set_contents (fn_ref, str2->str, -1, &error);
+	ret = gs_flatpak_test_write_ref_file (fn_ref, testdir2_repourl, fn_repourl, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -742,7 +749,6 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GString) str2 = g_string_new (NULL);
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -789,17 +795,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	g_string_append (str2, "[Flatpak Ref]\n");
-	g_string_append (str2, "Title=Chiron\n");
-	g_string_append (str2, "Name=org.test.Chiron\n");
-	g_string_append (str2, "Branch=master\n");
-	g_string_append_printf (str2, "Url=%s\n", testdir2_repourl);
-	g_string_append (str2, "IsRuntime=False\n");
-	g_string_append (str2, "Comment=Single line synopsis\n");
-	g_string_append (str2, "Description=A Testing Application\n");
-	g_string_append (str2, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
-	g_string_append_printf (str2, "RuntimeRepo=%s\n", fn_repourl);
-	ret = g_file_set_contents (fn_ref, str2->str, -1, &error);
+	ret = gs_flatpak_test_write_ref_file (fn_ref, testdir2_repourl, fn_repourl, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -982,16 +978,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	g_string_append (str, "[Flatpak Ref]\n");
-	g_string_append (str, "Title=Chiron\n");
-	g_string_append (str, "Name=org.test.Chiron\n");
-	g_string_append (str, "Branch=master\n");
-	g_string_append_printf (str, "Url=%s\n", testdir2_repourl);
-	g_string_append (str, "IsRuntime=False\n");
-	g_string_append (str, "Comment=Single line synopsis\n");
-	g_string_append (str, "Description=A Testing Application\n");
-	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
-	ret = g_file_set_contents (fn, str->str, -1, &error);
+	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
