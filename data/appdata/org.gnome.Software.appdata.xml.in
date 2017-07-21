@@ -46,6 +46,34 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-07-21" version="3.25.4">
+      <description>
+        <p>
+          This is an unstable release in the 3.25 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add new rpm-ostree integration for Fedora Atomic Workstation</li>
+          <li>Install the Flatpak runtime as part of the application install phase</li>
+          <li>Split OS updates up into multiple sections and show the target version</li>
+          <li>Support compatibility IDs when getting reviews from the ODRS</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Cancel plugin jobs if they take too much time</li>
+          <li>Correctly find already installed flatpak runtimes</li>
+          <li>Do not show an error for a flatpakref when broken remotes exist</li>
+          <li>Don't show the screenshot section for runtimes</li>
+          <li>Fix authentication prompt not showing when using snapd</li>
+          <li>Make license buttons buttons actually look clickable</li>
+          <li>Make the review moderator panel easier to use</li>
+          <li>Only show snaps as sandboxed if snapd supports confinement</li>
+          <li>Respect the per-user or per-system install preferences</li>
+          <li>Return the correct installed state for user/system flatpak remotes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-06-22" version="3.25.3">
       <description>
         <p>
