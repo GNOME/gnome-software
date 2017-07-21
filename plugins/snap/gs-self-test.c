@@ -55,6 +55,17 @@ snapd_client_connect_sync (SnapdClient *client, GCancellable *cancellable, GErro
 	return TRUE;
 }
 
+const gchar *
+snapd_client_get_user_agent (SnapdClient *client)
+{
+	return "snapd-glib/0.0.1";
+}
+
+void
+snapd_client_set_user_agent (SnapdClient *client, const gchar *user_agent)
+{
+}
+
 SnapdSystemInformation *
 snapd_client_get_system_information_sync (SnapdClient *client, GCancellable *cancellable, GError **error)
 {
