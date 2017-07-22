@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-07-11 10:51+0000\n"
-"PO-Revision-Date: 2017-07-11 20:23+0700\n"
+"POT-Creation-Date: 2017-07-17 16:14+0000\n"
+"PO-Revision-Date: 2017-07-18 14:42+0700\n"
 "Last-Translator: Kukuh Syafaat <syafaatkukuh@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -3204,7 +3204,7 @@ msgstr "Ini berarti tidak menerima pembaruan keamanan."
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
 #: src/gs-updates-page.c:1102
 msgid "It is recommended that you upgrade to a more recent version."
-msgstr "Anda sangat disarankan untuk memperbarui ke versi yang lebih baru."
+msgstr "Anda sangat disarankan untuk meningkatkan ke versi yang lebih baru."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: src/gs-updates-page.c:1360
@@ -3301,9 +3301,7 @@ msgstr "Mengunduh %s %s"
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s Siap dipasang"
 
-#. TRANSLATORS: this is a title for Fedora distro upgrades
 #: src/gs-upgrade-banner.ui:32
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
 msgid "A major upgrade, with new features and added polish."
 msgstr "Peningkatan mayor, dengan fitur-fitur baru dan polesan tambahan."
 
@@ -3806,7 +3804,12 @@ msgstr "Gagal menyalin"
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:212
 msgid "Downloading upgrade information…"
-msgstr "Mengunduh informasi pembaruan..."
+msgstr "Mengunduh informasi peningkatan..."
+
+#. TRANSLATORS: this is a title for Fedora distro upgrades
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
+msgid "Upgrade your Fedora system to the latest features and improvements."
+msgstr "Tingkatkan sistem Fedora Anda ke fitur dan perbaikan terbaru."
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
@@ -3817,23 +3820,28 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak adalah kerangka kerja untuk aplikasi destop di Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:590
+#: plugins/flatpak/gs-flatpak.c:569
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Mendapatkan metadata flatpak untuk %s…"
 
+#. TRANSLATORS: status text when downloading the RuntimeRepo
+#: plugins/flatpak/gs-flatpak.c:2611
+msgid "Getting runtime source…"
+msgstr "Mendapatkan sumber runtime..."
+
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:767
+#: plugins/fwupd/gs-plugin-fwupd.c:770
 msgid "Downloading firmware update signature…"
 msgstr "Mengunduh tanda tangan pembaruan perangkat tegar…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:813
+#: plugins/fwupd/gs-plugin-fwupd.c:816
 msgid "Downloading firmware update metadata…"
 msgstr "Mengunduh metadata pembaruan perangkat tegar…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:901
+#: plugins/fwupd/gs-plugin-fwupd.c:904
 msgid "Downloading firmware update…"
 msgstr "Mengunduh pembaruan perangkat tegar..."
 
