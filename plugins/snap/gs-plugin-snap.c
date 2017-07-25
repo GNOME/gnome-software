@@ -276,6 +276,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autofree gchar *scheme = NULL;
 	g_autofree gchar *path = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	/* not us */
 	scheme = gs_utils_get_url_scheme (url);
@@ -288,7 +289,8 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
-	gs_app_list_add (list, snap_to_app (plugin, snaps->pdata[0]));
+	app = snap_to_app (plugin, g_ptr_array_index (snaps, 0));
+	gs_app_list_add (list, app);
 
 	return TRUE;
 }
@@ -315,8 +317,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = snaps->pdata[i];
-		gs_app_list_add (list, snap_to_app (plugin, snap));
+		g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, i));
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -339,12 +341,14 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	}
 
 	for (i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = snaps->pdata[i];
+		SnapdSnap *snap = g_ptr_array_index (snaps, i);
+		g_autoptr(GsApp) app = NULL;
 
 		if (snapd_snap_get_status (snap) != SNAPD_SNAP_STATUS_ACTIVE)
 			continue;
 
-		gs_app_list_add (list, snap_to_app (plugin, snap));
+		app = snap_to_app (plugin, snap);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -367,8 +371,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = snaps->pdata[i];
-		gs_app_list_add (list, snap_to_app (plugin, snap));
+		g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, i));
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
