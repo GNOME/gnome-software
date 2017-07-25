@@ -304,6 +304,83 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 gboolean
+gs_plugin_add_featured (GsPlugin *plugin,
+		        GsAppList *list,
+		        GCancellable *cancellable,
+		        GError **error)
+{
+	g_autoptr(GPtrArray) snaps = NULL;
+	SnapdSnap *snap;
+	g_autoptr(GsApp) app = NULL;
+	GPtrArray *screenshots;
+	guint i;
+	const gchar *banner_url = NULL, *icon_url = NULL;
+	g_autoptr(GString) background_css = NULL;
+	g_autofree gchar *css = NULL;
+
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, "featured", NULL, cancellable, error);
+
+	if (snaps == NULL)
+		return FALSE;
+
+	if (snaps->len == 0)
+		return TRUE;
+
+	/* use first snap as the featured app */
+	snap = snaps->pdata[0];
+	app = snap_to_app (plugin, snap);
+
+	/* if has a sceenshot called 'banner.png' or 'banner-icon.png' then use them for the banner */
+	screenshots = snapd_snap_get_screenshots (snap);
+	for (i = 0; i < screenshots->len; i++) {
+		SnapdScreenshot *screenshot = screenshots->pdata[i];
+		const gchar *url;
+		g_autofree gchar *filename = NULL;
+
+		url = snapd_screenshot_get_url (screenshot);
+		filename = g_path_get_basename (url);
+		if (g_strcmp0 (filename, "banner.png") == 0 ||
+		    g_strcmp0 (filename, "banner.jpg") == 0) {
+			banner_url = url;
+		}
+		if (g_strcmp0 (filename, "banner-icon.png") == 0 ||
+		    g_strcmp0 (filename, "banner-icon.jpg") == 0) {
+			icon_url = url;
+		}
+	}
+
+	background_css = g_string_new ("");
+	if (icon_url != NULL)
+		g_string_append_printf (background_css,
+					"url('%s') left center / auto 100%% no-repeat, ",
+					icon_url);
+	else
+		g_string_append_printf (background_css,
+					"url('%s') left center / auto 100%% no-repeat, ",
+					snapd_snap_get_icon (snap));
+	if (banner_url != NULL)
+		g_string_append_printf (background_css,
+					"url('%s') center / cover no-repeat;",
+					banner_url);
+	else
+		g_string_append_printf (background_css, "#FFFFFF;");
+	css = g_strdup_printf ("border-color: #000000;\n"
+			       "text-shadow: 0 1px 1px rgba(255,255,255,0.5);\n"
+			       "color: #000000;\n"
+			       "outline-offset: 0;\n"
+			       "outline-color: alpha(#ffffff, 0.75);\n"
+			       "outline-style: dashed;\n"
+			       "outline-offset: 2px;\n"
+			       "background: %s;",
+			       background_css->str);
+	gs_app_set_metadata (app, "GnomeSoftware::FeatureTile-css", css);
+
+	gs_app_list_add (list, app);
+
+	return TRUE;
+}
+
+gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GsAppList *list,
 		       GCancellable *cancellable,
@@ -316,7 +393,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	if (snaps == NULL)
 		return FALSE;
 
-	for (i = 0; i < snaps->len; i++) {
+	/* skip first snap - it is used as the featured app */
+	for (i = 1; i < snaps->len; i++) {
 		g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, i));
 		gs_app_list_add (list, app);
 	}
@@ -555,8 +633,19 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 			for (i = 0; i < screenshots->len; i++) {
 				SnapdScreenshot *screenshot = screenshots->pdata[i];
+				const gchar *url;
+				g_autofree gchar *filename = NULL;
 				g_autoptr(AsScreenshot) ss = NULL;
 				g_autoptr(AsImage) image = NULL;
+
+				/* skip sceenshots used for banner when app is featured */
+				url = snapd_screenshot_get_url (screenshot);
+				filename = g_path_get_basename (url);
+				if (g_strcmp0 (filename, "banner.png") == 0 ||
+				    g_strcmp0 (filename, "banner.jpg") == 0 ||
+				    g_strcmp0 (filename, "banner-icon.png") == 0 ||
+				    g_strcmp0 (filename, "banner-icon.jpg") == 0)
+					continue;
 
 				ss = as_screenshot_new ();
 				as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
