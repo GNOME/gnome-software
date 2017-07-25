@@ -46,6 +46,7 @@ struct _GsSearchPage
 	gchar			*appid_to_show;
 	gchar			*value;
 	guint			 waiting_id;
+	guint			 max_results;
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -54,16 +55,6 @@ struct _GsSearchPage
 };
 
 G_DEFINE_TYPE (GsSearchPage, gs_search_page, GS_TYPE_PAGE)
-
-static void
-gs_search_page_app_row_activated_cb (GtkListBox *list_box,
-                                     GtkListBoxRow *row,
-                                     GsSearchPage *self)
-{
-	GsApp *app;
-	app = gs_app_row_get_app (GS_APP_ROW (row));
-	gs_shell_show_app (self->shell, app);
-}
 
 static void
 gs_search_page_app_row_clicked_cb (GsAppRow *app_row,
@@ -172,6 +163,9 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gtk_style_context_add_class (context, GTK_STYLE_CLASS_DIM_LABEL);
 		gtk_container_add (GTK_CONTAINER (self->list_box_search), w);
 		gtk_widget_show (w);
+	} else {
+		/* reset to default */
+		self->max_results = GS_SEARCH_PAGE_MAX_RESULTS;
 	}
 
 	if (self->appid_to_show != NULL) {
@@ -270,7 +264,7 @@ gs_search_page_load (GsSearchPage *self)
 	self->waiting_id = g_timeout_add (250, gs_search_page_waiting_show_cb, self);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", self->value,
-					 "max-results", GS_SEARCH_PAGE_MAX_RESULTS,
+					 "max-results", self->max_results,
 					 "timeout", 10,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -291,6 +285,24 @@ gs_search_page_load (GsSearchPage *self)
 					    self->search_cancellable,
 					    gs_search_page_get_search_cb,
 					    self);
+}
+
+static void
+gs_search_page_app_row_activated_cb (GtkListBox *list_box,
+                                     GtkListBoxRow *row,
+                                     GsSearchPage *self)
+{
+	GsApp *app;
+
+	/* increase the maximum allowed, and re-request the search */
+	if (!GS_IS_APP_ROW (row)) {
+		self->max_results *= 4;
+		gs_search_page_load (self);
+		return;
+	}
+
+	app = gs_app_row_get_app (GS_APP_ROW (row));
+	gs_shell_show_app (self->shell, app);
 }
 
 static void
@@ -492,6 +504,8 @@ gs_search_page_init (GsSearchPage *self)
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+	self->max_results = GS_SEARCH_PAGE_MAX_RESULTS;
 }
 
 GsSearchPage *
