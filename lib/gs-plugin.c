@@ -1371,6 +1371,8 @@ gs_plugin_download_file (GsPlugin *plugin,
 			     uri, str->str);
 		return FALSE;
 	}
+	if (!gs_mkdir_parent (filename, error))
+		return FALSE;
 	if (!g_file_set_contents (filename,
 				  msg->response_body->data,
 				  msg->response_body->length,

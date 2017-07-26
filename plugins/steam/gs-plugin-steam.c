@@ -389,8 +389,6 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 			return FALSE;
 		}
 	} else {
-		if (!gs_mkdir_parent (cache_fn, error))
-			return FALSE;
 		if (!gs_plugin_download_file (plugin,
 					      NULL, /* GsApp */
 					      uri,
