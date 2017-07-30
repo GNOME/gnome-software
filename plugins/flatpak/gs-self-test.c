@@ -134,7 +134,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 
 	/* check config file was updated */
-	root = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
+	root = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
 	config_fn = g_build_filename (root, "flatpak", "repo", "config", NULL);
 	kf = g_key_file_new ();
 	ret = g_key_file_load_from_file (kf, config_fn, 0, &error);
@@ -216,7 +216,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* check changed file exists */
-	root = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
+	root = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
 	changed_fn = g_build_filename (root, "flatpak", ".changed", NULL);
 	g_assert (g_file_test (changed_fn, G_FILE_TEST_IS_REGULAR));
 
@@ -1445,7 +1445,7 @@ main (int argc, char **argv)
 
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
-	g_setenv ("GS_SELF_TEST_FLATPACK_DATADIR", tmp_root, TRUE);
+	g_setenv ("GS_SELF_TEST_FLATPAK_DATADIR", tmp_root, TRUE);
 
 	/* ensure test root does not exist */
 	if (g_file_test (tmp_root, G_FILE_TEST_EXISTS)) {
