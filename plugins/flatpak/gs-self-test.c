@@ -65,6 +65,39 @@ gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const g
 	return g_file_set_contents (filename, str->str, -1, error);
 }
 
+/* create duplicate file as if downloaded in firefox */
+static void
+gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
+{
+	const gchar *fn = "/var/tmp/self-test/example (1)….flatpakrepo";
+	gboolean ret;
+	g_autofree gchar *testdir = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* get a resolvable  */
+	testdir = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
+	if (testdir == NULL)
+		return;
+
+	ret = gs_flatpak_test_write_repo_file (fn, testdir, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	file = g_file_new_for_path (fn);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
+					 "file", file,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
+					 NULL);
+	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpstr (gs_app_get_unique_id (app), ==, "user/*/*/source/example__1____/master");
+}
+
 static void
 gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
@@ -1508,6 +1541,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_repo_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo{non-ascii}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_flatpak_repo_non_ascii_func);
 	return g_test_run ();
 }
 

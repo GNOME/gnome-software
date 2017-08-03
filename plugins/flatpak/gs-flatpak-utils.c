@@ -100,6 +100,7 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 				   GError **error)
 {
 	gchar *tmp;
+	g_autofree gchar *basename = NULL;
 	g_autofree gchar *filename = NULL;
 	g_autofree gchar *repo_comment = NULL;
 	g_autofree gchar *repo_default_branch = NULL;
@@ -129,10 +130,17 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	}
 
 	/* get the ID from the basename */
-	repo_id = g_file_get_basename (file);
+	basename = g_file_get_basename (file);
+
+	/* ensure this is valid for flatpak */
+	repo_id = g_str_to_ascii (basename, NULL);
 	tmp = g_strrstr (repo_id, ".");
 	if (tmp != NULL)
 		*tmp = '\0';
+	for (guint i = 0; repo_id[i] != '\0'; i++) {
+		if (!g_ascii_isalnum (repo_id[i]))
+			repo_id[i] = '_';
+	}
 
 	/* create source */
 	repo_title = g_key_file_get_string (kf, "Flatpak Repo", "Title", NULL);
