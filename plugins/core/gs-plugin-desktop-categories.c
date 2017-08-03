@@ -63,7 +63,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			gs_category_add_key_color (category, &key_color);
 		g_ptr_array_add (list, category);
 		g_snprintf (msgctxt, sizeof(msgctxt),
-			    "Menu subcategory of %s", msdata[i].name);
+			    "Menu of %s", msdata[i].name);
 
 		/* add subcategories */
 		for (j = 0; msdata[i].mapping[j].id != NULL; j++) {
