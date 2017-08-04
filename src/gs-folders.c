@@ -192,6 +192,10 @@ load (GsFolders *folders)
 
 		child_path = g_strconcat (path, "folders/", ids[i], "/", NULL);
 		settings = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
+		if (settings == NULL) {
+			g_warning ("ignoring folder child %s as invalid", ids[i]);
+			continue;
+		}
 		name = g_settings_get_string (settings, "name");
 		translate = g_settings_get_boolean (settings, "translate");
 		folder = gs_folder_new (ids[i], name, translate);
