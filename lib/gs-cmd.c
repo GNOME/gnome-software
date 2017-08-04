@@ -687,6 +687,14 @@ main (int argc, char **argv)
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
+	} else if (argc >= 1 && g_strcmp0 (argv[1], "user-hash") == 0) {
+		g_autofree gchar *user_hash = gs_utils_get_user_hash (&error);
+		if (user_hash == NULL) {
+			ret = FALSE;
+		} else {
+			g_print ("%s\n", user_hash);
+			ret = TRUE;
+		}
 	} else {
 		ret = FALSE;
 		g_set_error_literal (&error,
