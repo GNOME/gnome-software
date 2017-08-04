@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-07-07 14:17+0000\n"
+"POT-Creation-Date: 2017-08-03 15:32+0000\n"
 "PO-Revision-Date: 2017-07-08 13:42+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -71,7 +71,7 @@ msgstr "Quadre d'actualitzacions"
 msgid "The update details"
 msgstr "Detalls de l'actualització"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:795
+#: data/appdata/org.gnome.Software.appdata.xml.in:823
 msgid "The GNOME Project"
 msgstr "El projecte GNOME"
 
@@ -1237,23 +1237,23 @@ msgid "Unable to find “%s”"
 msgstr "No s'ha trobat «%s»"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2013
+#: src/gs-details-page.c:2017
 msgid "Public domain"
 msgstr "Domini públic"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2029 src/gs-details-page.ui:1377
+#: src/gs-details-page.c:2033 src/gs-details-page.ui:1380
 msgid "Free Software"
 msgstr "Programari lliure"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2086
+#: src/gs-details-page.c:2090
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Els usuaris estan lligats a la següent llicència:"
 msgstr[1] "Els usuaris estan lligats a les següents llicències:"
 
-#: src/gs-details-page.c:2102 src/gs-details-page.ui:1486
+#: src/gs-details-page.c:2106 src/gs-details-page.ui:1489
 msgid "More information"
 msgstr "Més informació"
 
@@ -1404,31 +1404,31 @@ msgstr "Desconegut"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1157 src/gs-installed-page.c:487
-#: plugins/core/gs-desktop-common.c:330
+#: src/gs-details-page.ui:1160 src/gs-installed-page.c:487
+#: plugins/core/gs-desktop-common.c:331
 msgid "Add-ons"
 msgstr "Complements"
 
-#: src/gs-details-page.ui:1170
+#: src/gs-details-page.ui:1173
 msgid "Selected add-ons will be installed with the application."
 msgstr "S'instal·laran els complements seleccionats juntament amb l'aplicació."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1213
+#: src/gs-details-page.ui:1216
 msgid "Reviews"
 msgstr "Ressenyes"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1229
+#: src/gs-details-page.ui:1232
 msgid "_Write a Review"
 msgstr "_Escriviu una ressenya"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1251
+#: src/gs-details-page.ui:1254
 msgid "_Show More"
 msgstr "_Mostra'n més"
 
-#: src/gs-details-page.ui:1394
+#: src/gs-details-page.ui:1397
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1436,11 +1436,11 @@ msgstr ""
 "Això vol dir que el programari pot ser lliurement usat, copiat, distribuït, "
 "estudiat i modificat."
 
-#: src/gs-details-page.ui:1453
+#: src/gs-details-page.ui:1456
 msgid "Proprietary Software"
 msgstr "Programari de propietat"
 
-#: src/gs-details-page.ui:1470
+#: src/gs-details-page.ui:1473
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1450,20 +1450,20 @@ msgstr ""
 "habitualment restriccions en el seu ús i normalment no es pot accedir al seu "
 "codi font."
 
-#: src/gs-details-page.ui:1515
+#: src/gs-details-page.ui:1518
 msgid "Unknown Software License"
 msgstr "Llicència del programari desconeguda"
 
-#: src/gs-details-page.ui:1532
+#: src/gs-details-page.ui:1535
 msgid "The license terms of this software are unknown."
 msgstr "Els termes de llicència d'aquest programa són desconeguts."
 
-#: src/gs-details-page.ui:1559
+#: src/gs-details-page.ui:1562
 msgid "The application was rated this way because it features:"
 msgstr ""
 "L'aplicació va ser valorada d'aquesta manera per les seves característiques:"
 
-#: src/gs-details-page.ui:1585
+#: src/gs-details-page.ui:1588
 msgid "No details were available for this rating."
 msgstr "No hi ha detalls disponibles per aquesta valoració."
 
@@ -1712,7 +1712,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:388 lib/gs-plugin-loader.c:1407
+#: src/gs-extras-page.c:388 lib/gs-plugin-loader.c:1408
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No s'ha trobat cap còdec disponible per al format %s."
@@ -2069,7 +2069,7 @@ msgstr "Esteu segur de voler suprimir %s?"
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "Se suprimirà %s i haureu d'instal·lar-la per utilitzar-la de nou."
 
-#: lib/gs-plugin-loader.c:1410
+#: lib/gs-plugin-loader.c:1411
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2339,7 +2339,7 @@ msgstr "Captura de pantalla"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:164
+#: src/gs-search-page.c:155
 #, c-format
 msgid "%u more matches"
 msgstr "%u coincidències més"
@@ -2428,21 +2428,21 @@ msgstr ""
 "programari"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:906
+#: src/gs-shell.c:908
 msgid "Unable to get list of updates"
 msgstr "No s'ha pogut obtenir una llista d'actualitzacions"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:952
+#: src/gs-shell.c:954
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "No s'ha pogut instal·lar %s ja que ha fallat la baixada des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:958
+#: src/gs-shell.c:960
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "No s'ha pogut instal·lar %s ja que ha fallat la baixada"
@@ -2451,7 +2451,7 @@ msgstr "No s'ha pogut instal·lar %s ja que ha fallat la baixada"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:970
+#: src/gs-shell.c:972
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
@@ -2459,45 +2459,45 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:976
+#: src/gs-shell.c:978
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "No s'ha pogut instal·lar %s ja que no és compatible"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:983
+#: src/gs-shell.c:985
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "No s'ha pogut instal·lar: calia accés a Internet però no estava disponible"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:989
+#: src/gs-shell.c:991
 msgid "Unable to install: the application has an invalid format"
 msgstr "No s'ha pogut instal·lar: l'aplicació tenia un format invàlid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:994
+#: src/gs-shell.c:996
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "No s'ha pogut instal·lar %s: no hi ha prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1002
+#: src/gs-shell.c:1004
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "No s'ha pogut instal·lar %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1009
+#: src/gs-shell.c:1011
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "No s'ha pogut instal·lar %s: l'autenticació era invàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1016
+#: src/gs-shell.c:1018
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -2506,34 +2506,34 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: src/gs-shell.c:1029
+#: src/gs-shell.c:1031
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "El vostre compte a «%s» ha estat suspès."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1033
+#: src/gs-shell.c:1035
 msgid "It is not possible to install software until this has been resolved."
 msgstr "No és possible instal·lar programari fins que això s'hagi resolt."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: src/gs-shell.c:1044
+#: src/gs-shell.c:1046
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Per a més informació, visiteu %s."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1053
+#: src/gs-shell.c:1055
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "No s'ha pogut instal·lar %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1060
+#: src/gs-shell.c:1064
 #, c-format
 msgid "Unable to install %s"
 msgstr "No s'ha pogut instal·lar %s"
@@ -2542,48 +2542,48 @@ msgstr "No s'ha pogut instal·lar %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1106
+#: src/gs-shell.c:1110
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "No s'ha pogut actualitzar %s des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1112
+#: src/gs-shell.c:1116
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "No s'ha pogut actualitzar %s ja que ha fallat la baixada"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1118
+#: src/gs-shell.c:1122
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "No s'ha pogut actualitzar: calia accés a Internet però no estava disponible."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1126
+#: src/gs-shell.c:1130
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "No s'ha pogut actualitzar %s: no hi havia prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1135
+#: src/gs-shell.c:1139
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "No s'ha pogut actualitzar %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1142
+#: src/gs-shell.c:1146
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "No s'ha pogut actualitzar %s: l'autenticació no era vàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1149
+#: src/gs-shell.c:1153
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
@@ -2591,14 +2591,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1157
+#: src/gs-shell.c:1161
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "No s'ha pogut actualitzar %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1164
+#: src/gs-shell.c:1170
 #, c-format
 msgid "Unable to update %s"
 msgstr "No es pot actualitzar %s"
@@ -2606,97 +2606,97 @@ msgstr "No es pot actualitzar %s"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1209
+#: src/gs-shell.c:1215
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "No es pot actualitzar a %s des de %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1214
+#: src/gs-shell.c:1220
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "No s'ha pogut actualitzar a %s ja que ha fallat la baixada"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1221
+#: src/gs-shell.c:1227
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr ""
 "No s'ha pogut actualitzar: calia accés a Internet però no estava disponible."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1229
+#: src/gs-shell.c:1235
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "No s'ha pogut actualitzar %s: no hi havia prou espai al disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1238
+#: src/gs-shell.c:1244
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "No s'ha pogut actualitzar %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1245
+#: src/gs-shell.c:1251
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "No s'ha pogut actualitzar %s: l'autenticació no era vàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1252
+#: src/gs-shell.c:1258
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "No s'ha pogut actualitzar %s: o teniu permís per a actualitzar"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1259
+#: src/gs-shell.c:1265
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "No s'ha pogut actualitzar %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1266
+#: src/gs-shell.c:1274
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "No s'ha pogut actualitzar a %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1316
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "No s'ha pogut suprimir %s: calia una autenticació"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1314
+#: src/gs-shell.c:1322
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "No s'ha pogut suprimir %s: l'autenticació era invàlida"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1320
+#: src/gs-shell.c:1328
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "No s'ha pogut suprimir %s: no teniu permís per a suprimir programari"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1327
+#: src/gs-shell.c:1335
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "No s'ha pogut suprimir %s: cal estar connectat al corrent"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1334
+#: src/gs-shell.c:1344
 #, c-format
 msgid "Unable to remove %s"
 msgstr "No s'ha pogut suprimir %s"
@@ -2705,19 +2705,24 @@ msgstr "No s'ha pogut suprimir %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1380
+#: src/gs-shell.c:1390
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "No s'ha pogut executar %s: %s no està instal·lat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1387 src/gs-shell.c:1431 src/gs-shell.c:1471
+#: src/gs-shell.c:1397 src/gs-shell.c:1446 src/gs-shell.c:1494
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "No hi havia prou espai al disc. Allibereu espai a disc i torneu-ho a provar"
 
+#. TRANSLATORS: we failed to get a proper error code
+#: src/gs-shell.c:1405 src/gs-shell.c:1454 src/gs-shell.c:1521
+msgid "Sorry, something went wrong"
+msgstr "No ha funcionat"
+
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1426
+#: src/gs-shell.c:1441
 msgid "Failed to install file: authentication failed"
 msgstr ""
 "S'ha produït un error en instal·lar el fitxer: ha fallat l'autenticació"
@@ -2725,25 +2730,25 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1465
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to contact %s"
 msgstr "No s'ha pogut contactar %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1480
+#: src/gs-shell.c:1503
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Cal reiniciar %s per a utilitzar els nous connectors."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1485
+#: src/gs-shell.c:1508
 msgid "This application needs to be restarted to use new plugins."
 msgstr "Cal reiniciar aquesta aplicació per a utilitzar els nous connectors."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1492
+#: src/gs-shell.c:1515
 msgid "AC power is required"
 msgstr "Cal estar connectat al corrent"
 
@@ -3342,9 +3347,7 @@ msgstr "S'estan baixant %s %s"
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s preparat per instal·lar-se"
 
-#. TRANSLATORS: this is a title for Fedora distro upgrades
 #: src/gs-upgrade-banner.ui:32
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
 msgid "A major upgrade, with new features and added polish."
 msgstr "Una actualització major, amb noves funcionalitat i més polida."
 
@@ -3396,82 +3399,82 @@ msgid "AppStream;Software;App;"
 msgstr "AppStream;Programari;Aplicació;"
 
 #: plugins/core/gs-desktop-common.c:30
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:33
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:36
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "Audio Creation & Editing"
 msgstr "Edició i creació d'àudio"
 
 #: plugins/core/gs-desktop-common.c:42
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Reproductors de música"
 
 #: plugins/core/gs-desktop-common.c:51
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:54
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:57
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Depuradors"
 
 #: plugins/core/gs-desktop-common.c:60
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "Entorns integrats de desenvolupament"
 
 #: plugins/core/gs-desktop-common.c:69
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "All"
-msgstr "Totes"
+msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:73
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:77
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Intel·ligència artificial"
 
 #: plugins/core/gs-desktop-common.c:80
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Astronomia"
 
 #: plugins/core/gs-desktop-common.c:84
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Química"
 
 #: plugins/core/gs-desktop-common.c:88
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Llengües"
 
 #: plugins/core/gs-desktop-common.c:92
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Matemàtiques"
 
 #: plugins/core/gs-desktop-common.c:99
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Robòtica"
 
@@ -3546,142 +3549,142 @@ msgid "Strategy"
 msgstr "Estratègia"
 
 #: plugins/core/gs-desktop-common.c:156
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:159
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:162
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "Gràfics 3D"
 
 #: plugins/core/gs-desktop-common.c:165
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Fotografia"
 
 #: plugins/core/gs-desktop-common.c:168
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Escaneig"
 
 #: plugins/core/gs-desktop-common.c:171
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Gràfics vectorials"
 
 #: plugins/core/gs-desktop-common.c:174
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Visualitzador"
 
 #: plugins/core/gs-desktop-common.c:182
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:185
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:188
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Calendari"
 
 #: plugins/core/gs-desktop-common.c:192
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Base de dades"
 
 #: plugins/core/gs-desktop-common.c:195
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Finances"
 
 #: plugins/core/gs-desktop-common.c:199
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Processador de textos"
 
 #: plugins/core/gs-desktop-common.c:208
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Tipus de lletra"
 
 #: plugins/core/gs-desktop-common.c:211
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Còdecs"
 
 #: plugins/core/gs-desktop-common.c:214
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Input Sources"
 msgstr "Fonts d'entrada"
 
 #: plugins/core/gs-desktop-common.c:217
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Language Packs"
 msgstr "Paquets d'idioma"
 
 #: plugins/core/gs-desktop-common.c:220
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Shell Extensions"
 msgstr "Extensions del Shell"
 
 #: plugins/core/gs-desktop-common.c:223
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Localization"
 msgstr "Localització"
 
 #: plugins/core/gs-desktop-common.c:226
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
 msgstr "Controladors de maquinari"
 
 #: plugins/core/gs-desktop-common.c:234
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:237
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:240
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Xat"
 
 #: plugins/core/gs-desktop-common.c:247
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Notícies"
 
 #: plugins/core/gs-desktop-common.c:251
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Navegador web"
 
 #: plugins/core/gs-desktop-common.c:259
-msgctxt "Menu of Utility"
+msgctxt "Menu of Utilities"
 msgid "All"
 msgstr "Tots"
 
 #: plugins/core/gs-desktop-common.c:262
-msgctxt "Menu of Utility"
+msgctxt "Menu of Utilities"
 msgid "Featured"
 msgstr "Destacat"
 
 #: plugins/core/gs-desktop-common.c:265
-msgctxt "Menu of Utility"
+msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Editors de text"
 
@@ -3741,47 +3744,47 @@ msgid "Sports"
 msgstr "Esports"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:312
+#: plugins/core/gs-desktop-common.c:313
 msgid "Audio & Video"
 msgstr "Àudio i vídeo"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:315
+#: plugins/core/gs-desktop-common.c:316
 msgid "Developer Tools"
 msgstr "Eines de desenvolupament"
 
 #. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:318
+#: plugins/core/gs-desktop-common.c:319
 msgid "Education & Science"
 msgstr "Educació i ciència"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:321
+#: plugins/core/gs-desktop-common.c:322
 msgid "Games"
 msgstr "Jocs"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:324
+#: plugins/core/gs-desktop-common.c:325
 msgid "Graphics & Photography"
 msgstr "Gràfics i fotografia"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:327
+#: plugins/core/gs-desktop-common.c:328
 msgid "Productivity"
 msgstr "Productivitat"
 
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:333
+#: plugins/core/gs-desktop-common.c:334
 msgid "Communication & News"
 msgstr "Notícies i comunicació"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:336
+#: plugins/core/gs-desktop-common.c:337
 msgid "Reference"
 msgstr "Referència"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:339
+#: plugins/core/gs-desktop-common.c:340
 msgid "Utilities"
 msgstr "Utilitats"
 
@@ -3849,6 +3852,11 @@ msgstr "S'ha produït un error en copiar"
 msgid "Downloading upgrade information…"
 msgstr "S'està baixant la informació de l'actualització…"
 
+#. TRANSLATORS: this is a title for Fedora distro upgrades
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
+msgid "Upgrade your Fedora system to the latest features and improvements."
+msgstr ""
+
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
 msgstr "Compatibilitat amb Flatpak"
@@ -3858,23 +3866,28 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak és un espai de treball per aplicacions d'escriptori a Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:590
+#: plugins/flatpak/gs-flatpak.c:563
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "S'estan obtenint les metadades del flatpak per %s…"
 
+#. TRANSLATORS: status text when downloading the RuntimeRepo
+#: plugins/flatpak/gs-flatpak.c:2611
+msgid "Getting runtime source…"
+msgstr "S'estan preparant les actualitzacions…"
+
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:767
+#: plugins/fwupd/gs-plugin-fwupd.c:770
 msgid "Downloading firmware update signature…"
 msgstr "S'està baixant la signatura de l'actualització del microprogramari…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:813
+#: plugins/fwupd/gs-plugin-fwupd.c:816
 msgid "Downloading firmware update metadata…"
 msgstr "S'estan baixant les metadades de l'actualització del microprogramari…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:901
+#: plugins/fwupd/gs-plugin-fwupd.c:904
 msgid "Downloading firmware update…"
 msgstr "S'està baixant l'actualització del microprogramari…"
 
@@ -3923,7 +3936,7 @@ msgid "A snap is a universal Linux package"
 msgstr "Un «snap» és un paquet Linux universal"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/steam/gs-plugin-steam.c:602
+#: plugins/steam/gs-plugin-steam.c:600
 msgid "Downloading application page…"
 msgstr "S'està baixant la pàgina de l'aplicació…"
 
@@ -3934,6 +3947,62 @@ msgstr "Compatibilitat amb Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "La plataforma d'entreteniment de Valve"
+
+#~ msgctxt "Menu of AudioVideo"
+#~ msgid "All"
+#~ msgstr "Tots"
+
+#~ msgctxt "Menu of AudioVideo"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
+
+#~ msgctxt "Menu of Development"
+#~ msgid "All"
+#~ msgstr "Tots"
+
+#~ msgctxt "Menu of Development"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
+
+#~ msgctxt "Menu of Education and Science"
+#~ msgid "All"
+#~ msgstr "Totes"
+
+#~ msgctxt "Menu of Education and Science"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
+
+#~ msgctxt "Menu of Graphics"
+#~ msgid "All"
+#~ msgstr "Tots"
+
+#~ msgctxt "Menu of Graphics"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
+
+#~ msgctxt "Menu of Office"
+#~ msgid "All"
+#~ msgstr "Tots"
+
+#~ msgctxt "Menu of Office"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
+
+#~ msgctxt "Menu of Communication"
+#~ msgid "All"
+#~ msgstr "Tots"
+
+#~ msgctxt "Menu of Communication"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
+
+#~ msgctxt "Menu of Utility"
+#~ msgid "All"
+#~ msgstr "Tots"
+
+#~ msgctxt "Menu of Utility"
+#~ msgid "Featured"
+#~ msgstr "Destacat"
 
 #~ msgid "“%s” [%s]"
 #~ msgstr "«{%s}» [%s]"
@@ -3946,9 +4015,6 @@ msgstr "La plataforma d'entreteniment de Valve"
 
 #~ msgid "Total"
 #~ msgstr "Total"
-
-#~ msgid "Sorry, this did not work"
-#~ msgstr "No ha funcionat"
 
 #~ msgid "_Install All"
 #~ msgstr "_Instal·la-ho tot"
