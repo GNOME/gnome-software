@@ -26,11 +26,15 @@
 struct _GsReviewDialog
 {
 	GtkDialog	 parent_instance;
+	GsShell		*shell;
+	GsApp		*app;
 
 	GtkWidget	*star;
 	GtkWidget	*label_rating_desc;
 	GtkWidget	*summary_entry;
 	GtkWidget	*post_button;
+	GtkWidget	*box_donation;
+	GtkWidget	*button_donation;
 	GtkWidget	*text_view;
 	guint		 timer_id;
 };
@@ -103,6 +107,17 @@ gs_review_dialog_update_review_comment (GsReviewDialog *dialog)
 }
 
 static void
+gs_review_dialog_update_donation (GsReviewDialog *dialog)
+{
+	gint pc = gs_star_widget_get_rating (GS_STAR_WIDGET (dialog->star));
+	g_autoptr(GSettings) settings = g_settings_new ("org.gnome.software");
+	gtk_widget_set_visible (dialog->box_donation,
+				gs_app_get_url (dialog->app, AS_URL_KIND_DONATION) != NULL &&
+				g_settings_get_boolean (settings, "show-donation-ui"));
+	gtk_widget_set_sensitive (dialog->button_donation, pc == 0 || pc > 40);
+}
+
+static void
 gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
@@ -145,6 +160,9 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 
 	/* can the user submit this? */
 	gtk_widget_set_sensitive (dialog->post_button, all_okay);
+
+	/* ony show the review section if the user posted a positive review */
+	gs_review_dialog_update_donation (dialog);
 }
 
 static gboolean
@@ -154,6 +172,18 @@ gs_review_dialog_timeout_cb (gpointer user_data)
 	dialog->timer_id = 0;
 	gs_review_dialog_changed_cb (dialog);
 	return FALSE;
+}
+
+static void
+gs_review_dialog_donate_clicked_cb (GtkWidget *widget, GsReviewDialog *dialog)
+{
+	gs_shell_show_uri (dialog->shell, gs_app_get_url (dialog->app, AS_URL_KIND_DONATION));
+}
+
+static void
+gs_review_dialog_show_cb (GtkWidget *widget, GsReviewDialog *dialog)
+{
+	gs_review_dialog_update_donation (dialog);
 }
 
 static void
@@ -194,12 +224,19 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 
 	gtk_widget_set_sensitive (dialog->post_button, FALSE);
 
+	/* donation button */
+	g_signal_connect (dialog->button_donation, "clicked",
+			  G_CALLBACK (gs_review_dialog_donate_clicked_cb), dialog);
+	g_signal_connect (dialog, "show",
+			  G_CALLBACK (gs_review_dialog_show_cb), dialog);
 }
 
 static void
 gs_review_row_dispose (GObject *object)
 {
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (object);
+	g_clear_object (&dialog->app);
+	g_clear_object (&dialog->shell);
 	if (dialog->timer_id > 0) {
 		g_source_remove (dialog->timer_id);
 		dialog->timer_id = 0;
@@ -222,12 +259,18 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, summary_entry);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_view);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, post_button);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, button_donation);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, box_donation);
 }
 
 GtkWidget *
-gs_review_dialog_new (void)
+gs_review_dialog_new (GsShell *shell, GsApp *app)
 {
-	return GTK_WIDGET (g_object_new (GS_TYPE_REVIEW_DIALOG,
-					 "use-header-bar", TRUE,
-					 NULL));
+	GsReviewDialog *self;
+	self = g_object_new (GS_TYPE_REVIEW_DIALOG,
+			     "use-header-bar", TRUE,
+			     NULL);
+	self->app = g_object_ref (app);
+	self->shell = g_object_ref (shell);
+	return GTK_WIDGET (self);
 }
