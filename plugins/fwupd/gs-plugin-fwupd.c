@@ -243,6 +243,10 @@ gs_plugin_fwupd_setup_remote (GsPlugin *plugin, FwupdRemote *remote, GError **er
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *filename_asc = NULL;
 
+	/* we do not need to refresh local remotes */
+	if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
+		return TRUE;
+
 	/* find the name of the signature file in the cache */
 	filename_asc = gs_utils_get_cache_filename ("firmware",
 						    fwupd_remote_get_filename_asc (remote),
