@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-07-18 08:36+0000\n"
-"PO-Revision-Date: 2017-07-24 15:42+0200\n"
+"POT-Creation-Date: 2017-08-03 15:32+0000\n"
+"PO-Revision-Date: 2017-08-04 10:16+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: es <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -68,7 +68,7 @@ msgstr "Panel de actualizaciones"
 msgid "The update details"
 msgstr "Los detalles de la actualización"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:795
+#: data/appdata/org.gnome.Software.appdata.xml.in:823
 msgid "The GNOME Project"
 msgstr "El proyecto GNOME"
 
@@ -1399,7 +1399,7 @@ msgstr "Desconocida"
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
 #: src/gs-details-page.ui:1160 src/gs-installed-page.c:487
-#: plugins/core/gs-desktop-common.c:330
+#: plugins/core/gs-desktop-common.c:331
 msgid "Add-ons"
 msgstr "Complementos"
 
@@ -2330,7 +2330,7 @@ msgstr "Captura de pantalla"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:164
+#: src/gs-search-page.c:155
 #, c-format
 msgid "%u more matches"
 msgstr "%u coincidencias más"
@@ -2710,7 +2710,6 @@ msgstr ""
 
 #. TRANSLATORS: we failed to get a proper error code
 #: src/gs-shell.c:1405 src/gs-shell.c:1454 src/gs-shell.c:1521
-#| msgid "Sorry, this did not work"
 msgid "Sorry, something went wrong"
 msgstr "Algo salió mal"
 
@@ -2906,14 +2905,12 @@ msgstr "Actualizaciones instaladas"
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
 #: src/gs-update-dialog.c:419
-#| msgid "Additional Sources"
 msgid "Additions"
 msgstr "Añadidos"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
 #: src/gs-update-dialog.c:423
-#| msgid "Remove"
 msgid "Removals"
 msgstr "Eliminados"
 
@@ -2926,7 +2923,6 @@ msgstr "Actualizaciones"
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
 #: src/gs-update-dialog.c:431
-#| msgid "_Download"
 msgid "Downgrades"
 msgstr "Bajadas de versión"
 
@@ -3391,82 +3387,108 @@ msgid "AppStream;Software;App;"
 msgstr "AppStream;Software;App;aplicación;aplicaciones;"
 
 #: plugins/core/gs-desktop-common.c:30
-msgctxt "Menu of AudioVideo"
+#| msgid "All"
+msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:33
-msgctxt "Menu of AudioVideo"
+#| msgid "Featured"
+msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:36
-msgctxt "Menu of AudioVideo"
+#| msgctxt "Menu of AudioVideo"
+#| msgid "Audio Creation & Editing"
+msgctxt "Menu of Audio & Video"
 msgid "Audio Creation & Editing"
 msgstr "Creación y edición de sonido"
 
 #: plugins/core/gs-desktop-common.c:42
-msgctxt "Menu of AudioVideo"
+#| msgctxt "Menu of AudioVideo"
+#| msgid "Music Players"
+msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Reproductores de música"
 
 #: plugins/core/gs-desktop-common.c:51
-msgctxt "Menu of Development"
+#| msgid "All"
+msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:54
-msgctxt "Menu of Development"
+#| msgid "Featured"
+msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:57
-msgctxt "Menu of Development"
+#| msgctxt "Menu of Development"
+#| msgid "Debuggers"
+msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Depuradores"
 
 #: plugins/core/gs-desktop-common.c:60
-msgctxt "Menu of Development"
+#| msgctxt "Menu of Development"
+#| msgid "IDEs"
+msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "EID"
 
 #: plugins/core/gs-desktop-common.c:69
-msgctxt "Menu of Education and Science"
+#| msgid "All"
+msgctxt "Menu of Education & Science"
 msgid "All"
-msgstr "Todas"
+msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:73
-msgctxt "Menu of Education and Science"
+#| msgid "Featured"
+msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:77
-msgctxt "Menu of Education and Science"
+#| msgctxt "Menu of Education and Science"
+#| msgid "Artificial Intelligence"
+msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Inteligencia artificial"
 
 #: plugins/core/gs-desktop-common.c:80
-msgctxt "Menu of Education and Science"
+#| msgctxt "Menu of Education and Science"
+#| msgid "Astronomy"
+msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Astronomía"
 
 #: plugins/core/gs-desktop-common.c:84
-msgctxt "Menu of Education and Science"
+#| msgctxt "Menu of Education and Science"
+#| msgid "Chemistry"
+msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Química"
 
 #: plugins/core/gs-desktop-common.c:88
-msgctxt "Menu of Education and Science"
+#| msgctxt "Menu of Education and Science"
+#| msgid "Languages"
+msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Idiomas"
 
 #: plugins/core/gs-desktop-common.c:92
-msgctxt "Menu of Education and Science"
+#| msgctxt "Menu of Education and Science"
+#| msgid "Math"
+msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Matemáticas"
 
 #: plugins/core/gs-desktop-common.c:99
-msgctxt "Menu of Education and Science"
+#| msgctxt "Menu of Education and Science"
+#| msgid "Robotics"
+msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Robótica"
 
@@ -3541,142 +3563,190 @@ msgid "Strategy"
 msgstr "Estrategia"
 
 #: plugins/core/gs-desktop-common.c:156
-msgctxt "Menu of Graphics"
+#| msgid "All"
+msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:159
-msgctxt "Menu of Graphics"
+#| msgid "Featured"
+msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:162
-msgctxt "Menu of Graphics"
+#| msgctxt "Menu of Graphics"
+#| msgid "3D Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "Gráficos 3D"
 
 #: plugins/core/gs-desktop-common.c:165
-msgctxt "Menu of Graphics"
+#| msgctxt "Menu of Graphics"
+#| msgid "Photography"
+msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Fotografía"
 
 #: plugins/core/gs-desktop-common.c:168
-msgctxt "Menu of Graphics"
+#| msgctxt "Menu of Graphics"
+#| msgid "Scanning"
+msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Escaneado"
 
 #: plugins/core/gs-desktop-common.c:171
-msgctxt "Menu of Graphics"
+#| msgctxt "Menu of Graphics"
+#| msgid "Vector Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Gráficos vectoriales"
 
 #: plugins/core/gs-desktop-common.c:174
-msgctxt "Menu of Graphics"
+#| msgctxt "Menu of Graphics"
+#| msgid "Viewers"
+msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Visores"
 
 #: plugins/core/gs-desktop-common.c:182
-msgctxt "Menu of Office"
+#| msgid "All"
+msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:185
-msgctxt "Menu of Office"
+#| msgid "Featured"
+msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:188
-msgctxt "Menu of Office"
+#| msgctxt "Menu of Office"
+#| msgid "Calendar"
+msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Calendario"
 
 #: plugins/core/gs-desktop-common.c:192
-msgctxt "Menu of Office"
+#| msgctxt "Menu of Office"
+#| msgid "Database"
+msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Base de datos"
 
 #: plugins/core/gs-desktop-common.c:195
-msgctxt "Menu of Office"
+#| msgctxt "Menu of Office"
+#| msgid "Finance"
+msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Finanzas"
 
 #: plugins/core/gs-desktop-common.c:199
-msgctxt "Menu of Office"
+#| msgctxt "Menu of Office"
+#| msgid "Word Processor"
+msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Procesador de textos"
 
 #: plugins/core/gs-desktop-common.c:208
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Fonts"
+msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Tipografías"
 
 #: plugins/core/gs-desktop-common.c:211
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Codecs"
+msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Codificadores"
 
 #: plugins/core/gs-desktop-common.c:214
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Input Sources"
+msgctxt "Menu of Add-ons"
 msgid "Input Sources"
 msgstr "Fuentes de entrada"
 
 #: plugins/core/gs-desktop-common.c:217
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Language Packs"
+msgctxt "Menu of Add-ons"
 msgid "Language Packs"
 msgstr "Paquetes de idiomas"
 
 #: plugins/core/gs-desktop-common.c:220
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Shell Extensions"
+msgctxt "Menu of Add-ons"
 msgid "Shell Extensions"
 msgstr "Extensiones de la Shell"
 
 #: plugins/core/gs-desktop-common.c:223
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Localization"
+msgctxt "Menu of Add-ons"
 msgid "Localization"
 msgstr "Localización"
 
 #: plugins/core/gs-desktop-common.c:226
-msgctxt "Menu of Addons"
+#| msgctxt "Menu of Addons"
+#| msgid "Hardware Drivers"
+msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
 msgstr "Controladores hardware"
 
 #: plugins/core/gs-desktop-common.c:234
-msgctxt "Menu of Communication"
+#| msgid "All"
+msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:237
-msgctxt "Menu of Communication"
+#| msgid "Featured"
+msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:240
-msgctxt "Menu of Communication"
+#| msgctxt "Menu of Communication"
+#| msgid "Chat"
+msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Chat"
 
 #: plugins/core/gs-desktop-common.c:247
-msgctxt "Menu of Communication"
+#| msgctxt "Menu of Communication"
+#| msgid "News"
+msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Noticias"
 
 #: plugins/core/gs-desktop-common.c:251
-msgctxt "Menu of Communication"
+#| msgctxt "Menu of Communication"
+#| msgid "Web Browsers"
+msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Navegadores web"
 
 #: plugins/core/gs-desktop-common.c:259
-msgctxt "Menu of Utility"
+#| msgid "All"
+msgctxt "Menu of Utilities"
 msgid "All"
 msgstr "Todo"
 
 #: plugins/core/gs-desktop-common.c:262
-msgctxt "Menu of Utility"
+#| msgid "Featured"
+msgctxt "Menu of Utilities"
 msgid "Featured"
 msgstr "Destacado"
 
 #: plugins/core/gs-desktop-common.c:265
-msgctxt "Menu of Utility"
+#| msgctxt "Menu of Utility"
+#| msgid "Text Editors"
+msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Editores de texto"
 
@@ -3736,47 +3806,47 @@ msgid "Sports"
 msgstr "Deportes"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:312
+#: plugins/core/gs-desktop-common.c:313
 msgid "Audio & Video"
 msgstr "Sonido y vídeo"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:315
+#: plugins/core/gs-desktop-common.c:316
 msgid "Developer Tools"
 msgstr "Herramientas de desarrollo"
 
 #. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:318
+#: plugins/core/gs-desktop-common.c:319
 msgid "Education & Science"
 msgstr "Educación y ciencia"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:321
+#: plugins/core/gs-desktop-common.c:322
 msgid "Games"
 msgstr "Juegos"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:324
+#: plugins/core/gs-desktop-common.c:325
 msgid "Graphics & Photography"
 msgstr "Gráficos y fotografía"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:327
+#: plugins/core/gs-desktop-common.c:328
 msgid "Productivity"
 msgstr "Productividad"
 
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:333
+#: plugins/core/gs-desktop-common.c:334
 msgid "Communication & News"
 msgstr "Comunicación y noticias"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:336
+#: plugins/core/gs-desktop-common.c:337
 msgid "Reference"
 msgstr "Referencia"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:339
+#: plugins/core/gs-desktop-common.c:340
 msgid "Utilities"
 msgstr "Utilidades"
 
@@ -3865,8 +3935,7 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Obteniendo metadatos flatpak para %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2600
-#| msgid "Setting up updates…"
+#: plugins/flatpak/gs-flatpak.c:2611
 msgid "Getting runtime source…"
 msgstr "Obteniendo fuente en tiempo de ejecución…"
 
@@ -3931,7 +4000,7 @@ msgid "A snap is a universal Linux package"
 msgstr "Un snap es un paquete universal de Linux"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/steam/gs-plugin-steam.c:602
+#: plugins/steam/gs-plugin-steam.c:600
 msgid "Downloading application page…"
 msgstr "Descargando página de la aplicación…"
 
@@ -3942,6 +4011,62 @@ msgstr "Soporte de Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "La última plataforma de entretenimiento de Valve"
+
+#~ msgctxt "Menu of AudioVideo"
+#~ msgid "All"
+#~ msgstr "Todo"
+
+#~ msgctxt "Menu of AudioVideo"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
+
+#~ msgctxt "Menu of Development"
+#~ msgid "All"
+#~ msgstr "Todo"
+
+#~ msgctxt "Menu of Development"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
+
+#~ msgctxt "Menu of Education and Science"
+#~ msgid "All"
+#~ msgstr "Todas"
+
+#~ msgctxt "Menu of Education and Science"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
+
+#~ msgctxt "Menu of Graphics"
+#~ msgid "All"
+#~ msgstr "Todo"
+
+#~ msgctxt "Menu of Graphics"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
+
+#~ msgctxt "Menu of Office"
+#~ msgid "All"
+#~ msgstr "Todo"
+
+#~ msgctxt "Menu of Office"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
+
+#~ msgctxt "Menu of Communication"
+#~ msgid "All"
+#~ msgstr "Todo"
+
+#~ msgctxt "Menu of Communication"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
+
+#~ msgctxt "Menu of Utility"
+#~ msgid "All"
+#~ msgstr "Todo"
+
+#~ msgctxt "Menu of Utility"
+#~ msgid "Featured"
+#~ msgstr "Destacado"
 
 #~ msgid "“%s” [%s]"
 #~ msgstr "«%s» [%s]"
