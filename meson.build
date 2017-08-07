@@ -1,5 +1,5 @@
 project('gnome-software', 'c',
-  version : '3.25.5',
+  version : '3.25.90',
   license : 'GPL-2.0+',
   default_options : ['warning_level=1'],
   meson_version : '>=0.37.0'
@@ -225,16 +225,6 @@ if meson.version().version_compare('<0.41.0')
   else
     message('git not found, you will not be able to run `ninja dist`')
   endif
-endif
-
-appstream_util = find_program('appstream-util', required : false)
-if appstream_util.found()
-  custom_target('NEWS',
-    output : 'NEWS',
-    input : 'data/appdata/org.gnome.Software.appdata.xml.in',
-    command : [appstream_util, 'appdata-to-news', '@INPUT@'],
-    capture : true
-  )
 endif
 
 # FIXME: remove when https://github.com/mesonbuild/meson/issues/837 fixed

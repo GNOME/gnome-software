@@ -1,34 +1,23 @@
 GNOME Software Release Notes
 
-1. Write release entries:
+Write release entries:
 
 git log --format="%s" --cherry-pick --right-only GNOME_SOFTWARE_3_25_4... | grep -i -v trivial | grep -v Merge | sort | uniq
 Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
-3. Commit changes in gnome-software git:
-
-git commit -a -m "Release version 3.25.5"
-git tag -s GNOME_SOFTWARE_3_25_5 -m "==== Version 3.25.5 ===="
+git commit -a -m "Release version 3.25.90"
+git tag -s GNOME_SOFTWARE_3_25_90 -m "==== Version 3.25.90 ===="
 <enter password>
+
+ninja-build dist
 git push --tags
 git push
 
-4. Create tarball
-
-ninja-build dist
-
-5. Upload tarballs:
-
 scp meson-dist/*.tar.xz rhughes@master.gnome.org:
-
-6. Install module
-
 ssh rhughes@master.gnome.org
 ftpadmin install gnome-software-*.tar.xz
 
-7. Do post release version bump in meson.build
-
-8. Commit trivial changes:
+Post release version bump in meson.build
 
 git commit -a -m "trivial: Post release version bump"
 git push
