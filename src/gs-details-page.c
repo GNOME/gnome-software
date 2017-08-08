@@ -412,8 +412,14 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	switch (state) {
 	case AS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (self->button_cancel, TRUE);
+		/* If the app is installing, the user can only cancel it if
+		 * 1) They haven't already, and
+		 * 2) the plugin hasn't said that they can't, for example if a
+		 *    package manager has already gone 'too far'
+		 */
 		gtk_widget_set_sensitive (self->button_cancel,
-					  !g_cancellable_is_cancelled (self->cancellable));
+					  !g_cancellable_is_cancelled (self->cancellable) &&
+					   gs_app_get_allow_cancel (self->app));
 		break;
 	default:
 		gtk_widget_set_visible (self->button_cancel, FALSE);
@@ -496,6 +502,25 @@ gs_details_page_progress_changed_cb (GsApp *app,
                                      GsDetailsPage *self)
 {
 	g_idle_add (gs_details_page_refresh_progress_idle, g_object_ref (self));
+}
+
+static gboolean
+gs_details_page_allow_cancel_changed_idle (gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	gtk_widget_set_sensitive (self->button_cancel,
+				  gs_app_get_allow_cancel (self->app));
+	g_object_unref (self);
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_details_page_allow_cancel_changed_cb (GsApp *app,
+                                                    GParamSpec *pspec,
+                                                    GsDetailsPage *self)
+{
+	g_idle_add (gs_details_page_allow_cancel_changed_idle,
+		    g_object_ref (self));
 }
 
 static gboolean
@@ -1492,6 +1517,8 @@ set_app (GsDetailsPage *self, GsApp *app)
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_allow_cancel_changed_cb,
+						      self);
 	}
 
 	/* save app */
@@ -1513,6 +1540,9 @@ set_app (GsDetailsPage *self, GsApp *app)
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
 				 G_CALLBACK (gs_details_page_progress_changed_cb),
+				 self, 0);
+	g_signal_connect_object (self->app, "notify::allow-cancel",
+				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
 				 self, 0);
 
 	/* print what we've got */
@@ -1699,6 +1729,8 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 		g_signal_handlers_disconnect_by_func (self->settings,
 						      settings_changed_cb,
 						      self);
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_allow_cancel_changed_cb,
+						      self);
 	}
 	/* save app */
 	g_set_object (&self->app, app);
@@ -1717,6 +1749,9 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
 				 G_CALLBACK (gs_details_page_progress_changed_cb),
+				 self, 0);
+	g_signal_connect_object (self->app, "notify::allow-cancel",
+				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
 				 self, 0);
 	gs_details_page_load (self);
 

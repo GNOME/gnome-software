@@ -276,7 +276,8 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			gtk_widget_set_sensitive (priv->button, FALSE);
 			break;
 		default:
-			gtk_widget_set_sensitive (priv->button, TRUE);
+			gtk_widget_set_sensitive (priv->button,
+						  gs_app_get_allow_cancel (priv->app));
 			break;
 		}
 	}
@@ -568,6 +569,9 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	g_signal_connect_object (priv->app, "notify::progress",
+				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
+				 app_row, 0);
+	g_signal_connect_object (priv->app, "notify::allow-cancel",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	gs_app_row_refresh (app_row);

@@ -94,6 +94,12 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		if (data->app != NULL && percentage >= 0 && percentage <= 100)
 			gs_app_set_progress (data->app, (guint) percentage);
 	}
+
+	/* Only go from TRUE to FALSE - it doesn't make sense for a package
+	 * install to become uncancellable later on */
+	if (gs_app_get_allow_cancel (data->app))
+		gs_app_set_allow_cancel (data->app,
+					 pk_progress_get_allow_cancel (progress));
 }
 
 static gboolean
@@ -311,6 +317,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		/* state is known */
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+		/* if we remove the app again later, we should be able to
+		 * cancel the installation if we'd never installed it */
+		gs_app_set_allow_cancel (app, TRUE);
 
 		/* no longer valid */
 		gs_app_clear_source_ids (app);

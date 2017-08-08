@@ -135,6 +135,9 @@ void		 gs_app_set_state_recover	(GsApp		*app);
 guint		 gs_app_get_progress		(GsApp		*app);
 void		 gs_app_set_progress		(GsApp		*app,
 						 guint		 percentage);
+gboolean	gs_app_get_allow_cancel		(GsApp	*app);
+void		gs_app_set_allow_cancel		 (GsApp	*app,
+						  gboolean	can_cancel);
 const gchar	*gs_app_get_unique_id		(GsApp		*app);
 const gchar	*gs_app_get_branch		(GsApp		*app);
 void		 gs_app_set_branch		(GsApp		*app,

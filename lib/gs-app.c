@@ -107,6 +107,7 @@ typedef struct
 	AsAppScope		 scope;
 	AsBundleKind		 bundle_kind;
 	guint			 progress;
+	gboolean		 allow_cancel;
 	GHashTable		*metadata;
 	GPtrArray		*addons; /* of GsApp */
 	GHashTable		*addons_hash; /* of "id" */
@@ -136,6 +137,7 @@ enum {
 	PROP_KIND,
 	PROP_STATE,
 	PROP_PROGRESS,
+	PROP_CAN_CANCEL_INSTALLATION,
 	PROP_INSTALL_DATE,
 	PROP_QUIRK,
 	PROP_LAST
@@ -792,6 +794,24 @@ gs_app_get_progress (GsApp *app)
 }
 
 /**
+ * gs_app_get_allow_cancel:
+ * @app: a #GsApp
+ *
+ * Gets whether the app's installation or upgrade can be cancelled.
+ *
+ * Returns: TRUE if cancellation is possible, FALSE otherwise.
+ *
+ * Since: 3.26
+ **/
+gboolean
+gs_app_get_allow_cancel (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return priv->allow_cancel;
+}
+
+/**
  * gs_app_set_state_recover:
  * @app: a #GsApp
  *
@@ -992,6 +1012,29 @@ gs_app_set_progress (GsApp *app, guint percentage)
 	}
 	priv->progress = percentage;
 	gs_app_queue_notify (app, "progress");
+}
+
+/**
+ * gs_app_set_allow_cancel:
+ * @app: a #GsApp
+ * @boolean: if the installation or upgrade can be cancelled or not
+ *
+ * This sets a flag indicating whether the operation can be cancelled or not.
+ * This is used by the UI to set the "Cancel" button insensitive as
+ * appropriate.
+ *
+ * Since: 3.26
+ **/
+void
+gs_app_set_allow_cancel (GsApp *app, gboolean allow_cancel)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	g_return_if_fail (GS_IS_APP (app));
+	if (priv->allow_cancel == allow_cancel)
+		return;
+	priv->allow_cancel = allow_cancel;
+	gs_app_queue_notify (app, "allow-cancel");
 }
 
 /**
@@ -3727,6 +3770,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_PROGRESS:
 		g_value_set_uint (value, priv->progress);
 		break;
+	case PROP_CAN_CANCEL_INSTALLATION:
+		g_value_set_boolean (value, priv->allow_cancel);
+		break;
 	case PROP_INSTALL_DATE:
 		g_value_set_uint64 (value, priv->install_date);
 		break;
@@ -3778,6 +3824,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_PROGRESS:
 		priv->progress = g_value_get_uint (value);
+		break;
+	case PROP_CAN_CANCEL_INSTALLATION:
+		priv->allow_cancel = g_value_get_boolean (value);
 		break;
 	case PROP_INSTALL_DATE:
 		gs_app_set_install_date (app, g_value_get_uint64 (value));
@@ -3945,6 +3994,13 @@ gs_app_class_init (GsAppClass *klass)
 	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
 
 	/**
+	 * GsApp:allow-cancel:
+	 */
+	pspec = g_param_spec_boolean ("allow-cancel", NULL, NULL, TRUE,
+				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_CAN_CANCEL_INSTALLATION, pspec);
+
+	/**
 	 * GsApp:install-date:
 	 */
 	pspec = g_param_spec_uint64 ("install-date", NULL, NULL,
@@ -3993,6 +4049,7 @@ gs_app_init (GsApp *app)
 	                                    g_str_equal,
 	                                    g_free,
 	                                    g_free);
+	priv->allow_cancel = TRUE;
 	g_mutex_init (&priv->mutex);
 }
 
