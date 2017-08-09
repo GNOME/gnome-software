@@ -42,9 +42,10 @@ struct _GsCategoryPage
 	GtkWidget	*infobar_category_shell_extensions;
 	GtkWidget	*button_category_shell_extensions;
 	GtkWidget	*category_detail_box;
-	GtkWidget	*listbox_filter;
 	GtkWidget	*scrolledwindow_category;
-	GtkWidget	*scrolledwindow_filter;
+	GtkWidget	*subcats_filter_button_label;
+	GtkWidget	*subcats_filter_button;
+	GtkWidget	*popover_filter_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -176,15 +177,15 @@ gs_category_page_populate_filtered (GsCategoryPage *self, GsCategory *subcategor
 }
 
 static void
-filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
+filter_button_activated (GtkWidget *button,  gpointer data)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
 	GsCategory *category;
 
-	if (row == NULL)
-		return;
+	category = g_object_get_data (G_OBJECT (button), "category");
 
-	category = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "category");
+	gtk_label_set_text (GTK_LABEL (self->subcats_filter_button_label),
+			    gs_category_get_name (category));
 	gs_category_page_populate_filtered (self, category);
 }
 
@@ -192,37 +193,40 @@ static void
 gs_category_page_create_filter_list (GsCategoryPage *self,
                                      GsCategory *category)
 {
-	GtkWidget *row;
+	GtkWidget *button;
 	GsCategory *s;
 	guint i;
 	GPtrArray *children;
 	GtkWidget *first_subcat = NULL;
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-	gs_container_remove_all (GTK_CONTAINER (self->listbox_filter));
+	gs_container_remove_all (GTK_CONTAINER (self->popover_filter_box));
 
 	children = gs_category_get_children (category);
 	for (i = 0; i < children->len; i++) {
 		s = GS_CATEGORY (g_ptr_array_index (children, i));
+		/* don't include the featured subcategory (those will appear as banners) */
+		if (g_strcmp0 (gs_category_get_id (s), "featured") == 0)
+			continue;
 		if (gs_category_get_size (s) < 1) {
 			g_debug ("not showing %s/%s as no apps",
 				 gs_category_get_id (category),
 				 gs_category_get_id (s));
 			continue;
 		}
-		row = gtk_label_new (gs_category_get_name (s));
-		g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
-		g_object_set (row, "xalign", 0.0, "margin", 10, NULL);
-		gtk_widget_show (row);
-		gtk_list_box_insert (GTK_LIST_BOX (self->listbox_filter), row, -1);
+		button = gtk_model_button_new ();
+		g_object_set_data_full (G_OBJECT (button), "category", g_object_ref (s), g_object_unref);
+		g_object_set (button, "xalign", 0.0, "text", gs_category_get_name (s), NULL);
+		gtk_widget_show (button);
+		g_signal_connect (button, "clicked", G_CALLBACK (filter_button_activated), self);
+		gtk_container_add (GTK_CONTAINER (self->popover_filter_box), button);
 
 		/* make sure the first subcategory gets selected */
 		if (first_subcat == NULL)
-		        first_subcat = row;
+		        first_subcat = button;
 	}
 	if (first_subcat != NULL)
-		gtk_list_box_select_row (GTK_LIST_BOX (self->listbox_filter),
-					 GTK_LIST_BOX_ROW (gtk_widget_get_parent (first_subcat)));
+		filter_button_activated (button, self);
 }
 
 void
@@ -270,32 +274,6 @@ gs_category_page_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_category_page_parent_class)->dispose (object);
 }
 
-static gboolean
-key_event (GtkWidget *listbox, GdkEvent *event, GsCategoryPage *self)
-{
-	guint keyval;
-	gboolean handled;
-
-	if (!gdk_event_get_keyval (event, &keyval))
-		return FALSE;
-
-	if (keyval == GDK_KEY_Page_Up ||
-	    keyval == GDK_KEY_KP_Page_Up)
-		g_signal_emit_by_name (self->scrolledwindow_category, "scroll-child",
-				       GTK_SCROLL_PAGE_UP, FALSE, &handled);
-	else if (keyval == GDK_KEY_Page_Down ||
-	    	 keyval == GDK_KEY_KP_Page_Down)
-		g_signal_emit_by_name (self->scrolledwindow_category, "scroll-child",
-				       GTK_SCROLL_PAGE_DOWN, FALSE, &handled);
-	else if (keyval == GDK_KEY_Tab ||
-		 keyval == GDK_KEY_KP_Tab)
-		gtk_widget_child_focus (self->category_detail_box, GTK_DIR_TAB_FORWARD);
-	else
-		return FALSE;
-
-	return TRUE;
-}
-
 static void
 button_shell_extensions_cb (GtkButton *button, GsCategoryPage *self)
 {
@@ -323,13 +301,8 @@ gs_category_page_setup (GsPage *page,
 	self->builder = g_object_ref (builder);
 	self->shell = shell;
 
-	g_signal_connect (self->listbox_filter, "row-selected", G_CALLBACK (filter_selected), self);
-
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->category_detail_box), adj);
-
-	g_signal_connect (self->listbox_filter, "key-press-event",
-			  G_CALLBACK (key_event), self);
 
 	g_signal_connect (self->button_category_shell_extensions, "clicked",
 			  G_CALLBACK (button_shell_extensions_cb), self);
@@ -353,9 +326,10 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, category_detail_box);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, infobar_category_shell_extensions);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, button_category_shell_extensions);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, listbox_filter);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
-	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_filter);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, popover_filter_box);
 }
 
 GsCategoryPage *
