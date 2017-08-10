@@ -23,10 +23,16 @@
 #include "config.h"
 
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "gs-common.h"
 #include "gs-summary-tile.h"
 #include "gs-category-page.h"
+
+typedef enum {
+	SUBCATEGORY_SORT_TYPE_RATING,
+	SUBCATEGORY_SORT_TYPE_NAME
+} SubcategorySortType;
 
 struct _GsCategoryPage
 {
@@ -38,6 +44,9 @@ struct _GsCategoryPage
 	GsShell		*shell;
 	GsCategory	*category;
 	GsCategory	*subcategory;
+	guint		sort_rating_handler_id;
+	guint		sort_name_handler_id;
+	SubcategorySortType sort_type;
 
 	GtkWidget	*infobar_category_shell_extensions;
 	GtkWidget	*button_category_shell_extensions;
@@ -46,6 +55,9 @@ struct _GsCategoryPage
 	GtkWidget	*subcats_filter_button_label;
 	GtkWidget	*subcats_filter_button;
 	GtkWidget	*popover_filter_box;
+	GtkWidget	*subcats_sort_button_label;
+	GtkWidget	*sort_rating_button;
+	GtkWidget	*sort_name_button;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -69,6 +81,40 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 
 	app = gs_app_tile_get_app (tile);
 	gs_shell_show_app (self->shell, app);
+}
+
+static void
+gs_category_page_sort_by_type (GsCategoryPage *self,
+			       SubcategorySortType sort_type)
+{
+	const gchar *button_label;
+
+	if (sort_type == SUBCATEGORY_SORT_TYPE_NAME)
+		/* TRANSLATORS: button text when apps have been sorted alphabetically */
+		button_label = _("Sorted by Name");
+	else
+		/* TRANSLATORS: button text when apps have been sorted by their rating */
+		button_label = _("Sorted by Rating");
+
+	gtk_label_set_text (GTK_LABEL (self->subcats_sort_button_label), button_label);
+
+	/* only sort again if the sort type is different */
+	if (self->sort_type == sort_type)
+		return;
+
+	self->sort_type = sort_type;
+	gtk_flow_box_invalidate_sort (GTK_FLOW_BOX (self->category_detail_box));
+}
+
+static void
+sort_button_clicked (GtkButton *button, gpointer data)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (data);
+
+	if (button == GTK_BUTTON (self->sort_rating_button))
+		gs_category_page_sort_by_type (self, SUBCATEGORY_SORT_TYPE_RATING);
+	else
+		gs_category_page_sort_by_type (self, SUBCATEGORY_SORT_TYPE_NAME);
 }
 
 static void
@@ -105,8 +151,42 @@ gs_category_page_get_apps_cb (GObject *source_object,
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
+	self->sort_rating_handler_id = g_signal_connect (self->sort_rating_button,
+							 "clicked",
+							 G_CALLBACK (sort_button_clicked),
+							 self);
+	self->sort_name_handler_id = g_signal_connect (self->sort_name_button,
+						       "clicked",
+						       G_CALLBACK (sort_button_clicked),
+						       self);
+
 	/* seems a good place */
 	gs_shell_profile_dump (self->shell);
+}
+
+static gint
+gs_category_page_sort_flow_box_sort_func (GtkFlowBoxChild *child1,
+					  GtkFlowBoxChild *child2,
+					  gpointer data)
+{
+	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (gtk_bin_get_child (GTK_BIN (child1))));
+	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (gtk_bin_get_child (GTK_BIN (child2))));
+	SubcategorySortType sort_type;
+
+	if (!GS_IS_APP (app1) || !GS_IS_APP (app2))
+		return 0;
+
+	sort_type = GS_CATEGORY_PAGE (data)->sort_type;
+
+	if (sort_type == SUBCATEGORY_SORT_TYPE_RATING) {
+		gint rating_app1 = gs_app_get_rating (app1);
+		gint rating_app2 = gs_app_get_rating (app2);
+		if (rating_app1 > rating_app2)
+			return -1;
+		if (rating_app1 < rating_app2)
+			return 1;
+	}
+	return g_strcmp0 (gs_app_get_name (app1), gs_app_get_name (app2));
 }
 
 static void
@@ -138,7 +218,19 @@ gs_category_page_reload (GsPage *page)
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
 	}
 
+	if (self->sort_rating_handler_id > 0)
+		g_signal_handler_disconnect (self->sort_rating_button,
+					     self->sort_rating_handler_id);
+
+	if (self->sort_name_handler_id > 0)
+		g_signal_handler_disconnect (self->sort_name_button,
+					     self->sort_name_handler_id);
+
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
+
+	/* just ensure the sort button has the correct label */
+	gs_category_page_sort_by_type (self, self->sort_type);
+
 	count = MIN(30, gs_category_get_size (self->subcategory));
 	for (i = 0; i < count; i++) {
 		tile = gs_summary_tile_new (NULL);
@@ -292,6 +384,10 @@ gs_category_page_setup (GsPage *page,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->builder = g_object_ref (builder);
 	self->shell = shell;
+	self->sort_type = SUBCATEGORY_SORT_TYPE_RATING;
+	gtk_flow_box_set_sort_func (GTK_FLOW_BOX (self->category_detail_box),
+				    gs_category_page_sort_flow_box_sort_func,
+				    self, NULL);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->category_detail_box), adj);
@@ -322,6 +418,9 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, popover_filter_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button_label);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_name_button);
 }
 
 GsCategoryPage *
