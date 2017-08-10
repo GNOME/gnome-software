@@ -11,6 +11,28 @@
       </object>
     </child>
   </object>
+  <object class="GtkPopover" id="sorting_popover">
+    <property name="position">bottom</property>
+    <child>
+      <object class="GtkBox" id="sorting_popover_box">
+        <property name="visible">True</property>
+        <property name="margin">10</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkModelButton" id="sort_rating_button">
+            <property name="visible">True</property>
+            <property name="text" translatable="yes" comments="Translators: A label for a button to sort apps by their rating.">Top Rated</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="sort_name_button">
+            <property name="visible">True</property>
+            <property name="text" translatable="yes" comments="Translators: A label for a button to sort apps alphabetically.">Name</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
   <template class="GsCategoryPage" parent="GsPage">
     <child>
       <object class="GtkBox" id="box_category">
@@ -165,6 +187,65 @@
                                       <class name="text-button"/>
                                     </style>
                                   </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="pack-type">start</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkMenuButton" id="subcats_sort_button">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="relief">normal</property>
+                                    <property name="popover">sorting_popover</property>
+                                    <child internal-child="accessible">
+                                      <object class="AtkObject">
+                                        <property name="accessible-name" translatable="yes">Subcategories sorting menu</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkBox" id="grid2">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="valign">center</property>
+                                        <property name="spacing">6</property>
+                                        <property name="orientation">horizontal</property>
+                                        <child>
+                                          <object class="GtkLabel" id="subcats_sort_button_label">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="xalign">0.0</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="fill">False</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkArrow" id="arrow2">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="arrow_type">down</property>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="pack-type">end</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="text-button"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="pack-type">end</property>
+                                  </packing>
                                 </child>
                               </object>
                             </child>
@@ -208,6 +289,14 @@
     <widgets>
       <widget name="subcats_filter_button_label"/>
       <widget name="popover_filter_box"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup">
+    <property name="ignore-hidden">False</property>
+    <property name="mode">horizontal</property>
+    <widgets>
+      <widget name="subcats_sort_button_label"/>
+      <widget name="sorting_popover_box"/>
     </widgets>
   </object>
 </interface>
