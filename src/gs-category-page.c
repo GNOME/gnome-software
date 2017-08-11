@@ -182,13 +182,13 @@ filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 
 static void
 gs_category_page_create_filter_list (GsCategoryPage *self,
-                                     GsCategory *category,
-                                     GsCategory *subcategory)
+                                     GsCategory *category)
 {
 	GtkWidget *row;
 	GsCategory *s;
 	guint i;
 	GPtrArray *children;
+	GtkWidget *first_subcat = NULL;
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 	gs_container_remove_all (GTK_CONTAINER (self->listbox_filter));
@@ -208,25 +208,18 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 		gtk_widget_show (row);
 		gtk_list_box_insert (GTK_LIST_BOX (self->listbox_filter), row, -1);
 
-		/* if no subcategory was passed, then set it to the first one
-		 * that gets inserted in the list in order for the first
-		 * row/subcategory to be selected */
-		if (!subcategory)
-			subcategory = s;
-
-		if (subcategory == s)
-			gtk_list_box_select_row (GTK_LIST_BOX (self->listbox_filter), GTK_LIST_BOX_ROW (gtk_widget_get_parent (row)));
+		/* make sure the first subcategory gets selected */
+		if (first_subcat == NULL)
+		        first_subcat = row;
 	}
+	if (first_subcat != NULL)
+		gtk_list_box_select_row (GTK_LIST_BOX (self->listbox_filter),
+					 GTK_LIST_BOX_ROW (gtk_widget_get_parent (first_subcat)));
 }
 
 void
 gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 {
-	GPtrArray *children = NULL;
-	GsCategory *sub;
-	GsCategory *selected = NULL;
-	guint i;
-
 	/* this means we've come from the app-view -> back */
 	if (self->category == category)
 		return;
@@ -235,19 +228,8 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	g_clear_object (&self->category);
 	self->category = g_object_ref (category);
 
-	/* select favourites by default, otherwise the first subcategory in the
-	 * list will be selected */
-	children = gs_category_get_children (category);
-	for (i = 0; i < children->len; i++) {
-		sub = GS_CATEGORY (g_ptr_array_index (children, i));
-		if (g_strcmp0 (gs_category_get_id (sub), "favourites") == 0) {
-			selected = sub;
-			break;
-		}
-	}
-
 	/* find apps in this group */
-	gs_category_page_create_filter_list (self, category, selected);
+	gs_category_page_create_filter_list (self, category);
 }
 
 GsCategory *
