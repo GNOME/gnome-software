@@ -25,6 +25,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-app-list-private.h"
 #include "gs-common.h"
 #include "gs-summary-tile.h"
 #include "gs-category-page.h"
@@ -58,6 +59,7 @@ struct _GsCategoryPage
 	GtkWidget	*subcats_sort_button_label;
 	GtkWidget	*sort_rating_button;
 	GtkWidget	*sort_name_button;
+	GtkWidget	*featured_grid;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -196,6 +198,96 @@ gs_category_page_sort_flow_box_sort_func (GtkFlowBoxChild *child1,
 }
 
 static void
+gs_category_page_set_featured_placeholders (GsCategoryPage *self)
+{
+	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
+	for (guint i = 0; i < 3; ++i) {
+		GtkWidget *tile = gs_summary_tile_new (NULL);
+		g_signal_connect (tile, "clicked",
+				  G_CALLBACK (app_tile_clicked), self);
+		gtk_grid_attach (GTK_GRID (self->featured_grid), tile, i, 0, 1, 1);
+		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+	}
+	gtk_widget_show (self->featured_grid);
+}
+
+static void
+gs_category_page_get_featured_apps_cb (GObject *source_object,
+				       GAsyncResult *res,
+				       gpointer user_data)
+{
+	GsApp *app;
+	GtkWidget *tile;
+	GsCategoryPage *self = GS_CATEGORY_PAGE (user_data);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
+	gtk_widget_hide (self->featured_grid);
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
+	if (list == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get featured apps for category apps: %s", error->message);
+		return;
+	}
+	if (gs_app_list_length (list) < 3) {
+		g_debug ("not enough featured apps for category %s; not showing featured apps!",
+			 gs_category_get_id (self->category));
+		return;
+	}
+
+	/* randomize so we show different featured apps every time */
+	gs_app_list_randomize (list);
+
+	for (guint i = 0; i < 3; ++i) {
+		app = gs_app_list_index (list, i);
+		tile = gs_summary_tile_new (app);
+		g_signal_connect (tile, "clicked",
+				  G_CALLBACK (app_tile_clicked), self);
+		gtk_grid_attach (GTK_GRID (self->featured_grid), tile, i, 0, 1, 1);
+		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
+	}
+
+	gtk_widget_show (self->featured_grid);
+}
+
+static void
+gs_category_page_set_featured_apps (GsCategoryPage *self)
+{
+	GsCategory *featured_subcat = NULL;
+	GPtrArray *children = gs_category_get_children (self->category);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	for (guint i = 0; i < children->len; ++i) {
+		GsCategory *sub = GS_CATEGORY (g_ptr_array_index (children, i));
+		if (g_strcmp0 (gs_category_get_id (sub), "featured") == 0) {
+			featured_subcat = sub;
+			break;
+		}
+	}
+
+	if (featured_subcat == NULL)
+		return;
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+					 "category", featured_subcat,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader,
+					    plugin_job,
+					    self->cancellable,
+					    gs_category_page_get_featured_apps_cb,
+					    self);
+}
+
+static void
 gs_category_page_reload (GsPage *page)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
@@ -244,6 +336,8 @@ gs_category_page_reload (GsPage *page)
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
 
+	gs_category_page_set_featured_apps (self);
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 					 "category", self->subcategory,
 					 "max-results", 50,
@@ -290,6 +384,7 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 	guint i;
 	GPtrArray *children;
 	GtkWidget *first_subcat = NULL;
+	gboolean featured_category_found = FALSE;
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 	gs_container_remove_all (GTK_CONTAINER (self->popover_filter_box));
@@ -298,8 +393,10 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 	for (i = 0; i < children->len; i++) {
 		s = GS_CATEGORY (g_ptr_array_index (children, i));
 		/* don't include the featured subcategory (those will appear as banners) */
-		if (g_strcmp0 (gs_category_get_id (s), "featured") == 0)
+		if (g_strcmp0 (gs_category_get_id (s), "featured") == 0) {
+			featured_category_found = TRUE;
 			continue;
+		}
 		if (gs_category_get_size (s) < 1) {
 			g_debug ("not showing %s/%s as no apps",
 				 gs_category_get_id (category),
@@ -318,7 +415,16 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 		        first_subcat = button;
 	}
 	if (first_subcat != NULL)
-		filter_button_activated (button, self);
+		filter_button_activated (first_subcat, self);
+
+	/* set up the placeholders as having the featured category is a good
+	 * indicator that there will be featured apps */
+	if (featured_category_found) {
+		gs_category_page_set_featured_placeholders (self);
+	} else {
+		gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
+		gtk_widget_hide (self->featured_grid);
+	}
 }
 
 void
@@ -429,6 +535,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_name_button);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
 }
 
 GsCategoryPage *
