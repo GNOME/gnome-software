@@ -65,6 +65,21 @@
                             <property name="spacing">9</property>
                             <property name="valign">start</property>
                             <child>
+                              <object class="GtkBox" id="header_filter_box">
+                                <property name="visible">True</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="homogeneous">True</property>
+                                <style>
+                                  <class name="category_page_header_filter_box"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="pack-type">start</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkGrid" id="featured_grid">
                                 <property name="visible">False</property>
                                 <property name="can_focus">False</property>

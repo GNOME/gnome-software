@@ -451,3 +451,24 @@ flowboxchild {
 	border: 1px solid shade(@theme_selected_bg_color, 0.8);
 	color: @theme_selected_fg_color;
 }
+
+.category_page_header_filter_box .radio, .category_page_header_filter_box .radio:hover {
+	background-color: transparent; background-image: none;
+	box-shadow: none;
+	border: none;
+	border-radius: 0;
+	border-bottom: 4px solid transparent;
+}
+
+.category_page_header_filter_box .radio:hover {
+	border-bottom-color: @theme_selected_bg_color;
+}
+
+.category_page_header_filter_box .radio:checked {
+	border-bottom-color: @theme_selected_bg_color;
+}
+
+.category_page_header_filter_box {
+	background-color: #cfcfcd;
+	border-bottom: 1px solid darker(#cfcfcd);
+}
