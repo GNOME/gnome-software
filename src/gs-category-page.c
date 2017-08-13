@@ -61,6 +61,7 @@ struct _GsCategoryPage
 	GtkWidget	*sort_rating_button;
 	GtkWidget	*sort_name_button;
 	GtkWidget	*featured_grid;
+	GtkWidget	*header_filter_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -366,9 +367,15 @@ filter_button_activated (GtkWidget *button,  gpointer data)
 	gs_category_page_populate_filtered (self, category);
 }
 
+static gboolean
+gs_category_page_should_use_header_filter (GsCategory *category)
+{
+	return g_strcmp0 (gs_category_get_id (category), "addons") == 0;
+}
+
 static void
-gs_category_page_create_filter_list (GsCategoryPage *self,
-                                     GsCategory *category)
+gs_category_page_create_filter (GsCategoryPage *self,
+				GsCategory *category)
 {
 	GtkWidget *button;
 	GsCategory *s;
@@ -376,6 +383,7 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 	GPtrArray *children;
 	GtkWidget *first_subcat = NULL;
 	gboolean featured_category_found = FALSE;
+	gboolean use_header_filter = gs_category_page_should_use_header_filter (category);
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 	gs_container_remove_all (GTK_CONTAINER (self->popover_filter_box));
@@ -394,12 +402,25 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 				 gs_category_get_id (s));
 			continue;
 		}
-		button = gtk_model_button_new ();
+
+		/* create the right button type depending on where it will be used */
+		if (use_header_filter) {
+			if (button == NULL)
+				button = gtk_radio_button_new (NULL);
+			else
+				button = gtk_radio_button_new_from_widget (GTK_RADIO_BUTTON (button));
+			g_object_set (button, "xalign", 0.5, "label", gs_category_get_name (s),
+				      "draw-indicator", FALSE, "relief", GTK_RELIEF_NONE, NULL);
+			gtk_container_add (GTK_CONTAINER (self->header_filter_box), button);
+		} else {
+			button = gtk_model_button_new ();
+			g_object_set (button, "xalign", 0.0, "text", gs_category_get_name (s), NULL);
+			gtk_container_add (GTK_CONTAINER (self->popover_filter_box), button);
+		}
+
 		g_object_set_data_full (G_OBJECT (button), "category", g_object_ref (s), g_object_unref);
-		g_object_set (button, "xalign", 0.0, "text", gs_category_get_name (s), NULL);
 		gtk_widget_show (button);
 		g_signal_connect (button, "clicked", G_CALLBACK (filter_button_activated), self);
-		gtk_container_add (GTK_CONTAINER (self->popover_filter_box), button);
 
 		/* make sure the first subcategory gets selected */
 		if (first_subcat == NULL)
@@ -407,6 +428,10 @@ gs_category_page_create_filter_list (GsCategoryPage *self,
 	}
 	if (first_subcat != NULL)
 		filter_button_activated (first_subcat, self);
+
+	/* show only the adequate filter */
+	gtk_widget_set_visible (self->subcats_filter_button, !use_header_filter);
+	gtk_widget_set_visible (self->header_filter_box, use_header_filter);
 
 	/* set up the placeholders as having the featured category is a good
 	 * indicator that there will be featured apps */
@@ -430,7 +455,7 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	self->category = g_object_ref (category);
 
 	/* find apps in this group */
-	gs_category_page_create_filter_list (self, category);
+	gs_category_page_create_filter (self, category);
 }
 
 GsCategory *
@@ -527,6 +552,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_name_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, header_filter_box);
 }
 
 GsCategoryPage *
