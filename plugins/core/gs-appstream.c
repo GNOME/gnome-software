@@ -505,6 +505,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	const gchar *tmp;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_auto(GStrv) xdg_current_desktops = NULL;
 
 	/* search categories for the search term */
 	ptask = as_profile_start (gs_plugin_get_profile (plugin),
@@ -681,21 +682,33 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/*
 	 * Set the core applications for the current desktop that cannot be
-	 * removed -- but note: XDG_CURRENT_DESKTOP="GNOME" is different to
-	 * XDG_CURRENT_DESKTOP="Ubuntu:GNOME" here.
+	 * removed.
 	 *
-	 * To define what is compulsory for the hybrid desktop either:
+	 * If XDG_CURRENT_DESKTOP contains ":", indicating that it is made up
+	 * of multiple comopnents per the Desktop Entry Specification, an app
+	 * is compulsory if any of the components in XDG_CURRENT_DESKTOP match
+	 * any value in <compulsory_for_desktops />. In that way,
+	 * "GNOME-Classic:GNOME" shares compulsory apps with GNOME.
 	 *
-	 *  - Add an appstream merge file downstream with the tag
-	 *    <compulsory_for_desktop>Ubuntu:GNOME</compulsory_for_desktop>
+	 * As a special case, if the <compulsory_for_desktop /> value contains
+	 * a ":", we match the entire XDG_CURRENT_DESKTOP. This lets people set
+	 * compulsory apps for such compound desktops if they want.
 	 *
-	 *  - Get upstream projects to add the <compulsory_for_desktop> tag
 	 */
 	array = as_app_get_compulsory_for_desktops (item);
 	current_desktop = g_getenv ("XDG_CURRENT_DESKTOP");
+	xdg_current_desktops = g_strsplit (current_desktop, ":", 0);
 	for (i = 0; i < array->len; i++) {
 		tmp = g_ptr_array_index (array, i);
-		if (g_strcmp0 (current_desktop, tmp) == 0) {
+		/* if the value has a :, check the whole string */
+		if (g_strstr_len (tmp, -1, ":")) {
+			if (g_strcmp0 (current_desktop, tmp) == 0) {
+				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+				break;
+			}
+		/* otherwise check if any element matches this one */
+		} else if (g_strv_contains ((const gchar * const *) xdg_current_desktops,
+			   tmp)) {
 			gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 			break;
 		}
