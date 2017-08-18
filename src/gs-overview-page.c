@@ -189,7 +189,9 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 
 	/* Don't show apps from the category that's currently featured as the category of the day */
 	gs_app_list_filter (list, filter_category, priv->category_of_day);
-	gs_app_list_randomize (list);
+	/* Disabled on Ubuntu as we only show snaps and the order is significant
+	 * https://bugs.launchpad.net/bugs/1705953 */
+	//gs_app_list_randomize (list);
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
