@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-07-25 10:12+0000\n"
-"PO-Revision-Date: 2017-07-27 17:04+0500\n"
+"POT-Creation-Date: 2017-08-17 18:07+0000\n"
+"PO-Revision-Date: 2017-08-20 18:19+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -68,7 +68,7 @@ msgstr "Жаңартулар панелі"
 msgid "The update details"
 msgstr "Жаңарту ақпараты"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:823
+#: data/appdata/org.gnome.Software.appdata.xml.in:843
 msgid "The GNOME Project"
 msgstr "GNOME жобасы"
 
@@ -354,7 +354,7 @@ msgstr "Қазір қайта қосу"
 msgid "More Information"
 msgstr "Көбірек ақпарат"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:429 src/gs-details-page.ui:344
+#: src/gs-app-addon-row.c:95 src/gs-app-row.c:430 src/gs-details-page.ui:344
 msgid "Pending"
 msgstr "Кезекте"
 
@@ -365,7 +365,7 @@ msgstr "Орнатылған"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:432
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:439
 msgid "Installing"
 msgstr "Орнатылуда"
 
@@ -380,7 +380,7 @@ msgid "Folder Name"
 msgstr "Бума атауы"
 
 #: src/gs-app-folder-dialog.c:321 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.c:378 src/gs-details-page.ui:330 src/gs-editor.c:623
+#: src/gs-details-page.c:379 src/gs-details-page.ui:330 src/gs-editor.c:623
 #: src/gs-editor.c:655 src/gs-installed-page.c:609 src/gs-removal-dialog.ui:33
 #: src/gs-review-dialog.ui:23 src/gs-upgrade-banner.ui:131
 msgid "_Cancel"
@@ -526,12 +526,12 @@ msgstr "Өшіру"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:329
+#: src/gs-app-row.c:330
 msgid "Device cannot be used during update."
 msgstr "Құрылғыны жаңарту кезінде қолдану мүмкін емес."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:339 src/gs-details-page.ui:985
+#: src/gs-app-row.c:340 src/gs-details-page.ui:1000
 msgid "Source"
 msgstr "Қайнар көзі"
 
@@ -716,7 +716,7 @@ msgstr "Іске қосу және орнату"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Дестелер басқарушысы ұсынған толығырақ ақпараты бар қателер:"
 
-#: src/gs-common.c:448 src/gs-details-page.ui:592
+#: src/gs-common.c:448 src/gs-details-page.ui:607
 msgid "Details"
 msgstr "Ақпараты"
 
@@ -1125,14 +1125,14 @@ msgstr "Software ішінен табу"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:277 src/gs-details-page.c:307
+#: src/gs-details-page.c:278 src/gs-details-page.c:308
 #: src/gs-details-page.ui:206 src/gs-upgrade-banner.ui:146
 msgid "_Install"
 msgstr "Ор_нату"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: src/gs-details-page.c:312
+#: src/gs-details-page.c:313
 msgid "_Update"
 msgstr "Жаңар_ту"
 
@@ -1140,21 +1140,21 @@ msgstr "Жаңар_ту"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: src/gs-details-page.c:325
+#: src/gs-details-page.c:326
 msgid "_Install…"
 msgstr "Ор_нату…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:372 src/gs-details-page.ui:242
+#: src/gs-details-page.c:373 src/gs-details-page.ui:242
 msgid "_Remove"
 msgstr "Ө_шіру"
 
-#: src/gs-details-page.c:427 src/gs-sources-dialog.c:513
+#: src/gs-details-page.c:434 src/gs-sources-dialog.c:513
 msgid "Removing…"
 msgstr "Өшірілуде…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:712
+#: src/gs-details-page.c:744
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1163,51 +1163,51 @@ msgstr ""
 "болады."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:841
+#: src/gs-details-page.c:879
 msgctxt "version"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:875
+#: src/gs-details-page.c:913
 msgctxt "updated"
 msgid "Never"
 msgstr "Ешқашан"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:919
+#: src/gs-details-page.c:957
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1323
+#: src/gs-details-page.c:1361
 msgid "You need internet access to write a review"
 msgstr "Пікірді қалдыру үшін интернетпен байланыс керек"
 
-#: src/gs-details-page.c:1452
+#: src/gs-details-page.c:1490
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "\"%s\" табу мүмкін емес"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2017
+#: src/gs-details-page.c:2065
 msgid "Public domain"
 msgstr "Публикалық меншік"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2033 src/gs-details-page.ui:1380
+#: src/gs-details-page.c:2081 src/gs-details-page.ui:1395
 msgid "Free Software"
 msgstr "Еркін бағд. қамтама"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2090
+#: src/gs-details-page.c:2138
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Пайдаланушылар келесі лицензиялармен шектелген:"
 
-#: src/gs-details-page.c:2106 src/gs-details-page.ui:1489
+#: src/gs-details-page.c:2154 src/gs-details-page.ui:1504
 msgid "More information"
 msgstr "Көбірек ақпарат"
 
@@ -1281,131 +1281,135 @@ msgstr "Тек сенімді БҚ қайнар көздерін қолданы�
 msgid "_Website"
 msgstr "_Веб сайты"
 
-#: src/gs-details-page.ui:698
+#: src/gs-details-page.ui:579
+msgid "_Donate"
+msgstr ""
+
+#: src/gs-details-page.ui:713
 msgid "Localized in your Language"
 msgstr "Сіздің тіліңізде аудармасы бар"
 
-#: src/gs-details-page.ui:710
+#: src/gs-details-page.ui:725
 msgid "Documentation"
 msgstr "Құжаттама"
 
-#: src/gs-details-page.ui:722
+#: src/gs-details-page.ui:737
 msgid "Release Activity"
 msgstr "Шығарылым әрекеттері"
 
-#: src/gs-details-page.ui:734
+#: src/gs-details-page.ui:749
 msgid "System Integration"
 msgstr "Жүйелік интеграция"
 
-#: src/gs-details-page.ui:746
+#: src/gs-details-page.ui:761
 msgid "Sandboxed"
 msgstr "Құмсалғышта"
 
-#: src/gs-details-page.ui:771 src/gs-sources-dialog.ui:359
+#: src/gs-details-page.ui:786 src/gs-sources-dialog.ui:359
 msgid "Version"
 msgstr "Нұсқасы"
 
-#: src/gs-details-page.ui:808
+#: src/gs-details-page.ui:823
 msgid "Age Rating"
 msgstr "Жас бойынша рейтингі"
 
-#: src/gs-details-page.ui:846
+#: src/gs-details-page.ui:861
 msgid "Updated"
 msgstr "Жаңартылған"
 
-#: src/gs-details-page.ui:881
+#: src/gs-details-page.ui:896
 msgid "Category"
 msgstr "Санат"
 
-#: src/gs-details-page.ui:919
+#: src/gs-details-page.ui:934
 msgid "Installed Size"
 msgstr "Орнатылған өлшемі"
 
-#: src/gs-details-page.ui:952
+#: src/gs-details-page.ui:967
 msgid "Download Size"
 msgstr "Жүктеп алынатын өлшемі"
 
-#: src/gs-details-page.ui:1018
+#: src/gs-details-page.ui:1033
 msgid "Developer"
 msgstr "Өндіруші"
 
-#: src/gs-details-page.ui:1052
+#: src/gs-details-page.ui:1067
 msgid "License"
 msgstr "Лицензиясы"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1072
+#: src/gs-details-page.ui:1087
 msgid "Free"
 msgstr "Тегін"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1089
+#: src/gs-details-page.ui:1104
 msgid "Proprietary"
 msgstr "Проприетарлы"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.ui:1106 src/gs-review-row.c:71
+#: src/gs-details-page.ui:1121 src/gs-review-row.c:71
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1160 src/gs-installed-page.c:487
-#: plugins/core/gs-desktop-common.c:330
+#: src/gs-details-page.ui:1175 src/gs-installed-page.c:487
+#: plugins/core/gs-desktop-common.c:331
 msgid "Add-ons"
 msgstr "Қосымшалар"
 
-#: src/gs-details-page.ui:1173
+#: src/gs-details-page.ui:1188
 msgid "Selected add-ons will be installed with the application."
 msgstr "Таңдалған кеңейтулер қолданбамен бірге орнатылады."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1216
+#: src/gs-details-page.ui:1231
 msgid "Reviews"
 msgstr "Пікірлер"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1232
+#: src/gs-details-page.ui:1247
 msgid "_Write a Review"
 msgstr "Пікірді _жазу"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1254
+#: src/gs-details-page.ui:1269
 msgid "_Show More"
 msgstr "_Көбірек көрсету"
 
-#: src/gs-details-page.ui:1397
+#: src/gs-details-page.ui:1412
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
 msgstr ""
 
-#: src/gs-details-page.ui:1456
+#: src/gs-details-page.ui:1471
 msgid "Proprietary Software"
 msgstr "Проприетарлы БҚ"
 
-#: src/gs-details-page.ui:1473
+#: src/gs-details-page.ui:1488
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
 
-#: src/gs-details-page.ui:1518
+#: src/gs-details-page.ui:1533
 msgid "Unknown Software License"
 msgstr "БҚ лизензиясы белгісіз"
 
-#: src/gs-details-page.ui:1535
+#: src/gs-details-page.ui:1550
 msgid "The license terms of this software are unknown."
 msgstr "Қолданбаның лицензиялық шарттары белгісіз."
 
-#: src/gs-details-page.ui:1562
+#: src/gs-details-page.ui:1577
 msgid "The application was rated this way because it features:"
 msgstr ""
 
-#: src/gs-details-page.ui:1588
+#: src/gs-details-page.ui:1603
 msgid "No details were available for this rating."
 msgstr "Бұл рейтинг үшін ақпараты жоқ."
 
@@ -2268,7 +2272,7 @@ msgstr "Скриншот"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:164
+#: src/gs-search-page.c:155
 #, c-format
 msgid "%u more matches"
 msgstr "тағы %u сәйкестік"
@@ -3300,82 +3304,82 @@ msgid "AppStream;Software;App;"
 msgstr "AppStream;Software;App;Бағдарламалық қамтама;БҚ;Қолданба;"
 
 #: plugins/core/gs-desktop-common.c:30
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:33
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:36
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "Audio Creation & Editing"
 msgstr "Аудионы жасау және түзету"
 
 #: plugins/core/gs-desktop-common.c:42
-msgctxt "Menu of AudioVideo"
+msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Музыкалық плеерлер"
 
 #: plugins/core/gs-desktop-common.c:51
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:54
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:57
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Жөндеушілер"
 
 #: plugins/core/gs-desktop-common.c:60
-msgctxt "Menu of Development"
+msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "Өндіру орталары"
 
 #: plugins/core/gs-desktop-common.c:69
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:73
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:77
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Жасанды интеллект"
 
 #: plugins/core/gs-desktop-common.c:80
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Астрономия"
 
 #: plugins/core/gs-desktop-common.c:84
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Химия"
 
 #: plugins/core/gs-desktop-common.c:88
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Тілдер"
 
 #: plugins/core/gs-desktop-common.c:92
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Математика"
 
 #: plugins/core/gs-desktop-common.c:99
-msgctxt "Menu of Education and Science"
+msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Робототехника"
 
@@ -3450,144 +3454,144 @@ msgid "Strategy"
 msgstr "Стратегиялық"
 
 #: plugins/core/gs-desktop-common.c:156
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:159
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:162
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "3D графикасы"
 
 #: plugins/core/gs-desktop-common.c:165
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Фотография"
 
 #: plugins/core/gs-desktop-common.c:168
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Сканерлеу"
 
 #: plugins/core/gs-desktop-common.c:171
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Векторлық графика"
 
 #: plugins/core/gs-desktop-common.c:174
-msgctxt "Menu of Graphics"
+msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Қарау қолданбалары"
 
 #: plugins/core/gs-desktop-common.c:182
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:185
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:188
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Күнтізбе"
 
 #: plugins/core/gs-desktop-common.c:192
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Дерекқор"
 
 #: plugins/core/gs-desktop-common.c:195
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Қаржы"
 
 #: plugins/core/gs-desktop-common.c:199
-msgctxt "Menu of Office"
+msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Мәтіндік процессор"
 
 #: plugins/core/gs-desktop-common.c:208
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Қаріптер"
 
 #: plugins/core/gs-desktop-common.c:211
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Кодектер"
 
 #: plugins/core/gs-desktop-common.c:214
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Input Sources"
 msgstr "Кіріс қайнар көздері"
 
 #: plugins/core/gs-desktop-common.c:217
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Language Packs"
 msgstr "Тілдік дестелер"
 
 #: plugins/core/gs-desktop-common.c:220
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Shell Extensions"
 msgstr "Қоршам кеңейтулері"
 
 #: plugins/core/gs-desktop-common.c:223
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Localization"
 msgstr "Локализация"
 
 #: plugins/core/gs-desktop-common.c:226
-msgctxt "Menu of Addons"
+msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
 msgstr "Құрылғылық драйверлер"
 
 #: plugins/core/gs-desktop-common.c:234
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:237
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:240
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Чат"
 
 #: plugins/core/gs-desktop-common.c:247
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Жаңалықтар"
 
 #: plugins/core/gs-desktop-common.c:251
-msgctxt "Menu of Communication"
+msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
-msgstr "Веб браузері"
+msgstr "Веб браузерлері"
 
 #: plugins/core/gs-desktop-common.c:259
-msgctxt "Menu of Utility"
+msgctxt "Menu of Utilities"
 msgid "All"
 msgstr "Барлығы"
 
 #: plugins/core/gs-desktop-common.c:262
-msgctxt "Menu of Utility"
+msgctxt "Menu of Utilities"
 msgid "Featured"
 msgstr "Ұсынылатын"
 
 #: plugins/core/gs-desktop-common.c:265
-msgctxt "Menu of Utility"
+msgctxt "Menu of Utilities"
 msgid "Text Editors"
-msgstr "Мәтін түзетушісі"
+msgstr "Мәтін түзетушілері"
 
 #: plugins/core/gs-desktop-common.c:273
 msgctxt "Menu of Reference"
@@ -3645,47 +3649,47 @@ msgid "Sports"
 msgstr "Спорт"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:312
+#: plugins/core/gs-desktop-common.c:313
 msgid "Audio & Video"
 msgstr "Аудио және видео"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:315
+#: plugins/core/gs-desktop-common.c:316
 msgid "Developer Tools"
 msgstr "Өндіру саймандары"
 
 #. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:318
+#: plugins/core/gs-desktop-common.c:319
 msgid "Education & Science"
 msgstr "Білім алу және ғылым"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:321
+#: plugins/core/gs-desktop-common.c:322
 msgid "Games"
 msgstr "Ойындар"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:324
+#: plugins/core/gs-desktop-common.c:325
 msgid "Graphics & Photography"
 msgstr "Графика және фотография"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:327
+#: plugins/core/gs-desktop-common.c:328
 msgid "Productivity"
 msgstr "Өнімділік"
 
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:333
+#: plugins/core/gs-desktop-common.c:334
 msgid "Communication & News"
 msgstr "Байланысу және жаңалықтар"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:336
+#: plugins/core/gs-desktop-common.c:337
 msgid "Reference"
 msgstr "Сілтеме"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:339
+#: plugins/core/gs-desktop-common.c:340
 msgid "Utilities"
 msgstr "Утилиталар"
 
@@ -3776,22 +3780,21 @@ msgstr "%s үшін flatpak метадеректерін алу…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
 #: plugins/flatpak/gs-flatpak.c:2611
-#| msgid "Setting up updates…"
 msgid "Getting runtime source…"
 msgstr ""
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:770
+#: plugins/fwupd/gs-plugin-fwupd.c:774
 msgid "Downloading firmware update signature…"
 msgstr "Бинарлы кодтар жаңартудың қолтаңбасын жүктеп алу…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:816
+#: plugins/fwupd/gs-plugin-fwupd.c:820
 msgid "Downloading firmware update metadata…"
 msgstr "Бинарлы кодтар жаңартудың метадеректерін жүктеп алу…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:904
+#: plugins/fwupd/gs-plugin-fwupd.c:908
 msgid "Downloading firmware update…"
 msgstr "Бинарлы кодтар жаңартуын жүктеп алу…"
 
@@ -3838,7 +3841,7 @@ msgid "A snap is a universal Linux package"
 msgstr "Snap - бұл әмбебап Linux дестесі"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/steam/gs-plugin-steam.c:602
+#: plugins/steam/gs-plugin-steam.c:600
 msgid "Downloading application page…"
 msgstr "Қолданба парағын жүктеп алу…"
 
@@ -3849,6 +3852,62 @@ msgstr "Steam қолдауы"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Valve ұсынған көңіл көтеру платформасы"
+
+#~ msgctxt "Menu of AudioVideo"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of AudioVideo"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
+
+#~ msgctxt "Menu of Development"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of Development"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
+
+#~ msgctxt "Menu of Education and Science"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of Education and Science"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
+
+#~ msgctxt "Menu of Graphics"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of Graphics"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
+
+#~ msgctxt "Menu of Office"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of Office"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
+
+#~ msgctxt "Menu of Communication"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of Communication"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
+
+#~ msgctxt "Menu of Utility"
+#~ msgid "All"
+#~ msgstr "Барлығы"
+
+#~ msgctxt "Menu of Utility"
+#~ msgid "Featured"
+#~ msgstr "Ұсынылатын"
 
 #~ msgid "“%s” [%s]"
 #~ msgstr "\"%s\" [%s]"
