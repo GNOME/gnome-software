@@ -212,7 +212,7 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_HIGH);
 
 	/* get the virtual non-apps OS update */
-	app = gs_app_list_index (list, 1);
+	app = gs_app_list_index (list, 2);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.gnome.Software.OsUpdate");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
@@ -221,7 +221,7 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_related(app)->len, ==, 2);
 
 	/* get the virtual non-apps OS update */
-	app = gs_app_list_index (list, 2);
+	app = gs_app_list_index (list, 1);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "proxy.desktop");
 	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY));
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE_LIVE);
