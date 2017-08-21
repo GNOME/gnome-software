@@ -303,6 +303,28 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_clear_pointer (&priv->store_snaps, g_hash_table_unref);
 }
 
+static gboolean
+is_banner_image (const gchar *filename)
+{
+	/* Check if this screenshot was uploaded as "banner.png" or "banner.jpg".
+	 * The server optionally adds a 7 character suffix onto it if it would collide with
+	 * an existing name, e.g. "banner_MgEy4MI.png"
+	 * See https://forum.snapcraft.io/t/improve-method-for-setting-featured-snap-banner-image-in-store/
+	 */
+	return g_regex_match_simple ("^banner(?:_[a-zA-Z0-9]{7})?\\.(?:png|jpg)$", filename, 0, 0);
+}
+
+static gboolean
+is_banner_icon_image (const gchar *filename)
+{
+	/* Check if this screenshot was uploaded as "banner-icon.png" or "banner-icon.jpg".
+	 * The server optionally adds a 7 character suffix onto it if it would collide with
+	 * an existing name, e.g. "banner-icon_Ugn6pmj.png"
+	 * See https://forum.snapcraft.io/t/improve-method-for-setting-featured-snap-banner-image-in-store/
+	 */
+	return g_regex_match_simple ("^banner-icon(?:_[a-zA-Z0-9]{7})?\\.(?:png|jpg)$", filename, 0, 0);
+}
+
 gboolean
 gs_plugin_add_featured (GsPlugin *plugin,
 		        GsAppList *list,
@@ -339,14 +361,10 @@ gs_plugin_add_featured (GsPlugin *plugin,
 
 		url = snapd_screenshot_get_url (screenshot);
 		filename = g_path_get_basename (url);
-		if (g_strcmp0 (filename, "banner.png") == 0 ||
-		    g_strcmp0 (filename, "banner.jpg") == 0) {
+		if (is_banner_image (filename))
 			banner_url = url;
-		}
-		if (g_strcmp0 (filename, "banner-icon.png") == 0 ||
-		    g_strcmp0 (filename, "banner-icon.jpg") == 0) {
+		else if (is_banner_icon_image (filename))
 			icon_url = url;
-		}
 	}
 
 	background_css = g_string_new ("");
@@ -641,10 +659,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 				/* skip sceenshots used for banner when app is featured */
 				url = snapd_screenshot_get_url (screenshot);
 				filename = g_path_get_basename (url);
-				if (g_strcmp0 (filename, "banner.png") == 0 ||
-				    g_strcmp0 (filename, "banner.jpg") == 0 ||
-				    g_strcmp0 (filename, "banner-icon.png") == 0 ||
-				    g_strcmp0 (filename, "banner-icon.jpg") == 0)
+				if (is_banner_image (filename) || is_banner_icon_image (filename))
 					continue;
 
 				ss = as_screenshot_new ();
