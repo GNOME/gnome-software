@@ -319,56 +319,10 @@ load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *ca
 			return FALSE;
 		}
 	} else {
-		g_autofree gchar *basename_tmp = NULL;
-		g_autofree gchar *hash = NULL;
-		g_autofree gchar *basename = NULL;
-		g_autofree gchar *cache_fn = NULL;
-		g_autoptr(SoupMessage) message = NULL;
-		g_autoptr(GdkPixbufLoader) loader = NULL;
-		g_autoptr(GError) local_error = NULL;
-
-		/* attempt to load from cache */
-		basename_tmp = g_path_get_basename (icon_url);
-		hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, icon_url, -1);
-		basename = g_strdup_printf ("%s-%s", hash, basename_tmp);
-		cache_fn = gs_utils_get_cache_filename ("snap-icons", basename, GS_UTILS_CACHE_FLAG_WRITEABLE, error);
-		if (cache_fn == NULL)
-			return FALSE;
-		if (g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
-			g_autofree gchar *data = NULL;
-			gsize data_len;
-
-			if (g_file_get_contents (cache_fn, &data, &data_len, &local_error) &&
-			    gs_plugin_snap_set_app_pixbuf_from_data (app,
-								     data, data_len,
-								     &local_error))
-				return TRUE;
-
-			g_warning ("Failed to load cached icon: %s", local_error->message);
-		}
-
-		/* load from URL */
-		message = soup_message_new (SOUP_METHOD_GET, icon_url);
-		if (message == NULL) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Failed to parse icon URL: %s",
-				     icon_url);
-			return FALSE;
-		}
-		soup_session_send_message (gs_plugin_get_soup_session (plugin), message);
-		if (!gs_plugin_snap_set_app_pixbuf_from_data (app,
-					(const gchar *) message->response_body->data,
-					message->response_body->length,
-					error)) {
-			g_prefix_error (error, "Failed to load %s: ", icon_url);
-			return FALSE;
-		}
-
-		/* write to cache */
-		if (!g_file_set_contents (cache_fn, message->response_body->data, message->response_body->length, &local_error))
-			g_warning ("Failed to save icon to cache: %s", local_error->message);
+		g_autoptr(AsIcon) icon = as_icon_new ();
+		as_icon_set_kind (icon, AS_ICON_KIND_REMOTE);
+		as_icon_set_url (icon, icon_url);
+		gs_app_add_icon (app, icon);
 	}
 
 	return TRUE;
