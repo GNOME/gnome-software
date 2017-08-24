@@ -313,6 +313,8 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	g_autofree gchar *unique_id = NULL;
 	GsApp *cached_app;
 	g_autoptr(GsApp) app = NULL;
+	SnapdConfinement confinement;
+	GEnumClass *enum_class;
 
 	switch (snapd_snap_get_snap_type (snap)) {
 	case SNAPD_SNAP_TYPE_APP:
@@ -344,7 +346,13 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	if (priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT && snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
+
+	confinement = snapd_snap_get_confinement (snap);
+	enum_class = g_type_class_ref (SNAPD_TYPE_CONFINEMENT);
+	gs_app_set_metadata (app, "snap::confinement", g_enum_get_value (enum_class, confinement)->value_nick);
+	g_type_class_unref (enum_class);
+
+	if (priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT && confinement == SNAPD_CONFINEMENT_STRICT)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	return g_steal_pointer (&app);
@@ -823,6 +831,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	g_autoptr(SnapdClient) client = NULL;
+	SnapdInstallFlags flags = SNAPD_INSTALL_FLAGS_NONE;
 
 	/* We can only install apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -833,7 +842,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!snapd_client_install2_sync (client, SNAPD_INSTALL_FLAGS_NONE, gs_app_get_id (app), NULL, NULL, progress_cb, app, cancellable, error)) {
+	if (g_strcmp0 (gs_app_get_metadata_item (app, "snap::confinement"), "classic") == 0)
+		flags |= SNAPD_INSTALL_FLAGS_CLASSIC;
+	if (!snapd_client_install2_sync (client, flags, gs_app_get_id (app), NULL, NULL, progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		snapd_error_convert (error);
 		return FALSE;
