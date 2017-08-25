@@ -11,7 +11,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
 "POT-Creation-Date: 2017-08-24 10:36+0000\n"
-"PO-Revision-Date: 2017-08-25 12:04+0200\n"
+"PO-Revision-Date: 2017-08-25 15:44+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: čeština <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -1318,7 +1318,7 @@ msgstr "_Webové stránky"
 
 #: src/gs-details-page.ui:579
 msgid "_Donate"
-msgstr ""
+msgstr "Věnovat _dar"
 
 #: src/gs-details-page.ui:713
 msgid "Localized in your Language"
@@ -1479,7 +1479,7 @@ msgstr "Sloučit dokumenty"
 #. TRANSLATORS: button text
 #: src/gs-editor.c:608 src/gs-editor.c:879
 msgid "Throw away changes"
-msgstr ""
+msgstr "Zahodit změny"
 
 #. import the new file
 #: src/gs-editor.c:620 src/gs-editor.c:652
@@ -1529,13 +1529,9 @@ msgstr "Návrhář upoutávek do Softwaru GNOME"
 msgid "No Designs"
 msgstr "žádné návrhy"
 
-#: src/gs-editor.ui:110
-msgid "page1"
-msgstr ""
-
 #: src/gs-editor.ui:164
 msgid "Error message here"
-msgstr ""
+msgstr "Zde se vypisují chybové zprávy"
 
 #: src/gs-editor.ui:251
 msgid "App ID"
@@ -1554,14 +1550,8 @@ msgid "Editor’s Pick"
 msgstr "Doporučujeme"
 
 #: src/gs-editor.ui:398
-#, fuzzy
-#| msgid "Category"
-msgid "Category Feature"
-msgstr "Kategorie"
-
-#: src/gs-editor.ui:428
-msgid "page2"
-msgstr ""
+msgid "Category Featured"
+msgstr "Kategorie Významné"
 
 #. button in the info bar
 #: src/gs-editor.ui:473
@@ -2330,8 +2320,11 @@ msgstr "Snímek"
 #. * to show in in the search page
 #: src/gs-search-page.c:155
 #, c-format
-msgid "%u more matches"
-msgstr ""
+msgid "%u more match"
+msgid_plural "%u more matches"
+msgstr[0] "%u další výsledek hledání"
+msgstr[1] "%u další výsledky hledání"
+msgstr[2] "%u dalších výsledků hledání"
 
 #: src/gs-search-page.ui:7
 msgid "Search page"
