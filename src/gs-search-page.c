@@ -152,8 +152,10 @@ gs_search_page_get_search_cb (GObject *source_object,
 
 		/* TRANSLATORS: this is when there are too many search results
 		 * to show in in the search page */
-		str = g_strdup_printf (_("%u more matches"),
-				       gs_app_list_get_size_peak (list) - gs_app_list_length (list));
+		str = g_strdup_printf (ngettext("%u more match",
+		                                "%u more matches",
+		                                gs_app_list_get_size_peak (list) - gs_app_list_length (list)),
+		                       gs_app_list_get_size_peak (list) - gs_app_list_length (list));
 		gtk_label_set_label (GTK_LABEL (w), str);
 		gtk_widget_set_margin_bottom (w, 20);
 		gtk_widget_set_margin_top (w, 20);
