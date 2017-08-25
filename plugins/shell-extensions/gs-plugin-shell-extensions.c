@@ -268,7 +268,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (priv->proxy != NULL)
 		return TRUE;
 	priv->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
-						     G_DBUS_PROXY_FLAGS_NONE,
+						     G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START_AT_CONSTRUCTION,
 						     NULL,
 						     "org.gnome.Shell",
 						     "/org/gnome/Shell",
@@ -279,6 +279,13 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
+
+	/* not running under Shell */
+	if (g_dbus_proxy_get_name_owner (priv->proxy) == NULL) {
+		g_clear_object (&priv->proxy);
+		return FALSE;
+	}
+
 	g_signal_connect (priv->proxy, "g-signal",
 			  G_CALLBACK (gs_plugin_shell_extensions_changed_cb), plugin);
 
