@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-08-17 18:07+0000\n"
-"PO-Revision-Date: 2017-08-24 00:28+0200\n"
+"POT-Creation-Date: 2017-08-25 13:27+0000\n"
+"PO-Revision-Date: 2017-08-26 16:04+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -68,7 +68,7 @@ msgstr "Panel aktualizacji"
 msgid "The update details"
 msgstr "Informacje o aktualizacji"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:843
+#: data/appdata/org.gnome.Software.appdata.xml.in:861
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
 
@@ -1538,64 +1538,57 @@ msgstr "Projektowanie banerów dla Menedżera oprogramowania GNOME"
 msgid "No Designs"
 msgstr "Brak projektów"
 
-#: src/gs-editor.ui:110
-msgid "page1"
-msgstr "1. strona"
-
-#: src/gs-editor.ui:164
+#: src/gs-editor.ui:163
 msgid "Error message here"
 msgstr "Miejsce na komunikat o błędzie"
 
-#: src/gs-editor.ui:251
+#: src/gs-editor.ui:250
 msgid "App ID"
 msgstr "Identyfikator programu"
 
-#: src/gs-editor.ui:297
+#: src/gs-editor.ui:296
 msgid "Name"
 msgstr "Nazwa"
 
-#: src/gs-editor.ui:342 src/gs-review-dialog.ui:142
+#: src/gs-editor.ui:341 src/gs-review-dialog.ui:142
 msgid "Summary"
 msgstr "Podsumowanie"
 
-#: src/gs-editor.ui:383
+#: src/gs-editor.ui:382
 msgid "Editor’s Pick"
 msgstr "Nasz wybór"
 
-#: src/gs-editor.ui:398
-msgid "Category Feature"
+#. This check button controls whether the application’s banner appears in the “Featured” category
+#: src/gs-editor.ui:397
+msgid "Category Featured"
 msgstr "Polecane w kategorii"
 
-#: src/gs-editor.ui:428
-msgid "page2"
-msgstr "2. strona"
-
 #. button in the info bar
-#: src/gs-editor.ui:473
+#: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Cofnij"
 
-#: src/gs-editor.ui:549
+#: src/gs-editor.ui:547
 msgid "New Banner"
 msgstr "Nowy baner"
 
-#: src/gs-editor.ui:617
+#: src/gs-editor.ui:615
 msgid "Import from file"
 msgstr "Zaimportuj z pliku"
 
-#: src/gs-editor.ui:631
+#: src/gs-editor.ui:629
 msgid "Export to file"
 msgstr "Wyeksportuj do pliku"
 
-#: src/gs-editor.ui:645
+#: src/gs-editor.ui:643
 msgid "Delete Design"
 msgstr "Usuń projekt"
 
-#: src/gs-editor.ui:672
+#: src/gs-editor.ui:670
 msgid "Featured App"
 msgstr "Polecany program"
 
-#: src/gs-editor.ui:686
+#: src/gs-editor.ui:684
 msgid "OS Upgrade"
 msgstr "Aktualizacja systemu"
 
@@ -2338,8 +2331,11 @@ msgstr "Zrzut ekranu"
 #. * to show in in the search page
 #: src/gs-search-page.c:155
 #, c-format
-msgid "%u more matches"
-msgstr "%u więcej"
+msgid "%u more match"
+msgid_plural "%u more matches"
+msgstr[0] "%u więcej"
+msgstr[1] "%u więcej"
+msgstr[2] "%u więcej"
 
 #: src/gs-search-page.ui:7
 msgid "Search page"
