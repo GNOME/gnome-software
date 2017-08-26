@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-08-17 18:07+0000\n"
-"PO-Revision-Date: 2017-08-20 18:19+0500\n"
+"POT-Creation-Date: 2017-08-25 13:27+0000\n"
+"PO-Revision-Date: 2017-08-26 11:25+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -68,7 +68,7 @@ msgstr "Жаңартулар панелі"
 msgid "The update details"
 msgstr "Жаңарту ақпараты"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:843
+#: data/appdata/org.gnome.Software.appdata.xml.in:861
 msgid "The GNOME Project"
 msgstr "GNOME жобасы"
 
@@ -1283,7 +1283,7 @@ msgstr "_Веб сайты"
 
 #: src/gs-details-page.ui:579
 msgid "_Donate"
-msgstr ""
+msgstr "Ақ_шалай көмектесу"
 
 #: src/gs-details-page.ui:713
 msgid "Localized in your Language"
@@ -1488,64 +1488,57 @@ msgstr "GNOME Software баннерлер дизайнері"
 msgid "No Designs"
 msgstr "Дизайндар жоқ"
 
-#: src/gs-editor.ui:110
-msgid "page1"
-msgstr "page1"
-
-#: src/gs-editor.ui:164
+#: src/gs-editor.ui:163
 msgid "Error message here"
 msgstr "Қате хабарламасы осында"
 
-#: src/gs-editor.ui:251
+#: src/gs-editor.ui:250
 msgid "App ID"
 msgstr "App ID"
 
-#: src/gs-editor.ui:297
+#: src/gs-editor.ui:296
 msgid "Name"
 msgstr "Аты"
 
-#: src/gs-editor.ui:342 src/gs-review-dialog.ui:142
+#: src/gs-editor.ui:341 src/gs-review-dialog.ui:142
 msgid "Summary"
 msgstr "Қорытынды"
 
-#: src/gs-editor.ui:383
+#: src/gs-editor.ui:382
 msgid "Editor’s Pick"
 msgstr "Редакторлар таңдауы"
 
-#: src/gs-editor.ui:398
-msgid "Category Feature"
-msgstr "Санат"
-
-#: src/gs-editor.ui:428
-msgid "page2"
-msgstr "page2"
+#. This check button controls whether the application’s banner appears in the “Featured” category
+#: src/gs-editor.ui:397
+msgid "Category Featured"
+msgstr "Ұсынылған санаты"
 
 #. button in the info bar
-#: src/gs-editor.ui:473
+#: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Болдырмау"
 
-#: src/gs-editor.ui:549
+#: src/gs-editor.ui:547
 msgid "New Banner"
 msgstr "Жаңа баннер"
 
-#: src/gs-editor.ui:617
+#: src/gs-editor.ui:615
 msgid "Import from file"
 msgstr "Файлдан импорттау"
 
-#: src/gs-editor.ui:631
+#: src/gs-editor.ui:629
 msgid "Export to file"
 msgstr "Файлға экспорттау"
 
-#: src/gs-editor.ui:645
+#: src/gs-editor.ui:643
 msgid "Delete Design"
 msgstr "Дизайнды өшіру"
 
-#: src/gs-editor.ui:672
+#: src/gs-editor.ui:670
 msgid "Featured App"
 msgstr "Ұсынылатын қолданба"
 
-#: src/gs-editor.ui:686
+#: src/gs-editor.ui:684
 msgid "OS Upgrade"
 msgstr "ОЖ жаңартуы"
 
@@ -2274,8 +2267,9 @@ msgstr "Скриншот"
 #. * to show in in the search page
 #: src/gs-search-page.c:155
 #, c-format
-msgid "%u more matches"
-msgstr "тағы %u сәйкестік"
+msgid "%u more match"
+msgid_plural "%u more matches"
+msgstr[0] "тағы %u сәйкестік"
 
 #: src/gs-search-page.ui:7
 msgid "Search page"
@@ -3852,6 +3846,12 @@ msgstr "Steam қолдауы"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Valve ұсынған көңіл көтеру платформасы"
+
+#~ msgid "page1"
+#~ msgstr "page1"
+
+#~ msgid "page2"
+#~ msgstr "page2"
 
 #~ msgctxt "Menu of AudioVideo"
 #~ msgid "All"
