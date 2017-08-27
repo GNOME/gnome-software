@@ -9,10 +9,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2016-10-09 12:55+0000\n"
-"PO-Revision-Date: 2016-11-22 21:26+0200\n"
+"POT-Creation-Date: 2017-08-17 17:28+0000\n"
+"PO-Revision-Date: 2017-08-22 19:03+0200\n"
 "Last-Translator: Марко М. Костић <marko.m.kostic@gmail.com>\n"
 "Language-Team: српски <gnome-sr@googlegroups.org>\n"
 "Language: sr\n"
@@ -22,6 +22,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : n"
 "%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Project-Style: gnome\n"
+"X-Generator: Poedit 2.0.3\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -227,7 +228,7 @@ msgstr "Додај у фасциклу програма"
 
 #: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
 #: ../src/gs-removal-dialog.ui.h:2 ../src/gs-review-dialog.ui.h:3
-#: ../src/gs-shell-details.c:358 ../src/gs-shell-details.ui.h:6
+#: ../src/gs-shell-details.c:359 ../src/gs-shell-details.ui.h:6
 #: ../src/gs-shell-installed.c:530 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_Откажи"
@@ -240,7 +241,7 @@ msgstr "_Додај"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #. vim: set noexpandtab:
-#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
+#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
 #: ../src/gs-app-row.ui.h:1 ../src/gs-feature-tile.c:66
 #: ../src/gs-popular-tile.c:72 ../src/gs-popular-tile.c:75
 #: ../src/gs-summary-tile.c:78 ../src/gs-summary-tile.ui.h:1
@@ -267,8 +268,8 @@ msgstr "Поништи избор"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:378
-#: ../src/gs-shell.c:266 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:389
+#: ../src/gs-shell.c:273 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Програми"
 
@@ -293,7 +294,11 @@ msgstr "_Инсталирани"
 msgid "_Updates"
 msgstr "Аж_урирања"
 
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:439
+#: ../src/gnome-software.ui.h:11
+msgid "Search"
+msgstr "Претрага"
+
+#: ../src/gs-app-addon-row.c:97 ../src/gs-app-row.c:427
 #: ../src/gs-shell-details.ui.h:7
 msgid "Pending"
 msgstr "На чекању"
@@ -302,8 +307,8 @@ msgstr "На чекању"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:219
-#: ../src/gs-shell-details.c:410 ../src/gs-summary-tile.c:86
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:217
+#: ../src/gs-shell-details.c:411 ../src/gs-summary-tile.c:86
 msgid "Installing"
 msgstr "Инсталирам"
 
@@ -311,7 +316,7 @@ msgstr "Инсталирам"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:225
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:223
 #: ../src/gs-summary-tile.c:94
 msgid "Removing"
 msgstr "Уклањам"
@@ -321,69 +326,69 @@ msgid "Folder Name"
 msgstr "Назив фасцикле"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:98
+#: ../src/gs-application.c:103
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Режим покретања: „updates“ (ажурирања), „updated“ (ажурно), "
 "„installed“ (инсталирано) или „overview“ (преглед)"
 
-#: ../src/gs-application.c:98
+#: ../src/gs-application.c:103
 msgid "MODE"
 msgstr "РЕЖИМ"
 
-#: ../src/gs-application.c:100
+#: ../src/gs-application.c:105
 msgid "Search for applications"
 msgstr "Тражи програме"
 
-#: ../src/gs-application.c:100
+#: ../src/gs-application.c:105
 msgid "SEARCH"
 msgstr "ТРАЖИ"
 
-#: ../src/gs-application.c:102
+#: ../src/gs-application.c:107
 msgid "Show application details (using application ID)"
 msgstr "Приказује појединости програма (користећи ИБ програма)"
 
-#: ../src/gs-application.c:102
+#: ../src/gs-application.c:107
 msgid "ID"
 msgstr "ИБ"
 
-#: ../src/gs-application.c:104
+#: ../src/gs-application.c:109
 msgid "Show application details (using package name)"
 msgstr "Приказује појединости програма (користећи назив пакета)"
 
-#: ../src/gs-application.c:104
+#: ../src/gs-application.c:109
 msgid "PKGNAME"
 msgstr "НЗВПКТА"
 
-#: ../src/gs-application.c:106
+#: ../src/gs-application.c:111
 msgid "Open a local package file"
 msgstr "Отвара локалну датотеку са пакетом"
 
-#: ../src/gs-application.c:106
+#: ../src/gs-application.c:111
 msgid "FILENAME"
 msgstr "НАЗИВ ДАТОТЕКЕ"
 
-#: ../src/gs-application.c:108
+#: ../src/gs-application.c:113
 msgid "Show verbose debugging information"
 msgstr "Приказује опширне податке прочишћавања"
 
-#: ../src/gs-application.c:110
+#: ../src/gs-application.c:115
 msgid "Show profiling information for the service"
 msgstr "Приказује податке профилисања за услугу"
 
-#: ../src/gs-application.c:112
+#: ../src/gs-application.c:117
 msgid "Quit the running instance"
 msgstr "Затвара покренути примерак"
 
-#: ../src/gs-application.c:114
+#: ../src/gs-application.c:119
 msgid "Prefer local file sources to AppStream"
 msgstr "Даје предност локалним изворима датотека над током програма"
 
-#: ../src/gs-application.c:116
+#: ../src/gs-application.c:121
 msgid "Show version number"
 msgstr "Приказује број издања"
 
-#: ../src/gs-application.c:371
+#: ../src/gs-application.c:382
 msgid "translator-credits"
 msgstr ""
 "Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
@@ -392,31 +397,31 @@ msgstr ""
 "http://prevod.org — превод на српски језик."
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:375
+#: ../src/gs-application.c:386
 msgid "About Software"
 msgstr "О Програмима"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:381
+#: ../src/gs-application.c:392
 msgid "A nice way to manage the software on your system."
 msgstr "Фин начин за управљање програмима на вашем систему."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:172
+#: ../src/gs-app-row.c:170
 msgid "Visit website"
 msgstr "Посети веб страницу"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:177
+#: ../src/gs-app-row.c:175
 msgid "Install…"
 msgstr "Инсталирај…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:184
+#: ../src/gs-app-row.c:182
 msgid "Cancel"
 msgstr "Откажи"
 
@@ -426,7 +431,7 @@ msgstr "Откажи"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: update the fw
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:193 ../src/gs-app-row.c:200 ../src/gs-page.c:385
+#: ../src/gs-app-row.c:191 ../src/gs-app-row.c:198 ../src/gs-page.c:393
 #: ../src/gs-common.c:342
 msgid "Install"
 msgstr "Инсталирај"
@@ -434,25 +439,20 @@ msgstr "Инсталирај"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:204 ../src/gs-app-row.c:213 ../src/gs-page.c:531
+#: ../src/gs-app-row.c:202 ../src/gs-app-row.c:211 ../src/gs-page.c:541
 msgid "Remove"
 msgstr "Уклони"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:329
+#: ../src/gs-app-row.c:327
 msgid "Device cannot be used during update."
 msgstr "Уређај не може бити коришћен за време ажурирања."
 
 #. TRANSLATORS: this refers to where the app came from
-#: ../src/gs-app-row.c:339 ../src/gs-shell-details.ui.h:34
+#: ../src/gs-app-row.c:337 ../src/gs-shell-details.ui.h:34
 msgid "Source"
 msgstr "Извор"
-
-#. security sandbox
-#: ../src/gs-app-row.ui.h:3 ../src/gs-shell-details.ui.h:28
-msgid "Sandboxed"
-msgstr "Изоловани"
 
 #. TRANSLATORS: this is when the service name is not known
 #: ../src/gs-auth-dialog.c:70
@@ -653,20 +653,20 @@ msgstr "Историјат"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:376
+#: ../src/gs-page.c:384
 #, c-format
 msgid "Prepare %s"
 msgstr "Припремам „%s“"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * source name, e.g. 'GNOME Nightly'
-#: ../src/gs-page.c:500
+#: ../src/gs-page.c:510
 #, c-format
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Да ли сигурно желите да уклоните извор „%s“?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:504
+#: ../src/gs-page.c:514
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -677,13 +677,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:512
+#: ../src/gs-page.c:522
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Да ли сигурно желите да уклоните „%s“?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:515
+#: ../src/gs-page.c:525
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -691,25 +691,25 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:1049
+#: ../src/gs-plugin-loader.c:1149
 msgid "OS Updates"
 msgstr "Надоградње система"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:1054
+#: ../src/gs-plugin-loader.c:1154
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "У надоградње су укључена побољшања стабилности, безбедности и рада система."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1730 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1851 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Нема додатних кодека за формат датотеке „%s“."
 
-#: ../src/gs-plugin-loader.c:1733
+#: ../src/gs-plugin-loader.c:1854
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -718,6 +718,8 @@ msgstr ""
 "Податке о „%s“, као и податке о набављању кодека који може пуштати ову врсту "
 "датотеке можете пронаћи на веб страници."
 
+#. TRANSLATORS: This is a text displayed during a distro upgrade. %s
+#. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
 #: ../src/gs-removal-dialog.c:128
 #, c-format
 msgid ""
@@ -904,39 +906,39 @@ msgstr "Уклони…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:220
+#: ../src/gs-screenshot-image.c:223
 msgid "Screenshot not found"
 msgstr "Нема снимака екрана"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:236
+#: ../src/gs-screenshot-image.c:238
 msgid "Failed to load image"
 msgstr "Нисам успео да учитам слику"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:350
+#: ../src/gs-screenshot-image.c:352
 msgid "Screenshot size not found"
 msgstr "Нисам пронашао величину снимка екрана"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:378
+#: ../src/gs-screenshot-image.c:380
 msgid "Could not create cache"
 msgstr "Не могу да направим оставу"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:424
+#: ../src/gs-screenshot-image.c:426
 msgid "Screenshot not valid"
 msgstr "Неисправан снимак екрана"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:439
+#: ../src/gs-screenshot-image.c:441
 msgid "Screenshot not available"
 msgstr "Снимак екрана није доступан"
 
-#: ../src/gs-screenshot-image.c:482
+#: ../src/gs-screenshot-image.c:484
 msgid "Screenshot"
 msgstr "Снимак екрана"
 
@@ -957,14 +959,14 @@ msgstr ""
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: ../src/gs-shell-details.c:267 ../src/gs-shell-details.c:287
+#: ../src/gs-shell-details.c:268 ../src/gs-shell-details.c:288
 #: ../src/gs-shell-details.ui.h:2 ../src/gs-upgrade-banner.ui.h:6
 msgid "_Install"
 msgstr "_Инсталирај"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: ../src/gs-shell-details.c:292
+#: ../src/gs-shell-details.c:293
 msgid "_Update"
 msgstr "Аж_урирај"
 
@@ -972,73 +974,73 @@ msgstr "Аж_урирај"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:305
+#: ../src/gs-shell-details.c:306
 msgid "_Install…"
 msgstr "_Инсталирај…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:352 ../src/gs-shell-details.ui.h:5
+#: ../src/gs-shell-details.c:353 ../src/gs-shell-details.ui.h:5
 msgid "_Remove"
 msgstr "_Уклони"
 
-#: ../src/gs-shell-details.c:405 ../src/gs-sources-dialog.c:503
+#: ../src/gs-shell-details.c:406 ../src/gs-sources-dialog.c:503
 msgid "Removing…"
 msgstr "Уклањам…"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:684
+#: ../src/gs-shell-details.c:690
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Овај програм се може користити само ако постоји веза са интернетом."
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:811
+#: ../src/gs-shell-details.c:817
 msgctxt "version"
 msgid "Unknown"
 msgstr "Непознато"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:845
+#: ../src/gs-shell-details.c:851
 msgctxt "updated"
 msgid "Never"
 msgstr "Никада"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:891
+#: ../src/gs-shell-details.c:895
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Непознато"
 
-#: ../src/gs-shell-details.c:1327
+#: ../src/gs-shell-details.c:1335
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Не могу да нађем „%s“"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1388
+#: ../src/gs-shell-details.c:1396
 msgid "The file is not supported."
 msgstr "Датотека није подржана."
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1398 ../src/gs-common.c:161
+#: ../src/gs-shell-details.c:1406 ../src/gs-common.c:161
 msgid "Sorry, this did not work"
 msgstr "Нажалост, ово није успело"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:1754
+#: ../src/gs-shell-details.c:1776
 msgid "Public domain"
 msgstr "Јавно власништво"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:1770 ../src/gs-shell-details.ui.h:51
+#: ../src/gs-shell-details.c:1792 ../src/gs-shell-details.ui.h:51
 msgid "Free Software"
 msgstr "Слободан софтвер"
 
 #. TRANSLATORS: for the free software popover
-#: ../src/gs-shell-details.c:1825
+#: ../src/gs-shell-details.c:1849
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Корисници су везани следећом дозволом:"
@@ -1046,7 +1048,7 @@ msgstr[1] "Корисници су везани следећим дозвола�
 msgstr[2] "Корисници су везани следећим дозволама:"
 msgstr[3] "Корисници су везани следећом дозволом:"
 
-#: ../src/gs-shell-details.c:1841 ../src/gs-shell-details.ui.h:55
+#: ../src/gs-shell-details.c:1865 ../src/gs-shell-details.ui.h:55
 msgid "More information"
 msgstr "Још података"
 
@@ -1127,7 +1129,7 @@ msgstr "Користите само проверене изворе програ
 msgid "_Website"
 msgstr "_Веб страница"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:791
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-common.c:782
 msgid "Details"
 msgstr "Појединости"
 
@@ -1146,6 +1148,10 @@ msgstr "Активност пројекта"
 #: ../src/gs-shell-details.ui.h:27
 msgid "System Integration"
 msgstr "Усклађеност са системом"
+
+#: ../src/gs-shell-details.ui.h:28
+msgid "Sandboxed"
+msgstr "Изоловани"
 
 #: ../src/gs-shell-details.ui.h:29 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
@@ -1189,7 +1195,7 @@ msgstr "Власнички"
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
 #: ../src/gs-shell-details.ui.h:43 ../src/gs-shell-installed.c:438
-#: ../src/gs-update-list.c:128 ../src/plugins/gs-desktop-common.c:344
+#: ../src/gs-update-list.c:138 ../src/plugins/gs-desktop-common.c:344
 msgid "Add-ons"
 msgstr "Додаци"
 
@@ -1398,6 +1404,7 @@ msgstr ""
 "Податке о „%s“, као и начин набављања управљачког програма који може да "
 "подржи овај штампач можете наћи на %s."
 
+#. TRANSLATORS: hyperlink title
 #: ../src/gs-shell-extras.c:457
 msgid "this website"
 msgstr "овом веб сајту"
@@ -1416,12 +1423,12 @@ msgstr[1] "На жалост, не могу пронаћи „%s“. На „%s�
 msgstr[2] "На жалост, не могу пронаћи „%s“. На „%s“ можете наћи више података."
 msgstr[3] "На жалост, не могу пронаћи „%s“. На „%s“ можете наћи више података."
 
-#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
-#: ../src/gs-shell-extras.c:640
+#: ../src/gs-shell-extras.c:532 ../src/gs-shell-extras.c:587
+#: ../src/gs-shell-extras.c:627
 msgid "Failed to find any search results"
 msgstr "Неуспех при добављању резултата претраге"
 
-#: ../src/gs-shell-extras.c:814
+#: ../src/gs-shell-extras.c:808
 #, c-format
 msgid "%s file format"
 msgstr "%s формат датотеке"
@@ -1471,31 +1478,31 @@ msgid "There are no reviews to moderate"
 msgstr "Нема прегледа за уређење"
 
 #. add button
-#: ../src/gs-shell-overview.c:243
+#: ../src/gs-shell-overview.c:242
 msgid "More…"
 msgstr "Још…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:422
+#: ../src/gs-shell-overview.c:421
 msgid "Recommended Audio & Video Applications"
 msgstr "Препоручени аудио и видео програми"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:427
+#: ../src/gs-shell-overview.c:426
 msgid "Recommended Games"
 msgstr "Препоручене игре"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:432
+#: ../src/gs-shell-overview.c:431
 msgid "Recommended Graphics Applications"
 msgstr "Препоручени графички програми"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:437
+#: ../src/gs-shell-overview.c:436
 msgid "Recommended Productivity Applications"
 msgstr "Препоручени стваралачки програми"
 
@@ -1519,7 +1526,7 @@ msgid "Find out more…"
 msgstr "Сазнај више…"
 
 #. TRANSLATORS: button to turn on proprietary software sources
-#: ../src/gs-shell-overview.c:757
+#: ../src/gs-shell-overview.c:756
 msgid "Enable"
 msgstr "Укључи"
 
@@ -1631,29 +1638,29 @@ msgid "(This could take a while)"
 msgstr "(Ово може да потраје)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:425
+#: ../src/gs-shell-updates.c:428
 #, c-format
 msgid "Last checked: %s"
 msgstr "Последња провера: %s"
 
 #. TRANSLATORS: all updates will be installed
-#: ../src/gs-shell-updates.c:498
+#: ../src/gs-shell-updates.c:501
 msgid "_Install All"
 msgstr "_Инсталирај све"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:502 ../src/gs-shell-updates.c:1348
+#: ../src/gs-shell-updates.c:505 ../src/gs-shell-updates.c:1382
 msgid "Restart & _Install"
 msgstr "Поново покрени и _инсталирај"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:829
+#: ../src/gs-shell-updates.c:838
 msgid "Charges may apply"
 msgstr "Ажурирањем могу настати додатни новчани трошкови"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:833
+#: ../src/gs-shell-updates.c:842
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1663,48 +1670,48 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:837
+#: ../src/gs-shell-updates.c:846
 msgid "Check Anyway"
 msgstr "Ипак провери"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:853
+#: ../src/gs-shell-updates.c:862
 msgid "No Network"
 msgstr "Нема мреже"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:857
+#: ../src/gs-shell-updates.c:866
 msgid "Internet access is required to check for updates."
 msgstr "Потребан је приступ Интернету за проверу ажурирања."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:861
+#: ../src/gs-shell-updates.c:870
 msgid "Network Settings"
 msgstr "Подешавања мреже"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:951
+#: ../src/gs-shell-updates.c:960
 msgid "Updates have been installed"
 msgstr "Ажурирања су инсталирана"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:953
+#: ../src/gs-shell-updates.c:962
 msgid "A restart is required for them to take effect."
 msgstr "Потребно је поновно покретање како би ступила у дејство."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:955 ../src/gs-update-monitor.c:102
+#: ../src/gs-shell-updates.c:964 ../src/gs-update-monitor.c:102
 msgid "Not Now"
 msgstr "Не сада"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:957
+#: ../src/gs-shell-updates.c:966
 msgid "Restart"
 msgstr "Покрени поново"
 
-#: ../src/gs-shell-updates.c:1366
+#: ../src/gs-shell-updates.c:1400
 msgid "Check for updates"
 msgstr "Провери да ли има ажурирања"
 
@@ -2082,7 +2089,9 @@ msgid "%s %s Ready to be Installed"
 msgstr "Дистрибуција %s %s је спремна за инсталирање"
 
 #. vim: set noexpandtab:
+#. TRANSLATORS: this is a title for Fedora distro upgrades
 #: ../src/gs-upgrade-banner.ui.h:1
+#: ../src/plugins/gs-plugin-fedora-distro-upgrades.c:397
 msgid "A major upgrade, with new features and added polish."
 msgstr "Главна надоградња, са новим функцијама и додатим исправкама."
 
@@ -2219,367 +2228,367 @@ msgid "Enable and Install"
 msgstr "Укључи и инсталирај"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:403
+#: ../src/gs-common.c:394
 msgctxt "content rating violence-cartoon"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:406
+#: ../src/gs-common.c:397
 msgid "Cartoon characters in unsafe situations"
 msgstr "Ликови из цртаћа у непожељним ситуацијама"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:409
+#: ../src/gs-common.c:400
 msgid "Cartoon characters in aggressive conflict"
 msgstr "Ликови из цртаћа у агресивном сукобу"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:412
+#: ../src/gs-common.c:403
 msgid "Graphic violence involving cartoon characters"
 msgstr "Графичко насиље које укључује ликове из цртаћа"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:415
+#: ../src/gs-common.c:406
 msgctxt "content rating violence-fantasy"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:418
+#: ../src/gs-common.c:409
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr "Ликови у несигурним ситуацијама које се лако разликују од стварности"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:421
+#: ../src/gs-common.c:412
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr "Ликови у агресивном сукобу који се лако разликује од стварности"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:424
+#: ../src/gs-common.c:415
 msgid "Graphic violence easily distinguishable from reality"
 msgstr "Графичко насиље које се лако разликује од стварности"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:427
+#: ../src/gs-common.c:418
 msgctxt "content rating violence-realistic"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:430
+#: ../src/gs-common.c:421
 msgid "Mildly realistic characters in unsafe situations"
 msgstr "Благо стварни ликови у несигурним ситуацијама"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:433
+#: ../src/gs-common.c:424
 msgid "Depictions of realistic characters in aggressive conflict"
 msgstr "Приказ стварних ликова у агресивном сукобу"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:436
+#: ../src/gs-common.c:427
 msgid "Graphic violence involving realistic characters"
 msgstr "Графичко насиље које укључује стварне ликове"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:439
+#: ../src/gs-common.c:430
 msgctxt "content rating violence-bloodshed"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:442
+#: ../src/gs-common.c:433
 msgid "Unrealistic bloodshed"
 msgstr "Нереално крвопролиће"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:445
+#: ../src/gs-common.c:436
 msgid "Realistic bloodshed"
 msgstr "Реално крвопролиће"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:448
+#: ../src/gs-common.c:439
 msgid "Depictions of bloodshed and the mutilation of body parts"
 msgstr "Приказ крвопролића и сакаћење делова тела"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:451
+#: ../src/gs-common.c:442
 msgctxt "content rating violence-sexual"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:454
+#: ../src/gs-common.c:445
 msgid "Rape or other violent sexual behavior"
 msgstr "Силовање или друго насилно сексуално понашање"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:457
+#: ../src/gs-common.c:448
 msgctxt "content rating drugs-alcohol"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:460
+#: ../src/gs-common.c:451
 msgid "References to alcoholic beverages"
 msgstr "Упућивање на алкохолна пића"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:463
+#: ../src/gs-common.c:454
 msgid "Use of alcoholic beverages"
 msgstr "Употреба алкохолних пића"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:466
+#: ../src/gs-common.c:457
 msgctxt "content rating drugs-narcotics"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:469
+#: ../src/gs-common.c:460
 msgid "References to illicit drugs"
 msgstr "Упућивање на забрањене дроге"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:472
+#: ../src/gs-common.c:463
 msgid "Use of illicit drugs"
 msgstr "Употреба забрањених дрога"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:475
+#: ../src/gs-common.c:466
 msgid "References to tobacco products"
 msgstr "Упућивање на дуванске производе"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:478
+#: ../src/gs-common.c:469
 msgid "Use of tobacco products"
 msgstr "Употреба дуванских производа"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:481
+#: ../src/gs-common.c:472
 msgctxt "content rating sex-nudity"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:484
+#: ../src/gs-common.c:475
 msgid "Brief artistic nudity"
 msgstr "Кратка уметничка голотиња"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:487
+#: ../src/gs-common.c:478
 msgid "Prolonged nudity"
 msgstr "Продужена голотиња"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:490
+#: ../src/gs-common.c:481
 msgctxt "content rating sex-themes"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:493
+#: ../src/gs-common.c:484
 msgid "Provocative references or depictions"
 msgstr "Провокативне упуте или прикази"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:496
+#: ../src/gs-common.c:487
 msgid "Sexual references or depictions"
 msgstr "Сексуалне упуте или прикази"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:499
+#: ../src/gs-common.c:490
 msgid "Graphic sexual behavior"
 msgstr "Графичко сексуално понашање"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:502
+#: ../src/gs-common.c:493
 msgctxt "content rating language-profanity"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:505
+#: ../src/gs-common.c:496
 msgid "Mild or infrequent use of profanity"
 msgstr "Блага или ретка употреба псовки"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:508
+#: ../src/gs-common.c:499
 msgid "Moderate use of profanity"
 msgstr "Умерена употреба псовки"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:511
+#: ../src/gs-common.c:502
 msgid "Strong or frequent use of profanity"
 msgstr "Јака или честа употреба псовки"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:514
+#: ../src/gs-common.c:505
 msgctxt "content rating language-humor"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:517
+#: ../src/gs-common.c:508
 msgid "Slapstick humor"
 msgstr "Урнебесна комедија"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:520
+#: ../src/gs-common.c:511
 msgid "Vulgar or bathroom humor"
 msgstr "Вулгаран или неумесни хумор"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:523
+#: ../src/gs-common.c:514
 msgid "Mature or sexual humor"
 msgstr "Еротски и хумор за одрасле"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:526
+#: ../src/gs-common.c:517
 msgctxt "content rating language-discrimination"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:529
+#: ../src/gs-common.c:520
 msgid "Negativity towards a specific group of people"
 msgstr "Негативност према одређеној групи људи"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:532
+#: ../src/gs-common.c:523
 msgid "Discrimination designed to cause emotional harm"
 msgstr "Дискриминација осмишљена да изазове емотивну повреду"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:535
+#: ../src/gs-common.c:526
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr ""
 "Експлицитна дискриминација на основу пола, сексуалности, расе или "
 "вероисповести"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:538
+#: ../src/gs-common.c:529
 msgctxt "content rating money-advertising"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:541
+#: ../src/gs-common.c:532
 msgid "Product placement"
 msgstr "Пласман производа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:544
+#: ../src/gs-common.c:535
 msgid "Explicit references to specific brands or trademarked products"
 msgstr "Експлицитно упућивање на нарочите робне марке или заштићене производе"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:547
+#: ../src/gs-common.c:538
 msgid "Players are encouraged to purchase specific real-world items"
 msgstr "Играчи се охрабрују да купују нарочите ставке у стварном свету"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:550
+#: ../src/gs-common.c:541
 msgctxt "content rating money-gambling"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:553
+#: ../src/gs-common.c:544
 msgid "Gambling on random events using tokens or credits"
 msgstr "Коцкање на насумичним догађајима који користе жетоне или кредите"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:556
+#: ../src/gs-common.c:547
 msgid "Gambling using \"play\" money"
 msgstr "Коцкање које користи „играчки“ новац (play)"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:559
+#: ../src/gs-common.c:550
 msgid "Gambling using real money"
 msgstr "Коцкање које користи стварни новац"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:562
+#: ../src/gs-common.c:553
 msgctxt "content rating money-purchasing"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:565
+#: ../src/gs-common.c:556
 msgid "Ability to spend real money in-game"
 msgstr "Способност потрошње стварног новца у игри"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:568
+#: ../src/gs-common.c:559
 msgctxt "content rating social-chat"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:571
+#: ../src/gs-common.c:562
 msgid "Player-to-player game interactions without chat functionality"
 msgstr "Међудејство између играча без могућности ћаскања"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:574
+#: ../src/gs-common.c:565
 msgid "Player-to-player preset interactions without chat functionality"
 msgstr "Претподешено међудејство између играча без могућности ћаскања"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:577
+#: ../src/gs-common.c:568
 msgid "Uncontrolled chat functionality between players"
 msgstr "Неконтролисана могућност ћаскања између играча"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:580
+#: ../src/gs-common.c:571
 msgctxt "content rating social-audio"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:583
+#: ../src/gs-common.c:574
 msgid "Uncontrolled audio or video chat functionality between players"
 msgstr "Неконтролисана могућност аудио и видео ћаскања између играча"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:586
+#: ../src/gs-common.c:577
 msgctxt "content rating social-contacts"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:589
+#: ../src/gs-common.c:580
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
 "Размена корисничких имена друштвених мрежа или адреса електронске поште"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:592
+#: ../src/gs-common.c:583
 msgctxt "content rating social-info"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:595
+#: ../src/gs-common.c:586
 msgid "Sharing user information with 3rd parties"
 msgstr "Размена корисничких података са трећим странама"
 
 #. TRANSLATORS: content rating description
-#: ../src/gs-common.c:598
+#: ../src/gs-common.c:589
 msgctxt "content rating social-location"
 msgid "None"
 msgstr "Ништа"
 
 #. TRANSLATORS: content rating description: comments welcome
-#: ../src/gs-common.c:601
+#: ../src/gs-common.c:592
 msgid "Sharing physical location to other users"
 msgstr "Размена стварних локација са другим корисницима"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:772
+#: ../src/gs-common.c:763
 msgid "Detailed errors from the package manager follow:"
 msgstr "Опширније грешке управника пакета следе:"
 
