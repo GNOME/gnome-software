@@ -157,7 +157,7 @@ gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 
 	/* fwupd >= 0.7.1 supports per-device signals, and also the
 	 * SUPPORTED flag -- so we can limit number of UI refreshes */
-	if (!fwupd_device_has_flag (dev, FU_DEVICE_FLAG_SUPPORTED)) {
+	if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_SUPPORTED)) {
 		g_debug ("%s changed (not supported) so ignoring",
 			 fwupd_device_get_id (dev));
 		return;
@@ -348,7 +348,6 @@ gs_plugin_fwupd_add_required_location (GsPlugin *plugin, const gchar *location)
 static GsApp *
 gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 {
-	FwupdDeviceFlags flags;
 	FwupdDevice *dev = fwupd_result_get_device (res);
 	FwupdRelease *rel = fwupd_result_get_release (res);
 	GsApp *app;
@@ -371,18 +370,32 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	gs_app_add_category (app, "System");
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
 
+#if FWUPD_CHECK_VERSION(0,9,7)
 	/* something can be done */
-	flags = fwupd_device_get_flags (dev);
-	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE ||
-	    flags & FU_DEVICE_FLAG_ALLOW_OFFLINE)
+	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_UPDATABLE))
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+
+	/* only can be applied in systemd-offline */
+	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_ONLY_OFFLINE))
+		gs_app_set_metadata (app, "fwupd::OnlyOffline", "");
+
+
+	/* reboot required to apply update */
+	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_NEEDS_REBOOT))
+		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+#else
+	/* something can be done */
+	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_ALLOW_ONLINE) ||
+	    fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_ALLOW_OFFLINE))
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 
 	/* can be done live */
-	if ((flags & FU_DEVICE_FLAG_ALLOW_ONLINE) == 0)
+	if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_ALLOW_ONLINE))
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+#endif
 
 	/* is removable */
-	if ((flags & FU_DEVICE_FLAG_INTERNAL) == 0)
+	if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_INTERNAL))
 		gs_app_add_quirk (app, AS_APP_QUIRK_REMOVABLE_HARDWARE);
 
 	/* create icon */
@@ -452,7 +465,7 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	}
 
 	/* needs action */
-	if (fwupd_device_has_flag (dev, FU_DEVICE_FLAG_NEEDS_BOOTLOADER))
+	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_NEEDS_BOOTLOADER))
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
 	else
 		gs_app_remove_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
@@ -692,7 +705,7 @@ gs_plugin_fwupd_add_updates (GsPlugin *plugin,
 		g_autoptr(GError) error_local2 = NULL;
 
 		/* locked device that needs unlocking */
-		if (fwupd_device_has_flag (dev, FU_DEVICE_FLAG_LOCKED)) {
+		if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_LOCKED)) {
 			g_autoptr(GsApp) app = NULL;
 			if (!is_downloaded)
 				continue;
@@ -972,8 +985,13 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	g_set_object (&priv->app_current, app);
 
 	/* only offline supported */
+#if FWUPD_CHECK_VERSION(0,9,7)
+	if (gs_app_get_metadata_item (app, "fwupd::OnlyOffline") != NULL)
+		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
+#else
 	if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
+#endif
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!fwupd_client_install (priv->client, device_id,
