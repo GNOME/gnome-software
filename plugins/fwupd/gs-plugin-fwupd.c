@@ -768,7 +768,11 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	}
 
 	/* download the signature first, it's smaller */
+#if FWUPD_CHECK_VERSION(0,9,7)
+	url_asc = g_strdup (fwupd_remote_get_metadata_uri_sig (remote));
+#else
 	url_asc = soup_uri_to_string (fwupd_remote_get_uri_asc (remote), FALSE);
+#endif
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading firmware update signature…"));
@@ -818,7 +822,11 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading firmware update metadata…"));
+#if FWUPD_CHECK_VERSION(0,9,7)
+	url_asc = g_strdup (fwupd_remote_get_metadata_uri (remote));
+#else
 	url = soup_uri_to_string (fwupd_remote_get_uri (remote), FALSE);
+#endif
 	if (!gs_plugin_download_file (plugin, app_dl, url, filename,
 				      cancellable, error)) {
 		gs_utils_error_add_unique_id (error, priv->cached_origin);
