@@ -38,6 +38,7 @@ struct _GsPopularTile
 	GtkWidget	*eventbox;
 	GtkWidget	*stack;
 	GtkWidget	*stars;
+	GtkWidget	*label_origin;
 };
 
 G_DEFINE_TYPE (GsPopularTile, gs_popular_tile, GS_TYPE_APP_TILE)
@@ -179,6 +180,7 @@ gs_popular_tile_class_init (GsPopularTileClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsPopularTile, eventbox);
 	gtk_widget_class_bind_template_child (widget_class, GsPopularTile, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsPopularTile, stars);
+	gtk_widget_class_bind_template_child (widget_class, GsPopularTile, label_origin);
 }
 
 GtkWidget *
@@ -191,6 +193,25 @@ gs_popular_tile_new (GsApp *app)
 		gs_app_tile_set_app (GS_APP_TILE (tile), app);
 
 	return GTK_WIDGET (tile);
+}
+
+void
+gs_popular_tile_show_source (GsPopularTile *tile, gboolean show_source)
+{
+	if (show_source) {
+		const gchar *hostname = gs_app_get_origin_hostname (tile->app);
+		if (hostname != NULL) {
+			/* TRANSLATORS: this refers to where the app came from */
+			g_autofree gchar *source_text = g_strdup_printf ("%s: %s", _("Source"),
+									 hostname);
+			gtk_label_set_label (GTK_LABEL (tile->label_origin), source_text);
+		} else {
+			/* if the hostname is not valid then we hide the source */
+			show_source = FALSE;
+		}
+	}
+
+	gtk_widget_set_visible (tile->label_origin, show_source);
 }
 
 /* vim: set noexpandtab: */
