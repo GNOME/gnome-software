@@ -57,6 +57,7 @@ struct _GsCategoryPage
 	GtkWidget	*subcats_filter_button_label;
 	GtkWidget	*subcats_filter_button;
 	GtkWidget	*popover_filter_box;
+	GtkWidget	*subcats_sort_button;
 	GtkWidget	*subcats_sort_button_label;
 	GtkWidget	*sort_rating_button;
 	GtkWidget	*sort_name_button;
@@ -307,12 +308,19 @@ gs_category_page_reload (GsPage *page)
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (self->subcategory));
 
-	/* show the shell extensions header */
-	if (g_strcmp0 (gs_category_get_id (self->category), "addons") == 0 &&
-	    g_strcmp0 (gs_category_get_id (self->subcategory), "shell-extensions") == 0) {
-		gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
+	if (g_strcmp0 (gs_category_get_id (self->category), "addons") == 0) {
+		if (g_strcmp0 (gs_category_get_id (self->subcategory), "shell-extensions") != 0) {
+			/* we don't want to show the sort button on the addons that
+			 * cannot be rated */
+			gtk_widget_set_visible (self->subcats_sort_button, FALSE);
+		} else {
+			/* show the shell extensions header and the sort button */
+			gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
+			gtk_widget_set_visible (self->subcats_sort_button, TRUE);
+		}
 	} else {
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
+		gtk_widget_set_visible (self->subcats_sort_button, TRUE);
 	}
 
 	if (self->sort_rating_handler_id > 0)
@@ -554,6 +562,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, popover_filter_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_name_button);
