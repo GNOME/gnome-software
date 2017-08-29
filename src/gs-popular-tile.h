@@ -31,6 +31,8 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsPopularTile, gs_popular_tile, GS, POPULAR_TILE, GsAppTile)
 
 GtkWidget	*gs_popular_tile_new			(GsApp		*app);
+void		 gs_popular_tile_show_source		(GsPopularTile	*tile,
+							 gboolean	 show_source);
 
 G_END_DECLS
 
