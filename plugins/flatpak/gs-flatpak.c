@@ -2205,11 +2205,6 @@ gs_flatpak_launch (GsFlatpak *self,
 		   GError **error)
 {
 	GsApp *runtime;
-	const gchar *branch = NULL;
-
-	branch = gs_flatpak_app_get_ref_branch (app);
-	if (branch == NULL)
-		branch = "master";
 
 	/* check the runtime is installed */
 	runtime = gs_app_get_runtime (app);
