@@ -30,6 +30,7 @@ struct _GsPluginJob
 {
 	GObject			 parent_instance;
 	GsPluginRefineFlags	 refine_flags;
+	GsPluginRefineFlags	 filter_flags;
 	GsPluginRefreshFlags	 refresh_flags;
 	GsPluginFailureFlags	 failure_flags;
 	guint			 max_results;
@@ -56,6 +57,7 @@ enum {
 	PROP_AGE,
 	PROP_SEARCH,
 	PROP_REFINE_FLAGS,
+	PROP_FILTER_FLAGS,
 	PROP_REFRESH_FLAGS,
 	PROP_FAILURE_FLAGS,
 	PROP_AUTH,
@@ -79,6 +81,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	gint64 time_now = g_get_monotonic_time ();
 	g_string_append_printf (str, "running %s",
 				gs_plugin_action_to_string (self->action));
+	if (self->filter_flags > 0) {
+		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->filter_flags);
+		g_string_append_printf (str, " with filter-flags=%s", tmp);
+	}
 	if (self->refine_flags > 0) {
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
@@ -159,11 +165,25 @@ gs_plugin_job_set_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine_fl
 	self->refine_flags = refine_flags;
 }
 
+void
+gs_plugin_job_set_filter_flags (GsPluginJob *self, GsPluginRefineFlags filter_flags)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	self->filter_flags = filter_flags;
+}
+
 GsPluginRefineFlags
 gs_plugin_job_get_refine_flags (GsPluginJob *self)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
 	return self->refine_flags;
+}
+
+GsPluginRefineFlags
+gs_plugin_job_get_filter_flags (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
+	return self->filter_flags;
 }
 
 void
@@ -447,6 +467,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_REFINE_FLAGS:
 		g_value_set_uint64 (value, self->refine_flags);
 		break;
+	case PROP_FILTER_FLAGS:
+		g_value_set_uint64 (value, self->filter_flags);
+		break;
 	case PROP_REFRESH_FLAGS:
 		g_value_set_uint64 (value, self->refresh_flags);
 		break;
@@ -503,6 +526,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_REFINE_FLAGS:
 		gs_plugin_job_set_refine_flags (self, g_value_get_uint64 (value));
+		break;
+	case PROP_FILTER_FLAGS:
+		gs_plugin_job_set_filter_flags (self, g_value_get_uint64 (value));
 		break;
 	case PROP_REFRESH_FLAGS:
 		gs_plugin_job_set_refresh_flags (self, g_value_get_uint64 (value));
@@ -588,6 +614,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFINE_FLAGS, pspec);
 
+	pspec = g_param_spec_uint64 ("filter-flags", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_FILTER_FLAGS, pspec);
+
 	pspec = g_param_spec_uint64 ("refresh-flags", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE);
@@ -654,6 +685,7 @@ gs_plugin_job_init (GsPluginJob *self)
 {
 	self->failure_flags = GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY;
 	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+	self->filter_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	self->refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
 	self->list = gs_app_list_new ();
 	self->time_created = g_get_monotonic_time ();

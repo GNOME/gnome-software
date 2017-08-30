@@ -30,6 +30,7 @@ G_BEGIN_DECLS
 
 GsPluginAction		 gs_plugin_job_get_action		(GsPluginJob	*self);
 GsPluginRefreshFlags	 gs_plugin_job_get_refresh_flags	(GsPluginJob	*self);
+GsPluginRefineFlags	 gs_plugin_job_get_filter_flags		(GsPluginJob	*self);
 GsPluginRefineFlags	 gs_plugin_job_get_refine_flags		(GsPluginJob	*self);
 gboolean		 gs_plugin_job_has_refine_flags		(GsPluginJob	*self,
 								 GsPluginRefineFlags refine_flags);

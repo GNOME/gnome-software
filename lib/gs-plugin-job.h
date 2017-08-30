@@ -38,6 +38,8 @@ G_DECLARE_FINAL_TYPE (GsPluginJob, gs_plugin_job, GS, PLUGIN_JOB, GObject)
 
 void		 gs_plugin_job_set_refine_flags		(GsPluginJob	*self,
 							 GsPluginRefineFlags refine_flags);
+void		 gs_plugin_job_set_filter_flags		(GsPluginJob	*self,
+							 GsPluginRefineFlags filter_flags);
 void		 gs_plugin_job_set_refresh_flags	(GsPluginJob	*self,
 							 GsPluginRefreshFlags refresh_flags);
 void		 gs_plugin_job_set_failure_flags	(GsPluginJob	*self,

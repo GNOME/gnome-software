@@ -108,6 +108,12 @@ gs_category_page_get_apps_cb (GObject *source_object,
 	gs_shell_profile_dump (self->shell);
 }
 
+static gboolean
+_max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	return gs_app_get_rating (app1) < gs_app_get_rating (app2);
+}
+
 static void
 gs_category_page_reload (GsPage *page)
 {
@@ -147,11 +153,13 @@ gs_category_page_reload (GsPage *page)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 					 "category", self->subcategory,
+					 "max-results", 50,
+					 "filter-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
 					 NULL);
+	gs_plugin_job_set_sort_func (plugin_job, _max_results_sort_cb);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    plugin_job,
 					    self->cancellable,
