@@ -78,7 +78,6 @@ typedef struct
 	gchar			*events_info_uri;
 	gboolean		 profile_mode;
 	gboolean		 in_mode_change;
-	gboolean		 show_detailed_error;
 	GsPage			*page_last;
 } GsShellPrivate;
 
@@ -832,6 +831,14 @@ gs_shell_get_title_from_app (GsApp *app)
 }
 
 static gboolean
+gs_shell_show_detailed_error (GsShell *shell, const GError *error)
+{
+	if (error->code == GS_PLUGIN_ERROR_FAILED)
+		return TRUE;
+	return FALSE;
+}
+
+static gboolean
 gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *origin = gs_plugin_event_get_origin (event);
@@ -922,7 +929,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1078,7 +1085,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1184,7 +1191,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1288,7 +1295,7 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1358,7 +1365,7 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1419,7 +1426,7 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1431,7 +1438,6 @@ static gboolean
 gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 {
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const GError *error = gs_plugin_event_get_error (event);
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -1458,7 +1464,7 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 		return FALSE;
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -1535,7 +1541,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (priv->show_detailed_error)
+	if (gs_shell_show_detailed_error (shell, error))
 		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
@@ -2019,7 +2025,6 @@ gs_shell_init (GsShell *shell)
 	priv->pages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	priv->back_entry_stack = g_queue_new ();
 	priv->ignore_primary_buttons = FALSE;
-	priv->show_detailed_error = TRUE;
 	priv->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
 }
 
