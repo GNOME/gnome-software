@@ -760,6 +760,16 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	g_autoptr(GBytes) data = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
+	/* sanity check */
+	if (fwupd_remote_get_filename_asc (remote) == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "remote %s has no filename signature",
+			     fwupd_remote_get_id (remote));
+		return FALSE;
+	}
+
 	/* check cache age */
 	filename_asc = gs_utils_get_cache_filename ("firmware",
 						    fwupd_remote_get_filename_asc (remote),
@@ -875,6 +885,8 @@ gs_plugin_fwupd_refresh_remotes (GsPlugin *plugin,
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
 		if (!fwupd_remote_get_enabled (remote))
+			continue;
+		if (fwupd_remote_get_kind (remote) == FWUPD_REMOTE_KIND_LOCAL)
 			continue;
 		if (!gs_plugin_fwupd_refresh_remote (plugin, remote, cache_age,
 						     cancellable, error))
