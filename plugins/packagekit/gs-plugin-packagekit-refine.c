@@ -515,10 +515,10 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_packagekit_refine_details (GsPlugin *plugin,
-				     GsAppList *list,
-				     GCancellable *cancellable,
-				     GError **error)
+gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
+				      GsAppList *list,
+				      GCancellable *cancellable,
+				      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *source_ids;
@@ -570,6 +570,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 static gboolean
 gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					    GsAppList *list,
+					    GsPluginRefineFlags flags,
 					    GCancellable *cancellable,
 					    GError **error)
 {
@@ -579,8 +580,16 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	const gchar *package_id;
 	PkBitfield filter;
 	ProgressData data;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
+
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "packagekit-refine[update-urgency]");
+
+	/* not required */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
+		return TRUE;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -657,11 +666,11 @@ gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags,
 }
 
 static gboolean
-gs_plugin_refine_require_details (GsPlugin *plugin,
-				  GsAppList *list,
-				  GsPluginRefineFlags flags,
-				  GCancellable *cancellable,
-				  GError **error)
+gs_plugin_packagekit_refine_details (GsPlugin *plugin,
+				     GsAppList *list,
+				     GsPluginRefineFlags flags,
+				     GCancellable *cancellable,
+				     GError **error)
 {
 	guint i;
 	GsApp *app;
@@ -689,10 +698,10 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	}
 	if (gs_app_list_length (list_tmp) == 0)
 		return TRUE;
-	ret = gs_plugin_packagekit_refine_details (plugin,
-						   list_tmp,
-						   cancellable,
-						   error);
+	ret = gs_plugin_packagekit_refine_details2 (plugin,
+						    list_tmp,
+						    cancellable,
+						    error);
 	if (!ret)
 		return FALSE;
 	return TRUE;
@@ -813,44 +822,23 @@ gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GsAppList *list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+static gboolean
+gs_plugin_packagekit_refine_name_to_id (GsPlugin *plugin,
+					GsAppList *list,
+					GsPluginRefineFlags flags,
+					GCancellable *cancellable,
+					GError **error)
 {
-	guint i;
-	GPtrArray *sources;
-	GsApp *app;
-	const gchar *tmp;
-	gboolean ret = TRUE;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsAppList) resolve_all = NULL;
-	g_autoptr(GsAppList) updatedetails_all = NULL;
-	AsProfileTask *ptask = NULL;
 
-	/* when we need the cannot-be-upgraded applications, we implement this
-	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
-	 * to the related-apps list with a state of %AS_APP_STATE_UNAVAILABLE */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
-		for (i = 0; i < gs_app_list_length (list); i++) {
-			app = gs_app_list_index (list, i);
-			if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
-				continue;
-			if (!gs_plugin_packagekit_refine_distro_upgrade (plugin,
-									 app,
-									 cancellable,
-									 error))
-				return FALSE;
-		}
-	}
-
-	/* can we resolve in one go? */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit-refine[name->id]");
 	resolve_all = gs_app_list_new ();
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GPtrArray *sources;
+		GsApp *app = gs_app_list_index (list, i);
+		const gchar *tmp;
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
 			continue;
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
@@ -872,23 +860,34 @@ gs_plugin_refine (GsPlugin *plugin,
 		}
 	}
 	if (gs_app_list_length (resolve_all) > 0) {
-		ret = gs_plugin_packagekit_resolve_packages (plugin,
-							     resolve_all,
-							     cancellable,
-							     error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_packagekit_resolve_packages (plugin,
+							    resolve_all,
+							    cancellable,
+							    error))
+			return FALSE;
 	}
-	as_profile_task_free (ptask);
+	return TRUE;
+}
 
-	/* set the package-id for an installed desktop file */
+static gboolean
+gs_plugin_packagekit_refine_filename_to_id (GsPlugin *plugin,
+					    GsAppList *list,
+					    GsPluginRefineFlags flags,
+					    GCancellable *cancellable,
+					    GError **error)
+{
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* not now */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
+		return TRUE;
+
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit-refine[installed-filename->id]");
-	for (i = 0; i < gs_app_list_length (list); i++) {
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		g_autofree gchar *fn = NULL;
-		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
-			continue;
-		app = gs_app_list_index (list, i);
+		GsApp *app = gs_app_list_index (list, i);
+		const gchar *tmp;
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
 			continue;
 		if (gs_app_get_source_id_default (app) != NULL)
@@ -919,22 +918,32 @@ gs_plugin_refine (GsPlugin *plugin,
 			g_debug ("ignoring %s as does not exist", fn);
 			continue;
 		}
-		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
+		if (!gs_plugin_packagekit_refine_from_desktop (plugin,
 								app,
 								fn,
 								cancellable,
-								error);
-		if (!ret)
-			goto out;
+								error))
+			return FALSE;
 	}
-	as_profile_task_free (ptask);
+	return TRUE;
+}
 
-	/* any update details missing? */
+static gboolean
+gs_plugin_packagekit_refine_update_details (GsPlugin *plugin,
+					    GsAppList *list,
+					    GsPluginRefineFlags flags,
+					    GCancellable *cancellable,
+					    GError **error)
+{
+	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GsAppList) updatedetails_all = NULL;
+
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit-refine[id->update-details]");
 	updatedetails_all = gs_app_list_new ();
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		const gchar *tmp;
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
 			continue;
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
@@ -948,35 +957,60 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_app_list_add (updatedetails_all, app);
 	}
 	if (gs_app_list_length (updatedetails_all) > 0) {
-		ret = gs_plugin_packagekit_refine_updatedetails (plugin,
-								 updatedetails_all,
-								 cancellable,
-								 error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_packagekit_refine_updatedetails (plugin,
+								updatedetails_all,
+								cancellable,
+								error))
+			return FALSE;
 	}
-	as_profile_task_free (ptask);
+	return TRUE;
+}
 
-	/* any important details missing? */
-	ret = gs_plugin_refine_require_details (plugin,
-						list,
-						flags,
-						cancellable,
-						error);
-	if (!ret)
-		goto out;
+gboolean
+gs_plugin_refine (GsPlugin *plugin,
+		  GsAppList *list,
+		  GsPluginRefineFlags flags,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	/* when we need the cannot-be-upgraded applications, we implement this
+	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
+	 * to the related-apps list with a state of %AS_APP_STATE_UNAVAILABLE */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
+		for (guint i = 0; i < gs_app_list_length (list); i++) {
+			GsApp *app = gs_app_list_index (list, i);
+			if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+				continue;
+			if (!gs_plugin_packagekit_refine_distro_upgrade (plugin,
+									 app,
+									 cancellable,
+									 error))
+				return FALSE;
+		}
+	}
+
+	/* can we resolve in one go? */
+	if (!gs_plugin_packagekit_refine_name_to_id (plugin, list, flags, cancellable, error))
+		return FALSE;
+
+	/* set the package-id for an installed desktop file */
+	if (!gs_plugin_packagekit_refine_filename_to_id (plugin, list, flags, cancellable, error))
+		return FALSE;
+
+	/* any update details missing? */
+	if (!gs_plugin_packagekit_refine_update_details (plugin, list, flags, cancellable, error))
+		return FALSE;
+
+	/* any package details missing? */
+	if (!gs_plugin_packagekit_refine_details (plugin, list, flags, cancellable, error))
+		return FALSE;
 
 	/* get the update severity */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) > 0) {
-		ret = gs_plugin_packagekit_refine_update_urgency (plugin,
-								  list,
-								  cancellable,
-								  error);
-		if (!ret)
-			goto out;
-	}
-out:
-	return ret;
+	if (!gs_plugin_packagekit_refine_update_urgency (plugin, list, flags, cancellable, error))
+		return FALSE;
+
+	/* success */
+	return TRUE;
 }
 
 gboolean
