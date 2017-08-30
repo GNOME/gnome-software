@@ -285,8 +285,8 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 
 	/* if the user types more characters we'll get cancelled - don't go on
 	 * to mark apps as unavailable because packages->len = 0 */
-	if (g_cancellable_is_cancelled (cancellable)) {
-		g_prefix_error (error, "not refining - cancelled: ");
+	if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+		gs_utils_error_convert_gio (error);
 		return FALSE;
 	}
 
