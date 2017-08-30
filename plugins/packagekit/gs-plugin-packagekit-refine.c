@@ -282,6 +282,14 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
+
+	/* if the user types more characters we'll get cancelled - don't go on
+	 * to mark apps as unavailable because packages->len = 0 */
+	if (g_cancellable_is_cancelled (cancellable)) {
+		g_prefix_error (error, "not refining - cancelled: ");
+		return FALSE;
+	}
+
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		if (gs_app_get_local_file (app) != NULL)
