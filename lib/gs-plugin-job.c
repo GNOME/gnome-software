@@ -89,6 +89,8 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	}
 	if (self->timeout > 0)
 		g_string_append_printf (str, " with timeout=%u", self->timeout);
+	if (self->max_results > 0)
+		g_string_append_printf (str, " with max-results=%u", self->max_results);
 	if (self->age != 0) {
 		if (self->age == G_MAXUINT) {
 			g_string_append (str, " with cache age=any");
