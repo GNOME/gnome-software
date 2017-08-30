@@ -132,7 +132,7 @@ gs_loading_page_load (GsLoadingPage *self)
 	/* ensure that at least some metadata of any age is present, and also
 	 * spin up the plugins enough as to prime caches */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", G_MAXUINT,
+					 "age", (guint64) G_MAXUINT,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);

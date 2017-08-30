@@ -303,7 +303,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", G_MAXUINT,
+					 "age", (guint64) G_MAXUINT,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
@@ -539,7 +539,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", G_MAXUINT,
+					 "age", (guint64) G_MAXUINT,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
@@ -1067,7 +1067,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", 0,
+					 "age", (guint64) 0,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
@@ -1300,7 +1300,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", G_MAXUINT,
+					 "age", (guint64) G_MAXUINT,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
@@ -1347,7 +1347,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", 0, /* force now */
+					 "age", (guint64) 0, /* force now */
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA |
 							  GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
 					 NULL);

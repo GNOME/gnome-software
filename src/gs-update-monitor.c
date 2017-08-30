@@ -473,7 +473,7 @@ check_updates (GsUpdateMonitor *monitor)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refresh-flags", refresh_flags,
-					 "age", 60 * 60 * 24,
+					 "age", (guint64) (60 * 60 * 24),
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
 					    monitor->cancellable,

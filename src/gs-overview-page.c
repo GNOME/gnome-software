@@ -583,7 +583,7 @@ gs_overview_page_load (GsOverviewPage *self)
 
 		priv->loading_recent = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-						 "age", 60 * 60 * 24 * 60,
+						 "age", (guint64) (60 * 60 * 24 * 60),
 						 "max-results", 20,
 						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |

@@ -1270,7 +1270,7 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", refresh_flags,
 					 "refresh-flags", refresh_flags,
-					 "age", 10 * 60,
+					 "age", (guint64) (10 * 60),
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_refresh,

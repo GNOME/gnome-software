@@ -415,7 +415,7 @@ main (int argc, char **argv)
 	if (g_getenv ("GS_CMD_NO_INITIAL_REFRESH") == NULL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", G_MAXUINT,
+						 "age", (guint64) G_MAXUINT,
 						 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
@@ -622,7 +622,7 @@ main (int argc, char **argv)
 			if (list != NULL)
 				g_object_unref (list);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
-							 "age", cache_age,
+							 "age", (guint64) cache_age,
 							 "refine-flags", self->refine_flags,
 							 "max-results", self->max_results,
 							 NULL);
@@ -682,7 +682,7 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		refresh_flags = gs_cmd_refresh_flag_from_string (argv[2]);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-						 "age", cache_age,
+						 "age", (guint64) cache_age,
 						 "refresh-flags", refresh_flags,
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,

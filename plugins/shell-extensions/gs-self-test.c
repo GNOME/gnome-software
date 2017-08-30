@@ -88,7 +88,7 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 	/* refresh the metadata */
 	g_setenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN", xml_fn, TRUE);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", G_MAXUINT,
+					 "age", (guint64) G_MAXUINT,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
