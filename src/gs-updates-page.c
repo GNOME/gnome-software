@@ -1268,7 +1268,6 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 		refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					 "refine-flags", refresh_flags,
 					 "refresh-flags", refresh_flags,
 					 "age", (guint64) (10 * 60),
 					 NULL);
