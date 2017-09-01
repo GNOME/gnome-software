@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-08-05 13:17+0000\n"
-"PO-Revision-Date: 2017-08-06 20:59+0700\n"
+"POT-Creation-Date: 2017-08-25 13:27+0000\n"
+"PO-Revision-Date: 2017-08-27 15:17+0700\n"
 "Last-Translator: Kukuh Syafaat <syafaatkukuh@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -68,7 +68,7 @@ msgstr "Panel pembaruan"
 msgid "The update details"
 msgstr "Detil pembaruan"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:823
+#: data/appdata/org.gnome.Software.appdata.xml.in:861
 msgid "The GNOME Project"
 msgstr "Proyek GNOME"
 
@@ -374,7 +374,7 @@ msgstr "Nyalakan Ulang Sekarang"
 msgid "More Information"
 msgstr "Informasi lebih lanjut"
 
-#: src/gs-app-addon-row.c:95 src/gs-app-row.c:429 src/gs-details-page.ui:344
+#: src/gs-app-addon-row.c:95 src/gs-app-row.c:430 src/gs-details-page.ui:344
 msgid "Pending"
 msgstr "Tertunda"
 
@@ -385,7 +385,7 @@ msgstr "Terpasang"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:433
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:439
 msgid "Installing"
 msgstr "Memasang"
 
@@ -551,12 +551,12 @@ msgstr "Hapus"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:329
+#: src/gs-app-row.c:330
 msgid "Device cannot be used during update."
 msgstr "Perangkat tidak dapat dipakai selama pembaruan."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:339 src/gs-details-page.ui:1000
+#: src/gs-app-row.c:340 src/gs-details-page.ui:1000
 msgid "Source"
 msgstr "Sumber"
 
@@ -1178,63 +1178,63 @@ msgstr "_Pasang..."
 msgid "_Remove"
 msgstr "_Hapus"
 
-#: src/gs-details-page.c:428 src/gs-sources-dialog.c:513
+#: src/gs-details-page.c:434 src/gs-sources-dialog.c:513
 msgid "Removing…"
 msgstr "Menghapus…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:719
+#: src/gs-details-page.c:744
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Aplikasi ini hanya dapat dipakai ketika ada koneksi internet aktif."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:854
+#: src/gs-details-page.c:879
 msgctxt "version"
 msgid "Unknown"
 msgstr "Tak diketahui"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:888
+#: src/gs-details-page.c:913
 msgctxt "updated"
 msgid "Never"
 msgstr "Tak Pernah"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:932
+#: src/gs-details-page.c:957
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Tak diketahui"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1336
+#: src/gs-details-page.c:1361
 msgid "You need internet access to write a review"
 msgstr "Anda perlu akses internet untuk menulis ulasan"
 
-#: src/gs-details-page.c:1465
+#: src/gs-details-page.c:1490
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Tak bisa temukan \"%s\""
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2030
+#: src/gs-details-page.c:2065
 msgid "Public domain"
 msgstr "Domain publik"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2046 src/gs-details-page.ui:1395
+#: src/gs-details-page.c:2081 src/gs-details-page.ui:1395
 msgid "Free Software"
 msgstr "Perangkat Lunak Bebas"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2103
+#: src/gs-details-page.c:2138
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Pengguna terikat oleh lisensi-lisensi berikut:"
 
-#: src/gs-details-page.c:2119 src/gs-details-page.ui:1504
+#: src/gs-details-page.c:2154 src/gs-details-page.ui:1504
 msgid "More information"
 msgstr "Informasi lebih lanjut"
 
@@ -1525,64 +1525,57 @@ msgstr "GNOME Perangkat Lunak Perancang Banner"
 msgid "No Designs"
 msgstr "Tidak Ada Desain"
 
-#: src/gs-editor.ui:110
-msgid "page1"
-msgstr "halaman1"
-
-#: src/gs-editor.ui:164
+#: src/gs-editor.ui:163
 msgid "Error message here"
 msgstr "Pesan kesalahan disini"
 
-#: src/gs-editor.ui:251
+#: src/gs-editor.ui:250
 msgid "App ID"
 msgstr "ID aplikasi"
 
-#: src/gs-editor.ui:297
+#: src/gs-editor.ui:296
 msgid "Name"
 msgstr "Nama"
 
-#: src/gs-editor.ui:342 src/gs-review-dialog.ui:142
+#: src/gs-editor.ui:341 src/gs-review-dialog.ui:142
 msgid "Summary"
 msgstr "Ringkasan"
 
-#: src/gs-editor.ui:383
+#: src/gs-editor.ui:382
 msgid "Editor’s Pick"
 msgstr "Pilihan Penyunting"
 
-#: src/gs-editor.ui:398
-msgid "Category Feature"
-msgstr "Fitur Kategori"
-
-#: src/gs-editor.ui:428
-msgid "page2"
-msgstr "halaman2"
+#. This check button controls whether the application’s banner appears in the “Featured” category
+#: src/gs-editor.ui:397
+msgid "Category Featured"
+msgstr "Kategori Pilihan"
 
 #. button in the info bar
-#: src/gs-editor.ui:473
+#: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Tak Jadi"
 
-#: src/gs-editor.ui:549
+#: src/gs-editor.ui:547
 msgid "New Banner"
 msgstr "Banner Baru"
 
-#: src/gs-editor.ui:617
+#: src/gs-editor.ui:615
 msgid "Import from file"
 msgstr "Impor dari berkas"
 
-#: src/gs-editor.ui:631
+#: src/gs-editor.ui:629
 msgid "Export to file"
 msgstr "Ekspor ke berkas"
 
-#: src/gs-editor.ui:645
+#: src/gs-editor.ui:643
 msgid "Delete Design"
 msgstr "Hapus Desain"
 
-#: src/gs-editor.ui:672
+#: src/gs-editor.ui:670
 msgid "Featured App"
 msgstr "Aplikasi Pilihan"
 
-#: src/gs-editor.ui:686
+#: src/gs-editor.ui:684
 msgid "OS Upgrade"
 msgstr "Peningkatan OS"
 
@@ -2320,8 +2313,9 @@ msgstr "Cuplikan layar"
 #. * to show in in the search page
 #: src/gs-search-page.c:155
 #, c-format
-msgid "%u more matches"
-msgstr "%u lagi yang cocok"
+msgid "%u more match"
+msgid_plural "%u more matches"
+msgstr[0] "%u lagi yang cocok"
 
 #: src/gs-search-page.ui:7
 msgid "Search page"
@@ -3905,6 +3899,12 @@ msgstr "Dukungan Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Platform hiburan paling pamungkas dari Valve"
+
+#~ msgid "page1"
+#~ msgstr "halaman1"
+
+#~ msgid "page2"
+#~ msgstr "halaman2"
 
 #~ msgctxt "Menu of AudioVideo"
 #~ msgid "All"
