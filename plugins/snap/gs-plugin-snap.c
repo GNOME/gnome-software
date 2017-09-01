@@ -65,6 +65,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* Override hardcoded popular apps */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "hardcoded-popular");
 
+	/* set plugin flags */
+	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
+
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Snap");
 }
@@ -236,34 +239,43 @@ static GsApp *
 snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsApp *app;
+	g_autofree gchar *unique_id = NULL;
+	GsApp *cached_app;
+	g_autoptr(GsApp) app = NULL;
 
-	/* create a unique ID for deduplication, TODO: branch? */
-	app = gs_app_new (snapd_snap_get_name (snap));
 	switch (snapd_snap_get_snap_type (snap)) {
 	case SNAPD_SNAP_TYPE_APP:
-		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		unique_id = g_strdup_printf ("system/snap/*/desktop/%s/*", snapd_snap_get_name (snap));
 		break;
 	case SNAPD_SNAP_TYPE_KERNEL:
 	case SNAPD_SNAP_TYPE_GADGET:
 	case SNAPD_SNAP_TYPE_OS:
-		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		unique_id = g_strdup_printf ("system/snap/*/runtime/%s/*", snapd_snap_get_name (snap));
 		break;
         default:
 	case SNAPD_SNAP_TYPE_UNKNOWN:
                 break;
 	}
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+
+	cached_app = gs_plugin_cache_lookup (plugin, unique_id);
+	if (cached_app == NULL) {
+		app = gs_plugin_app_new (plugin, NULL);
+		gs_app_set_from_unique_id (app, unique_id);
+		gs_plugin_cache_add (plugin, unique_id, app);
+	}
+	else
+		app = g_object_ref (cached_app);
+
 	gs_app_set_management_plugin (app, "snap");
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	if (priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT && snapd_snap_get_confinement (snap) == SNAPD_CONFINEMENT_STRICT)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
-	return app;
+	return g_steal_pointer (&app);
 }
 
 gboolean
