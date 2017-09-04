@@ -630,6 +630,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (local_snap));
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (local_snap));
+		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (local_snap));
 		gs_app_set_version (app, snapd_snap_get_version (local_snap));
 		gs_app_set_size_installed (app, snapd_snap_get_installed_size (local_snap));
 		gs_app_set_install_date (app, g_date_time_to_unix (snapd_snap_get_install_date (local_snap)));
@@ -656,6 +657,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (store_snap));
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (store_snap));
+		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (store_snap));
 		gs_app_set_version (app, snapd_snap_get_version (store_snap));
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
 		gs_app_set_developer_name (app, snapd_snap_get_developer (store_snap));
