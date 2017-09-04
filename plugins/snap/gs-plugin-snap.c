@@ -41,6 +41,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_autoptr (GError) error = NULL;
 
 	priv->client = snapd_client_new ();
+	snapd_client_set_allow_interaction (priv->client, TRUE);
 	if (!snapd_client_connect_sync (priv->client, NULL, &error)) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
