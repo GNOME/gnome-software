@@ -281,11 +281,9 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *object_id;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0) {
+	/* only process this app if it is a Flatpak app */
+	if (!GS_IS_FLATPAK_APP (app))
 		return NULL;
-	}
 
 	/* specified an explicit name */
 	object_id = gs_flatpak_app_get_object_id (app);
