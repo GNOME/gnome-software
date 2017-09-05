@@ -1480,6 +1480,10 @@ main (int argc, char **argv)
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_SELF_TEST_FLATPAK_DATADIR", tmp_root, TRUE);
 
+	/* allow dist'ing with no gnome-software installed */
+	if (g_getenv ("GS_SELF_TEST_SKIP_ALL") != NULL)
+		return 0;
+
 	/* ensure test root does not exist */
 	if (g_file_test (tmp_root, G_FILE_TEST_EXISTS)) {
 		ret = gs_utils_rmtree (tmp_root, &error);
