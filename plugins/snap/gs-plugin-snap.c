@@ -183,7 +183,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	priv->store_name = g_strdup (snapd_system_information_get_store (system_information));
 	if (priv->store_name == NULL)
 		priv->store_name = g_strdup (/* TRANSLATORS: default snap store name */
-					     _("Ubuntu Store"));
+					     _("Snap Store"));
 	priv->system_confinement = snapd_system_information_get_confinement (system_information);
 
 	/* load from disk */
