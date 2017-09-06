@@ -81,6 +81,7 @@ gboolean	 gs_utils_error_convert_gdbus	(GError		**perror);
 gboolean	 gs_utils_error_convert_gdk_pixbuf(GError	**perror);
 gboolean	 gs_utils_error_convert_json_glib (GError	**perror);
 gboolean	 gs_utils_error_convert_appstream (GError	**perror);
+gboolean	 gs_utils_is_low_resolution	  (GtkWidget     *toplevel);
 
 gchar		*gs_utils_get_url_scheme	(const gchar	*url);
 gchar		*gs_utils_get_url_path		(const gchar	*url);
