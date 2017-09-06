@@ -39,6 +39,7 @@
 #include "gs-sources-dialog.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
+#include "gs-utils.h"
 
 static const gchar *page_name[] = {
 	"unknown",
@@ -729,6 +730,31 @@ gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gs_plugin_loader_set_scale (priv->plugin_loader,
 				    (guint) gtk_widget_get_scale_factor (widget));
+}
+
+static void
+gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
+{
+
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	/* adapt the window for low resolution screens */
+	if (gs_utils_is_low_resolution (GTK_WIDGET (priv->main_window))) {
+		    GtkWidget *buttonbox = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+
+		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
+					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all")),
+					     "non-homogeneous", TRUE,
+					     NULL);
+		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
+					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed")),
+					     "non-homogeneous", TRUE,
+					     NULL);
+		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
+					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates")),
+					     "non-homogeneous", TRUE,
+					     NULL);
+	}
 }
 
 static void
@@ -1701,6 +1727,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	priv->main_window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	g_signal_connect (priv->main_window, "map",
 			  G_CALLBACK (gs_shell_main_window_mapped_cb), shell);
+	g_signal_connect (priv->main_window, "realize",
+			  G_CALLBACK (gs_shell_main_window_realized_cb), shell);
 
 	g_signal_connect (priv->main_window, "delete-event",
 			  G_CALLBACK (main_window_closed_cb), shell);
