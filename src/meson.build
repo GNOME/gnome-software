@@ -266,7 +266,7 @@ if get_option('enable-packagekit')
     output : 'org.freedesktop.PackageKit.service',
     install: true,
     install_dir: join_paths(get_option('datadir'), 'dbus-1', 'services'),
-    configuration : conf
+    configuration : cdata
   )
 endif
 
