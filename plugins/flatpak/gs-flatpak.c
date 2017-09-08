@@ -1291,6 +1291,7 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 	g_autoptr(FlatpakRemote) xremote = NULL;
 	g_autofree gchar *url = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	/* profile */
 	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
@@ -1311,8 +1312,18 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   gs_app_get_origin (app),
 							   cancellable,
-							   error);
+							   &error_local);
 	if (xremote == NULL) {
+		if (g_error_matches (error_local,
+				     G_IO_ERROR,
+				     G_IO_ERROR_NOT_FOUND)) {
+			/* if the user deletes the -origin remote for a locally
+			 * installed flatpakref file then we should just show
+			 * 'localhost' and not return an error */
+			gs_app_set_origin_hostname (app, "");
+			return TRUE;
+		}
+		g_propagate_error (error, g_steal_pointer (&error_local));
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
