@@ -41,6 +41,10 @@ void			 gs_fwupd_app_set_update_uri		(GsApp		*app,
 								 const gchar	*update_uri);
 void			 gs_fwupd_app_set_is_locked		(GsApp		*app,
 								 gboolean	 is_locked);
+void			 gs_fwupd_app_set_from_device		(GsApp		*app,
+								 FwupdDevice	*dev);
+void			 gs_fwupd_app_set_from_release		(GsApp		*app,
+								 FwupdRelease	*rel);
 
 G_END_DECLS
 
