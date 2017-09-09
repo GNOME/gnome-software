@@ -878,6 +878,28 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
+			       GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *remote_id = gs_app_get_metadata_item (app, "fwupd::remote-id");
+	if (remote_id == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "not enough data for fwupd %s",
+			     gs_app_get_unique_id (app));
+		return FALSE;
+	}
+	return fwupd_client_modify_remote (priv->client,
+					   remote_id,
+					   "Enabled",
+					   enabled ? "true" : "false",
+					   cancellable,
+					   error);
+}
+
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -889,7 +911,27 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
+	/* source -> remote */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+		return gs_plugin_fwupd_modify_source (plugin, app, TRUE,
+						      cancellable, error);
+	}
+
+	/* firmware */
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
+}
+
+gboolean
+gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
+		      GCancellable *cancellable, GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* source -> remote */
+	return gs_plugin_fwupd_modify_source (plugin, app, TRUE, cancellable, error);
 }
 
 gboolean
@@ -977,5 +1019,48 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		gs_app_list_add (list, app);
 	}
 
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_sources (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GPtrArray) remotes = NULL;
+
+	/* find all remotes */
+	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
+	if (remotes == NULL)
+		return FALSE;
+	for (guint i = 0; i < remotes->len; i++) {
+		FwupdRemote *remote = g_ptr_array_index (remotes, i);
+		g_autofree gchar *id = NULL;
+		g_autoptr(GsApp) app = NULL;
+
+		/* ignore these, they're built in */
+		if (fwupd_remote_get_kind (remote) == FWUPD_REMOTE_KIND_LOCAL)
+			continue;
+
+		/* create something that we can use to enable/disable */
+		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
+		app = gs_app_new (id);
+		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?
+				  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
+				 fwupd_remote_get_id (remote));
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+				    fwupd_remote_get_title (remote));
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+				fwupd_remote_get_metadata_uri (remote));
+		gs_app_set_metadata (app, "fwupd::remote-id",
+				     fwupd_remote_get_id (remote));
+		gs_app_list_add (list, app);
+	}
 	return TRUE;
 }
