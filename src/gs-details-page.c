@@ -782,6 +782,36 @@ gs_details_page_history_cb (GtkLabel *label,
 }
 
 static void
+gs_details_page_refresh_size (GsDetailsPage *self)
+{
+	/* set the installed size */
+	if (gs_app_get_size_installed (self->app) != GS_APP_SIZE_UNKNOWABLE &&
+	    gs_app_get_size_installed (self->app) != 0) {
+		g_autofree gchar *size = NULL;
+		size = g_format_size (gs_app_get_size_installed (self->app));
+		gtk_label_set_label (GTK_LABEL (self->label_details_size_installed_value), size);
+		gtk_widget_show (self->label_details_size_installed_title);
+		gtk_widget_show (self->label_details_size_installed_value);
+	} else {
+		gtk_widget_hide (self->label_details_size_installed_title);
+		gtk_widget_hide (self->label_details_size_installed_value);
+	}
+
+	/* set the download size */
+	if (!gs_app_is_installed (self->app) &&
+	    gs_app_get_size_download (self->app) != GS_APP_SIZE_UNKNOWABLE) {
+		g_autofree gchar *size = NULL;
+		size = g_format_size (gs_app_get_size_download (self->app));
+		gtk_label_set_label (GTK_LABEL (self->label_details_size_download_value), size);
+		gtk_widget_show (self->label_details_size_download_title);
+		gtk_widget_show (self->label_details_size_download_value);
+	} else {
+		gtk_widget_hide (self->label_details_size_download_title);
+		gtk_widget_hide (self->label_details_size_download_value);
+	}
+}
+
+static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GPtrArray *history;
@@ -879,31 +909,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_label_set_label (GTK_LABEL (self->label_details_version_value), C_("version", "Unknown"));
 	}
 
-	/* set the installed size */
-	if (gs_app_get_size_installed (self->app) != GS_APP_SIZE_UNKNOWABLE &&
-	    gs_app_get_size_installed (self->app) != 0) {
-		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size_installed (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_installed_value), size);
-		gtk_widget_show (self->label_details_size_installed_title);
-		gtk_widget_show (self->label_details_size_installed_value);
-	} else {
-		gtk_widget_hide (self->label_details_size_installed_title);
-		gtk_widget_hide (self->label_details_size_installed_value);
-	}
-
-	/* set the download size */
-	if (!gs_app_is_installed (self->app) &&
-	    gs_app_get_size_download (self->app) != GS_APP_SIZE_UNKNOWABLE) {
-		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size_download (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_download_value), size);
-		gtk_widget_show (self->label_details_size_download_title);
-		gtk_widget_show (self->label_details_size_download_value);
-	} else {
-		gtk_widget_hide (self->label_details_size_download_title);
-		gtk_widget_hide (self->label_details_size_download_value);
-	}
+	/* refresh size information */
+	gs_details_page_refresh_size (self);
 
 	/* set the updated date */
 	updated = gs_app_get_install_date (self->app);
@@ -1376,6 +1383,7 @@ gs_details_page_app_refine2_cb (GObject *source,
 			   error->message);
 		return;
 	}
+	gs_details_page_refresh_size (self);
 	gs_details_page_refresh_reviews (self);
 
 	/* seems a good place */
@@ -1386,12 +1394,16 @@ static void
 gs_details_page_app_refine2 (GsDetailsPage *self)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* if these tasks fail (e.g. because we have no networking) then it's
+	 * of no huge importance if we don't get the required data */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -1676,7 +1688,6 @@ gs_details_page_load (GsDetailsPage *self)
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
