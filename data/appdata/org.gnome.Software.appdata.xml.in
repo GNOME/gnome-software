@@ -46,6 +46,29 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-09-11" version="3.26.0">
+      <description>
+        <p>
+          This is the first stable release for GNOME 3.26,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Use the new fwupd API in 0.9.7 to avoid when a reboot is required</li>
+          <li>Pass the complete proxy settings to PackageKit</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Do not crash when emitting an uncommon error message</li>
+          <li>Do not show a critical warning with new versions of fwupd</li>
+          <li>Do not show an error for a remote-less flatpakref application</li>
+          <li>Don't refine PackageKit packages after we've been cancelled</li>
+          <li>Fix a possible crash on 32 bit systems</li>
+          <li>Fix GNOME Shell search results for snap applications</li>
+          <li>Properly disable shell-extensions when not running GNOME Shell</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-08-21" version="3.25.91">
       <description>
         <p>
