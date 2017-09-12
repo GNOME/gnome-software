@@ -49,10 +49,14 @@ static void
 gs_fwupd_app_to_string (GsApp *app, GString *str)
 {
 	GsFwupdApp *fwupd_app = GS_FWUPD_APP (app);
-	gs_utils_append_key_value (str, 20, "fwupd::device-id",
-				   fwupd_app->device_id);
-	gs_utils_append_key_value (str, 20, "fwupd::update-uri",
-				   fwupd_app->update_uri);
+	if (fwupd_app->device_id != NULL) {
+		gs_utils_append_key_value (str, 20, "fwupd::device-id",
+					   fwupd_app->device_id);
+	}
+	if (fwupd_app->update_uri != NULL) {
+		gs_utils_append_key_value (str, 20, "fwupd::update-uri",
+					   fwupd_app->update_uri);
+	}
 	gs_utils_append_key_value (str, 20, "fwupd::is-locked",
 				   fwupd_app->is_locked ? "yes" : "no");
 }
