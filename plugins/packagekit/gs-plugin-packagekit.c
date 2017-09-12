@@ -97,9 +97,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* Only go from TRUE to FALSE - it doesn't make sense for a package
 	 * install to become uncancellable later on */
-	if (gs_app_get_allow_cancel (data->app))
+	if (data->app != NULL && gs_app_get_allow_cancel (data->app)) {
 		gs_app_set_allow_cancel (data->app,
 					 pk_progress_get_allow_cancel (progress));
+	}
 }
 
 static gboolean
