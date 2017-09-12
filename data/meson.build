@@ -8,11 +8,14 @@ install_data('org.gnome.software.gschema.xml',
 
 if get_option('enable-external-appstream')
   # replace @libexecdir@
+  conf_data = configuration_data()
+  conf_data.set('libexecdir', join_paths(get_option('prefix'),
+                                         get_option('libexecdir')))
   configure_file(
     input : 'org.gnome.software.external-appstream.policy.in',
     output : 'org.gnome.software.external-appstream.policy',
     install: true,
     install_dir: join_paths(get_option('datadir'), 'polkit-1', 'actions'),
-    configuration : conf
+    configuration : conf_data
   )
 endif
