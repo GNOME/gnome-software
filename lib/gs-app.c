@@ -556,8 +556,10 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		GsApp *app_tmp = g_ptr_array_index (priv->related, i);
 		gs_app_kv_lpad (str, "related", gs_app_get_unique_id (app_tmp));
 	}
-	if (priv->history->len > 0)
-		gs_app_kv_printf (str, "history", "%u", priv->history->len);
+	for (i = 0; i < priv->history->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (priv->history, i);
+		gs_app_kv_lpad (str, "history", gs_app_get_unique_id (app_tmp));
+	}
 	for (i = 0; i < priv->categories->len; i++) {
 		tmp = g_ptr_array_index (priv->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
