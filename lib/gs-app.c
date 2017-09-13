@@ -3100,8 +3100,6 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (GS_IS_APP (app2));
-	g_return_if_fail (gs_app_get_id (app2) != NULL);
 
 	/* if the app is updatable-live and any related app is not then
 	 * degrade to the offline state */
@@ -3156,8 +3154,6 @@ gs_app_add_history (GsApp *app, GsApp *app2)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (GS_IS_APP (app2));
-	g_return_if_fail (gs_app_get_id (app2) != NULL);
 	g_ptr_array_add (priv->history, g_object_ref (app2));
 }
 
