@@ -109,9 +109,9 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 {
 	GOutputStream *outstream = NULL;
 	SoupSession *soup_session;
-	const gchar *tmp_file_path = NULL;
 	guint status_code;
 	gboolean file_written;
+	g_autofree gchar *tmp_file_path = NULL;
 	g_autofree gchar *file_name = NULL;
 	g_autofree gchar *local_mod_date = NULL;
 	g_autofree gchar *target_file_path = NULL;
