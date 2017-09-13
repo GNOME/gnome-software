@@ -144,7 +144,7 @@ if get_option('enable-packagekit')
 endif
 
 if get_option('enable-fwupd')
-  fwupd = dependency('fwupd', version : '>= 0.9.7')
+  fwupd = dependency('fwupd', version : '>= 0.9.8')
 endif
 
 if get_option('enable-flatpak')
