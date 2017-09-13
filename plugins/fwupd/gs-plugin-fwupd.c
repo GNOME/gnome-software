@@ -351,11 +351,16 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	FwupdDevice *dev = fwupd_result_get_device (res);
 	FwupdRelease *rel = fwupd_result_get_release (res);
 	GsApp *app;
-	const gchar *id;
+	g_autofree gchar *id = NULL;
 	g_autoptr(AsIcon) icon = NULL;
 
 	/* get from cache */
-	id = fwupd_result_get_unique_id (res);
+	id = as_utils_unique_id_build (AS_APP_SCOPE_SYSTEM,
+				       AS_BUNDLE_KIND_UNKNOWN,
+				       NULL, /* origin */
+				       AS_APP_KIND_FIRMWARE,
+				       fwupd_release_get_appstream_id (rel),
+				       NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
 		app = gs_plugin_app_new (plugin, id);
