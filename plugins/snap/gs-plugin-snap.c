@@ -597,6 +597,15 @@ find_launch_app (GsApp *app, SnapdSnap *local_snap)
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 }
 
+static gchar *
+gs_plugin_snap_get_description_safe (SnapdSnap *snap)
+{
+	GString *str = g_string_new (snapd_snap_get_description (snap));
+	as_utils_string_replace (str, "\r", "");
+	as_utils_string_replace (str, "  ", " ");
+	return g_string_free (str, FALSE);
+}
+
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -621,6 +630,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	local_snap = snapd_client_list_one_sync (priv->client, id, cancellable, NULL);
 	if (local_snap != NULL) {
 		const gchar *name;
+		g_autofree gchar *description = NULL;
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		name = snapd_snap_get_title (local_snap);
@@ -628,7 +638,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			name = snapd_snap_get_name (local_snap);
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (local_snap));
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (local_snap));
+		description = gs_plugin_snap_get_description_safe (local_snap);
+		if (description != NULL)
+			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (local_snap));
 		gs_app_set_version (app, snapd_snap_get_version (local_snap));
 		gs_app_set_size_installed (app, snapd_snap_get_installed_size (local_snap));
@@ -646,6 +658,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (store_snap != NULL) {
 		GPtrArray *screenshots;
 		const gchar *name;
+		g_autofree gchar *description = NULL;
 
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -655,7 +668,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			name = snapd_snap_get_name (store_snap);
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, name);
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (store_snap));
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_description (store_snap));
+		description = gs_plugin_snap_get_description_safe (store_snap);
+		if (description != NULL)
+			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (store_snap));
 		gs_app_set_version (app, snapd_snap_get_version (store_snap));
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
