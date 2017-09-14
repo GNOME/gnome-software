@@ -2159,7 +2159,18 @@ gs_details_page_license_nonfree_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autofree gchar *str = NULL;
 	g_autofree gchar *uri = NULL;
-	uri = g_settings_get_string (self->settings, "nonfree-software-uri");
+	g_auto(GStrv) tokens = NULL;
+
+	/* license specified as a link */
+	tokens = as_utils_spdx_license_tokenize (gs_app_get_license (self->app));
+	for (guint i = 0; tokens[i] != NULL; i++) {
+		if (g_str_has_prefix (tokens[i], "@LicenseRef-proprietary=")) {
+			uri = g_strdup (tokens[i] + 24);
+			break;
+		}
+	}
+	if (uri == NULL)
+		uri = g_settings_get_string (self->settings, "nonfree-software-uri");
 	str = g_strdup_printf ("<a href=\"%s\">%s</a>",
 			       uri,
 			       _("More information"));
