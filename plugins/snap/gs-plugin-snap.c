@@ -506,15 +506,7 @@ load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *ca
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	if (icon_url == NULL || g_strcmp0 (icon_url, "") == 0) {
-		g_autoptr(AsIcon) icon = as_icon_new ();
-		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		as_icon_set_name (icon, "package-x-generic");
-		gs_app_add_icon (app, icon);
-		return TRUE;
-	}
-
-	/* icon is optional, either loaded from snapd or from a URL */
+	/* icon is either loaded from snapd or from a URL */
 	if (g_str_has_prefix (icon_url, "/")) {
 		g_autoptr(SnapdIcon) icon = NULL;
 
