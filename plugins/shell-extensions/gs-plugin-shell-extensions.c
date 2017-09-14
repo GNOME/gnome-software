@@ -644,7 +644,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* look in the cache */
-	cachefn = gs_utils_get_cache_filename ("extensions",
+	cachefn = gs_utils_get_cache_filename ("shell-extensions",
 					       "gnome.json",
 					       GS_UTILS_CACHE_FLAG_WRITEABLE,
 					       error);

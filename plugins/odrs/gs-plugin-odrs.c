@@ -180,8 +180,8 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check cache age */
-	fn = gs_utils_get_cache_filename ("ratings",
-					  "odrs.json",
+	fn = gs_utils_get_cache_filename ("odrs",
+					  "ratings.json",
 					  GS_UTILS_CACHE_FLAG_WRITEABLE,
 					  error);
 	if (fn == NULL)
@@ -600,7 +600,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 
 	/* look in the cache */
 	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
-	cachefn = gs_utils_get_cache_filename ("reviews",
+	cachefn = gs_utils_get_cache_filename ("odrs",
 					       cachefn_basename,
 					       GS_UTILS_CACHE_FLAG_WRITEABLE,
 					       error);
@@ -807,7 +807,7 @@ gs_plugin_odrs_invalidate_cache (AsReview *review, GError **error)
 	/* look in the cache */
 	cachefn_basename = g_strdup_printf ("%s.json",
 					    as_review_get_metadata_item (review, "app_id"));
-	cachefn = gs_utils_get_cache_filename ("reviews",
+	cachefn = gs_utils_get_cache_filename ("odrs",
 					       cachefn_basename,
 					       GS_UTILS_CACHE_FLAG_WRITEABLE,
 					       error);

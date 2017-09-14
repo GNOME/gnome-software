@@ -127,7 +127,7 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
 
 /**
  * gs_utils_get_cache_filename:
- * @kind: A cache kind, e.g. "firmware" or "screenshots/123x456"
+ * @kind: A cache kind, e.g. "fwupd" or "screenshots/123x456"
  * @resource: A resource, e.g. "system.bin" or "http://foo.bar/baz.bin"
  * @flags: Some #GsUtilsCacheFlags, e.g. %GS_UTILS_CACHE_FLAG_WRITEABLE
  * @error: A #GError, or %NULL
@@ -141,6 +141,11 @@ gs_utils_filename_array_return_newest (GPtrArray *array)
  *
  * If there is more than one match, the file that has been modified last is
  * returned.
+ *
+ * If a plugin requests a file to be saved in the cache it is the plugins
+ * responsibility to remove the file when it is no longer valid or is too old
+ * -- gnome-software will not ever clean the cache for the plugin.
+ * For this reason it is a good idea to use the plugin name as @kind.
  *
  * Returns: The full path and filename, which may or may not exist, or %NULL
  **/

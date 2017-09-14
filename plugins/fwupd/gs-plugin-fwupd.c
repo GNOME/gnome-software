@@ -248,7 +248,7 @@ gs_plugin_fwupd_setup_remote (GsPlugin *plugin, FwupdRemote *remote, GError **er
 		return TRUE;
 
 	/* find the name of the signature file in the cache */
-	filename_asc = gs_utils_get_cache_filename ("firmware",
+	filename_asc = gs_utils_get_cache_filename ("fwupd",
 						    fwupd_remote_get_filename_asc (remote),
 						    GS_UTILS_CACHE_FLAG_WRITEABLE,
 						    error);
@@ -456,7 +456,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 
 	/* does the firmware already exist in the cache? */
 	basename = g_path_get_basename (update_uri);
-	filename_cache = gs_utils_get_cache_filename ("firmware",
+	filename_cache = gs_utils_get_cache_filename ("fwupd",
 						      basename,
 						      GS_UTILS_CACHE_FLAG_NONE,
 						      error);
@@ -655,7 +655,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	}
 
 	/* check cache age */
-	filename_asc = gs_utils_get_cache_filename ("firmware",
+	filename_asc = gs_utils_get_cache_filename ("fwupd",
 						    fwupd_remote_get_filename_asc (remote),
 						    GS_UTILS_CACHE_FLAG_WRITEABLE,
 						    error);
@@ -710,7 +710,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 			     g_steal_pointer (&checksum));
 
 	/* download the payload and save to file */
-	filename = gs_utils_get_cache_filename ("firmware",
+	filename = gs_utils_get_cache_filename ("fwupd",
 						fwupd_remote_get_filename (remote),
 						GS_UTILS_CACHE_FLAG_WRITEABLE,
 						error);
@@ -799,7 +799,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		tmp = g_ptr_array_index (priv->to_download, i);
 		basename = g_path_get_basename (tmp);
-		filename_cache = gs_utils_get_cache_filename ("firmware",
+		filename_cache = gs_utils_get_cache_filename ("fwupd",
 							      basename,
 							      GS_UTILS_CACHE_FLAG_WRITEABLE,
 							      error);
