@@ -152,8 +152,6 @@ gs_utils_get_cache_filename (const gchar *kind,
 {
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *cachedir = NULL;
-	g_autofree gchar *vername = NULL;
-	g_auto(GStrv) version = g_strsplit (VERSION, ".", 3);
 	g_autoptr(GFile) cachedir_file = NULL;
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
 
@@ -199,10 +197,8 @@ gs_utils_get_cache_filename (const gchar *kind,
 
 	/* create the cachedir in a per-release location, creating
 	 * if it does not already exist */
-	vername = g_strdup_printf ("%s.%s", version[0], version[1]);
 	cachedir = g_build_filename (g_get_user_cache_dir (),
 				     "gnome-software",
-				     vername,
 				     kind,
 				     NULL);
 	cachedir_file = g_file_new_for_path (cachedir);
