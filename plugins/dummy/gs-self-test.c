@@ -148,6 +148,60 @@ gs_plugins_dummy_refine_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* get the extra bits */
+	app = gs_app_new ("chiron.desktop");
+	gs_app_set_management_plugin (app, "dummy");
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
+
+	/* check the not-launchable quirk */
+
+	g_assert (!gs_app_has_quirk(app, AS_APP_QUIRK_NOT_LAUNCHABLE));
+
+	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "true");
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	g_assert (gs_app_has_quirk(app, AS_APP_QUIRK_NOT_LAUNCHABLE));
+
+	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", NULL);
+	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "false");
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	g_assert (!gs_app_has_quirk(app, AS_APP_QUIRK_NOT_LAUNCHABLE));
+}
+
+static void
 gs_plugins_dummy_key_colors_func (GsPluginLoader *plugin_loader)
 {
 	GPtrArray *array;
@@ -766,7 +820,10 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/purchase",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_purchase_func);
-;
+	g_test_add_data_func ("/gnome-software/plugins/dummy/metadata-quirks",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_dummy_metadata_quirks);
+
 	return g_test_run ();
 }
 
