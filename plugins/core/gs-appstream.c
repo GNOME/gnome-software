@@ -554,6 +554,15 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		break;
 	}
 
+	/* check if the special metadata affects the not-launchable quirk */
+	tmp = gs_app_get_metadata_item (app, "GnomeSoftware::quirks::not-launchable");
+	if (tmp != NULL) {
+		if (g_strcmp0 (tmp, "true") == 0)
+			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		else if (g_strcmp0 (tmp, "false") == 0)
+			gs_app_remove_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	}
+
 	/* set management plugin automatically */
 	gs_refine_item_management_plugin (plugin, app, item);
 
