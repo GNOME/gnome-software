@@ -66,9 +66,9 @@ app_state_changed_idle (gpointer user_data)
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		installed = TRUE;
-		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (tile->app),
-					_("Installed"));
+		/* TRANSLATORS: this refers to an app (by name) that is installed */
+		name = g_strdup_printf (_("%s (Installed)"),
+					gs_app_get_name (tile->app));
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	default:
@@ -202,7 +202,7 @@ gs_popular_tile_show_source (GsPopularTile *tile, gboolean show_source)
 		const gchar *hostname = gs_app_get_origin_hostname (tile->app);
 		if (hostname != NULL) {
 			/* TRANSLATORS: this refers to where the app came from */
-			g_autofree gchar *source_text = g_strdup_printf ("%s: %s", _("Source"),
+			g_autofree gchar *source_text = g_strdup_printf (_("Source: %s"),
 									 hostname);
 			gtk_label_set_label (GTK_LABEL (tile->label_origin), source_text);
 		} else {
