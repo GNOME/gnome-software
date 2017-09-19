@@ -12,7 +12,6 @@ subdir('dummy')
 subdir('epiphany')
 subdir('fedora-pkgdb-collections')
 subdir('fedora-tagger-usage')
-subdir('ubuntuone')
 
 if get_option('enable-flatpak')
   subdir('flatpak')
@@ -47,6 +46,9 @@ if get_option('enable-snap')
 endif
 if get_option('enable-steam')
   subdir('steam')
+endif
+if get_option('enable-ubuntuone')
+  subdir('ubuntuone')
 endif
 if get_option('enable-ubuntu-reviews')
   subdir('ubuntu-reviews')
