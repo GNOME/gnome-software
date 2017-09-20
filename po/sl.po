@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
 "POT-Creation-Date: 2017-08-05 15:21+0200\n"
-"PO-Revision-Date: 2017-08-05 16:38+0200\n"
+"PO-Revision-Date: 2017-09-20 13:41+0200\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -116,7 +116,7 @@ msgid ""
 "controls if that dialog is suppressed."
 msgstr ""
 "Pred namestitvijo lastniške programske opreme se pokaže opozorilo. "
-"Nastavitev določa prikazanost sporočila."
+"Nastavitev določa način prikazovanja sporočila."
 
 #: ../data/org.gnome.software.gschema.xml.h:9
 msgid "A list of popular applications"
@@ -180,12 +180,12 @@ msgstr "Seznam uradnih virov, vodenih kot prosta programska oprema"
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
+"Naslov URL dovoljenja, ki mora biti navedeno, da se program opredeli kot "
+"prosto programsko opremo"
 
 #: ../data/org.gnome.software.gschema.xml.h:23
-#, fuzzy
-#| msgid "A list of applications to use, overriding the system defined ones."
 msgid "Install bundled applications for all users on the system where possible"
-msgstr "Seznam programov za uporabo, ki prepišejo privzeta določila sistema."
+msgstr "Namesti programe za vse uporabnike v sistemu, kjer je to mogoče"
 
 #: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Show the folder management UI"
@@ -201,19 +201,21 @@ msgstr "Ponudi tudi posodobitve za predobjave"
 
 #: ../data/org.gnome.software.gschema.xml.h:27
 msgid "Show some UI elements informing the user that an app is non-free"
-msgstr ""
+msgstr "Pokaži vidne oznake, ki kažejo, da programska oprema ni brezplačna"
 
 #: ../data/org.gnome.software.gschema.xml.h:28
 msgid "Show the prompt to install nonfree software sources"
-msgstr ""
+msgstr "Pokaži potrditveno okno pred nameščanjem plačljive programske opreme"
 
 #: ../data/org.gnome.software.gschema.xml.h:29
 msgid "Show non-free software in search results"
-msgstr ""
+msgstr "Pokaži tudi ne-prosto programsko opremo v zadetkih iskanja"
 
 #: ../data/org.gnome.software.gschema.xml.h:30
 msgid "The URI that explains nonfree and proprietary software"
 msgstr ""
+"Naslov URI, prek katerega je dostop do opredelitev plačljive in lastniške "
+"programske opreme"
 
 #: ../data/org.gnome.software.gschema.xml.h:31
 msgid "A list of non-free sources that can be optionally enabled"
@@ -659,13 +661,13 @@ msgstr "Ali res želite odstraniti vir %s?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-page.c:514
-#, fuzzy, c-format
-#| msgid "%s will be removed, and you will have to install it to use it again."
+#, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the source to use them again."
 msgstr ""
-"Program %s bo odstranjen. Za ponovno uporabo ga bo treba znova namestiti."
+"Vsi programi iz %s bodo odstranjeni. Za ponovno uporabo jih bo treba znova "
+"namestiti."
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
@@ -718,6 +720,8 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"Nekatera trenutno nameščena programska oprema ni združljiva z %s. Če "
+"nadaljujete, bodo med nadgradnjo samodejno odstranjeni naslednji paketi:"
 
 #. vim: set noexpandtab:
 #: ../src/gs-removal-dialog.ui.h:1
@@ -812,7 +816,7 @@ msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr ""
-"Podajte kretek povzetek mnenja, na primer »Odličen program, ki ga toplo "
+"Podajte kratek povzetek mnenja, na primer »Odličen program, ki ga toplo "
 "priporočam!«"
 
 #. Translators: This is where the users enter their opinions about the apps.
@@ -1138,7 +1142,7 @@ msgstr "Sistemska povezljivost"
 
 #: ../src/gs-shell-details.ui.h:28
 msgid "Sandboxed"
-msgstr ""
+msgstr "Zabeleženo v peskovnik"
 
 #: ../src/gs-shell-details.ui.h:29 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
@@ -1223,6 +1227,8 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
+"To pomeni, da je programska oprema v lasti posameznika ali podjetja. "
+"Obstajajo pogosto omejitve uporabe in dostopa do izvorne kode."
 
 #: ../src/gs-shell-details.ui.h:56
 msgid "Unknown Software License"
@@ -1502,11 +1508,15 @@ msgstr "Priporočeni pisarniški programi"
 msgid ""
 "Provides access to additional software, including web browsers and games."
 msgstr ""
+"Omogoča dostop do dodatne programske opreme, vključno s spletnimi brskalniki "
+"in igrami."
 
 #. TRANSLATORS: this is the proprietary info bar
 #: ../src/gs-shell-overview.c:716
 msgid "Proprietary software has restrictions on use and access to source code."
 msgstr ""
+"Lastniška programska oprema ima omejitve uporabe in dostopa do programske "
+"kode."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the proprietary info bar
@@ -2218,17 +2228,17 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:397
 msgid "Cartoon characters in unsafe situations"
-msgstr ""
+msgstr "Risani liki v nevarnih situacijah"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:400
 msgid "Cartoon characters in aggressive conflict"
-msgstr ""
+msgstr "Risani liki v nasilnih konfliktih"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:403
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Nazorno nasilje med risanimi liki"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:406
@@ -2240,16 +2250,18 @@ msgstr "Brez"
 #: ../src/gs-common.c:409
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr ""
+"Liki v nevarnih situacijah, ki jih je mogoče zlahka razlikovati od realnosti"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:412
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr ""
+"Liki v nasilnem konfliktu, ki ga je mogoče  zlahka razlikovati od realnosti"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:415
 msgid "Graphic violence easily distinguishable from reality"
-msgstr ""
+msgstr "Nazorno nasilje, ki ga je mogoče zlahka razlikovati od realnosti"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:418
@@ -2260,17 +2272,17 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:421
 msgid "Mildly realistic characters in unsafe situations"
-msgstr ""
+msgstr "Napol realistični liki v nevarnih situacijah"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:424
 msgid "Depictions of realistic characters in aggressive conflict"
-msgstr ""
+msgstr "Prikazovanje realističnih likov v nasilnih konfliktih"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:427
 msgid "Graphic violence involving realistic characters"
-msgstr ""
+msgstr "Nazorno nasilje, ki vključuje realistične like"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:430
@@ -2291,7 +2303,7 @@ msgstr "Realistično prelivanje krvi"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:439
 msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr ""
+msgstr "Prikazi prelivanja krvi in pohabljanje delov telesa"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:442
@@ -2392,7 +2404,7 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:496
 msgid "Mild or infrequent use of profanity"
-msgstr "Nižno ali redko preklinjanje"
+msgstr "Nežno ali redko preklinjanje"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:499
@@ -2413,17 +2425,17 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:508
 msgid "Slapstick humor"
-msgstr ""
+msgstr "Situacijski humor"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:511
 msgid "Vulgar or bathroom humor"
-msgstr ""
+msgstr "Vulgaren humor"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:514
 msgid "Mature or sexual humor"
-msgstr ""
+msgstr "Humor za odrasle"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:517
@@ -2434,17 +2446,17 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:520
 msgid "Negativity towards a specific group of people"
-msgstr ""
+msgstr "Negativen odnos do specifične skupine ljudi"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:523
 msgid "Discrimination designed to cause emotional harm"
-msgstr ""
+msgstr "Diskriminatorno delovanje, ki lahko sproži močan čustven odziv"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:526
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr ""
+msgstr "Izrecna diskriminacija na podlagi spola, spolnosti, rase ali vere"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:529
@@ -2460,12 +2472,12 @@ msgstr "Opredelitev izdelka"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:535
 msgid "Explicit references to specific brands or trademarked products"
-msgstr ""
+msgstr "Izrecna sklicevanja na določene blagovne znamke ali izdelke"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:538
 msgid "Players are encouraged to purchase specific real-world items"
-msgstr ""
+msgstr "Igralce spodbuja k nakupu določenih pravih predmetov"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:541
@@ -2477,16 +2489,17 @@ msgstr "Brez"
 #: ../src/gs-common.c:544
 msgid "Gambling on random events using tokens or credits"
 msgstr ""
+"Igranje na srečo na naključnih dogodkih z uporabo žetonov ali kreditnih točk"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:547
 msgid "Gambling using \"play\" money"
-msgstr ""
+msgstr "Igranje na srečo s namišljenim denarjem"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:550
 msgid "Gambling using real money"
-msgstr ""
+msgstr "Igranje na srečo s pravim denarjem"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:553
@@ -2497,7 +2510,7 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:556
 msgid "Ability to spend real money in-game"
-msgstr ""
+msgstr "Možnost uporabe pravega denarja znotraj igre"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:559
@@ -2508,17 +2521,18 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:562
 msgid "Player-to-player game interactions without chat functionality"
-msgstr ""
+msgstr "Interakcije med igralci znotraj igre brez funkcije za klepet"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:565
 msgid "Player-to-player preset interactions without chat functionality"
 msgstr ""
+"Predložene interakcije med igralci znotraj igre brez funkcije za klepet"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:568
 msgid "Uncontrolled chat functionality between players"
-msgstr ""
+msgstr "Nenadzorovana možnost klepeta med igralci"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:571
@@ -2529,7 +2543,7 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:574
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr ""
+msgstr "Nenadzorovana možnost zvočnega ali video klepeta med igralci"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:577
@@ -2541,6 +2555,7 @@ msgstr "Brez"
 #: ../src/gs-common.c:580
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
+"Objavljanje uporabniškega imena ali elektronskega naslova socialnega omrežja"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:583
@@ -2562,7 +2577,7 @@ msgstr "Brez"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:592
 msgid "Sharing physical location to other users"
-msgstr ""
+msgstr "Objavljanje trenutnega mesta drugim uporabnikom"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
