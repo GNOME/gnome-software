@@ -9,7 +9,7 @@ executable(
   dependencies : [gio_unix, appstream_glib],
   c_args : cargs,
   install : true,
-  install_dir : 'libexec'
+  install_dir : get_option('libexecdir')
 )
 
 shared_module(
