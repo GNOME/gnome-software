@@ -329,13 +329,17 @@ gs_category_page_reload (GsPage *page)
 		gtk_widget_set_visible (self->subcats_sort_button, TRUE);
 	}
 
-	if (self->sort_rating_handler_id > 0)
+	if (self->sort_rating_handler_id > 0) {
 		g_signal_handler_disconnect (self->sort_rating_button,
 					     self->sort_rating_handler_id);
+		self->sort_rating_handler_id = 0;
+	}
 
-	if (self->sort_name_handler_id > 0)
+	if (self->sort_name_handler_id > 0) {
 		g_signal_handler_disconnect (self->sort_name_button,
 					     self->sort_name_handler_id);
+		self->sort_name_handler_id = 0;
+	}
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 
