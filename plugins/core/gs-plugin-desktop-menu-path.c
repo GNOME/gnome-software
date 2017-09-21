@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
+
 #include <gnome-software.h>
 
 #include "gs-desktop-common.h"
@@ -62,6 +64,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	const GsDesktopData *msdata;
 	gboolean found = FALSE;
 	guint i, j, k;
+	gchar msgctxt[100];
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
@@ -79,11 +82,14 @@ gs_plugin_refine_app (GsPlugin *plugin,
 				continue;
 			if (g_strcmp0 (map->id, "featured") == 0)
 				continue;
+			g_snprintf (msgctxt, sizeof(msgctxt),
+			            "Menu of %s", data->name);
 			for (k = 0; !found && map->fdo_cats[k] != NULL; k++) {
 				const gchar *tmp = msdata[i].mapping[j].fdo_cats[k];
 				if (_gs_app_has_desktop_group (app, tmp)) {
-					strv[0] = msdata[i].name;
-					strv[1] = msdata[i].mapping[j].name;
+					strv[0] = g_dgettext (GETTEXT_PACKAGE, msdata[i].name);
+					strv[1] = g_dpgettext2 (GETTEXT_PACKAGE, msgctxt,
+					                        msdata[i].mapping[j].name);
 					found = TRUE;
 					break;
 				}
