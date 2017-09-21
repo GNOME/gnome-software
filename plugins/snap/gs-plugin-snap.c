@@ -350,7 +350,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_free (&priv->store_name);
+	g_free (priv->store_name);
 	g_clear_object (&priv->auth);
 	g_clear_pointer (&priv->store_snaps, g_hash_table_unref);
 }
