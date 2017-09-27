@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
 "POT-Creation-Date: 2017-09-27 11:10+0200\n"
-"PO-Revision-Date: 2017-09-27 11:20+0200\n"
+"PO-Revision-Date: 2017-09-27 11:32+0200\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
 "%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 2.0.1\n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -1461,15 +1461,12 @@ msgstr "Nalaganje datoteke je spodletelo"
 
 #. TRANSLATORS: window title
 #: src/gs-editor.c:598 src/gs-editor.c:874
-#, fuzzy
 msgid "Unsaved changes"
-msgstr "Povrni neshranjene spremembe dokumentu '%s'?"
+msgstr "Neshranjene spremembe"
 
 #: src/gs-editor.c:600
-#, fuzzy
-#| msgid "Application is ready to be used."
 msgid "The application list is already loaded."
-msgstr "Preskočeni bodo že naloženi seznami nalog"
+msgstr "Seznam programov je že naložen"
 
 #. TRANSLATORS: button text
 #: src/gs-editor.c:604
@@ -1521,29 +1518,21 @@ msgstr "V projektu %s so spremembe, ki še niso shranjene"
 
 #. TRANSLATORS: show the program version
 #: src/gs-editor.c:1111
-#, fuzzy
 msgid "Use verbose logging"
-msgstr "podroben izpis"
+msgstr "Shranjuj podroben izpis"
 
 #. TRANSLATORS: program name, an application to add and remove software repositories
 #: src/gs-editor.c:1119
-#, fuzzy
-#| msgid "GNOME Software"
 msgid "GNOME Software Banner Designer"
-msgstr "Programsko oblikovanje vmesnikov za GTK+ in GNOME."
+msgstr "Oblikovalnik vmesnikov za okolje GNOME"
 
 #: src/gs-editor.ui:63 src/gs-editor.ui:77
-#, fuzzy
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "GUI Designers"
 msgid "No Designs"
-msgstr ""
-"Ustvarjanje in urejanje uporabniškega vmesnika za GTK+ in GNOME programe."
+msgstr "Ni zasnov"
 
 #: src/gs-editor.ui:163
-#, fuzzy
 msgid "Error message here"
-msgstr "Podrobno sporočilo o napaki:"
+msgstr "Sporočilo o napaki"
 
 #: src/gs-editor.ui:250
 msgid "App ID"
@@ -1563,10 +1552,8 @@ msgstr "Izbor urednikov"
 
 #. This check button controls whether the application’s banner appears in the “Featured” category
 #: src/gs-editor.ui:397
-#, fuzzy
-#| msgid "Featured"
 msgid "Category Featured"
-msgstr "Kategorija"
+msgstr "Kategorija novosti"
 
 #. button in the info bar
 #: src/gs-editor.ui:471
@@ -1590,10 +1577,8 @@ msgid "Delete Design"
 msgstr "Izbriši zasnovo"
 
 #: src/gs-editor.ui:670
-#, fuzzy
-#| msgid "Featured"
 msgid "Featured App"
-msgstr "Novosti"
+msgstr "Novosti programske opreme"
 
 #: src/gs-editor.ui:684
 msgid "OS Upgrade"
@@ -3410,17 +3395,12 @@ msgstr ""
 "Odnamestitev;App;Trgovina;"
 
 #: src/org.gnome.Software.Editor.desktop.in:3
-#, fuzzy
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "GUI Designers"
 msgid "Banner Designer"
-msgstr "Snovalnik vmesnika "
+msgstr "Snovalnik pasic"
 
 #: src/org.gnome.Software.Editor.desktop.in:4
-#, fuzzy
-#| msgid "Whether to manage updates in GNOME Software"
 msgid "Design the featured banners for GNOME Software"
-msgstr "Ali naj bodo posodobitve upravljane s privzetim programom GNOME"
+msgstr "Oblikovanje pasic za programsko opremo GNOME"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.Editor.desktop.in:13
@@ -3819,10 +3799,8 @@ msgstr "Pripomočki"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/core/gs-plugin-appstream.c:693
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading extra metadata files…"
-msgstr "Dodatni metapodatki in ostale podrobnosti so prikazane v tem oknu.\n"
+msgstr "Poteka prejemanje dodatnih datotek metapodatkov ..."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -3839,10 +3817,9 @@ msgstr ""
 
 #. TRANSLATORS: status text when downloading
 #: plugins/core/gs-plugin-rewrite-resource.c:55
-#, fuzzy
 #| msgid "Downloading new updates…"
 msgid "Downloading featured images…"
-msgstr "Prejemanje"
+msgstr "Poteka prejemanje zaslonskih slik programov ..."
 
 #: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
 msgid "Web Apps Support"
@@ -3883,10 +3860,8 @@ msgstr "Kopiranje je spodletelo"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:212
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading upgrade information…"
-msgstr "Poteka prejemanje ..."
+msgstr "Poteka prejemanje podrobnosti posodobitev ..."
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
@@ -3909,31 +3884,24 @@ msgstr "Pridobi metapodatke flatpak za %s ..."
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
 #: plugins/flatpak/gs-flatpak.c:2617
-#, fuzzy
-#| msgid "Setting up updates…"
 msgid "Getting runtime source…"
-msgstr "Čas izvajanja"
+msgstr "Pridobivanje virov zagonskih programov ..."
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:801
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading firmware update signature…"
-msgstr "Prejemanje posodobitve je končano"
+msgstr "Prejemanje podpisov posodobitev strojne programske opreme ..."
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:847
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading firmware update metadata…"
-msgstr "Posodabljanje metapodatkov je spodletelo: %s"
+msgstr "Prejemanje metapodatkov posodobitev strojne programske opreme ..."
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:941
-#, fuzzy
 #| msgid "Downloading new updates…"
 msgid "Downloading firmware update…"
-msgstr "Prejemanje posodobitve je končano"
+msgstr "Prejemanje posodobitev strojne programske opreme ..."
 
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
 msgid "Firmware Upgrade Support"
@@ -3955,10 +3923,8 @@ msgstr ""
 
 #. TRANSLATORS: status text when downloading
 #: plugins/odrs/gs-plugin-odrs.c:205
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading application ratings…"
-msgstr "Poteka prejemanje virov programa ..."
+msgstr "Poteka prejemanje ocen programske preme ..."
 
 #: plugins/odrs/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:6
 msgid "Open Desktop Ratings Support"
@@ -3972,10 +3938,8 @@ msgstr ""
 
 #. TRANSLATORS: status text when downloading
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:669
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading shell extension metadata…"
-msgstr "Prejemanje razširitve"
+msgstr "Prejemanje metapodatkov razširitev ukazne lupine ..."
 
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:6
 msgid "Snappy Support"
@@ -3987,10 +3951,8 @@ msgstr "»Snap« je univerzalni paket operacijskega sistema Linux"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/steam/gs-plugin-steam.c:600
-#, fuzzy
-#| msgid "Downloading new updates…"
 msgid "Downloading application page…"
-msgstr "Poteka prejemanje virov programa ..."
+msgstr "Poteka prejemanje strani programske opreme ..."
 
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:6
 msgid "Steam Support"
