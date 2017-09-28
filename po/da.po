@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-09-05 19:31+0000\n"
-"PO-Revision-Date: 2017-09-08 19:43+0200\n"
+"POT-Creation-Date: 2017-09-28 11:43+0000\n"
+"PO-Revision-Date: 2017-09-28 22:08+0200\n"
 "Last-Translator: Kris Thomsen\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -70,7 +70,7 @@ msgstr "Opdateringspanel"
 msgid "The update details"
 msgstr "Opdateringsdetaljerne"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:861
+#: data/appdata/org.gnome.Software.appdata.xml.in:884
 msgid "The GNOME Project"
 msgstr "GNOME-projektet"
 
@@ -295,7 +295,6 @@ msgstr ""
 "ned i en app-info-mappe"
 
 #: data/org.gnome.software.gschema.xml:143
-#| msgid "Install an appstream file into a system location"
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr "Installér en AppStream-fil på en systemplacering for alle brugere"
 
@@ -609,6 +608,10 @@ msgstr "Indtast din engangskode til to-faktor-godkendelse."
 msgid "PIN"
 msgstr "Pinkode"
 
+#: src/gs-auth-dialog.ui:325
+msgid "Authenticate"
+msgstr "Godkend"
+
 #: src/gs-auth-dialog.ui:337
 msgid "Continue"
 msgstr "Fortsæt"
@@ -650,7 +653,6 @@ msgstr "Vælg venligst et tal mellem 1 og %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
 #: lib/gs-cmd.c:268
-#| msgid "An application"
 msgid "Choose an application:"
 msgstr "Vælg et program:"
 
@@ -1469,7 +1471,6 @@ msgstr "CSS-valideret OK!"
 
 #. TRANSLATORS: error dialog title
 #: src/gs-editor.c:564
-#| msgid "Failed to load image"
 msgid "Failed to load file"
 msgstr "Kunne ikke indlæse fil"
 
@@ -1479,7 +1480,6 @@ msgid "Unsaved changes"
 msgstr "Ændringer, som ikke er gemt"
 
 #: src/gs-editor.c:600
-#| msgid "Application is ready to be used."
 msgid "The application list is already loaded."
 msgstr "Programlisten er allerede indlæst."
 
@@ -1508,7 +1508,6 @@ msgstr "_Gem"
 
 #. TRANSLATORS: error dialog title
 #: src/gs-editor.c:676
-#| msgid "Failed to load image"
 msgid "Failed to save file"
 msgstr "Kunne ikke gemme fil"
 
@@ -1524,7 +1523,6 @@ msgid "Banner design deleted."
 msgstr "Bannerdesign slettet."
 
 #: src/gs-editor.c:876
-#| msgid "The application was rated this way because it features:"
 msgid "The application list has unsaved changes."
 msgstr "Programlisten har ændringer, som ikke er gemt."
 
@@ -1535,13 +1533,10 @@ msgstr "Brug detaljeret logning"
 
 #. TRANSLATORS: program name, an application to add and remove software repositories
 #: src/gs-editor.c:1119
-#| msgid "GNOME Software"
 msgid "GNOME Software Banner Designer"
 msgstr "GNOME Software-bannerdesigner"
 
 #: src/gs-editor.ui:63 src/gs-editor.ui:77
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "GUI Designers"
 msgid "No Designs"
 msgstr "Ingen designs"
 
@@ -1562,13 +1557,11 @@ msgid "Summary"
 msgstr "Resumé"
 
 #: src/gs-editor.ui:382
-#| msgid "Editor’s Picks"
 msgid "Editor’s Pick"
 msgstr "Redaktørens valg"
 
 #. This check button controls whether the application’s banner appears in the “Featured” category
 #: src/gs-editor.ui:397
-#| msgid "Category"
 msgid "Category Featured"
 msgstr "Udvalgt i kategori"
 
@@ -1576,6 +1569,10 @@ msgstr "Udvalgt i kategori"
 #: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Omgør"
+
+#: src/gs-editor.ui:524 src/org.gnome.Software.Editor.desktop.in:3
+msgid "Banner Designer"
+msgstr "Bannerdesigner"
 
 #: src/gs-editor.ui:547
 msgid "New Banner"
@@ -1594,12 +1591,10 @@ msgid "Delete Design"
 msgstr "Slet design"
 
 #: src/gs-editor.ui:670
-#| msgid "Featured"
 msgid "Featured App"
 msgstr "Udvalgt program"
 
 #: src/gs-editor.ui:684
-#| msgid "OS Updates"
 msgid "OS Upgrade"
 msgstr "Systemopgradering"
 
@@ -2017,7 +2012,6 @@ msgstr "Ingen programdata fundet"
 #. * application summary, e.g. 'GNOME Clocks'
 #: src/gs-page.c:445
 #, c-format
-#| msgid "Are you sure you want to remove %s?"
 msgid "Are you sure you want to purchase %s?"
 msgstr "Er du sikker på, at du vil købe %s?"
 
@@ -2715,7 +2709,6 @@ msgstr "Ikke nok diskplads — frigør venligst noget plads og forsøg igen"
 
 #. TRANSLATORS: we failed to get a proper error code
 #: src/gs-shell.c:1412 src/gs-shell.c:1460 src/gs-shell.c:1527
-#| msgid "Sorry, this did not work"
 msgid "Sorry, something went wrong"
 msgstr "Beklager, noget gik galt"
 
@@ -2911,14 +2904,12 @@ msgstr "Installerede opdateringer"
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
 #: src/gs-update-dialog.c:419
-#| msgid "Additional Sources"
 msgid "Additions"
 msgstr "Tilføjelser"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
 #: src/gs-update-dialog.c:423
-#| msgid "Remove"
 msgid "Removals"
 msgstr "Fjernelser"
 
@@ -2931,7 +2922,6 @@ msgstr "Opdateringer"
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
 #: src/gs-update-dialog.c:431
-#| msgid "_Download"
 msgid "Downgrades"
 msgstr "Nedgraderinger"
 
@@ -2970,7 +2960,6 @@ msgstr "Vis"
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
 #: src/gs-update-monitor.c:255 src/gs-updates-page.ui:46
-#| msgid "Software Updates Available"
 msgid "Operating System Updates Unavailable"
 msgstr "Systemopdateringer er ikke tilgængelige"
 
@@ -3230,13 +3219,11 @@ msgstr "O_pdater alle"
 #. * and the second %s is the distro version, e.g. '25'
 #: src/gs-updates-page.c:1088
 #, c-format
-#| msgid "The file is not supported."
 msgid "%s %s is no longer supported."
 msgstr "%s %s er ikke længere understøttet."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
 #: src/gs-updates-page.c:1093
-#| msgid "The file is not supported."
 msgid "Your OS is no longer supported."
 msgstr "Dit system er ikke længere understøttet."
 
@@ -3247,7 +3234,6 @@ msgstr "Dette betyder at det ikke modtager sikkerhedsopdateringer."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
 #: src/gs-updates-page.c:1102
-#| msgid "It is recommended that you install important updates now"
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Det anbefales at du opgraderer til en nyere version."
 
@@ -3381,14 +3367,7 @@ msgstr ""
 "Opdateringer;Opgrader;Kilder;Pakkearkiver;Indstillinger;Installer;"
 "Afinstaller;Program;Software;App;Store;"
 
-#: src/org.gnome.Software.Editor.desktop.in:3
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "GUI Designers"
-msgid "Banner Designer"
-msgstr "Bannerdesigner"
-
 #: src/org.gnome.Software.Editor.desktop.in:4
-#| msgid "Whether to manage updates in GNOME Software"
 msgid "Design the featured banners for GNOME Software"
 msgstr "Design udvalgt-bannerne til GNOME Software"
 
@@ -3398,107 +3377,81 @@ msgid "AppStream;Software;App;"
 msgstr "AppStream;Software;App;Program"
 
 #: plugins/core/gs-desktop-common.c:30
-#| msgid "All"
 msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:33
-#| msgid "Featured"
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:36
-#| msgctxt "Menu of AudioVideo"
-#| msgid "Audio Creation & Editing"
 msgctxt "Menu of Audio & Video"
 msgid "Audio Creation & Editing"
 msgstr "Lyd-kreering og -redigering"
 
 #: plugins/core/gs-desktop-common.c:42
-#| msgctxt "Menu of AudioVideo"
-#| msgid "Music Players"
 msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Musikafspillere"
 
 #: plugins/core/gs-desktop-common.c:51
-#| msgid "All"
 msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:54
-#| msgid "Featured"
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:57
-#| msgctxt "Menu of Development"
-#| msgid "Debuggers"
 msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Fejlsøgere"
 
 #: plugins/core/gs-desktop-common.c:60
-#| msgctxt "Menu of Development"
-#| msgid "IDEs"
 msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "Udviklingsmiljøer"
 
 #: plugins/core/gs-desktop-common.c:69
-#| msgid "All"
 msgctxt "Menu of Education & Science"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:73
-#| msgid "Featured"
 msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:77
-#| msgctxt "Menu of Education and Science"
-#| msgid "Artificial Intelligence"
 msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Kunstig intelligens"
 
 #: plugins/core/gs-desktop-common.c:80
-#| msgctxt "Menu of Education and Science"
-#| msgid "Astronomy"
 msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Astronomi"
 
 #: plugins/core/gs-desktop-common.c:84
-#| msgctxt "Menu of Education and Science"
-#| msgid "Chemistry"
 msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Kemi"
 
 #: plugins/core/gs-desktop-common.c:88
-#| msgctxt "Menu of Education and Science"
-#| msgid "Languages"
 msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Sprog"
 
 #: plugins/core/gs-desktop-common.c:92
-#| msgctxt "Menu of Education and Science"
-#| msgid "Math"
 msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Matematik"
 
 #: plugins/core/gs-desktop-common.c:99
-#| msgctxt "Menu of Education and Science"
-#| msgid "Robotics"
 msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Robotteknologi"
@@ -3574,189 +3527,141 @@ msgid "Strategy"
 msgstr "Strategi"
 
 #: plugins/core/gs-desktop-common.c:156
-#| msgid "All"
 msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:159
-#| msgid "Featured"
 msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:162
-#| msgctxt "Menu of Graphics"
-#| msgid "3D Graphics"
 msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "3D-grafik"
 
 #: plugins/core/gs-desktop-common.c:165
-#| msgctxt "Menu of Graphics"
-#| msgid "Photography"
 msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Fotografi"
 
 #: plugins/core/gs-desktop-common.c:168
-#| msgctxt "Menu of Graphics"
-#| msgid "Scanning"
 msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Skanning"
 
 #: plugins/core/gs-desktop-common.c:171
-#| msgctxt "Menu of Graphics"
-#| msgid "Vector Graphics"
 msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Vektorgrafik"
 
 #: plugins/core/gs-desktop-common.c:174
-#| msgctxt "Menu of Graphics"
-#| msgid "Viewers"
 msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Fremvisere"
 
 #: plugins/core/gs-desktop-common.c:182
-#| msgid "All"
 msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:185
-#| msgid "Featured"
 msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:188
-#| msgctxt "Menu of Office"
-#| msgid "Calendar"
 msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Kalender"
 
 #: plugins/core/gs-desktop-common.c:192
-#| msgctxt "Menu of Office"
-#| msgid "Database"
 msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Database"
 
 #: plugins/core/gs-desktop-common.c:195
-#| msgctxt "Menu of Office"
-#| msgid "Finance"
 msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Finans"
 
 #: plugins/core/gs-desktop-common.c:199
-#| msgctxt "Menu of Office"
-#| msgid "Word Processor"
 msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Tekstbehandling"
 
 #: plugins/core/gs-desktop-common.c:208
-#| msgctxt "Menu of Addons"
-#| msgid "Fonts"
 msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Skrifttyper"
 
 #: plugins/core/gs-desktop-common.c:211
-#| msgctxt "Menu of Addons"
-#| msgid "Codecs"
 msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Codec"
 
 #: plugins/core/gs-desktop-common.c:214
-#| msgctxt "Menu of Addons"
-#| msgid "Input Sources"
 msgctxt "Menu of Add-ons"
 msgid "Input Sources"
 msgstr "Inputkilder"
 
 #: plugins/core/gs-desktop-common.c:217
-#| msgctxt "Menu of Addons"
-#| msgid "Language Packs"
 msgctxt "Menu of Add-ons"
 msgid "Language Packs"
 msgstr "Sprogpakker"
 
 #: plugins/core/gs-desktop-common.c:220
-#| msgctxt "Menu of Addons"
-#| msgid "Shell Extensions"
 msgctxt "Menu of Add-ons"
 msgid "Shell Extensions"
 msgstr "Shell-udvidelser"
 
 #: plugins/core/gs-desktop-common.c:223
-#| msgctxt "Menu of Addons"
-#| msgid "Localization"
 msgctxt "Menu of Add-ons"
 msgid "Localization"
 msgstr "Lokalisering"
 
 #: plugins/core/gs-desktop-common.c:226
-#| msgctxt "Menu of Addons"
-#| msgid "Hardware Drivers"
 msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
 msgstr "Hardwaredrivere"
 
 #: plugins/core/gs-desktop-common.c:234
-#| msgid "All"
 msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:237
-#| msgid "Featured"
 msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:240
-#| msgctxt "Menu of Communication"
-#| msgid "Chat"
 msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Chat"
 
 #: plugins/core/gs-desktop-common.c:247
-#| msgctxt "Menu of Communication"
-#| msgid "News"
 msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Nyheder"
 
 #: plugins/core/gs-desktop-common.c:251
-#| msgctxt "Menu of Communication"
-#| msgid "Web Browsers"
 msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Webbrowsere"
 
 #: plugins/core/gs-desktop-common.c:259
-#| msgid "All"
 msgctxt "Menu of Utilities"
 msgid "All"
 msgstr "Alle"
 
 #: plugins/core/gs-desktop-common.c:262
-#| msgid "Featured"
 msgctxt "Menu of Utilities"
 msgid "Featured"
 msgstr "Udvalgte"
 
 #: plugins/core/gs-desktop-common.c:265
-#| msgctxt "Menu of Utility"
-#| msgid "Text Editors"
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Tekstredigering"
@@ -3863,7 +3768,6 @@ msgstr "Værktøjer"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/core/gs-plugin-appstream.c:693
-#| msgid "Downloading new updates…"
 msgid "Downloading extra metadata files…"
 msgstr "Henter ekstra metadatafiler …"
 
@@ -3881,7 +3785,6 @@ msgstr "Inkluderer ydelses-, stabilitets- og sikkerhedsforbedringer."
 
 #. TRANSLATORS: status text when downloading
 #: plugins/core/gs-plugin-rewrite-resource.c:55
-#| msgid "Downloading new updates…"
 msgid "Downloading featured images…"
 msgstr "Henter udvalgte billeder …"
 
@@ -3924,7 +3827,6 @@ msgstr "Kunne ikke kopiere"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:212
-#| msgid "Downloading new updates…"
 msgid "Downloading upgrade information…"
 msgstr "Henter opgraderingsinformation …"
 
@@ -3948,26 +3850,22 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Henter flatpak-metadata til %s …"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2606
-#| msgid "Setting up updates…"
+#: plugins/flatpak/gs-flatpak.c:2617
 msgid "Getting runtime source…"
 msgstr "Henter kørselskilder …"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:801
-#| msgid "Downloading new updates…"
 msgid "Downloading firmware update signature…"
 msgstr "Henter signatur til firmwareopdatering …"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:847
-#| msgid "Downloading new updates…"
 msgid "Downloading firmware update metadata…"
 msgstr "Henter metadata til firmwareopdatering …"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:941
-#| msgid "Downloading new updates…"
 msgid "Downloading firmware update…"
 msgstr "Henter firmwareopdatering …"
 
@@ -3991,7 +3889,6 @@ msgstr ""
 
 #. TRANSLATORS: status text when downloading
 #: plugins/odrs/gs-plugin-odrs.c:205
-#| msgid "Downloading new updates…"
 msgid "Downloading application ratings…"
 msgstr "Henter programvurderinger …"
 
@@ -4005,7 +3902,6 @@ msgstr "ODRS er en tjeneste, der giver brugeranmeldelser af programmer"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:669
-#| msgid "Downloading new updates…"
 msgid "Downloading shell extension metadata…"
 msgstr "Henter metadata til shell-udvidelse …"
 
@@ -4019,7 +3915,6 @@ msgstr "En snap er en universel Linux-pakke"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/steam/gs-plugin-steam.c:600
-#| msgid "Downloading new updates…"
 msgid "Downloading application page…"
 msgstr "Henter programside …"
 
