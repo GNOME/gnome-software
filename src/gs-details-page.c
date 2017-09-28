@@ -1675,7 +1675,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
 					    gs_details_page_url_to_app_cb,
-					    self);
+					    helper);
 }
 
 static void
