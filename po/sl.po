@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-09-27 11:10+0200\n"
-"PO-Revision-Date: 2017-09-27 11:32+0200\n"
+"POT-Creation-Date: 2017-09-29 10:12+0200\n"
+"PO-Revision-Date: 2017-09-29 10:16+0200\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
 "%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -193,7 +193,7 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:64
 msgid "The last update timestamp"
-msgstr "Časovni žig  zadnje posodobitve"
+msgstr "Časovni žig zadnje posodobitve"
 
 #: data/org.gnome.software.gschema.xml:68
 msgid "The age in seconds to verify the upstream screenshot is still valid"
@@ -291,10 +291,8 @@ msgstr ""
 "mapo app-info"
 
 #: data/org.gnome.software.gschema.xml:143
-#, fuzzy
-#| msgid "Install an appstream file into a system location"
 msgid "Install the AppStream files to a system-wide location for all users"
-msgstr "Namesti pretočno datoteko na sistemsko mesto"
+msgstr "Namesti datoteke AppStream na sistemsko mesto za vse uporabnike"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -465,7 +463,7 @@ msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
-"Vrsta odziva, ki je pričakovan  za to dejanje: možnost iso »brez«, »obvesti« "
+"Vrsta odziva, ki je pričakovan za to dejanje: možnost iso »brez«, »obvesti« "
 "in »polno«"
 
 #: src/gs-application.c:114
@@ -598,6 +596,10 @@ msgstr "Vpišite enkratno kodo PIN za dvofaktorsko overjanje."
 #: src/gs-auth-dialog.ui:223
 msgid "PIN"
 msgstr "Koda PIN"
+
+#: src/gs-auth-dialog.ui:325
+msgid "Authenticate"
+msgstr "Overi"
 
 #: src/gs-auth-dialog.ui:337
 msgid "Continue"
@@ -777,7 +779,7 @@ msgstr ""
 #: src/gs-content-rating.c:93
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr ""
-"Liki v nasilnem konfliktu, ki ga je mogoče  zlahka razlikovati od realnosti"
+"Liki v nasilnem konfliktu, ki ga je mogoče zlahka razlikovati od realnosti"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:96
@@ -1316,7 +1318,7 @@ msgstr "_Spletišče"
 
 #: src/gs-details-page.ui:579
 msgid "_Donate"
-msgstr ""
+msgstr "_Doniraj"
 
 #: src/gs-details-page.ui:713
 msgid "Localized in your Language"
@@ -1470,15 +1472,13 @@ msgstr "Seznam programov je že naložen"
 
 #. TRANSLATORS: button text
 #: src/gs-editor.c:604
-#, fuzzy
 msgid "Merge documents"
-msgstr "Združi z"
+msgstr "Združi dokumente"
 
 #. TRANSLATORS: button text
 #: src/gs-editor.c:608 src/gs-editor.c:879
-#, fuzzy
 msgid "Throw away changes"
-msgstr "Odsoten"
+msgstr "Zavrzi spremembe"
 
 #. import the new file
 #: src/gs-editor.c:620 src/gs-editor.c:652
@@ -1500,21 +1500,18 @@ msgstr "Shranjevanje datoteke je spodletelo"
 
 #. TRANSLATORS, the %s is the app name, e.g. 'Inkscape'
 #: src/gs-editor.c:751
-#, fuzzy, c-format
+#, c-format
 msgid "%s banner design deleted."
-msgstr "Slika »%s« je izbrisana."
+msgstr "Zasnova oblikovanja pasice %s je izbrisana."
 
 #. TRANSLATORS, this is a notification
 #: src/gs-editor.c:754
-#, fuzzy
 msgid "Banner design deleted."
-msgstr "Oblikovanje po pogodbi"
+msgstr "Zasnova oblikovanja pasice je izbrisana."
 
 #: src/gs-editor.c:876
-#, fuzzy
-#| msgid "The application was rated this way because it features:"
 msgid "The application list has unsaved changes."
-msgstr "V projektu %s so spremembe, ki še niso shranjene"
+msgstr "Seznam programov vključuje še ne shranjene spremembe."
 
 #. TRANSLATORS: show the program version
 #: src/gs-editor.c:1111
@@ -1559,6 +1556,10 @@ msgstr "Kategorija novosti"
 #: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Razveljavi"
+
+#: src/gs-editor.ui:524 src/org.gnome.Software.Editor.desktop.in:3
+msgid "Banner Designer"
+msgstr "Snovalnik pasic"
 
 #: src/gs-editor.ui:547
 msgid "New Banner"
@@ -2011,9 +2012,9 @@ msgstr "Ali ste prepričani, da želite opraviti nakup %s?"
 
 #. TRANSLATORS: longer dialog text
 #: src/gs-page.c:449
-#, fuzzy, c-format
+#, c-format
 msgid "%s will be installed, and you will be charged %s."
-msgstr "%s %s Pripravljeno za namestitev"
+msgstr "Program %s bo nameščen, prejem pa bo obračunan z %s"
 
 #. TRANSLATORS: this is button text to purchase the application
 #: src/gs-page.c:462
@@ -2332,10 +2333,10 @@ msgstr "Zaslonska slika"
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "+ %u dodatnih"
+msgstr[1] "+ %u dodaten"
+msgstr[2] "+ %u dodatna"
+msgstr[3] "+ %u dodatni"
 
 #: src/gs-search-page.ui:7
 msgid "Search page"
@@ -3394,10 +3395,6 @@ msgstr ""
 "Posodobitve;Posodobitev;Viri;Skladišča;Programi;Namestitev;Lastnosti;"
 "Odnamestitev;App;Trgovina;"
 
-#: src/org.gnome.Software.Editor.desktop.in:3
-msgid "Banner Designer"
-msgstr "Snovalnik pasic"
-
 #: src/org.gnome.Software.Editor.desktop.in:4
 msgid "Design the featured banners for GNOME Software"
 msgstr "Oblikovanje pasic za programsko opremo GNOME"
@@ -3817,7 +3814,6 @@ msgstr ""
 
 #. TRANSLATORS: status text when downloading
 #: plugins/core/gs-plugin-rewrite-resource.c:55
-#| msgid "Downloading new updates…"
 msgid "Downloading featured images…"
 msgstr "Poteka prejemanje zaslonskih slik programov ..."
 
@@ -3866,7 +3862,7 @@ msgstr "Poteka prejemanje podrobnosti posodobitev ..."
 #. TRANSLATORS: this is a title for Fedora distro upgrades
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
 msgid "Upgrade your Fedora system to the latest features and improvements."
-msgstr ""
+msgstr "Posodobite sistem Fedora na najnovejšo različico programske opreme"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:6
 msgid "Flatpak Support"
@@ -3899,7 +3895,6 @@ msgstr "Prejemanje metapodatkov posodobitev strojne programske opreme ..."
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:941
-#| msgid "Downloading new updates…"
 msgid "Downloading firmware update…"
 msgstr "Prejemanje posodobitev strojne programske opreme ..."
 
