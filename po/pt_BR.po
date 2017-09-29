@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-08-31 14:15+0000\n"
-"PO-Revision-Date: 2017-09-03 10:06-0200\n"
+"POT-Creation-Date: 2017-09-28 22:22+0000\n"
+"PO-Revision-Date: 2017-09-28 21:00-0200\n"
 "Last-Translator: Rafael Fontenelle <rafaelff@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -75,7 +75,7 @@ msgstr "Painel de atualizações"
 msgid "The update details"
 msgstr "Os detalhes da atualização"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:861
+#: data/appdata/org.gnome.Software.appdata.xml.in:884
 msgid "The GNOME Project"
 msgstr "O projeto GNOME"
 
@@ -617,6 +617,10 @@ msgstr "Insira seu pin para autenticação de dois fatores."
 #: src/gs-auth-dialog.ui:223
 msgid "PIN"
 msgstr "PIN"
+
+#: src/gs-auth-dialog.ui:325
+msgid "Authenticate"
+msgstr "Autenticar"
 
 #: src/gs-auth-dialog.ui:337
 msgid "Continue"
@@ -1576,7 +1580,6 @@ msgstr "Escolha do editor"
 
 #. This check button controls whether the application’s banner appears in the “Featured” category
 #: src/gs-editor.ui:397
-#| msgid "Category Feature"
 msgid "Category Featured"
 msgstr "Categoria em destaque"
 
@@ -1584,6 +1587,11 @@ msgstr "Categoria em destaque"
 #: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Desfazer"
+
+# "Construtor de interface gráfica" é usado para "GUI designer" na tradução do Glade --Enrico
+#: src/gs-editor.ui:524 src/org.gnome.Software.Editor.desktop.in:3
+msgid "Banner Designer"
+msgstr "Designer de banner"
 
 #: src/gs-editor.ui:547
 msgid "New Banner"
@@ -2346,7 +2354,6 @@ msgstr "Captura de tela"
 #. * to show in in the search page
 #: src/gs-search-page.c:155
 #, c-format
-#| msgid "%u more matches"
 msgid "%u more match"
 msgid_plural "%u more matches"
 msgstr[0] "mais %u correspondência"
@@ -3397,11 +3404,6 @@ msgstr ""
 "Atualizações;Upgrade;Atualização;Fontes;Repositórios;Preferências;Instalação;"
 "Instalar;Desinstalar;Programa;Software;Aplicativo;App;Loja;Store;"
 
-# "Construtor de interface gráfica" é usado para "GUI designer" na tradução do Glade --Enrico
-#: src/org.gnome.Software.Editor.desktop.in:3
-msgid "Banner Designer"
-msgstr "Designer de banner"
-
 #: src/org.gnome.Software.Editor.desktop.in:4
 msgid "Design the featured banners for GNOME Software"
 msgstr "Crie seus banners de destaque para o GNOME Software"
@@ -3885,7 +3887,7 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Obtendo metadados de flatpak para %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2606
+#: plugins/flatpak/gs-flatpak.c:2617
 msgid "Getting runtime source…"
 msgstr "Obtendo fontes de runtime…"
 
