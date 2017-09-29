@@ -228,8 +228,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < json_array_get_length (snaps); i++) {
-		JsonObject *snap = json_array_get_object_element (snaps, i);
-		gs_app_list_add (list, snap_to_app (plugin, snap));
+		g_autoptr(GsApp) app = snap_to_app (plugin, json_array_get_object_element (snaps, i));
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -253,13 +253,15 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	for (i = 0; i < json_array_get_length (snaps); i++) {
 		JsonObject *snap = json_array_get_object_element (snaps, i);
+		g_autoptr(GsApp) app = NULL;
 		const gchar *status;
 
 		status = json_object_get_string_member (snap, "status");
 		if (g_strcmp0 (status, "active") != 0)
 			continue;
 
-		gs_app_list_add (list, snap_to_app (plugin, snap));
+		app = snap_to_app (plugin, snap);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -282,8 +284,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 		return FALSE;
 
 	for (i = 0; i < json_array_get_length (snaps); i++) {
-		JsonObject *snap = json_array_get_object_element (snaps, i);
-		gs_app_list_add (list, snap_to_app (plugin, snap));
+		g_autoptr(GsApp) app = snap_to_app (plugin, json_array_get_object_element (snaps, i));
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
