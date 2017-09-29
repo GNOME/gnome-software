@@ -134,6 +134,14 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 		guid_str = g_strjoinv (",", tmp);
 		gs_app_set_metadata (app, "fwupd::Guid", guid_str);
 	}
+	if (fwupd_device_get_name (dev) != NULL) {
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
+				 fwupd_device_get_name (dev));
+	}
+	if (fwupd_device_get_summary (dev) != NULL) {
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
+				    fwupd_device_get_summary (dev));
+	}
 	if (fwupd_device_get_version (dev) != NULL) {
 		gs_app_set_version (app, fwupd_device_get_version (dev));
 	}
