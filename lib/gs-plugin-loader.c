@@ -938,6 +938,15 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 }
 
 static gboolean
+app_thaw_notify_idle (gpointer data)
+{
+	GsApp *app = GS_APP (data);
+	g_object_thaw_notify (G_OBJECT (app));
+	g_object_unref (app);
+	return G_SOURCE_REMOVE;
+}
+
+static gboolean
 gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 			     GsAppList *list,
 			     GCancellable *cancellable,
@@ -1021,7 +1030,7 @@ out:
 	/* now emit all the changed signals */
 	for (guint i = 0; i < gs_app_list_length (freeze_list); i++) {
 		GsApp *app = gs_app_list_index (freeze_list, i);
-		g_object_thaw_notify (G_OBJECT (app));
+		g_idle_add (app_thaw_notify_idle, g_object_ref (app));
 	}
 	return ret;
 }
