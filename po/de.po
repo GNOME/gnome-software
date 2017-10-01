@@ -14,9 +14,9 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-09-08 07:40+0000\n"
-"PO-Revision-Date: 2017-09-11 16:34+0200\n"
-"Last-Translator: Wolfgang Stoeggl <c72578@yahoo.de>\n"
+"POT-Creation-Date: 2017-09-30 08:23+0000\n"
+"PO-Revision-Date: 2017-10-01 13:20+0200\n"
+"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,7 @@ msgstr "Seite mit Aktualisierungen"
 msgid "The update details"
 msgstr "Details zur Aktualisierung"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:861
+#: data/appdata/org.gnome.Software.appdata.xml.in:884
 msgid "The GNOME Project"
 msgstr "Das GNOME-Projekt"
 
@@ -626,6 +626,10 @@ msgstr "Geben Sie Ihre einmalige PIN für die Zwei-Stufen-Legitimierung ein."
 #: src/gs-auth-dialog.ui:223
 msgid "PIN"
 msgstr "PIN"
+
+#: src/gs-auth-dialog.ui:325
+msgid "Authenticate"
+msgstr "Legitimieren"
 
 #: src/gs-auth-dialog.ui:337
 msgid "Continue"
@@ -1596,6 +1600,10 @@ msgstr "Vorstellungskategorie"
 #: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Rückgängig"
+
+#: src/gs-editor.ui:524 src/org.gnome.Software.Editor.desktop.in:3
+msgid "Banner Designer"
+msgstr "Banner-Designer"
 
 #: src/gs-editor.ui:547
 msgid "New Banner"
@@ -3452,10 +3460,6 @@ msgstr ""
 "Aktualisierungen;Systemktualisierung;Quellen;Einstellungen;Installieren;"
 "Entfernen;Programm;Software;App;Store;Anwendung;Update;"
 
-#: src/org.gnome.Software.Editor.desktop.in:3
-msgid "Banner Designer"
-msgstr "Banner-Designer"
-
 #: src/org.gnome.Software.Editor.desktop.in:4
 msgid "Design the featured banners for GNOME Software"
 msgstr "Vorgestellte Banner für GNOME Software entwerfen"
@@ -3947,7 +3951,7 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-Metadaten für %s werden geholt …"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2606
+#: plugins/flatpak/gs-flatpak.c:2617
 msgid "Getting runtime source…"
 msgstr "Quelle für Laufzeitumgebungen wird geholt …"
 
