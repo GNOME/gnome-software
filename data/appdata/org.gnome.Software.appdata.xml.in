@@ -46,6 +46,22 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-10-02" version="3.26.1">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Fix memory leak in "external appstream" plugin</li>
+          <li>Don't translate an icon name in the Punjabi translation</li>
+          <li>Fix critical warning in the fwupd plugin if the update URI isn't set</li>
+          <li>Fix Addon categories not showing</li>
+          <li>Fix crash in PackageKit plugin if reporting progress with no current application</li>
+          <li>Revert a change in the snapd plugin which can cause operations to fail or hang in some situations</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-09-11" version="3.26.0">
       <description>
         <p>
