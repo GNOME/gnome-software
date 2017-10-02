@@ -2,11 +2,11 @@ GNOME Software Release Notes
 
 Write release entries:
 
-git log --format="%s" --cherry-pick --right-only GNOME_SOFTWARE_3_26_0... | grep -i -v trivial | grep -v Merge | sort | uniq
+git log --format="%s" --cherry-pick --right-only GNOME_SOFTWARE_3_26_1... | grep -i -v trivial | grep -v Merge | sort | uniq
 Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
-git commit -a -m "Release version 3.26.1"
-git tag -s GNOME_SOFTWARE_3_26_1 -m "==== Version 3.26.1 ===="
+git commit -a -m "Release version 3.26.2"
+git tag -s GNOME_SOFTWARE_3_26_2 -m "==== Version 3.26.2 ===="
 <enter password>
 
 ninja-build dist
