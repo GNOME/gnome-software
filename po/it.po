@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software 3.26\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-09-10 01:01+0000\n"
-"PO-Revision-Date: 2017-09-10 13:32+0200\n"
+"POT-Creation-Date: 2017-10-02 05:47+0000\n"
+"PO-Revision-Date: 2017-10-02 11:00+0200\n"
 "Last-Translator: Gianvito Cavasoli <gianvito@gmx.it>\n"
 "Language-Team: Italiano <gnome-it-list@gnome.org>\n"
 "Language: it\n"
@@ -69,7 +69,7 @@ msgstr "Riquadro aggiornamenti"
 msgid "The update details"
 msgstr "I dettagli dell'aggiornamento"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:861
+#: data/appdata/org.gnome.Software.appdata.xml.in:884
 msgid "The GNOME Project"
 msgstr "Il progetto GNOME"
 
@@ -611,6 +611,10 @@ msgstr "Immettere il PIN temporaneo per l'autenticazione a 2 fattori."
 #: src/gs-auth-dialog.ui:223
 msgid "PIN"
 msgstr "PIN"
+
+#: src/gs-auth-dialog.ui:325
+msgid "Authenticate"
+msgstr "Autentica"
 
 #: src/gs-auth-dialog.ui:337
 msgid "Continue"
@@ -1566,7 +1570,6 @@ msgstr "Selezionata da noi"
 
 #. This check button controls whether the application’s banner appears in the “Featured” category
 #: src/gs-editor.ui:397
-#| msgid "Category Feature"
 msgid "Category Featured"
 msgstr "Categoria in evidenza"
 
@@ -1574,6 +1577,10 @@ msgstr "Categoria in evidenza"
 #: src/gs-editor.ui:471
 msgid "Undo"
 msgstr "Annulla"
+
+#: src/gs-editor.ui:524 src/org.gnome.Software.Editor.desktop.in:3
+msgid "Banner Designer"
+msgstr "Progettazione striscione"
 
 #: src/gs-editor.ui:547
 msgid "New Banner"
@@ -2341,7 +2348,6 @@ msgstr "Schermata"
 #. * to show in in the search page
 #: src/gs-search-page.c:155
 #, c-format
-#| msgid "%u more matches"
 msgid "%u more match"
 msgid_plural "%u more matches"
 msgstr[0] "%u altro risultato"
@@ -3396,10 +3402,6 @@ msgstr ""
 "Aggiornamenti;Avanzamento;Sorgenti;Repository;Preferenze;Installare;"
 "Disinstallare;Programma;Software;Applicazione;Negozio;"
 
-#: src/org.gnome.Software.Editor.desktop.in:3
-msgid "Banner Designer"
-msgstr "Progettazione striscione"
-
 #: src/org.gnome.Software.Editor.desktop.in:4
 msgid "Design the featured banners for GNOME Software"
 msgstr "Progetta lo striscione in evidenza per GNOME Software"
@@ -3883,7 +3885,7 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Recupero metadata flatpak di %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2606
+#: plugins/flatpak/gs-flatpak.c:2617
 msgid "Getting runtime source…"
 msgstr "Recupero sorgenti delle librerie…"
 
@@ -3960,9 +3962,3 @@ msgstr "Supporto Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "La piattaforma finale di intrattenimento di Valve"
-
-#~ msgid "page1"
-#~ msgstr "pagina1"
-
-#~ msgid "page2"
-#~ msgstr "pagina2"
