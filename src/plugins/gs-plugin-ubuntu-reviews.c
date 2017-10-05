@@ -230,19 +230,27 @@ wilson_score (gdouble value, gint n, gdouble power)
 static gint
 get_rating (gint64 one_star_count, gint64 two_star_count, gint64 three_star_count, gint64 four_star_count, gint64 five_star_count)
 {
+	gdouble val;
 	gint n_ratings;
 
 	n_ratings = one_star_count + two_star_count + three_star_count + four_star_count + five_star_count;
 	if (n_ratings == 0)
 		return -1;
 
-	// Use a Wilson score which is a method of ensuring small numbers of ratings don't give high scores
-	// https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
-	return ((wilson_score (one_star_count, n_ratings, 0.1) * 20) +
-		(wilson_score (two_star_count, n_ratings, 0.1) * 40) +
-		(wilson_score (three_star_count, n_ratings, 0.1) * 60) +
-		(wilson_score (four_star_count, n_ratings, 0.1) * 80) +
-		(wilson_score (five_star_count, n_ratings, 0.1) * 100));
+	/* get score */
+	val =  (wilson_score (one_star_count, n_ratings, 0.2) * -2);
+	val += (wilson_score (two_star_count, n_ratings, 0.2) * -1);
+	val += (wilson_score (four_star_count, n_ratings, 0.2) * 1);
+	val += (wilson_score (five_star_count, n_ratings, 0.2) * 2);
+
+	/* normalize from -2..+2 to 0..5 */
+	val += 3;
+
+	/* multiply to a percentage */
+	val *= 20;
+
+	/* return rounded up integer */
+	return (gint) ceil (val);
 }
 
 static gboolean
