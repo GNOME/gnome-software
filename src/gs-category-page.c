@@ -404,7 +404,7 @@ static void
 gs_category_page_create_filter (GsCategoryPage *self,
 				GsCategory *category)
 {
-	GtkWidget *button;
+	GtkWidget *button = NULL;
 	GsCategory *s;
 	guint i;
 	GPtrArray *children;
