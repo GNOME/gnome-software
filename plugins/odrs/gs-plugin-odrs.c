@@ -584,6 +584,7 @@ static GPtrArray *
 gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	JsonNode *json_compat_ids;
 	const gchar *version;
 	guint status_code;
 	g_autofree gchar *cachefn_basename = NULL;
@@ -594,7 +595,6 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	g_autoptr(GPtrArray) reviews = NULL;
 	g_autoptr(JsonBuilder) builder = NULL;
 	g_autoptr(JsonGenerator) json_generator = NULL;
-	g_autoptr(JsonNode) json_compat_ids = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 
