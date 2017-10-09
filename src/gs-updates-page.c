@@ -199,9 +199,16 @@ _get_all_apps (GsUpdatesPage *self)
 {
 	GsAppList *apps = gs_app_list_new ();
 	for (guint i = 0; i < GS_UPDATE_PAGE_SECTION_LAST; i++) {
-		g_autoptr(GsAppList) apps_tmp = NULL;
-		apps_tmp = _get_apps_for_section (self, i);
-		gs_app_list_add_list (apps, apps_tmp);
+		g_autoptr(GList) children = NULL;
+
+		if (self->listboxes[i] == NULL)
+			continue;
+
+		children = gtk_container_get_children (GTK_CONTAINER (self->listboxes[i]));
+		for (GList *l = children; l != NULL; l = l->next) {
+			GsAppRow *app_row = GS_APP_ROW (l->data);
+			gs_app_list_add (apps, gs_app_row_get_app (app_row));
+		}
 	}
 	return apps;
 }
