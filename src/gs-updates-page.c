@@ -213,6 +213,21 @@ _get_all_apps (GsUpdatesPage *self)
 	return apps;
 }
 
+static guint
+_get_num_updates (GsUpdatesPage *self)
+{
+	guint count = 0;
+	g_autoptr(GsAppList) apps = _get_all_apps (self);
+
+	for (guint i = 0; i < gs_app_list_length (apps); ++i) {
+		GsApp *app = gs_app_list_index (apps, i);
+		if (gs_app_is_updatable (app) ||
+		    gs_app_get_state (app) == AS_APP_STATE_INSTALLING)
+			++count;
+	}
+	return count;
+}
+
 static gboolean
 _get_has_headers (GsUpdatesPage *self)
 {
@@ -334,9 +349,11 @@ gs_updates_page_get_state_string (GsPluginStatus status)
 static void
 gs_updates_page_update_ui_state (GsUpdatesPage *self)
 {
+	GtkWidget *widget = NULL;
 	gboolean allow_mobile_refresh = TRUE;
 	g_autofree gchar *checked_str = NULL;
 	g_autofree gchar *spinner_str = NULL;
+	guint num_updates = 0;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
 		return;
@@ -486,6 +503,26 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		}
 		gtk_widget_set_visible (self->label_updates_last_checked, checked_str != NULL);
 	}
+
+	/* set the right updates count */
+	num_updates = _get_num_updates (self);
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
+	if (num_updates > 0 &&
+	    gs_plugin_loader_get_allow_updates (self->plugin_loader)) {
+		g_autofree gchar *text = NULL;
+		text = g_strdup_printf ("%u", num_updates);
+		gtk_label_set_label (GTK_LABEL (widget), text);
+		gtk_widget_show (widget);
+	} else {
+		gtk_widget_hide (widget);
+	}
+
+	/* update the tab style */
+	if (num_updates > 0 &&
+	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
+		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
+	else
+		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
 }
 
 static void
@@ -998,26 +1035,6 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 				      /* TRANSLATORS: all updates will be installed */
 				      _("U_pdate All"));
 	}
-
-	/* update the counter */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
-						     "button_updates_counter"));
-	if (gs_app_list_length (list) > 0 &&
-	    gs_plugin_loader_get_allow_updates (self->plugin_loader)) {
-		g_autofree gchar *text = NULL;
-		text = g_strdup_printf ("%u", gs_app_list_length (list));
-		gtk_label_set_label (GTK_LABEL (widget), text);
-		gtk_widget_show (widget);
-	} else {
-		gtk_widget_hide (widget);
-	}
-
-	/* update the tab style */
-	if (gs_app_list_length (list) > 0 &&
-	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
-		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
-	else
-		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
 
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
