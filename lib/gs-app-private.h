@@ -33,6 +33,7 @@ void		 gs_app_set_unique_id		(GsApp		*app,
 						 const gchar	*unique_id);
 void		 gs_app_remove_addon		(GsApp		*app,
 						 GsApp		*addon);
+GCancellable	*gs_app_get_cancellable		(GsApp		*app);
 
 G_END_DECLS
 
