@@ -4756,7 +4756,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 				g_assert (ptask != NULL);
 				gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 				ret = plugin_app_func (plugin, app,
-						       cancellable,
+						       gs_app_get_cancellable (app),
 						       &error_local);
 				gs_plugin_loader_action_stop (plugin_loader, plugin);
 
