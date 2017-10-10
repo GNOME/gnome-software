@@ -685,11 +685,9 @@ gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
 				    GsApp *app,
 				    GsShellUpdates *self)
 {
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
 		return;
-	g_set_object (&self->cancellable, cancellable);
-	gs_page_update_app (GS_PAGE (self), app, self->cancellable);
+	gs_page_update_app (GS_PAGE (self), app, gs_app_get_cancellable (app));
 }
 
 static void
@@ -901,6 +899,7 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	GsApp *app = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
@@ -915,10 +914,11 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 
 	/* cancel trigger */
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
+	app = gs_app_list_index (apps, 0);
 	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   gs_app_list_index (apps, 0),
+					   app,
 					   GS_PLUGIN_ACTION_UPDATE_CANCEL,
-					   self->cancellable,
+					   gs_app_get_cancellable (app),
 					   cancel_trigger_failed_cb,
 					   self);
 }
