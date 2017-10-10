@@ -57,6 +57,7 @@ struct _GsDetailsPage
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
+	GCancellable		*app_cancellable;
 	GsApp			*app;
 	GsShell			*shell;
 	SoupSession		*session;
@@ -398,7 +399,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	case AS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (self->button_cancel, TRUE);
 		gtk_widget_set_sensitive (self->button_cancel,
-					  !g_cancellable_is_cancelled (self->cancellable));
+					  !g_cancellable_is_cancelled (self->app_cancellable));
 		break;
 	default:
 		gtk_widget_set_visible (self->button_cancel, FALSE);
@@ -1490,6 +1491,8 @@ set_app (GsDetailsPage *self, GsApp *app)
 	gs_details_page_refresh_content_rating (self);
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
 
+	g_set_object (&self->app_cancellable, gs_app_get_cancellable (app));
+
 	/* do 2nd stage refine */
 	gs_details_page_app_refine2 (self);
 }
@@ -1657,6 +1660,9 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::progress",
 				 G_CALLBACK (gs_details_page_progress_changed_cb),
 				 self, 0);
+
+	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
+
 	gs_details_page_load (self);
 
 	/* change widgets */
@@ -1676,15 +1682,14 @@ gs_details_page_get_app (GsDetailsPage *self)
 static void
 gs_details_page_app_remove_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
-	g_set_object (&self->cancellable, cancellable);
-	gs_page_remove_app (GS_PAGE (self), self->app, self->cancellable);
+	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
+	gs_page_remove_app (GS_PAGE (self), self->app, self->app_cancellable);
 }
 
 static void
 gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
-	g_cancellable_cancel (self->cancellable);
+	g_cancellable_cancel (self->app_cancellable);
 	gtk_widget_set_sensitive (widget, FALSE);
 }
 
@@ -1693,7 +1698,6 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	GList *l;
 	g_autoptr(GList) addons = NULL;
-	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
@@ -1706,15 +1710,15 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 		}
 	}
 
-	g_set_object (&self->cancellable, cancellable);
+	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
 
 	if (gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE_LIVE) {
-		gs_page_update_app (GS_PAGE (self), self->app, self->cancellable);
+		gs_page_update_app (GS_PAGE (self), self->app, self->app_cancellable);
 		return;
 	}
 
 	gs_page_install_app (GS_PAGE (self), self->app, GS_SHELL_INTERACTION_FULL,
-			     self->cancellable);
+			     self->app_cancellable);
 }
 
 static void
@@ -1734,10 +1738,12 @@ gs_details_page_addon_selected_cb (GsAppAddonRow *row,
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_addon_row_get_selected (row)) {
+			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
 			gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL,
-					     self->cancellable);
+					     self->app_cancellable);
 		} else {
-			gs_page_remove_app (GS_PAGE (self), addon, self->cancellable);
+			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
+			gs_page_remove_app (GS_PAGE (self), addon, self->app_cancellable);
 			/* make sure the addon checkboxes are synced if the
 			 * user clicks cancel in the remove confirmation dialog */
 			gs_details_page_refresh_addons (self);
@@ -2166,6 +2172,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
+	g_clear_object (&self->app_cancellable);
 	g_clear_object (&self->session);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
