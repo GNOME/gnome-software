@@ -205,6 +205,17 @@ gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader, GsPluginJob *plugin_
 static void
 gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
+	/* reset progress */
+	switch (gs_plugin_job_get_action (helper->plugin_job)) {
+	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_REMOVE:
+	case GS_PLUGIN_ACTION_UPDATE:
+		gs_app_set_progress (gs_plugin_job_get_app (helper->plugin_job), 0);
+		break;
+	default:
+		break;
+	}
+
 	if (helper->cancellable_id > 0) {
 		g_cancellable_disconnect (helper->cancellable_caller,
 					  helper->cancellable_id);
