@@ -2989,6 +2989,13 @@ _gs_app_get_icon_by_kind (GsApp *app, AsIconKind kind)
 	return NULL;
 }
 
+static void
+generic_update_cancelled_cb (GCancellable *cancellable, gpointer data)
+{
+	GCancellable *app_cancellable = G_CANCELLABLE (data);
+	g_cancellable_cancel (app_cancellable);
+}
+
 static gboolean
 gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 				 GsPluginLoaderHelper *helper,
@@ -2996,6 +3003,7 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 				 GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	guint cancel_handler_id = 0;
 	GsAppList *list;
 
 	/* run each plugin, per-app version */
@@ -3013,10 +3021,22 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 
 		/* for each app */
 		for (guint j = 0; j < gs_app_list_length (list); j++) {
+			GCancellable *app_cancellable;
 			GsApp *app = gs_app_list_index (list, j);
 			gboolean ret;
 			g_autoptr(AsProfileTask) ptask = NULL;
 			g_autoptr(GError) error_local = NULL;
+
+			/* if the whole operation should be cancelled */
+			if (g_cancellable_set_error_if_cancelled (cancellable, error))
+				return FALSE;
+
+			/* make sure that the app update is cancelled when the whole op is cancelled */
+			app_cancellable = gs_app_get_cancellable (app);
+			cancel_handler_id = g_cancellable_connect (cancellable,
+								   G_CALLBACK (generic_update_cancelled_cb),
+								   g_object_ref (app_cancellable),
+								   g_object_unref);
 
 			gs_plugin_job_set_app (helper->plugin_job, app);
 			ptask = as_profile_start (priv->profile,
@@ -3026,8 +3046,10 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 						  gs_app_get_id (app));
 			g_assert (ptask != NULL);
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-			ret = plugin_app_func (plugin, app, gs_app_get_cancellable (app), &error_local);
+			ret = plugin_app_func (plugin, app, app_cancellable, &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
+			g_cancellable_disconnect (cancellable, cancel_handler_id);
+
 			if (!ret) {
 				if (!gs_plugin_error_handle_failure (helper,
 								     plugin,
