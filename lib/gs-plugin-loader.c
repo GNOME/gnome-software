@@ -3026,7 +3026,7 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 						  gs_app_get_id (app));
 			g_assert (ptask != NULL);
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-			ret = plugin_app_func (plugin, app, cancellable, &error_local);
+			ret = plugin_app_func (plugin, app, gs_app_get_cancellable (app), &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
 				if (!gs_plugin_error_handle_failure (helper,
