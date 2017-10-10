@@ -124,6 +124,7 @@ typedef struct
 	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;
 	GsPrice			*price;
+	GCancellable		*cancellable;
 } GsAppPrivate;
 
 enum {
@@ -3736,6 +3737,34 @@ gs_app_get_priority (GsApp *app)
 	return priv->priority;
 }
 
+/**
+ * gs_app_get_cancellable:
+ * @app: a #GsApp
+ *
+ * Get a cancellable to be used with operations related to the #GsApp. This is a
+ * way for views to be able to cancel an on-going operation. If the #GCancellable
+ * is canceled, it will be unreferenced and renewed before returning it, i.e. the
+ * cancellable object will always be ready to use for new operations. So be sure
+ * to keep a reference to it if you do more than just passing the cancellable to
+ * a process.
+ *
+ * Returns: a #GCancellable
+ *
+ * Since: 3.28
+ **/
+GCancellable *
+gs_app_get_cancellable (GsApp *app)
+{
+	g_autoptr(GCancellable) cancellable = NULL;
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	if (priv->cancellable == NULL || g_cancellable_is_cancelled (priv->cancellable)) {
+		cancellable = g_cancellable_new ();
+		g_set_object (&priv->cancellable, cancellable);
+	}
+	return priv->cancellable;
+}
+
 static void
 gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -3894,6 +3923,7 @@ gs_app_finalize (GObject *object)
 	g_hash_table_unref (priv->related_hash);
 	g_ptr_array_unref (priv->categories);
 	g_ptr_array_unref (priv->key_colors);
+	g_clear_object (&priv->cancellable);
 	if (priv->keywords != NULL)
 		g_ptr_array_unref (priv->keywords);
 	if (priv->local_file != NULL)
