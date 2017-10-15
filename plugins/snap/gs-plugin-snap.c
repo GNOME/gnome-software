@@ -911,7 +911,6 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		      GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(SnapdAuthData) auth_data = NULL;
 	g_autoptr(GVariant) macaroon_variant = NULL;
 	g_autofree gchar *serialized_macaroon = NULL;
 
@@ -926,8 +925,8 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	}
 
 	macaroon_variant = g_variant_new ("(s^as)",
-					  snapd_auth_data_get_macaroon (auth_data),
-					  snapd_auth_data_get_discharges (auth_data));
+					  snapd_auth_data_get_macaroon (priv->auth_data),
+					  snapd_auth_data_get_discharges (priv->auth_data));
 	serialized_macaroon = g_variant_print (macaroon_variant, FALSE);
 	gs_auth_add_metadata (auth, "macaroon", serialized_macaroon);
 
