@@ -526,8 +526,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 static gboolean
 load_icon (GsPlugin *plugin, SnapdClient *client, GsApp *app, const gchar *icon_url, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
 	if (icon_url == NULL || g_strcmp0 (icon_url, "") == 0) {
 		g_autoptr(AsIcon) icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
@@ -634,7 +632,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	const gchar *id, *icon_url = NULL;
 	g_autoptr(SnapdSnap) local_snap = NULL;
