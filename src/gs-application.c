@@ -251,6 +251,10 @@ gs_application_initialize_ui (GsApplication *app)
 
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
 	gtk_application_add_window (GTK_APPLICATION (app), gs_shell_get_window (app->shell));
+
+	/* it's very important to set the loading as the first mode because it will
+	 * make the plugins load all their needed initial catalogs/information */
+	gs_shell_set_mode (app->shell, GS_SHELL_MODE_LOADING);
 }
 
 static void
@@ -808,14 +812,12 @@ gs_application_activate (GApplication *application)
 	gs_application_initialize_ui (GS_APPLICATION (application));
 
 	/* start metadata loading screen */
-	if (gs_shell_get_mode (app->shell) == GS_SHELL_MODE_UNKNOWN) {
+	if (gs_shell_get_mode (app->shell) == GS_SHELL_MODE_LOADING)
 		g_signal_connect (app->shell, "loaded",
 				  G_CALLBACK (gs_application_shell_loaded_cb),
 				  app);
-		gs_shell_set_mode (app->shell, GS_SHELL_MODE_LOADING);
-	} else {
+	else
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
-	}
 
 	gs_shell_activate (GS_APPLICATION (application)->shell);
 
