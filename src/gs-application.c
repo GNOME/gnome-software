@@ -67,9 +67,36 @@ struct _GsApplication {
 	GsShellSearchProvider *search_provider;
 	GSettings       *settings;
 	gboolean	 loading_done;
+	GSimpleActionGroup	*action_map;
 };
 
 G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
+
+typedef struct {
+	GsApplication *app;
+	GSimpleAction *action;
+	GVariant *action_param;
+} GsActivationHelper;
+
+static GsActivationHelper *
+gs_activation_helper_new (GsApplication *app,
+			  GSimpleAction *action,
+			  GVariant *parameter)
+{
+	GsActivationHelper *helper = g_slice_new0 (GsActivationHelper);
+	helper->app = app;
+	helper->action = G_SIMPLE_ACTION (action);
+	helper->action_param = parameter;
+
+	return helper;
+}
+
+static void
+gs_activation_helper_free (GsActivationHelper *helper)
+{
+	g_variant_unref (helper->action_param);
+	g_slice_free (GsActivationHelper, helper);
+}
 
 GsPluginLoader *
 gs_application_get_plugin_loader (GsApplication *application)
@@ -498,6 +525,17 @@ quit_activated (GSimpleAction *action,
 }
 
 static void
+activate_on_shell_loaded_cb (GsActivationHelper *helper)
+{
+	GsApplication *app = helper->app;
+
+	g_action_activate (G_ACTION (helper->action), helper->action_param);
+
+	g_signal_handlers_disconnect_by_data (app->shell, helper);
+	gs_activation_helper_free (helper);
+}
+
+static void
 set_mode_activated (GSimpleAction *action,
 		    GVariant      *parameter,
 		    gpointer       data)
@@ -725,12 +763,18 @@ install_resources_activated (GSimpleAction *action,
 
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
-	{ "sources", sources_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
 	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "reboot", reboot_activated, NULL, NULL, NULL },
 	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
+	{ "launch", launch_activated, "s", NULL, NULL },
+	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
+	{ "nop", NULL, NULL, NULL }
+};
+
+static GActionEntry actions_after_loading[] = {
+	{ "sources", sources_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
@@ -738,8 +782,6 @@ static GActionEntry actions[] = {
 	{ "details-url", details_url_activated, "(s)", NULL, NULL },
 	{ "install", install_activated, "(su)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
-	{ "launch", launch_activated, "s", NULL, NULL },
-	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "install-resources", install_resources_activated, "(sass)", NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
@@ -747,12 +789,13 @@ static GActionEntry actions[] = {
 static void
 gs_application_update_software_sources_presence (GApplication *self)
 {
+	GsApplication *app = GS_APPLICATION (self);
 	GSimpleAction *action;
 	gboolean enable_sources;
 
-	action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (self),
+	action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (app->action_map),
 							      "sources"));
-	enable_sources = g_settings_get_boolean (GS_APPLICATION (self)->settings,
+	enable_sources = g_settings_get_boolean (app->settings,
 						 ENABLE_SOFTWARE_SOURCES_CONF_KEY);
 	g_simple_action_set_enabled (action, enable_sources);
 }
@@ -775,11 +818,71 @@ gs_application_setup_search_provider (GsApplication *app)
 }
 
 static void
+wrapper_action_activated_cb (GSimpleAction *action,
+			     GVariant	   *parameter,
+			     gpointer	    data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	const gchar *action_name = g_action_get_name (G_ACTION (action));
+	GAction *real_action = g_action_map_lookup_action (G_ACTION_MAP (app->action_map),
+							   action_name);
+
+	if (app->shell_loaded_handler_id != 0) {
+		GsActivationHelper *helper = gs_activation_helper_new (app,
+								       G_SIMPLE_ACTION (real_action),
+								       g_variant_ref (parameter));
+
+		g_signal_handlers_disconnect (app->shell, app->shell_loaded_handler_id);
+		app->shell_loaded_handler_id = 0;
+
+		g_signal_connect_swapped (app->shell, "loaded",
+					  G_CALLBACK (activate_on_shell_loaded_cb), helper);
+		return;
+	}
+
+	g_action_activate (real_action, parameter);
+}
+
+static void
+gs_application_add_wrapper_actions (GApplication *application)
+{
+	GsApplication *app = GS_APPLICATION (application);
+	GActionMap *map = NULL;
+
+	app->action_map = g_simple_action_group_new ();
+	map = G_ACTION_MAP (app->action_map);
+
+	/* add the real actions to a different map and add wrapper actions to the
+	 * application instead; the wrapper actions will call the real ones but
+	 * after the "loading state" has finished */
+
+	g_action_map_add_action_entries (G_ACTION_MAP (map), actions_after_loading,
+					 G_N_ELEMENTS (actions_after_loading),
+					 application);
+
+	for (guint i = 0; i < G_N_ELEMENTS (actions_after_loading); ++i) {
+		const GActionEntry *entry = &actions_after_loading[i];
+		GAction *action = g_action_map_lookup_action (map, entry->name);
+		g_autoptr (GSimpleAction) simple_action = NULL;
+
+		simple_action = g_simple_action_new (g_action_get_name (action),
+						     g_action_get_parameter_type (action));
+		g_signal_connect (simple_action, "activate",
+				  G_CALLBACK (wrapper_action_activated_cb),
+				  application);
+		g_action_map_add_action (G_ACTION_MAP (application),
+					 G_ACTION (simple_action));
+	}
+}
+
+static void
 gs_application_startup (GApplication *application)
 {
 	GSettings *settings;
 	GsApplication *app = GS_APPLICATION (application);
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
+
+	gs_application_add_wrapper_actions (application);
 
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
 					 actions, G_N_ELEMENTS (actions),
@@ -846,6 +949,7 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->dbus_helper);
 #endif
 	g_clear_object (&app->settings);
+	g_clear_object (&app->action_map);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
