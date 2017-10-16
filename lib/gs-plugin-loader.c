@@ -447,9 +447,10 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	return TRUE;
 }
 
-static void
+static GsPlugin *
 gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 {
+	GsPlugin *adopter = NULL;
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	guint i;
 	guint j;
@@ -474,6 +475,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 				g_debug ("%s adopted %s",
 					 gs_plugin_get_name (plugin),
 					 gs_app_get_unique_id (app));
+				adopter = plugin;
 			}
 		}
 	}
@@ -485,6 +487,8 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 			continue;
 		g_debug ("nothing adopted %s", gs_app_get_unique_id (app));
 	}
+
+	return adopter;
 }
 
 static gint
@@ -3633,6 +3637,8 @@ GsApp *
 gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_id)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GsPlugin *plugin = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	GsApp *app;
 
 	/* already exists */
@@ -3643,6 +3649,24 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 	/* create and add */
 	app = gs_app_new (NULL);
 	gs_app_set_from_unique_id (app, unique_id);
+
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app);
+
+	/* XXX: plugins like the Flatpak one only operate over their own type of
+	 * apps, thus we should check if any plugin wants to adopt the app, and
+	 * then create a new app with the type desired by that plugin; otherwise
+	 * e.g. the Flatpak plugin won't refine any apps that have not been created
+	 * with its desired type;
+	 * this is a bit clumbersome but ATM it's the fastest way to ensure we use the
+	 * right type for the apps */
+	plugin = gs_plugin_loader_run_adopt (plugin_loader, list);
+	if (plugin != NULL) {
+		g_object_unref (app);
+		app = gs_plugin_app_new (plugin, NULL);
+		gs_app_set_from_unique_id (app, unique_id);
+	}
+
 	gs_app_list_add (priv->global_cache, app);
 	return app;
 }
