@@ -9,7 +9,7 @@
     <title>GNOME Software Reference Manual</title>
   </bookinfo>
 
-  <reference id="plugins">
+  <reference id="tutorial">
     <title>GNOME Software Plugin Tutorial</title>
     <partintro>
       <para>
@@ -201,7 +201,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
     return TRUE;
 
   /* the trigger exists, so create a fake app */
-  app = gs_app_new ("example:chiron.desktop");
+  app = gs_app_new ("chiron.desktop");
   gs_app_set_management_plugin (app, "example");
   gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
   gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -238,15 +238,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
           This shows a lot of the plugin architecture in action. Some notable points:
         </para>
         <itemizedlist>
-          <listitem>
-            <para>
-              The application ID (<code>example:chiron.desktop</code>) has a
-              prefix of <code>example</code> which means we can co-exist with
-              any package or flatpak version of the Chiron application,
-              not setting the prefix would make the UI confused if more than
-              one <code>chiron.desktop</code> got added.
-            </para>
-          </listitem>
           <listitem>
             <para>
               Setting the management plugin means we can check for this string
@@ -530,9 +521,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
           set, and allows the plugin to <emphasis>claim</emphasis> the
           application for itself so it can handle installation, removal and
           updating.
-          In the case of steam it could check the ID has a prefix of
-          <code>steam:</code> or could check some other plugin-specific metadata
-          using <code>gs_app_get_metadata_item()</code>.
         </para>
         <para>
           Another good example is the <code>fwupd</code> that wants to handle
