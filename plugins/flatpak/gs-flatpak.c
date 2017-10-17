@@ -1683,7 +1683,7 @@ gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime
 		return NULL;
 
 	/* create the complete GsApp from the single string */
-	app = gs_plugin_app_new (plugin, split[0]);
+	app = gs_app_new (split[0]);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
