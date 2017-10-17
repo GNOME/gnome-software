@@ -47,7 +47,7 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 	}
 
 	if (app == NULL) {
-		app = gs_plugin_app_new (plugin, NULL);
+		app = gs_app_new (NULL);
 		gs_app_set_from_unique_id (app, unique_id);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));

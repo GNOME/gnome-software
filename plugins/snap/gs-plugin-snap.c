@@ -298,7 +298,7 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 
 	cached_app = gs_plugin_cache_lookup (plugin, unique_id);
 	if (cached_app == NULL) {
-		app = gs_plugin_app_new (plugin, NULL);
+		app = gs_app_new (NULL);
 		gs_app_set_from_unique_id (app, unique_id);
 		gs_plugin_cache_add (plugin, unique_id, app);
 	}

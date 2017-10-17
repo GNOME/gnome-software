@@ -74,7 +74,6 @@ typedef struct
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
 	gboolean		 enabled;
-	GType			 app_gtype;
 	gchar			*locale;		/* allow-none */
 	gchar			*language;		/* allow-none */
 	gchar			*name;
@@ -439,59 +438,6 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->enabled = enabled;
-}
-
-/**
- * gs_plugin_get_app_gtype:
- * @plugin: a #GsPlugin
- *
- * Gets the native application GType.
- *
- * Returns: a #GType, e.g. %GS_TYPE_APP
- *
- * Since: 3.26
- **/
-GType
-gs_plugin_get_app_gtype (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->app_gtype;
-}
-
-/**
- * gs_plugin_set_app_gtype:
- * @plugin: a #GsPlugin
- * @app_gtype: the #GType state
- *
- * Sets the native application GType.
- *
- * Since: 3.26
- **/
-void
-gs_plugin_set_app_gtype (GsPlugin *plugin, GType app_gtype)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	priv->app_gtype = app_gtype;
-}
-
-/**
- * gs_plugin_app_new:
- * @plugin: a #GsPlugin
- * @id: an application ID
- *
- * Creates a GsApp, which may possibly be a subclassed type.
- * To set the type used when creating objects, plugins must use
- * gs_plugin_set_app_gtype() with a custom #GType.
- *
- * Returns: a #GsApp
- *
- * Since: 3.26
- **/
-GsApp *
-gs_plugin_app_new (GsPlugin *plugin, const gchar *id)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return GS_APP (g_object_new (priv->app_gtype, "id", id, NULL));
 }
 
 /**
@@ -2211,7 +2157,6 @@ gs_plugin_init (GsPlugin *plugin)
 		priv->rules[i] = g_ptr_array_new_with_free_func (g_free);
 
 	priv->enabled = TRUE;
-	priv->app_gtype = GS_TYPE_APP;
 	priv->scale = 1;
 	priv->profile = as_profile_new ();
 	priv->cache = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,

@@ -385,7 +385,7 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 				       NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
-		app = gs_plugin_app_new (plugin, id);
+		app = gs_app_new (id);
 		gs_plugin_cache_add (plugin, id, app);
 	}
 
