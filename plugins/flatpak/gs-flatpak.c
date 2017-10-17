@@ -139,19 +139,13 @@ gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 
 	/* create a temp GsApp */
 	id = gs_flatpak_build_id (xref);
-	app = gs_plugin_app_new (self->plugin, id);
+	app = gs_app_new (id);
 	gs_flatpak_set_metadata (self, app, xref);
 
-	/* we already have one and it's a Flatpak app, return the ref'd cached copy */
+	/* return the ref'd cached copy */
 	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
-	if (app_cached != NULL) {
-		if (GS_IS_FLATPAK_APP (app_cached)) {
-			return app_cached;
-		} else {
-			g_warning ("Found cached app in Flatpak plugin that is not a Flatpak app: %s; ",
-				   gs_app_get_unique_id (app_cached));
-		}
-	}
+	if (app_cached != NULL)
+		return app_cached;
 
 	/* fallback values */
 	if (gs_app_get_kind (app) == AS_APP_KIND_RUNTIME) {

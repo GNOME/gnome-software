@@ -76,9 +76,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 					  g_permission_get_can_acquire (permission);
 	}
 
-	/* unique to us */
-	gs_plugin_set_app_gtype (plugin, GS_TYPE_FLATPAK_APP);
-
 	/* used for self tests */
 	priv->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
 }
@@ -281,9 +278,11 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *object_id;
 
-	/* only process this app if it is a Flatpak app */
-	if (!GS_IS_FLATPAK_APP (app))
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0) {
 		return NULL;
+	}
 
 	/* specified an explicit name */
 	object_id = gs_flatpak_app_get_object_id (app);
