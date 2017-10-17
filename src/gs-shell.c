@@ -502,7 +502,8 @@ gs_shell_go_back (GsShell *shell)
 
 	switch (entry->mode) {
 	case GS_SHELL_MODE_UNKNOWN:
-		/* only happens when the user does --search foobar */
+	case GS_SHELL_MODE_LOADING:
+		/* happens when using --search, --details, --install, etc. options */
 		g_debug ("popping back entry for %s", page_name[entry->mode]);
 		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 		break;
