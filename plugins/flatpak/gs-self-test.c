@@ -1419,7 +1419,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert (got_progress_installing);
 	//g_assert_cmpint (progress_cnt, >, 20); //FIXME: bug in OSTree
 	g_assert_cmpint (pending_app_changed_cnt, ==, 0);
-	g_assert_cmpint (updates_changed_cnt, ==, 1);
+	g_assert_cmpint (updates_changed_cnt, ==, 0);
 
 	/* no longer care */
 	g_signal_handler_disconnect (plugin_loader, pending_apps_changed_id);
