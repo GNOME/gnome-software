@@ -25,144 +25,61 @@
 
 #include "gs-flatpak-app.h"
 
-struct _GsFlatpakApp
-{
-	GsApp			 parent_instance;
-	FlatpakRefKind		 ref_kind;
-	gchar			*ref_arch;
-	gchar			*ref_branch;
-	gchar			*ref_name;
-	gchar			*commit;
-	gchar			*object_id;
-	gchar			*repo_gpgkey;
-	gchar			*repo_url;
-	GsFlatpakAppFileKind	 file_kind;
-	GsApp			*runtime_repo;
-};
-
-G_DEFINE_TYPE (GsFlatpakApp, gs_flatpak_app, GS_TYPE_APP)
-
-static gboolean
-_g_set_str (gchar **str_ptr, const gchar *new_str)
-{
-	if (*str_ptr == new_str || g_strcmp0 (*str_ptr, new_str) == 0)
-		return FALSE;
-	g_free (*str_ptr);
-	*str_ptr = g_strdup (new_str);
-	return TRUE;
-}
-
-static const gchar *
-gs_flatpak_app_file_kind_to_string (GsFlatpakAppFileKind file_kind)
-{
-	if (file_kind == GS_FLATPAK_APP_FILE_KIND_REPO)
-		return "flatpakrepo";
-	if (file_kind == GS_FLATPAK_APP_FILE_KIND_REF)
-		return "flatpakref";
-	if (file_kind == GS_FLATPAK_APP_FILE_KIND_BUNDLE)
-		return "flatpak";
-	return NULL;
-}
-
-static void
-gs_flatpak_app_to_string (GsApp *app, GString *str)
-{
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	gs_utils_append_key_value (str, 20, "flatpak::ref-kind",
-				   gs_flatpak_app_get_ref_kind_as_str (app));
-	if (flatpak_app->ref_name != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::ref-name",
-					   flatpak_app->ref_name);
-	}
-	if (flatpak_app->ref_arch != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::ref-arch",
-					   flatpak_app->ref_arch);
-	}
-	if (flatpak_app->ref_branch != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::ref-branch",
-					   flatpak_app->ref_branch);
-	}
-	if (flatpak_app->commit != NULL)
-		gs_utils_append_key_value (str, 20, "flatpak::commit",
-				   flatpak_app->commit);
-	if (flatpak_app->object_id != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::object-id",
-					   flatpak_app->object_id);
-	}
-	if (flatpak_app->repo_gpgkey != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::repo-gpgkey",
-					   flatpak_app->repo_gpgkey);
-	}
-	if (flatpak_app->repo_url != NULL) {
-		gs_utils_append_key_value (str, 20, "flatpak::repo-url",
-					   flatpak_app->repo_url);
-	}
-	if (flatpak_app->file_kind != GS_FLATPAK_APP_FILE_KIND_UNKNOWN) {
-		gs_utils_append_key_value (str, 20, "flatpak::file-kind",
-					   gs_flatpak_app_file_kind_to_string (flatpak_app->file_kind));
-	}
-	if (flatpak_app->runtime_repo != NULL) {
-		g_string_append (str, "\n\tRuntimeRepo:\n\t");
-		gs_app_to_string_append (flatpak_app->runtime_repo, str);
-	}
-}
-
 const gchar *
 gs_flatpak_app_get_ref_name (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->ref_name;
+	return gs_app_get_metadata_item (app, "flatpak::RefName");
 }
 
 const gchar *
 gs_flatpak_app_get_ref_arch (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->ref_arch;
+	return gs_app_get_metadata_item (app, "flatpak::RefArch");
 }
 
 const gchar *
 gs_flatpak_app_get_ref_branch (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->ref_branch;
+	return gs_app_get_metadata_item (app, "flatpak::RefBranch");
 }
 
 const gchar *
 gs_flatpak_app_get_commit (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->commit;
+	return gs_app_get_metadata_item (app, "flatpak::Commit");
 }
 
 GsFlatpakAppFileKind
 gs_flatpak_app_get_file_kind (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->file_kind;
+	GVariant *tmp = gs_app_get_metadata_variant (app, "flatpak::FileKind");
+	if (tmp == NULL)
+		return GS_FLATPAK_APP_FILE_KIND_UNKNOWN;
+	return g_variant_get_uint32 (tmp);
 }
 
 GsApp *
 gs_flatpak_app_get_runtime_repo (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->runtime_repo;
+	return g_object_get_data (G_OBJECT (app), "flatpak::RuntimeRepo");
 }
 
 FlatpakRefKind
 gs_flatpak_app_get_ref_kind (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->ref_kind;
+	GVariant *tmp = gs_app_get_metadata_variant (app, "flatpak::RefKind");
+	if (tmp == NULL)
+		return FLATPAK_REF_KIND_APP;
+	return g_variant_get_uint32 (tmp);
 }
 
 const gchar *
 gs_flatpak_app_get_ref_kind_as_str (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	if (flatpak_app->ref_kind == FLATPAK_REF_KIND_APP)
+	FlatpakRefKind ref_kind = gs_flatpak_app_get_ref_kind (app);
+	if (ref_kind == FLATPAK_REF_KIND_APP)
 		return "app";
-	if (flatpak_app->ref_kind == FLATPAK_REF_KIND_RUNTIME)
+	if (ref_kind == FLATPAK_REF_KIND_RUNTIME)
 		return "runtime";
 	return NULL;
 }
@@ -170,139 +87,100 @@ gs_flatpak_app_get_ref_kind_as_str (GsApp *app)
 const gchar *
 gs_flatpak_app_get_object_id (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->object_id;
+	return gs_app_get_metadata_item (app, "flatpak::ObjectID");
 }
 
 const gchar *
 gs_flatpak_app_get_repo_gpgkey (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->repo_gpgkey;
+	return gs_app_get_metadata_item (app, "flatpak::RepoGpgKey");
 }
 
 const gchar *
 gs_flatpak_app_get_repo_url (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	return flatpak_app->repo_url;
+	return gs_app_get_metadata_item (app, "flatpak::RepoUrl");
 }
 
 gchar *
 gs_flatpak_app_get_ref_display (GsApp *app)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
 	return g_strdup_printf ("%s/%s/%s/%s",
 				gs_flatpak_app_get_ref_kind_as_str (app),
-				flatpak_app->ref_name,
-				flatpak_app->ref_arch,
-				flatpak_app->ref_branch);
+				gs_flatpak_app_get_ref_name (app),
+				gs_flatpak_app_get_ref_arch (app),
+				gs_flatpak_app_get_ref_branch (app));
 }
 
 void
 gs_flatpak_app_set_ref_name (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->ref_name, val);
+	gs_app_set_metadata (app, "flatpak::RefName", val);
 }
 
 void
 gs_flatpak_app_set_ref_arch (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->ref_arch, val);
+	gs_app_set_metadata (app, "flatpak::RefArch", val);
 }
 
 void
 gs_flatpak_app_set_ref_branch (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->ref_branch, val);
+	gs_app_set_metadata (app, "flatpak::RefBranch", val);
 }
 
 void
 gs_flatpak_app_set_commit (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->commit, val);
+	gs_app_set_metadata (app, "flatpak::Commit", val);
 }
 
 void
 gs_flatpak_app_set_file_kind (GsApp *app, GsFlatpakAppFileKind file_kind)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	flatpak_app->file_kind = file_kind;
+	g_autoptr(GVariant) tmp = g_variant_new_uint32 (file_kind);
+	gs_app_set_metadata_variant (app, "flatpak::FileKind", tmp);
 }
 
 void
 gs_flatpak_app_set_runtime_repo (GsApp *app, GsApp *runtime_repo)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	g_set_object (&flatpak_app->runtime_repo, runtime_repo);
+	g_object_set_data_full (G_OBJECT (app),
+				"flatpak::RuntimeRepo",
+				g_object_ref (runtime_repo),
+				(GDestroyNotify) g_object_unref);
 }
 
 void
 gs_flatpak_app_set_ref_kind (GsApp *app, FlatpakRefKind ref_kind)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	flatpak_app->ref_kind = ref_kind;
+	g_autoptr(GVariant) tmp = g_variant_new_uint32 (ref_kind);
+	gs_app_set_metadata_variant (app, "flatpak::RefKind", tmp);
 }
 
 void
 gs_flatpak_app_set_object_id (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->object_id, val);
+	gs_app_set_metadata (app, "flatpak::ObjectID", val);
 }
 
 void
 gs_flatpak_app_set_repo_gpgkey (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->repo_gpgkey, val);
+	gs_app_set_metadata (app, "flatpak::RepoGpgKey", val);
 }
 
 void
 gs_flatpak_app_set_repo_url (GsApp *app, const gchar *val)
 {
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (app);
-	_g_set_str (&flatpak_app->repo_url, val);
-}
-
-static void
-gs_flatpak_app_finalize (GObject *object)
-{
-	GsFlatpakApp *flatpak_app = GS_FLATPAK_APP (object);
-	if (flatpak_app->runtime_repo != NULL)
-		g_object_unref (flatpak_app->runtime_repo);
-	g_free (flatpak_app->ref_arch);
-	g_free (flatpak_app->ref_branch);
-	g_free (flatpak_app->ref_name);
-	g_free (flatpak_app->commit);
-	g_free (flatpak_app->object_id);
-	g_free (flatpak_app->repo_gpgkey);
-	g_free (flatpak_app->repo_url);
-	G_OBJECT_CLASS (gs_flatpak_app_parent_class)->finalize (object);
-}
-
-static void
-gs_flatpak_app_class_init (GsFlatpakAppClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	GsAppClass *klass_app = GS_APP_CLASS (klass);
-	klass_app->to_string = gs_flatpak_app_to_string;
-	object_class->finalize = gs_flatpak_app_finalize;
-}
-
-static void
-gs_flatpak_app_init (GsFlatpakApp *flatpak_app)
-{
+	gs_app_set_metadata (app, "flatpak::RepoUrl", val);
 }
 
 GsApp *
 gs_flatpak_app_new (const gchar *id)
 {
-	return GS_APP (g_object_new (GS_TYPE_FLATPAK_APP, "id", id, NULL));
+	return GS_APP (g_object_new (GS_TYPE_APP, "id", id, NULL));
 }
 
 /* vim: set noexpandtab: */
