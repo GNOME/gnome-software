@@ -120,9 +120,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 #endif
 
-	/* unique to us */
-	gs_plugin_set_app_gtype (plugin, GS_TYPE_FWUPD_APP);
-
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
 }
