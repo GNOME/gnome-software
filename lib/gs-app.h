@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -239,9 +239,14 @@ void		 gs_app_set_runtime		(GsApp		*app,
 						 GsApp		*runtime);
 const gchar	*gs_app_get_metadata_item	(GsApp		*app,
 						 const gchar	*key);
+GVariant	*gs_app_get_metadata_variant	(GsApp		*app,
+						 const gchar	*key);
 void		 gs_app_set_metadata		(GsApp		*app,
 						 const gchar	*key,
 						 const gchar	*value);
+void		 gs_app_set_metadata_variant	(GsApp		*app,
+						 const gchar	*key,
+						 GVariant	*value);
 gint		 gs_app_get_rating		(GsApp		*app);
 void		 gs_app_set_rating		(GsApp		*app,
 						 gint		 rating);

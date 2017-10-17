@@ -580,10 +580,26 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	}
 	keys = g_hash_table_get_keys (priv->metadata);
 	for (l = keys; l != NULL; l = l->next) {
+		GVariant *val;
+		const GVariantType *val_type;
 		g_autofree gchar *key = NULL;
+		g_autofree gchar *val_str = NULL;
+
 		key = g_strdup_printf ("{%s}", (const gchar *) l->data);
-		tmp = g_hash_table_lookup (priv->metadata, l->data);
-		gs_app_kv_lpad (str, key, tmp);
+		val = g_hash_table_lookup (priv->metadata, l->data);
+		val_type = g_variant_get_type (val);
+		if (g_variant_type_equal (val_type, G_VARIANT_TYPE_STRING)) {
+			val_str = g_variant_dup_string (val, NULL);
+		} else if (g_variant_type_equal (val_type, G_VARIANT_TYPE_BOOLEAN)) {
+			val_str = g_strdup (g_variant_get_boolean (val) ? "True" : "False");
+		} else if (g_variant_type_equal (val_type, G_VARIANT_TYPE_UINT32)) {
+			val_str = g_strdup_printf ("%" G_GUINT32_FORMAT,
+						   g_variant_get_uint32 (val));
+		} else {
+			val_str = g_strdup_printf ("unknown type of %s",
+						   g_variant_get_type_string (val));
+		}
+		gs_app_kv_lpad (str, key, val_str);
 	}
 	g_list_free (keys);
 
@@ -2950,6 +2966,50 @@ gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 const gchar *
 gs_app_get_metadata_item (GsApp *app, const gchar *key)
 {
+	GVariant *tmp;
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	g_return_val_if_fail (key != NULL, NULL);
+	tmp = gs_app_get_metadata_variant (app, key);
+	if (tmp == NULL)
+		return NULL;
+	return g_variant_get_string (tmp, NULL);
+}
+
+/**
+ * gs_app_set_metadata:
+ * @app: a #GsApp
+ * @key: a string, e.g. "fwupd::DeviceID"
+ * @value: a string, e.g. "fubar"
+ *
+ * Sets some metadata for the application.
+ * Is is expected that plugins namespace any plugin-specific metadata.
+ *
+ * Since: 3.22
+ **/
+void
+gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (key != NULL);
+	gs_app_set_metadata_variant (app, key,
+				     value != NULL ? g_variant_new_string (value) : NULL);
+}
+
+/**
+ * gs_app_get_metadata_variant:
+ * @app: a #GsApp
+ * @key: a string, e.g. "fwupd::device-id"
+ *
+ * Gets some metadata for the application.
+ * Is is expected that plugins namespace any plugin-specific metadata.
+ *
+ * Returns: a string, or %NULL for unset
+ *
+ * Since: 3.26
+ **/
+GVariant *
+gs_app_get_metadata_variant (GsApp *app, const gchar *key)
+{
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	g_return_val_if_fail (key != NULL, NULL);
@@ -2957,23 +3017,23 @@ gs_app_get_metadata_item (GsApp *app, const gchar *key)
 }
 
 /**
- * gs_app_set_metadata:
+ * gs_app_set_metadata_variant:
  * @app: a #GsApp
- * @key: a string, e.g. "fwupd::device-id"
- * @value: a string, e.g. "fubar"
+ * @key: a string, e.g. "fwupd::DeviceID"
+ * @value: a #GVariant
  *
  * Sets some metadata for the application.
  * Is is expected that plugins namespace any plugin-specific metadata,
  * for example `fwupd::device-id`.
  *
- * Since: 3.22
+ * Since: 3.26
  **/
 void
-gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
+gs_app_set_metadata_variant (GsApp *app, const gchar *key, GVariant *value)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
-	const gchar *found;
+	GVariant *found;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -2986,13 +3046,23 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 	/* check we're not overwriting */
 	found = g_hash_table_lookup (priv->metadata, key);
 	if (found != NULL) {
-		if (g_strcmp0 (found, value) == 0)
+		if (g_variant_equal (found, value))
 			return;
-		g_warning ("tried overwriting %s key %s from %s to %s",
-			   priv->id, key, found, value);
+		if (g_variant_type_equal (g_variant_get_type (value), G_VARIANT_TYPE_STRING) &&
+		    g_variant_type_equal (g_variant_get_type (found), G_VARIANT_TYPE_STRING)) {
+			g_warning ("tried overwriting %s key %s from %s to %s",
+				   priv->id, key,
+				   g_variant_get_string (found, NULL),
+				   g_variant_get_string (value, NULL));
+		} else {
+			g_warning ("tried overwriting %s key %s (%s->%s)",
+				   priv->id, key,
+				   g_variant_get_type_string (found),
+				   g_variant_get_type_string (value));
+		}
 		return;
 	}
-	g_hash_table_insert (priv->metadata, g_strdup (key), g_strdup (value));
+	g_hash_table_insert (priv->metadata, g_strdup (key), g_variant_ref (value));
 }
 
 /**
@@ -4066,7 +4136,7 @@ gs_app_init (GsApp *app)
 	priv->metadata = g_hash_table_new_full (g_str_hash,
 	                                        g_str_equal,
 	                                        g_free,
-	                                        g_free);
+	                                        (GDestroyNotify) g_variant_unref);
 	priv->addons_hash = g_hash_table_new_full (g_str_hash,
 	                                           g_str_equal,
 	                                           g_free,
