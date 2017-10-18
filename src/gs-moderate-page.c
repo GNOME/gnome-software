@@ -221,7 +221,7 @@ gs_moderate_page_load (GsModeratePage *self)
 
 	/* get unvoted reviews as apps */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |

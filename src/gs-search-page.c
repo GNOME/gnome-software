@@ -268,7 +268,7 @@ gs_search_page_load (GsSearchPage *self)
 					 "search", self->value,
 					 "max-results", self->max_results,
 					 "timeout", 10,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |

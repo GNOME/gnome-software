@@ -321,7 +321,7 @@ typedef enum {
 /**
  * GsPluginFailureFlags:
  * @GS_PLUGIN_FAILURE_FLAGS_NONE:		No flags set
- * @GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS:		Report errors out-of-band
+ * @GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS:		Report errors as in-app-notifications
  * @GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY:		Abort after any plugin error
  * @GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH:		Abort after a authentication error
  * @GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE:		Do not show a message on the console

@@ -182,7 +182,7 @@ gs_application_initialize_plugins (GsApplication *app)
 	if (!gs_plugin_loader_setup (app->plugin_loader,
 				     plugin_whitelist,
 				     plugin_blacklist,
-				     GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+				     GS_PLUGIN_FAILURE_FLAGS_NONE,
 				     NULL,
 				     &error)) {
 		g_warning ("Failed to setup plugins: %s", error->message);

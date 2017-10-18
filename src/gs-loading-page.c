@@ -133,7 +133,7 @@ gs_loading_page_load (GsLoadingPage *self)
 	 * spin up the plugins enough as to prime caches */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) G_MAXUINT,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
