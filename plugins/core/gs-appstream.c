@@ -697,20 +697,22 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	 */
 	array = as_app_get_compulsory_for_desktops (item);
 	current_desktop = g_getenv ("XDG_CURRENT_DESKTOP");
-	xdg_current_desktops = g_strsplit (current_desktop, ":", 0);
-	for (i = 0; i < array->len; i++) {
-		tmp = g_ptr_array_index (array, i);
-		/* if the value has a :, check the whole string */
-		if (g_strstr_len (tmp, -1, ":")) {
-			if (g_strcmp0 (current_desktop, tmp) == 0) {
+	if (current_desktop != NULL) {
+		xdg_current_desktops = g_strsplit (current_desktop, ":", 0);
+		for (i = 0; i < array->len; i++) {
+			tmp = g_ptr_array_index (array, i);
+			/* if the value has a :, check the whole string */
+			if (g_strstr_len (tmp, -1, ":")) {
+				if (g_strcmp0 (current_desktop, tmp) == 0) {
+					gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+					break;
+				}
+			/* otherwise check if any element matches this one */
+			} else if (g_strv_contains ((const gchar * const *) xdg_current_desktops,
+				   tmp)) {
 				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 				break;
 			}
-		/* otherwise check if any element matches this one */
-		} else if (g_strv_contains ((const gchar * const *) xdg_current_desktops,
-			   tmp)) {
-			gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
-			break;
 		}
 	}
 
