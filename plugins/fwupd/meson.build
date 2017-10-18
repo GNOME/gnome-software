@@ -29,7 +29,9 @@ i18n.merge_file(
 
 if get_option('enable-tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable('gs-self-test-fwupd',
+  e = executable(
+    'gs-self-test-fwupd',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -45,5 +47,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-fwupd', e)
+  test('gs-self-test-fwupd', e, env: test_env)
 endif

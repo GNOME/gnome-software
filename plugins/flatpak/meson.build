@@ -36,7 +36,9 @@ if get_option('enable-tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
-  e = executable('gs-self-test-flatpak',
+  e = executable(
+    'gs-self-test-flatpak',
+    compiled_schemas,
     sources : [
       'gs-flatpak-app.c',
       'gs-self-test.c'
@@ -54,5 +56,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-flatpak', e, timeout : 120)
+  test('gs-self-test-flatpak', e, env: test_env, timeout : 120)
 endif

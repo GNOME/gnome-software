@@ -204,11 +204,19 @@ configure_file(
 add_project_arguments('-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE',
                       language : 'c')
 
+test_env = [
+  'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
+  'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
+  'GSETTINGS_SCHEMA_DIR=@0@/data/'.format(meson.build_root()),
+  'GSETTINGS_BACKEND=memory',
+  'MALLOC_CHECK_=2',
+]
+
+subdir('data')
 subdir('lib')
 subdir('plugins')
 subdir('src')
 subdir('po')
-subdir('data')
 subdir('doc')
 
 if meson.version().version_compare('<0.41.0')

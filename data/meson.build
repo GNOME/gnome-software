@@ -2,7 +2,7 @@ subdir('appdata')
 subdir('icons')
 subdir('assets')
 
-compiled = gnome.compile_schemas()
+compiled_schemas = gnome.compile_schemas()
 install_data('org.gnome.software.gschema.xml',
              install_dir : 'share/glib-2.0/schemas')
 

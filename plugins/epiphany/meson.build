@@ -27,7 +27,9 @@ i18n.merge_file(
 
 if get_option('enable-tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', '..', 'data') + '"']
-  e = executable('gs-self-test-epiphany',
+  e = executable(
+    'gs-self-test-epiphany',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -43,5 +45,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-epiphany', e)
+  test('gs-self-test-epiphany', e, env: test_env)
 endif

@@ -28,7 +28,9 @@ i18n.merge_file(
 if get_option('enable-tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
-  e = executable('gs-self-test-snap',
+  e = executable(
+    'gs-self-test-snap',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -45,5 +47,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-snap', e)
+  test('gs-self-test-snap', e, env: test_env)
 endif

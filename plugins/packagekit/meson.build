@@ -138,7 +138,9 @@ sources : 'gs-plugin-packagekit-proxy.c',
 
 if get_option('enable-tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable('gs-self-test-packagekit',
+  e = executable(
+    'gs-self-test-packagekit',
+    compiled_schemas,
     sources : [
       'gs-markdown.c',
       'gs-self-test.c'
@@ -155,5 +157,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-packagekit', e)
+  test('gs-self-test-packagekit', e, env: test_env)
 endif

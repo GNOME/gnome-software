@@ -16,7 +16,9 @@ shared_module(
 )
 
 if get_option('enable-tests')
-  e = executable('gs-self-test-dummy',
+  e = executable(
+    'gs-self-test-dummy',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -32,5 +34,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-dummy', e)
+  test('gs-self-test-dummy', e, env: test_env)
 endif

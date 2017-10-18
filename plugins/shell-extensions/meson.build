@@ -15,7 +15,9 @@ sources : 'gs-plugin-shell-extensions.c',
 )
 
 if get_option('enable-tests')
-  e = executable('gs-self-test-shell-extensions',
+  e = executable(
+    'gs-self-test-shell-extensions',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -31,5 +33,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-shell-extensions', e)
+  test('gs-self-test-shell-extensions', e, env: test_env)
 endif

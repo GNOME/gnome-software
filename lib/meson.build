@@ -125,6 +125,7 @@ if get_option('enable-tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
   e = executable(
     'gs-self-test',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -146,5 +147,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs
   )
-  test('gs-self-test-lib', e)
+  test('gs-self-test-lib', e, env: test_env)
 endif

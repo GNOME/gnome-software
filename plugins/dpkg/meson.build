@@ -16,7 +16,9 @@ shared_module(
 if get_option('enable-tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable('gs-self-test-dpkg',
+  e = executable(
+    'gs-self-test-dpkg',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -32,5 +34,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-dpkg', e)
+  test('gs-self-test-dpkg', e, env: test_env)
 endif

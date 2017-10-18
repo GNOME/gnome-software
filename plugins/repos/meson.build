@@ -16,7 +16,9 @@ shared_module(
 
 if get_option('enable-tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
-  e = executable('gs-self-test-repos',
+  e = executable(
+    'gs-self-test-repos',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -32,5 +34,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-repos', e)
+  test('gs-self-test-repos', e, env: test_env)
 endif

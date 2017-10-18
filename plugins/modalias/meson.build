@@ -17,7 +17,9 @@ sources : 'gs-plugin-modalias.c',
 )
 
 if get_option('enable-tests')
-  e = executable('gs-self-test-modalias',
+  e = executable(
+    'gs-self-test-modalias',
+    compiled_schemas,
     sources : [
       'gs-self-test.c'
     ],
@@ -33,5 +35,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-modalias', e)
+  test('gs-self-test-modalias', e, env: test_env)
 endif
