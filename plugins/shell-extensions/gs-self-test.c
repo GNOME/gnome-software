@@ -82,6 +82,12 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(AsStore) store = NULL;
 
+	/* no shell-extensions, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "shell-extensions")) {
+		g_test_skip ("not enabled");
+		return;
+	}
+
 	/* ensure files are removed */
 	g_unlink (xml_fn);
 
