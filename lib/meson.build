@@ -147,5 +147,5 @@ if get_option('enable-tests')
     ],
     c_args : cargs
   )
-  test('gs-self-test-lib', e, env: test_env)
+  test('gs-self-test-lib', e, env: test_env, timeout : 120)
 endif
