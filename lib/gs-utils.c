@@ -258,26 +258,30 @@ gs_utils_get_user_hash (GError **error)
 /**
  * gs_utils_get_permission:
  * @id: A PolicyKit ID, e.g. "org.gnome.Desktop"
+ * @cancellable: A #GCancellable, or %NULL
+ * @error: A #GError, or %NULL
  *
  * Gets a permission object for an ID.
  *
  * Returns: a #GPermission, or %NULL if this if not possible.
  **/
 GPermission *
-gs_utils_get_permission (const gchar *id)
+gs_utils_get_permission (const gchar *id, GCancellable *cancellable, GError **error)
 {
 #ifdef HAVE_POLKIT
 	g_autoptr(GPermission) permission = NULL;
-	g_autoptr(GError) error = NULL;
-
-	permission = polkit_permission_new_sync (id, NULL, NULL, &error);
+	permission = polkit_permission_new_sync (id, NULL, cancellable, error);
 	if (permission == NULL) {
-		g_warning ("Failed to create permission %s: %s", id, error->message);
+		g_prefix_error (error, "failed to create permission %s: ", id);
+		gs_utils_error_convert_gio (error);
 		return NULL;
 	}
 	return g_steal_pointer (&permission);
 #else
-	g_debug ("no PolicyKit, so can't return GPermission for %s", id);
+	g_set_error (error,
+		     GS_PLUGIN_ERROR,
+		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		     "no PolicyKit, so can't return GPermission for %s", id);
 	return NULL;
 #endif
 }

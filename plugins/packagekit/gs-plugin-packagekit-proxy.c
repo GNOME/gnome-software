@@ -234,13 +234,15 @@ reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
 	g_autofree gchar *proxy_socks = NULL;
 	g_autofree gchar *no_proxy = NULL;
 	g_autofree gchar *pac = NULL;
+	g_autoptr(GError) error = NULL;
 	g_autoptr(GPermission) permission = NULL;
 
 	/* only if we can achieve the action *without* an auth dialog */
 	permission = gs_utils_get_permission ("org.freedesktop.packagekit."
-					      "system-network-proxy-configure");
+					      "system-network-proxy-configure",
+					      cancellable, &error);
 	if (permission == NULL) {
-		g_debug ("not setting proxy as no permission");
+		g_debug ("not setting proxy as no permission: %s", error->message);
 		return;
 	}
 	if (!g_permission_get_allowed (permission)) {

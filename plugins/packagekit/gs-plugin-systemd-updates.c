@@ -132,7 +132,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* check if we have permission to trigger the update */
 	priv->permission = gs_utils_get_permission (
-		"org.freedesktop.packagekit.trigger-offline-update");
+		"org.freedesktop.packagekit.trigger-offline-update",
+		NULL, NULL);
 	if (priv->permission != NULL) {
 		g_signal_connect (priv->permission, "notify",
 				  G_CALLBACK (gs_plugin_systemd_updates_permission_cb),

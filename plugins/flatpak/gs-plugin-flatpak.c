@@ -48,6 +48,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPermission) permission = NULL;
 
 	priv->flatpaks = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -70,8 +71,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* if we can't update the AppStream database system-wide don't even
 	 * pull the data as we can't do anything with it */
-	permission = gs_utils_get_permission (action_id);
-	if (permission != NULL) {
+	permission = gs_utils_get_permission (action_id, NULL, &error_local);
+	if (permission == NULL) {
+		g_debug ("no permission for %s: %s", action_id, error_local->message);
+	} else {
 		priv->has_system_helper = g_permission_get_allowed (permission) ||
 					  g_permission_get_can_acquire (permission);
 	}

@@ -61,7 +61,9 @@ gchar		*gs_utils_get_cache_filename	(const gchar	*kind,
 						 GsUtilsCacheFlags flags,
 						 GError		**error);
 gchar		*gs_utils_get_user_hash		(GError		**error);
-GPermission	*gs_utils_get_permission	(const gchar	*id);
+GPermission	*gs_utils_get_permission	(const gchar	*id,
+						 GCancellable	*cancellable,
+						 GError		**error);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
 GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
