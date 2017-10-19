@@ -263,6 +263,7 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *name_owner = NULL;
 	g_autoptr(GVariant) version = NULL;
 
 	if (priv->proxy != NULL)
@@ -281,7 +282,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	/* not running under Shell */
-	if (g_dbus_proxy_get_name_owner (priv->proxy) == NULL) {
+	name_owner = g_dbus_proxy_get_name_owner (priv->proxy);
+	if (name_owner == NULL) {
 		g_clear_object (&priv->proxy);
 		return FALSE;
 	}
@@ -456,7 +458,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 				      JsonObject *json_app,
 				      GError **error)
 {
-	AsApp *app;
+	g_autoptr(AsApp) app = NULL;
 	JsonObject *json_ver_map;
 	const gchar *tmp;
 
@@ -536,7 +538,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	as_app_add_metadata (app, "GnomeSoftware::OriginHostnameUrl",
 			     SHELL_EXTENSIONS_API_URI);
 
-	return app;
+	return g_steal_pointer (&app);
 }
 
 static GPtrArray *
