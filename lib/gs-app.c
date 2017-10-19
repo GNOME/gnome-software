@@ -2990,10 +2990,12 @@ gs_app_get_metadata_item (GsApp *app, const gchar *key)
 void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
+	g_autoptr(GVariant) tmp = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key != NULL);
-	gs_app_set_metadata_variant (app, key,
-				     value != NULL ? g_variant_new_string (value) : NULL);
+	if (value != NULL)
+		tmp = g_variant_new_string (value);
+	gs_app_set_metadata_variant (app, key, tmp);
 }
 
 /**
