@@ -593,9 +593,18 @@ static void
 gs_auth_secret_func (void)
 {
 	gboolean ret;
+	g_autoptr(GDBusConnection) conn = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAuth) auth1 = NULL;
 	g_autoptr(GsAuth) auth2 = NULL;
+
+	/* we not have an active session bus */
+	conn = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
+	if (conn == NULL) {
+		g_prefix_error (&error, "no session bus available: ");
+		g_test_skip (error->message);
+		return;
+	}
 
 	/* save secrets to disk */
 	auth1 = gs_auth_new ("self-test");
