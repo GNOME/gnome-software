@@ -492,15 +492,15 @@ gs_app_thread_cb (gpointer data)
 static void
 gs_app_thread_func (void)
 {
+	GThread *thread1;
+	GThread *thread2;
 	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
-	g_autoptr(GThread) thread1 = NULL;
-	g_autoptr(GThread) thread2 = NULL;
 
 	/* try really hard to cause a threading problem */
 	g_setenv ("G_MESSAGES_DEBUG", "", TRUE);
 	thread1 = g_thread_new ("thread1", gs_app_thread_cb, app);
 	thread2 = g_thread_new ("thread2", gs_app_thread_cb, app);
-	g_thread_join (thread1);
+	g_thread_join (thread1); /* consumes the reference  */
 	g_thread_join (thread2);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 }
