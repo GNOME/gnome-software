@@ -37,6 +37,7 @@ GsOsRelease	*gs_os_release_new			(GError		**error);
 const gchar	*gs_os_release_get_name			(GsOsRelease	*os_release);
 const gchar	*gs_os_release_get_version		(GsOsRelease	*os_release);
 const gchar	*gs_os_release_get_id			(GsOsRelease	*os_release);
+const gchar	*gs_os_release_get_id_like		(GsOsRelease	*os_release);
 const gchar	*gs_os_release_get_version_id		(GsOsRelease	*os_release);
 const gchar	*gs_os_release_get_pretty_name		(GsOsRelease	*os_release);
 const gchar	*gs_os_release_get_cpe_name		(GsOsRelease	*os_release);
