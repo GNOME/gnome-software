@@ -88,145 +88,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	}
 }
 
-typedef struct {
-	GsApp		*app;
-	GsPlugin	*plugin;
-	AsProfileTask	*ptask;
-	gchar		*profile_id;
-} ProgressData;
-
-static void
-gs_plugin_packagekit_progress_cb (PkProgress *progress,
-				  PkProgressType type,
-				  gpointer user_data)
-{
-	ProgressData *data = (ProgressData *) user_data;
-	GsPlugin *plugin = data->plugin;
-	GsPluginStatus plugin_status;
-	PkStatusEnum status;
-
-	if (type != PK_PROGRESS_TYPE_STATUS)
-		return;
-	g_object_get (progress,
-		      "status", &status,
-		      NULL);
-
-	/* profile */
-	if (status == PK_STATUS_ENUM_SETUP) {
-		data->ptask = as_profile_start (gs_plugin_get_profile (plugin),
-						"packagekit-refine::transaction[%s]",
-						data->profile_id);
-		/* this isn't awesome, but saves us handling it in the caller */
-		g_free (data->profile_id);
-		data->profile_id = NULL;
-	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		g_clear_pointer (&data->ptask, as_profile_task_free);
-	}
-
-	plugin_status = packagekit_status_enum_to_plugin_status (status);
-	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-		gs_plugin_status_update (plugin, data->app, plugin_status);
-}
-
-static void
-gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
-                                                GsApp *app,
-                                                PkPackage *package)
-{
-	const gchar *data;
-
-	gs_app_set_management_plugin (app, "packagekit");
-	gs_app_add_source (app, pk_package_get_name (package));
-	gs_app_add_source_id (app, pk_package_get_id (package));
-
-	/* set origin */
-	if (gs_app_get_origin (app) == NULL) {
-		data = pk_package_get_data (package);
-		if (g_str_has_prefix (data, "installed:"))
-			data += 10;
-		gs_app_set_origin (app, data);
-	}
-
-	/* set unavailable state */
-	if (pk_package_get_info (package) == PK_INFO_ENUM_UNAVAILABLE) {
-		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
-		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-	}
-	if (gs_app_get_version (app) == NULL)
-		gs_app_set_version (app,
-			pk_package_get_version (package));
-	gs_app_set_name (app,
-			 GS_APP_QUALITY_LOWEST,
-			 pk_package_get_name (package));
-	gs_app_set_summary (app,
-			    GS_APP_QUALITY_LOWEST,
-			    pk_package_get_summary (package));
-}
-
-static void
-gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
-					   GPtrArray *packages,
-					   GsApp *app)
-{
-	GPtrArray *sources;
-	PkPackage *package;
-	const gchar *pkgname;
-	guint i, j;
-	guint number_available = 0;
-	guint number_installed = 0;
-
-	/* find any packages that match the package name */
-	number_installed = 0;
-	number_available = 0;
-	sources = gs_app_get_sources (app);
-	for (j = 0; j < sources->len; j++) {
-		pkgname = g_ptr_array_index (sources, j);
-		for (i = 0; i < packages->len; i++) {
-			package = g_ptr_array_index (packages, i);
-			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
-				gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
-				switch (pk_package_get_info (package)) {
-				case PK_INFO_ENUM_INSTALLED:
-					number_installed++;
-					break;
-				case PK_INFO_ENUM_AVAILABLE:
-					number_available++;
-					break;
-				case PK_INFO_ENUM_UNAVAILABLE:
-					number_available++;
-					break;
-				default:
-					/* should we expect anything else? */
-					break;
-				}
-			}
-		}
-	}
-
-	/* if *all* the source packages for the app are installed then the
-	 * application is considered completely installed */
-	if (number_installed == sources->len && number_available == 0) {
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	} else if (number_installed + number_available == sources->len) {
-		/* if all the source packages are installed and all the rest
-		 * of the packages are available then the app is available */
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	} else if (number_installed + number_available > sources->len) {
-		/* we have more packages returned than source packages */
-		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-	} else if (number_installed + number_available < sources->len) {
-		g_autofree gchar *tmp = NULL;
-		/* we have less packages returned than source packages */
-		tmp = gs_app_to_string (app);
-		g_debug ("Failed to find all packages for:\n%s", tmp);
-		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-	}
-}
-
 static gboolean
 gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				       GsAppList *list,
@@ -239,7 +100,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	const gchar *pkgname;
 	guint i;
 	guint j;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
@@ -263,10 +124,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
-	data.profile_id = NULL;
 
 	/* resolve them all at once */
 	results = pk_client_resolve (priv->client,
@@ -308,13 +166,12 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *to_array[] = { NULL, NULL };
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
 	data.app = app;
 	data.plugin = plugin;
-	data.ptask = NULL;
 	data.profile_id = g_path_get_basename (filename);
 
 	to_array[0] = filename;
@@ -381,7 +238,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	GsApp *app;
 	guint cnt = 0;
 	PkUpdateDetail *update_detail;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autofree const gchar **package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -398,10 +255,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	if (cnt == 0)
 		return TRUE;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
-	data.profile_id = NULL;
 
 	/* get any update details */
 	results = pk_client_get_update_detail (priv->client,
@@ -437,83 +291,6 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	return TRUE;
 }
 
-/*
- * gs_pk_compare_ids:
- *
- * Do not compare the repo. Some backends do not append the origin.
- */
-static gboolean
-gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
-{
-	gboolean ret;
-	g_auto(GStrv) split1 = NULL;
-	g_auto(GStrv) split2 = NULL;
-
-	split1 = pk_package_id_split (package_id1);
-	split2 = pk_package_id_split (package_id2);
-	ret = (g_strcmp0 (split1[PK_PACKAGE_ID_NAME],
-			  split2[PK_PACKAGE_ID_NAME]) == 0 &&
-	       g_strcmp0 (split1[PK_PACKAGE_ID_VERSION],
-			  split2[PK_PACKAGE_ID_VERSION]) == 0 &&
-	       g_strcmp0 (split1[PK_PACKAGE_ID_ARCH],
-			  split2[PK_PACKAGE_ID_ARCH]) == 0);
-	return ret;
-}
-
-static void
-gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
-					 GPtrArray *array,
-					 GsApp *app)
-{
-	GPtrArray *source_ids;
-	PkDetails *details;
-	const gchar *package_id;
-	guint i;
-	guint j;
-	guint64 size = 0;
-
-	source_ids = gs_app_get_source_ids (app);
-	for (j = 0; j < source_ids->len; j++) {
-		package_id = g_ptr_array_index (source_ids, j);
-		for (i = 0; i < array->len; i++) {
-			g_autofree gchar *desc = NULL;
-			/* right package? */
-			details = g_ptr_array_index (array, i);
-			if (!gs_pk_compare_ids (package_id,
-						pk_details_get_package_id (details))) {
-				continue;
-			}
-			if (gs_app_get_license (app) == NULL) {
-				g_autofree gchar *license_spdx = NULL;
-				license_spdx = as_utils_license_to_spdx (pk_details_get_license (details));
-				if (license_spdx != NULL) {
-					gs_app_set_license (app,
-							    GS_APP_QUALITY_LOWEST,
-							    license_spdx);
-				}
-			}
-			if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
-				gs_app_set_url (app,
-						AS_URL_KIND_HOMEPAGE,
-						pk_details_get_url (details));
-			}
-			size += pk_details_get_size (details);
-			break;
-		}
-	}
-
-	/* the size is the size of all sources */
-	if (gs_app_is_installed (app)) {
-		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-		if (size > 0 && gs_app_get_size_installed (app) == 0)
-			gs_app_set_size_installed (app, size);
-	} else {
-		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
-		if (size > 0 && gs_app_get_size_download (app) == 0)
-			gs_app_set_size_download (app, size);
-	}
-}
-
 static gboolean
 gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 				      GsAppList *list,
@@ -525,7 +302,7 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	guint i, j;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -541,9 +318,7 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	}
 	g_ptr_array_add (package_ids, NULL);
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
 	data.profile_id = g_strjoinv (",", (gchar **) package_ids->pdata);
 
 	/* get any details */
@@ -579,7 +354,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	PkBitfield filter;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -591,10 +366,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
 		return TRUE;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
-	data.profile_id = NULL;
 
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
@@ -774,15 +546,13 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	GsApp *app2;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	guint cache_age_save;
 
 	data.app = app;
 	data.plugin = plugin;
-	data.ptask = NULL;
-	data.profile_id = NULL;
 
 	/* ask PK to simulate upgrading the system */
 	cache_age_save = pk_client_get_cache_age (priv->client);

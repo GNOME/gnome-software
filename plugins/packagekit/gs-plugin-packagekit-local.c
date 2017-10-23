@@ -47,15 +47,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->task);
 }
 
-typedef struct {
-	GsApp		*app;
-	GsPlugin	*plugin;
-} ProgressData;
-
 static void
-gs_plugin_packagekit_progress_cb (PkProgress *progress,
-				  PkProgressType type,
-				  gpointer user_data)
+gs_plugin_packagekit_local_progress_cb (PkProgress *progress,
+					PkProgressType type,
+					gpointer user_data)
 {
 	ProgressData *data = (ProgressData *) user_data;
 	GsPlugin *plugin = data->plugin;
@@ -83,7 +78,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkFiles *item;
-	ProgressData data;
+	ProgressData data = { 0 };
 	guint i;
 	guint j;
 	gchar **fns;
@@ -99,7 +94,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	results = pk_client_get_files_local (PK_CLIENT (priv->task),
 					     files,
 					     cancellable,
-					     gs_plugin_packagekit_progress_cb, &data,
+					     gs_plugin_packagekit_local_progress_cb, &data,
 					     error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_utils_error_add_unique_id (error, app);
@@ -145,7 +140,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	PkDetails *item;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr (PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *content_type = NULL;
@@ -170,7 +165,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	if (!g_strv_contains (mimetypes, content_type))
 		return TRUE;
 
-	data.app = NULL;
 	data.plugin = plugin;
 
 	/* get details */

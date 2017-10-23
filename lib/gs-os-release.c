@@ -43,6 +43,7 @@ struct _GsOsRelease
 	gchar			*name;
 	gchar			*version;
 	gchar			*id;
+	gchar			**id_like;
 	gchar			*version_id;
 	gchar			*pretty_name;
 	gchar			*cpe_name;
@@ -109,6 +110,10 @@ gs_os_release_initable_init (GInitable *initable,
 		}
 		if (g_strcmp0 (lines[i], "ID") == 0) {
 			os_release->id = g_strdup (tmp);
+			continue;
+		}
+		if (g_strcmp0 (lines[i], "ID_LIKE") == 0) {
+			os_release->id_like = g_strsplit (tmp, " ", 0);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "VERSION_ID") == 0) {
@@ -184,6 +189,25 @@ gs_os_release_get_id (GsOsRelease *os_release)
 {
 	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
 	return os_release->id;
+}
+
+/**
+ * gs_os_release_get_id_like:
+ * @os_release: A #GsOsRelease
+ *
+ * Gets the ID_LIKE from the os-release parser. This is a list of operating
+ * systems that are "closely related" to the local operating system, possibly
+ * by being a derivative distribution.
+ *
+ * Returns: a %NULL terminated list
+ *
+ * Since: 3.26.2
+ **/
+const gchar * const *
+gs_os_release_get_id_like (GsOsRelease *os_release)
+{
+	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
+	return (const gchar * const *) os_release->id_like;
 }
 
 /**
@@ -278,6 +302,7 @@ gs_os_release_finalize (GObject *object)
 	g_free (os_release->name);
 	g_free (os_release->version);
 	g_free (os_release->id);
+	g_strfreev (os_release->id_like);
 	g_free (os_release->version_id);
 	g_free (os_release->pretty_name);
 	g_free (os_release->cpe_name);

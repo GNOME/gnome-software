@@ -55,40 +55,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->task);
 }
 
-typedef struct {
-	GsPlugin	*plugin;
-	AsProfileTask	*ptask;
-} ProgressData;
-
-static void
-gs_plugin_packagekit_progress_cb (PkProgress *progress,
-				  PkProgressType type,
-				  gpointer user_data)
-{
-	ProgressData *data = (ProgressData *) user_data;
-	GsPlugin *plugin = data->plugin;
-	GsPluginStatus plugin_status;
-	PkStatusEnum status;
-
-	if (type != PK_PROGRESS_TYPE_STATUS)
-		return;
-	g_object_get (progress,
-		      "status", &status,
-		      NULL);
-
-	/* profile */
-	if (status == PK_STATUS_ENUM_SETUP) {
-		data->ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-							"packagekit-refresh::transaction");
-	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		g_clear_pointer (&data->ptask, as_profile_task_free);
-	}
-
-	plugin_status = packagekit_status_enum_to_plugin_status (status);
-	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-		gs_plugin_status_update (plugin, NULL, plugin_status);
-}
-
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -97,7 +63,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 
 	/* nothing to re-generate */
@@ -108,7 +74,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 0);
 
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* refresh the metadata */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA ||

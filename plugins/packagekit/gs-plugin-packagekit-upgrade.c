@@ -48,15 +48,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->task);
 }
 
-typedef struct {
-	GsApp		*app;
-	GsPlugin	*plugin;
-} ProgressData;
-
 static void
-gs_plugin_packagekit_progress_cb (PkProgress *progress,
-				  PkProgressType type,
-				  gpointer user_data)
+gs_plugin_packagekit_upgrade_progress_cb (PkProgress *progress,
+					  PkProgressType type,
+					  gpointer user_data)
 {
 	ProgressData *data = (ProgressData *) user_data;
 	GsPlugin *plugin = data->plugin;
@@ -80,7 +75,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -100,7 +95,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 					       gs_app_get_version (app),
 					       PK_UPGRADE_KIND_ENUM_COMPLETE,
 					       cancellable,
-					       gs_plugin_packagekit_progress_cb, &data,
+					       gs_plugin_packagekit_upgrade_progress_cb, &data,
 					       error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);

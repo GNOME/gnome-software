@@ -56,53 +56,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->task);
 }
 
-typedef struct {
-	GsApp		*app;
-	GsPlugin	*plugin;
-	AsProfileTask	*ptask;
-} ProgressData;
-
-static void
-gs_plugin_packagekit_progress_cb (PkProgress *progress,
-				  PkProgressType type,
-				  gpointer user_data)
-{
-	ProgressData *data = (ProgressData *) user_data;
-	GsPlugin *plugin = data->plugin;
-
-	if (type == PK_PROGRESS_TYPE_STATUS) {
-		GsPluginStatus plugin_status;
-		PkStatusEnum status;
-		g_object_get (progress,
-			      "status", &status,
-			      NULL);
-
-		/* profile */
-		if (status == PK_STATUS_ENUM_SETUP) {
-			data->ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-						"packagekit-refine::transaction");
-		} else if (status == PK_STATUS_ENUM_FINISHED) {
-			g_clear_pointer (&data->ptask, as_profile_task_free);
-		}
-
-		plugin_status = packagekit_status_enum_to_plugin_status (status);
-		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, data->app, plugin_status);
-
-	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
-		gint percentage = pk_progress_get_percentage (progress);
-		if (data->app != NULL && percentage >= 0 && percentage <= 100)
-			gs_app_set_progress (data->app, (guint) percentage);
-	}
-
-	/* Only go from TRUE to FALSE - it doesn't make sense for a package
-	 * install to become uncancellable later on */
-	if (data->app != NULL && gs_app_get_allow_cancel (data->app)) {
-		gs_app_set_allow_cancel (data->app,
-					 pk_progress_get_allow_cancel (progress));
-	}
-}
-
 static gboolean
 gs_plugin_add_sources_related (GsPlugin *plugin,
 			       GHashTable *hash,
@@ -114,16 +67,14 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	GsApp *app;
 	GsApp *app_tmp;
 	PkBitfield filter;
-	ProgressData data;
+	ProgressData data = { 0 };
 	const gchar *id;
 	gboolean ret = TRUE;
 	g_autoptr(GsAppList) installed = gs_app_list_new ();
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit::add-sources-related");
@@ -174,16 +125,14 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
 	PkRepoDetail *rd;
-	ProgressData data;
+	ProgressData data = { 0 };
 	const gchar *id;
 	guint i;
 	g_autoptr(GHashTable) hash = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
@@ -232,12 +181,11 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 
 	data.app = app;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -263,7 +211,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *addons;
 	GPtrArray *source_ids;
-	ProgressData data;
+	ProgressData data = { 0 };
 	const gchar *package_id;
 	guint i, j;
 	g_autofree gchar *local_filename = NULL;
@@ -273,7 +221,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	data.app = app;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -445,12 +392,11 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 			      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 
 	data.app = app;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -474,13 +420,11 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(PkResults) results = NULL;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -510,7 +454,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	GPtrArray *source_ids;
-	ProgressData data;
+	ProgressData data = { 0 };
 	guint i;
 	guint cnt = 0;
 	g_autoptr(PkResults) results = NULL;
@@ -518,7 +462,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	data.app = app;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -586,12 +529,10 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -620,12 +561,10 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
-	ProgressData data;
+	ProgressData data = { 0 };
 	g_autoptr(PkResults) results = NULL;
 
-	data.app = NULL;
 	data.plugin = plugin;
-	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);

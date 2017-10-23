@@ -29,15 +29,34 @@
 
 G_BEGIN_DECLS
 
-GsPluginStatus 	packagekit_status_enum_to_plugin_status	(PkStatusEnum	 status);
+typedef struct {
+	GsApp		*app;
+	GsPlugin	*plugin;
+	AsProfileTask	*ptask;
+	gchar		*profile_id;
+} ProgressData;
 
-gboolean	gs_plugin_packagekit_add_results	(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 PkResults	*results,
-							 GError		**error);
-gboolean	gs_plugin_packagekit_error_convert	(GError		**error);
-gboolean	gs_plugin_packagekit_results_valid	(PkResults	*results,
-							 GError		**error);
+GsPluginStatus 	packagekit_status_enum_to_plugin_status		(PkStatusEnum	 status);
+
+gboolean	gs_plugin_packagekit_add_results		(GsPlugin	*plugin,
+								 GsAppList	*list,
+								 PkResults	*results,
+								 GError		**error);
+gboolean	gs_plugin_packagekit_error_convert		(GError		**error);
+gboolean	gs_plugin_packagekit_results_valid		(PkResults	*results,
+								 GError		**error);
+void		gs_plugin_packagekit_progress_cb		(PkProgress	*progress,
+								 PkProgressType	type,
+								 gpointer	user_data);
+void		gs_plugin_packagekit_resolve_packages_app	(GsPlugin *plugin,
+								 GPtrArray *packages,
+								 GsApp *app);
+void		gs_plugin_packagekit_set_metadata_from_package	(GsPlugin *plugin,
+								 GsApp *app,
+								 PkPackage *package);
+void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
+								 GPtrArray *array,
+								 GsApp *app);
 
 G_END_DECLS
 
