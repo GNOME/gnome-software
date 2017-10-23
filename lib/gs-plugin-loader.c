@@ -3078,6 +3078,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginRefineFlags filter_flags;
+	GsPluginRefineFlags refine_flags;
 	gboolean add_to_pending_array = FALSE;
 
 	/* these change the pending count on the installed panel */
@@ -3274,6 +3275,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 
 		/* run refine() on each one again to pick up any icons */
+		refine_flags = gs_plugin_job_get_refine_flags (helper->plugin_job);
 		gs_plugin_job_set_refine_flags (helper->plugin_job,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON);
 		if (!gs_plugin_loader_run_refine (helper, list, cancellable, &error)) {
@@ -3281,6 +3283,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 			return;
 		}
+		/* restore the refine flags so that gs_app_list_filter sees the right thing */
+		gs_plugin_job_set_refine_flags (helper->plugin_job, refine_flags);
 		break;
 	default:
 		break;

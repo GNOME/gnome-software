@@ -1673,7 +1673,8 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS,
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS |
+							 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
