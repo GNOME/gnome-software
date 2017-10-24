@@ -547,7 +547,8 @@ gs_updates_page_get_upgrades_cb (GObject *source_object,
 		gs_updates_page_clear_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
 		gtk_widget_set_visible (self->upgrade_banner, FALSE);
 	} else {
-		GsApp *app = gs_app_list_index (list, 0);
+		/* rely on the app list already being sorted */
+		GsApp *app = gs_app_list_index (list, gs_app_list_length (list) - 1);
 		g_debug ("got upgrade %s", gs_app_get_id (app));
 		gs_upgrade_banner_set_app (GS_UPGRADE_BANNER (self->upgrade_banner), app);
 		gs_updates_page_set_flag (self, GS_UPDATES_PAGE_FLAG_HAS_UPGRADES);
