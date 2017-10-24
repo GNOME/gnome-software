@@ -559,7 +559,8 @@ gs_shell_updates_get_upgrades_cb (GObject *source_object,
 		g_debug ("updates-shell: no upgrades to show");
 		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
 	} else {
-		GsApp *app = gs_app_list_index (list, 0);
+		/* rely on the app list already being sorted */
+		GsApp *app = gs_app_list_index (list, gs_app_list_length (list) - 1);
 		g_debug ("got upgrade %s", gs_app_get_id (app));
 		gs_upgrade_banner_set_app (GS_UPGRADE_BANNER (self->upgrade_banner), app);
 		gs_shell_updates_set_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
