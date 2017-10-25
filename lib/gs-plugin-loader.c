@@ -3338,15 +3338,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	}
 
-	/* too many */
-	if (gs_app_list_length (list) > 500) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "too many results returned");
-		return;
-	}
-
 	/* filter duplicates with priority, taking into account the source name
 	 * & version, so we combine available updates with the installed app */
 	gs_app_list_filter (list, gs_plugin_loader_app_set_prio, plugin_loader);
