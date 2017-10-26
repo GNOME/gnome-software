@@ -33,9 +33,6 @@
  * other users.
  */
 
-#define PK_OFFLINE_UPDATE_RESULTS_GROUP		"PackageKit Offline Update Results"
-#define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
-
 static gboolean
 gs_plugin_packagekit_convert_error (GError **error,
 				    PkErrorEnum error_enum,
@@ -98,87 +95,71 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GCancellable *cancellable,
 				  GError **error)
 {
-	gboolean ret;
 	guint64 mtime;
 	guint i;
-	g_auto(GStrv) package_ids = NULL;
-	g_autofree gchar *packages = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GFileInfo) info = NULL;
-	g_autoptr(GKeyFile) key_file = NULL;
+	g_autoptr(GPtrArray) package_array = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(PkResults) results = NULL;
+	PkExitEnum exit_code;
 
-	/* was any offline update attempted */
-	if (!g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS))
-		return TRUE;
+	/* get the results */
+	results = pk_offline_get_results (&error_local);
+	if (results == NULL) {
+		/* was any offline update attempted */
+		if (g_error_matches (error_local,
+		                     PK_OFFLINE_ERROR,
+		                     PK_OFFLINE_ERROR_NO_DATA)) {
+			return TRUE;
+		}
+
+		g_set_error (error,
+		             GS_PLUGIN_ERROR,
+		             GS_PLUGIN_ERROR_INVALID_FORMAT,
+		             "Failed to get offline update results: %s",
+		             error_local->message);
+		return FALSE;
+	}
 
 	/* get the mtime of the results */
-	file = g_file_new_for_path (PK_OFFLINE_UPDATE_RESULTS_FILENAME);
-	info = g_file_query_info (file,
-				  G_FILE_ATTRIBUTE_TIME_MODIFIED,
-				  G_FILE_QUERY_INFO_NONE,
-				  cancellable,
-				  error);
-	if (info == NULL)
-		return FALSE;
-	mtime = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
-
-	/* open the file */
-	key_file = g_key_file_new ();
-	ret = g_key_file_load_from_file (key_file,
-					 PK_OFFLINE_UPDATE_RESULTS_FILENAME,
-					 G_KEY_FILE_NONE,
-					 error);
-	if (!ret)
+	mtime = pk_offline_get_results_mtime (error);
+	if (mtime == 0)
 		return FALSE;
 
 	/* only return results if successful */
-	ret = g_key_file_get_boolean (key_file,
-				      PK_OFFLINE_UPDATE_RESULTS_GROUP,
-				      "Success",
-				      NULL);
-	if (!ret) {
-		g_autofree gchar *code = NULL;
-		g_autofree gchar *details = NULL;
-		code = g_key_file_get_string (key_file,
-					      PK_OFFLINE_UPDATE_RESULTS_GROUP,
-					      "ErrorCode",
-					      error);
-		if (code == NULL)
+	exit_code = pk_results_get_exit_code (results);
+	if (exit_code != PK_EXIT_ENUM_SUCCESS) {
+		g_autoptr(PkError) error_code = NULL;
+
+		error_code = pk_results_get_error_code (results);
+		if (error_code == NULL) {
+			g_set_error (error,
+			             GS_PLUGIN_ERROR,
+			             GS_PLUGIN_ERROR_FAILED,
+			             "Offline update failed without error_code set");
 			return FALSE;
-		details = g_key_file_get_string (key_file,
-						 PK_OFFLINE_UPDATE_RESULTS_GROUP,
-						 "ErrorDetails",
-						 error);
-		if (details == NULL)
-			return FALSE;
+		}
+
 		return gs_plugin_packagekit_convert_error (error,
-							   pk_error_enum_from_string (code),
-							   details);
+		                                           pk_error_get_code (error_code),
+		                                           pk_error_get_details (error_code));
 	}
 
 	/* get list of package-ids */
-	packages = g_key_file_get_string (key_file,
-					  PK_OFFLINE_UPDATE_RESULTS_GROUP,
-					  "Packages",
-					  NULL);
-	if (packages == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "No 'Packages' in %s",
-			     PK_OFFLINE_UPDATE_RESULTS_FILENAME);
-		return FALSE;
-	}
-	package_ids = g_strsplit (packages, ",", -1);
-	for (i = 0; package_ids[i] != NULL; i++) {
+	package_array = pk_results_get_package_array (results);
+	for (i = 0; i < package_array->len; i++) {
+		PkPackage *pkg = g_ptr_array_index (package_array, i);
+		const gchar *package_id;
+		g_autofree gchar *tmp = NULL;
 		g_autoptr(GsApp) app = NULL;
 		g_auto(GStrv) split = NULL;
+
 		app = gs_app_new (NULL);
-		split = g_strsplit (package_ids[i], ";", 4);
+		package_id = pk_package_get_id (pkg);
+		split = g_strsplit (package_id, ";", 4);
 		gs_app_add_source (app, split[0]);
 		gs_app_set_update_version (app, split[1]);
 		gs_app_set_management_plugin (app, "packagekit");
-		gs_app_add_source_id (app, package_ids[i]);
+		gs_app_add_source_id (app, package_id);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		gs_app_set_install_date (app, mtime);
