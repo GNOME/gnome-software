@@ -287,7 +287,8 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 		break;
         default:
 	case SNAPD_SNAP_TYPE_UNKNOWN:
-                break;
+		unique_id = g_strdup_printf ("system/snap/*/*/%s/*", snapd_snap_get_name (snap));
+		break;
 	}
 
 	cached_app = gs_plugin_cache_lookup (plugin, unique_id);
