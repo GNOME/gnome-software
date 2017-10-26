@@ -371,6 +371,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		id = gs_app_get_source_default (app);
+	if (id == NULL)
+		return TRUE;
 
 	/* get information from installed snaps */
 	local_snap = gs_snapd_list_one (macaroon, discharges, id, cancellable, NULL);
