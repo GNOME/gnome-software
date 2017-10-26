@@ -31,6 +31,8 @@ struct GsPluginData {
 	gchar			*store_name;
 	SnapdSystemConfinement	 system_confinement;
 	GsAuth			*auth;
+
+	GMutex			 store_snaps_lock;
 	GHashTable		*store_snaps;
 };
 
@@ -60,6 +62,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr (GError) error = NULL;
+
+	g_mutex_init (&priv->store_snaps_lock);
 
 	client = get_client (plugin, &error);
 	if (client == NULL) {
@@ -247,13 +251,32 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 	return TRUE;
 }
 
+static SnapdSnap *
+store_snap_cache_lookup (GsPlugin *plugin, const gchar *name)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->store_snaps_lock);
+	return g_hash_table_lookup (priv->store_snaps, name);
+}
+
+static void
+store_snap_cache_update (GsPlugin *plugin, GPtrArray *snaps)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->store_snaps_lock);
+	guint i;
+
+	for (i = 0; i < snaps->len; i++) {
+		SnapdSnap *snap = snaps->pdata[i];
+		g_hash_table_insert (priv->store_snaps, g_strdup (snapd_snap_get_name (snap)), g_object_ref (snap));
+	}
+}
+
 static GPtrArray *
 find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const gchar *query, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
-	guint i;
 
 	client = get_client (plugin, error);
 	if (client == NULL)
@@ -265,11 +288,7 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 		return NULL;
 	}
 
-	/* cache results */
-	for (i = 0; i < snaps->len; i++) {
-		SnapdSnap *snap = snaps->pdata[i];
-		g_hash_table_insert (priv->store_snaps, g_strdup (snapd_snap_get_name (snap)), g_object_ref (snap));
-	}
+	store_snap_cache_update (plugin, snaps);
 
 	return g_steal_pointer (&snaps);
 }
@@ -354,6 +373,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (priv->store_name);
 	g_clear_object (&priv->auth);
 	g_clear_pointer (&priv->store_snaps, g_hash_table_unref);
+	g_mutex_clear (&priv->store_snaps_lock);
 }
 
 static gboolean
@@ -564,12 +584,11 @@ load_icon (GsPlugin *plugin, SnapdClient *client, GsApp *app, const gchar *icon_
 static SnapdSnap *
 get_store_snap (GsPlugin *plugin, const gchar *name, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	SnapdSnap *snap = NULL;
 	g_autoptr(GPtrArray) snaps = NULL;
 
 	/* use cached version if available */
-	snap = g_hash_table_lookup (priv->store_snaps, name);
+	snap = store_snap_cache_lookup (plugin, name);
 	if (snap != NULL)
 		return g_object_ref (snap);
 
