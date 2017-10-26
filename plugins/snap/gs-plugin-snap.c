@@ -649,6 +649,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		id = gs_app_get_source_default (app);
+	if (id == NULL)
+		return TRUE;
 
 	/* get information from installed snaps */
 	local_snap = snapd_client_list_one_sync (client, id, cancellable, NULL);
