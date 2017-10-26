@@ -144,6 +144,23 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		                                           pk_error_get_details (error_code));
 	}
 
+	/* distro upgrade? */
+	if (pk_results_get_role (results) == PK_ROLE_ENUM_UPGRADE_SYSTEM) {
+		g_autoptr(GsApp) app = NULL;
+
+		app = gs_app_new (NULL);
+		gs_app_set_from_unique_id (app, "*/*/*/*/system/*");
+		gs_app_set_management_plugin (app, "packagekit");
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+		gs_app_set_install_date (app, mtime);
+		gs_app_set_metadata (app, "GnomeSoftware::Creator",
+				     gs_plugin_get_name (plugin));
+		gs_app_list_add (list, app);
+
+		return TRUE;
+	}
+
 	/* get list of package-ids */
 	package_array = pk_results_get_package_array (results);
 	for (i = 0; i < package_array->len; i++) {

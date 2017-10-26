@@ -631,24 +631,37 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	if (time_last_notified >= gs_app_get_install_date (app))
 		return;
 
-	/* TRANSLATORS: title when we've done offline updates */
-	title = ngettext ("Software Update Installed",
-			  "Software Updates Installed",
-			  gs_app_list_length (apps));
-	/* TRANSLATORS: message when we've done offline updates */
-	message = ngettext ("An important OS update has been installed.",
-			    "Important OS updates have been installed.",
-			    gs_app_list_length (apps));
+	if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE) {
+		/* TRANSLATORS: Notification title when we've done a distro upgrade */
+		notification = g_notification_new (_("System Upgrade Complete"));
 
-	notification = g_notification_new (title);
-	g_notification_set_body (notification, message);
-	/* TRANSLATORS: Button to look at the updates that were installed.
-	 * Note that it has nothing to do with the application reviews, the
-	 * users can't express their opinions here. In some languages
-	 * "Review (evaluate) something" is a different translation than
-	 * "Review (browse) something." */
-	g_notification_add_button_with_target (notification, C_("updates", "Review"), "app.set-mode", "s", "updated");
-	g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
+		/* TRANSLATORS: This is the notification body when we've done a
+		 * distro upgrade. First %s is the distro name and the 2nd %s
+		 * is the version, e.g. "Welcome to Fedora 28!" */
+		message = g_strdup_printf (_("Welcome to %s %s!"),
+		                           gs_app_get_name (app),
+		                           gs_app_get_version (app));
+		g_notification_set_body (notification, message);
+	} else {
+		/* TRANSLATORS: title when we've done offline updates */
+		title = ngettext ("Software Update Installed",
+				  "Software Updates Installed",
+				  gs_app_list_length (apps));
+		/* TRANSLATORS: message when we've done offline updates */
+		message = ngettext ("An important OS update has been installed.",
+				    "Important OS updates have been installed.",
+				    gs_app_list_length (apps));
+
+		notification = g_notification_new (title);
+		g_notification_set_body (notification, message);
+		/* TRANSLATORS: Button to look at the updates that were installed.
+		 * Note that it has nothing to do with the application reviews, the
+		 * users can't express their opinions here. In some languages
+		 * "Review (evaluate) something" is a different translation than
+		 * "Review (browse) something." */
+		g_notification_add_button_with_target (notification, C_("updates", "Review"), "app.set-mode", "s", "updated");
+		g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
+	}
 	g_application_send_notification (monitor->application, "offline-updates", notification);
 
 	/* update the timestamp so we don't show again */
@@ -667,6 +680,7 @@ cleanup_notifications_cb (gpointer user_data)
 	g_debug ("getting historical updates for fresh session");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
