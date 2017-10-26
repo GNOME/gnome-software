@@ -1429,6 +1429,7 @@ gs_flatpak_refine_origin_from_installation (GsFlatpak *self,
 			g_debug ("found remote %s", remote_name);
 			gs_app_set_origin (app, remote_name);
 			gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (FLATPAK_REF (xref)));
+			gs_plugin_refine_item_scope (self, app);
 			return TRUE;
 		}
 		g_debug ("failed to find remote %s: %s",
