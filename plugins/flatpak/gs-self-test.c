@@ -1240,6 +1240,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	GsApp *app;
 	GsApp *app_tmp;
 	GsApp *runtime;
+	GsApp *old_runtime;
 	gboolean got_progress_installing = FALSE;
 	gboolean ret;
 	guint notify_progress_id;
@@ -1398,6 +1399,11 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 				  G_CALLBACK (update_app_progress_notify_cb),
 				  &progress_cnt);
 
+	/* check that the runtime is not the update's one */
+	old_runtime = gs_app_get_runtime (app);
+	g_assert (old_runtime != NULL);
+	g_assert_cmpstr (gs_app_get_branch (old_runtime), !=, "new_master");
+
 	/* use a mainloop so we get the events in the default context */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
@@ -1421,6 +1427,13 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (pending_app_changed_cnt, ==, 0);
 	g_assert_cmpint (updates_changed_cnt, ==, 0);
 
+	/* check that the app's runtime has changed */
+	runtime = gs_app_get_runtime (app);
+	g_assert (runtime != NULL);
+	g_assert (old_runtime != runtime);
+	g_assert_cmpstr (gs_app_get_branch (runtime), ==, "new_master");
+	g_assert (gs_app_get_state (runtime) == AS_APP_STATE_INSTALLED);
+
 	/* no longer care */
 	g_signal_handler_disconnect (plugin_loader, pending_apps_changed_id);
 	g_signal_handler_disconnect (plugin_loader, updates_changed_id);
@@ -1436,10 +1449,19 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (ret);
 
+	/* remove the old_runtime */
+	g_assert_cmpstr (gs_app_get_unique_id (old_runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", old_runtime,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
 	/* remove the runtime */
-	runtime = gs_app_get_runtime (app);
-	g_assert (runtime != NULL);
-	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/new_master");
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 					 "app", runtime,
