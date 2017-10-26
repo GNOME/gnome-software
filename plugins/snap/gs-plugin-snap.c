@@ -30,6 +30,8 @@
 struct GsPluginData {
 	gboolean	 system_is_confined;
 	GsAuth		*auth;
+
+	GMutex		 store_snaps_lock;
 	GHashTable	*store_snaps;
 };
 
@@ -44,6 +46,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
 
+	g_mutex_init (&priv->store_snaps_lock);
 	priv->store_snaps = g_hash_table_new_full (g_str_hash, g_str_equal,
 						   g_free, (GDestroyNotify) json_object_unref);
 
@@ -143,25 +146,40 @@ gs_plugin_snap_set_app_pixbuf_from_data (GsApp *app, const gchar *buf, gsize cou
 	return TRUE;
 }
 
+static JsonObject *
+store_snap_cache_lookup (GsPlugin *plugin, const gchar *name)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->store_snaps_lock);
+	return g_hash_table_lookup (priv->store_snaps, name);
+}
+
+static void
+store_snap_cache_update (GsPlugin *plugin, JsonArray *snaps)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->store_snaps_lock);
+	guint i;
+
+	for (i = 0; i < json_array_get_length (snaps); i++) {
+		JsonObject *snap = json_array_get_object_element (snaps, i);
+		g_hash_table_insert (priv->store_snaps, g_strdup (json_object_get_string_member (snap, "name")), json_object_ref (snap));
+	}
+}
+
 static JsonArray *
 find_snaps (GsPlugin *plugin, const gchar *section, gboolean match_name, const gchar *query, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
 	g_autoptr(JsonArray) snaps = NULL;
-	guint i;
 
 	get_macaroon (plugin, &macaroon, &discharges);
 	snaps = gs_snapd_find (macaroon, discharges, section, match_name, query, cancellable, error);
 	if (snaps == NULL)
 		return NULL;
 
-	/* cache results */
-	for (i = 0; i < json_array_get_length (snaps); i++) {
-		JsonObject *snap = json_array_get_object_element (snaps, i);
-		g_hash_table_insert (priv->store_snaps, g_strdup (json_object_get_string_member (snap, "name")), json_object_ref (snap));
-	}
+	store_snap_cache_update (plugin, snaps);
 
 	return g_steal_pointer (&snaps);
 }
@@ -244,6 +262,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_clear_object (&priv->auth);
 	g_hash_table_unref (priv->store_snaps);
+	g_mutex_clear (&priv->store_snaps_lock);
 }
 
 gboolean
@@ -411,12 +430,11 @@ load_icon (GsPlugin *plugin, GsApp *app, const gchar *icon_url, GCancellable *ca
 static JsonObject *
 get_store_snap (GsPlugin *plugin, const gchar *name, GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	JsonObject *snap = NULL;
 	g_autoptr(JsonArray) snaps = NULL;
 
 	/* use cached version if available */
-	snap = g_hash_table_lookup (priv->store_snaps, name);
+	snap = store_snap_cache_lookup (plugin, name);
 	if (snap != NULL)
 		return json_object_ref (snap);
 
