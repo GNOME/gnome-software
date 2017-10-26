@@ -2390,33 +2390,30 @@ gs_flatpak_refine_runtime_for_install (GsFlatpak *self,
 				       GError **error)
 {
 	GsApp *runtime;
+	gsize len;
+	const gchar *str;
+	g_autoptr(GBytes) data = NULL;
 
-	/* only required for ostree-based flatpak apps */
-	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
-		gsize len;
-		const gchar *str;
-		g_autoptr(GBytes) data = NULL;
-		g_autoptr(GsApp) runtime_new = NULL;
+	if (gs_app_get_kind (app) == AS_APP_KIND_RUNTIME)
+		return TRUE;
 
-		data = gs_flatpak_fetch_remote_metadata (self, app, cancellable, error);
-		if (data == NULL) {
-			gs_utils_error_add_unique_id (error, app);
-			return FALSE;
-		}
-
-		str = g_bytes_get_data (data, &len);
-		runtime_new = gs_flatpak_create_runtime_from_metadata (self, app,
-								       str, len,
-								       error);
-		if (runtime_new == NULL)
-			return FALSE;
-		gs_app_set_update_runtime (app, runtime_new);
+	/* ensure that we get the right runtime that will need to be installed */
+	data = gs_flatpak_fetch_remote_metadata (self, app, cancellable, error);
+	if (data == NULL) {
+		gs_utils_error_add_unique_id (error, app);
+		return FALSE;
 	}
 
-	/* no runtime required */
-	runtime = gs_app_get_update_runtime (app);
+	str = g_bytes_get_data (data, &len);
+	runtime = gs_flatpak_create_runtime_from_metadata (self, app,
+							   str, len,
+							   error);
+
+	/* apps need to have a runtime */
 	if (runtime == NULL)
-		return TRUE;
+		return FALSE;
+
+	gs_app_set_update_runtime (app, runtime);
 
 	/* the runtime could come from a different remote to the app */
 	if (!gs_refine_item_metadata (self, runtime, cancellable, error)) {
@@ -2440,8 +2437,6 @@ gs_flatpak_refine_runtime_for_install (GsFlatpak *self,
 		gs_utils_error_add_unique_id (error, runtime);
 		return FALSE;
 	}
-
-	gs_app_set_runtime (app, runtime);
 
 	return TRUE;
 }
@@ -2473,11 +2468,11 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	}
 
 	/* add runtime */
-	runtime = gs_app_get_runtime (app);
+	if (!gs_flatpak_refine_runtime_for_install (self, app, cancellable, error))
+		return FALSE;
+	runtime = gs_app_get_update_runtime (app);
 	if (runtime != NULL) {
 		g_autofree gchar *ref_display = NULL;
-		if (!gs_flatpak_refine_runtime_for_install (self, app, cancellable, error))
-			return FALSE;
 		ref_display = gs_flatpak_app_get_ref_display (runtime);
 		if (g_hash_table_contains (hash_installed, ref_display)) {
 			g_debug ("%s is already installed, so skipping",
@@ -2899,6 +2894,8 @@ gs_flatpak_update_app (GsFlatpak *self,
 	g_autoptr(GPtrArray) xrefs_installed = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
+	GsApp *runtime = NULL;
+	GsApp *update_runtime = NULL;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -2933,6 +2930,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 		gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLING);
 	}
+
 	for (phelper->job_now = 0; phelper->job_now < phelper->job_max; phelper->job_now++) {
 		GsApp *app_tmp = gs_app_list_index (list, phelper->job_now);
 		g_autofree gchar *ref_display = NULL;
@@ -2974,6 +2972,12 @@ gs_flatpak_update_app (GsFlatpak *self,
 	gs_app_set_update_version (app, NULL);
 	gs_app_set_update_details (app, NULL);
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
+
+	/* setup the new runtime if needed */
+	runtime = gs_app_get_runtime (app);
+	update_runtime = gs_app_get_update_runtime (app);
+	if (runtime != update_runtime && gs_app_is_installed (update_runtime))
+		gs_app_set_runtime (app, update_runtime);
 
 	/* set new version */
 	if (!gs_flatpak_refine_appstream (self, app, error))
