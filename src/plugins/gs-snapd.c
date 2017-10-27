@@ -753,6 +753,14 @@ send_package_action (const gchar *macaroon,
 			return FALSE;
 		}
 
+		if (g_cancellable_is_cancelled (cancellable) && aborted) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED,
+				     "%s of %s was cancelled", action, name);
+			return FALSE;
+		}
+
 		return TRUE;
 	}
 }
