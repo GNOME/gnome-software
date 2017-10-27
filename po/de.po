@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-10-24 21:43+0000\n"
-"PO-Revision-Date: 2017-10-27 11:36+0200\n"
+"POT-Creation-Date: 2017-10-27 10:05+0000\n"
+"PO-Revision-Date: 2017-10-27 12:09+0200\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: Deutsch <gnome-de@gnome.org>\n"
 "Language: de\n"
@@ -3111,15 +3111,28 @@ msgstr ""
 msgid "Show Details"
 msgstr "Details anzeigen"
 
+#. TRANSLATORS: Notification title when we've done a distro upgrade
+#: src/gs-update-monitor.c:636
+msgid "System Upgrade Complete"
+msgstr "Betriebssystemaktualisierung ist abgeschlossen"
+
+#. TRANSLATORS: This is the notification body when we've done a
+#. * distro upgrade. First %s is the distro name and the 2nd %s
+#. * is the version, e.g. "Welcome to Fedora 28!"
+#: src/gs-update-monitor.c:641
+#, c-format
+msgid "Welcome to %s %s!"
+msgstr "Willkommen zu %s %s!"
+
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:635
+#: src/gs-update-monitor.c:647
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Software-Aktualisierung installiert"
 msgstr[1] "Software-Aktualisierungen installiert"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:639
+#: src/gs-update-monitor.c:651
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Eine wichtige Betriebssystemaktualisierung wurde installiert."
@@ -3130,30 +3143,30 @@ msgstr[1] "Wichtige Betriebssystemaktualisierungen wurden installiert."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:650
+#: src/gs-update-monitor.c:662
 msgctxt "updates"
 msgid "Review"
 msgstr "Ansehen"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:697
+#: src/gs-update-monitor.c:711
 msgid "Failed To Update"
 msgstr "Aktualisierung fehlgeschlagen"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:703
+#: src/gs-update-monitor.c:717
 msgid "The system was already up to date."
 msgstr "Das System ist bereits auf dem neusten Stand."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:708
+#: src/gs-update-monitor.c:722
 msgid "The update was cancelled."
 msgstr "Die Aktualisierung wurde abgebrochen."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:714
+#: src/gs-update-monitor.c:728
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3163,7 +3176,7 @@ msgstr ""
 
 # Sollte dann nicht auch gleich auf eine fehlerhafte Signatur hingewiesen werden?
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:720
+#: src/gs-update-monitor.c:734
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3172,7 +3185,7 @@ msgstr ""
 "an den Autor bzw. Hersteller des Programms für weitere Einzelheiten."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:726
+#: src/gs-update-monitor.c:740
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -3180,7 +3193,7 @@ msgstr ""
 "bisschen Platz und versuchen Sie es anschließend erneut."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:731
+#: src/gs-update-monitor.c:745
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4045,8 +4058,7 @@ msgid "Downloading shell extension metadata…"
 msgstr "Metadaten für Shell-Erweiterung werden heruntergeladen …"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:206
-#| msgid "Snappy Support"
+#: plugins/snap/gs-plugin-snap.c:210
 msgid "Snap Store"
 msgstr "Snap Store"
 
