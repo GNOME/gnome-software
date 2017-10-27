@@ -570,9 +570,9 @@ gs_snapd_get_interfaces (const gchar *macaroon, gchar **discharges, GCancellable
 }
 
 static JsonObject *
-get_changes (const gchar *macaroon, gchar **discharges,
-	     const gchar *change_id,
-	     GCancellable *cancellable, GError **error)
+get_change (const gchar *macaroon, gchar **discharges,
+	    const gchar *change_id,
+	    GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *path = NULL;
 	guint status_code;
@@ -584,6 +584,52 @@ get_changes (const gchar *macaroon, gchar **discharges,
 
 	path = g_strdup_printf ("/v2/changes/%s", change_id);
 	if (!send_request ("GET", path, NULL,
+			   macaroon, discharges,
+			   &status_code, &reason_phrase,
+			   &response_type, &response, NULL,
+			   cancellable, error))
+		return NULL;
+
+	if (status_code != SOUP_STATUS_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "snapd returned status code %u: %s",
+			     status_code, reason_phrase);
+		return NULL;
+	}
+
+	parser = parse_result (response, response_type, error);
+	if (parser == NULL)
+		return NULL;
+	root = json_node_get_object (json_parser_get_root (parser));
+	result = json_object_get_object_member (root, "result");
+	if (result == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "snapd returned no result");
+		return NULL;
+	}
+
+	return json_object_ref (result);
+}
+
+static JsonObject *
+abort_change (const gchar *macaroon, gchar **discharges,
+	      const gchar *change_id,
+	      GCancellable *cancellable, GError **error)
+{
+	g_autofree gchar *path = NULL;
+	guint status_code;
+	g_autofree gchar *reason_phrase = NULL;
+	g_autofree gchar *response_type = NULL;
+	g_autofree gchar *response = NULL;
+	g_autoptr(JsonParser) parser = NULL;
+	JsonObject *root, *result;
+
+	path = g_strdup_printf ("/v2/changes/%s", change_id);
+	if (!send_request ("POST", path, "{\"action\": \"abort\"}",
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -632,8 +678,10 @@ send_package_action (const gchar *macaroon,
 	g_autofree gchar *response = NULL;
 	g_autofree gchar *status = NULL;
 	g_autoptr(JsonParser) parser = NULL;
-	JsonObject *root, *result;
+	JsonObject *root;
 	const gchar *type;
+	const gchar *change_id;
+	gboolean aborted = FALSE;
 
 	content = g_strdup_printf ("{\"action\": \"%s\"}", action);
 	path = g_strdup_printf ("/v2/snaps/%s", name);
@@ -641,7 +689,7 @@ send_package_action (const gchar *macaroon,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
-			   cancellable, error))
+			   NULL, error))
 		return FALSE;
 
 	if (status_code == SOUP_STATUS_UNAUTHORIZED) {
@@ -667,38 +715,46 @@ send_package_action (const gchar *macaroon,
 
 	root = json_node_get_object (json_parser_get_root (parser));
 	type = json_object_get_string_member (root, "type");
-
-	if (g_strcmp0 (type, "async") == 0) {
-		const gchar *change_id;
-
-		change_id = json_object_get_string_member (root, "change");
-
-		while (TRUE) {
-			/* Wait for a little bit before polling */
-			g_usleep (100 * 1000);
-
-			result = get_changes (macaroon, discharges, change_id, cancellable, error);
-			if (result == NULL)
-				return FALSE;
-
-			status = g_strdup (json_object_get_string_member (result, "status"));
-
-			if (g_strcmp0 (status, "Done") == 0)
-				break;
-
-			callback (result, user_data);
-		}
-	}
-
-	if (g_strcmp0 (status, "Done") != 0) {
+	if (g_strcmp0 (type, "async") != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "snapd operation finished with status %s", status);
+			     "snapd operation returned unexpected type '%s'", type);
 		return FALSE;
 	}
+	change_id = json_object_get_string_member (root, "change");
 
-	return TRUE;
+	while (TRUE) {
+		g_autoptr(JsonObject) result = NULL;
+
+		if (g_cancellable_is_cancelled (cancellable) && !aborted) {
+			result = abort_change (macaroon, discharges, change_id, NULL, error);
+			aborted = TRUE;
+		}
+		else {
+			/* Wait for a little bit before polling */
+			g_usleep (100 * 1000);
+			result = get_change (macaroon, discharges, change_id, NULL, error);
+		}
+		if (result == NULL)
+			return FALSE;
+
+		callback (result, user_data);
+
+		if (!json_object_get_boolean_member (result, "ready"))
+			continue;
+
+		if (json_object_has_member (result, "err")) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "snapd operation finished with error: %s",
+				     json_object_get_string_member (result, "err"));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
 }
 
 gboolean
