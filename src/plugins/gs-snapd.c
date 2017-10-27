@@ -115,7 +115,7 @@ send_request (const gchar  *method,
 	g_autoptr (GString) request = NULL;
 	gssize n_written;
 	g_autoptr (GByteArray) buffer = NULL;
-	gsize data_length = 0, header_length, body_offset = 0;
+	gsize data_length = 0, body_offset = 0;
 	g_autoptr (SoupMessageHeaders) headers = NULL;
 	gsize chunk_length = 0, n_required, chunk_offset;
 	guint code;
