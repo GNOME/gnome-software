@@ -326,10 +326,14 @@
 }
 
 .app-listbox-header {
-	padding: 6px 6px 6px 10px;
+	padding: 6px;
 	background-image: none;
 	border-bottom: 1px solid @theme_bg_color;
 }
+
+.app-listbox-header:dir(ltr) { padding-left: 10px; }
+
+.app-listbox-header:dir(rtl) { padding-right: 10px; }
 
 .app-updates-section {
 	border-radius: 4px;
