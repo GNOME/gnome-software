@@ -47,8 +47,10 @@ get_client (GsPlugin *plugin, GError **error)
 
 	client = snapd_client_new ();
 	snapd_client_set_allow_interaction (client, TRUE);
+#ifndef SNAPD_GLIB_VERSION_1_24
 	if (!snapd_client_connect_sync (client, NULL, error))
 		return NULL;
+#endif
 	old_user_agent = snapd_client_get_user_agent (client);
 	user_agent = g_strdup_printf ("%s %s", gs_user_agent (), old_user_agent);
 	snapd_client_set_user_agent (client, user_agent);
