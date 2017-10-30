@@ -29,6 +29,7 @@
 struct GsPluginData {
 	SnapdAuthData		*auth_data;
 	gchar			*store_name;
+	gboolean		 snapd_supports_polkit;
 	SnapdSystemConfinement	 system_confinement;
 	GsAuth			*auth;
 
@@ -196,6 +197,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(SnapdSystemInformation) system_information = NULL;
+	g_auto(GStrv) version = NULL;
 
 	client = get_client (plugin, error);
 	if (client == NULL)
@@ -209,6 +211,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		priv->store_name = g_strdup (/* TRANSLATORS: default snap store name */
 					     _("Snap Store"));
 	priv->system_confinement = snapd_system_information_get_confinement (system_information);
+
+	version = g_strsplit (snapd_system_information_get_version (system_information), ".", -1);
+	if (g_strv_length (version) >= 2) {
+		int major = g_ascii_strtoull (version[0], NULL, 10);
+		int minor = g_ascii_strtoull (version[1], NULL, 10);
+
+		if (major > 2 || (major == 2 && minor >= 28))
+			priv->snapd_supports_polkit = TRUE;
+	}
 
 	/* load from disk */
 	gs_auth_add_metadata (priv->auth, "macaroon", NULL);
@@ -939,8 +950,20 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	if (auth != priv->auth)
 		return TRUE;
 
+	/* snapd < 2.28 required root access to login, so we went via a D-Bus service (snapd-login-service).
+	 * For newer versions we just access it directly */
 	g_clear_object (&priv->auth_data);
-	priv->auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
+	if (priv->snapd_supports_polkit) {
+		g_autoptr(SnapdClient) client = NULL;
+
+		client = get_client (plugin, error);
+		if (client == NULL)
+			return FALSE;
+
+		priv->auth_data = snapd_client_login_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
+	}
+	else
+		priv->auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
 	if (priv->auth_data == NULL) {
 		snapd_error_convert (error);
 		return FALSE;
