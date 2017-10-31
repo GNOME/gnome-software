@@ -37,6 +37,7 @@ struct GsPluginData {
 	GSettings	*settings;
 	gboolean	 is_valid;
 	GPtrArray	*distros;
+	GMutex		 mutex;
 };
 
 typedef enum {
@@ -63,6 +64,8 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->mutex);
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
@@ -94,6 +97,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_ptr_array_unref (priv->distros);
 	g_free (priv->os_name);
 	g_free (priv->cachefn);
+	g_mutex_clear (&priv->mutex);
 }
 
 static void
@@ -129,6 +133,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gchar *endptr = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	/* get the file to cache */
 	priv->cachefn = gs_utils_get_cache_filename ("fedora-pkgdb-collections",
@@ -231,6 +236,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+
 	/* only for update metadata */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
@@ -500,6 +508,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	/* ensure valid data is loaded */
 	if (!_ensure_cache (plugin, cancellable, error))
@@ -525,8 +534,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkgdbItem *item;
 	const gchar *cpe_name;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	/* not for us */
 	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
