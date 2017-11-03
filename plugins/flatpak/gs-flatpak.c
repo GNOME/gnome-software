@@ -1795,7 +1795,7 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 }
 
 static GsApp *
-gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime)
+gs_flatpak_create_runtime (GsPlugin *plugin, const gchar *runtime)
 {
 	g_autofree gchar *source = NULL;
 	g_auto(GStrv) split = NULL;
@@ -1844,7 +1844,6 @@ gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime
 
 static GsApp *
 gs_flatpak_create_runtime_from_metadata (GsFlatpak *self,
-					 const GsApp *app,
 					 const gchar *data,
 					 const gsize length,
 					 GError **error)
@@ -1862,7 +1861,7 @@ gs_flatpak_create_runtime_from_metadata (GsFlatpak *self,
 		gs_utils_error_convert_gio (error);
 		return NULL;
 	}
-	return gs_flatpak_create_runtime (self->plugin, app, runtime);
+	return gs_flatpak_create_runtime (self->plugin, runtime);
 }
 
 static gboolean
@@ -1927,7 +1926,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 
 	/* create runtime */
 	if (gs_app_get_runtime (app) == NULL) {
-		app_runtime = gs_flatpak_create_runtime (self->plugin, app, runtime);
+		app_runtime = gs_flatpak_create_runtime (self->plugin, runtime);
 		if (app_runtime != NULL) {
 			gs_plugin_refine_item_scope (self, app_runtime);
 			gs_app_set_runtime (app, app_runtime);
@@ -2538,7 +2537,7 @@ gs_flatpak_refine_runtime_for_install (GsFlatpak *self,
 	}
 
 	str = g_bytes_get_data (data, &len);
-	runtime = gs_flatpak_create_runtime_from_metadata (self, app,
+	runtime = gs_flatpak_create_runtime_from_metadata (self,
 							   str, len,
 							   error);
 
