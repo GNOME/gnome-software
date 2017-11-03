@@ -57,6 +57,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		"tracker-preferences.desktop",
 		"Uninstall*.desktop",
 		"wine-*.desktop",
+		"gnome-session-properties.desktop",
 		NULL };
 
 	/* not set yet */
