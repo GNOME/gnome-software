@@ -72,6 +72,9 @@ void			 gs_flatpak_app_set_file_kind		(GsApp		*app,
 								 GsFlatpakAppFileKind	file_kind);
 void			 gs_flatpak_app_set_runtime_repo	(GsApp		*app,
 								 GsApp		*runtime_repo);
+void			 gs_flatpak_app_set_main_app_ref_name	(GsApp		*app,
+								 const gchar	*main_app_ref);
+const gchar		*gs_flatpak_app_get_main_app_ref_name	(GsApp		*app);
 
 G_END_DECLS
 
