@@ -791,6 +791,25 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 		gs_app_set_install_date (app, mtime);
 	}
 
+	/* if it's a runtime, check if the main-app info should be set */
+	if (gs_app_get_kind (app) == AS_APP_KIND_RUNTIME &&
+	    gs_flatpak_app_get_main_app_ref_name (app) == NULL) {
+		g_autoptr(GError) error = NULL;
+		g_autoptr(GKeyFile) metadata_file = NULL;
+		metadata_file = g_key_file_new ();
+		if (g_key_file_load_from_file (metadata_file, metadata_fn,
+					       G_KEY_FILE_NONE, &error)) {
+			g_autofree gchar *main_app = g_key_file_get_string (metadata_file,
+									    "ExtensionOf",
+									    "ref", NULL);
+			if (main_app != NULL)
+				gs_flatpak_app_set_main_app_ref_name (app, main_app);
+		} else {
+			g_warning ("Error loading the metadata file for '%s': %s",
+				   gs_app_get_unique_id (app), error->message);
+		}
+	}
+
 	/* this is faster than resolving */
 	if (gs_app_get_origin (app) == NULL)
 		gs_app_set_origin (app, flatpak_installed_ref_get_origin (xref));
@@ -1122,6 +1141,84 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	return TRUE;
 }
 
+static GsApp *
+get_main_app_of_related (GsFlatpak *self,
+			 GsApp *related_app,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	g_autoptr(FlatpakInstalledRef) ref = NULL;
+	const gchar *ref_name;
+	g_auto(GStrv) app_tokens = NULL;
+
+	ref_name = gs_flatpak_app_get_main_app_ref_name (related_app);
+	if (ref_name == NULL) {
+		g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
+			     "%s doesn't have a main app set to it.",
+			     gs_app_get_unique_id (related_app));
+		return NULL;
+	}
+
+	app_tokens = g_strsplit (ref_name, "/", -1);
+	if (g_strv_length (app_tokens) != 4) {
+		g_set_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_DATA,
+			     "The main app of %s has an invalid name: %s",
+			     gs_app_get_unique_id (related_app), ref_name);
+		return NULL;
+	}
+
+	/* this function only returns G_IO_ERROR_NOT_FOUND when the metadata file
+	 * is missing, but if that's the case then things should have broken before
+	 * this point */
+	ref = flatpak_installation_get_installed_ref (self->installation,
+						      FLATPAK_REF_KIND_APP,
+						      app_tokens[1],
+						      app_tokens[2],
+						      app_tokens[3],
+						      cancellable,
+						      error);
+	if (ref == NULL)
+		return NULL;
+
+	return gs_flatpak_create_installed (self, ref, error);
+}
+
+static GsApp *
+get_real_app_for_update (GsFlatpak *self,
+			 GsApp *app,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	GsApp *main_app = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	if (gs_app_get_kind (app) == AS_APP_KIND_RUNTIME)
+		main_app = get_main_app_of_related (self, app, cancellable, &error_local);
+
+	if (main_app == NULL) {
+		/* not all runtimes are extensions, and in that case we get the
+		 * not-found error, so we only report other types of errors */
+		if (error_local != NULL &&
+		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+			g_warning ("Couldn't get the main app for related app %s: %s",
+				   gs_app_get_unique_id (app),
+				   error_local->message);
+			g_propagate_error (error, g_steal_pointer (&error_local));
+			gs_flatpak_error_convert (error);
+			return NULL;
+		}
+
+		main_app = g_object_ref (app);
+	} else {
+		g_debug ("Related extension app %s of main app %s is updatable, so "
+			 "setting the latter's state instead.", gs_app_get_unique_id (app),
+			 gs_app_get_unique_id (main_app));
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	}
+
+	return main_app;
+}
+
 gboolean
 gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			GCancellable *cancellable,
@@ -1145,6 +1242,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 		const gchar *latest_commit;
 		g_autoptr(GsApp) app = NULL;
 		g_autoptr(GError) error_local = NULL;
+		g_autoptr(GsApp) main_app = NULL;
 
 		/* check the application has already been downloaded */
 		commit = flatpak_ref_get_commit (FLATPAK_REF (xref));
@@ -1169,12 +1267,17 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
 		}
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
-		gs_app_set_update_details (app, NULL);
-		gs_app_set_update_version (app, NULL);
-		gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
-		gs_app_set_size_download (app, 0);
-		gs_app_list_add (list, app);
+
+		main_app = get_real_app_for_update (self, app, cancellable, error);
+		if (main_app == NULL)
+			return FALSE;
+
+		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_update_details (main_app, NULL);
+		gs_app_set_update_version (main_app, NULL);
+		gs_app_set_update_urgency (main_app, AS_URGENCY_KIND_UNKNOWN);
+		gs_app_set_size_download (main_app, 0);
+		gs_app_list_add (list, main_app);
 	}
 
 	/* success */
@@ -1201,6 +1304,7 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 		guint64 download_size = 0;
 		g_autoptr(GsApp) app = NULL;
 		g_autoptr(GError) error_local = NULL;
+		g_autoptr(GsApp) main_app = NULL;
 
 		/* we have an update to show */
 		g_debug ("%s has update", flatpak_ref_get_name (FLATPAK_REF (xref)));
@@ -1209,10 +1313,15 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
 		}
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+
+		main_app = get_real_app_for_update (self, app, cancellable, error);
+		if (main_app == NULL)
+			return FALSE;
+
+		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 
 		/* get the current download size */
-		if (gs_app_get_size_download (app) == 0) {
+		if (gs_app_get_size_download (main_app) == 0) {
 			if (!flatpak_installation_fetch_remote_size_sync (self->installation,
 									  gs_app_get_origin (app),
 									  FLATPAK_REF (xref),
@@ -1222,13 +1331,13 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 									  &error_local)) {
 				g_warning ("failed to get download size: %s",
 					   error_local->message);
-				gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+				gs_app_set_size_download (main_app, GS_APP_SIZE_UNKNOWABLE);
 			} else {
-				gs_app_set_size_download (app, download_size);
+				gs_app_set_size_download (main_app, download_size);
 			}
 		}
 
-		gs_app_list_add (list, app);
+		gs_app_list_add (list, main_app);
 	}
 
 	/* success */
