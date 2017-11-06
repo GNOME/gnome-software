@@ -43,7 +43,6 @@ struct _GsOsRelease
 	gchar			*name;
 	gchar			*version;
 	gchar			*id;
-	gchar			*id_like;
 	gchar			*version_id;
 	gchar			*pretty_name;
 	gchar			*cpe_name;
@@ -110,10 +109,6 @@ gs_os_release_initable_init (GInitable *initable,
 		}
 		if (g_strcmp0 (lines[i], "ID") == 0) {
 			os_release->id = g_strdup (tmp);
-			continue;
-		}
-		if (g_strcmp0 (lines[i], "ID_LIKE") == 0) {
-			os_release->id_like = g_strdup (tmp);
 			continue;
 		}
 		if (g_strcmp0 (lines[i], "VERSION_ID") == 0) {
@@ -189,23 +184,6 @@ gs_os_release_get_id (GsOsRelease *os_release)
 {
 	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
 	return os_release->id;
-}
-
-/**
- * gs_os_release_get_id_like:
- * @os_release: A #GsOsRelease
- *
- * Gets the ID_LIKE from the os-release parser.
- *
- * Returns: a string, or %NULL
- *
- * Since: 3.26.2
- **/
-const gchar *
-gs_os_release_get_id_like (GsOsRelease *os_release)
-{
-	g_return_val_if_fail (GS_IS_OS_RELEASE (os_release), NULL);
-	return os_release->id_like;
 }
 
 /**
