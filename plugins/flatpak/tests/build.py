@@ -105,3 +105,8 @@ build_flatpak('org.test.Chiron.Extension',
               'app-extension',
               'app-extension/repo',
               cleanrepodir=False)
+copy_repo('app-extension', 'app-extension-update')
+build_flatpak('org.test.Chiron.Extension',
+              'app-extension-update',
+              'app-extension-update/repo',
+              cleanrepodir=False)

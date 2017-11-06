@@ -1466,8 +1466,18 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *extension;
+	GsApp *app_tmp;
+	gboolean got_progress_installing = FALSE;
 	gboolean ret;
+	guint notify_progress_id;
+	guint notify_state_id;
+	guint pending_app_changed_cnt = 0;
+	guint pending_apps_changed_id;
+	guint progress_cnt = 0;
+	guint updates_changed_cnt = 0;
+	guint updates_changed_id;
 	g_autofree gchar *repodir1_fn = NULL;
+	g_autofree gchar *repodir2_fn = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app_source = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -1486,6 +1496,12 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	repodir1_fn = gs_test_get_filename (TESTDATADIR, "app-extension/repo");
 	if (repodir1_fn == NULL ||
 	    !g_file_test (repodir1_fn, G_FILE_TEST_EXISTS)) {
+		g_test_skip ("no flatpak test repo");
+		return;
+	}
+	repodir2_fn = gs_test_get_filename (TESTDATADIR, "app-extension-update/repo");
+	if (repodir2_fn == NULL ||
+	    !g_file_test (repodir2_fn, G_FILE_TEST_EXISTS)) {
 		g_test_skip ("no flatpak test repo");
 		return;
 	}
@@ -1553,6 +1569,92 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	extension = gs_app_list_lookup (global_cache, "user/flatpak/*/runtime/org.test.Chiron.Extension/master");
 	g_assert_nonnull (extension);
 	g_assert_cmpint (gs_app_get_state (extension), ==, AS_APP_STATE_INSTALLED);
+
+	/* switch to the new repo (to get the update) */
+	g_assert_cmpint (unlink ("/var/tmp/self-test/repo"), ==, 0);
+	g_assert_cmpint (symlink (repodir2_fn, "/var/tmp/self-test/repo"), ==, 0);
+
+	/* refresh the appstream metadata */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
+					 "age", (guint64) 0, /* force now */
+					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA |
+							  GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	g_assert_no_error (error);
+	g_assert_true (ret);
+
+	/* get the updates list */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+					 NULL);
+	list_updates = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert_nonnull (list_updates);
+
+	g_assert_cmpint (gs_app_list_length (list_updates), ==, 1);
+	for (guint i = 0; i < gs_app_list_length (list_updates); i++) {
+		app_tmp = gs_app_list_index (list_updates, i);
+		g_debug ("got update %s", gs_app_get_unique_id (app_tmp));
+	}
+
+	/* check that the extension has no update */
+	app_tmp = gs_app_list_lookup (list_updates, "*/flatpak/test/*/org.test.Chiron.Extension/*");
+	g_assert_null (app_tmp);
+
+	/* check that the app has an update (it's affected by the extension's update) */
+	app_tmp = gs_app_list_lookup (list_updates, "*/flatpak/test/*/org.test.Chiron.desktop/*");
+	g_assert (app_tmp == app);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE_LIVE);
+
+	/* care about signals */
+	pending_apps_changed_id =
+		g_signal_connect (plugin_loader, "pending-apps-changed",
+				  G_CALLBACK (gs_plugins_flatpak_count_signal_cb),
+				  &pending_app_changed_cnt);
+	updates_changed_id =
+		g_signal_connect (plugin_loader, "updates-changed",
+				  G_CALLBACK (gs_plugins_flatpak_count_signal_cb),
+				  &updates_changed_cnt);
+	notify_state_id =
+		g_signal_connect (app, "notify::state",
+				  G_CALLBACK (update_app_state_notify_cb),
+				  &got_progress_installing);
+	notify_progress_id =
+		g_signal_connect (app, "notify::progress",
+				  G_CALLBACK (update_app_progress_notify_cb),
+				  &progress_cnt);
+
+	/* use a mainloop so we get the events in the default context */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
+					 "app", app,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
+							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
+					 NULL);
+	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
+					    NULL,
+					    update_app_action_finish_sync,
+					    loop);
+	g_main_loop_run (loop);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
+	g_assert_true (got_progress_installing);
+	g_assert_cmpint (pending_app_changed_cnt, ==, 0);
+
+	/* check the extension's state after the update */
+	g_assert_cmpint (gs_app_get_state (extension), ==, AS_APP_STATE_INSTALLED);
+
+	/* no longer care */
+	g_signal_handler_disconnect (plugin_loader, pending_apps_changed_id);
+	g_signal_handler_disconnect (plugin_loader, updates_changed_id);
+	g_signal_handler_disconnect (app, notify_state_id);
+	g_signal_handler_disconnect (app, notify_progress_id);
 
 	/* remove the app */
 	g_object_unref (plugin_job);

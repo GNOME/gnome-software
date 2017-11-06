@@ -183,4 +183,16 @@ gs_flatpak_app_new (const gchar *id)
 	return GS_APP (g_object_new (GS_TYPE_APP, "id", id, NULL));
 }
 
+void
+gs_flatpak_app_set_main_app_ref_name (GsApp *app, const gchar *main_app_ref)
+{
+	gs_app_set_metadata (app, "flatpak::mainApp", main_app_ref);
+}
+
+const gchar *
+gs_flatpak_app_get_main_app_ref_name (GsApp *app)
+{
+	return gs_app_get_metadata_item (app, "flatpak::mainApp");
+}
+
 /* vim: set noexpandtab: */
