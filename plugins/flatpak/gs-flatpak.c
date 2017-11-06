@@ -2341,10 +2341,13 @@ gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
 	for (guint i = 0; i < related->len; i++) {
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
 		g_autoptr(GsApp) app_tmp = NULL;
+
 		if (!flatpak_related_ref_should_delete (xref_related))
 			continue;
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, error))
+			return NULL;
 		gs_app_list_add (list, app_tmp);
 	}
 
@@ -2531,6 +2534,10 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		} else {
 			gs_app_set_origin (app_tmp, gs_app_get_origin (app));
 			g_debug ("adding related %s for install", ref_display);
+
+			if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, error))
+				return NULL;
+
 			gs_app_list_add (list, app_tmp);
 		}
 	}
