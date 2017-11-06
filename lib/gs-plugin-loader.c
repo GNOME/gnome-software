@@ -3770,4 +3770,20 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
 }
+
+/*
+ * gs_plugin_loader_get_global_cache:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Returns the global cache.
+ *
+ * Returns: (transfer none): a #GsAppList
+ **/
+GsAppList *
+gs_plugin_loader_get_global_cache (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->global_cache;
+}
+
 /* vim: set noexpandtab: */
