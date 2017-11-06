@@ -2327,10 +2327,23 @@ gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
 	for (guint i = 0; i < related->len; i++) {
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
 		g_autoptr(GsApp) app_tmp = NULL;
+		g_autoptr(GError) error_local = NULL;
+
 		if (!flatpak_related_ref_should_delete (xref_related))
 			continue;
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, &error_local)) {
+			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+				g_propagate_error (error, g_steal_pointer (&error_local));
+				return NULL;
+			}
+			g_warning ("Failed to refine %s when getting the list of apps to "
+				   "remove: %s; not adding the app...",
+				   gs_app_get_unique_id (app_tmp),
+				   error_local->message);
+			continue;
+		}
 		gs_app_list_add (list, app_tmp);
 	}
 
@@ -2509,6 +2522,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		FlatpakRelatedRef *xref_related = g_ptr_array_index (related, i);
 		g_autofree gchar *ref_display = NULL;
 		g_autoptr(GsApp) app_tmp = NULL;
+		g_autoptr(GError) error_local = NULL;
 
 		/* not included */
 		if (!gs_flatpak_related_should_download (self, app, xref_related))
@@ -2522,6 +2536,19 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		} else {
 			gs_app_set_origin (app_tmp, gs_app_get_origin (app));
 			g_debug ("adding related %s for install", ref_display);
+
+			if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, &error_local)) {
+				if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+					g_propagate_error (error, g_steal_pointer (&error_local));
+					return NULL;
+			        }
+				g_warning ("Failed to refine %s when getting the list of apps to "
+					   "install: %s; not adding the app...",
+					   gs_app_get_unique_id (app_tmp),
+					   error_local->message);
+				continue;
+			}
+
 			gs_app_list_add (list, app_tmp);
 		}
 	}
