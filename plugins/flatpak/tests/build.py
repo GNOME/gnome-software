@@ -3,6 +3,7 @@
 import subprocess
 import os
 import shutil
+import configparser
 
 def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
     print('Building %s from %s into %s' % (appid, srcdir, repodir))
@@ -25,12 +26,15 @@ def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
     else:
         flatpak_cmd = 'flatpak'
 
+    metadata_path = os.path.join(srcdir, appid, 'metadata')
+    metadata = configparser.ConfigParser()
+    metadata.read(metadata_path)
+    is_runtime = True if 'Runtime' in metadata.sections() else False
+
     # runtimes have different defaults
-    if appid.find('Runtime') != -1:
-        is_runtime = True
+    if is_runtime:
         prefix = 'usr'
     else:
-        is_runtime = False
         prefix = 'files'
 
     # finish the build
@@ -95,3 +99,14 @@ build_flatpak('org.test.Chiron',
 build_flatpak('org.test.Runtime',
               'only-runtime',
               'only-runtime/repo')
+
+# app with an extension
+copy_repo('only-runtime', 'app-extension')
+build_flatpak('org.test.Chiron',
+              'app-extension',
+              'app-extension/repo',
+              cleanrepodir=False)
+build_flatpak('org.test.Chiron.Extension',
+              'app-extension',
+              'app-extension/repo',
+              cleanrepodir=False)
