@@ -2567,8 +2567,11 @@ gs_flatpak_refine_runtime_for_install (GsFlatpak *self,
 }
 
 static GsAppList *
-gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
-				 GCancellable *cancellable, GError **error)
+gs_flatpak_get_list_for_install_or_update (GsFlatpak *self,
+					   GsApp *app,
+					   gboolean is_update,
+					   GCancellable *cancellable,
+					   GError **error)
 {
 	GsApp *runtime;
 	g_autofree gchar *ref = NULL;
@@ -2576,6 +2579,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	g_autoptr(GPtrArray) xrefs_installed = NULL;
 	g_autoptr(GHashTable) hash_installed = NULL;
 	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autofree gchar *app_ref = NULL;
 
 	/* get the list of installed apps */
 	xrefs_installed = flatpak_installation_list_installed_refs (self->installation,
@@ -2638,24 +2642,47 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		/* already installed? */
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		ref_display = gs_flatpak_app_get_ref_display (app_tmp);
-		if (g_hash_table_contains (hash_installed, ref_display)) {
+		if (!is_update && g_hash_table_contains (hash_installed, ref_display)) {
 			g_debug ("not adding related %s as already installed", ref_display);
-		} else {
-			gs_app_set_origin (app_tmp, gs_app_get_origin (app));
-			g_debug ("adding related %s for install", ref_display);
-
-			if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, error))
-				return NULL;
-
-			gs_app_list_add (list, app_tmp);
+			continue;
 		}
+
+		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, error))
+			return NULL;
+		if (is_update && !gs_app_is_updatable (app_tmp)) {
+			g_debug ("not adding related %s as it's not updatable", ref_display);
+			continue;
+		}
+		g_debug ("adding related %s for install/update", ref_display);
+		gs_app_list_add (list, app_tmp);
 	}
 
-	/* add the original app last unless it's a proxy app */
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+	/* add the original app last unless it's already installed or is a proxy app */
+	app_ref = gs_flatpak_app_get_ref_display (app);
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY) &&
+	    !g_hash_table_contains (hash_installed, app_ref))
 		gs_app_list_add (list, app);
 
 	return g_steal_pointer (&list);
+}
+
+static GsAppList *
+gs_flatpak_get_list_for_install (GsFlatpak *self,
+				 GsApp *app,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	return gs_flatpak_get_list_for_install_or_update (self, app, FALSE, cancellable, error);
+}
+
+static GsAppList *
+gs_flatpak_get_list_for_update (GsFlatpak *self,
+				GsApp *app,
+				GCancellable *cancellable,
+				GError **error)
+{
+	return gs_flatpak_get_list_for_install_or_update (self, app, TRUE, cancellable, error);
 }
 
 gboolean
@@ -3045,7 +3072,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 	}
 
 	/* get the list of apps to process */
-	list = gs_flatpak_get_list_for_install (self, app, cancellable, error);
+	list = gs_flatpak_get_list_for_update (self, app, cancellable, error);
 	if (list == NULL) {
 		g_prefix_error (error, "failed to get related refs: ");
 		gs_app_set_state_recover (app);
