@@ -2569,8 +2569,11 @@ gs_flatpak_refine_runtime_for_install (GsFlatpak *self,
 }
 
 static GsAppList *
-gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
-				 GCancellable *cancellable, GError **error)
+gs_flatpak_get_list_for_install_or_update (GsFlatpak *self,
+					   GsApp *app,
+					   gboolean is_update,
+					   GCancellable *cancellable,
+					   GError **error)
 {
 	GsApp *runtime;
 	g_autofree gchar *ref = NULL;
@@ -2641,26 +2644,29 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		/* already installed? */
 		app_tmp = gs_flatpak_create_app (self, FLATPAK_REF (xref_related));
 		ref_display = gs_flatpak_app_get_ref_display (app_tmp);
-		if (g_hash_table_contains (hash_installed, ref_display)) {
+		if (!is_update && g_hash_table_contains (hash_installed, ref_display)) {
 			g_debug ("not adding related %s as already installed", ref_display);
-		} else {
-			gs_app_set_origin (app_tmp, gs_app_get_origin (app));
-			g_debug ("adding related %s for install", ref_display);
-
-			if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, &error_local)) {
-				if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-					g_propagate_error (error, g_steal_pointer (&error_local));
-					return NULL;
-			        }
-				g_warning ("Failed to refine %s when getting the list of apps to "
-					   "install: %s; not adding the app...",
-					   gs_app_get_unique_id (app_tmp),
-					   error_local->message);
-				continue;
-			}
-
-			gs_app_list_add (list, app_tmp);
+			continue;
 		}
+
+		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
+		if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, &error_local)) {
+			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+				g_propagate_error (error, g_steal_pointer (&error_local));
+				return NULL;
+			}
+			g_warning ("Failed to refine %s when getting the list of apps to "
+				   "install/update: %s; not adding the app...",
+				   gs_app_get_unique_id (app_tmp),
+				   error_local->message);
+			continue;
+		}
+		if (is_update && !gs_app_is_updatable (app_tmp)) {
+			g_debug ("not adding related %s as it's not updatable", ref_display);
+			continue;
+		}
+		g_debug ("adding related %s for install/update", ref_display);
+		gs_app_list_add (list, app_tmp);
 	}
 
 	/* add the original app last unless it's a proxy app */
@@ -2668,6 +2674,24 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 		gs_app_list_add (list, app);
 
 	return g_steal_pointer (&list);
+}
+
+static GsAppList *
+gs_flatpak_get_list_for_install (GsFlatpak *self,
+				 GsApp *app,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	return gs_flatpak_get_list_for_install_or_update (self, app, FALSE, cancellable, error);
+}
+
+static GsAppList *
+gs_flatpak_get_list_for_update (GsFlatpak *self,
+				GsApp *app,
+				GCancellable *cancellable,
+				GError **error)
+{
+	return gs_flatpak_get_list_for_install_or_update (self, app, TRUE, cancellable, error);
 }
 
 gboolean
@@ -3080,7 +3104,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 	}
 
 	/* get the list of apps to process */
-	list = gs_flatpak_get_list_for_install (self, app, cancellable, error);
+	list = gs_flatpak_get_list_for_update (self, app, cancellable, error);
 	if (list == NULL) {
 		g_prefix_error (error, "failed to get related refs: ");
 		gs_app_set_state_recover (app);
