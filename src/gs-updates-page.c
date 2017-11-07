@@ -637,14 +637,14 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 
 typedef struct {
 	GsUpdatesPage	*self;
-	GsAppList	*apps;
+	gboolean	 do_reboot;
+	gboolean	 do_reboot_notification;
 } GsUpdatesPageUpdateHelper;
 
 static void
 _update_helper_free (GsUpdatesPageUpdateHelper *helper)
 {
 	g_object_unref (helper->self);
-	g_object_unref (helper->apps);
 	g_free (helper);
 }
 
@@ -653,8 +653,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsUpdatesPageUpdateHelper, _update_helper_free);
 static void
 _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer user_data)
 {
-	gboolean do_reboot = FALSE;
-	gboolean do_reboot_notification = FALSE;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsUpdatesPageUpdateHelper) helper = (GsUpdatesPageUpdateHelper *) user_data;
 
@@ -670,17 +668,8 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 		return;
 	}
 
-	/* look at each app in turn */
-	for (guint i = 0; helper->apps != NULL && i < gs_app_list_length (helper->apps); i++) {
-		GsApp *app = gs_app_list_index (helper->apps, i);
-		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
-			do_reboot = TRUE;
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
-			do_reboot_notification = TRUE;
-	}
-
 	/* trigger reboot if any application was not updatable live */
-	if (do_reboot) {
+	if (helper->do_reboot) {
 		g_autoptr(GDBusConnection) bus = NULL;
 		bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
 		g_dbus_connection_call (bus,
@@ -695,7 +684,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 
 	/* when we are not doing an offline update, show a notification
 	 * if any application requires a reboot */
-	} else if (do_reboot_notification) {
+	} else if (helper->do_reboot_notification) {
 		g_autoptr(GNotification) n = NULL;
 		/* TRANSLATORS: we've just live-updated some apps */
 		n = g_notification_new (_("Updates have been installed"));
@@ -719,7 +708,16 @@ _update_all (GsUpdatesPage *self, GsAppList *apps)
 	GsUpdatesPageUpdateHelper *helper = g_new0 (GsUpdatesPageUpdateHelper, 1);
 
 	helper->self = g_object_ref (self);
-	helper->apps = g_object_ref (apps);
+
+	/* look at each app in turn */
+	for (guint i = 0; apps != NULL && i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
+		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
+			helper->do_reboot = TRUE;
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
+			helper->do_reboot_notification = TRUE;
+	}
+
 	g_set_object (&self->cancellable, cancellable);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "list", apps,
