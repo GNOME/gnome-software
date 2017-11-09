@@ -46,6 +46,65 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-11-09" version="3.26.2">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Various fixes to cancellable handling, making it more robust to cancel install/remove operations</li>
+          <li>Fix a common crash in Fedora distro upgrades plugin</li>
+          <li>Fix showing N+2 Fedora upgrades</li>
+          <li>Fix flatpak updates inadvertently triggering a reboot</li>
+          <li>Revert plugin GType registering changes that broke app "adopting"</li>
+          <li>Various flatpak plugin fixes</li>
+          <li>Various snap plugin fixes</li>
+          <li>Bump fwupd required dep to 0.9.7 and support building with new 1.0.0 API</li>
+          <li>Avoid erroring out for operations that return more than 500 results (distro upgrades, getting gnome-shell extensions list)</li>
+          <li>Fix a few memory leaks</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
+    <release date="2017-10-02" version="3.26.1">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Fix memory leak in "external appstream" plugin</li>
+          <li>Don't translate an icon name in the Punjabi translation</li>
+          <li>Fix critical warning in the fwupd plugin if the update URI isn't set</li>
+          <li>Fix Addon categories not showing</li>
+          <li>Fix crash in PackageKit plugin if reporting progress with no current application</li>
+          <li>Revert a change in the snapd plugin which can cause operations to fail or hang in some situations</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
+    <release date="2017-09-11" version="3.26.0">
+      <description>
+        <p>
+          This is the first stable release for GNOME 3.26,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Use the new fwupd API in 0.9.7 to avoid when a reboot is required</li>
+          <li>Pass the complete proxy settings to PackageKit</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Do not crash when emitting an uncommon error message</li>
+          <li>Do not show a critical warning with new versions of fwupd</li>
+          <li>Do not show an error for a remote-less flatpakref application</li>
+          <li>Don't refine PackageKit packages after we've been cancelled</li>
+          <li>Fix a possible crash on 32 bit systems</li>
+          <li>Fix GNOME Shell search results for snap applications</li>
+          <li>Properly disable shell-extensions when not running GNOME Shell</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-08-21" version="3.25.91">
       <description>
         <p>
