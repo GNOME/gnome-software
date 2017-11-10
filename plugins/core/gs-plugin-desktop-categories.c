@@ -46,13 +46,13 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GError **error)
 {
 	const GsDesktopData *msdata;
-	gchar msgctxt[100];
 	guint i, j, k;
 
 	msdata = gs_desktop_get_data ();
 	for (i = 0; msdata[i].id != NULL; i++) {
 		GdkRGBA key_color;
 		GsCategory *category;
+		g_autofree gchar *msgctxt = NULL;
 
 		/* add parent category */
 		category = gs_category_new (msdata[i].id);
@@ -62,8 +62,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		if (gdk_rgba_parse (&key_color, msdata[i].key_colors))
 			gs_category_add_key_color (category, &key_color);
 		g_ptr_array_add (list, category);
-		g_snprintf (msgctxt, sizeof(msgctxt),
-			    "Menu of %s", msdata[i].name);
+		msgctxt = g_strdup_printf ("Menu of %s", msdata[i].name);
 
 		/* add subcategories */
 		for (j = 0; msdata[i].mapping[j].id != NULL; j++) {

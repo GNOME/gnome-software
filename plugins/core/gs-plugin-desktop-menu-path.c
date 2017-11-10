@@ -64,7 +64,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	const GsDesktopData *msdata;
 	gboolean found = FALSE;
 	guint i, j, k;
-	gchar msgctxt[100];
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
@@ -78,12 +77,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		const GsDesktopData *data = &msdata[i];
 		for (j = 0; !found && data->mapping[j].id != NULL; j++) {
 			const GsDesktopMap *map = &data->mapping[j];
+			g_autofree gchar *msgctxt = NULL;
+
 			if (g_strcmp0 (map->id, "all") == 0)
 				continue;
 			if (g_strcmp0 (map->id, "featured") == 0)
 				continue;
-			g_snprintf (msgctxt, sizeof(msgctxt),
-			            "Menu of %s", data->name);
+			msgctxt = g_strdup_printf ("Menu of %s", data->name);
 			for (k = 0; !found && map->fdo_cats[k] != NULL; k++) {
 				const gchar *tmp = msdata[i].mapping[j].fdo_cats[k];
 				if (_gs_app_has_desktop_group (app, tmp)) {
