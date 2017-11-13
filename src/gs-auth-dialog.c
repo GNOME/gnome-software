@@ -132,7 +132,6 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 		if (url != NULL) {
 			g_autoptr(GError) error_local = NULL;
 			g_debug ("showing link in: %s", error->message);
-#if GTK_CHECK_VERSION (3, 22, 0)
 			if (!gtk_show_uri_on_window (GTK_WINDOW (dialog),
 			                             url,
 			                             GDK_CURRENT_TIME,
@@ -140,12 +139,6 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 				g_warning ("failed to show URI %s: %s",
 				           url, error_local->message);
 			}
-#else
-			if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error_local)) {
-				g_warning ("failed to show URI %s: %s",
-					   url, error_local->message);
-			}
-#endif
 			return;
 		}
 

@@ -34,9 +34,7 @@
 #include <gdk/gdkx.h>
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
-#if GTK_CHECK_VERSION(3,22,4)
 #include <gdk/gdkwayland.h>
-#endif
 #endif
 
 #ifdef HAVE_PACKAGEKIT
@@ -748,13 +746,11 @@ install_resources_activated (GSimpleAction *action,
 	}
 #endif
 #ifdef GDK_WINDOWING_WAYLAND
-#if GTK_CHECK_VERSION(3,22,4)
 	if (GDK_IS_WAYLAND_DISPLAY (display)) {
 		if (startup_id != NULL && startup_id[0] != '\0')
 			gdk_wayland_display_set_startup_notification_id (display,
 			                                                 startup_id);
 	}
-#endif
 #endif
 
 	gs_application_present_window (app, startup_id);
