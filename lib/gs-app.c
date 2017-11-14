@@ -82,6 +82,7 @@ typedef struct
 	GPtrArray		*key_colors;
 	GPtrArray		*keywords;
 	GHashTable		*urls;
+	GHashTable		*launchables;
 	gchar			*license;
 	GsAppQuality		 license_quality;
 	gchar			**menu_path;
@@ -505,6 +506,14 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	tmp = g_hash_table_lookup (priv->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
+	keys = g_hash_table_get_keys (priv->launchables);
+	for (l = keys; l != NULL; l = l->next) {
+		g_autofree gchar *key = NULL;
+		key = g_strdup_printf ("launchable{%s}", (const gchar *) l->data);
+		tmp = g_hash_table_lookup (priv->launchables, l->data);
+		gs_app_kv_lpad (str, key, tmp);
+	}
+	g_list_free (keys);
 	if (priv->license != NULL) {
 		gs_app_kv_lpad (str, "license", priv->license);
 		gs_app_kv_lpad (str, "license-is-free",
@@ -2129,6 +2138,47 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 	g_hash_table_insert (priv->urls,
 			     g_strdup (as_url_kind_to_string (kind)),
 			     g_strdup (url));
+}
+
+/**
+ * gs_app_get_launchable:
+ * @app: a #GsApp
+ * @kind: a #AsLaunchableKind, e.g. %AS_LAUNCHABLE_KIND_DESKTOP_ID
+ *
+ * Gets a launchable of a specific type.
+ *
+ * Returns: a string, or %NULL for unset
+ *
+ * Since: 3.28
+ **/
+const gchar *
+gs_app_get_launchable (GsApp *app, AsLaunchableKind kind)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return g_hash_table_lookup (priv->launchables,
+				    as_launchable_kind_to_string (kind));
+}
+
+/**
+ * gs_app_set_launchable:
+ * @app: a #GsApp
+ * @kind: a #AsLaunchableKind, e.g. %AS_LAUNCHABLE_KIND_DESKTOP_ID
+ * @launchable: a way to launch, e.g. "org.gnome.Sysprof2.desktop"
+ *
+ * Sets a launchable of a specific type.
+ *
+ * Since: 3.28
+ **/
+void
+gs_app_set_launchable (GsApp *app, AsLaunchableKind kind, const gchar *launchable)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	g_return_if_fail (GS_IS_APP (app));
+	g_hash_table_insert (priv->launchables,
+			     g_strdup (as_launchable_kind_to_string (kind)),
+			     g_strdup (launchable));
 }
 
 /**
@@ -3974,6 +4024,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->branch);
 	g_free (priv->name);
 	g_hash_table_unref (priv->urls);
+	g_hash_table_unref (priv->launchables);
 	g_free (priv->license);
 	g_strfreev (priv->menu_path);
 	g_free (priv->origin);
@@ -4152,6 +4203,10 @@ gs_app_init (GsApp *app)
 	                                    g_str_equal,
 	                                    g_free,
 	                                    g_free);
+	priv->launchables = g_hash_table_new_full (g_str_hash,
+	                                           g_str_equal,
+	                                           g_free,
+	                                           g_free);
 	priv->allow_cancel = TRUE;
 	g_mutex_init (&priv->mutex);
 }

@@ -92,7 +92,7 @@ add_global_link_arguments(
 # Needed for PATH_MAX and symlink()
 add_project_arguments('-D_XOPEN_SOURCE=500', language : 'c')
 
-appstream_glib = dependency('appstream-glib', version : '>= 0.7.0')
+appstream_glib = dependency('appstream-glib', version : '>= 0.7.3')
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.31.5')
 gio_unix = dependency('gio-unix-2.0')
 gmodule = dependency('gmodule-2.0')

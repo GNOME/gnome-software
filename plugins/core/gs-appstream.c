@@ -498,6 +498,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	AsRequire *req;
 	g_autoptr(GError) error_local = NULL;
 	GHashTable *urls;
+	GPtrArray *launchables;
 	GPtrArray *array;
 	GPtrArray *pkgnames;
 	GPtrArray *kudos;
@@ -625,6 +626,36 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			gs_app_set_url (app,
 					as_url_kind_from_string (l->data),
 					g_hash_table_lookup (urls, l->data));
+		}
+	}
+
+	/* add launchables */
+	launchables = as_app_get_launchables (item);
+	for (i = 0; i < launchables->len; i++) {
+		AsLaunchable *launchable = g_ptr_array_index (launchables, i);
+		switch (as_launchable_get_kind (launchable)) {
+		case AS_LAUNCHABLE_KIND_DESKTOP_ID:
+			gs_app_set_launchable (app,
+					       AS_LAUNCHABLE_KIND_DESKTOP_ID,
+					       as_launchable_get_value (launchable));
+			break;
+		case AS_LAUNCHABLE_KIND_SERVICE:
+			gs_app_set_launchable (app,
+					       AS_LAUNCHABLE_KIND_SERVICE,
+					       as_launchable_get_value (launchable));
+			break;
+		case AS_LAUNCHABLE_KIND_COCKPIT_MANIFEST:
+			gs_app_set_launchable (app,
+					       AS_LAUNCHABLE_KIND_COCKPIT_MANIFEST,
+					       as_launchable_get_value (launchable));
+			break;
+		case AS_LAUNCHABLE_KIND_URL:
+			gs_app_set_launchable (app,
+					       AS_LAUNCHABLE_KIND_URL,
+					       as_launchable_get_value (launchable));
+			break;
+		default:
+			break;
 		}
 	}
 

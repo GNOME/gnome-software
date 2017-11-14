@@ -94,6 +94,7 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GFile) symlink_desktop = NULL;
 	g_autoptr(GFile) symlink_icon = NULL;
+	const gchar *url = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -151,9 +152,12 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 			       G_KEY_FILE_DESKTOP_GROUP,
 			       G_KEY_FILE_DESKTOP_KEY_COMMENT,
 			       gs_app_get_summary (app));
+	url = gs_app_get_launchable (app, AS_LAUNCHABLE_KIND_URL);
+	if (url == NULL)
+		url = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
 	exec = g_strdup_printf ("epiphany --application-mode --profile=\"%s\" %s",
 				epi_dir,
-				gs_app_get_url (app, AS_URL_KIND_HOMEPAGE));
+				url);
 	g_key_file_set_string (kf,
 			       G_KEY_FILE_DESKTOP_GROUP,
 			       G_KEY_FILE_DESKTOP_KEY_EXEC,

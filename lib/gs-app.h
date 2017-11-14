@@ -185,6 +185,11 @@ const gchar	*gs_app_get_url			(GsApp		*app,
 void		 gs_app_set_url			(GsApp		*app,
 						 AsUrlKind	 kind,
 						 const gchar	*url);
+const gchar	*gs_app_get_launchable		(GsApp		*app,
+						 AsLaunchableKind kind);
+void		 gs_app_set_launchable		(GsApp		*app,
+						 AsLaunchableKind kind,
+						 const gchar	*launchable);
 const gchar	*gs_app_get_license		(GsApp		*app);
 gboolean	 gs_app_get_license_is_free	(GsApp		*app);
 void		 gs_app_set_license		(GsApp		*app,
