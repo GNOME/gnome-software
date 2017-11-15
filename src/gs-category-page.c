@@ -473,6 +473,8 @@ gs_category_page_create_filter (GsCategoryPage *self,
 void
 gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 {
+	GtkAdjustment *adj = NULL;
+
 	/* this means we've come from the app-view -> back */
 	if (self->category == category)
 		return;
@@ -483,6 +485,11 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 
 	/* find apps in this group */
 	gs_category_page_create_filter (self, category);
+
+	/* scroll the list of apps to the beginning, otherwise it will show
+	 * with the previous scroll value */
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
+	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 }
 
 GsCategory *
