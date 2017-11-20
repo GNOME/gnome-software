@@ -416,6 +416,55 @@ gs_plugin_fwupd_new_app_from_results (GsPlugin *plugin, FwupdResult *res)
 	return app;
 }
 
+#if FWUPD_CHECK_VERSION(1,0,0)
+static gchar *
+gs_plugin_fwupd_build_device_id (FwupdDevice *dev)
+{
+	g_autofree gchar *tmp = g_strdup (fwupd_device_get_id (dev));
+	g_strdelimit (tmp, "/", '_');
+	return g_strdup_printf ("org.fwupd.%s.device", tmp);
+}
+
+static GsApp *
+gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
+{
+	GPtrArray *icons;
+	g_autofree gchar *id = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	/* create a GsApp based on the device, not the release */
+	id = gs_plugin_fwupd_build_device_id (device);
+	app = gs_app_new (id);
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_set_version (app, fwupd_device_get_version (device));
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_name (device));
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_summary (device));
+	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_description (device));
+	gs_app_set_origin (app, fwupd_device_get_vendor (device));
+	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (device));
+	gs_app_set_management_plugin (app, "fwupd");
+
+	/* create icon */
+	icons = fwupd_device_get_icons (device);
+	for (guint j = 0; j < icons->len; j++) {
+		const gchar *icon = g_ptr_array_index (icons, j);
+		g_autoptr(AsIcon) icon_tmp = as_icon_new ();
+		if (g_str_has_prefix (icon, "/")) {
+			as_icon_set_kind (icon_tmp, AS_ICON_KIND_LOCAL);
+			as_icon_set_filename (icon_tmp, icon);
+		} else {
+			as_icon_set_kind (icon_tmp, AS_ICON_KIND_STOCK);
+			as_icon_set_name (icon_tmp, icon);
+		}
+		gs_app_add_icon (app, icon_tmp);
+	}
+	return g_steal_pointer (&app);
+}
+#endif
+
 static gboolean
 gs_plugin_add_update_app (GsPlugin *plugin,
 			  GsAppList *list,
@@ -641,7 +690,7 @@ gs_plugin_fwupd_add_updates (GsPlugin *plugin,
 		/* locked device that needs unlocking */
 		if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_LOCKED)) {
 			g_autoptr(GsApp) app = NULL;
-			app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+			app = gs_plugin_fwupd_new_app_from_device_raw (plugin, dev);
 			gs_fwupd_app_set_is_locked (app, TRUE);
 			gs_app_list_add (list, app);
 			continue;
@@ -1317,14 +1366,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 }
 
 #if FWUPD_CHECK_VERSION(1,0,0)
-static gchar *
-gs_plugin_fwupd_build_device_id (FwupdDevice *dev)
-{
-	g_autofree gchar *tmp = g_strdup (fwupd_device_get_id (dev));
-	g_strdelimit (tmp, "/", '_');
-	return g_strdup_printf ("org.fwupd.%s.device", tmp);
-}
-
 static gboolean
 gs_plugin_fwupd_add_releases (GsPlugin *plugin, GsApp *app,
 			      GCancellable *cancellable, GError **error)
@@ -1334,7 +1375,7 @@ gs_plugin_fwupd_add_releases (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GPtrArray) releases = NULL;
 
 	releases = fwupd_client_get_releases (priv->client,
-					      gs_app_get_metadata_item (app, "fwupd::device-id"),
+					      gs_fwupd_app_get_device_id (app),
 					      cancellable,
 					      &error_local);
 	if (releases == NULL) {
@@ -1369,48 +1410,19 @@ gs_plugin_fwupd_add_devices (GsPlugin *plugin, GsAppList *list,
 		return FALSE;
 	for (guint i = 0; i < devices->len; i++) {
 		FwupdDevice *device = g_ptr_array_index (devices, i);
-		GPtrArray *icons;
-		g_autofree gchar *id = NULL;
 		g_autoptr(GsApp) app = NULL;
 
 		/* ignore these, we can't do anything */
 		if (!fwupd_device_has_flag (device, FWUPD_DEVICE_FLAG_UPDATABLE))
 			continue;
 
-		/* create something that we can use to enable/disable */
-		id = gs_plugin_fwupd_build_device_id (device);
-		app = gs_app_new (id);
-		gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
-		gs_app_set_version (app, fwupd_device_get_version (device));
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_name (device));
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_summary (device));
-		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_description (device));
-		gs_app_set_origin (app, fwupd_device_get_vendor (device));
-		gs_app_set_metadata (app, "fwupd::device-id", fwupd_device_get_id (device));
-		gs_app_set_management_plugin (app, "fwupd");
-		gs_app_list_add (list, app);
-
-		/* create icon */
-		icons = fwupd_device_get_icons (device);
-		for (guint j = 0; j < icons->len; j++) {
-			const gchar *icon = g_ptr_array_index (icons, j);
-			g_autoptr(AsIcon) icon_tmp = as_icon_new ();
-			if (g_str_has_prefix (icon, "/")) {
-				as_icon_set_kind (icon_tmp, AS_ICON_KIND_LOCAL);
-				as_icon_set_filename (icon_tmp, icon);
-			} else {
-				as_icon_set_kind (icon_tmp, AS_ICON_KIND_STOCK);
-				as_icon_set_name (icon_tmp, icon);
-			}
-			gs_app_add_icon (app, icon_tmp);
-		}
-
 		/* add releases */
+		app = gs_plugin_fwupd_new_app_from_device_raw (plugin, device);
 		if (!gs_plugin_fwupd_add_releases (plugin, app, cancellable, error))
 			return FALSE;
+
+		/* add all */
+		gs_app_list_add (list, g_steal_pointer (&app));
 	}
 	return TRUE;
 }
