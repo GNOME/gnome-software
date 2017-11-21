@@ -1353,9 +1353,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 				  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
-				 fwupd_remote_get_id (remote));
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
-				    fwupd_remote_get_title (remote));
+				 fwupd_remote_get_title (remote));
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 				fwupd_remote_get_metadata_uri (remote));
 		gs_app_set_metadata (app, "fwupd::remote-id",
