@@ -338,6 +338,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
 		g_debug ("no sources to show");
+		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
+		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header), "dim-label");
 		return;
 	}
 
