@@ -26,6 +26,7 @@
 struct GsPluginData {
 	GHashTable	*urls;		/* origin : url */
 	GFileMonitor	*monitor;
+	GMutex		 mutex;
 	gchar		*reposdir;
 	gboolean	 valid;
 };
@@ -34,6 +35,8 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->mutex);
 
 	/* for debugging and the self tests */
 	priv->reposdir = g_strdup (g_getenv ("GS_SELF_TEST_REPOS_DIR"));
@@ -62,8 +65,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_hash_table_unref (priv->urls);
 	if (priv->monitor != NULL)
 		g_object_unref (priv->monitor);
+	g_mutex_clear (&priv->mutex);
 }
 
+/* mutex must be held */
 static gboolean
 gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -145,6 +150,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GFile) file = g_file_new_for_path (priv->reposdir);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	/* watch for changes */
 	priv->monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, cancellable, error);
@@ -168,6 +174,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
