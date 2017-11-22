@@ -607,6 +607,33 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 }
 
 static void
+gs_page_channel_switched_cb (GObject *source,
+                             GAsyncResult *res,
+                             gpointer user_data)
+{
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (g_error_matches (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("%s", error->message);
+		return;
+	}
+	if (!ret) {
+		g_warning ("failed to switch channel %s: %s",
+		           gs_app_get_id (helper->app),
+		           error->message);
+		return;
+	}
+}
+
+static void
 gs_page_remove_app_response_cb (GtkDialog *dialog,
 				gint response,
 				GsPageHelper *helper)
