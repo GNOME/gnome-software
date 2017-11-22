@@ -970,7 +970,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* save the new checksum so we don't downoad the payload unless it's changed */
+	/* save the new checksum so we don't download the payload unless it's changed */
 	g_hash_table_insert (priv->remote_asc_hash,
 			     g_strdup (filename_asc),
 			     g_steal_pointer (&checksum));

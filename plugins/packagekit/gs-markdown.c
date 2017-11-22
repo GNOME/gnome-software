@@ -43,7 +43,7 @@
  *
  * It does support the rest of the standard pretty well, although it's not
  * been run against any conformance tests. The parsing is single pass, with
- * a simple enumerated intepretor mode and a single line back-memory.
+ * a simple enumerated interpretor mode and a single line back-memory.
  *
  ******************************************************************************/
 

@@ -490,7 +490,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	as_app_add_metadata (item, "X-Steam-GameID", gameid_str);
 	as_app_add_metadata (item, "GnomeSoftware::Plugin", "steam");
 
-	/* ban certains apps based on the name */
+	/* ban certain apps based on the name */
 	if (g_strstr_len (name, -1, "Dedicated Server") != NULL)
 		as_app_add_veto (item, "Dedicated Server");
 

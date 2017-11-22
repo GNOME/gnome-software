@@ -178,7 +178,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		}
 	}
 
-	/* per-user instalations always available when not in self tests */
+	/* per-user installations always available when not in self tests */
 	if (priv->destdir_for_tests == NULL) {
 		g_autoptr(FlatpakInstallation) installation = NULL;
 		installation = flatpak_installation_new_user (cancellable, error);

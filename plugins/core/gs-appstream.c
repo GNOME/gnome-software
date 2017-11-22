@@ -694,7 +694,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	 * removed.
 	 *
 	 * If XDG_CURRENT_DESKTOP contains ":", indicating that it is made up
-	 * of multiple comopnents per the Desktop Entry Specification, an app
+	 * of multiple components per the Desktop Entry Specification, an app
 	 * is compulsory if any of the components in XDG_CURRENT_DESKTOP match
 	 * any value in <compulsory_for_desktops />. In that way,
 	 * "GNOME-Classic:GNOME" shares compulsory apps with GNOME.

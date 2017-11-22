@@ -502,7 +502,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			return FALSE;
 	}
 
-	/* sucess */
+	/* success */
 	return TRUE;
 }
 
@@ -549,7 +549,7 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		gs_app_list_add (list, new);
 	}
 
-	/* sucess */
+	/* success */
 	return TRUE;
 }
 
