@@ -25,7 +25,7 @@
 
 /*
  * SECTION:
- * Sets the package provanance to TRUE if installed by an official
+ * Sets the package provenance to TRUE if installed by an official
  * software source.
  */
 
