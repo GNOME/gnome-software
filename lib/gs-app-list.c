@@ -166,7 +166,7 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
  * incrementing the reference count.
  * If the application already exists then a warning is printed to the console.
  *
- * Applications that have the application ID lazy-loaded will always be addded
+ * Applications that have the application ID lazy-loaded will always be added
  * to the list, and to clean these up the plugin loader will also call the
  * gs_app_list_filter_duplicates() method when all plugins have run.
  *
