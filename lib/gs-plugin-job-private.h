@@ -52,6 +52,7 @@ GsPlugin		*gs_plugin_job_get_plugin		(GsPluginJob	*self);
 GsCategory		*gs_plugin_job_get_category		(GsPluginJob	*self);
 AsReview		*gs_plugin_job_get_review		(GsPluginJob	*self);
 GsPrice			*gs_plugin_job_get_price		(GsPluginJob	*self);
+GsChannel		*gs_plugin_job_get_channel		(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);

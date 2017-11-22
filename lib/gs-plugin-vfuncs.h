@@ -592,6 +592,24 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
+ * gs_plugin_app_switch_channel:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ * @channel: a #GsChannel
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Set the app chanel.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_app_switch_channel		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsChannel	*channel,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
  * gs_plugin_app_remove:
  * @plugin: a #GsPlugin
  * @app: a #GsApp

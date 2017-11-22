@@ -126,6 +126,8 @@ typedef struct
 	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;
 	GsPrice			*price;
+	GPtrArray		*channels;
+	GsChannel		*active_channel;
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
 } GsAppPrivate;
@@ -594,6 +596,18 @@ gs_app_to_string_append (GsApp *app, GString *str)
 			tmp = g_ptr_array_index (priv->keywords, i);
 			gs_app_kv_lpad (str, "keyword", tmp);
 		}
+	}
+	for (i = 0; i < priv->channels->len; i++) {
+		GsChannel *channel = g_ptr_array_index (priv->channels, i);
+		g_autofree gchar *key = NULL;
+		key = g_strdup_printf ("channel-%02u", i);
+		gs_app_kv_printf (str, key, "%s [%s]",
+		                  gs_channel_get_name (channel),
+		                  gs_channel_get_version (channel));
+	}
+	if (priv->active_channel != NULL) {
+		gs_app_kv_printf (str, "active-channel", "%s",
+		                  gs_channel_get_name (priv->active_channel));
 	}
 	keys = g_hash_table_get_keys (priv->metadata);
 	for (GList *l = keys; l != NULL; l = l->next) {
@@ -3990,6 +4004,80 @@ gs_app_get_priority (GsApp *app)
 }
 
 /**
+ * gs_app_add_channel:
+ * @app: a #GsApp
+ * @channel: a #GsChannel
+ *
+ * Adds a channel to the application.
+ *
+ * Since: 3.28
+ **/
+void
+gs_app_add_channel (GsApp *app, GsChannel *channel)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_CHANNEL (channel));
+	g_ptr_array_add (priv->channels, g_object_ref (channel));
+	if (priv->active_channel == NULL && gs_channel_get_version (channel) != NULL)
+		priv->active_channel = g_object_ref (channel);
+}
+
+/**
+ * gs_app_get_channels:
+ * @app: a #GsApp
+ *
+ * Gets the list of channels.
+ *
+ * Returns: (element-type GsChannel) (transfer none): a list
+ *
+ * Since: 3.28
+ **/
+GPtrArray *
+gs_app_get_channels (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->channels;
+}
+
+/**
+ * gs_app_set_active_channel:
+ * @app: a #GsApp
+ * @channel: a #GsChannel
+ *
+ * Set the currently active channel.
+ *
+ * Since: 3.28
+ **/
+void
+gs_app_set_active_channel (GsApp *app, GsChannel *channel)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_CHANNEL (channel));
+	g_set_object (&priv->active_channel, channel);
+}
+
+/**
+ * gs_app_get_active_channel:
+ * @app: a #GsApp
+ *
+ * Gets the currently active channel.
+ *
+ * Returns: a #GsChannel or %NULL.
+ *
+ * Since: 3.28
+ **/
+GsChannel *
+gs_app_get_active_channel (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->active_channel;
+}
+
+/**
  * gs_app_get_cancellable:
  * @app: a #GsApp
  *
@@ -4170,6 +4258,8 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&priv->reviews, g_ptr_array_unref);
 	g_clear_pointer (&priv->provides, g_ptr_array_unref);
 	g_clear_pointer (&priv->icons, g_ptr_array_unref);
+	g_clear_pointer (&priv->channels, g_ptr_array_unref);
+	g_clear_object (&priv->active_channel);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
@@ -4357,6 +4447,7 @@ gs_app_init (GsApp *app)
 	priv->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->provides = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->channels = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->metadata = g_hash_table_new_full (g_str_hash,
 	                                        g_str_equal,
 	                                        g_free,

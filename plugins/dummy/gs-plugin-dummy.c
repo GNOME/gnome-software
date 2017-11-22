@@ -835,6 +835,17 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_app_switch_channel (GsPlugin *plugin,
+			      GsApp *app,
+			      GsChannel *channel,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	g_debug ("Switching channel to %s", gs_channel_get_name (channel));
+	return TRUE;
+}
+
+gboolean
 gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 			        GCancellable *cancellable, GError **error)
 {

@@ -28,6 +28,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <appstream-glib.h>
 
+#include "gs-channel.h"
 #include "gs-price.h"
 
 G_BEGIN_DECLS
@@ -325,6 +326,12 @@ void		 gs_app_remove_quirk		(GsApp		*app,
 						 AsAppQuirk	 quirk);
 gboolean	 gs_app_is_installed		(GsApp		*app);
 gboolean	 gs_app_is_updatable		(GsApp		*app);
+GPtrArray	*gs_app_get_channels		(GsApp		*app);
+void		 gs_app_add_channel		(GsApp		*app,
+						 GsChannel	*channel);
+void		 gs_app_set_active_channel	(GsApp		*app,
+						 GsChannel	*channel);
+GsChannel	*gs_app_get_active_channel	(GsApp		*app);
 G_END_DECLS
 
 #endif /* __GS_APP_H */

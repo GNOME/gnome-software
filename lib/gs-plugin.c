@@ -1763,6 +1763,8 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_destroy";
 	if (action == GS_PLUGIN_ACTION_PURCHASE)
 		return "gs_plugin_app_purchase";
+	if (action == GS_PLUGIN_ACTION_SWITCH_CHANNEL)
+		return "gs_plugin_app_switch_channel";
 	return NULL;
 }
 
@@ -1865,6 +1867,8 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "destroy";
 	if (action == GS_PLUGIN_ACTION_PURCHASE)
 		return "purchase";
+	if (action == GS_PLUGIN_ACTION_SWITCH_CHANNEL)
+		return "switch-channel";
 	return NULL;
 }
 
@@ -1967,6 +1971,8 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_DESTROY;
 	if (g_strcmp0 (action, "purchase") == 0)
 		return GS_PLUGIN_ACTION_PURCHASE;
+	if (g_strcmp0 (action, "switch-channel") == 0)
+		return GS_PLUGIN_ACTION_SWITCH_CHANNEL;
 	return GS_PLUGIN_ACTION_UNKNOWN;
 }
 

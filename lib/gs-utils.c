@@ -1049,6 +1049,41 @@ gs_utils_get_url_path (const gchar *url)
 }
 
 /**
+ * gs_utils_get_url_query:
+ * @url: A URL, e.g. "snap://moon-buggy?channel=beta"
+ * @url: A parameter name, e.g. "channel"
+ *
+ * Gets a query parameter from the URL string.
+ *
+ * Returns: the URL query parameter, e.g. "beta"
+ */
+gchar *
+gs_utils_get_url_query_param (const gchar *url, const gchar *name)
+{
+	g_autoptr(SoupURI) uri = NULL;
+	const gchar *query;
+	g_autofree gchar *prefix = NULL;
+	g_auto(GStrv) params = NULL;
+	int i;
+
+	uri = soup_uri_new (url);
+	if (!SOUP_URI_IS_VALID (uri))
+		return NULL;
+
+	query = soup_uri_get_query (uri);
+	if (query == NULL)
+		return NULL;
+	params = g_strsplit (query, "&", -1);
+	prefix = g_strdup_printf ("%s=", name);
+	for (i = 0; params[i] != NULL; i++) {
+		if (g_str_has_prefix (params[i], prefix))
+			return g_strdup (params[i] + strlen (prefix));
+	}
+
+	return NULL;
+}
+
+/**
  * gs_user_agent:
  *
  * Gets the user agent to use for remote requests.

@@ -44,6 +44,11 @@ gs_utils_url_func (void)
 	g_autofree gchar *path3 = NULL;
 	g_autofree gchar *scheme1 = NULL;
 	g_autofree gchar *scheme2 = NULL;
+	g_autofree gchar *value1 = NULL;
+	g_autofree gchar *value2 = NULL;
+	g_autofree gchar *value3 = NULL;
+	g_autofree gchar *value4 = NULL;
+	g_autofree gchar *value5 = NULL;
 
 	scheme1 = gs_utils_get_url_scheme ("appstream://gimp.desktop");
 	g_assert_cmpstr (scheme1, ==, "appstream");
@@ -56,6 +61,17 @@ gs_utils_url_func (void)
 	g_assert_cmpstr (path2, ==, "gimp.desktop");
 	path3 = gs_utils_get_url_path ("apt:/gimp");
 	g_assert_cmpstr (path3, ==, "gimp");
+
+	value1 = gs_utils_get_url_query_param ("snap://moon-buggy", "channel");
+	g_assert_null (value1);
+	value2 = gs_utils_get_url_query_param ("snap://moon-buggy?", "channel");
+	g_assert_null (value2);
+	value3 = gs_utils_get_url_query_param ("snap://moon-buggy?channel=beta", "channel");
+	g_assert_cmpstr (value3, ==, "beta");
+	value4 = gs_utils_get_url_query_param ("snap://moon-buggy?channel=beta&foo=bar", "channel");
+	g_assert_cmpstr (value4, ==, "beta");
+	value5 = gs_utils_get_url_query_param ("snap://moon-buggy?foo=bar&channel=beta", "channel");
+	g_assert_cmpstr (value5, ==, "beta");
 }
 
 static void

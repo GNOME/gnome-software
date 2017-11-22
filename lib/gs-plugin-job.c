@@ -48,6 +48,7 @@ struct _GsPluginJob
 	GsCategory		*category;
 	AsReview		*review;
 	GsPrice			*price;
+	GsChannel		*channel;
 	gint64			 time_created;
 };
 
@@ -67,6 +68,7 @@ enum {
 	PROP_REVIEW,
 	PROP_MAX_RESULTS,
 	PROP_PRICE,
+	PROP_CHANNEL,
 	PROP_TIMEOUT,
 	PROP_LAST
 };
@@ -124,6 +126,9 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->price != NULL) {
 		g_autofree gchar *price_string = gs_price_to_string (self->price);
 		g_string_append_printf (str, " with price=%s", price_string);
+	}
+	if (self->channel != NULL) {
+		g_string_append_printf (str, " with channel=%s", gs_channel_get_name (self->channel));
 	}
 	if (self->auth != NULL) {
 		g_string_append_printf (str, " with auth=%s",
@@ -435,6 +440,20 @@ gs_plugin_job_get_price (GsPluginJob *self)
 	return self->price;
 }
 
+void
+gs_plugin_job_set_channel (GsPluginJob *self, GsChannel *channel)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->channel, channel);
+}
+
+GsChannel *
+gs_plugin_job_get_channel (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->channel;
+}
+
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -479,6 +498,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_PRICE:
 		g_value_set_object (value, self->price);
+		break;
+	case PROP_CHANNEL:
+		g_value_set_object (value, self->channel);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, self->max_results);
@@ -543,6 +565,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_PRICE:
 		gs_plugin_job_set_price (self, g_value_get_object (value));
 		break;
+	case PROP_CHANNEL:
+		gs_plugin_job_set_channel (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -562,6 +587,7 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&self->category);
 	g_clear_object (&self->review);
 	g_clear_object (&self->price);
+	g_clear_object (&self->channel);
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
 
@@ -651,6 +677,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     GS_TYPE_PRICE,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_PRICE, pspec);
+
+	pspec = g_param_spec_object ("channel", NULL, NULL,
+				     GS_TYPE_CHANNEL,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_CHANNEL, pspec);
 }
 
 static void

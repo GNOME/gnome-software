@@ -70,6 +70,8 @@ void		 gs_plugin_job_set_review		(GsPluginJob	*self,
 							 AsReview	*review);
 void		 gs_plugin_job_set_price		(GsPluginJob	*self,
 							 GsPrice	*price);
+void		 gs_plugin_job_set_channel		(GsPluginJob	*self,
+							 GsChannel	*channel);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 
