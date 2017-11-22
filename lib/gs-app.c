@@ -387,7 +387,6 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	GsAppClass *klass = GS_APP_GET_CLASS (app);
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	AsImage *im;
-	AsScreenshot *ss;
 	GList *keys;
 	GList *l;
 	const gchar *tmp;
@@ -467,8 +466,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	if (priv->description != NULL)
 		gs_app_kv_lpad (str, "description", priv->description);
 	for (i = 0; i < priv->screenshots->len; i++) {
+		AsScreenshot *ss = g_ptr_array_index (priv->screenshots, i);
 		g_autofree gchar *key = NULL;
-		ss = g_ptr_array_index (priv->screenshots, i);
 		tmp = as_screenshot_get_caption (ss, NULL);
 		im = as_screenshot_get_image (ss, 0, 0);
 		if (im == NULL)
