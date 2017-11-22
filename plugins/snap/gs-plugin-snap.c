@@ -438,7 +438,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	snap = snaps->pdata[0];
 	app = snap_to_app (plugin, snap);
 
-	/* if has a sceenshot called 'banner.png' or 'banner-icon.png' then use them for the banner */
+	/* if has a screenshot called 'banner.png' or 'banner-icon.png' then use them for the banner */
 	screenshots = snapd_snap_get_screenshots (snap);
 	for (i = 0; i < screenshots->len; i++) {
 		SnapdScreenshot *screenshot = screenshots->pdata[i];
@@ -759,7 +759,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 				g_autoptr(AsScreenshot) ss = NULL;
 				g_autoptr(AsImage) image = NULL;
 
-				/* skip sceenshots used for banner when app is featured */
+				/* skip screenshots used for banner when app is featured */
 				url = snapd_screenshot_get_url (screenshot);
 				filename = g_path_get_basename (url);
 				if (is_banner_image (filename) || is_banner_icon_image (filename))
