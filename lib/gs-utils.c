@@ -230,7 +230,7 @@ gs_utils_get_cache_filename (const gchar *kind,
  * @error: A #GError, or %NULL
  *
  * This SHA1 hash is composed of the contents of machine-id and your
- * usename and is also salted with a hardcoded value.
+ * username and is also salted with a hardcoded value.
  *
  * This provides an identifier that can be used to identify a specific
  * user on a machine, allowing them to cast only one vote or perform

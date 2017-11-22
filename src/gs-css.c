@@ -265,7 +265,7 @@ gs_css_validate (GsCss *self, GError **error)
  * gs_css_set_rewrite_func:
  * @self: a #GsCss
  * @func: a #GsCssRewriteFunc or %NULL
- * @user_data: userr data to pass to @func
+ * @user_data: user data to pass to @func
  *
  * Sets a function to be used when rewriting CSS before it is parsed.
  *

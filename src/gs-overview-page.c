@@ -130,7 +130,7 @@ gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 
-	/* every job increcements this */
+	/* every job increments this */
 	if (priv->action_cnt == 0) {
 		g_warning ("action_cnt already zero!");
 		return;

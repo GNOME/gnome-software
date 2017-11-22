@@ -540,7 +540,7 @@ gs_updates_page_set_state (GsUpdatesPage *self, GsUpdatesPageState state)
 static void
 gs_updates_page_decrement_refresh_count (GsUpdatesPage *self)
 {
-	/* every job increcements this */
+	/* every job increments this */
 	if (self->action_cnt == 0) {
 		g_warning ("action_cnt already zero!");
 		return;

@@ -262,7 +262,7 @@ gs_plugin_func (void)
 	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list_dup, 0)), ==, "a");
 	g_object_unref (list_dup);
 
-	/* test removing obects */
+	/* test removing objects */
 	app = gs_app_new ("a");
 	list_remove = gs_app_list_new ();
 	gs_app_list_add (list_remove, app);

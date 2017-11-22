@@ -1066,7 +1066,7 @@ gs_app_set_allow_cancel (GsApp *app, gboolean allow_cancel)
  * All applications start in state %AS_APP_STATE_UNKNOWN,
  * but the frontend is not supposed to see GsApps with this state.
  *
- * Plugins are reponsible for changing the state to one of the other
+ * Plugins are responsible for changing the state to one of the other
  * states before the GsApp is passed to the frontend.
  *
  * |[

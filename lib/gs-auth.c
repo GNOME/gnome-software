@@ -308,7 +308,7 @@ gs_auth_add_flags (GsAuth *auth, GsAuthFlags flags)
  * @auth: a #GsAuth
  * @flags: a #GsAuthFlags, e.g. %GS_AUTH_FLAG_REMEMBER
  *
- * Finds ouf if the authentication has a flag.
+ * Finds out if the authentication has a flag.
  *
  * Returns: %TRUE if set
  */

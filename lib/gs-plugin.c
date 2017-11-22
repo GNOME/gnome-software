@@ -270,7 +270,7 @@ gs_plugin_get_data (GsPlugin *plugin)
  * This is normally called in gs_plugin_initialize() and the data should
  * not be manually freed.
  *
- * Returns: the #GsPluginData, cleared to NUL butes
+ * Returns: the #GsPluginData, cleared to NUL bytes
  *
  * Since: 3.22
  **/
@@ -1013,7 +1013,7 @@ gs_plugin_app_launch_cb (gpointer user_data)
  * @app: a #GsApp
  * @error: a #GError, or %NULL
  *
- * Launches the application using GAppInfo.
+ * Launches the application using #GAppInfo.
  *
  * Returns: %TRUE for success
  *
@@ -1140,7 +1140,7 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 	if (header_size < body_length)
 		return;
 
-	/* calulate percentage */
+	/* calculate percentage */
 	percentage = (guint) ((100 * body_length) / header_size);
 	g_debug ("%s progress: %u%%", gs_app_get_id (helper->app), percentage);
 	gs_app_set_progress (helper->app, percentage);
@@ -1563,7 +1563,7 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
  * likes. Using this function may mean the front-end and the plugin
  * may be operating on a different GsApp with the same cache ID.
  *
- * Most plugins do not need to call this funtion; if a suitable cache
+ * Most plugins do not need to call this function; if a suitable cache
  * key is being used the old cache item can remain.
  *
  * Since: 3.22

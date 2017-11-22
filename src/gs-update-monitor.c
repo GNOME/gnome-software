@@ -239,7 +239,7 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 	}
 
-	/* might be alrady showing, so just withdraw it and re-issue it */
+	/* might be already showing, so just withdraw it and re-issue it */
 	g_application_withdraw_notification (monitor->application, "eol");
 
 	/* do not show when the main window is active */
@@ -762,7 +762,7 @@ allow_updates_notify_cb (GsPluginLoader *plugin_loader,
 {
 	if (gs_plugin_loader_get_allow_updates (plugin_loader)) {
 		/* We restart the updates check here to avoid the user
-		 * pontentially waiting for the hourly check */
+		 * potentially waiting for the hourly check */
 		restart_updates_check (monitor);
 		restart_upgrades_check (monitor);
 	} else {

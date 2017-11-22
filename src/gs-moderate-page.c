@@ -115,7 +115,7 @@ gs_moderate_page_review_clicked_cb (GsReviewRow *row,
 					    self);
 	gtk_widget_set_visible (GTK_WIDGET (row), FALSE);
 
-	/* if there are no more visble rows, hide the app */
+	/* if there are no more visible rows, hide the app */
 	gs_moderate_page_perhaps_hide_app_row (self, app);
 }
 
