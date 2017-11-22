@@ -2431,7 +2431,7 @@ gs_app_set_origin_hostname (GsApp *app, const gchar *origin_hostname)
  * @app: a #GsApp
  * @screenshot: a #AsScreenshot
  *
- * Adds a screenshot to the applicaton.
+ * Adds a screenshot to the application.
  *
  * Since: 3.22
  **/
