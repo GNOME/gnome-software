@@ -53,6 +53,37 @@
 	border-radius: 16px;
 }
 
+.details-channel,
+.details-channel:backdrop {
+	outline-offset: 0;
+	background-image: none;
+	border-image: none;
+	border-radius: 4px;
+	border-width: 0 0 2px 0;
+	padding: 1px 9px;
+	box-shadow: none;
+	text-shadow: none;
+	color: #ffffff;
+}
+
+.details-channel label,
+.details-channel:backdrop label,
+.details-channel:hover label {
+	color: #fff;
+}
+
+.details-channel {
+	background-color: #4e9a06;
+	border-color: #3e7905;
+}
+.details-channel:hover {
+	background-color: #5db807;
+	border-color: #4d9606;
+}
+.details-channel:backdrop {
+	border-color: #4e9a06;
+}
+
 .details-license-free,
 .details-license-nonfree,
 .details-license-unknown,
