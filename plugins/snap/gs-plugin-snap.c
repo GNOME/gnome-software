@@ -698,6 +698,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (local_snap != NULL) {
 		const gchar *name;
 		g_autofree gchar *description = NULL;
+		g_autofree gchar *version = NULL;
+
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		name = snapd_snap_get_title (local_snap);
@@ -709,7 +711,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		if (description != NULL)
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (local_snap));
-		gs_app_set_version (app, snapd_snap_get_version (local_snap));
+		version = g_strdup_printf ("%s (%s)", snapd_snap_get_version (local_snap), snapd_snap_get_revision (local_snap));
+		gs_app_set_version (app, version);
 		gs_app_set_size_installed (app, snapd_snap_get_installed_size (local_snap));
 		gs_app_set_install_date (app, g_date_time_to_unix (snapd_snap_get_install_date (local_snap)));
 		gs_app_set_developer_name (app, snapd_snap_get_developer (local_snap));
@@ -726,6 +729,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		GPtrArray *screenshots;
 		const gchar *name;
 		g_autofree gchar *description = NULL;
+		g_autofree gchar *version = NULL;
 
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -739,7 +743,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		if (description != NULL)
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (store_snap));
-		gs_app_set_version (app, snapd_snap_get_version (store_snap));
+		version = g_strdup_printf ("%s (%s)", snapd_snap_get_version (store_snap), snapd_snap_get_revision (store_snap));
+		gs_app_set_version (app, version);
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
 		gs_app_set_developer_name (app, snapd_snap_get_developer (store_snap));
 		if (icon_url == NULL) {
