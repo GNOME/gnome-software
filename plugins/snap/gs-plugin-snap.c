@@ -568,7 +568,7 @@ static gboolean
 load_icon (GsPlugin *plugin, SnapdClient *client, GsApp *app, const gchar *icon_url, GCancellable *cancellable, GError **error)
 {
 	/* icon is either loaded from snapd or from a URL */
-	if (g_str_has_prefix (icon_url, "/")) {
+	if (icon_url != NULL && g_str_has_prefix (icon_url, "/")) {
 		g_autoptr(SnapdIcon) icon = NULL;
 
 		icon = snapd_client_get_icon_sync (client, gs_app_get_id (app), cancellable, error);
