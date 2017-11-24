@@ -729,7 +729,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		GPtrArray *screenshots;
 		const gchar *name;
 		g_autofree gchar *description = NULL;
-		g_autofree gchar *version = NULL;
 
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -743,8 +742,11 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		if (description != NULL)
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (store_snap));
-		version = g_strdup_printf ("%s (%s)", snapd_snap_get_version (store_snap), snapd_snap_get_revision (store_snap));
-		gs_app_set_version (app, version);
+		if (gs_app_get_version (app) == NULL) {
+			g_autofree gchar *version = NULL;
+			version = g_strdup_printf ("%s (%s)", snapd_snap_get_version (store_snap), snapd_snap_get_revision (store_snap));
+			gs_app_set_version (app, version);
+		}
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
 		gs_app_set_developer_name (app, snapd_snap_get_developer (store_snap));
 		if (icon_url == NULL) {
