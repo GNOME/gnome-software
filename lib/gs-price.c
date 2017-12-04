@@ -126,6 +126,8 @@ gs_price_to_string (GsPrice *price)
 	} else if (g_strcmp0 (price->currency, "USD") == 0) {
 		return g_strdup_printf (_("US$%.2f"), price->amount);
 	} else {
+		/* Translators: %s is the currency, and %f is the amount.
+		 * You can switch the order by using “%2$f %1$s” instead. */
 		return g_strdup_printf (_("%s %f"), price->currency, price->amount);
 	}
 }
