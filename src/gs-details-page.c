@@ -62,6 +62,7 @@ struct _GsDetailsPage
 	GsShell			*shell;
 	SoupSession		*session;
 	gboolean		 enable_reviews;
+	gboolean		 show_all_reviews;
 	GSettings		*settings;
 
 	GtkWidget		*application_details_icon;
@@ -1341,13 +1342,15 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
-		gtk_widget_set_visible (row, i < SHOW_NR_REVIEWS_INITIAL);
+		gtk_widget_set_visible (row, self->show_all_reviews ||
+					     i < SHOW_NR_REVIEWS_INITIAL);
 		gs_review_row_set_network_available (GS_REVIEW_ROW (row),
 						     gs_plugin_loader_get_network_available (self->plugin_loader));
 	}
 
 	/* only show the button if there are more to show */
 	gtk_widget_set_visible (self->button_more_reviews,
+				!self->show_all_reviews &&
 				reviews->len > SHOW_NR_REVIEWS_INITIAL);
 
 	/* show the button only if the user never reviewed */
@@ -1513,6 +1516,9 @@ static void
 set_app (GsDetailsPage *self, GsApp *app)
 {
 	g_autofree gchar *tmp = NULL;
+
+	/* do not show all the reviews by default */
+	self->show_all_reviews = FALSE;
 
 	/* disconnect the old handlers */
 	if (self->app != NULL) {
@@ -1956,6 +1962,7 @@ gs_details_page_app_removed (GsPage *page, GsApp *app)
 static void
 gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
+	self->show_all_reviews = TRUE;
 	gtk_container_foreach (GTK_CONTAINER (self->list_box_reviews),
 			       (GtkCallback) gtk_widget_show, NULL);
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
