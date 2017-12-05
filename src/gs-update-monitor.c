@@ -316,6 +316,13 @@ static void
 get_updates (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* disabled in gsettings or from a plugin */
+	if (!gs_plugin_loader_get_allow_updates (monitor->plugin_loader)) {
+		g_debug ("not getting updates as not enabled");
+		return;
+	}
+
 	/* NOTE: this doesn't actually do any network access, instead it just
 	 * returns already downloaded-and-depsolved packages */
 	g_debug ("Getting updates");
@@ -335,6 +342,12 @@ static void
 get_upgrades (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* disabled in gsettings or from a plugin */
+	if (!gs_plugin_loader_get_allow_updates (monitor->plugin_loader)) {
+		g_debug ("not getting upgrades as not enabled");
+		return;
+	}
 
 	/* NOTE: this doesn't actually do any network access, it relies on the
 	 * AppStream data being up to date, either by the appstream-data
@@ -381,8 +394,7 @@ refresh_cache_finished_cb (GObject *object,
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}
-	if (gs_plugin_loader_get_allow_updates (monitor->plugin_loader))
-		get_updates (monitor);
+	get_updates (monitor);
 }
 
 typedef enum {
