@@ -625,6 +625,35 @@ install_activated (GSimpleAction *action,
 	gs_shell_install (app->shell, a, interaction);
 }
 
+static GFile *
+_copy_file_to_cache (GFile *file_src, GError **error)
+{
+	g_autoptr(GFile) file_dest = NULL;
+	g_autofree gchar *cache_dir = NULL;
+	g_autofree gchar *cache_fn = NULL;
+	g_autofree gchar *filename = NULL;
+	g_autofree gchar *basename = NULL;
+
+	/* get destination location */
+	filename = g_file_get_path (file_src);
+	cache_dir = g_dir_make_tmp ("gnome-software-XXXXXX", error);
+	if (cache_dir == NULL)
+		return NULL;
+	basename = g_file_get_basename (file_src);
+	cache_fn = g_build_filename (cache_dir, basename, NULL);
+
+	/* copy file to cache */
+	file_dest = g_file_new_for_path (cache_fn);
+	if (!g_file_copy (file_src, file_dest,
+			  G_FILE_COPY_OVERWRITE,
+			  NULL, /* cancellable */
+			  NULL, NULL, /* progress */
+			  error)) {
+		return NULL;
+	}
+	return g_steal_pointer (&file_dest);
+}
+
 static void
 filename_activated (GSimpleAction *action,
 		    GVariant      *parameter,
@@ -637,7 +666,21 @@ filename_activated (GSimpleAction *action,
 	gs_application_initialize_ui (app);
 
 	g_variant_get (parameter, "(&s)", &filename);
-	file = g_file_new_for_path (filename);
+
+	/* this could go away at any moment, so make a local copy */
+	if (g_str_has_prefix (filename, "/tmp") ||
+	    g_str_has_prefix (filename, "/var/tmp")) {
+		g_autoptr(GError) error = NULL;
+		g_autoptr(GFile) file_src = g_file_new_for_path (filename);
+		file = _copy_file_to_cache (file_src, &error);
+		if (file == NULL) {
+			g_warning ("failed to copy file, falling back to %s: %s",
+				   filename, error->message);
+			file = g_file_new_for_path (filename);
+		}
+	} else {
+		file = g_file_new_for_path (filename);
+	}
 	gs_shell_show_local_file (app->shell, file);
 }
 
