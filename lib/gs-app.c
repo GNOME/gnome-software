@@ -2215,6 +2215,7 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 	tokens = as_utils_spdx_license_tokenize (license);
 	for (i = 0; tokens[i] != NULL; i++) {
 		if (g_strcmp0 (tokens[i], "&") == 0 ||
+		    g_strcmp0 (tokens[i], "+") == 0 ||
 		    g_strcmp0 (tokens[i], "|") == 0)
 			continue;
 		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
