@@ -833,7 +833,7 @@ gs_application_update_software_sources_presence (GApplication *self)
 	GSimpleAction *action;
 	gboolean enable_sources;
 
-	action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (app->action_map),
+	action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (self),
 							      "sources"));
 	enable_sources = g_settings_get_boolean (app->settings,
 						 ENABLE_SOFTWARE_SOURCES_CONF_KEY);
@@ -910,6 +910,8 @@ gs_application_add_wrapper_actions (GApplication *application)
 		g_signal_connect (simple_action, "activate",
 				  G_CALLBACK (wrapper_action_activated_cb),
 				  application);
+		g_object_bind_property (simple_action, "notify::enabled", action,
+					"notify::enabled", G_BINDING_DEFAULT);
 		g_action_map_add_action (G_ACTION_MAP (application),
 					 G_ACTION (simple_action));
 	}
