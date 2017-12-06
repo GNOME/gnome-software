@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-11-13 21:32+0000\n"
-"PO-Revision-Date: 2017-11-16 11:33+0700\n"
+"POT-Creation-Date: 2017-12-05 10:49+0000\n"
+"PO-Revision-Date: 2017-12-06 15:06+0700\n"
 "Last-Translator: Kukuh Syafaat <syafaatkukuh@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -93,16 +93,17 @@ msgstr ""
 "misalnya GNOME, KDE, dan XFCE."
 
 #: data/org.gnome.software.gschema.xml:10
-msgid "Whether to manage updates in GNOME Software"
-msgstr "Apakah mengelola pembaruan dalam GNOME Perangkat Lunak"
+msgid "Whether to manage updates and upgrades in GNOME Software"
+msgstr "Apakah mengelola pembaruan dan peningkatan dalam GNOME Perangkat Lunak"
 
 #: data/org.gnome.software.gschema.xml:11
 msgid ""
-"If disabled, GNOME Software will hide the updates panel and not perform any "
-"automatic updates actions."
+"If disabled, GNOME Software will hide the updates panel, not perform any "
+"automatic updates actions or prompt for upgrades."
 msgstr ""
 "Bila tak difungsikan, GNOME Perangkat Lunak akan menyembunyikan panel "
-"pembaruan dan tidak melalukan sebarang aksi pemutakhiran otomatis."
+"pembaruan, tidak melalukan sebarang aksi pemutakhiran atau peningkatan "
+"otomatis."
 
 #: data/org.gnome.software.gschema.xml:15
 msgid "Whether to automatically download updates"
@@ -1215,7 +1216,7 @@ msgstr "_Pasang…"
 msgid "_Remove"
 msgstr "_Hapus"
 
-#: src/gs-details-page.c:435 src/gs-sources-dialog.c:513
+#: src/gs-details-page.c:435 src/gs-sources-dialog.c:516
 msgid "Removing…"
 msgstr "Menghapus…"
 
@@ -2827,20 +2828,20 @@ msgstr "Biasanya memiliki pembatasan penggunaan dan akses ke kode sumber."
 msgid "Proprietary Software Sources"
 msgstr "Sumber Perangkat Lunak Proprietari"
 
-#: src/gs-sources-dialog.c:498 src/gs-sources-dialog.ui:487
+#: src/gs-sources-dialog.c:501 src/gs-sources-dialog.ui:487
 msgid "Remove Source"
 msgstr "Hapus Sumber"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-sources-dialog.c:584
+#: src/gs-sources-dialog.c:587
 msgid "the operating system"
 msgstr "sistem operasi"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-sources-dialog.c:677
+#: src/gs-sources-dialog.c:680
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -2995,40 +2996,40 @@ msgid "Software Upgrade Available"
 msgstr "Pemutakhiran Perangkat Lunak Tersedia"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:610
+#: src/gs-update-monitor.c:622
 msgid "Software Updates Failed"
 msgstr "Pembaruan Perangkat Lunak Gagal"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:612
+#: src/gs-update-monitor.c:624
 msgid "An important OS update failed to be installed."
 msgstr "Suatu pembaruan OS yang penting gagal dipasang."
 
-#: src/gs-update-monitor.c:613
+#: src/gs-update-monitor.c:625
 msgid "Show Details"
 msgstr "Tampilkan Rincian"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:636
+#: src/gs-update-monitor.c:648
 msgid "System Upgrade Complete"
 msgstr "Peningkatan Sistem Selesai"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:641
+#: src/gs-update-monitor.c:653
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Selamat datang di %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:647
+#: src/gs-update-monitor.c:659
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Pembaruan Perangkat Lunak Terpasang"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:651
+#: src/gs-update-monitor.c:663
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Pembaruan OS yang penting telah dipasang."
@@ -3038,30 +3039,30 @@ msgstr[0] "Pembaruan OS yang penting telah dipasang."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:662
+#: src/gs-update-monitor.c:674
 msgctxt "updates"
 msgid "Review"
 msgstr "Ulasan"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:711
+#: src/gs-update-monitor.c:723
 msgid "Failed To Update"
 msgstr "Gagal Memperbarui"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:717
+#: src/gs-update-monitor.c:729
 msgid "The system was already up to date."
 msgstr "Sistem sudah pada kondisi terbaru."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:722
+#: src/gs-update-monitor.c:734
 msgid "The update was cancelled."
 msgstr "Pembaruan dibatalkan."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:728
+#: src/gs-update-monitor.c:740
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3070,7 +3071,7 @@ msgstr ""
 "Internet dan coba lagi."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:734
+#: src/gs-update-monitor.c:746
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3079,14 +3080,14 @@ msgstr ""
 "pada penyedia perangkat lunak Anda untuk informasi lebih rinci."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:740
+#: src/gs-update-monitor.c:752
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Tidak tersedia ruang diska yang cukup. Kosongkanlah beberapa dan coba lagi."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:745
+#: src/gs-update-monitor.c:757
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3882,17 +3883,17 @@ msgid "Getting runtime source…"
 msgstr "Mendapatkan sumber runtime…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:794 plugins/fwupd/gs-plugin-fwupd.c:893
+#: plugins/fwupd/gs-plugin-fwupd.c:843 plugins/fwupd/gs-plugin-fwupd.c:942
 msgid "Downloading firmware update signature…"
 msgstr "Mengunduh tanda tangan pembaruan perangkat tegar…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:835 plugins/fwupd/gs-plugin-fwupd.c:939
+#: plugins/fwupd/gs-plugin-fwupd.c:884 plugins/fwupd/gs-plugin-fwupd.c:988
 msgid "Downloading firmware update metadata…"
 msgstr "Mengunduh metadata pembaruan perangkat tegar…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:1030
+#: plugins/fwupd/gs-plugin-fwupd.c:1079
 msgid "Downloading firmware update…"
 msgstr "Mengunduh pembaruan perangkat tegar…"
 
