@@ -594,7 +594,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	array = as_app_get_content_ratings (item);
 	for (i = 0; i < array->len; i++) {
 		AsContentRating *cr = g_ptr_array_index (array, i);
-		if (g_strcmp0 (as_content_rating_get_kind (cr), "oars-1.0") == 0) {
+		if (g_str_has_prefix (as_content_rating_get_kind (cr), "oars-1.")) {
 			gs_app_set_content_rating (app, cr);
 			break;
 		}
