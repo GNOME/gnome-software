@@ -910,8 +910,8 @@ gs_application_add_wrapper_actions (GApplication *application)
 		g_signal_connect (simple_action, "activate",
 				  G_CALLBACK (wrapper_action_activated_cb),
 				  application);
-		g_object_bind_property (simple_action, "notify::enabled", action,
-					"notify::enabled", G_BINDING_DEFAULT);
+		g_object_bind_property (simple_action, "enabled", action,
+					"enabled", G_BINDING_DEFAULT);
 		g_action_map_add_action (G_ACTION_MAP (application),
 					 G_ACTION (simple_action));
 	}
