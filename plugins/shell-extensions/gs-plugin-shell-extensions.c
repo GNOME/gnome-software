@@ -284,7 +284,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* not running under Shell */
 	name_owner = g_dbus_proxy_get_name_owner (priv->proxy);
 	if (name_owner == NULL) {
-		g_clear_object (&priv->proxy);
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "gnome-shell is not running");
 		return FALSE;
 	}
 
