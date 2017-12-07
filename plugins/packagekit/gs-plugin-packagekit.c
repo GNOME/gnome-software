@@ -210,6 +210,34 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_repo_enable (GsPlugin *plugin,
+                       GsApp *repo,
+                       GCancellable *cancellable,
+                       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	ProgressData data = { 0 };
+	g_autoptr(PkResults) results = NULL;
+
+	data.app = repo;
+	data.plugin = plugin;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, repo, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_repo_enable (PK_CLIENT (priv->task),
+					 gs_app_get_id (repo),
+					 TRUE,
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, &data,
+					 error);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_utils_error_add_unique_id (error, repo);
+		return FALSE;
+	}
+	return TRUE;
+}
+
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -235,7 +263,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* we enable the repo */
+	/* enable repo */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+		return gs_plugin_repo_enable (plugin, app,
+		                              cancellable, error);
+	}
+
+	/* enable the repo where the unavailable app is coming from */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 
 		/* get everything up front we need */
