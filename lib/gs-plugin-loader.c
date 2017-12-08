@@ -239,7 +239,7 @@ static void
 gs_plugin_loader_job_debug (GsPluginLoaderHelper *helper)
 {
 	g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
-	g_info ("%s", str);
+	g_debug ("%s", str);
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderHelper, gs_plugin_loader_helper_free)
