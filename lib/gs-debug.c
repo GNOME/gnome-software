@@ -31,7 +31,6 @@ struct _GsDebug
 	GObject		 parent_instance;
 	GMutex		 mutex;
 	gboolean	 use_time;
-	gboolean	 use_color;
 };
 
 G_DEFINE_TYPE (GsDebug, gs_debug, G_TYPE_OBJECT)
@@ -91,32 +90,38 @@ gs_log_writer_console (GLogLevelFlags log_level,
 	for (guint i = domain->len; i < 3; i++)
 		g_string_append (domain, " ");
 
-	/* to file */
-	if (!debug->use_color) {
-		if (tmp != NULL)
-			g_print ("%s ", tmp);
-		g_print ("%s ", domain->str);
-		g_print ("%s\n", log_message);
-
-	/* to screen */
-	} else {
-		switch (log_level) {
-		case G_LOG_LEVEL_ERROR:
-		case G_LOG_LEVEL_CRITICAL:
-		case G_LOG_LEVEL_WARNING:
+	switch (log_level) {
+	case G_LOG_LEVEL_ERROR:
+	case G_LOG_LEVEL_CRITICAL:
+	case G_LOG_LEVEL_WARNING:
+		/* to screen */
+		if (isatty (fileno (stderr)) == 1) {
 			/* critical in red */
 			if (tmp != NULL)
-				g_print ("%c[%dm%s ", 0x1B, 32, tmp);
+				g_printerr ("%c[%dm%s ", 0x1B, 32, tmp);
+			g_printerr ("%s ", domain->str);
+			g_printerr ("%c[%dm%s\n%c[%dm", 0x1B, 31, log_message, 0x1B, 0);
+		} else { /* to file */
+			if (tmp != NULL)
+				g_print ("%s ", tmp);
 			g_print ("%s ", domain->str);
-			g_print ("%c[%dm%s\n%c[%dm", 0x1B, 31, log_message, 0x1B, 0);
-			break;
-		default:
+			g_print ("%s\n", log_message);
+		}
+		break;
+	default:
+		/* to screen */
+		if (isatty (fileno (stdout)) == 1) {
 			/* debug in blue */
 			if (tmp != NULL)
 				g_print ("%c[%dm%s ", 0x1B, 32, tmp);
 			g_print ("%s ", domain->str);
 			g_print ("%c[%dm%s\n%c[%dm", 0x1B, 34, log_message, 0x1B, 0);
 			break;
+		} else { /* to file */
+			if (tmp != NULL)
+				g_print ("%s ", tmp);
+			g_print ("%s ", domain->str);
+			g_print ("%s\n", log_message);
 		}
 	}
 
@@ -179,7 +184,6 @@ gs_debug_init (GsDebug *debug)
 {
 	g_mutex_init (&debug->mutex);
 	debug->use_time = g_getenv ("GS_DEBUG_NO_TIME") == NULL;
-	debug->use_color = (isatty (fileno (stdout)) == 1);
 	g_log_set_writer_func (gs_debug_log_writer,
 			       g_object_ref (debug),
 			       (GDestroyNotify) g_object_unref);
