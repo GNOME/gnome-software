@@ -59,9 +59,9 @@ gs_update_list_add_app (GsUpdateList *update_list, GsApp *app)
 				    priv->sizegroup_image,
 				    priv->sizegroup_name,
 				    NULL);
-	g_signal_connect (app, "notify::state",
-			  G_CALLBACK (gs_update_list_app_state_notify_cb),
-			  app_row);
+	g_signal_connect_object (app, "notify::state",
+	                         G_CALLBACK (gs_update_list_app_state_notify_cb),
+	                         app_row, 0);
 	gtk_widget_show (app_row);
 }
 

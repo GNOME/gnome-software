@@ -931,9 +931,9 @@ _add_app_row (GsUpdatesPage *self, GsApp *app)
 				    self->sizegroup_image,
 				    self->sizegroup_name,
 				    self->sizegroup_button);
-	g_signal_connect (app, "notify::state",
-			  G_CALLBACK (_app_state_notify_cb),
-			  app_row);
+	g_signal_connect_object (app, "notify::state",
+	                         G_CALLBACK (_app_state_notify_cb),
+	                         app_row, 0);
 }
 
 static void
