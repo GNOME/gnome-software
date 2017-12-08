@@ -125,10 +125,10 @@ gs_log_writer_console (GLogLevelFlags log_level,
 }
 
 static GLogWriterOutput
-gs_debug_log_writer (GLogLevelFlags log_level,
-		     const GLogField *fields,
-		     gsize n_fields,
-		     gpointer user_data)
+gs_log_writer_journald (GLogLevelFlags log_level,
+                        const GLogField *fields,
+                        gsize n_fields,
+                        gpointer user_data)
 {
 	/* important enough to force to the journal */
 	switch (log_level) {
@@ -136,12 +136,25 @@ gs_debug_log_writer (GLogLevelFlags log_level,
 	case G_LOG_LEVEL_CRITICAL:
 	case G_LOG_LEVEL_WARNING:
 	case G_LOG_LEVEL_INFO:
-		g_log_writer_journald (log_level, fields, n_fields, user_data);
+		return g_log_writer_journald (log_level, fields, n_fields, user_data);
 		break;
 	default:
 		break;
 	}
-	return gs_log_writer_console (log_level, fields, n_fields, user_data);
+
+	return G_LOG_WRITER_UNHANDLED;
+}
+
+static GLogWriterOutput
+gs_debug_log_writer (GLogLevelFlags log_level,
+		     const GLogField *fields,
+		     gsize n_fields,
+		     gpointer user_data)
+{
+	if (g_log_writer_is_journald (fileno (stderr)))
+		return gs_log_writer_journald (log_level, fields, n_fields, user_data);
+	else
+		return gs_log_writer_console (log_level, fields, n_fields, user_data);
 }
 
 static void
