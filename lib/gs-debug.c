@@ -49,7 +49,8 @@ gs_log_writer_console (GLogLevelFlags log_level,
 	g_autoptr(GString) domain = NULL;
 
 	/* enabled */
-	if (g_getenv ("GS_DEBUG") == NULL)
+	if (g_getenv ("GS_DEBUG") == NULL &&
+	    log_level == G_LOG_LEVEL_DEBUG)
 		return G_LOG_WRITER_HANDLED;
 
 	/* get data from arguments */
