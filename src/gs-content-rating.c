@@ -216,7 +216,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Explicit references to specific brands or trademarked products") },
 	{ "money-advertising", AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Players are encouraged to purchase specific real-world items") },
+	_("Users are encouraged to purchase specific real-world items") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("No gambling of any kind") },
@@ -237,22 +237,22 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Ability to spend real money in-game") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	_("No way to chat with other players") },
+	_("No way to chat with other users") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description */
-	_("Player-to-player game interactions without chat functionality") },
+	_("User-to-user game interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
-	_("Player-to-player preset interactions without chat functionality") },
+	_("User-to-user preset interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Uncontrolled chat functionality between players") },
+	_("Uncontrolled chat functionality between users") },
 	{ "social-audio",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	_("No way to talk with other players") },
+	_("No way to talk with other users") },
 	{ "social-audio",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Uncontrolled audio or video chat functionality between players") },
+	_("Uncontrolled audio or video chat functionality between users") },
 	{ "social-contacts",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("No sharing of social network usernames or email addresses") },
