@@ -103,6 +103,14 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 		g_auto(GStrv) split = NULL;
 		app = gs_app_list_index (installed, i);
 		split = pk_package_id_split (gs_app_get_source_id_default (app));
+		if (split == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     "invalid package-id: %s",
+				     gs_app_get_source_id_default (app));
+			return FALSE;
+		}
 		if (g_str_has_prefix (split[PK_PACKAGE_ID_DATA], "installed:")) {
 			id = split[PK_PACKAGE_ID_DATA] + 10;
 			app_tmp = g_hash_table_lookup (hash, id);
