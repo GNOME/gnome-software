@@ -179,12 +179,21 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			continue;
 		}
 
+		/* get ID details */
+		split = pk_package_id_split (package_ids[i]);
+		if (split == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_INVALID_FORMAT,
+				     "invalid package-id: %s", package_ids[i]);
+			return FALSE;
+		}
+
 		/* create new app */
 		app = gs_app_new (NULL);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_add_source_id (app, package_ids[i]);
-		split = pk_package_id_split (package_ids[i]);
 		gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);

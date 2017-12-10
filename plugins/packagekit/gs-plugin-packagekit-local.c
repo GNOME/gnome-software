@@ -210,6 +210,13 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 			     gs_plugin_get_name (plugin));
 	package_id = pk_details_get_package_id (item);
 	split = pk_package_id_split (package_id);
+	if (split == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "invalid package-id: %s", package_id);
+		return FALSE;
+	}
 	basename = g_path_get_basename (filename);
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);

@@ -450,7 +450,11 @@ gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
 	g_auto(GStrv) split2 = NULL;
 
 	split1 = pk_package_id_split (package_id1);
+	if (split1 == NULL)
+		return FALSE;
 	split2 = pk_package_id_split (package_id2);
+	if (split2 == NULL)
+		return FALSE;
 	ret = (g_strcmp0 (split1[PK_PACKAGE_ID_NAME],
 			  split2[PK_PACKAGE_ID_NAME]) == 0 &&
 	       g_strcmp0 (split1[PK_PACKAGE_ID_VERSION],
