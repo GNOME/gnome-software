@@ -243,7 +243,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("User-to-user game interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
-	_("User-to-user preset interactions without chat functionality") },
+	_("Moderated chat functionality between users") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
 	_("Uncontrolled chat functionality between users") },
@@ -264,7 +264,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("No sharing of user information with 3rd parties") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Sharing user information with 3rd parties") },
+	_("Sharing information identifiable to the user") },
 	{ "social-location",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("No sharing of physical location to other users") },
