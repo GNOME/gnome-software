@@ -95,8 +95,16 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 		gs_app_set_metadata (app, "fwupd::Guid", guid_str);
 	}
 	if (fwupd_device_get_name (dev) != NULL) {
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 fwupd_device_get_name (dev));
+		g_autofree gchar *vendor_name = NULL;
+		if (g_str_has_prefix (fwupd_device_get_name (dev),
+				      fwupd_device_get_vendor (dev))) {
+			vendor_name = g_strdup (fwupd_device_get_name (dev));
+		} else {
+			vendor_name = g_strdup_printf ("%s %s",
+						       fwupd_device_get_vendor (dev),
+						       fwupd_device_get_name (dev));
+		}
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, vendor_name);
 	}
 	if (fwupd_device_get_summary (dev) != NULL) {
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
