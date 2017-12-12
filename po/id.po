@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-12-05 10:49+0000\n"
-"PO-Revision-Date: 2017-12-06 15:06+0700\n"
+"POT-Creation-Date: 2017-12-10 14:28+0000\n"
+"PO-Revision-Date: 2017-12-11 16:50+0700\n"
 "Last-Translator: Kukuh Syafaat <syafaatkukuh@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -391,7 +391,7 @@ msgstr "Terpasang"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:440
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:441
 msgid "Installing"
 msgstr "Memasang"
 
@@ -406,7 +406,7 @@ msgid "Folder Name"
 msgstr "Nama Folder"
 
 #: src/gs-app-folder-dialog.c:321 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.c:380 src/gs-details-page.ui:330 src/gs-editor.c:623
+#: src/gs-details-page.c:381 src/gs-details-page.ui:330 src/gs-editor.c:623
 #: src/gs-editor.c:655 src/gs-installed-page.c:609 src/gs-removal-dialog.ui:33
 #: src/gs-review-dialog.ui:23 src/gs-upgrade-banner.ui:131
 msgid "_Cancel"
@@ -1030,8 +1030,8 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:219
-msgid "Players are encouraged to purchase specific real-world items"
-msgstr "Pemain didorong untuk membeli spesifik item dunia nyata"
+msgid "Users are encouraged to purchase specific real-world items"
+msgstr "Pengguna dianjurkan untuk membeli barang dunia nyata tertentu"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:222
@@ -1058,70 +1058,223 @@ msgstr "Perjudian menggunakan uang riil"
 msgid "No ability to spend money"
 msgstr "Tidak ada kemampuan membelanjakan uang"
 
+#. v1.1
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:237
+msgid "Users are encouraged to donate real money"
+msgstr "Pengguna dianjurkan untuk menyumbangkan uang sungguhan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:240
 msgid "Ability to spend real money in-game"
 msgstr "Kemampuan untuk menghabiskan uang riil dalam game"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:240
-msgid "No way to chat with other players"
-msgstr "Tidak ada cara untuk mengobrol dengan pemain lain"
-
-#. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:243
-msgid "Player-to-player game interactions without chat functionality"
-msgstr "Interaksi permainan pemain-ke-pemain tanpa fungsi obrol"
+msgid "No way to chat with other users"
+msgstr "Tidak ada cara untuk mengobrol dengan pengguna lain"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:246
-msgid "Player-to-player preset interactions without chat functionality"
-msgstr "Interaksi preset pemain-ke-pemain tanpa fungsi obrol"
+msgid "User-to-user game interactions without chat functionality"
+msgstr "Antarmuka pengguna ke pengguna tanpa fungsi obrolan"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:249
-msgid "Uncontrolled chat functionality between players"
-msgstr "Fungsi obrol tidak terkontrol antara pemain"
+msgid "Moderated chat functionality between users"
+msgstr "Moderasi fungsi obrolan antar pengguna"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:252
-msgid "No way to talk with other players"
-msgstr "Tidak ada cara untuk berbicara dengan pemain lain"
+msgid "Uncontrolled chat functionality between users"
+msgstr "Fungsi obrolan yang tidak terkontrol antara pengguna"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:255
-msgid "Uncontrolled audio or video chat functionality between players"
-msgstr "Fungsi obrol audio atau video tidak terkontrol antara pemain"
+msgid "No way to talk with other users"
+msgstr "Tidak ada cara untuk berbicara dengan pengguna lain"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:258
+msgid "Uncontrolled audio or video chat functionality between users"
+msgstr "Fungsi obrolan audio atau video yang tidak terkontrol antara pengguna"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:261
 msgid "No sharing of social network usernames or email addresses"
 msgstr "Tidak berbagi alamat surel atau nama pengguna media sosial"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
+#: src/gs-content-rating.c:264
 msgid "Sharing social network usernames or email addresses"
 msgstr "Berbagai nama pengguna jejaring sosial atau alamat surel"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:264
+#: src/gs-content-rating.c:267
 msgid "No sharing of user information with 3rd parties"
 msgstr "Tidak berbagi informasi pengguna dengan pihak ke-3"
 
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:267
-msgid "Sharing user information with 3rd parties"
-msgstr "Berbagi informasi pengguna dengan pihak ke-3"
-
+#. v1.1
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:270
+msgid "Checking for the latest application version"
+msgstr "Memeriksa versi aplikasi terbaru"
+
+#. v1.1
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:273
+msgid "Sharing diagnostic data not identifiable to the user"
+msgstr "Berbagi data diagnostik yang tidak dapat dikenali pengguna"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:276
+msgid "Sharing information identifiable to the user"
+msgstr "Berbagi informasi yang bisa dikenali pengguna"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:279
 msgid "No sharing of physical location to other users"
 msgstr "Tidak berbagi lokasi fisik ke pengguna lain"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:273
+#: src/gs-content-rating.c:282
 msgid "Sharing physical location to other users"
 msgstr "Berbagi lokasi fisik ke pengguna lain"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:287
+msgid "No references to homosexuality"
+msgstr "Tidak ada referensi untuk homoseksualitas"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:290
+msgid "Indirect references to homosexuality"
+msgstr "Tidak ada referensi untuk homoseksualitas"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:293
+msgid "Kissing between people of the same gender"
+msgstr "Berciuman antara orang-orang dengan jenis kelamin yang sama"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:296
+msgid "Graphic sexual behavior between people of the same gender"
+msgstr "Perilaku seksual grafis antara orang dengan jenis kelamin yang sama"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:299
+msgid "No references to prostitution"
+msgstr "Tidak ada referensi untuk prostitusi"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:302
+msgid "Indirect references to prostitution"
+msgstr "Referensi tidak langsung untuk prostitusi"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:305
+msgid "Direct references of prostitution"
+msgstr "Referensi langsung untuk prostitusi"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:308
+msgid "Graphic depictions of the act of prostitution"
+msgstr "Penggambaran grafis dari prostitusi"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:311
+msgid "No references to adultery"
+msgstr "Tidak ada referensi untuk perzinaan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:314
+msgid "Indirect references to adultery"
+msgstr "Referensi tidak langsung untuk perzinaan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:317
+msgid "Direct references of adultery"
+msgstr "Referensi langsung untuk perzinaan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:320
+msgid "Graphic depictions of the act of adultery"
+msgstr "Penggambaran grafis dari tindakan perzinaan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:323
+msgid "No sexualized characters"
+msgstr "Tidak ada karakter seksual"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:326
+msgid "Scantily clad human characters"
+msgstr "Karakter manusia berpakaian minim"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:329
+msgid "Overtly sexualized human characters"
+msgstr "Karakter manusia seksual secara menyeluruh"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:332
+msgid "No references to desecration"
+msgstr "Tidak ada referensi untuk penodaan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:335
+msgid "Depictions or references to historical desecration"
+msgstr "Penggambaran atau referensi tentang penodaan sejarah"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:338
+msgid "Depictions of modern-day human desecration"
+msgstr "Penggambaran tentang penodaan manusia zaman modern"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:341
+msgid "Graphic depictions of modern-day desecration"
+msgstr "Penggambaran grafis tentang penodaan modern"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:344
+msgid "No visible dead human remains"
+msgstr "Tidak ada sisa manusia mati yang terlihat"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:347
+msgid "Visible dead human remains"
+msgstr "Sisa manusia mati yang terlihat"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:350
+msgid "Dead human remains that are exposed to the elements"
+msgstr "Sisa manusia mati yang terpapar unsur"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:353
+msgid "Graphic depictions of desecration of human bodies"
+msgstr "Penggambaran grafis penodaan tubuh manusia"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:356
+msgid "No references to slavery"
+msgstr "Tidak ada referensi untuk perbudakan"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:359
+msgid "Depictions or references to historical slavery"
+msgstr "Penggambaran atau referensi tentang perbudakan sejarah"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:362
+msgid "Depictions of modern-day slavery"
+msgstr "Penggambaran perbudakan modern"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:365
+msgid "Graphic depictions of modern-day slavery"
+msgstr "Penggambaran grafis tentang perbudakan modern"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:294
@@ -1192,14 +1345,14 @@ msgstr "Cari dalam Perangkat Lunak"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:279 src/gs-details-page.c:309
+#: src/gs-details-page.c:280 src/gs-details-page.c:310
 #: src/gs-details-page.ui:206 src/gs-upgrade-banner.ui:146
 msgid "_Install"
 msgstr "_Pasang"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: src/gs-details-page.c:314
+#: src/gs-details-page.c:315
 msgid "_Update"
 msgstr "Perbar_ui"
 
@@ -1207,72 +1360,72 @@ msgstr "Perbar_ui"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: src/gs-details-page.c:327
+#: src/gs-details-page.c:328
 msgid "_Install…"
 msgstr "_Pasang…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:374 src/gs-details-page.ui:242
+#: src/gs-details-page.c:375 src/gs-details-page.ui:242
 msgid "_Remove"
 msgstr "_Hapus"
 
-#: src/gs-details-page.c:435 src/gs-sources-dialog.c:516
+#: src/gs-details-page.c:436 src/gs-sources-dialog.c:516
 msgid "Removing…"
 msgstr "Menghapus…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:745
+#: src/gs-details-page.c:746
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Aplikasi ini hanya dapat dipakai ketika ada koneksi internet aktif."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:910
+#: src/gs-details-page.c:911
 msgctxt "version"
 msgid "Unknown"
 msgstr "Tak diketahui"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:921
+#: src/gs-details-page.c:922
 msgctxt "updated"
 msgid "Never"
 msgstr "Tak Pernah"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:965
+#: src/gs-details-page.c:966
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Tak diketahui"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1369
+#: src/gs-details-page.c:1372
 msgid "You need internet access to write a review"
 msgstr "Anda perlu akses internet untuk menulis ulasan"
 
-#: src/gs-details-page.c:1503
+#: src/gs-details-page.c:1506
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Tak bisa temukan \"%s\""
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2083
+#: src/gs-details-page.c:2090
 msgid "Public domain"
 msgstr "Domain publik"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2099 src/gs-details-page.ui:1395
+#: src/gs-details-page.c:2106 src/gs-details-page.ui:1395
 msgid "Free Software"
 msgstr "Perangkat Lunak Bebas"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2156
+#: src/gs-details-page.c:2163
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Pengguna terikat oleh lisensi-lisensi berikut:"
 
-#: src/gs-details-page.c:2183 src/gs-details-page.ui:1504
+#: src/gs-details-page.c:2190 src/gs-details-page.ui:1504
 msgid "More information"
 msgstr "Informasi lebih lanjut"
 
@@ -2917,25 +3070,25 @@ msgstr "Pembaruan Terpasang"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:419
+#: src/gs-update-dialog.c:420
 msgid "Additions"
 msgstr "Penambahan"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:423
+#: src/gs-update-dialog.c:424
 msgid "Removals"
 msgstr "Penghapusan"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:427
+#: src/gs-update-dialog.c:428
 msgid "Updates"
 msgstr "Pembaruan"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:431
+#: src/gs-update-dialog.c:432
 msgid "Downgrades"
 msgstr "Penurunan"
 
@@ -3929,7 +4082,7 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr "ODRS adalah layanan yang menyediakan ulasan pengguna dari aplikasi"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:671
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:674
 msgid "Downloading shell extension metadata…"
 msgstr "Mengunduh metadata ekstensi shell…"
 
@@ -3958,6 +4111,12 @@ msgstr "Dukungan Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Platform hiburan paling pamungkas dari Valve"
+
+#~ msgid "Player-to-player preset interactions without chat functionality"
+#~ msgstr "Interaksi preset pemain-ke-pemain tanpa fungsi obrol"
+
+#~ msgid "Sharing user information with 3rd parties"
+#~ msgstr "Berbagi informasi pengguna dengan pihak ke-3"
 
 #~ msgid "page1"
 #~ msgstr "halaman1"
