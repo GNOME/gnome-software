@@ -1477,13 +1477,16 @@ gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
 				     GAsyncResult *res,
 				     GError **error)
 {
+	g_autoptr(GsAppList) list = NULL;
+
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_TASK (res), NULL);
 	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
+	list = g_task_propagate_pointer (G_TASK (res), error);
 	gs_utils_error_convert_gio (error);
-	return g_task_propagate_pointer (G_TASK (res), error);
+	return g_steal_pointer (&list);
 }
 
 /**
@@ -1504,6 +1507,7 @@ gs_plugin_loader_job_action_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
 	list = g_task_propagate_pointer (G_TASK (res), error);
+	gs_utils_error_convert_gio (error);
 	return list != NULL;
 }
 
