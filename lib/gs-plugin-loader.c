@@ -178,7 +178,6 @@ typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 /* async helper */
 typedef struct {
 	GsPluginLoader			*plugin_loader;
-	GCancellable			*cancellable;
 	GCancellable			*cancellable_caller;
 	gulong				 cancellable_id;
 	const gchar			*function_name;
@@ -225,8 +224,6 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 		g_source_remove (helper->timeout_id);
 	if (helper->plugin_job != NULL)
 		g_object_unref (helper->plugin_job);
-	if (helper->cancellable != NULL)
-		g_object_unref (helper->cancellable);
 	if (helper->cancellable_caller != NULL)
 		g_object_unref (helper->cancellable_caller);
 	if (helper->catlist != NULL)
@@ -3385,12 +3382,14 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 static gboolean
 gs_plugin_loader_job_timeout_cb (gpointer user_data)
 {
-	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
+	GTask *task = (GTask *) user_data;
+	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginLoaderHelper *helper = g_task_get_task_data (task);
 
 	/* call the cancellable */
 	g_debug ("cancelling job as it took too long");
-	if (!g_cancellable_is_cancelled (helper->cancellable))
-		g_cancellable_cancel (helper->cancellable);
+	if (!g_cancellable_is_cancelled (cancellable))
+		g_cancellable_cancel (cancellable);
 
 	/* failed */
 	helper->timeout_triggered = TRUE;
@@ -3399,10 +3398,10 @@ gs_plugin_loader_job_timeout_cb (gpointer user_data)
 }
 
 static void
-gs_plugin_loader_cancelled_cb (GCancellable *cancellable, GsPluginLoaderHelper *helper)
+gs_plugin_loader_cancelled_cb (GCancellable *cancellable, GTask *task)
 {
 	/* just proxy this forward */
-	g_cancellable_cancel (helper->cancellable);
+	g_cancellable_cancel (g_task_get_cancellable (task));
 }
 
 /**
@@ -3584,13 +3583,12 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* jobs always have a valid cancellable, so proxy the caller */
-	helper->cancellable = g_object_ref (cancellable_job);
 	if (cancellable != NULL) {
 		helper->cancellable_caller = g_object_ref (cancellable);
 		helper->cancellable_id =
 			g_cancellable_connect (helper->cancellable_caller,
 					       G_CALLBACK (gs_plugin_loader_cancelled_cb),
-					       helper, NULL);
+					       task, NULL);
 	}
 
 	/* set up a hang handler */
@@ -3607,7 +3605,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		helper->timeout_id =
 			g_timeout_add_seconds (gs_plugin_job_get_timeout (plugin_job),
 					       gs_plugin_loader_job_timeout_cb,
-					       helper);
+					       task);
 		break;
 	default:
 		break;
