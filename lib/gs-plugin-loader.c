@@ -1626,6 +1626,7 @@ gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
+	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_job_get_categories_thread_cb);
 }
 
@@ -3565,10 +3566,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
 
-	/* let the task cancel itself */
-	g_task_set_check_cancellable (task, FALSE);
-	g_task_set_return_on_cancel (task, FALSE);
-
 	/* pre-tokenize search */
 	if (action == GS_PLUGIN_ACTION_SEARCH) {
 		const gchar *search = gs_plugin_job_get_search (plugin_job);
@@ -3612,6 +3609,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* run in a thread */
+	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_process_thread_cb);
 }
 
