@@ -2670,7 +2670,8 @@ gs_flatpak_get_list_for_install_or_update (GsFlatpak *self,
 		gs_app_set_origin (app_tmp, gs_app_get_origin (app));
 		if (!gs_plugin_refine_item_state (self, app_tmp, cancellable, error))
 			return FALSE;
-		if (is_update && !gs_app_is_updatable (app_tmp)) {
+		if (gs_app_is_installed (app_tmp) && is_update &&
+		    !gs_app_is_updatable (app_tmp)) {
 			g_debug ("not adding related %s as it's not updatable", ref_display);
 			continue;
 		}
