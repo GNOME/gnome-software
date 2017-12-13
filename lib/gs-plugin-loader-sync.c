@@ -25,13 +25,9 @@
 
 /* tiny helper to help us do the async operation */
 typedef struct {
-	GError		**error;
-	GsAppList	*list;
-	GPtrArray	*catlist;
+	GAsyncResult    *res;
 	GMainContext    *context;
 	GMainLoop	*loop;
-	gboolean	 ret;
-	GsApp		*app;
 } GsPluginLoaderHelper;
 
 static void
@@ -39,9 +35,7 @@ _job_process_finish_sync (GsPluginLoader *plugin_loader,
 			  GAsyncResult *res,
 			  GsPluginLoaderHelper *helper)
 {
-	helper->list = gs_plugin_loader_job_process_finish (plugin_loader,
-							    res,
-							    helper->error);
+	helper->res = g_object_ref (res);
 	g_main_loop_quit (helper->loop);
 }
 
@@ -52,11 +46,12 @@ gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 			      GError **error)
 {
 	GsPluginLoaderHelper helper;
+	GsAppList *list;
 
 	/* create temp object */
+	helper.res = NULL;
 	helper.context = g_main_context_new ();
 	helper.loop = g_main_loop_new (helper.context, FALSE);
-	helper.error = error;
 
 	g_main_context_push_thread_default (helper.context);
 
@@ -67,13 +62,18 @@ gs_plugin_loader_job_process (GsPluginLoader *plugin_loader,
 					    (GAsyncReadyCallback) _job_process_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+	                                            helper.res,
+	                                            error);
 
 	g_main_context_pop_thread_default (helper.context);
 
 	g_main_loop_unref (helper.loop);
 	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
 
-	return helper.list;
+	return list;
 }
 
 static void
@@ -81,9 +81,7 @@ _job_get_categories_finish_sync (GsPluginLoader *plugin_loader,
 				 GAsyncResult *res,
 				 GsPluginLoaderHelper *helper)
 {
-	helper->catlist = gs_plugin_loader_job_get_categories_finish (plugin_loader,
-								      res,
-								      helper->error);
+	helper->res = g_object_ref (res);
 	g_main_loop_quit (helper->loop);
 }
 
@@ -94,11 +92,12 @@ gs_plugin_loader_job_get_categories (GsPluginLoader *plugin_loader,
 				    GError **error)
 {
 	GsPluginLoaderHelper helper;
+	GPtrArray *catlist;
 
 	/* create temp object */
+	helper.res = NULL;
 	helper.context = g_main_context_new ();
 	helper.loop = g_main_loop_new (helper.context, FALSE);
-	helper.error = error;
 
 	g_main_context_push_thread_default (helper.context);
 
@@ -109,13 +108,18 @@ gs_plugin_loader_job_get_categories (GsPluginLoader *plugin_loader,
 						   (GAsyncReadyCallback) _job_get_categories_finish_sync,
 						   &helper);
 	g_main_loop_run (helper.loop);
+	catlist = gs_plugin_loader_job_get_categories_finish (plugin_loader,
+	                                                      helper.res,
+	                                                      error);
 
 	g_main_context_pop_thread_default (helper.context);
 
 	g_main_loop_unref (helper.loop);
 	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
 
-	return helper.catlist;
+	return catlist;
 }
 
 static void
@@ -123,9 +127,7 @@ _job_action_finish_sync (GsPluginLoader *plugin_loader,
 			 GAsyncResult *res,
 			 GsPluginLoaderHelper *helper)
 {
-	helper->ret = gs_plugin_loader_job_action_finish (plugin_loader,
-							  res,
-							  helper->error);
+	helper->res = g_object_ref (res);
 	g_main_loop_quit (helper->loop);
 }
 
@@ -136,11 +138,12 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 			      GError **error)
 {
 	GsPluginLoaderHelper helper;
+	gboolean ret;
 
 	/* create temp object */
+	helper.res = NULL;
 	helper.context = g_main_context_new ();
 	helper.loop = g_main_loop_new (helper.context, FALSE);
-	helper.error = error;
 
 	g_main_context_push_thread_default (helper.context);
 
@@ -151,13 +154,18 @@ gs_plugin_loader_job_action (GsPluginLoader *plugin_loader,
 					    (GAsyncReadyCallback) _job_action_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
+	ret = gs_plugin_loader_job_action_finish (plugin_loader,
+	                                          helper.res,
+	                                          error);
 
 	g_main_context_pop_thread_default (helper.context);
 
 	g_main_loop_unref (helper.loop);
 	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
 
-	return helper.ret;
+	return ret;
 }
 
 static void
@@ -165,15 +173,9 @@ _job_process_app_finish_sync (GObject *source_object,
 			      GAsyncResult *res,
 			      gpointer user_data)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
-	g_autoptr(GsAppList) list = NULL;
 
-	list = gs_plugin_loader_job_process_finish (plugin_loader,
-						    res,
-						    helper->error);
-	if (list != NULL)
-		helper->app = g_object_ref (gs_app_list_index (list, 0));
+	helper->res = g_object_ref (res);
 	g_main_loop_quit (helper->loop);
 }
 
@@ -184,12 +186,13 @@ gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
 				  GError **error)
 {
 	GsPluginLoaderHelper helper;
+	g_autoptr(GsAppList) list = NULL;
+	GsApp *app = NULL;
 
 	/* create temp object */
-	helper.app = NULL;
+	helper.res = NULL;
 	helper.context = g_main_context_new ();
 	helper.loop = g_main_loop_new (helper.context, FALSE);
-	helper.error = error;
 
 	g_main_context_push_thread_default (helper.context);
 
@@ -200,13 +203,20 @@ gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
 					    _job_process_app_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+	                                            helper.res,
+	                                            error);
+	if (list != NULL)
+		app = g_object_ref (gs_app_list_index (list, 0));
 
 	g_main_context_pop_thread_default (helper.context);
 
 	g_main_loop_unref (helper.loop);
 	g_main_context_unref (helper.context);
+	if (helper.res != NULL)
+		g_object_unref (helper.res);
 
-	return helper.app;
+	return app;
 }
 
 /* vim: set noexpandtab: */
