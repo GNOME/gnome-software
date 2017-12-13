@@ -666,12 +666,14 @@ send_package_action (const gchar *macaroon,
 		     gchar **discharges,
 		     const gchar *name,
 		     const gchar *action,
+		     gboolean classic,
 		     GsSnapdProgressCallback callback,
 		     gpointer user_data,
 		     GCancellable *cancellable,
 		     GError **error)
 {
-	g_autofree gchar *content = NULL, *path = NULL;
+	g_autoptr(GString) content = NULL;
+	g_autofree gchar *path = NULL;
 	guint status_code;
 	g_autofree gchar *reason_phrase = NULL;
 	g_autofree gchar *response_type = NULL;
@@ -683,9 +685,13 @@ send_package_action (const gchar *macaroon,
 	const gchar *change_id;
 	gboolean aborted = FALSE;
 
-	content = g_strdup_printf ("{\"action\": \"%s\"}", action);
+	content = g_string_new ("{");
+	g_string_append_printf (content, "\"action\": \"%s\"", action);
+	if (classic)
+		g_string_append (content, ", \"classic\": true");
+	g_string_append (content, "}");
 	path = g_strdup_printf ("/v2/snaps/%s", name);
-	if (!send_request ("POST", path, content,
+	if (!send_request ("POST", path, content->str,
 			   macaroon, discharges,
 			   &status_code, &reason_phrase,
 			   &response_type, &response, NULL,
@@ -767,12 +773,12 @@ send_package_action (const gchar *macaroon,
 
 gboolean
 gs_snapd_install (const gchar *macaroon, gchar **discharges,
-		  const gchar *name,
+		  const gchar *name, gboolean classic,
 		  GsSnapdProgressCallback callback, gpointer user_data,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	return send_package_action (macaroon, discharges, name, "install", callback, user_data, cancellable, error);
+	return send_package_action (macaroon, discharges, name, "install", classic, callback, user_data, cancellable, error);
 }
 
 gboolean
@@ -781,7 +787,7 @@ gs_snapd_remove (const gchar *macaroon, gchar **discharges,
 		 GsSnapdProgressCallback callback, gpointer user_data,
 		 GCancellable *cancellable, GError **error)
 {
-	return send_package_action (macaroon, discharges, name, "remove", callback, user_data, cancellable, error);
+	return send_package_action (macaroon, discharges, name, "remove", FALSE, callback, user_data, cancellable, error);
 }
 
 gchar *

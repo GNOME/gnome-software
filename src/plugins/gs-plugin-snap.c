@@ -200,7 +200,7 @@ snap_to_app (GsPlugin *plugin, JsonObject *snap)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app;
-	const gchar *type;
+	const gchar *type, *confinement;
 
 	/* create a unique ID for deduplication, TODO: branch? */
 	app = gs_app_new (json_object_get_string_member (snap, "name"));
@@ -218,7 +218,9 @@ snap_to_app (GsPlugin *plugin, JsonObject *snap)
 	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, get_snap_title (snap));
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	if (priv->system_is_confined && g_strcmp0 (json_object_get_string_member (snap, "confinement"), "strict") == 0)
+	confinement = json_object_get_string_member (snap, "confinement");
+	gs_app_set_metadata (app, "snap::confinement", confinement);
+	if (priv->system_is_confined && g_strcmp0 (confinement, "strict") == 0)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	return app;
@@ -529,6 +531,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	g_autofree gchar *macaroon = NULL;
 	g_auto(GStrv) discharges = NULL;
+	gboolean classic = FALSE;
 
 	/* We can only install apps we know of */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -538,7 +541,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	get_macaroon (plugin, &macaroon, &discharges);
-	if (!gs_snapd_install (macaroon, discharges, gs_app_get_id (app), progress_cb, app, cancellable, error)) {
+	if (g_strcmp0 (gs_app_get_metadata_item (app, "snap::confinement"), "classic") == 0)
+		classic = TRUE;
+	if (!gs_snapd_install (macaroon, discharges, gs_app_get_id (app), classic, progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
