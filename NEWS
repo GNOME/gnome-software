@@ -1,3 +1,26 @@
+Version 3.27.3
+~~~~~~~~~~~~~~
+Released: 2017-11-13
+
+This is an unstable release in the 3.27 development series, with the following
+improvements:
+ * Fix crashes in the repos plugin due to missing locking
+ * Add translated strings for the new OARS v1.1 additions
+ * Work around Firefox deleting rpm/deb files downloaded to /tmp when closing
+ * Log errors to console when starting from command line
+ * Do not enable distro-upgrades when updates are disabled
+ * Do not require the user to keep clicking 'More reviews' after each click
+ * Fix a critical when updating (flatpak) packages live
+ * fwupd: Do not crash when trying to list a locked device
+ * fwupd: Prepend the vendor name to the device name if not included
+ * Improve SPDX ID parsing when working out if it is 'free'
+ * packagekit: Do not crash when getting an invalid ID from PackageKit
+ * packagekit: Support apt:// URLs
+ * Various fixes to the snap plugin
+ * Do not crash when closing the source dialog while it is loading
+
+This release also updates translations.
+
 Version 3.27.2
 ~~~~~~~~~~~~~~
 Released: 2017-11-13

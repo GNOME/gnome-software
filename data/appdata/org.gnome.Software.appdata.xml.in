@@ -46,6 +46,31 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-11-13" version="3.27.3">
+      <description>
+        <p>
+          This is an unstable release in the 3.27 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Fix crashes in the repos plugin due to missing locking</li>
+          <li>Add translated strings for the new OARS v1.1 additions</li>
+          <li>Work around Firefox deleting rpm/deb files downloaded to /tmp when closing</li>
+          <li>Log errors to console when starting from command line</li>
+          <li>Do not enable distro-upgrades when updates are disabled</li>
+          <li>Do not require the user to keep clicking 'More reviews' after each click</li>
+          <li>Fix a critical when updating (flatpak) packages live</li>
+          <li>fwupd: Do not crash when trying to list a locked device</li>
+          <li>fwupd: Prepend the vendor name to the device name if not included</li>
+          <li>Improve SPDX ID parsing when working out if it is 'free'</li>
+          <li>packagekit: Do not crash when getting an invalid ID from PackageKit</li>
+          <li>packagekit: Support apt:// URLs</li>
+          <li>Various fixes to the snap plugin</li>
+          <li>Do not crash when closing the source dialog while it is loading</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-11-13" version="3.27.2">
       <description>
         <p>
