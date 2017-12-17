@@ -1,3 +1,19 @@
+Version 3.26.4
+~~~~~~~~~~~~~~
+Released: 2017-12-17
+
+This is a stable release with the following changes:
+ * Fix crashes in the repos plugin due to missing locking
+ * Work around Firefox deleting rpm/deb files downloaded to /tmp when closing
+ * Do not require the user to keep clicking 'More reviews' after each click
+ * Fix a critical when updating (flatpak) packages live
+ * fwupd: Prepend the vendor name to the device name if not included
+ * Improve SPDX ID parsing when working out if it is 'free'
+ * packagekit: Do not crash when getting an invalid ID from PackageKit
+ * Do not crash when closing the source dialog while it is loading
+
+This release also updates translations.
+
 Version 3.26.3
 ~~~~~~~~~~~~~~
 Released: 2017-11-21

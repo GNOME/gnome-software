@@ -46,6 +46,24 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2017-12-17" version="3.26.4">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Fix crashes in the repos plugin due to missing locking</li>
+          <li>Work around Firefox deleting rpm/deb files downloaded to /tmp when closing</li>
+          <li>Do not require the user to keep clicking 'More reviews' after each click</li>
+          <li>Fix a critical when updating (flatpak) packages live</li>
+          <li>fwupd: Prepend the vendor name to the device name if not included</li>
+          <li>Improve SPDX ID parsing when working out if it is 'free'</li>
+          <li>packagekit: Do not crash when getting an invalid ID from PackageKit</li>
+          <li>Do not crash when closing the source dialog while it is loading</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-11-21" version="3.26.3">
       <description>
         <p>
