@@ -136,6 +136,7 @@ void		 gs_plugin_report_event			(GsPlugin	*plugin,
 							 GsPluginEvent	*event);
 void		 gs_plugin_set_allow_updates		(GsPlugin	*plugin,
 							 gboolean	 allow_updates);
+gboolean	 gs_plugin_get_network_available	(GsPlugin	*plugin);
 
 G_END_DECLS
 

@@ -2659,12 +2659,26 @@ gs_flatpak_create_runtime_repo (GsFlatpak *self,
 	return g_steal_pointer (&app);
 }
 
+static gboolean
+app_has_local_source (GsApp *app)
+{
+	const gchar *url = gs_app_get_origin_hostname (app);
+	return url != NULL && g_str_has_prefix (url, "file://");
+}
+
 gboolean
 gs_flatpak_app_install (GsFlatpak *self,
 			GsApp *app,
 			GCancellable *cancellable,
 			GError **error)
 {
+	/* queue for install if installation needs the network */
+	if (!app_has_local_source (app) &&
+	    !gs_plugin_get_network_available (self->plugin)) {
+		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
+		return TRUE;
+	}
+
 	/* ensure we have metadata and state */
 	if (!gs_flatpak_refine_app (self, app,
 				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,

@@ -83,6 +83,7 @@ typedef struct
 	guint			 priority;
 	guint			 timer_id;
 	GMutex			 timer_mutex;
+	GNetworkMonitor		*network_monitor;
 } GsPluginPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
@@ -230,6 +231,8 @@ gs_plugin_finalize (GObject *object)
 		g_object_unref (priv->soup_session);
 	if (priv->global_cache != NULL)
 		g_object_unref (priv->global_cache);
+	if (priv->network_monitor != NULL)
+		g_object_unref (priv->network_monitor);
 	g_hash_table_unref (priv->cache);
 	g_hash_table_unref (priv->vfuncs);
 	g_mutex_clear (&priv->cache_mutex);
@@ -802,6 +805,43 @@ gs_plugin_set_global_cache (GsPlugin *plugin, GsAppList *global_cache)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_set_object (&priv->global_cache, global_cache);
+}
+
+/**
+ * gs_plugin_set_network_monitor:
+ * @plugin: a #GsPlugin
+ * @network_monitor: a #GNetworkMonitor
+ *
+ * Sets the network monitor so that plugins can check the state of the network.
+ *
+ * Since: 3.28
+ **/
+void
+gs_plugin_set_network_monitor (GsPlugin *plugin, GNetworkMonitor *monitor)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_set_object (&priv->network_monitor, monitor);
+}
+
+/**
+ * gs_plugin_get_network_available:
+ * @plugin: a #GsPlugin
+ *
+ * Gets whether a network connectivity is available.
+ *
+ * Returns: %TRUE if a network is available.
+ *
+ * Since: 3.28
+ **/
+gboolean
+gs_plugin_get_network_available (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	if (priv->network_monitor == NULL) {
+		g_debug ("no network monitor, so returning network-available=TRUE");
+		return TRUE;
+	}
+	return g_network_monitor_get_network_available (priv->network_monitor);
 }
 
 /**

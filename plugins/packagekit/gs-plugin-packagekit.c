@@ -269,6 +269,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 		                              cancellable, error);
 	}
 
+	/* queue for install if installation needs the network */
+	if (!gs_plugin_get_network_available (plugin)) {
+		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
+		return TRUE;
+	}
+
 	/* enable the repo where the unavailable app is coming from */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 

@@ -71,6 +71,7 @@ typedef struct
 } GsPluginLoaderPrivate;
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
+static void add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app);
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
@@ -755,6 +756,12 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 							plugin,
 							error_local,
 							error);
+	}
+
+	/* add app to the pending installation queue if necessary */
+	if (action == GS_PLUGIN_ACTION_INSTALL &&
+	    app != NULL && gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+	        add_app_to_install_queue (helper->plugin_loader, app);
 	}
 
 	/* check the plugin didn't take too long */
@@ -2157,6 +2164,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gs_plugin_set_language (plugin, priv->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
 	gs_plugin_set_global_cache (plugin, priv->global_cache);
+	gs_plugin_set_network_monitor (plugin, priv->network_monitor);
 	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
 	/* add to array */
@@ -3449,14 +3457,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 			g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 			return;
 		}
-	}
-	if (action == GS_PLUGIN_ACTION_INSTALL &&
-	    !gs_plugin_loader_get_network_available (plugin_loader)) {
-		GsAppList *list = gs_plugin_job_get_list (plugin_job);
-		add_app_to_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job));
-		task = g_task_new (plugin_loader, cancellable, callback, user_data);
-		g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
-		return;
 	}
 
 	/* hardcoded, so resolve a set list */
