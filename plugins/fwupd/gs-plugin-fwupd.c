@@ -102,6 +102,8 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	g_autoptr(SoupSession) soup_session = NULL;
+
 	priv->client = fwupd_client_new ();
 	priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
@@ -119,6 +121,14 @@ gs_plugin_initialize (GsPlugin *plugin)
 		return;
 	}
 #endif
+
+	/* use a custom session with the content decoder turned off */
+	soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
+						      SOUP_SESSION_TIMEOUT, 10,
+						      NULL);
+	soup_session_remove_feature_by_type (soup_session,
+					     SOUP_TYPE_CONTENT_DECODER);
+	gs_plugin_set_soup_session (plugin, soup_session);
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");

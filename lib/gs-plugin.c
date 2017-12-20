@@ -759,7 +759,7 @@ gs_plugin_set_profile (GsPlugin *plugin, AsProfile *profile)
  * gs_plugin_get_soup_session:
  * @plugin: a #GsPlugin
  *
- * Gets the soup session that plugins can use when downloading.
+ * Gets the soup session that this plugin can use when downloading.
  *
  * Returns: the #SoupSession
  *
@@ -777,7 +777,7 @@ gs_plugin_get_soup_session (GsPlugin *plugin)
  * @plugin: a #GsPlugin
  * @soup_session: a #SoupSession
  *
- * Sets the soup session that plugins will use when downloading.
+ * Sets the soup session that this plugin will use when downloading.
  *
  * Since: 3.22
  **/
