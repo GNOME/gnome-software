@@ -1496,6 +1496,7 @@ void
 gs_plugin_cache_remove (GsPlugin *plugin, const gchar *key)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_return_if_fail (key != NULL);
