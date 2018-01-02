@@ -169,11 +169,11 @@ load (GsFolders *folders)
 {
 	GsFolder *folder;
 	guint i, j;
-	gchar *path;
 	gboolean translate;
 	GHashTableIter iter;
 	gchar *app;
 	gchar *category;
+	g_autofree gchar *path = NULL;
 	g_auto(GStrv) ids = NULL;
 
 	folders->folders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)gs_folder_free);
