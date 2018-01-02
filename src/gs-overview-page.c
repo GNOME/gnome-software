@@ -368,12 +368,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 		goto out;
 
-	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
-		/* Don't show apps from the category that's currently featured as the category of the day */
-		gs_app_list_filter (list, filter_category, priv->category_of_day);
-		gs_app_list_randomize (list);
-	}
-
 	gtk_widget_hide (priv->featured_heading);
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
 	if (list == NULL) {
@@ -385,6 +379,12 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		g_warning ("failed to get featured apps: "
 			   "no apps to show");
 		goto out;
+	}
+
+	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
+		/* Don't show apps from the category that's currently featured as the category of the day */
+		gs_app_list_filter (list, filter_category, priv->category_of_day);
+		gs_app_list_randomize (list);
 	}
 
 	/* at the moment, we only care about the first app */
