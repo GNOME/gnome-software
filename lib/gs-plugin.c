@@ -1540,6 +1540,8 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 	if (key == NULL)
 		key = gs_app_get_unique_id (app);
 
+	g_return_if_fail (key != NULL);
+
 	/* global, so using internal unique_id */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
 		if (!as_utils_unique_id_valid (key)) {
