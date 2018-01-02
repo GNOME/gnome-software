@@ -4006,6 +4006,7 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&priv->history, g_ptr_array_unref);
 	g_clear_pointer (&priv->related, g_ptr_array_unref);
 	g_clear_pointer (&priv->screenshots, g_ptr_array_unref);
+	g_clear_pointer (&priv->review_ratings, g_array_unref);
 	g_clear_pointer (&priv->reviews, g_ptr_array_unref);
 	g_clear_pointer (&priv->provides, g_ptr_array_unref);
 	g_clear_pointer (&priv->icons, g_ptr_array_unref);
