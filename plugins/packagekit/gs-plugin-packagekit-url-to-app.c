@@ -65,7 +65,6 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	data.app = app;
 	data.plugin = plugin;
-	data.profile_id = path;
 
 	/* only do this for apt:// on debian or debian-like distros */
 	os_release = gs_os_release_new (error);

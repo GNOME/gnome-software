@@ -172,7 +172,6 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 
 	data.app = app;
 	data.plugin = plugin;
-	data.profile_id = g_path_get_basename (filename);
 
 	to_array[0] = filename;
 	results = pk_client_search_files (priv->client,
@@ -319,7 +318,6 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	g_ptr_array_add (package_ids, NULL);
 
 	data.plugin = plugin;
-	data.profile_id = g_strjoinv (",", (gchar **) package_ids->pdata);
 
 	/* get any details */
 	results = pk_client_get_details (priv->client,
@@ -328,8 +326,9 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
 		g_prefix_error (error, "failed to get details for %s: ",
-				data.profile_id);
+		                package_ids_str);
 		return FALSE;
 	}
 

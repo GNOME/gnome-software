@@ -33,7 +33,6 @@ typedef struct {
 	GsApp		*app;
 	GsPlugin	*plugin;
 	AsProfileTask	*ptask;
-	gchar		*profile_id;
 } ProgressData;
 
 GsPluginStatus 	packagekit_status_enum_to_plugin_status		(PkStatusEnum	 status);
