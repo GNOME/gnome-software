@@ -46,6 +46,24 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-01-08" version="3.26.5">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add missing locking to gs_plugin_cache_remove(), fixing a possible crash</li>
+          <li>Fix various memory leaks spotted by valgrind</li>
+          <li>Fix a possible crash triggered by the fwupd plugin</li>
+          <li>Do not emit critical warnings when reviewing OS Updates</li>
+          <li>fwupd: Use the custom user-agent when downloading firmware</li>
+          <li>overview page: Fix a crash when we have no featured apps</li>
+          <li>packagekit: Implement repository enabling</li>
+          <li>Fix hover CSS for "unknown" and "nonfree" license buttons</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2017-12-17" version="3.26.4">
       <description>
         <p>

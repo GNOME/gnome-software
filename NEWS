@@ -1,3 +1,19 @@
+Version 3.26.5
+~~~~~~~~~~~~~~
+Released: 2018-01-08
+
+This is a stable release with the following changes:
+ * Add missing locking to gs_plugin_cache_remove(), fixing a possible crash
+ * Fix various memory leaks spotted by valgrind
+ * Fix a possible crash triggered by the fwupd plugin
+ * Do not emit critical warnings when reviewing OS Updates
+ * fwupd: Use the custom user-agent when downloading firmware
+ * overview page: Fix a crash when we have no featured apps
+ * packagekit: Implement repository enabling
+ * Fix hover CSS for "unknown" and "nonfree" license buttons
+
+This release also updates translations.
+
 Version 3.26.4
 ~~~~~~~~~~~~~~
 Released: 2017-12-17
