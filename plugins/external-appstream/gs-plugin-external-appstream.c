@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2016 Endless Mobile, Inc.
+ * Copyright (C) 2016-2018 Endless Mobile, Inc.
  *
  * Authors: Joaquim Rocha <jrocha@endlessm.com>
  *
@@ -24,8 +24,7 @@
 #include <config.h>
 
 #include <gnome-software.h>
-
-#define APPSTREAM_SYSTEM_DIR LOCALSTATEDIR "/cache/app-info/xmls"
+#include "gs-external-appstream-utils.h"
 
 struct GsPluginData {
 	GSettings *settings;
@@ -35,13 +34,14 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	const gchar *system_dir = gs_external_appstream_utils_get_system_dir ();
 
 	priv->settings = g_settings_new ("org.gnome.software");
 
 	/* run it before the appstream plugin */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
 
-	g_debug ("appstream system dir: %s", APPSTREAM_SYSTEM_DIR);
+	g_debug ("appstream system dir: %s", system_dir);
 }
 
 void
@@ -122,7 +122,7 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 
 	/* check age */
 	file_name = g_path_get_basename (url);
-	target_file_path = g_build_filename (APPSTREAM_SYSTEM_DIR, file_name, NULL);
+	target_file_path = gs_external_appstream_utils_get_file_cache_path (file_name);
 	if (!gs_plugin_external_appstream_check (target_file_path, cache_age)) {
 		g_debug ("skipping updating external appstream file %s: "
 			 "cache age is older than file",

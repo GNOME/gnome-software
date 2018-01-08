@@ -29,20 +29,18 @@
 #include <glib/gi18n.h>
 #include <glib-object.h>
 
+#include "gs-external-appstream-utils.h"
+
 static gboolean
 gs_install_appstream_copy_file (GFile *file, GError **error)
 {
-	g_autofree gchar *basename = NULL;
-	g_autofree gchar *basename_prefixed = NULL;
-	g_autofree gchar *cachedir = NULL;
-	g_autofree gchar *cachefn = NULL;
-	g_autoptr(GFile) cachedir_file = NULL;
-	g_autoptr(GFile) cachefn_file = NULL;
+	g_autofree gchar *basename = g_file_get_basename (file);
+	g_autofree gchar *cachefn = gs_external_appstream_utils_get_file_cache_path (basename);
+	g_autoptr(GFile) cachefn_file = g_file_new_for_path (cachefn);
+	g_autoptr(GFile) cachedir_file = g_file_get_parent (cachefn_file);
 
 	/* make sure the parent directory exists, but if not then create with
 	 * the ownership and permissions of the current process */
-	cachedir = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
-	cachedir_file = g_file_new_for_path (cachedir);
 	if (!g_file_query_exists (cachedir_file, NULL)) {
 		if (!g_file_make_directory_with_parents (cachedir_file, NULL, error))
 			return FALSE;
@@ -50,10 +48,6 @@ gs_install_appstream_copy_file (GFile *file, GError **error)
 
 	/* do the copy, overwriting existing files and setting the permissions
 	 * of the current process (so that should be -rw-r--r--) */
-	basename = g_file_get_basename (file);
-	basename_prefixed = g_strdup_printf ("org.gnome.Software-%s", basename);
-	cachefn = g_build_filename (cachedir, basename_prefixed, NULL);
-	cachefn_file = g_file_new_for_path (cachefn);
 	return g_file_copy (file, cachefn_file,
 			    G_FILE_COPY_OVERWRITE |
 			    G_FILE_COPY_NOFOLLOW_SYMLINKS |
