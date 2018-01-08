@@ -133,8 +133,6 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 	msg = soup_message_new (SOUP_METHOD_GET, url);
 
 	/* Set the If-Modified-Since header if the target file exists */
-	target_file_path = g_build_filename (APPSTREAM_SYSTEM_DIR, file_name,
-					     NULL);
 	local_mod_date = gs_plugin_external_appstream_get_modification_date (target_file_path);
 	if (local_mod_date != NULL) {
 		g_debug ("Requesting contents of %s if modified since %s",
