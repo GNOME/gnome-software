@@ -371,7 +371,7 @@ gs_plugin_job_set_list (GsPluginJob *self, GsAppList *list)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
 	if (list == NULL)
-		g_warning ("trying to set list to NULL, not a god idea");
+		g_warning ("trying to set list to NULL, not a good idea");
 	g_set_object (&self->list, list);
 }
 
