@@ -210,7 +210,11 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPDATE:
-		gs_app_set_progress (gs_plugin_job_get_app (helper->plugin_job), 0);
+		{
+			GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
+			if (app != NULL)
+				gs_app_set_progress (app, 0);
+		}
 		break;
 	default:
 		break;
