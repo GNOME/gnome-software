@@ -1503,10 +1503,12 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	GsApp *app;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
 	g_return_val_if_fail (key != NULL, NULL);
+
+	locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	/* global, so using a unique_id */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
@@ -1536,10 +1538,12 @@ void
 gs_plugin_cache_remove (GsPlugin *plugin, const gchar *key)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_return_if_fail (key != NULL);
+
+	locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	/* global, so using internal unique_id */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE)) {
@@ -1571,10 +1575,12 @@ void
 gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_return_if_fail (GS_IS_APP (app));
+
+	locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	/* default */
 	if (key == NULL)
@@ -1615,10 +1621,11 @@ void
 gs_plugin_cache_invalidate (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 
+	locker = g_mutex_locker_new (&priv->cache_mutex);
 	g_hash_table_remove_all (priv->cache);
 }
 
