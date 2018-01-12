@@ -175,9 +175,10 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 void
 gs_app_list_add (GsAppList *list, GsApp *app)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&list->mutex);
 	gs_app_list_add_safe (list, app);
 }
 
@@ -196,10 +197,12 @@ gs_app_list_remove (GsAppList *list, GsApp *app)
 {
 	GsApp *app_tmp;
 	const gchar *unique_id;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
+
+	locker = g_mutex_locker_new (&list->mutex);
 
 	/* remove, or ignore if not found */
 	unique_id = gs_app_get_unique_id (app);
@@ -227,11 +230,13 @@ void
 gs_app_list_add_list (GsAppList *list, GsAppList *donor)
 {
 	guint i;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP_LIST (donor));
 	g_return_if_fail (list != donor);
+
+	locker = g_mutex_locker_new (&list->mutex);
 
 	/* add each app */
 	for (i = 0; i < donor->array->len; i++) {
@@ -292,8 +297,9 @@ gs_app_list_remove_all_safe (GsAppList *list)
 void
 gs_app_list_remove_all (GsAppList *list)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP_LIST (list));
+	locker = g_mutex_locker_new (&list->mutex);
 	gs_app_list_remove_all_safe (list);
 }
 
@@ -313,10 +319,12 @@ gs_app_list_filter (GsAppList *list, GsAppListFilterFunc func, gpointer user_dat
 	guint i;
 	GsApp *app;
 	g_autoptr(GsAppList) old = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (func != NULL);
+
+	locker = g_mutex_locker_new (&list->mutex);
 
 	/* deep copy to a temp list and clear the current one */
 	old = gs_app_list_copy (list);
@@ -356,9 +364,10 @@ gs_app_list_sort_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 void
 gs_app_list_sort (GsAppList *list, GsAppListSortFunc func, gpointer user_data)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 	GsAppListSortHelper helper;
 	g_return_if_fail (GS_IS_APP_LIST (list));
+	locker = g_mutex_locker_new (&list->mutex);
 	helper.func = func;
 	helper.user_data = user_data;
 	g_ptr_array_sort_with_data (list->array, gs_app_list_sort_cb, &helper);
@@ -440,9 +449,11 @@ gs_app_list_randomize (GsAppList *list)
 	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
 	g_autoptr(GDateTime) date = NULL;
 	g_autofree gchar *key = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	locker = g_mutex_locker_new (&list->mutex);
 
 	/* mark this list as random */
 	list->flags |= GS_APP_LIST_FLAG_IS_RANDOMIZED;
@@ -481,9 +492,11 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 	g_autoptr(GHashTable) hash = NULL;
 	g_autoptr(GHashTable) kept_apps = NULL;
 	g_autoptr(GsAppList) old = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	locker = g_mutex_locker_new (&list->mutex);
 
 	/* a hash table to hold apps with unique app ids */
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
