@@ -1292,7 +1292,7 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
 
-	/* get all the updatable apps and runtimes (no network I/O) */
+	/* get all the updatable apps and runtimes */
 	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
 								     cancellable,
 								     error);
