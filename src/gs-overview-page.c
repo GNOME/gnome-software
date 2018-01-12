@@ -58,6 +58,7 @@ typedef struct
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
+	GtkWidget		*box_popular_rotating;
 	GtkWidget		*box_recent;
 	GtkWidget		*featured_heading;
 	GtkWidget		*category_heading;
@@ -326,14 +327,14 @@ gs_overview_page_get_category_apps_cb (GObject *source_object,
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (gs_overview_page_category_more_cb), self);
 	gtk_container_add (GTK_CONTAINER (headerbox), button);
-	gtk_container_add (GTK_CONTAINER (priv->box_overview), headerbox);
+	gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), headerbox);
 
 	/* add hiding box */
 	box = gs_hiding_box_new ();
 	gs_hiding_box_set_spacing (GS_HIDING_BOX (box), 14);
 	gtk_widget_set_visible (box, TRUE);
 	gtk_widget_set_valign (box, GTK_ALIGN_START);
-	gtk_container_add (GTK_CONTAINER (priv->box_overview), box);
+	gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), box);
 
 	/* add all the apps */
 	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
@@ -601,6 +602,9 @@ gs_overview_page_load (GsOverviewPage *self)
 		const guint MAX_CATS = 2;
 		g_autoptr(GPtrArray) cats_random = NULL;
 		cats_random = gs_overview_page_get_random_categories ();
+
+		/* remove existing widgets, if any */
+		gs_container_remove_all (GTK_CONTAINER (priv->box_popular_rotating));
 
 		/* load all the categories */
 		for (i = 0; i < cats_random->len && i < MAX_CATS; i++) {
@@ -997,6 +1001,7 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, bin_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular_rotating);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_recent);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, category_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, featured_heading);
