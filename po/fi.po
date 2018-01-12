@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=General\n"
-"POT-Creation-Date: 2017-09-28 11:43+0000\n"
-"PO-Revision-Date: 2017-09-28 15:43+0300\n"
+"POT-Creation-Date: 2017-12-14 10:17+0000\n"
+"PO-Revision-Date: 2018-01-12 12:29+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -68,7 +68,7 @@ msgstr "Päivityssivu"
 msgid "The update details"
 msgstr "Päivityksen tiedot"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:884
+#: data/appdata/org.gnome.Software.appdata.xml.in:940
 msgid "The GNOME Project"
 msgstr "Gnome-projekti"
 
@@ -93,13 +93,19 @@ msgstr ""
 "KDE ja XFCE."
 
 #: data/org.gnome.software.gschema.xml:10
-msgid "Whether to manage updates in GNOME Software"
-msgstr "Hallitaanko päivityksiä Gnomen Ohjelmistot-sovelluksessa"
+msgid "Whether to manage updates and upgrades in GNOME Software"
+msgstr ""
+"Hallitaanko päivityksiä ja järjestelmäpäivityksiä Gnomen Ohjelmistot-"
+"sovelluksessa"
 
 #: data/org.gnome.software.gschema.xml:11
+#, fuzzy
+#| msgid ""
+#| "If disabled, GNOME Software will hide the updates panel and not perform "
+#| "any automatic updates actions."
 msgid ""
-"If disabled, GNOME Software will hide the updates panel and not perform any "
-"automatic updates actions."
+"If disabled, GNOME Software will hide the updates panel, not perform any "
+"automatic updates actions or prompt for upgrades."
 msgstr ""
 "Jos poistettu käytöstä, Gnomen Ohjelmistot-sovellus piilottaa päivitykset "
 "eikä suorita automaattisia päivitystoimintoja."
@@ -261,25 +267,30 @@ msgstr "Näytä suljettuja ohjelmistoja hakutuloksissa"
 
 #: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
-msgstr ""
+msgstr "Näytä sovellusten asennettu koko asennettujen sovellusten listassa"
 
+#. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:131
+msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
+msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
+
+#: data/org.gnome.software.gschema.xml:132
 msgid "The URI that explains nonfree and proprietary software"
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:135
+#: data/org.gnome.software.gschema.xml:136
 msgid "A list of non-free sources that can be optionally enabled"
 msgstr ""
 "Luettelo suljetuista lisäohjelmistolähteistä, jotka on mahdollista ottaa "
 "käyttöön"
 
-#: data/org.gnome.software.gschema.xml:139
+#: data/org.gnome.software.gschema.xml:140
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
 msgstr ""
 
-#: data/org.gnome.software.gschema.xml:143
+#: data/org.gnome.software.gschema.xml:144
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr "Asenna AppStream-tiedostot järjestelmäsijaintiin kaikille käyttäjille"
 
@@ -346,7 +357,7 @@ msgstr "Tutki levy"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:372 src/gs-updates-page.c:1391
+#: src/gnome-software.ui:372 src/gs-updates-page.c:1416
 msgid "Network Settings"
 msgstr "Verkkoasetukset"
 
@@ -365,13 +376,13 @@ msgid "Pending"
 msgstr "Odottaa"
 
 #: src/gs-app-addon-row.c:101 src/gs-app-row.ui:209 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:88 src/gs-popular-tile.c:70
+#: src/gs-feature-tile.c:88
 msgid "Installed"
 msgstr "Asennettu"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:439
+#: src/gs-app-addon-row.c:105 src/gs-app-row.c:218 src/gs-details-page.c:441
 msgid "Installing"
 msgstr "Asennetaan"
 
@@ -386,7 +397,7 @@ msgid "Folder Name"
 msgstr "Kansion nimi"
 
 #: src/gs-app-folder-dialog.c:321 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.c:379 src/gs-details-page.ui:330 src/gs-editor.c:623
+#: src/gs-details-page.c:381 src/gs-details-page.ui:330 src/gs-editor.c:623
 #: src/gs-editor.c:655 src/gs-installed-page.c:609 src/gs-removal-dialog.ui:33
 #: src/gs-review-dialog.ui:23 src/gs-upgrade-banner.ui:131
 msgid "_Cancel"
@@ -401,91 +412,91 @@ msgid "Add to Application Folder"
 msgstr "Lisää sovelluskansioon"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:99
+#: src/gs-application.c:125
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Käynnistystila, joko \"updates\", \"updated\", \"installed\" tai \"overview\""
 
-#: src/gs-application.c:99
+#: src/gs-application.c:125
 msgid "MODE"
 msgstr "TILA"
 
-#: src/gs-application.c:101
+#: src/gs-application.c:127
 msgid "Search for applications"
 msgstr "Etsi sovelluksia"
 
-#: src/gs-application.c:101
+#: src/gs-application.c:127
 msgid "SEARCH"
 msgstr ""
 
-#: src/gs-application.c:103
+#: src/gs-application.c:129
 msgid "Show application details (using application ID)"
 msgstr "Näytä sovelluksen tiedot (käyttäen sovelluksen tunnistetta)"
 
-#: src/gs-application.c:103 src/gs-application.c:107
+#: src/gs-application.c:129 src/gs-application.c:133
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:105
+#: src/gs-application.c:131
 msgid "Show application details (using package name)"
 msgstr "Näytä sovelluksen tiedot (käyttäen paketin nimeä)"
 
-#: src/gs-application.c:105
+#: src/gs-application.c:131
 msgid "PKGNAME"
 msgstr ""
 
-#: src/gs-application.c:107
+#: src/gs-application.c:133
 msgid "Install the application (using application ID)"
 msgstr "Asenna sovellus (käyttäen sovelluksen tunnistetta)"
 
-#: src/gs-application.c:109
+#: src/gs-application.c:135
 msgid "Open a local package file"
 msgstr "Avaa paikallinen pakettitiedosto"
 
-#: src/gs-application.c:109
+#: src/gs-application.c:135
 msgid "FILENAME"
 msgstr "TIEDOSTONIMI"
 
-#: src/gs-application.c:111
+#: src/gs-application.c:137
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
 
-#: src/gs-application.c:114
+#: src/gs-application.c:140
 msgid "Show verbose debugging information"
 msgstr "Näytä runsasta vianselvitystietoa"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:142
 msgid "Show profiling information for the service"
 msgstr "Näytä palvelun profilointitietoja"
 
-#: src/gs-application.c:118
+#: src/gs-application.c:144
 msgid "Quit the running instance"
 msgstr "Lopeta käynnissä oleva instanssi"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:146
 msgid "Prefer local file sources to AppStream"
 msgstr ""
 
-#: src/gs-application.c:122
+#: src/gs-application.c:148
 msgid "Show version number"
 msgstr "Näytä versionumero"
 
-#: src/gs-application.c:306
+#: src/gs-application.c:344
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:313
+#: src/gs-application.c:351
 #, c-format
 msgid "About %s"
 msgstr "Tietoja - %s"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:317
+#: src/gs-application.c:355
 msgid "A nice way to manage the software on your system."
 msgstr "Mukava tapa hallita järjestelmän ohjelmistoja."
 
@@ -608,17 +619,45 @@ msgstr "Kaikki"
 msgid "Featured"
 msgstr "Nostot"
 
-#: src/gs-category-page.ui:81
+#. TRANSLATORS: button text when apps have been sorted alphabetically
+#: src/gs-category-page.c:99
+msgid "Sorted by Name"
+msgstr "Lajiteltu nimen mukaan"
+
+#. TRANSLATORS: button text when apps have been sorted by their rating
+#: src/gs-category-page.c:102
+msgid "Sorted by Rating"
+msgstr "Lajiteltu arvostelun mukaan"
+
+#. Translators: A label for a button to sort apps by their rating.
+#: src/gs-category-page.ui:24
+msgid "Top Rated"
+msgstr "Parhaiten arvostellut"
+
+#. Translators: A label for a button to sort apps alphabetically.
+#: src/gs-category-page.ui:30 src/gs-editor.ui:296
+msgid "Name"
+msgstr "Nimi"
+
+#: src/gs-category-page.ui:117
 msgid "Extension Settings"
 msgstr "Laajennusasetukset"
 
-#: src/gs-category-page.ui:110
+#: src/gs-category-page.ui:146
 msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
 msgstr ""
 "Käytä laajennuksia omalla vastuullasi. Jos kohtaat ongelmia järjestelmän "
 "toiminnassa, poista laajennukset käytöstä."
+
+#: src/gs-category-page.ui:182
+msgid "Subcategories filter menu"
+msgstr "Alaluokkien suodatusvalikko"
+
+#: src/gs-category-page.ui:235
+msgid "Subcategories sorting menu"
+msgstr "Alaluokkien lajitteluvalikko"
 
 #. TRANSLATORS: the user isn't reading the question
 #: lib/gs-cmd.c:205
@@ -978,8 +1017,8 @@ msgstr "Selkeitä viittauksia tiettyyn brändiin tai tavaramerkkiin"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:219
-msgid "Players are encouraged to purchase specific real-world items"
-msgstr "Pelaajia kehotetaan ostamaan tiettyjä todellisia esineitä"
+msgid "Users are encouraged to purchase specific real-world items"
+msgstr "Käyttäjiä kehotetaan ostamaan tiettyjä todellisia esineitä"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:222
@@ -1006,76 +1045,227 @@ msgstr "Uhkapeliä käyttäen oikeaa rahaa"
 msgid "No ability to spend money"
 msgstr "Ei mahdollisuutta käyttää oikeaa rahaa"
 
+#. v1.1
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:237
+msgid "Users are encouraged to donate real money"
+msgstr "Käyttäjiä kehotetaan lahjoittamaan oikeaa rahaa"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:240
 msgid "Ability to spend real money in-game"
 msgstr "Mahdollisuus käyttää oikeaa rahaa pelissä"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:240
-msgid "No way to chat with other players"
-msgstr "Ei mahdollisuutta keskustella muiden pelaajien kanssa"
-
-#. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:243
-msgid "Player-to-player game interactions without chat functionality"
-msgstr ""
-"Pelaajien välistä pelin sisäistä vuorovaikutusta ilman "
-"keskustelumahdollisuutta"
+msgid "No way to chat with other users"
+msgstr "Ei mahdollisuutta keskustella muiden käyttäjien kanssa"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:246
-msgid "Player-to-player preset interactions without chat functionality"
+msgid "User-to-user game interactions without chat functionality"
 msgstr ""
 "Pelaajien välistä pelin sisäistä vuorovaikutusta ilman "
 "keskustelumahdollisuutta"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:249
-msgid "Uncontrolled chat functionality between players"
-msgstr "Valvomaton keskusteluominaisuus pelaajien välillä"
+msgid "Moderated chat functionality between users"
+msgstr "Valvottu keskusteluominaisuus käyttäjien välillä"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:252
-msgid "No way to talk with other players"
-msgstr "Ei mahdollisuutta puhua muiden pelaajien kanssa"
+msgid "Uncontrolled chat functionality between users"
+msgstr "Valvomaton keskusteluominaisuus käyttäjien välillä"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:255
-msgid "Uncontrolled audio or video chat functionality between players"
-msgstr "Valvomaton ääni- tai videokeskusteluominaisuus pelaajien välillä"
+msgid "No way to talk with other users"
+msgstr "Ei mahdollisuutta puhua muiden käyttäjien kanssa"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:258
+msgid "Uncontrolled audio or video chat functionality between users"
+msgstr "Valvomaton ääni- tai videokeskusteluominaisuus käyttäjien välillä"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:261
 msgid "No sharing of social network usernames or email addresses"
 msgstr ""
 "Ei sosiaalisen median käyttäjätunnusten tai sähköpostiosoitteiden jakamista"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
+#: src/gs-content-rating.c:264
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
 "Sosiaalisen median käyttäjätunnusten tai sähköpostiosoitteiden jakamista"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:264
+#: src/gs-content-rating.c:267
 msgid "No sharing of user information with 3rd parties"
 msgstr "Ei käyttäjätiedon jakamista kolmansien osapuolten kanssa"
 
-#. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:267
-msgid "Sharing user information with 3rd parties"
-msgstr "Käyttäjätiedon jakamista kolmansien osapuolten kanssa"
-
+#. v1.1
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:270
+msgid "Checking for the latest application version"
+msgstr "Tarkistetaan viimeisintä sovellusversiota"
+
+#. v1.1
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:273
+msgid "Sharing diagnostic data not identifiable to the user"
+msgstr "Jakaa diagnostiikkatietoja, jotka eivät ole yhdistettävissä käyttäjään"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:276
+msgid "Sharing information identifiable to the user"
+msgstr "Jakaa käyttäjään yhdistettävissä olevia tietoja"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:279
 msgid "No sharing of physical location to other users"
 msgstr "Ei fyysisen sijainnin jakamista muille pelaajille"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:273
+#: src/gs-content-rating.c:282
 msgid "Sharing physical location to other users"
 msgstr "Fyysisen sijainnin jakamista muille pelaajille"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:287
+msgid "No references to homosexuality"
+msgstr "Ei viittauksia homoseksuaalisuuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:290
+msgid "Indirect references to homosexuality"
+msgstr "Epäsuoria viittauksia homoseksuaalisuuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:293
+msgid "Kissing between people of the same gender"
+msgstr "Suutelua samaa sukupuolta olevien kesken"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:296
+msgid "Graphic sexual behavior between people of the same gender"
+msgstr "Graafista seksuaalista käyttäytymistä samaa sukupuolta olevien kesken"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:299
+msgid "No references to prostitution"
+msgstr "Ei viittauksia prostituutioon"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:302
+msgid "Indirect references to prostitution"
+msgstr "Epäsuoria viittauksia prosituutioon"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:305
+msgid "Direct references of prostitution"
+msgstr "Suoria viittauksia prosituutioon"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:308
+msgid "Graphic depictions of the act of prostitution"
+msgstr "Graafisia kuvauksia prostituutioon liittyvistä toimista"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:311
+msgid "No references to adultery"
+msgstr "Ei viittauksia haureuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:314
+msgid "Indirect references to adultery"
+msgstr "Epäsuoria viittauksia haureuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:317
+msgid "Direct references of adultery"
+msgstr "Suoria viittauksia haureuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:320
+msgid "Graphic depictions of the act of adultery"
+msgstr "Graafisia kuvauksia haureuteen liittyvistä toimista"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:323
+msgid "No sexualized characters"
+msgstr "Ei seksualisoituja hahmoja"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:326
+msgid "Scantily clad human characters"
+msgstr "Vähävaatteisia ihmishahmoja"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:329
+msgid "Overtly sexualized human characters"
+msgstr "Avoimesti seksualisoituja ihmishahmoja"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:332
+msgid "No references to desecration"
+msgstr "Ei viittauksia häpäisyyn"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:335
+msgid "Depictions or references to historical desecration"
+msgstr "Kuvauksia tai viittauksia historialliseen häpäisyyn"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:338
+msgid "Depictions of modern-day human desecration"
+msgstr "Kuvauksia nykypäivän ihmishäpäisystä"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:341
+msgid "Graphic depictions of modern-day desecration"
+msgstr "Graafisia kuvauksia nykypäivän häpäisystä"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:344
+msgid "No visible dead human remains"
+msgstr "Ei näkyviä kuolleen ihmisen jäännöksiä"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:347
+msgid "Visible dead human remains"
+msgstr "Näkyviä kuolleen ihmisen jäännöksiä"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:350
+msgid "Dead human remains that are exposed to the elements"
+msgstr "Kuolleen ihmisen jäännöksiä, jotka altistetaan elementeille"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:353
+msgid "Graphic depictions of desecration of human bodies"
+msgstr "Graafisia kuvauksia tai häpäisyä liittyen ihmisruumiisiin"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:356
+msgid "No references to slavery"
+msgstr "Ei viittauksia orjuuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:359
+msgid "Depictions or references to historical slavery"
+msgstr "Kuvauksia tai viittauksia historialliseen orjuuteen"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:362
+msgid "Depictions of modern-day slavery"
+msgstr "Kuvauksia nykypäivän orjuudesta"
+
+#. TRANSLATORS: content rating description
+#: src/gs-content-rating.c:365
+msgid "Graphic depictions of modern-day slavery"
+msgstr "Graafisia kuvauksia nykypäivän orjuudesta"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:294
@@ -1146,14 +1336,14 @@ msgstr "Etsi ohjelmistoista"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: src/gs-details-page.c:278 src/gs-details-page.c:308
+#: src/gs-details-page.c:280 src/gs-details-page.c:310
 #: src/gs-details-page.ui:206 src/gs-upgrade-banner.ui:146
 msgid "_Install"
 msgstr "_Asenna"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: src/gs-details-page.c:313
+#: src/gs-details-page.c:315
 msgid "_Update"
 msgstr "_Päivitä"
 
@@ -1161,21 +1351,21 @@ msgstr "_Päivitä"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: src/gs-details-page.c:326
+#: src/gs-details-page.c:328
 msgid "_Install…"
 msgstr "_Asenna…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:373 src/gs-details-page.ui:242
+#: src/gs-details-page.c:375 src/gs-details-page.ui:242
 msgid "_Remove"
 msgstr "_Poista"
 
-#: src/gs-details-page.c:434 src/gs-sources-dialog.c:513
+#: src/gs-details-page.c:436 src/gs-sources-dialog.c:516
 msgid "Removing…"
 msgstr "Poistetaan…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:744
+#: src/gs-details-page.c:746
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1183,52 +1373,52 @@ msgstr ""
 "Tätä sovellusta voi käyttää ainoastaan internetyhteyden ollessa muodostettu."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:879
+#: src/gs-details-page.c:911
 msgctxt "version"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:913
+#: src/gs-details-page.c:922
 msgctxt "updated"
 msgid "Never"
 msgstr "Ei koskaan"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:957
+#: src/gs-details-page.c:966
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1361
+#: src/gs-details-page.c:1372
 msgid "You need internet access to write a review"
 msgstr "Arvostelun kirjoittaminen vaatii internetyhteyden"
 
-#: src/gs-details-page.c:1490
+#: src/gs-details-page.c:1506
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Kohdetta “%s” ei löytynyt"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2065
+#: src/gs-details-page.c:2090
 msgid "Public domain"
 msgstr "Public domain"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2081 src/gs-details-page.ui:1395
+#: src/gs-details-page.c:2106 src/gs-details-page.ui:1395
 msgid "Free Software"
 msgstr "Vapaa ohjelmisto"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2138
+#: src/gs-details-page.c:2163
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Käyttäjiä sitoo seuraava lisenssi:"
 msgstr[1] "Käyttäjiä sitovat seuraavat lisenssit:"
 
-#: src/gs-details-page.c:2154 src/gs-details-page.ui:1504
+#: src/gs-details-page.c:2190 src/gs-details-page.ui:1504
 msgid "More information"
 msgstr "Lisätietoja"
 
@@ -1526,10 +1716,6 @@ msgstr "Virheviesti tähän"
 msgid "App ID"
 msgstr "Sovelluksen tunniste"
 
-#: src/gs-editor.ui:296
-msgid "Name"
-msgstr "Nimi"
-
 #: src/gs-editor.ui:341 src/gs-review-dialog.ui:142
 msgid "Summary"
 msgstr "Yhteenveto"
@@ -1682,7 +1868,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:388 lib/gs-plugin-loader.c:1417
+#: src/gs-extras-page.c:388 lib/gs-plugin-loader.c:1436
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s-muotoa varten ei ole lisäkoodekkeja saatavilla."
@@ -2037,7 +2223,7 @@ msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "%s poistetaan. Jos haluat käyttää sitä jatkossa, se pitää asentaa uudelleen."
 
-#: lib/gs-plugin-loader.c:1420
+#: lib/gs-plugin-loader.c:1439
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2045,6 +2231,18 @@ msgid ""
 msgstr ""
 "Tietoja kohteesta %s, ja tietoa kuinka saada tätä tiedostomuotoa tukeva "
 "koodekki, löytyy verkkosivustolta."
+
+#. TRANSLATORS: this refers to an app (by name) that is installed
+#: src/gs-popular-tile.c:70 src/gs-summary-tile.c:75
+#, c-format
+msgid "%s (Installed)"
+msgstr "%s (Asennettu)"
+
+#. TRANSLATORS: this refers to where the app came from
+#: src/gs-popular-tile.c:205
+#, c-format
+msgid "Source: %s"
+msgstr "Lähde: %s"
 
 #: lib/gs-price.c:111
 #, c-format
@@ -2094,7 +2292,7 @@ msgstr "US$%.2f"
 #: lib/gs-price.c:129
 #, c-format
 msgid "%s %f"
-msgstr "%s %f"
+msgstr "%2$f %1$s"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -2330,32 +2528,32 @@ msgstr "Sovellusta ei löytynyt"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:806 src/gs-shell.c:811 src/gs-shell.c:826 src/gs-shell.c:830
+#: src/gs-shell.c:833 src/gs-shell.c:838 src/gs-shell.c:853 src/gs-shell.c:857
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:858
+#: src/gs-shell.c:885
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Laiteohjelmistopäivitysten lataaminen lähteestä %s epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:864
+#: src/gs-shell.c:891
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Päivitysten lataaminen lähteestä %s epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:871
+#: src/gs-shell.c:898
 msgid "Unable to download updates"
 msgstr "Päivitysten lataaminen epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:876
+#: src/gs-shell.c:903
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2364,29 +2562,29 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:885
+#: src/gs-shell.c:912
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "Päivitysten lataaminen lähteestä %s epäonnistui: levytilaa ei ole riittävästi"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:890
+#: src/gs-shell.c:917
 msgid "Unable to download updates: not enough disk space"
 msgstr "Päivitysten lataaminen epäonnistui: levytilaa ei ole riittävästi"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:898
+#: src/gs-shell.c:925
 msgid "Unable to download updates: authentication was required"
 msgstr "Päivitysten lataaminen epäonnistui: tunnistautuminen vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:903
+#: src/gs-shell.c:930
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Päivitysten lataaminen epäonnistui: tunnistautuminen oli virheellinen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:908
+#: src/gs-shell.c:935
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2394,14 +2592,14 @@ msgstr ""
 "ohjelmistojen asentamiseen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:915
+#: src/gs-shell.c:942
 msgid "Unable to get list of updates"
 msgstr "Päivitysluettelon noutaminen epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:961
+#: src/gs-shell.c:988
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr ""
@@ -2409,7 +2607,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:967
+#: src/gs-shell.c:994
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Sovelluksen %s asennus epäonnistui, koska lataaminen epäonnistui"
@@ -2418,7 +2616,7 @@ msgstr "Sovelluksen %s asennus epäonnistui, koska lataaminen epäonnistui"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:979
+#: src/gs-shell.c:1006
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
@@ -2427,46 +2625,46 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:985
+#: src/gs-shell.c:1012
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Sovelluksen %s asennus epäonnistui, koska ei se ei ole tuettu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:992
+#: src/gs-shell.c:1019
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Asennus epäonnistui: internetyhteys vaadittiin, mutta sitä ei ollut "
 "saatavilla"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:998
+#: src/gs-shell.c:1025
 msgid "Unable to install: the application has an invalid format"
 msgstr "Asennus epäonnistui: sovelluksen muoto ei ole kelvollinen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1003
+#: src/gs-shell.c:1030
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Sovelluksen %s asennus epäonnistui: levytilaa ei ole riittävästi"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1011
+#: src/gs-shell.c:1038
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Sovelluksen %s asennus epäonnistui: tunnistautuminen vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1018
+#: src/gs-shell.c:1045
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Sovelluksen %s asennus epäonnistui: tunnistautuminen oli virheellinen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1025
+#: src/gs-shell.c:1052
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -2476,13 +2674,13 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: src/gs-shell.c:1038
+#: src/gs-shell.c:1065
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "\"%s\"-tilisi on jäädytetty."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1042
+#: src/gs-shell.c:1069
 msgid "It is not possible to install software until this has been resolved."
 msgstr ""
 "Ohjelmistojen asennus ei ole mahdollista, ennen kuin tämä asia on selvitetty."
@@ -2490,21 +2688,21 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: src/gs-shell.c:1053
+#: src/gs-shell.c:1080
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Lisätietoja on osoitteessa %s."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1062
+#: src/gs-shell.c:1089
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Sovelluksen %s asennus epäonnistui: verkkovirta vaaditaan"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1071
+#: src/gs-shell.c:1098
 #, c-format
 msgid "Unable to install %s"
 msgstr "Sovelluksen %s asennus epäonnistui"
@@ -2513,20 +2711,20 @@ msgstr "Sovelluksen %s asennus epäonnistui"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1117
+#: src/gs-shell.c:1144
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "Sovelluksen %s päivitys lähteestä %s epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1123
+#: src/gs-shell.c:1150
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Sovelluksen %s päivitys epäonnistui, koska lataaminen epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1129
+#: src/gs-shell.c:1156
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Päivitys epäonnistui: internetyhteys vaadittiin, mutta sitä ei ollut "
@@ -2534,28 +2732,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1137
+#: src/gs-shell.c:1164
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Sovelluksen %s päivitys epäonnistui: ei riittävästi levytilaa"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1146
+#: src/gs-shell.c:1173
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Sovelluksen %s päivitys epäonnistui: tunnistautuminen vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1153
+#: src/gs-shell.c:1180
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Sovelluksen %s päivitys epäonnistui: tunnistautuminen oli virheellinen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1160
+#: src/gs-shell.c:1187
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
@@ -2564,14 +2762,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1168
+#: src/gs-shell.c:1195
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Sovelluksen %s päivitys epäonnistui: verkkovirta vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1177
+#: src/gs-shell.c:1204
 #, c-format
 msgid "Unable to update %s"
 msgstr "Sovelluksen %s päivitys epäonnistui"
@@ -2579,20 +2777,20 @@ msgstr "Sovelluksen %s päivitys epäonnistui"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1249
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Järjestelmäpäivitys %s lähteestä %s epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1227
+#: src/gs-shell.c:1254
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Järjestelmäpäivitys %s epäonnistui, koska lataaminen epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1234
+#: src/gs-shell.c:1261
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr ""
 "Järjestelmäpäivitys epäonnistui: internetyhteys vaadittiin, mutta sitä ei "
@@ -2600,28 +2798,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1242
+#: src/gs-shell.c:1269
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Järjestelmäpäivitys %s epäonnistui: ei riittävästi levytilaa"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1251
+#: src/gs-shell.c:1278
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Järjestelmäpäivitys %s epäonnistui: tunnistautuminen vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1258
+#: src/gs-shell.c:1285
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Järjestelmäpäivitys %s epäonnistui: tunnistautuminen oli virheellinen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1265
+#: src/gs-shell.c:1292
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr ""
@@ -2630,28 +2828,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1272
+#: src/gs-shell.c:1299
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Järjestelmäpäivitys %s epäonnistui: verkkovirta vaaditaan"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1281
+#: src/gs-shell.c:1308
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Järjestelmäpäivitys %s epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1323
+#: src/gs-shell.c:1350
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Sovelluksen %s poistaminen epäonnistui: tunnistautuminen vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1329
+#: src/gs-shell.c:1356
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr ""
@@ -2659,7 +2857,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1335
+#: src/gs-shell.c:1362
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr ""
@@ -2668,14 +2866,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1342
+#: src/gs-shell.c:1369
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Sovelluksen %s poistaminen epäonnistui: verkkovirta vaadittiin"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1351
+#: src/gs-shell.c:1378
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Sovelluksen %s poistaminen epäonnistui"
@@ -2684,51 +2882,51 @@ msgstr "Sovelluksen %s poistaminen epäonnistui"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1397
+#: src/gs-shell.c:1424
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Sovelluksen %s käynnistäminen epäonnistui: %s ei ole asennettu"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1404 src/gs-shell.c:1452 src/gs-shell.c:1500
+#: src/gs-shell.c:1431 src/gs-shell.c:1479 src/gs-shell.c:1527
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Levytilaa ei ollut riittävästi — vapauta levytilaa ja yritä uudelleen"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1412 src/gs-shell.c:1460 src/gs-shell.c:1527
+#: src/gs-shell.c:1439 src/gs-shell.c:1487 src/gs-shell.c:1554
 msgid "Sorry, something went wrong"
 msgstr "Valitettavasti jokin meni pieleen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1447
+#: src/gs-shell.c:1474
 msgid "Failed to install file: authentication failed"
 msgstr "Tiedoston asennus epäonnistui: tunnistautuminen epäonnistui"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1494
+#: src/gs-shell.c:1521
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Yhteys kohteeseen %s ei onnistu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1509
+#: src/gs-shell.c:1536
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr ""
 "%s tulee käynnistää uudelleen, jotta uudet liitännäiset ovat käytettävissä."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1541
 msgid "This application needs to be restarted to use new plugins."
 msgstr ""
 "Tämä sovellus tulee käynnistää uudelleen, jotta uudet liitännäiset ovat "
 "käytettävissä."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1521
+#: src/gs-shell.c:1548
 msgid "AC power is required"
 msgstr "Verkkovirta vaaditaan"
 
@@ -2797,20 +2995,20 @@ msgstr "Tyypillisesti rajoituksia käytön ja pääsyn lähdekoodiin suhteen."
 msgid "Proprietary Software Sources"
 msgstr "Suljetut ohjelmistolähteet"
 
-#: src/gs-sources-dialog.c:498 src/gs-sources-dialog.ui:487
+#: src/gs-sources-dialog.c:501 src/gs-sources-dialog.ui:487
 msgid "Remove Source"
 msgstr "Poista lähde"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-sources-dialog.c:584
+#: src/gs-sources-dialog.c:587
 msgid "the operating system"
 msgstr "käyttöjärjestelmä"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-sources-dialog.c:677
+#: src/gs-sources-dialog.c:680
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -2854,11 +3052,6 @@ msgstr "Lisätty"
 msgid "Website"
 msgstr "Verkkosivusto"
 
-#: src/gs-summary-tile.c:75
-#, c-format
-msgid "%s (Installed)"
-msgstr "%s (Asennettu)"
-
 #: src/gs-summary-tile.c:80
 #, c-format
 msgid "%s (Installing)"
@@ -2891,25 +3084,25 @@ msgstr "Asennetut päivitykset"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:419
+#: src/gs-update-dialog.c:420
 msgid "Additions"
 msgstr "Lisäykset"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:423
+#: src/gs-update-dialog.c:424
 msgid "Removals"
 msgstr "Poistot"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:427
+#: src/gs-update-dialog.c:428
 msgid "Updates"
 msgstr "Päivitykset"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:431
+#: src/gs-update-dialog.c:432
 msgid "Downgrades"
 msgstr "Version muutokset alempaan"
 
@@ -2939,7 +3132,7 @@ msgstr ""
 "Tärkeitä järjestelmä- ja sovelluspäivityksiä on valmiina asennettavaksi"
 
 #. TRANSLATORS: button text
-#: src/gs-update-monitor.c:100 src/gs-updates-page.c:703
+#: src/gs-update-monitor.c:100 src/gs-updates-page.c:740
 msgid "Not Now"
 msgstr "Ei nyt"
 
@@ -2972,28 +3165,42 @@ msgid "Software Upgrade Available"
 msgstr "Ohjelmistopäivitys saatavilla"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:610
+#: src/gs-update-monitor.c:622
 msgid "Software Updates Failed"
 msgstr "Ohjelmistopäivitykset epäonnistuivat"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:612
+#: src/gs-update-monitor.c:624
 msgid "An important OS update failed to be installed."
 msgstr "Tärkeän järjestelmäpäivityksen asennus epäonnistui."
 
-#: src/gs-update-monitor.c:613
+#: src/gs-update-monitor.c:625
 msgid "Show Details"
 msgstr "Näytä tiedot"
 
+#. TRANSLATORS: Notification title when we've done a distro upgrade
+#: src/gs-update-monitor.c:648
+msgid "System Upgrade Complete"
+msgstr "Järjestelmän versiopäivitys valmistui"
+
+#. TRANSLATORS: This is the notification body when we've done a
+#. * distro upgrade. First %s is the distro name and the 2nd %s
+#. * is the version, e.g. "Welcome to Fedora 28!"
+#: src/gs-update-monitor.c:653
+#, c-format
+#| msgid "Welcome to Software"
+msgid "Welcome to %s %s!"
+msgstr "Tervetuloa, käytössäsi on %s %s!"
+
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:635
+#: src/gs-update-monitor.c:659
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Ohjelmistopäivitys asennettu"
 msgstr[1] "Ohjelmistopäivitykset asennettu"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:639
+#: src/gs-update-monitor.c:663
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tärkeä järjestelmäpäivitys asennettiin."
@@ -3004,30 +3211,30 @@ msgstr[1] "Tärkeitä järjestelmäpäivityksiä asennettiin."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:650
+#: src/gs-update-monitor.c:674
 msgctxt "updates"
 msgid "Review"
 msgstr "Tarkastele"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:697
+#: src/gs-update-monitor.c:723
 msgid "Failed To Update"
 msgstr "Päivitys epäonnistui"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:703
+#: src/gs-update-monitor.c:729
 msgid "The system was already up to date."
 msgstr "Järjestelmä oli jo ajan tasalla."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:708
+#: src/gs-update-monitor.c:734
 msgid "The update was cancelled."
 msgstr "Päivitys peruttiin."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:714
+#: src/gs-update-monitor.c:740
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3036,7 +3243,7 @@ msgstr ""
 "yhteys toimii ja yritä uudelleen."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:720
+#: src/gs-update-monitor.c:746
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3045,13 +3252,13 @@ msgstr ""
 "tarjoajaan saadaksesi lisätietoja."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:726
+#: src/gs-update-monitor.c:752
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Levytilaa ei ollut riittävästi. Vapauta levytilaa ja yritä uudelleen."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:731
+#: src/gs-update-monitor.c:757
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3060,105 +3267,105 @@ msgstr ""
 "ja yritä uudelleen. Jos ongelma jatkuu, ota yhteys ohjelmistojen tarjoajaan."
 
 #. TRANSLATORS: Time in 24h format
-#: src/gs-updates-page.c:273
+#: src/gs-updates-page.c:297
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: src/gs-updates-page.c:276
+#: src/gs-updates-page.c:300
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: src/gs-updates-page.c:282
+#: src/gs-updates-page.c:306
 msgid "Yesterday, %R"
 msgstr "Eilen, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: src/gs-updates-page.c:286
+#: src/gs-updates-page.c:310
 msgid "Yesterday, %l:%M %p"
 msgstr "Eilen, %l:%M %p"
 
-#: src/gs-updates-page.c:289
+#: src/gs-updates-page.c:313
 msgid "Two days ago"
 msgstr "Kaksi päivää sitten"
 
-#: src/gs-updates-page.c:291
+#: src/gs-updates-page.c:315
 msgid "Three days ago"
 msgstr "Kolme päivää sitten"
 
-#: src/gs-updates-page.c:293
+#: src/gs-updates-page.c:317
 msgid "Four days ago"
 msgstr "Neljä päivää sitten"
 
-#: src/gs-updates-page.c:295
+#: src/gs-updates-page.c:319
 msgid "Five days ago"
 msgstr "Viisi päivää sitten"
 
-#: src/gs-updates-page.c:297
+#: src/gs-updates-page.c:321
 msgid "Six days ago"
 msgstr "Kuusi päivää sitten"
 
-#: src/gs-updates-page.c:299
+#: src/gs-updates-page.c:323
 msgid "One week ago"
 msgstr "Viikko sitten"
 
-#: src/gs-updates-page.c:301
+#: src/gs-updates-page.c:325
 msgid "Two weeks ago"
 msgstr "Kaksi viikkoa sitten"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-updates-page.c:305
+#: src/gs-updates-page.c:329
 msgid "%e %B %Y"
 msgstr "%e. %Bta %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: src/gs-updates-page.c:318
+#: src/gs-updates-page.c:342
 msgid "Downloading new updates…"
 msgstr "Ladataan uusia päivityksiä…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:322
+#: src/gs-updates-page.c:346
 msgid "Looking for new updates…"
 msgstr "Etsitään uusia päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:361
+#: src/gs-updates-page.c:387
 msgid "Setting up updates…"
 msgstr "Asetetaan päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:362 src/gs-updates-page.c:369
+#: src/gs-updates-page.c:388 src/gs-updates-page.c:395
 msgid "(This could take a while)"
 msgstr "(Tämä saattaa kestää hetken)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:474
+#: src/gs-updates-page.c:500
 #, c-format
 msgid "Last checked: %s"
 msgstr "Viimeksi tarkistettu: %s"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-updates-page.c:699
+#: src/gs-updates-page.c:736
 msgid "Updates have been installed"
 msgstr "Päivitykset on asennettu"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-updates-page.c:701
+#: src/gs-updates-page.c:738
 msgid "A restart is required for them to take effect."
 msgstr "Muutosten voimaan tulemiseksi vaaditaan uudelleenkäynnistys."
 
 #. TRANSLATORS: button text
-#: src/gs-updates-page.c:705
+#: src/gs-updates-page.c:742
 msgid "Restart"
 msgstr "Käynnistä uudelleen"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-page.c:766
+#: src/gs-updates-page.c:812
 msgid "Integrated Firmware"
 msgstr "Integroitu laiteohjelmisto"
 
@@ -3166,76 +3373,76 @@ msgstr "Integroitu laiteohjelmisto"
 #. * system firmware
 #. TRANSLATORS: This is the button for upgrading all
 #. * offline updates
-#: src/gs-updates-page.c:769 src/gs-updates-page.c:779
+#: src/gs-updates-page.c:815 src/gs-updates-page.c:825
 msgid "Restart & Update"
 msgstr "Käynnistä uudelleen ja päivitä"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-page.c:776
+#: src/gs-updates-page.c:822
 msgid "Requires Restart"
 msgstr "Vaatii uudelleenkäynnistyksen"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-page.c:786
+#: src/gs-updates-page.c:832
 msgid "Application Updates"
 msgstr "Sovelluspäivitykset"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-page.c:789
+#: src/gs-updates-page.c:835
 msgid "Update All"
 msgstr "Päivitä kaikki"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-page.c:796
+#: src/gs-updates-page.c:842
 msgid "Device Firmware"
 msgstr "Laitteen laiteohjelmisto"
 
 #. TRANSLATORS: this is an offline update
-#: src/gs-updates-page.c:986
+#: src/gs-updates-page.c:1030
 msgid "_Restart & Update"
 msgstr "Käynnistä uu_delleen ja asenna"
 
 #. TRANSLATORS: all updates will be installed
-#: src/gs-updates-page.c:990
+#: src/gs-updates-page.c:1034
 msgid "U_pdate All"
 msgstr "Päivitä _kaikki"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:1088
+#: src/gs-updates-page.c:1113
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s ei ole enää tuettu."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:1093
+#: src/gs-updates-page.c:1118
 msgid "Your OS is no longer supported."
 msgstr "Käyttöjärjestelmäsi ei ole enää tuettu."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:1098
+#: src/gs-updates-page.c:1123
 msgid "This means that it does not receive security updates."
 msgstr ""
 "Tämä tarkoittaa, ettei käyttöjärjestelmään ole saatavilla enää "
 "tietoturvapäivityksiä."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:1102
+#: src/gs-updates-page.c:1127
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "On suositeltavaa, että päivität käyttöjärjestelmän uudempaan versioon."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:1359
+#: src/gs-updates-page.c:1384
 msgid "Charges may apply"
 msgstr "Saattaa aiheuttaa lisäkuluja"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:1363
+#: src/gs-updates-page.c:1388
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3245,26 +3452,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:1367
+#: src/gs-updates-page.c:1392
 msgid "Check Anyway"
 msgstr "Tarkista silti"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:1383
+#: src/gs-updates-page.c:1408
 msgid "No Network"
 msgstr "Ei verkkoa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:1387
+#: src/gs-updates-page.c:1412
 msgid "Internet access is required to check for updates."
 msgstr "Päivitysten tarkistaminen vaatii internetyhteyden."
 
-#: src/gs-updates-page.c:1792
+#: src/gs-updates-page.c:1817
 msgid "Restart & _Install"
 msgstr "Käynnistä uudelleen ja _asenna"
 
-#: src/gs-updates-page.c:1810
+#: src/gs-updates-page.c:1835
 msgid "Check for updates"
 msgstr "Tarkista päivitykset"
 
@@ -3826,12 +4033,12 @@ msgid "Failed to copy"
 msgstr "Kopiointi epäonnistui"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:212
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:217
 msgid "Downloading upgrade information…"
 msgstr "Ladataan versiopäivitystietoja…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:303
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:311
 msgid "Upgrade your Fedora system to the latest features and improvements."
 msgstr ""
 "Päivitä Fedora-järjestelmäsi saadaksesi uusimmat ominaisuudet ja parannukset."
@@ -3845,28 +4052,28 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak on viitekehys Linux-työpöytäsovelluksille"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:563
+#: plugins/flatpak/gs-flatpak.c:606
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Noudetaan flatpak-metatietoja kohteelle %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2617
+#: plugins/flatpak/gs-flatpak.c:2636
 msgid "Getting runtime source…"
 msgstr "Noudetaan runtime-lähdettä…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:801
+#: plugins/fwupd/gs-plugin-fwupd.c:843 plugins/fwupd/gs-plugin-fwupd.c:942
 msgid "Downloading firmware update signature…"
 msgstr "Ladataan laiteohjelmiston päivitysallekirjoituksia…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:847
+#: plugins/fwupd/gs-plugin-fwupd.c:884 plugins/fwupd/gs-plugin-fwupd.c:988
 msgid "Downloading firmware update metadata…"
 msgstr "Ladataan laiteohjelmiston päivityksen metatietoja…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:941
+#: plugins/fwupd/gs-plugin-fwupd.c:1079
 msgid "Downloading firmware update…"
 msgstr "Ladataan laiteohjelmiston päivitystä…"
 
@@ -3900,9 +4107,14 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr "ODRS on sovellusten käyttäjäarvioihin keskittynyt palvelu"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:669
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:674
 msgid "Downloading shell extension metadata…"
 msgstr "Ladataan Shell-laajennuksen metatietoja…"
+
+#. TRANSLATORS: default snap store name
+#: plugins/snap/gs-plugin-snap.c:214
+msgid "Snap Store"
+msgstr "Snap-kauppa"
 
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:6
 msgid "Snappy Support"
@@ -3924,6 +4136,14 @@ msgstr "Steam-tuki"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Valven tarjoama viihdealusta"
+
+#~ msgid "Player-to-player preset interactions without chat functionality"
+#~ msgstr ""
+#~ "Pelaajien välistä pelin sisäistä vuorovaikutusta ilman "
+#~ "keskustelumahdollisuutta"
+
+#~ msgid "Sharing user information with 3rd parties"
+#~ msgstr "Käyttäjätiedon jakamista kolmansien osapuolten kanssa"
 
 #~ msgid "“%s” [%s]"
 #~ msgstr "“%s” [%s]"
