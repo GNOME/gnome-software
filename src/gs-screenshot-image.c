@@ -465,6 +465,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* check if the URL points to a local file */
 	url = as_image_get_url (im);
 	if (g_str_has_prefix (url, "file://")) {
+		g_free (ssimg->filename);
 		ssimg->filename = g_strdup (url + 7);
 		if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
 			as_screenshot_show_image (ssimg);
@@ -479,6 +480,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		sizedir = g_strdup_printf ("%ux%u", ssimg->width * ssimg->scale, ssimg->height * ssimg->scale);
 	}
 	cache_kind = g_build_filename ("screenshots", sizedir, NULL);
+	g_free (ssimg->filename);
 	ssimg->filename = gs_utils_get_cache_filename (cache_kind,
 						       basename,
 						       GS_UTILS_CACHE_FLAG_NONE,
