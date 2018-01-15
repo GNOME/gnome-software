@@ -39,6 +39,10 @@ struct _GsUpdateMonitor {
 	GDBusProxy	*proxy_upower;
 	GError		*last_offline_error;
 
+	GNetworkMonitor *network_monitor;
+	guint		 network_changed_handler;
+	GCancellable    *network_cancellable;
+
 	guint		 cleanup_notifications_id;	/* at startup */
 	guint		 check_startup_id;		/* 60s after startup */
 	guint		 check_hourly_id;		/* and then every hour */
@@ -394,6 +398,10 @@ refresh_cache_finished_cb (GObject *object,
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}
+	if (g_cancellable_is_cancelled (monitor->network_cancellable)) {
+		g_clear_object (&monitor->network_cancellable);
+		monitor->network_cancellable = g_cancellable_new ();
+	}
 	get_updates (monitor);
 }
 
@@ -488,7 +496,7 @@ check_updates (GsUpdateMonitor *monitor)
 					 "age", (guint64) (60 * 60 * 24),
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
-					    monitor->cancellable,
+					    monitor->network_cancellable,
 					    refresh_cache_finished_cb,
 					    monitor);
 }
@@ -783,8 +791,20 @@ allow_updates_notify_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
+gs_update_monitor_network_changed_cb (GNetworkMonitor *network_monitor,
+				      gboolean available,
+				      GsUpdateMonitor *monitor)
+{
+	/* cancel an on-going refresh if we're now in a metered connection */
+	if (!g_settings_get_boolean (monitor->settings, "refresh-when-metered") &&
+	    g_network_monitor_get_network_metered (network_monitor))
+		g_cancellable_cancel (monitor->network_cancellable);
+}
+
+static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
+	GNetworkMonitor *network_monitor;
 	g_autoptr(GError) error = NULL;
 	monitor->settings = g_settings_new ("org.gnome.software");
 
@@ -796,7 +816,11 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	monitor->check_startup_id =
 		g_timeout_add_seconds (60, check_updates_on_startup_cb, monitor);
 
+	/* we use two cancellables because one can be cancelled by any network
+	 * changes to a metered connection, and this shouldn't intervene with other
+	 * operations */
 	monitor->cancellable = g_cancellable_new ();
+	monitor->network_cancellable = g_cancellable_new ();
 
 	/* connect to UPower to get the system power state */
 	monitor->proxy_upower = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
@@ -814,6 +838,15 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	} else {
 		g_warning ("failed to connect to upower: %s", error->message);
 	}
+
+	network_monitor = g_network_monitor_get_default ();
+	if (network_monitor == NULL)
+		return;
+	monitor->network_monitor = g_object_ref (network_monitor);
+	monitor->network_changed_handler = g_signal_connect (monitor->network_monitor,
+							     "network-changed",
+							     G_CALLBACK (gs_update_monitor_network_changed_cb),
+							     monitor);
 }
 
 static void
@@ -821,9 +854,19 @@ gs_update_monitor_dispose (GObject *object)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
+	if (monitor->network_changed_handler != 0) {
+		g_signal_handler_disconnect (monitor->network_monitor,
+					     monitor->network_changed_handler);
+		monitor->network_changed_handler = 0;
+	}
+
 	if (monitor->cancellable) {
 		g_cancellable_cancel (monitor->cancellable);
 		g_clear_object (&monitor->cancellable);
+	}
+	if (monitor->network_changed_handler) {
+		g_cancellable_cancel (monitor->network_cancellable);
+		g_clear_object (&monitor->network_cancellable);
 	}
 
 	stop_updates_check (monitor);
