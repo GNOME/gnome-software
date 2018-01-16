@@ -39,6 +39,7 @@ typedef struct
 	GtkWidget	*version_label;
 	GtkWidget	*star;
 	GtkWidget	*folder_label;
+	GtkWidget	*description_box;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
 	GtkWidget	*button;
@@ -665,6 +666,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, star);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, folder_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button);
@@ -714,12 +716,14 @@ void
 gs_app_row_set_size_groups (GsAppRow *app_row,
 			    GtkSizeGroup *image,
 			    GtkSizeGroup *name,
+			    GtkSizeGroup *desc,
 			    GtkSizeGroup *button)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	gtk_size_group_add_widget (image, priv->image);
 	gtk_size_group_add_widget (name, priv->name_box);
+	gtk_size_group_add_widget (desc, priv->description_box);
 	gtk_size_group_add_widget (button, priv->button);
 }
 

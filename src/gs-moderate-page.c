@@ -38,6 +38,7 @@ struct _GsModeratePage
 	GCancellable		*cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GsShell			*shell;
 
@@ -147,6 +148,7 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
 				    self->sizegroup_name,
+				    self->sizegroup_desc,
 				    self->sizegroup_button);
 
 	/* add reviews */
@@ -304,6 +306,7 @@ gs_moderate_page_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 
 	g_clear_object (&self->plugin_loader);
@@ -342,6 +345,7 @@ gs_moderate_page_init (GsModeratePage *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
