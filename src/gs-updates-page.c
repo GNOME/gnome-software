@@ -108,6 +108,7 @@ struct _GsUpdatesPage
 
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GtkSizeGroup		*sizegroup_header;
 	GtkListBox		*listboxes[GS_UPDATE_PAGE_SECTION_LAST];
@@ -976,6 +977,7 @@ _add_app_row (GsUpdatesPage *self, GsApp *app)
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
 				    self->sizegroup_name,
+				    self->sizegroup_desc,
 				    self->sizegroup_button);
 	g_signal_connect_object (app, "notify::state",
 	                         G_CALLBACK (_app_state_notify_cb),
@@ -1848,6 +1850,7 @@ gs_updates_page_setup (GsPage *page,
 	/* visually aligned */
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
@@ -1886,6 +1889,7 @@ gs_updates_page_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 	g_clear_object (&self->sizegroup_header);
 
@@ -1933,6 +1937,7 @@ gs_updates_page_init (GsUpdatesPage *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_header = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 

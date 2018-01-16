@@ -41,6 +41,7 @@ struct _GsSearchPage
 	GCancellable		*search_cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GsShell			*shell;
 	gchar			*appid_to_show;
@@ -140,6 +141,7 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 					    self->sizegroup_image,
 					    self->sizegroup_name,
+					    self->sizegroup_desc,
 					    self->sizegroup_button);
 		gtk_widget_show (app_row);
 	}
@@ -454,6 +456,7 @@ gs_search_page_dispose (GObject *object)
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 
 	g_clear_object (&self->builder);
@@ -505,6 +508,7 @@ gs_search_page_init (GsSearchPage *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_desc = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	self->max_results = GS_SEARCH_PAGE_MAX_RESULTS;
