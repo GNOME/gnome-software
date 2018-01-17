@@ -609,6 +609,8 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
 			gtk_widget_set_visible (ssimg, TRUE);
 		}
+		gtk_widget_set_visible (self->box_details_screenshot_fallback,
+		                        screenshots->len == 0);
 		return;
 	}
 
