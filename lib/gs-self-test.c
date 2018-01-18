@@ -587,6 +587,15 @@ gs_app_func (void)
 	g_assert_cmpuint (gs_app_get_progress (app), ==, 42);
 	gs_app_set_progress (app, 142);
 	g_assert_cmpuint (gs_app_get_progress (app), ==, 100);
+
+	/* check pending action */
+	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_pending_action (app, GS_PLUGIN_ACTION_UPDATE);
+	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UPDATE);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
+	gs_app_set_state_recover (app);
 }
 
 static void
