@@ -100,6 +100,10 @@ if get_option('enable-gnome-desktop')
   gnome_software_dependencies += [gnome_desktop]
 endif
 
+if get_option('enable-gtkspell')
+  gnome_software_dependencies += [gtkspell]
+endif
+
 executable(
   'gnome-software',
   resources_src,
