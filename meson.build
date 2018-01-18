@@ -125,6 +125,7 @@ endif
 
 if get_option('enable-gtkspell')
   gtkspell = dependency('gtkspell3-3.0')
+  conf.set('HAVE_GTKSPELL', 1)
 endif
 
 if get_option('enable-polkit')
