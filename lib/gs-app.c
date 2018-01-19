@@ -1120,8 +1120,13 @@ gs_app_set_state (GsApp *app, AsAppState state)
 
 	if (gs_app_set_state_internal (app, state)) {
 		/* since the state changed, and the pending-action refers to
-		 * actions that usually change the state, we reset it here */
-		gs_app_set_pending_action_internal (app, GS_PLUGIN_ACTION_UNKNOWN);
+		 * actions that usually change the state, we assign it to the
+		 * appropriate action here */
+		GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
+		if (priv->state == AS_APP_STATE_QUEUED_FOR_INSTALL)
+			action = GS_PLUGIN_ACTION_INSTALL;
+		gs_app_set_pending_action_internal (app, action);
+
 		gs_app_queue_notify (app, "state");
 	}
 }
