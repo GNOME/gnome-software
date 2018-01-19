@@ -38,6 +38,7 @@
 #include <string.h>
 #include <glib/gstdio.h>
 #include <json-glib/json-glib.h>
+#include <sys/sysinfo.h>
 
 #ifdef HAVE_POLKIT
 #include <polkit/polkit.h>
@@ -49,6 +50,8 @@
 
 #define LOW_RESOLUTION_WIDTH  800
 #define LOW_RESOLUTION_HEIGHT 600
+
+#define MB_IN_BYTES (1024 * 1024)
 
 /**
  * gs_mkdir_parent:
@@ -1027,6 +1030,14 @@ gs_utils_is_low_resolution (GtkWidget *toplevel)
 	gdk_monitor_get_geometry (monitor, &geometry);
 
 	return geometry.width < LOW_RESOLUTION_WIDTH || geometry.height < LOW_RESOLUTION_HEIGHT;
+}
+
+guint
+gs_utils_get_memory_total (void)
+{
+	struct sysinfo si = { 0 };
+	sysinfo (&si);
+	return si.totalram / MB_IN_BYTES / si.mem_unit;
 }
 
 /* vim: set noexpandtab: */
