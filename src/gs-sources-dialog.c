@@ -63,16 +63,14 @@ get_source_installed_text (GPtrArray *sources)
 {
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
-	guint i;
-	guint j;
 	g_autofree gchar *addons_text = NULL;
 	g_autofree gchar *apps_text = NULL;
 
 	/* split up the types */
-	for (j = 0; j < sources->len; j++) {
+	for (guint j = 0; j < sources->len; j++) {
 		GsApp *app = g_ptr_array_index (sources, j);
 		GPtrArray *related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
+		for (guint i = 0; i < related->len; i++) {
 			GsApp *app_tmp = g_ptr_array_index (related, i);
 			switch (gs_app_get_kind (app_tmp)) {
 			case AS_APP_KIND_WEB_APP:
@@ -181,11 +179,10 @@ source_modified_cb (GObject *source,
 static void
 gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 {
-	guint i;
 	g_auto(GStrv) nonfree_ids = NULL;
 
 	nonfree_ids = g_settings_get_strv (dialog->settings, "nonfree-sources");
-	for (i = 0; nonfree_ids[i] != NULL; i++) {
+	for (guint i = 0; nonfree_ids[i] != NULL; i++) {
 		GsApp *app;
 		g_autofree gchar *unique_id = NULL;
 		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
@@ -239,7 +236,6 @@ static void
 gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 {
 	gboolean switch_active;
-	guint i;
 	g_autofree gchar *text = NULL;
 	g_autofree gchar *uri = NULL;
 	g_auto(GStrv) nonfree_ids = NULL;
@@ -283,7 +279,7 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 	gs_sources_dialog_row_set_comment (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), str->str);
 
 	/* get all the proprietary sources */
-	for (i = 0; nonfree_ids[i] != NULL; i++) {
+	for (guint i = 0; nonfree_ids[i] != NULL; i++) {
 		GsApp *app;
 		g_autofree gchar *unique_id = NULL;
 		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
@@ -311,7 +307,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		GAsyncResult *res,
 		GsSourcesDialog *dialog)
 {
-	guint i;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -349,7 +344,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
-	for (i = 0; i < gs_app_list_length (list); i++) {
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
 			continue;
@@ -442,7 +437,6 @@ list_row_activated_cb (GtkListBox *list_box,
 	GPtrArray *related;
 	GsApp *app;
 	guint cnt_apps = 0;
-	guint i;
 
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "details");
 
@@ -452,7 +446,7 @@ list_row_activated_cb (GtkListBox *list_box,
 	app = GS_APP (g_object_get_data (G_OBJECT (row),
 					 "GsShell::app"));
 	related = gs_app_get_related (app);
-	for (i = 0; i < related->len; i++) {
+	for (guint i = 0; i < related->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (related, i);
 		switch (gs_app_get_kind (app_tmp)) {
 		case AS_APP_KIND_DESKTOP:
