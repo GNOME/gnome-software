@@ -109,7 +109,8 @@ void		 gs_plugin_loader_setup_again		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_clear_caches		(GsPluginLoader	*plugin_loader);
 GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
-
+void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_loader,
+                                                        guint           num_ops);
 
 G_END_DECLS
 

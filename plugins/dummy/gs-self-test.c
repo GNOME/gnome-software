@@ -27,6 +27,29 @@
 
 static guint _status_changed_cnt = 0;
 
+typedef struct {
+	GError *error;
+	GMainLoop *loop;
+} GsDummyTestHelper;
+
+static GsDummyTestHelper *
+gs_dummy_test_helper_new (void)
+{
+        return g_new0 (GsDummyTestHelper, 1);
+}
+
+static void
+gs_dummy_test_helper_free (GsDummyTestHelper *helper)
+{
+	if (helper->error != NULL)
+		g_error_free (helper->error);
+	if (helper->loop != NULL)
+		g_main_loop_unref (helper->loop);
+	g_free (helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsDummyTestHelper, gs_dummy_test_helper_free)
+
 static void
 gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 				    GsApp *app,
@@ -673,6 +696,123 @@ gs_plugins_dummy_purchase_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
 }
 
+static void
+plugin_job_action_cb (GObject *source,
+		      GAsyncResult *res,
+		      gpointer user_data)
+{
+      GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+      GsDummyTestHelper *helper = (GsDummyTestHelper *) user_data;
+
+      gs_plugin_loader_job_action_finish (plugin_loader, res, &helper->error);
+      if (helper->loop != NULL)
+              g_main_loop_quit (helper->loop);
+}
+
+static void
+gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GsAppList) list = NULL;
+        GsApp *app1 = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsApp) app3 = NULL;
+	g_autoptr(GsPluginJob) plugin_job1 = NULL;
+	g_autoptr(GsPluginJob) plugin_job2 = NULL;
+	g_autoptr(GsPluginJob) plugin_job3 = NULL;
+	g_autoptr(GMainContext) context = NULL;
+	g_autoptr(GsDummyTestHelper) helper1 = gs_dummy_test_helper_new ();
+	g_autoptr(GsDummyTestHelper) helper2 = gs_dummy_test_helper_new ();
+	g_autoptr(GsDummyTestHelper) helper3 = gs_dummy_test_helper_new ();
+
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* get the updates list */
+	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES, NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job1, NULL, &helper3->error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (helper3->error);
+	g_assert (list != NULL);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	app1 = gs_app_list_index (list, 0);
+	g_assert_cmpstr (gs_app_get_id (app1), ==, "org.fedoraproject.release-rawhide.upgrade");
+	g_assert_cmpint (gs_app_get_kind (app1), ==, AS_APP_KIND_OS_UPGRADE);
+	g_assert_cmpint (gs_app_get_state (app1), ==, AS_APP_STATE_AVAILABLE);
+
+	/* allow only one operation at a time */
+	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 1);
+
+	app2 = gs_app_new ("chiron.desktop");
+	gs_app_set_management_plugin (app2, "dummy");
+	gs_app_set_state (app2, AS_APP_STATE_AVAILABLE);
+
+	/* use "proxy" prefix so the update function succeeds... */
+	app3 = gs_app_new ("proxy-zeus.desktop");
+	gs_app_set_management_plugin (app3, "dummy");
+	gs_app_set_state (app3, AS_APP_STATE_UPDATABLE_LIVE);
+
+	context = g_main_context_new ();
+	helper3->loop = g_main_loop_new (context, FALSE);
+	g_main_context_push_thread_default (context);
+
+	/* call a few operations at the "same time" */
+
+	/* download an upgrade */
+	g_object_unref (plugin_job1);
+	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+					  "app", app1,
+					  NULL);
+	gs_plugin_loader_job_process_async (plugin_loader,
+					    plugin_job1,
+					    NULL,
+					    plugin_job_action_cb,
+					    helper1);
+
+	/* install an app */
+	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+					  "app", app2,
+					  NULL);
+	gs_plugin_loader_job_process_async (plugin_loader,
+					    plugin_job2,
+					    NULL,
+					    plugin_job_action_cb,
+					    helper2);
+
+	/* update an app */
+	plugin_job3 = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
+					  "app", app3,
+					  NULL);
+	gs_plugin_loader_job_process_async (plugin_loader,
+					    plugin_job3,
+					    NULL,
+					    plugin_job_action_cb,
+					    helper3);
+
+	/* since we have only 1 parallel installation op possible,
+	 * verify the last operations are pending */
+	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_pending_action (app2), ==, GS_PLUGIN_ACTION_INSTALL);
+	g_assert_cmpint (gs_app_get_state (app3), ==, AS_APP_STATE_UPDATABLE_LIVE);
+	g_assert_cmpint (gs_app_get_pending_action (app3), ==, GS_PLUGIN_ACTION_UPDATE);
+
+	/* wait for the 2nd installation to finish, it means the 1st should have been
+	 * finished too */
+	g_main_loop_run (helper3->loop);
+	g_main_context_pop_thread_default (context);
+
+	gs_test_flush_main_context ();
+	g_assert_no_error (helper1->error);
+	g_assert_no_error (helper2->error);
+	g_assert_no_error (helper3->error);
+
+	g_assert_cmpint (gs_app_get_state (app1), ==, AS_APP_STATE_UPDATABLE);
+	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app3), ==, AS_APP_STATE_INSTALLED);
+
+	/* set the default max parallel ops */
+	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 0);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -823,7 +963,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/metadata-quirks",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_metadata_quirks);
-
+	g_test_add_data_func ("/gnome-software/plugins/dummy/limit-parallel-ops",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_dummy_limit_parallel_ops_func);
 	return g_test_run ();
 }
 
