@@ -233,6 +233,19 @@ gs_details_page_update_shortcut_button (GsDetailsPage *self)
 	}
 }
 
+static gboolean
+app_has_pending_action (GsApp *app)
+{
+	/* sanitize the pending state change by verifying we're in one of the
+	 * expected states */
+	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE &&
+	    gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE &&
+	    gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+		return FALSE;
+
+	return gs_app_get_pending_action (app) != GS_PLUGIN_ACTION_UNKNOWN;
+}
+
 static void
 gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -398,6 +411,12 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 		}
 	}
 
+	if (app_has_pending_action (self->app)) {
+		gtk_widget_set_visible (self->button_install, FALSE);
+		gtk_widget_set_visible (self->button_details_launch, FALSE);
+		gtk_widget_set_visible (self->button_remove, FALSE);
+	}
+
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 
@@ -428,6 +447,12 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_cancel, FALSE);
 		break;
 	}
+	if (app_has_pending_action (self->app)) {
+		gtk_widget_set_visible (self->button_cancel, TRUE);
+		gtk_widget_set_sensitive (self->button_cancel,
+					  !g_cancellable_is_cancelled (self->app_cancellable) &&
+					  gs_app_get_allow_cancel (self->app));
+	}
 
 	/* progress status label */
 	switch (state) {
@@ -444,6 +469,28 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	default:
 		gtk_widget_set_visible (self->label_progress_status, FALSE);
 		break;
+	}
+	if (app_has_pending_action (self->app)) {
+		GsPluginAction action = gs_app_get_pending_action (self->app);
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		switch (action) {
+		case GS_PLUGIN_ACTION_INSTALL:
+			/* TRANSLATORS: This is a label on top of the app's progress
+			 * bar to inform the user that the app should be installed soon */
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+					     _("Pending installation…"));
+			break;
+		case GS_PLUGIN_ACTION_UPDATE:
+		case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
+			/* TRANSLATORS: This is a label on top of the app's progress
+			 * bar to inform the user that the app should be updated soon */
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+					     _("Pending update…"));
+			break;
+		default:
+			gtk_widget_set_visible (self->label_progress_status, FALSE);
+			break;
+		}
 	}
 
 	/* percentage bar */
@@ -464,6 +511,10 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->label_progress_percentage, FALSE);
 		gtk_widget_set_visible (self->progressbar_top, FALSE);
 		break;
+	}
+	if (app_has_pending_action (self->app)) {
+		gtk_widget_set_visible (self->progressbar_top, TRUE);
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top), 0);
 	}
 
 	/* spinner */
@@ -488,6 +539,8 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->box_progress, FALSE);
 		break;
 	}
+	if (app_has_pending_action (self->app))
+		gtk_widget_set_visible (self->box_progress, TRUE);
 }
 
 static gboolean
@@ -1572,6 +1625,9 @@ set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::allow-cancel",
 				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
 				 self, 0);
+	g_signal_connect_object (self->app, "notify::pending-action",
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
+				 self, 0);
 
 	/* print what we've got */
 	tmp = gs_app_to_string (self->app);
@@ -1783,6 +1839,9 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::allow-cancel",
 				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
 				 self, 0);
+	g_signal_connect_object (self->app, "notify::pending-action",
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
+				 self, 0);
 
 	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
 
@@ -1814,6 +1873,9 @@ gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_cancellable_cancel (self->app_cancellable);
 	gtk_widget_set_sensitive (widget, FALSE);
+
+	/* reset the pending-action from the app if needed */
+	gs_app_set_pending_action (self->app, GS_PLUGIN_ACTION_UNKNOWN);
 }
 
 static void

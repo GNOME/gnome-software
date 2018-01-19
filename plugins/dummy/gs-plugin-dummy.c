@@ -548,7 +548,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* install app */
-	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
+	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, error)) {
 			gs_app_set_state_recover (app);
