@@ -216,7 +216,7 @@ gs_overview_page_get_recent_cb (GObject *source_object, GAsyncResult *res, gpoin
 	}
 
 	/* not enough to show */
-	if (gs_app_list_length (list) < 6) {
+	if (gs_app_list_length (list) < N_TILES) {
 		g_warning ("Only %u apps for recent list, hiding",
 			   gs_app_list_length (list));
 		gtk_widget_set_visible (priv->box_recent, FALSE);
