@@ -515,6 +515,60 @@ gs_plugin_add_popular (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsCategory *category,
+			     GsAppList *list,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GsCategory *c;
+	g_autoptr(GString) id = NULL;
+	const gchar *sections = NULL;
+
+	id = g_string_new ("");
+	for (c = category; c != NULL; c = gs_category_get_parent (c)) {
+		if (c != category)
+			g_string_prepend (id, "/");
+		g_string_prepend (id, gs_category_get_id (c));
+	}
+
+	if (strcmp (id->str, "games/featured") == 0)
+		sections = "games";
+	else if (strcmp (id->str, "audio-video/featured") == 0)
+		sections = "music;video";
+	else if (strcmp (id->str, "graphics/featured") == 0)
+		sections = "graphics";
+	else if (strcmp (id->str, "communication/featured") == 0)
+		sections = "social-networking";
+	else if (strcmp (id->str, "productivity/featured") == 0)
+		sections = "productivity;finance";
+	else if (strcmp (id->str, "developer-tools/featured") == 0)
+		sections = "developers";
+	else if (strcmp (id->str, "utilities/featured") == 0)
+		sections = "utilities";
+
+	if (sections != NULL) {
+		g_auto(GStrv) tokens = NULL;
+		int i;
+
+		tokens = g_strsplit (sections, ";", -1);
+		for (i = 0; tokens[i] != NULL; i++) {
+			g_autoptr(GPtrArray) snaps = NULL;
+			guint j;
+
+			snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, tokens[i], NULL, cancellable, error);
+			if (snaps == NULL)
+				return FALSE;
+			for (j = 0; j < snaps->len; j++) {
+				g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, j));
+				gs_app_list_add (list, app);
+			}
+		}
+	}
+	return TRUE;
+}
+
+gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
 			 GCancellable *cancellable,
