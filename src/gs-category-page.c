@@ -188,6 +188,8 @@ gs_category_page_get_apps_cb (GObject *source_object,
 static gboolean
 _max_results_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
+	if (gs_app_get_bundle_kind (app1) == AS_BUNDLE_KIND_SNAP || gs_app_get_bundle_kind (app2) == AS_BUNDLE_KIND_SNAP)
+		return gs_app_get_bundle_kind (app1) == AS_BUNDLE_KIND_SNAP ? -1 : 1;
 	return gs_app_get_rating (app1) < gs_app_get_rating (app2);
 }
 
@@ -208,8 +210,13 @@ gs_category_page_sort_flow_box_sort_func (GtkFlowBoxChild *child1,
 	sort_type = GS_CATEGORY_PAGE (data)->sort_type;
 
 	if (sort_type == SUBCATEGORY_SORT_TYPE_RATING) {
-		gint rating_app1 = gs_app_get_rating (app1);
-		gint rating_app2 = gs_app_get_rating (app2);
+		gint rating_app1, rating_app2;
+
+		if (gs_app_get_bundle_kind (app1) == AS_BUNDLE_KIND_SNAP || gs_app_get_bundle_kind (app2) == AS_BUNDLE_KIND_SNAP)
+			return gs_app_get_bundle_kind (app1) == AS_BUNDLE_KIND_SNAP ? -1 : 1;
+
+		rating_app1 = gs_app_get_rating (app1);
+		rating_app2 = gs_app_get_rating (app2);
 		if (rating_app1 > rating_app2)
 			return -1;
 		if (rating_app1 < rating_app2)
