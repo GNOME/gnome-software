@@ -168,13 +168,21 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 
 	/* get popular apps */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	gtk_widget_set_visible (priv->box_popular, list != NULL);
-	gtk_widget_set_visible (priv->popular_heading, list != NULL);
 	if (list == NULL) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to get popular apps: %s", error->message);
 		goto out;
 	}
+
+	/* not enough to show */
+	if (gs_app_list_length (list) < N_TILES) {
+		g_warning ("Only %u apps for popular list, hiding",
+		           gs_app_list_length (list));
+		gtk_widget_set_visible (priv->box_popular, FALSE);
+		gtk_widget_set_visible (priv->popular_heading, FALSE);
+		goto out;
+	}
+
 	/* Don't show apps from the category that's currently featured as the category of the day */
 	gs_app_list_filter (list, filter_category, priv->category_of_day);
 	gs_app_list_randomize (list);
@@ -188,6 +196,8 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
 	}
+	gtk_widget_set_visible (priv->box_popular, TRUE);
+	gtk_widget_set_visible (priv->popular_heading, TRUE);
 
 	priv->empty = FALSE;
 
