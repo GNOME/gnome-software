@@ -115,6 +115,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		}
 	}
 
+	/* Register as a client so that the rpm-ostree daemon doesn't exit */
+	if (!gs_rpmostree_sysroot_call_register_client_sync (priv->sysroot_proxy,
+	                                                     g_variant_new ("a{sv}", NULL),
+	                                                     cancellable,
+	                                                     error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
