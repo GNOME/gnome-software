@@ -62,9 +62,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_background (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
 
-	/* we can get better results than the RPM plugin */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "rpm");
-
 	/* need pkgname and ID */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");

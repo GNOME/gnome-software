@@ -28,9 +28,6 @@ endif
 if get_option('enable-odrs')
   subdir('odrs')
 endif
-if get_option('enable-ostree')
-  subdir('ostree')
-endif
 if get_option('enable-packagekit')
   subdir('packagekit')
 endif

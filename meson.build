@@ -133,10 +133,6 @@ if get_option('enable-polkit')
   conf.set('HAVE_POLKIT', 1)
 endif
 
-if get_option('enable-ostree')
-  ostree = dependency('ostree-1')
-endif
-
 if get_option('enable-packagekit')
   packagekit = dependency('packagekit-glib2', version : '>= 1.1.0')
   conf.set('HAVE_PACKAGEKIT', '1')
@@ -154,10 +150,6 @@ endif
 
 if get_option('enable-limba')
   limba = dependency('limba', version : '>= 0.5.6')
-endif
-
-if get_option('enable-rpm')
-  rpm = dependency('rpm')
 endif
 
 if get_option('enable-rpm-ostree')
