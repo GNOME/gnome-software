@@ -160,6 +160,11 @@ if get_option('enable-rpm')
   rpm = dependency('rpm')
 endif
 
+if get_option('enable-rpm-ostree')
+  ostree = dependency('ostree-1')
+  rpm_ostree = dependency('rpm-ostree-1')
+endif
+
 if get_option('enable-ubuntu-reviews')
   oauth = dependency('oauth')
 endif
