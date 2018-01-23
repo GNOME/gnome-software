@@ -118,6 +118,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
+	    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM) {
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	}
+}
+
 typedef struct {
 	GsPlugin *plugin;
 	GError *error;
@@ -452,4 +461,18 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	}
 
 	return TRUE;
+}
+
+gboolean
+gs_plugin_launch (GsPlugin *plugin,
+                  GsApp *app,
+                  GCancellable *cancellable,
+                  GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+	               gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	return gs_plugin_app_launch (plugin, app, error);
 }
