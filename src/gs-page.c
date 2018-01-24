@@ -398,7 +398,8 @@ gs_page_install_purchase_response_cb (GtkDialog *dialog,
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
 					 "app", helper->app,
 					 "price", gs_app_get_price (helper->app),
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
