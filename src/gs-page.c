@@ -360,9 +360,8 @@ gs_page_app_purchased_cb (GObject *source,
 	}
 
 	if (gs_app_get_state (helper->app) != AS_APP_STATE_AVAILABLE) {
-		g_warning ("no plugin purchased %s: %s",
-		           gs_app_get_id (helper->app),
-		           error->message);
+		g_warning ("no plugin purchased %s",
+		           gs_app_get_id (helper->app));
 		return;
 	}
 
