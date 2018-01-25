@@ -2154,12 +2154,16 @@ gs_details_page_license_widget_for_token (GsDetailsPage *self, const gchar *toke
 	if (g_strcmp0 (token, "@LicenseRef-public-domain") == 0) {
 		/* TRANSLATORS: see the wikipedia page */
 		return gs_details_page_label_widget (self, _("Public domain"),
-			"https://en.wikipedia.org/wiki/Public_domain");
+			/* TRANSLATORS: Replace the link with a version in your language,
+			 * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit */
+			_("https://en.wikipedia.org/wiki/Public_domain"));
 	}
 
 	/* free software, license unspecified */
 	if (g_str_has_prefix (token, "@LicenseRef-free")) {
-		const gchar *url = "https://www.gnu.org/philosophy/free-sw";
+		/* TRANSLATORS: Replace the link with a version in your language,
+		 * e.g. https://www.gnu.org/philosophy/free-sw.de */
+		const gchar *url = _("https://www.gnu.org/philosophy/free-sw");
 		gchar *tmp;
 
 		/* we support putting a custom URL in the
