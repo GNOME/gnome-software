@@ -64,6 +64,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data = { 0 };
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
 
 	/* nothing to re-generate */
@@ -73,6 +74,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	/* cache age of 0 is user-initiated */
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 0);
 
+	data.app = app_dl;
 	data.plugin = plugin;
 
 	/* refresh the metadata */
