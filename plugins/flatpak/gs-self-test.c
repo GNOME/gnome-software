@@ -1280,7 +1280,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* add indirection so we can switch this after install */
-	unlink ("/var/tmp/self-test/repo");
+	g_assert_cmpint (unlink ("/var/tmp/self-test/repo"), ==, 0);
 	g_assert (symlink (repodir1_fn, "/var/tmp/self-test/repo") == 0);
 
 	/* add a remote */
