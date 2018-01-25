@@ -398,10 +398,6 @@ refresh_cache_finished_cb (GObject *object,
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}
-	if (g_cancellable_is_cancelled (monitor->network_cancellable)) {
-		g_clear_object (&monitor->network_cancellable);
-		monitor->network_cancellable = g_cancellable_new ();
-	}
 	get_updates (monitor);
 }
 
@@ -797,8 +793,11 @@ gs_update_monitor_network_changed_cb (GNetworkMonitor *network_monitor,
 {
 	/* cancel an on-going refresh if we're now in a metered connection */
 	if (!g_settings_get_boolean (monitor->settings, "refresh-when-metered") &&
-	    g_network_monitor_get_network_metered (network_monitor))
+	    g_network_monitor_get_network_metered (network_monitor)) {
 		g_cancellable_cancel (monitor->network_cancellable);
+		g_object_unref (monitor->network_cancellable);
+		monitor->network_cancellable = g_cancellable_new ();
+	}
 }
 
 static void
@@ -860,11 +859,11 @@ gs_update_monitor_dispose (GObject *object)
 		monitor->network_changed_handler = 0;
 	}
 
-	if (monitor->cancellable) {
+	if (monitor->cancellable != NULL) {
 		g_cancellable_cancel (monitor->cancellable);
 		g_clear_object (&monitor->cancellable);
 	}
-	if (monitor->network_changed_handler) {
+	if (monitor->network_cancellable != NULL) {
 		g_cancellable_cancel (monitor->network_cancellable);
 		g_clear_object (&monitor->network_cancellable);
 	}
