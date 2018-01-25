@@ -459,16 +459,16 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
 		switch (action) {
 		case GS_PLUGIN_ACTION_INSTALL:
-			/* TRANSLATORS: This is a label on top of the app's progress
-			 * bar to inform the user that the app should be installed soon */
 			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+					     /* TRANSLATORS: This is a label on top of the app's progress
+					      * bar to inform the user that the app should be installed soon */
 					     _("Pending installation…"));
 			break;
 		case GS_PLUGIN_ACTION_UPDATE:
 		case GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD:
-			/* TRANSLATORS: This is a label on top of the app's progress
-			 * bar to inform the user that the app should be updated soon */
 			gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+					     /* TRANSLATORS: This is a label on top of the app's progress
+					      * bar to inform the user that the app should be updated soon */
 					     _("Pending update…"));
 			break;
 		default:
