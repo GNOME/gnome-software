@@ -501,6 +501,11 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 						AS_URL_KIND_HOMEPAGE,
 						pk_details_get_url (details));
 			}
+			if (gs_app_get_description (app) == NULL) {
+				gs_app_set_description (app,
+				                        GS_APP_QUALITY_LOWEST,
+				                        pk_details_get_description (details));
+			}
 			size += pk_details_get_size (details);
 			break;
 		}
