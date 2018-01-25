@@ -422,8 +422,7 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	}
 	if (gs_app_get_version (app) == NULL)
-		gs_app_set_version (app,
-			pk_package_get_version (package));
+		gs_app_set_version (app, pk_package_get_version (package));
 	gs_app_set_name (app,
 			 GS_APP_QUALITY_LOWEST,
 			 pk_package_get_name (package));
