@@ -1134,7 +1134,6 @@ get_main_app_of_related (GsFlatpak *self,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	g_autofree gchar *main_app_name = g_strdup (gs_flatpak_app_get_ref_name (related_app));
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
 	const gchar *ref_name;
 	g_auto(GStrv) app_tokens = NULL;
@@ -1165,7 +1164,6 @@ get_main_app_of_related (GsFlatpak *self,
 						      app_tokens[3],
 						      cancellable,
 						      error);
-
 	if (ref == NULL)
 		return NULL;
 
@@ -1193,6 +1191,7 @@ get_real_app_for_update (GsFlatpak *self,
 				   gs_app_get_unique_id (app),
 				   error_local->message);
 			g_propagate_error (error, g_steal_pointer (&error_local));
+			gs_flatpak_error_convert (error);
 			return NULL;
 		}
 
