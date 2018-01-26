@@ -2580,6 +2580,7 @@ gs_flatpak_get_list_for_install_or_update (GsFlatpak *self,
 	g_autoptr(GPtrArray) xrefs_installed = NULL;
 	g_autoptr(GHashTable) hash_installed = NULL;
 	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autofree gchar *app_ref = NULL;
 
 	/* get the list of installed apps */
 	xrefs_installed = flatpak_installation_list_installed_refs (self->installation,
@@ -2669,7 +2670,9 @@ gs_flatpak_get_list_for_install_or_update (GsFlatpak *self,
 	}
 
 	/* add the original app last unless it's a proxy app */
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+	app_ref = gs_flatpak_app_get_ref_display (app);
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY) &&
+	    !g_hash_table_contains (hash_installed, app_ref))
 		gs_app_list_add (list, app);
 
 	return g_steal_pointer (&list);
