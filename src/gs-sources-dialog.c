@@ -370,11 +370,9 @@ get_resolve_nonfree_sources_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	/* add each */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		gs_app_list_add (dialog->nonfree_source_list, app);
-	}
+	/* save results for later */
+	g_clear_object (&dialog->nonfree_source_list);
+	dialog->nonfree_source_list = g_object_ref (list);
 
 	/* refresh widget */
 	if (dialog->nonfree_search_cnt == 0)
