@@ -40,7 +40,6 @@ struct _GsSourcesDialog
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*button_back;
-	GtkWidget	*button_remove;
 	GtkWidget	*frame_proprietary;
 	GtkWidget	*grid_noresults;
 	GtkWidget	*label2;
@@ -526,58 +525,6 @@ back_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
 }
 
-static void
-app_removed_cb (GObject *source,
-		GAsyncResult *res,
-		gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to remove: %s", error->message);
-	} else {
-		reload_sources (dialog);
-		reload_nonfree_sources (dialog);
-	}
-
-	/* enable button */
-	gtk_widget_set_sensitive (dialog->button_remove, TRUE);
-	gtk_button_set_label (GTK_BUTTON (dialog->button_remove), _("Remove Source"));
-
-	/* allow going back */
-	gtk_widget_set_sensitive (dialog->button_back, TRUE);
-	gtk_widget_set_sensitive (dialog->listbox_apps, TRUE);
-}
-
-static void
-remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
-{
-	GsApp *app;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* disable button */
-	gtk_widget_set_sensitive (dialog->button_remove, FALSE);
-	gtk_button_set_label (GTK_BUTTON (dialog->button_remove), _("Removing…"));
-
-	/* disallow going back */
-	gtk_widget_set_sensitive (dialog->button_back, FALSE);
-	gtk_widget_set_sensitive (dialog->listbox_apps, FALSE);
-
-	/* remove source */
-	app = GS_APP (g_object_get_data (G_OBJECT (dialog->stack), "GsShell::app"));
-	g_debug ("removing source '%s'", gs_app_get_name (app));
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-					 NULL);
-	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-					    dialog->cancellable,
-					    app_removed_cb,
-					    dialog);
-}
-
 static gboolean
 key_press_event (GsSourcesDialog *dialog, GdkEventKey *event)
 {
@@ -729,8 +676,6 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 
 	g_signal_connect (dialog->button_back, "clicked",
 			  G_CALLBACK (back_button_cb), dialog);
-	g_signal_connect (dialog->button_remove, "clicked",
-			  G_CALLBACK (remove_button_cb), dialog);
 
 	/* global keynav and mouse back button */
 	g_signal_connect (dialog, "key-press-event",
@@ -750,7 +695,6 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-sources-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, button_back);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, frame_proprietary);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, grid_noresults);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label2);
