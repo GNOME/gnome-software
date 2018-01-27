@@ -164,9 +164,26 @@ add_source (GtkListBox *listbox, GsApp *app)
 }
 
 static void
-source_modified_cb (GObject *source,
-		    GAsyncResult *res,
-		    gpointer user_data)
+source_installed_cb (GObject *source,
+                     GAsyncResult *res,
+                     gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to install: %s", error->message);
+	} else {
+		reload_sources (dialog);
+		reload_nonfree_sources (dialog);
+	}
+}
+
+static void
+source_removed_cb (GObject *source,
+                   GAsyncResult *res,
+                   gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
@@ -196,7 +213,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 				gs_plugin_loader_job_process_async (dialog->plugin_loader,
 								    plugin_job,
 								    dialog->cancellable,
-								    source_modified_cb,
+								    source_installed_cb,
 								    dialog);
 			}
 		} else {
@@ -208,7 +225,7 @@ gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
 				gs_plugin_loader_job_process_async (dialog->plugin_loader,
 								    plugin_job,
 								    dialog->cancellable,
-								    source_modified_cb,
+								    source_removed_cb,
 								    dialog);
 			}
 		}
