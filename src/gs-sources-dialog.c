@@ -245,7 +245,7 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 	/* TRANSLATORS: nonfree software */
 	g_string_append (str, _("Typically has restrictions on use and "
 				"access to source code."));
-	g_string_append (str, " ");
+	g_string_append (str, "\n");
 
 	/* optional URL */
 	uri = g_settings_get_string (dialog->settings, "nonfree-software-uri");
