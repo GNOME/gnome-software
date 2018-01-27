@@ -343,7 +343,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
 			continue;
 		add_source (GTK_LIST_BOX (dialog->listbox), app);
-		gs_app_list_add (dialog->source_list, app);
 	}
 }
 
@@ -682,7 +681,6 @@ gs_sources_dialog_dispose (GObject *object)
 		g_clear_object (&dialog->cancellable);
 	}
 	g_clear_object (&dialog->settings);
-	g_clear_object (&dialog->source_list);
 	g_clear_object (&dialog->nonfree_source_list);
 
 	G_OBJECT_CLASS (gs_sources_dialog_parent_class)->dispose (object);
@@ -696,7 +694,6 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	dialog->source_list = gs_app_list_new ();
 	dialog->nonfree_source_list = gs_app_list_new ();
 	dialog->cancellable = g_cancellable_new ();
 	dialog->settings = g_settings_new ("org.gnome.software");
