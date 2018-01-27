@@ -584,7 +584,6 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_NOT_INSTALLED,
 					 -1);
 	results = pk_client_what_provides (PK_CLIENT (priv->task),
 	                                   filter,
