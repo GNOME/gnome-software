@@ -765,7 +765,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_INITIALIZE:
 	case GS_PLUGIN_ACTION_DESTROY:
 	case GS_PLUGIN_ACTION_SETUP:
-		if (g_timer_elapsed (timer, NULL) > 0.5f) {
+		if (g_timer_elapsed (timer, NULL) > 1.0f) {
 			g_warning ("plugin %s took %.1f seconds to do %s",
 				   gs_plugin_get_name (plugin),
 				   g_timer_elapsed (timer, NULL),
@@ -773,7 +773,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		}
 		break;
 	default:
-		if (g_timer_elapsed (timer, NULL) > 0.5f) {
+		if (g_timer_elapsed (timer, NULL) > 1.0f) {
 			g_debug ("plugin %s took %.1f seconds to do %s",
 				 gs_plugin_get_name (plugin),
 				 g_timer_elapsed (timer, NULL),
