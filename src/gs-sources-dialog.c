@@ -229,10 +229,8 @@ static void
 gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 {
 	gboolean switch_active;
-	g_autofree gchar *text = NULL;
 	g_autofree gchar *uri = NULL;
 	g_auto(GStrv) nonfree_ids = NULL;
-	g_autoptr(GPtrArray) sources = g_ptr_array_new ();
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* get from GSettings, as some distros want to override this */
@@ -272,15 +270,7 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 		gtk_widget_show (dialog->row_proprietary);
 	}
 	gs_sources_dialog_row_set_comment (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), str->str);
-
-	/* get all the proprietary sources */
-	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
-		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
-		g_ptr_array_add (sources, app);
-	}
-	text = get_source_installed_text (sources);
-	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
-					       text);
+	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), NULL);
 
 	/* if the user opted in then show the switch as active */
 	switch_active = g_settings_get_boolean (dialog->settings, "show-nonfree-software");
