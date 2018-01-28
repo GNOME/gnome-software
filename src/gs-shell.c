@@ -659,7 +659,7 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	    	return GDK_EVENT_PROPAGATE;
 
 	state = event->state;
-	keymap = gdk_keymap_get_default ();
+	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (win));
 	gdk_keymap_add_virtual_modifiers (keymap, &state);
 	state = state & gtk_accelerator_get_default_mod_mask ();
 	is_rtl = gtk_widget_get_direction (button) == GTK_TEXT_DIR_RTL;
