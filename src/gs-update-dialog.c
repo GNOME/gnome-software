@@ -592,8 +592,9 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 }
 
 static gboolean
-key_press_event (GsUpdateDialog *dialog, GdkEventKey *event)
+key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
+	GsUpdateDialog *dialog = (GsUpdateDialog *) widget;
 	GdkKeymap *keymap;
 	GdkModifierType state;
 	gboolean is_rtl;
@@ -602,7 +603,7 @@ key_press_event (GsUpdateDialog *dialog, GdkEventKey *event)
 		return GDK_EVENT_PROPAGATE;
 
 	state = event->state;
-	keymap = gdk_keymap_get_default ();
+	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (widget));
 	gdk_keymap_add_virtual_modifiers (keymap, &state);
 	state = state & gtk_accelerator_get_default_mod_mask ();
 	is_rtl = gtk_widget_get_direction (dialog->button_back) == GTK_TEXT_DIR_RTL;
