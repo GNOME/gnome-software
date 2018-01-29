@@ -1666,9 +1666,9 @@ gs_shell_events_notify_cb (GsPluginLoader *plugin_loader,
 static void
 gs_shell_plugin_event_dismissed_cb (GtkButton *button, GsShell *shell)
 {
-	GPtrArray *events;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	guint i;
+	g_autoptr(GPtrArray) events = NULL;
 
 	/* mark any events currently showing as invalid */
 	events = gs_plugin_loader_get_events (priv->plugin_loader);
