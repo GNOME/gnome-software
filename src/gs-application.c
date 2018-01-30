@@ -55,7 +55,6 @@ struct _GsApplication {
 	GtkApplication	 parent;
 	gboolean	 enable_profile_mode;
 	GCancellable	*cancellable;
-	GtkApplication	*application;
 	GtkCssProvider	*provider;
 	GsPluginLoader	*plugin_loader;
 	gint		 pending_apps;
