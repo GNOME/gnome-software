@@ -40,6 +40,13 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
 }
 
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->client);
+}
+
 gboolean
 gs_plugin_url_to_app (GsPlugin *plugin,
 		      GsAppList *list,
