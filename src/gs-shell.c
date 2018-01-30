@@ -1469,6 +1469,10 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	switch (error->code) {
+	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Unable to open – not supported"));
+		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Failed to install file: "
