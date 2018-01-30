@@ -34,6 +34,7 @@
 #include "gs-common.h"
 
 #define N_TILES 9
+#define FEATURED_ROTATE_TIME 30 /* seconds */
 
 typedef struct
 {
@@ -52,10 +53,11 @@ typedef struct
 	gchar			*category_of_day;
 	GHashTable		*category_hash;		/* id : GsCategory */
 	GSettings		*settings;
+	guint			 featured_rotate_timer_id;
 
 	GtkWidget		*infobar_proprietary;
 	GtkWidget		*label_proprietary;
-	GtkWidget		*bin_featured;
+	GtkWidget		*stack_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
 	GtkWidget		*box_popular_rotating;
@@ -160,7 +162,6 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	guint i;
 	GsApp *app;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
@@ -189,7 +190,7 @@ gs_overview_page_get_popular_cb (GObject *source_object,
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
-	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+	for (guint i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
 		app = gs_app_list_index (list, i);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -362,6 +363,35 @@ out:
 	gs_overview_page_decrement_action_cnt (self);
 }
 
+static gboolean
+gs_overview_page_featured_rotate_cb (gpointer user_data)
+{
+	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
+	GtkWidget *visible_child, *next_child = NULL;
+	g_autoptr(GList) children = NULL;
+	GList *link;
+
+	visible_child = gtk_stack_get_visible_child (GTK_STACK (priv->stack_featured));
+	children = gtk_container_get_children (GTK_CONTAINER (priv->stack_featured));
+	if (children == NULL)
+		return G_SOURCE_CONTINUE;
+
+	for (link = children; link != NULL; link = link->next) {
+		GtkWidget *child = link->data;
+		if (child == visible_child) {
+			if (link->next != NULL)
+				next_child = link->next->data;
+			break;
+		}
+	}
+	if (next_child == NULL)
+		next_child = g_list_nth_data (children, 0);
+	gtk_stack_set_visible_child (GTK_STACK (priv->stack_featured), next_child);
+
+	return G_SOURCE_CONTINUE;
+}
+
 static void
 gs_overview_page_get_featured_cb (GObject *source_object,
                                   GAsyncResult *res,
@@ -370,17 +400,21 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 	GsOverviewPage *self = GS_OVERVIEW_PAGE (user_data);
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkWidget *tile;
-	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	guint i;
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
 	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 		goto out;
 
+	if (priv->featured_rotate_timer_id != 0) {
+		g_source_remove (priv->featured_rotate_timer_id);
+		priv->featured_rotate_timer_id = 0;
+	}
+
 	gtk_widget_hide (priv->featured_heading);
-	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
+	gs_container_remove_all (GTK_CONTAINER (priv->stack_featured));
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s",
 			   error->message);
@@ -398,16 +432,22 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		gs_app_list_randomize (list);
 	}
 
-	/* at the moment, we only care about the first app */
-	app = gs_app_list_index (list, 0);
-	tile = gs_feature_tile_new (app);
-	g_signal_connect (tile, "clicked",
-			  G_CALLBACK (app_tile_clicked), self);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GtkWidget *tile;
 
-	gtk_container_add (GTK_CONTAINER (priv->bin_featured), tile);
+		tile = gs_feature_tile_new (app);
+		g_signal_connect (tile, "clicked",
+				  G_CALLBACK (app_tile_clicked), self);
+
+		gtk_container_add (GTK_CONTAINER (priv->stack_featured), tile);
+	}
 	gtk_widget_show (priv->featured_heading);
 
 	priv->empty = FALSE;
+	priv->featured_rotate_timer_id = g_timeout_add_seconds (FEATURED_ROTATE_TIME,
+								gs_overview_page_featured_rotate_cb,
+								self);
 
 out:
 	gs_overview_page_decrement_action_cnt (self);
@@ -909,7 +949,7 @@ gs_overview_page_setup (GsPage *page,
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->box_overview), adj);
 
 	tile = gs_feature_tile_new (NULL);
-	gtk_container_add (GTK_CONTAINER (priv->bin_featured), tile);
+	gtk_container_add (GTK_CONTAINER (priv->stack_featured), tile);
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_popular_tile_new (NULL);
@@ -970,6 +1010,11 @@ gs_overview_page_dispose (GObject *object)
 	g_clear_pointer (&priv->category_of_day, g_free);
 	g_clear_pointer (&priv->category_hash, g_hash_table_unref);
 
+	if (priv->featured_rotate_timer_id != 0) {
+		g_source_remove (priv->featured_rotate_timer_id);
+		priv->featured_rotate_timer_id = 0;
+	}
+
 	G_OBJECT_CLASS (gs_overview_page_parent_class)->dispose (object);
 }
 
@@ -1009,7 +1054,7 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, infobar_proprietary);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, label_proprietary);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, bin_featured);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, stack_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular_rotating);
