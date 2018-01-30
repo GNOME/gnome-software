@@ -1551,10 +1551,13 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	switch (error->code) {
+	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Failed to install file: not supported"));
+		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install file: "
-					"authentication failed"));
+		g_string_append (str, _("Failed to install file: authentication failed"));
 		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
 		/* TRANSLATORS: failure text for the in-app notification */
@@ -1575,6 +1578,47 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	/* add extra debugging for debug builds */
 	if (gs_shell_show_detailed_error (shell, error))
 		gs_shell_append_detailed_error (shell, str, error);
+
+	/* show in-app notification */
+	gs_shell_show_event_app_notify (shell, str->str, buttons);
+	return TRUE;
+}
+
+static gboolean
+gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
+{
+	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
+	const GError *error = gs_plugin_event_get_error (event);
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	switch (error->code) {
+	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Failed to install: not supported"));
+		break;
+	case GS_PLUGIN_ERROR_NO_SECURITY:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Failed to install: authentication failed"));
+		break;
+	case GS_PLUGIN_ERROR_NO_SPACE:
+		/* TRANSLATORS: failure text for the in-app notification */
+		g_string_append (str, _("Not enough disk space — free up some space "
+					"and try again"));
+		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
+		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		break;
+	default:
+		/* TRANSLATORS: we failed to get a proper error code */
+		g_string_append (str, _("Sorry, something went wrong"));
+		break;
+	}
+	if (str->len == 0)
+		return FALSE;
+
+	/* add extra debugging for debug builds */
+	if (gs_shell_show_detailed_error (shell, error))
+		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1694,8 +1738,9 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ACTION_LAUNCH:
 		return gs_shell_show_event_launch (shell, event);
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
-	case GS_PLUGIN_ACTION_URL_TO_APP:
 		return gs_shell_show_event_file_to_app (shell, event);
+	case GS_PLUGIN_ACTION_URL_TO_APP:
+		return gs_shell_show_event_url_to_app (shell, event);
 	default:
 		break;
 	}
