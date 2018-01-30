@@ -39,7 +39,13 @@
 #include <string.h>
 #include <glib/gstdio.h>
 #include <json-glib/json-glib.h>
+
+#if defined(__linux__)
 #include <sys/sysinfo.h>
+#elif defined(__FreeBSD__)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
 
 #ifdef HAVE_POLKIT
 #include <polkit/polkit.h>
@@ -1036,9 +1042,17 @@ gs_utils_is_low_resolution (GtkWidget *toplevel)
 guint
 gs_utils_get_memory_total (void)
 {
+#if defined(__linux__)
 	struct sysinfo si = { 0 };
 	sysinfo (&si);
 	return si.totalram / MB_IN_BYTES / si.mem_unit;
+#elif defined(__FreeBSD__)
+	unsigned long physmem;
+	sysctl ((int[]){ CTL_HW, HW_PHYSMEM }, 2, &physmem, &(size_t){ sizeof (physmem) }, NULL, 0);
+	return physmem / MB_IN_BYTES;
+#else
+#error "Please implement gs_utils_get_memory_total for your system."
+#endif
 }
 
 /**
