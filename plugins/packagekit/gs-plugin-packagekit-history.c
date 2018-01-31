@@ -122,13 +122,13 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
-	GError *error_local = NULL;
 	guint j;
 	GsApp *app;
 	guint i = 0;
 	GVariantIter iter;
 	GVariant *value;
 	g_autofree const gchar **package_names = NULL;
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GVariant) result = NULL;
 	g_autoptr(GVariant) tuple = NULL;
 
