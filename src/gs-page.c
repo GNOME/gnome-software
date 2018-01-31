@@ -328,7 +328,8 @@ gs_page_purchase_authenticate_cb (GsPage *page,
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
 					 "app", helper->app,
 					 "price", gs_app_get_price (helper->app),
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    helper->cancellable,
@@ -372,6 +373,25 @@ gs_page_app_purchased_cb (GObject *source,
 					      helper);
 			g_steal_pointer (&helper);
 			return;
+		} else if (g_error_matches (error,
+		                            GS_PLUGIN_ERROR,
+		                            GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP)) {
+			const gchar *url;
+
+			/* have we been given a link */
+			url = gs_utils_get_error_value (error);
+			if (url != NULL) {
+				g_autoptr(GError) error_local = NULL;
+				g_debug ("showing link in: %s", error->message);
+				if (!gtk_show_uri_on_window (GTK_WINDOW (gs_shell_get_window (priv->shell)),
+				                             url,
+				                             GDK_CURRENT_TIME,
+				                             &error_local)) {
+					g_warning ("failed to show URI %s: %s",
+					           url, error_local->message);
+				}
+				return;
+			}
 		}
 
 		g_warning ("failed to purchase %s: %s",
@@ -421,7 +441,8 @@ gs_page_install_purchase_response_cb (GtkDialog *dialog,
 					 "app", helper->app,
 					 "price", gs_app_get_price (helper->app),
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-							  GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH,
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH |
+							  GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,

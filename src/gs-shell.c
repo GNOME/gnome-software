@@ -983,6 +983,66 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 }
 
 static gboolean
+gs_shell_show_event_purchase (GsShell *shell, GsPluginEvent *event)
+{
+	GsApp *app = gs_plugin_event_get_app (event);
+	const GError *error = gs_plugin_event_get_error (event);
+	g_autofree gchar *str_app = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
+
+	str_app = gs_shell_get_title_from_app (app);
+	switch (error->code) {
+	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
+	case GS_PLUGIN_ERROR_PIN_REQUIRED:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to purchase %s: "
+					       "authentication was required"),
+					str_app);
+		break;
+	case GS_PLUGIN_ERROR_AUTH_INVALID:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to purchase %s: "
+					       "authentication was invalid"),
+					str_app);
+		break;
+	case GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to purchase %s: "
+					       "no payment method setup"),
+					str_app);
+		break;
+	case GS_PLUGIN_ERROR_PURCHASE_DECLINED:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to purchase %s: "
+					       "payment was declined"),
+					str_app);
+		break;
+	default:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to purchase %s"), str_app);
+		break;
+	}
+	if (str->len == 0)
+		return FALSE;
+
+	/* add extra debugging for debug builds */
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
+
+	/* show in-app notification */
+	gs_shell_show_event_app_notify (shell, str->str, GS_SHELL_EVENT_BUTTON_NONE);
+	return TRUE;
+}
+
+static gboolean
 gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 {
 	GsApp *app = gs_plugin_event_get_app (event);
@@ -1638,6 +1698,8 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	switch (action) {
 	case GS_PLUGIN_ACTION_REFRESH:
 		return gs_shell_show_event_refresh (shell, event);
+	case GS_PLUGIN_ACTION_PURCHASE:
+		return gs_shell_show_event_purchase (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:
 		return gs_shell_show_event_install (shell, event);
 	case GS_PLUGIN_ACTION_UPDATE:
