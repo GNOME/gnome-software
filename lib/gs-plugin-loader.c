@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -344,15 +344,51 @@ gs_plugin_loader_add_event (GsPluginLoader *plugin_loader, GsPluginEvent *event)
 	g_idle_add (gs_plugin_loader_notify_idle_cb, plugin_loader);
 }
 
+static GsPluginEvent *
+gs_plugin_job_to_failed_event (GsPluginJob *plugin_job, const GError *error)
+{
+	GsPluginEvent *event;
+	GsPluginFailureFlags flags;
+	g_autoptr(GError) error_copy = NULL;
+
+	/* invalid */
+	if (error == NULL)
+		return NULL;
+	if (error->domain != GS_PLUGIN_ERROR) {
+		g_warning ("not GsPlugin error %s:%i: %s",
+			   g_quark_to_string (error->domain),
+			   error->code,
+			   error->message);
+		g_set_error_literal (&error_copy,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     error->message);
+	} else {
+		error_copy = g_error_copy (error);
+	}
+
+	/* only add this if the caller is interactive */
+	flags = gs_plugin_job_get_failure_flags (plugin_job);
+	if ((flags & GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS) == 0)
+		return NULL;
+
+	/* create plugin event */
+	event = gs_plugin_event_new ();
+	gs_plugin_event_set_error (event, error_copy);
+	gs_plugin_event_set_action (event, gs_plugin_job_get_action (plugin_job));
+	if (gs_plugin_job_get_app (plugin_job) != NULL)
+		gs_plugin_event_set_app (event, gs_plugin_job_get_app (plugin_job));
+	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+	return event;
+}
+
 /* if the error is worthy of notifying then create a plugin event */
 static void
 gs_plugin_loader_create_event_from_error (GsPluginLoader *plugin_loader,
-					  GsPluginAction action,
+					  GsPluginJob *plugin_job,
 					  GsPlugin *plugin,
-					  GsApp *app,
 					  const GError *error)
 {
-	guint i;
 	g_autoptr(GsApp) origin = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
@@ -370,16 +406,13 @@ gs_plugin_loader_create_event_from_error (GsPluginLoader *plugin_loader,
 	}
 
 	/* create plugin event */
-	event = gs_plugin_event_new ();
-	if (app != NULL)
-		gs_plugin_event_set_app (event, app);
-	gs_plugin_event_set_error (event, error);
-	gs_plugin_event_set_action (event, action);
-	gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+	event = gs_plugin_job_to_failed_event (plugin_job, error);
+	if (event == NULL)
+		return;
 
 	/* can we find a unique ID */
 	split = g_strsplit_set (error->message, "[]: ", -1);
-	for (i = 0; split[i] != NULL; i++) {
+	for (guint i = 0; split[i] != NULL; i++) {
 		if (as_utils_unique_id_valid (split[i])) {
 			origin = gs_plugin_cache_lookup (plugin, split[i]);
 			if (origin != NULL) {
@@ -437,16 +470,13 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	}
 
 	/* create event which is handled by the GsShell */
-	flags = gs_plugin_job_get_failure_flags (helper->plugin_job);
-	if (flags & GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS) {
-		gs_plugin_loader_create_event_from_error (helper->plugin_loader,
-							  gs_plugin_job_get_action (helper->plugin_job),
-							  plugin,
-							  gs_plugin_job_get_app (helper->plugin_job),
-							  error_local);
-	}
+	gs_plugin_loader_create_event_from_error (helper->plugin_loader,
+						  helper->plugin_job,
+						  plugin,
+						  error_local);
 
 	/* abort early to allow main thread to process */
+	flags = gs_plugin_job_get_failure_flags (helper->plugin_job);
 	if (gs_plugin_loader_is_error_fatal (flags, error_local)) {
 		if (error != NULL)
 			*error = g_error_copy (error_local);
@@ -3405,11 +3435,16 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	    action == GS_PLUGIN_ACTION_FILE_TO_APP) {
 		if (gs_app_list_length (list) == 0) {
 			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "no application was created for %s",
-						 str);
+			g_autoptr(GError) error_local = NULL;
+			g_autoptr(GsPluginEvent) event = NULL;
+			g_set_error (&error_local,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no application was created for %s", str);
+			event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local);
+			if (event != NULL)
+				gs_plugin_loader_add_event (plugin_loader, event);
+			g_task_return_error (task, g_steal_pointer (&error_local));
 			return;
 		}
 		if (gs_app_list_length (list) > 1) {
