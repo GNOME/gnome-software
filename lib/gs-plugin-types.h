@@ -92,6 +92,8 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_RESTART_REQUIRED:		A restart is required
  * @GS_PLUGIN_ERROR_AC_POWER_REQUIRED:		AC power is required
  * @GS_PLUGIN_ERROR_TIMED_OUT:			The job timed out
+ * @GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP:		Purchase support not setup
+ * @GS_PLUGIN_ERROR_PURCHASE_DECLINED:		Purchase was declined
  *
  * The failure error types.
  **/
@@ -115,6 +117,8 @@ typedef enum {
 	GS_PLUGIN_ERROR_RESTART_REQUIRED,
 	GS_PLUGIN_ERROR_AC_POWER_REQUIRED,
 	GS_PLUGIN_ERROR_TIMED_OUT,
+	GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP,
+	GS_PLUGIN_ERROR_PURCHASE_DECLINED,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;
@@ -325,6 +329,7 @@ typedef enum {
  * @GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY:		Abort after any plugin error
  * @GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH:		Abort after a authentication error
  * @GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE:		Do not show a message on the console
+ * @GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE:	Abort after a purchase error
  *
  * The failure flags for the plugin action.
  *
@@ -337,6 +342,7 @@ typedef enum {
 #define GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY		((guint64) 1 << 1)
 #define GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH		((guint64) 1 << 2)
 #define GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE		((guint64) 1 << 3)
+#define GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE		((guint64) 1 << 4)
 typedef guint64 GsPluginFailureFlags;
 
 G_END_DECLS

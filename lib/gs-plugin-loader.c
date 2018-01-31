@@ -409,6 +409,12 @@ gs_plugin_loader_is_error_fatal (GsPluginFailureFlags failure_flags,
 		if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID))
 			return TRUE;
 	}
+	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE) {
+		if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP))
+			return TRUE;
+		if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_PURCHASE_DECLINED))
+			return TRUE;
+	}
 	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT))
 		return TRUE;
 	return FALSE;
