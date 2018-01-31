@@ -1667,6 +1667,10 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "ac-power-required";
 	if (error == GS_PLUGIN_ERROR_TIMED_OUT)
 		return "timed-out";
+	if (error == GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP)
+		return "purchase-not-setup";
+	if (error == GS_PLUGIN_ERROR_PURCHASE_DECLINED)
+		return "purchase-declined";
 	return NULL;
 }
 
@@ -1988,6 +1992,8 @@ gs_plugin_failure_flags_to_string (GsPluginFailureFlags failure_flags)
 		g_ptr_array_add (cstrs, "fatal-auth");
 	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE)
 		g_ptr_array_add (cstrs, "no-console");
+	if (failure_flags & GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE)
+		g_ptr_array_add (cstrs, "fatal-purchase");
 	if (cstrs->len == 0)
 		return g_strdup ("none");
 	g_ptr_array_add (cstrs, NULL);
