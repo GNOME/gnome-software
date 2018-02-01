@@ -34,7 +34,6 @@ struct _GsSourcesDialog
 {
 	GtkDialog	 parent_instance;
 	GSettings	*settings;
-	GsAppList	*source_list;
 	GsAppList	*nonfree_source_list;
 
 	GCancellable	*cancellable;
