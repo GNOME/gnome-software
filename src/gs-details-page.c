@@ -1200,17 +1200,14 @@ gs_details_page_app_set_review_cb (GObject *source,
                                    gpointer user_data);
 
 static void
-gs_details_page_authenticate_cb (GtkDialog *dialog,
-                                 GtkResponseType response_type,
+gs_details_page_authenticate_cb (GsPage *page,
+				 gboolean authenticated,
 				 gpointer user_data)
 {
 	g_autoptr(GsDetailsPageReviewHelper) helper = (GsDetailsPageReviewHelper *) user_data;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	if (response_type != GTK_RESPONSE_OK)
+	if (!authenticated)
 		return;
 
 	plugin_job = gs_plugin_job_newv (helper->action,
@@ -1240,20 +1237,12 @@ gs_details_page_app_set_review_cb (GObject *source,
 		if (g_error_matches (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-			g_autoptr(GError) error_local = NULL;
-			GtkWidget *dialog;
-			dialog = gs_auth_dialog_new (helper->self->plugin_loader,
-						     helper->app,
-						     gs_utils_get_error_value (error),
-						     &error_local);
-			if (dialog == NULL) {
-				g_warning ("%s", error_local->message);
-				return;
-			}
-			gs_shell_modal_dialog_present (helper->self->shell, GTK_DIALOG (dialog));
-			g_signal_connect (dialog, "response",
-					  G_CALLBACK (gs_details_page_authenticate_cb),
-					  helper);
+			gs_page_authenticate (GS_PAGE (helper->self),
+					      helper->app,
+					      gs_utils_get_error_value (error),
+					      helper->self->cancellable,
+					      gs_details_page_authenticate_cb,
+					      helper);
 			g_steal_pointer (&helper);
 			return;
 		}
