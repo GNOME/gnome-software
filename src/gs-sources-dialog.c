@@ -46,7 +46,6 @@ struct _GsSourcesDialog
 	GtkWidget	*label_header;
 	GtkWidget	*listbox;
 	GtkWidget	*listbox_apps;
-	GtkWidget	*listbox_proprietary;
 	GtkWidget	*row_proprietary;
 	GtkWidget	*scrolledwindow_apps;
 	GtkWidget	*spinner;
@@ -271,19 +270,6 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 					_("Find out more…"));
 	}
 
-	/* add row */
-	if (dialog->row_proprietary == NULL) {
-		dialog->row_proprietary = gs_sources_dialog_row_new ();
-		g_signal_connect (dialog->row_proprietary, "notify::switch-active",
-				  G_CALLBACK (gs_sources_dialog_switch_active_cb),
-				  dialog);
-		gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
-						/* TRANSLATORS: list header */
-						_("Proprietary Software Sources"));
-		gs_sources_dialog_row_set_switch_enabled (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), TRUE);
-		gtk_list_box_prepend (GTK_LIST_BOX (dialog->listbox_proprietary), dialog->row_proprietary);
-		gtk_widget_show (dialog->row_proprietary);
-	}
 	gs_sources_dialog_row_set_comment (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), str->str);
 	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), NULL);
 
@@ -664,6 +650,14 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 				    list_sort_func,
 				    dialog, NULL);
 
+	/* set up third party repository row */
+	g_signal_connect (dialog->row_proprietary, "notify::switch-active",
+	                  G_CALLBACK (gs_sources_dialog_switch_active_cb),
+	                  dialog);
+	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
+	                                /* TRANSLATORS: list header */
+	                                _("Proprietary Software Sources"));
+	gs_sources_dialog_row_set_switch_enabled (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), TRUE);
 	gs_sources_dialog_refresh_proprietary_apps (dialog);
 
 	os_name = get_os_name ();
@@ -702,7 +696,7 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label_header);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox_apps);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox_proprietary);
+	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, row_proprietary);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, scrolledwindow_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, stack);
