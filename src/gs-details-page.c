@@ -1202,17 +1202,17 @@ gs_details_page_app_set_review_cb (GObject *source,
 static void
 gs_details_page_authenticate_cb (GtkDialog *dialog,
                                  GtkResponseType response_type,
-                                 GsDetailsPageReviewHelper *helper)
+				 gpointer user_data)
 {
+	g_autoptr(GsDetailsPageReviewHelper) helper = (GsDetailsPageReviewHelper *) user_data;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (response_type != GTK_RESPONSE_OK) {
-		gs_details_page_review_helper_free (helper);
+	if (response_type != GTK_RESPONSE_OK)
 		return;
-	}
+
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "app", helper->app,
 					 "review", helper->review,
@@ -1223,6 +1223,7 @@ gs_details_page_authenticate_cb (GtkDialog *dialog,
 					    helper->self->cancellable,
 					    gs_details_page_app_set_review_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -1252,7 +1253,8 @@ gs_details_page_app_set_review_cb (GObject *source,
 			gs_shell_modal_dialog_present (helper->self->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_details_page_authenticate_cb),
-					  g_steal_pointer (&helper));
+					  helper);
+			g_steal_pointer (&helper);
 			return;
 		}
 		g_warning ("failed to set review on %s: %s",

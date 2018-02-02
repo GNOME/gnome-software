@@ -80,18 +80,18 @@ gs_page_app_installed_cb (GObject *source,
 static void
 gs_page_install_authenticate_cb (GtkDialog *dialog,
 				 GtkResponseType response_type,
-				 GsPageHelper *helper)
+				 gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (response_type != GTK_RESPONSE_OK) {
-		gs_page_helper_free (helper);
+	if (response_type != GTK_RESPONSE_OK)
 		return;
-	}
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", helper->app,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
@@ -100,6 +100,7 @@ gs_page_install_authenticate_cb (GtkDialog *dialog,
 					    helper->cancellable,
 					    gs_page_app_installed_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -110,18 +111,18 @@ gs_page_app_removed_cb (GObject *source,
 static void
 gs_page_remove_authenticate_cb (GtkDialog *dialog,
 				GtkResponseType response_type,
-				GsPageHelper *helper)
+				gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (response_type != GTK_RESPONSE_OK) {
-		gs_page_helper_free (helper);
+	if (response_type != GTK_RESPONSE_OK)
 		return;
-	}
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 					 "app", helper->app,
 					 NULL);
@@ -129,6 +130,7 @@ gs_page_remove_authenticate_cb (GtkDialog *dialog,
 					    helper->cancellable,
 					    gs_page_app_removed_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -170,7 +172,8 @@ gs_page_app_installed_cb (GObject *source,
 			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_page_install_authenticate_cb),
-					  g_steal_pointer (&helper));
+					  helper);
+			g_steal_pointer (&helper);
 			return;
 		}
 
@@ -232,7 +235,8 @@ gs_page_app_removed_cb (GObject *source,
 			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_page_remove_authenticate_cb),
-					  g_steal_pointer (&helper));
+					  helper);
+			g_steal_pointer (&helper);
 			return;
 		}
 
@@ -286,18 +290,18 @@ gs_page_app_purchased_cb (GObject *source,
 static void
 gs_page_purchase_authenticate_cb (GtkDialog *dialog,
 				  GtkResponseType response_type,
-				  GsPageHelper *helper)
+				  gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (response_type != GTK_RESPONSE_OK) {
-		gs_page_helper_free (helper);
+	if (response_type != GTK_RESPONSE_OK)
 		return;
-	}
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
 					 "app", helper->app,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
@@ -306,6 +310,7 @@ gs_page_purchase_authenticate_cb (GtkDialog *dialog,
 					    helper->cancellable,
 					    gs_page_app_purchased_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -316,7 +321,6 @@ gs_page_app_purchased_cb (GObject *source,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsPage *page = helper->page;
-	GCancellable *cancellable = helper->cancellable;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -349,7 +353,8 @@ gs_page_app_purchased_cb (GObject *source,
 			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_page_purchase_authenticate_cb),
-					  g_steal_pointer (&helper));
+					  helper);
+			g_steal_pointer (&helper);
 			return;
 		}
 
@@ -372,16 +377,18 @@ gs_page_app_purchased_cb (GObject *source,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,
-					    cancellable,
+					    helper->cancellable,
 					    gs_page_app_installed_cb,
-					    g_steal_pointer (&helper));
+					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
 gs_page_install_purchase_response_cb (GtkDialog *dialog,
 				      gint response,
-				      GsPageHelper *helper)
+				      gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -389,10 +396,9 @@ gs_page_install_purchase_response_cb (GtkDialog *dialog,
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	/* not agreed */
-	if (response != GTK_RESPONSE_OK) {
-		gs_page_helper_free (helper);
+	if (response != GTK_RESPONSE_OK)
 		return;
-	}
+
 	g_debug ("purchase %s", gs_app_get_id (helper->app));
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
@@ -406,6 +412,7 @@ gs_page_install_purchase_response_cb (GtkDialog *dialog,
 					    helper->cancellable,
 					    gs_page_app_purchased_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 void
@@ -484,8 +491,9 @@ gs_page_install_app (GsPage *page,
 static void
 gs_page_update_app_response_cb (GtkDialog *dialog,
 				gint response,
-				GsPageHelper *helper)
+				gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -493,10 +501,9 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	/* not agreed */
-	if (response != GTK_RESPONSE_OK) {
-		gs_page_helper_free (helper);
+	if (response != GTK_RESPONSE_OK)
 		return;
-	}
+
 	g_debug ("update %s", gs_app_get_id (helper->app));
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "app", helper->app,
@@ -506,6 +513,7 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 					    helper->cancellable,
 					    gs_page_app_installed_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 static void
@@ -609,8 +617,9 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 static void
 gs_page_remove_app_response_cb (GtkDialog *dialog,
 				gint response,
-				GsPageHelper *helper)
+				gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -618,10 +627,9 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	/* not agreed */
-	if (response != GTK_RESPONSE_OK) {
-		gs_page_helper_free (helper);
+	if (response != GTK_RESPONSE_OK)
 		return;
-	}
+
 	g_debug ("remove %s", gs_app_get_id (helper->app));
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "app", helper->app,
@@ -630,6 +638,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 					    helper->cancellable,
 					    gs_page_app_removed_cb,
 					    helper);
+	g_steal_pointer (&helper);
 }
 
 void
