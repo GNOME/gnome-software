@@ -740,6 +740,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	/* We only want reviews and ratings for debian packages */
+	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE)
+		return TRUE;
+
 	if ((flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING | GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS)) != 0) {
 		if (!refine_rating (plugin, app, cancellable, error))
 			return FALSE;
