@@ -658,6 +658,35 @@ download_reviews (GsPlugin *plugin, GsApp *app,
 	return parse_reviews (plugin, result, app, cancellable, error);
 }
 
+static gchar*
+determine_package_name ( const gchar* full_package_name )
+{
+	const gchar *package_name;
+
+	// If the app is a flatpak the source package name contains slashes
+	// such as: app/org.gnome.Builder/x86_64/master
+	// If we find four sections of slashes we extract the second part
+	// otherwise we use the whole string or first part
+	if (g_strrstr (full_package_name, "/") != NULL) {
+		gchar **split_package_name = g_strsplit (full_package_name, "/", 4);
+		if (g_strv_length (split_package_name) == 4) {
+			package_name = g_strdup (split_package_name[1]);
+
+			g_debug ("Found package name with slashes, assuming flatpak, changed '%s' to '%s'",
+				 full_package_name, package_name);
+		} else {
+			g_warning ("Found package name with unexpected amount of slashes, taking first part: '%s'",
+				   full_package_name);
+			package_name = g_strdup (split_package_name[0]);
+		}
+		g_strfreev (split_package_name);
+	} else {
+		package_name = full_package_name;
+	}
+
+	return package_name;
+}
+
 static gboolean
 refine_rating (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
 {
@@ -685,7 +714,7 @@ refine_rating (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError *
 		gboolean ret;
 
 		/* Otherwise use the statistics */
-		package_name = g_ptr_array_index (sources, i);
+		package_name = determine_package_name (g_ptr_array_index (sources, i));
 		ret = get_review_stats (plugin, package_name, &rating, review_ratings, error);
 		if (!ret)
 			return FALSE;
@@ -720,7 +749,7 @@ refine_reviews (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError 
 	for (i = 0; i < sources->len; i++) {
 		const gchar *package_name;
 
-		package_name = g_ptr_array_index (sources, i);
+		package_name = determine_package_name (g_ptr_array_index (sources, i));
 		for (j = 0; j < N_PAGES; j++) {
 			gboolean ret;
 
