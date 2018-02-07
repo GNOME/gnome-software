@@ -166,7 +166,7 @@ source_installed_cb (GObject *source,
                      gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
+	GsSourcesDialog *dialog = (GsSourcesDialog *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
@@ -183,7 +183,7 @@ source_removed_cb (GObject *source,
                    gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
+	GsSourcesDialog *dialog = (GsSourcesDialog *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
