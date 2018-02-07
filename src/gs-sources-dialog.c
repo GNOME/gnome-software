@@ -195,13 +195,15 @@ source_removed_cb (GObject *source,
 }
 
 static void
-gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
+gs_sources_dialog_install_remove_proprietary_sources (GsSourcesDialog *dialog)
 {
+	gboolean switch_active = gs_sources_dialog_row_get_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary));
+
 	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
 		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
 
-		/* depending on the new policy, add or remove the source */
-		if (g_settings_get_boolean (dialog->settings, "show-nonfree-software")) {
+		/* add or remove the source */
+		if (switch_active) {
 			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
 				g_autoptr(GsPluginJob) plugin_job = NULL;
 				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
@@ -234,9 +236,19 @@ gs_sources_dialog_switch_active_cb (GsSourcesDialogRow *row,
 				    GParamSpec *pspec,
 				    GsSourcesDialog *dialog)
 {
-	gboolean active = gs_sources_dialog_row_get_switch_active (row);
-	g_settings_set_boolean (dialog->settings, "show-nonfree-software", active);
+	gs_sources_dialog_install_remove_proprietary_sources (dialog);
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
+}
+
+static gboolean
+all_apps_installed (GsAppList *list)
+{
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
+			return FALSE;
+	}
+	return TRUE;
 }
 
 static void
@@ -273,10 +285,11 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 	gs_sources_dialog_row_set_comment (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), str->str);
 	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), NULL);
 
-	/* if the user opted in then show the switch as active */
-	switch_active = g_settings_get_boolean (dialog->settings, "show-nonfree-software");
+	/* if all the apps are installed, show the switch as active */
+	switch_active = all_apps_installed (dialog->nonfree_source_list);
 	gs_sources_dialog_row_set_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
 						 switch_active);
+
 	gtk_widget_show (dialog->frame_proprietary);
 }
 
@@ -590,10 +603,9 @@ settings_changed_cb (GSettings *settings,
 		     const gchar *key,
 		     GsSourcesDialog *dialog)
 {
-	if (g_strcmp0 (key, "show-nonfree-software") == 0 ||
-	    g_strcmp0 (key, "nonfree-software-uri") == 0 ||
+	if (g_strcmp0 (key, "nonfree-software-uri") == 0 ||
 	    g_strcmp0 (key, "nonfree-sources") == 0) {
-		gs_sources_dialog_rescan_proprietary_sources (dialog);
+		gs_sources_dialog_refresh_proprietary_apps (dialog);
 	}
 }
 
