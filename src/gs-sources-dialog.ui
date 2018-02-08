@@ -143,6 +143,12 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="selection_mode">none</property>
+                        <child>
+                          <object class="GsSourcesDialogRow" id="row_proprietary">
+                            <property name="visible">True</property>
+                            <property name="activatable">False</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -480,24 +486,6 @@
                     <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="button_remove">
-                    <property name="label" translatable="yes">Remove Source</property>
-                    <property name="visible">False</property> <!-- Bug #754315 -->
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="margin_top">12</property>
-                    <style>
-                      <class name="destructive-action"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">4</property>
-                    <property name="pack_type">end</property>
                   </packing>
                 </child>
               </object>

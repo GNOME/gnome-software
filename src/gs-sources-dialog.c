@@ -34,12 +34,11 @@ struct _GsSourcesDialog
 {
 	GtkDialog	 parent_instance;
 	GSettings	*settings;
-	GsAppList	*source_list;
+	GsAppList	*nonfree_source_list;
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*button_back;
-	GtkWidget	*button_remove;
 	GtkWidget	*frame_proprietary;
 	GtkWidget	*grid_noresults;
 	GtkWidget	*label2;
@@ -47,32 +46,44 @@ struct _GsSourcesDialog
 	GtkWidget	*label_header;
 	GtkWidget	*listbox;
 	GtkWidget	*listbox_apps;
-	GtkWidget	*listbox_proprietary;
 	GtkWidget	*row_proprietary;
 	GtkWidget	*scrolledwindow_apps;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
+	gint		 nonfree_search_cnt;
 };
 
 G_DEFINE_TYPE (GsSourcesDialog, gs_sources_dialog, GTK_TYPE_DIALOG)
 
+typedef struct {
+	GsSourcesDialog	*dialog;
+	GsPluginAction	 action;
+} InstallData;
+
+static void
+install_data_free (InstallData *install_data)
+{
+	g_clear_object (&install_data->dialog);
+	g_slice_free (InstallData, install_data);
+}
+
 static void reload_sources (GsSourcesDialog *dialog);
+static void reload_nonfree_sources (GsSourcesDialog *dialog);
+static void gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog);
 
 static gchar *
 get_source_installed_text (GPtrArray *sources)
 {
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
-	guint i;
-	guint j;
 	g_autofree gchar *addons_text = NULL;
 	g_autofree gchar *apps_text = NULL;
 
 	/* split up the types */
-	for (j = 0; j < sources->len; j++) {
+	for (guint j = 0; j < sources->len; j++) {
 		GsApp *app = g_ptr_array_index (sources, j);
 		GPtrArray *related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
+		for (guint i = 0; i < related->len; i++) {
 			GsApp *app_tmp = g_ptr_array_index (related, i);
 			switch (gs_app_get_kind (app_tmp)) {
 			case AS_APP_KIND_WEB_APP:
@@ -163,65 +174,65 @@ add_source (GtkListBox *listbox, GsApp *app)
 }
 
 static void
-source_modified_cb (GObject *source,
-		    GAsyncResult *res,
-		    gpointer user_data)
+source_installed_cb (GObject *source,
+                     GAsyncResult *res,
+                     gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
+	InstallData *install_data = (InstallData *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to remove: %s", error->message);
+		const gchar *action_str = gs_plugin_action_to_string (install_data->action);
+
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+			g_debug ("%s cancelled", action_str);
+			goto out;
+		}
+
+		g_warning ("failed to %s: %s", action_str, error->message);
+		gs_sources_dialog_refresh_proprietary_apps (install_data->dialog);
 	} else {
-		reload_sources (dialog);
+		reload_sources (install_data->dialog);
+		reload_nonfree_sources (install_data->dialog);
 	}
+
+out:
+	install_data_free (install_data);
 }
 
 static void
-gs_sources_dialog_rescan_proprietary_sources (GsSourcesDialog *dialog)
+gs_sources_dialog_install_proprietary_sources (GsSourcesDialog *dialog, gboolean install)
 {
-	guint i;
-	g_auto(GStrv) nonfree_ids = NULL;
+	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
+		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
+		GsPluginAction action;
+		InstallData *install_data;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	nonfree_ids = g_settings_get_strv (dialog->settings, "nonfree-sources");
-	for (i = 0; nonfree_ids[i] != NULL; i++) {
-		GsApp *app;
-		g_autofree gchar *unique_id = NULL;
-		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
-							   nonfree_ids[i]);
-		app = gs_app_list_lookup (dialog->source_list, unique_id);
-		if (app == NULL) {
-			g_warning ("no source for %s", unique_id);
+		if (install && gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
+			action = GS_PLUGIN_ACTION_INSTALL;
+		} else if (!install && gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+			action = GS_PLUGIN_ACTION_REMOVE;
+		} else {
+			g_debug ("app in state %s when %s, skipping",
+			         as_app_state_to_string (gs_app_get_state (app)),
+			         install ? "installing" : "removing");
 			continue;
 		}
 
-		/* depending on the new policy, add or remove the source */
-		if (g_settings_get_boolean (dialog->settings, "show-nonfree-software")) {
-			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
-				g_autoptr(GsPluginJob) plugin_job = NULL;
-				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-								 "app", app,
-								 NULL);
-				gs_plugin_loader_job_process_async (dialog->plugin_loader,
-								    plugin_job,
-								    dialog->cancellable,
-								    source_modified_cb,
-								    dialog);
-			}
-		} else {
-			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-				g_autoptr(GsPluginJob) plugin_job = NULL;
-				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-								 "app", app,
-								 NULL);
-				gs_plugin_loader_job_process_async (dialog->plugin_loader,
-								    plugin_job,
-								    dialog->cancellable,
-								    source_modified_cb,
-								    dialog);
-			}
-		}
+		install_data = g_slice_new0 (InstallData);
+		install_data->dialog = g_object_ref (dialog);
+		install_data->action = action;
+
+		plugin_job = gs_plugin_job_newv (action,
+		                                 "app", app,
+		                                 NULL);
+		gs_plugin_loader_job_process_async (dialog->plugin_loader,
+		                                    plugin_job,
+		                                    dialog->cancellable,
+		                                    source_installed_cb,
+		                                    install_data);
 	}
 }
 
@@ -230,25 +241,37 @@ gs_sources_dialog_switch_active_cb (GsSourcesDialogRow *row,
 				    GParamSpec *pspec,
 				    GsSourcesDialog *dialog)
 {
-	gboolean active = gs_sources_dialog_row_get_switch_active (row);
-	g_settings_set_boolean (dialog->settings, "show-nonfree-software", active);
+	gboolean active;
+
+	active = gs_sources_dialog_row_get_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary));
+	gs_sources_dialog_install_proprietary_sources (dialog, active);
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
+}
+
+static gboolean
+all_apps_installed (GsAppList *list)
+{
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
+			return FALSE;
+	}
+	return TRUE;
 }
 
 static void
 gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 {
 	gboolean switch_active;
-	guint i;
-	g_autofree gchar *text = NULL;
 	g_autofree gchar *uri = NULL;
 	g_auto(GStrv) nonfree_ids = NULL;
-	g_autoptr(GPtrArray) sources = g_ptr_array_new ();
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* get from GSettings, as some distros want to override this */
 	nonfree_ids = g_settings_get_strv (dialog->settings, "nonfree-sources");
-	if (g_strv_length (nonfree_ids) == 0) {
+	if (g_strv_length (nonfree_ids) == 0 ||
+	    gs_app_list_length (dialog->nonfree_source_list) == 0) {
+		/* no apps in the nonfree list */
 		gtk_widget_hide (dialog->frame_proprietary);
 		return;
 	}
@@ -256,7 +279,7 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 	/* TRANSLATORS: nonfree software */
 	g_string_append (str, _("Typically has restrictions on use and "
 				"access to source code."));
-	g_string_append (str, " ");
+	g_string_append (str, "\n");
 
 	/* optional URL */
 	uri = g_settings_get_string (dialog->settings, "nonfree-software-uri");
@@ -267,42 +290,14 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 					_("Find out more…"));
 	}
 
-	/* add row */
-	if (dialog->row_proprietary == NULL) {
-		dialog->row_proprietary = gs_sources_dialog_row_new ();
-		g_signal_connect (dialog->row_proprietary, "notify::switch-active",
-				  G_CALLBACK (gs_sources_dialog_switch_active_cb),
-				  dialog);
-		gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
-						/* TRANSLATORS: list header */
-						_("Proprietary Software Sources"));
-		gs_sources_dialog_row_set_switch_enabled (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), TRUE);
-		gtk_list_box_prepend (GTK_LIST_BOX (dialog->listbox_proprietary), dialog->row_proprietary);
-		gtk_widget_show (dialog->row_proprietary);
-	}
 	gs_sources_dialog_row_set_comment (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), str->str);
+	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), NULL);
 
-	/* get all the proprietary sources */
-	for (i = 0; nonfree_ids[i] != NULL; i++) {
-		GsApp *app;
-		g_autofree gchar *unique_id = NULL;
-		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
-							   nonfree_ids[i]);
-		app = gs_app_list_lookup (dialog->source_list, unique_id);
-		if (app == NULL) {
-			g_warning ("no source for %s", unique_id);
-			continue;
-		}
-		g_ptr_array_add (sources, app);
-	}
-	text = get_source_installed_text (sources);
-	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
-					       text);
-
-	/* if the user opted in then show the switch as active */
-	switch_active = g_settings_get_boolean (dialog->settings, "show-nonfree-software");
+	/* if all the apps are installed, show the switch as active */
+	switch_active = all_apps_installed (dialog->nonfree_source_list);
 	gs_sources_dialog_row_set_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
 						 switch_active);
+
 	gtk_widget_show (dialog->frame_proprietary);
 }
 
@@ -311,7 +306,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		GAsyncResult *res,
 		GsSourcesDialog *dialog)
 {
-	guint i;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -349,16 +343,45 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
-	for (i = 0; i < gs_app_list_length (list); i++) {
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
 			continue;
 		add_source (GTK_LIST_BOX (dialog->listbox), app);
-		gs_app_list_add (dialog->source_list, app);
+	}
+}
+
+static void
+get_resolve_nonfree_sources_cb (GsPluginLoader *plugin_loader,
+                                GAsyncResult *res,
+                                GsSourcesDialog *dialog)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	dialog->nonfree_search_cnt--;
+
+	/* get the results */
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED)) {
+			g_debug ("get nonfree-sources cancelled");
+			return;
+		} else {
+			g_warning ("failed to get nonfree-sources: %s", error->message);
+		}
+		return;
 	}
 
+	/* save results for later */
+	g_clear_object (&dialog->nonfree_source_list);
+	dialog->nonfree_source_list = g_object_ref (list);
+
 	/* refresh widget */
-	gs_sources_dialog_refresh_proprietary_apps (dialog);
+	if (dialog->nonfree_search_cnt == 0)
+		gs_sources_dialog_refresh_proprietary_apps (dialog);
 }
 
 static void
@@ -380,6 +403,34 @@ reload_sources (GsSourcesDialog *dialog)
 					    dialog->cancellable,
 					    (GAsyncReadyCallback) get_sources_cb,
 					    dialog);
+}
+
+static void
+reload_nonfree_sources (GsSourcesDialog *dialog)
+{
+	g_auto(GStrv) nonfree_ids = NULL;
+
+	/* search already ongoing */
+	if (dialog->nonfree_search_cnt > 0)
+		return;
+
+	/* resolve any packages from nonfree-sources GSetting */
+	nonfree_ids = g_settings_get_strv (dialog->settings, "nonfree-sources");
+	for (guint i = 0; nonfree_ids[i] != NULL; i++) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
+		                                 "search", nonfree_ids[i],
+		                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+		                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+		                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+		                                 NULL);
+		gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
+		                                    dialog->cancellable,
+		                                    (GAsyncReadyCallback) get_resolve_nonfree_sources_cb,
+		                                    dialog);
+		dialog->nonfree_search_cnt++;
+	}
 }
 
 static void
@@ -442,7 +493,6 @@ list_row_activated_cb (GtkListBox *list_box,
 	GPtrArray *related;
 	GsApp *app;
 	guint cnt_apps = 0;
-	guint i;
 
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "details");
 
@@ -452,7 +502,7 @@ list_row_activated_cb (GtkListBox *list_box,
 	app = GS_APP (g_object_get_data (G_OBJECT (row),
 					 "GsShell::app"));
 	related = gs_app_get_related (app);
-	for (i = 0; i < related->len; i++) {
+	for (guint i = 0; i < related->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (related, i);
 		switch (gs_app_get_kind (app_tmp)) {
 		case AS_APP_KIND_DESKTOP:
@@ -479,57 +529,6 @@ back_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 {
 	gtk_widget_hide (dialog->button_back);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
-}
-
-static void
-app_removed_cb (GObject *source,
-		GAsyncResult *res,
-		gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to remove: %s", error->message);
-	} else {
-		reload_sources (dialog);
-	}
-
-	/* enable button */
-	gtk_widget_set_sensitive (dialog->button_remove, TRUE);
-	gtk_button_set_label (GTK_BUTTON (dialog->button_remove), _("Remove Source"));
-
-	/* allow going back */
-	gtk_widget_set_sensitive (dialog->button_back, TRUE);
-	gtk_widget_set_sensitive (dialog->listbox_apps, TRUE);
-}
-
-static void
-remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
-{
-	GsApp *app;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* disable button */
-	gtk_widget_set_sensitive (dialog->button_remove, FALSE);
-	gtk_button_set_label (GTK_BUTTON (dialog->button_remove), _("Removing…"));
-
-	/* disallow going back */
-	gtk_widget_set_sensitive (dialog->button_back, FALSE);
-	gtk_widget_set_sensitive (dialog->listbox_apps, FALSE);
-
-	/* remove source */
-	app = GS_APP (g_object_get_data (G_OBJECT (dialog->stack), "GsShell::app"));
-	g_debug ("removing source '%s'", gs_app_get_name (app));
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-					 NULL);
-	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-					    dialog->cancellable,
-					    app_removed_cb,
-					    dialog);
 }
 
 static gboolean
@@ -596,6 +595,7 @@ updates_changed_cb (GsPluginLoader *plugin_loader,
                     GsSourcesDialog *dialog)
 {
 	reload_sources (dialog);
+	reload_nonfree_sources (dialog);
 }
 
 static void
@@ -611,11 +611,9 @@ settings_changed_cb (GSettings *settings,
 		     const gchar *key,
 		     GsSourcesDialog *dialog)
 {
-	if (g_strcmp0 (key, "show-nonfree-software") == 0 ||
-	    g_strcmp0 (key, "nonfree-software-uri") == 0 ||
+	if (g_strcmp0 (key, "nonfree-software-uri") == 0 ||
 	    g_strcmp0 (key, "nonfree-sources") == 0) {
 		gs_sources_dialog_refresh_proprietary_apps (dialog);
-		gs_sources_dialog_rescan_proprietary_sources (dialog);
 	}
 }
 
@@ -634,7 +632,7 @@ gs_sources_dialog_dispose (GObject *object)
 		g_clear_object (&dialog->cancellable);
 	}
 	g_clear_object (&dialog->settings);
-	g_clear_object (&dialog->source_list);
+	g_clear_object (&dialog->nonfree_source_list);
 
 	G_OBJECT_CLASS (gs_sources_dialog_parent_class)->dispose (object);
 }
@@ -647,7 +645,7 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	dialog->source_list = gs_app_list_new ();
+	dialog->nonfree_source_list = gs_app_list_new ();
 	dialog->cancellable = g_cancellable_new ();
 	dialog->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (dialog->settings, "changed",
@@ -672,6 +670,14 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 				    list_sort_func,
 				    dialog, NULL);
 
+	/* set up third party repository row */
+	g_signal_connect (dialog->row_proprietary, "notify::switch-active",
+	                  G_CALLBACK (gs_sources_dialog_switch_active_cb),
+	                  dialog);
+	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
+	                                /* TRANSLATORS: list header */
+	                                _("Proprietary Software Sources"));
+	gs_sources_dialog_row_set_switch_enabled (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), TRUE);
 	gs_sources_dialog_refresh_proprietary_apps (dialog);
 
 	os_name = get_os_name ();
@@ -684,8 +690,6 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 
 	g_signal_connect (dialog->button_back, "clicked",
 			  G_CALLBACK (back_button_cb), dialog);
-	g_signal_connect (dialog->button_remove, "clicked",
-			  G_CALLBACK (remove_button_cb), dialog);
 
 	/* global keynav and mouse back button */
 	g_signal_connect (dialog, "key-press-event",
@@ -705,7 +709,6 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-sources-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, button_back);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, frame_proprietary);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, grid_noresults);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label2);
@@ -713,7 +716,7 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label_header);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox_apps);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox_proprietary);
+	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, row_proprietary);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, scrolledwindow_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, stack);
@@ -731,6 +734,7 @@ gs_sources_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 			       NULL);
 	set_plugin_loader (dialog, plugin_loader);
 	reload_sources (dialog);
+	reload_nonfree_sources (dialog);
 
 	return GTK_WIDGET (dialog);
 }
