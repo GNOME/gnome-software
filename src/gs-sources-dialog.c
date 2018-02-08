@@ -69,6 +69,7 @@ install_data_free (InstallData *install_data)
 
 static void reload_sources (GsSourcesDialog *dialog);
 static void reload_nonfree_sources (GsSourcesDialog *dialog);
+static void gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog);
 
 static gchar *
 get_source_installed_text (GPtrArray *sources)
@@ -182,14 +183,21 @@ source_installed_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to %s: %s",
-		           gs_plugin_action_to_string (install_data->action),
-		           error->message);
+		const gchar *action_str = gs_plugin_action_to_string (install_data->action);
+
+		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+			g_debug ("%s cancelled", action_str);
+			goto out;
+		}
+
+		g_warning ("failed to %s: %s", action_str, error->message);
+		gs_sources_dialog_refresh_proprietary_apps (install_data->dialog);
 	} else {
 		reload_sources (install_data->dialog);
 		reload_nonfree_sources (install_data->dialog);
 	}
 
+out:
 	install_data_free (install_data);
 }
 
