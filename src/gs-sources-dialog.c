@@ -55,6 +55,18 @@ struct _GsSourcesDialog
 
 G_DEFINE_TYPE (GsSourcesDialog, gs_sources_dialog, GTK_TYPE_DIALOG)
 
+typedef struct {
+	GsSourcesDialog	*dialog;
+	GsPluginAction	 action;
+} InstallData;
+
+static void
+install_data_free (InstallData *install_data)
+{
+	g_clear_object (&install_data->dialog);
+	g_slice_free (InstallData, install_data);
+}
+
 static void reload_sources (GsSourcesDialog *dialog);
 static void reload_nonfree_sources (GsSourcesDialog *dialog);
 
@@ -166,32 +178,19 @@ source_installed_cb (GObject *source,
                      gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = (GsSourcesDialog *) user_data;
+	InstallData *install_data = (InstallData *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to install: %s", error->message);
+		g_warning ("failed to %s: %s",
+		           gs_plugin_action_to_string (install_data->action),
+		           error->message);
 	} else {
-		reload_sources (dialog);
-		reload_nonfree_sources (dialog);
+		reload_sources (install_data->dialog);
+		reload_nonfree_sources (install_data->dialog);
 	}
-}
 
-static void
-source_removed_cb (GObject *source,
-                   GAsyncResult *res,
-                   gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsSourcesDialog *dialog = (GsSourcesDialog *) user_data;
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to remove: %s", error->message);
-	} else {
-		reload_sources (dialog);
-		reload_nonfree_sources (dialog);
-	}
+	install_data_free (install_data);
 }
 
 static void
@@ -199,33 +198,33 @@ gs_sources_dialog_install_proprietary_sources (GsSourcesDialog *dialog, gboolean
 {
 	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
 		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
+		GsPluginAction action;
+		InstallData *install_data;
+		g_autoptr(GsPluginJob) plugin_job = NULL;
 
-		/* add or remove the source */
-		if (install) {
-			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
-				g_autoptr(GsPluginJob) plugin_job = NULL;
-				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-								 "app", app,
-								 NULL);
-				gs_plugin_loader_job_process_async (dialog->plugin_loader,
-								    plugin_job,
-								    dialog->cancellable,
-								    source_installed_cb,
-								    dialog);
-			}
+		if (install && gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
+			action = GS_PLUGIN_ACTION_INSTALL;
+		} else if (!install && gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+			action = GS_PLUGIN_ACTION_REMOVE;
 		} else {
-			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-				g_autoptr(GsPluginJob) plugin_job = NULL;
-				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-								 "app", app,
-								 NULL);
-				gs_plugin_loader_job_process_async (dialog->plugin_loader,
-								    plugin_job,
-								    dialog->cancellable,
-								    source_removed_cb,
-								    dialog);
-			}
+			g_debug ("app in state %s when %s, skipping",
+			         as_app_state_to_string (gs_app_get_state (app)),
+			         install ? "installing" : "removing");
+			continue;
 		}
+
+		install_data = g_slice_new0 (InstallData);
+		install_data->dialog = g_object_ref (dialog);
+		install_data->action = action;
+
+		plugin_job = gs_plugin_job_newv (action,
+		                                 "app", app,
+		                                 NULL);
+		gs_plugin_loader_job_process_async (dialog->plugin_loader,
+		                                    plugin_job,
+		                                    dialog->cancellable,
+		                                    source_installed_cb,
+		                                    install_data);
 	}
 }
 
