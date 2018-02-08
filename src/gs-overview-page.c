@@ -866,7 +866,13 @@ gs_overview_page_refresh_proprietary (GsOverviewPage *self)
 						uri, _("Find out more…"));
 		}
 		gtk_label_set_markup (GTK_LABEL (priv->label_proprietary), str->str);
+#if 0
 		gtk_widget_set_visible (priv->infobar_proprietary, TRUE);
+#else
+		/* temporarily disabled until we've updated the text and synced
+		 * up with what gnome-initial-setup is doing */
+		gtk_widget_set_visible (priv->infobar_proprietary, FALSE);
+#endif
 	} else {
 		gtk_widget_set_visible (priv->infobar_proprietary, FALSE);
 	}
