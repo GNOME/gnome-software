@@ -195,15 +195,13 @@ source_removed_cb (GObject *source,
 }
 
 static void
-gs_sources_dialog_install_remove_proprietary_sources (GsSourcesDialog *dialog)
+gs_sources_dialog_install_proprietary_sources (GsSourcesDialog *dialog, gboolean install)
 {
-	gboolean switch_active = gs_sources_dialog_row_get_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary));
-
 	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
 		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
 
 		/* add or remove the source */
-		if (switch_active) {
+		if (install) {
 			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
 				g_autoptr(GsPluginJob) plugin_job = NULL;
 				plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
@@ -236,7 +234,10 @@ gs_sources_dialog_switch_active_cb (GsSourcesDialogRow *row,
 				    GParamSpec *pspec,
 				    GsSourcesDialog *dialog)
 {
-	gs_sources_dialog_install_remove_proprietary_sources (dialog);
+	gboolean active;
+
+	active = gs_sources_dialog_row_get_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary));
+	gs_sources_dialog_install_proprietary_sources (dialog, active);
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
 }
 
