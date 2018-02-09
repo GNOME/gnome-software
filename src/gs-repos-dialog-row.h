@@ -19,32 +19,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GS_SOURCES_DIALOG_ROW_H
-#define GS_SOURCES_DIALOG_ROW_H
+#ifndef GS_REPOS_DIALOG_ROW_H
+#define GS_REPOS_DIALOG_ROW_H
 
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SOURCES_DIALOG_ROW (gs_sources_dialog_row_get_type ())
+#define GS_TYPE_REPOS_DIALOG_ROW (gs_repos_dialog_row_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsSourcesDialogRow, gs_sources_dialog_row, GS, SOURCES_DIALOG_ROW, GtkListBoxRow)
+G_DECLARE_FINAL_TYPE (GsReposDialogRow, gs_repos_dialog_row, GS, REPOS_DIALOG_ROW, GtkListBoxRow)
 
-GtkWidget	*gs_sources_dialog_row_new		(void);
-void		 gs_sources_dialog_row_set_switch_enabled (GsSourcesDialogRow	*row,
+GtkWidget	*gs_repos_dialog_row_new		(void);
+void		 gs_repos_dialog_row_set_switch_enabled	(GsReposDialogRow	*row,
 							 gboolean		 switch_enabled);
-void		 gs_sources_dialog_row_set_switch_active (GsSourcesDialogRow	*row,
+void		 gs_repos_dialog_row_set_switch_active	(GsReposDialogRow	*row,
 							 gboolean		 switch_active);
-gboolean	 gs_sources_dialog_row_get_switch_active (GsSourcesDialogRow	*row);
-void		 gs_sources_dialog_row_set_name		(GsSourcesDialogRow	*row,
+gboolean	 gs_repos_dialog_row_get_switch_active	(GsReposDialogRow	*row);
+void		 gs_repos_dialog_row_set_name		(GsReposDialogRow	*row,
 							 const gchar		*name);
-void		 gs_sources_dialog_row_set_comment	(GsSourcesDialogRow	*row,
+void		 gs_repos_dialog_row_set_comment	(GsReposDialogRow	*row,
 							 const gchar		*comment);
-void		 gs_sources_dialog_row_set_description	(GsSourcesDialogRow	*row,
+void		 gs_repos_dialog_row_set_description	(GsReposDialogRow	*row,
 							 const gchar		*description);
 
 G_END_DECLS
 
-#endif /* GS_SOURCES_DIALOG_ROW_H */
+#endif /* GS_REPOS_DIALOG_ROW_H */
 
 /* vim: set noexpandtab: */

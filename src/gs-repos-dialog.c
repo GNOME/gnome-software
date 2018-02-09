@@ -25,12 +25,12 @@
 #include <glib/gi18n.h>
 
 #include "gnome-software-private.h"
-#include "gs-sources-dialog.h"
+#include "gs-repos-dialog.h"
 #include "gs-os-release.h"
-#include "gs-sources-dialog-row.h"
+#include "gs-repos-dialog-row.h"
 #include "gs-common.h"
 
-struct _GsSourcesDialog
+struct _GsReposDialog
 {
 	GtkDialog	 parent_instance;
 	GSettings	*settings;
@@ -53,10 +53,10 @@ struct _GsSourcesDialog
 	gint		 nonfree_search_cnt;
 };
 
-G_DEFINE_TYPE (GsSourcesDialog, gs_sources_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, GTK_TYPE_DIALOG)
 
 typedef struct {
-	GsSourcesDialog	*dialog;
+	GsReposDialog	*dialog;
 	GsPluginAction	 action;
 } InstallData;
 
@@ -67,9 +67,9 @@ install_data_free (InstallData *install_data)
 	g_slice_free (InstallData, install_data);
 }
 
-static void reload_sources (GsSourcesDialog *dialog);
-static void reload_nonfree_sources (GsSourcesDialog *dialog);
-static void gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog);
+static void reload_sources (GsReposDialog *dialog);
+static void reload_nonfree_sources (GsReposDialog *dialog);
+static void gs_repos_dialog_refresh_proprietary_apps (GsReposDialog *dialog);
 
 static gchar *
 get_source_installed_text (GPtrArray *sources)
@@ -152,13 +152,13 @@ add_source (GtkListBox *listbox, GsApp *app)
 	g_autofree gchar *text = NULL;
 	g_autoptr(GPtrArray) sources = g_ptr_array_new ();
 
-	row = gs_sources_dialog_row_new ();
-	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (row),
-	                                gs_app_get_name (app));
+	row = gs_repos_dialog_row_new ();
+	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (row),
+	                              gs_app_get_name (app));
 	g_ptr_array_add (sources, app);
 	text = get_source_installed_text (sources);
-	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (row),
-	                                       text);
+	gs_repos_dialog_row_set_description (GS_REPOS_DIALOG_ROW (row),
+	                                     text);
 
 	g_object_set_data_full (G_OBJECT (row), "GsShell::app",
 				g_object_ref (app),
@@ -191,7 +191,7 @@ source_installed_cb (GObject *source,
 		}
 
 		g_warning ("failed to %s: %s", action_str, error->message);
-		gs_sources_dialog_refresh_proprietary_apps (install_data->dialog);
+		gs_repos_dialog_refresh_proprietary_apps (install_data->dialog);
 	} else {
 		reload_sources (install_data->dialog);
 		reload_nonfree_sources (install_data->dialog);
@@ -202,7 +202,7 @@ out:
 }
 
 static void
-gs_sources_dialog_install_proprietary_sources (GsSourcesDialog *dialog, gboolean install)
+gs_repos_dialog_install_proprietary_sources (GsReposDialog *dialog, gboolean install)
 {
 	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
 		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
@@ -237,14 +237,14 @@ gs_sources_dialog_install_proprietary_sources (GsSourcesDialog *dialog, gboolean
 }
 
 static void
-gs_sources_dialog_switch_active_cb (GsSourcesDialogRow *row,
-				    GParamSpec *pspec,
-				    GsSourcesDialog *dialog)
+gs_repos_dialog_switch_active_cb (GsReposDialogRow *row,
+                                  GParamSpec *pspec,
+                                  GsReposDialog *dialog)
 {
 	gboolean active;
 
-	active = gs_sources_dialog_row_get_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary));
-	gs_sources_dialog_install_proprietary_sources (dialog, active);
+	active = gs_repos_dialog_row_get_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_proprietary));
+	gs_repos_dialog_install_proprietary_sources (dialog, active);
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
 }
 
@@ -260,7 +260,7 @@ all_apps_installed (GsAppList *list)
 }
 
 static void
-gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
+gs_repos_dialog_refresh_proprietary_apps (GsReposDialog *dialog)
 {
 	gboolean switch_active;
 	g_autofree gchar *uri = NULL;
@@ -290,13 +290,13 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 					_("Find out more…"));
 	}
 
-	gs_sources_dialog_row_set_comment (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), str->str);
-	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), NULL);
+	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), str->str);
+	gs_repos_dialog_row_set_description (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), NULL);
 
 	/* if all the apps are installed, show the switch as active */
 	switch_active = all_apps_installed (dialog->nonfree_source_list);
-	gs_sources_dialog_row_set_switch_active (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
-						 switch_active);
+	gs_repos_dialog_row_set_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_proprietary),
+	                                       switch_active);
 
 	gtk_widget_show (dialog->frame_proprietary);
 }
@@ -304,7 +304,7 @@ gs_sources_dialog_refresh_proprietary_apps (GsSourcesDialog *dialog)
 static void
 get_sources_cb (GsPluginLoader *plugin_loader,
 		GAsyncResult *res,
-		GsSourcesDialog *dialog)
+		GsReposDialog *dialog)
 {
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
@@ -354,7 +354,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 static void
 get_resolve_nonfree_sources_cb (GsPluginLoader *plugin_loader,
                                 GAsyncResult *res,
-                                GsSourcesDialog *dialog)
+                                GsReposDialog *dialog)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -381,11 +381,11 @@ get_resolve_nonfree_sources_cb (GsPluginLoader *plugin_loader,
 
 	/* refresh widget */
 	if (dialog->nonfree_search_cnt == 0)
-		gs_sources_dialog_refresh_proprietary_apps (dialog);
+		gs_repos_dialog_refresh_proprietary_apps (dialog);
 }
 
 static void
-reload_sources (GsSourcesDialog *dialog)
+reload_sources (GsReposDialog *dialog)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -406,7 +406,7 @@ reload_sources (GsSourcesDialog *dialog)
 }
 
 static void
-reload_nonfree_sources (GsSourcesDialog *dialog)
+reload_nonfree_sources (GsReposDialog *dialog)
 {
 	g_auto(GStrv) nonfree_ids = NULL;
 
@@ -488,7 +488,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 static void
 list_row_activated_cb (GtkListBox *list_box,
 		       GtkListBoxRow *row,
-		       GsSourcesDialog *dialog)
+		       GsReposDialog *dialog)
 {
 	GPtrArray *related;
 	GsApp *app;
@@ -525,7 +525,7 @@ list_row_activated_cb (GtkListBox *list_box,
 }
 
 static void
-back_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
+back_button_cb (GtkWidget *widget, GsReposDialog *dialog)
 {
 	gtk_widget_hide (dialog->button_back);
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
@@ -534,7 +534,7 @@ back_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 static gboolean
 key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 {
-	GsSourcesDialog *dialog = (GsSourcesDialog *) widget;
+	GsReposDialog *dialog = (GsReposDialog *) widget;
 	GdkKeymap *keymap;
 	GdkModifierType state;
 	gboolean is_rtl;
@@ -559,7 +559,7 @@ key_press_event (GtkWidget *widget, GdkEventKey *event, gpointer user_data)
 }
 
 static gboolean
-button_press_event (GsSourcesDialog *dialog, GdkEventButton *event)
+button_press_event (GsReposDialog *dialog, GdkEventButton *event)
 {
 	/* Mouse hardware back button is 8 */
 	if (event->button != 8)
@@ -592,14 +592,14 @@ get_os_name (void)
 
 static void
 updates_changed_cb (GsPluginLoader *plugin_loader,
-                    GsSourcesDialog *dialog)
+                    GsReposDialog *dialog)
 {
 	reload_sources (dialog);
 	reload_nonfree_sources (dialog);
 }
 
 static void
-set_plugin_loader (GsSourcesDialog *dialog, GsPluginLoader *plugin_loader)
+set_plugin_loader (GsReposDialog *dialog, GsPluginLoader *plugin_loader)
 {
 	dialog->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (dialog->plugin_loader, "updates-changed",
@@ -609,18 +609,18 @@ set_plugin_loader (GsSourcesDialog *dialog, GsPluginLoader *plugin_loader)
 static void
 settings_changed_cb (GSettings *settings,
 		     const gchar *key,
-		     GsSourcesDialog *dialog)
+		     GsReposDialog *dialog)
 {
 	if (g_strcmp0 (key, "nonfree-software-uri") == 0 ||
 	    g_strcmp0 (key, "nonfree-sources") == 0) {
-		gs_sources_dialog_refresh_proprietary_apps (dialog);
+		gs_repos_dialog_refresh_proprietary_apps (dialog);
 	}
 }
 
 static void
-gs_sources_dialog_dispose (GObject *object)
+gs_repos_dialog_dispose (GObject *object)
 {
-	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (object);
+	GsReposDialog *dialog = GS_REPOS_DIALOG (object);
 
 	if (dialog->plugin_loader != NULL) {
 		g_signal_handlers_disconnect_by_func (dialog->plugin_loader, updates_changed_cb, dialog);
@@ -634,11 +634,11 @@ gs_sources_dialog_dispose (GObject *object)
 	g_clear_object (&dialog->settings);
 	g_clear_object (&dialog->nonfree_source_list);
 
-	G_OBJECT_CLASS (gs_sources_dialog_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_repos_dialog_parent_class)->dispose (object);
 }
 
 static void
-gs_sources_dialog_init (GsSourcesDialog *dialog)
+gs_repos_dialog_init (GsReposDialog *dialog)
 {
 	g_autofree gchar *label_text = NULL;
 	g_autofree gchar *os_name = NULL;
@@ -672,13 +672,13 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 
 	/* set up third party repository row */
 	g_signal_connect (dialog->row_proprietary, "notify::switch-active",
-	                  G_CALLBACK (gs_sources_dialog_switch_active_cb),
+	                  G_CALLBACK (gs_repos_dialog_switch_active_cb),
 	                  dialog);
-	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary),
-	                                /* TRANSLATORS: list header */
-	                                _("Proprietary Software Sources"));
-	gs_sources_dialog_row_set_switch_enabled (GS_SOURCES_DIALOG_ROW (dialog->row_proprietary), TRUE);
-	gs_sources_dialog_refresh_proprietary_apps (dialog);
+	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_proprietary),
+	                              /* TRANSLATORS: list header */
+	                              _("Proprietary Software Sources"));
+	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), TRUE);
+	gs_repos_dialog_refresh_proprietary_apps (dialog);
 
 	os_name = get_os_name ();
 	/* TRANSLATORS: This is the text displayed in the Software Sources
@@ -699,35 +699,35 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 }
 
 static void
-gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
+gs_repos_dialog_class_init (GsReposDialogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->dispose = gs_sources_dialog_dispose;
+	object_class->dispose = gs_repos_dialog_dispose;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-sources-dialog.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, button_back);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, frame_proprietary);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, grid_noresults);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label2);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label_empty);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, label_header);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, listbox_apps);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, row_proprietary);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, scrolledwindow_apps);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, spinner);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, button_back);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame_proprietary);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, grid_noresults);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label2);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, listbox);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, listbox_apps);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, row_proprietary);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, scrolledwindow_apps);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
 }
 
 GtkWidget *
-gs_sources_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
+gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 {
-	GsSourcesDialog *dialog;
+	GsReposDialog *dialog;
 
-	dialog = g_object_new (GS_TYPE_SOURCES_DIALOG,
+	dialog = g_object_new (GS_TYPE_REPOS_DIALOG,
 			       "use-header-bar", TRUE,
 			       "transient-for", parent,
 			       "modal", TRUE,

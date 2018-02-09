@@ -21,9 +21,9 @@
 
 #include "config.h"
 
-#include "gs-sources-dialog-row.h"
+#include "gs-repos-dialog-row.h"
 
-struct _GsSourcesDialogRow
+struct _GsReposDialogRow
 {
 	GtkListBoxRow	 parent_instance;
 
@@ -39,31 +39,31 @@ enum {
 	PROP_LAST
 };
 
-G_DEFINE_TYPE (GsSourcesDialogRow, gs_sources_dialog_row, GTK_TYPE_LIST_BOX_ROW)
+G_DEFINE_TYPE (GsReposDialogRow, gs_repos_dialog_row, GTK_TYPE_LIST_BOX_ROW)
 
 void
-gs_sources_dialog_row_set_switch_enabled (GsSourcesDialogRow *row,
-				       gboolean switch_enabled)
+gs_repos_dialog_row_set_switch_enabled (GsReposDialogRow *row,
+                                        gboolean switch_enabled)
 {
 	gtk_widget_set_visible (row->active_switch, switch_enabled);
 }
 
 void
-gs_sources_dialog_row_set_switch_active (GsSourcesDialogRow *row,
-					 gboolean switch_active)
+gs_repos_dialog_row_set_switch_active (GsReposDialogRow *row,
+                                       gboolean switch_active)
 {
 	gtk_switch_set_active (GTK_SWITCH (row->active_switch), switch_active);
 }
 
 void
-gs_sources_dialog_row_set_name (GsSourcesDialogRow *row, const gchar *name)
+gs_repos_dialog_row_set_name (GsReposDialogRow *row, const gchar *name)
 {
 	gtk_label_set_text (GTK_LABEL (row->name_label), name);
 	gtk_widget_set_visible (row->name_label, name != NULL);
 }
 
 void
-gs_sources_dialog_row_set_comment (GsSourcesDialogRow *row, const gchar *comment)
+gs_repos_dialog_row_set_comment (GsReposDialogRow *row, const gchar *comment)
 {
 	gtk_label_set_markup (GTK_LABEL (row->comment_label), comment);
 	gtk_widget_set_visible (row->comment_label, comment != NULL);
@@ -79,37 +79,37 @@ gs_sources_dialog_row_set_comment (GsSourcesDialogRow *row, const gchar *comment
 }
 
 void
-gs_sources_dialog_row_set_description (GsSourcesDialogRow *row, const gchar *description)
+gs_repos_dialog_row_set_description (GsReposDialogRow *row, const gchar *description)
 {
 	gtk_label_set_markup (GTK_LABEL (row->description_label), description);
 	gtk_widget_set_visible (row->description_label, description != NULL);
 }
 
 static void
-gs_sources_dialog_switch_active_cb (GtkSwitch *active_switch,
-				    GParamSpec *pspec,
-				    GsSourcesDialogRow *row)
+gs_repos_dialog_switch_active_cb (GtkSwitch *active_switch,
+                                  GParamSpec *pspec,
+                                  GsReposDialogRow *row)
 {
 	g_object_notify (G_OBJECT (row), "switch-active");
 }
 
 gboolean
-gs_sources_dialog_row_get_switch_active (GsSourcesDialogRow *row)
+gs_repos_dialog_row_get_switch_active (GsReposDialogRow *row)
 {
 	return gtk_switch_get_active (GTK_SWITCH (row->active_switch));
 }
 
 static void
-gs_sources_dialog_row_get_property (GObject *object,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *pspec)
+gs_repos_dialog_row_get_property (GObject *object,
+                                  guint prop_id,
+                                  GValue *value,
+                                  GParamSpec *pspec)
 {
-	GsSourcesDialogRow *row = GS_SOURCES_DIALOG_ROW (object);
+	GsReposDialogRow *row = GS_REPOS_DIALOG_ROW (object);
 	switch (prop_id) {
 	case PROP_SWITCH_ACTIVE:
 		g_value_set_boolean (value,
-				     gs_sources_dialog_row_get_switch_active (row));
+				     gs_repos_dialog_row_get_switch_active (row));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -118,38 +118,38 @@ gs_sources_dialog_row_get_property (GObject *object,
 }
 
 static void
-gs_sources_dialog_row_init (GsSourcesDialogRow *row)
+gs_repos_dialog_row_init (GsReposDialogRow *row)
 {
 	gtk_widget_init_template (GTK_WIDGET (row));
 	g_signal_connect (row->active_switch, "notify::active",
-			  G_CALLBACK (gs_sources_dialog_switch_active_cb), row);
+			  G_CALLBACK (gs_repos_dialog_switch_active_cb), row);
 }
 
 static void
-gs_sources_dialog_row_class_init (GsSourcesDialogRowClass *klass)
+gs_repos_dialog_row_class_init (GsReposDialogRowClass *klass)
 {
 	GParamSpec *pspec;
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->get_property = gs_sources_dialog_row_get_property;
+	object_class->get_property = gs_repos_dialog_row_get_property;
 
 	pspec = g_param_spec_string ("switch-active", NULL, NULL, FALSE,
 				     G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_SWITCH_ACTIVE, pspec);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-sources-dialog-row.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog-row.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialogRow, active_switch);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialogRow, name_label);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialogRow, comment_label);
-	gtk_widget_class_bind_template_child (widget_class, GsSourcesDialogRow, description_label);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialogRow, active_switch);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialogRow, name_label);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialogRow, comment_label);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialogRow, description_label);
 }
 
 GtkWidget *
-gs_sources_dialog_row_new (void)
+gs_repos_dialog_row_new (void)
 {
-	return g_object_new (GS_TYPE_SOURCES_DIALOG_ROW, NULL);
+	return g_object_new (GS_TYPE_REPOS_DIALOG_ROW, NULL);
 }
 
 /* vim: set noexpandtab: */

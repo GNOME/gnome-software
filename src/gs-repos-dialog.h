@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GS_SOURCES_DIALOG_H
-#define GS_SOURCES_DIALOG_H
+#ifndef GS_REPOS_DIALOG_H
+#define GS_REPOS_DIALOG_H
 
 #include <gtk/gtk.h>
 
@@ -28,15 +28,15 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SOURCES_DIALOG (gs_sources_dialog_get_type ())
+#define GS_TYPE_REPOS_DIALOG (gs_repos_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsSourcesDialog, gs_sources_dialog, GS, SOURCES_DIALOG, GtkDialog)
+G_DECLARE_FINAL_TYPE (GsReposDialog, gs_repos_dialog, GS, REPOS_DIALOG, GtkDialog)
 
-GtkWidget	*gs_sources_dialog_new		(GtkWindow	*parent,
+GtkWidget	*gs_repos_dialog_new		(GtkWindow	*parent,
 						 GsPluginLoader	*plugin_loader);
 
 G_END_DECLS
 
-#endif /* GS_SOURCES_DIALOG_H */
+#endif /* GS_REPOS_DIALOG_H */
 
 /* vim: set noexpandtab: */

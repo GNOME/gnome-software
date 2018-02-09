@@ -36,7 +36,7 @@
 #include "gs-updates-page.h"
 #include "gs-category-page.h"
 #include "gs-extras-page.h"
-#include "gs-sources-dialog.h"
+#include "gs-repos-dialog.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
@@ -1916,7 +1916,7 @@ gs_shell_show_sources (GsShell *shell)
 	if (g_spawn_command_line_async ("software-properties-gtk", NULL))
 		return;
 
-	dialog = gs_sources_dialog_new (priv->main_window, priv->plugin_loader);
+	dialog = gs_repos_dialog_new (priv->main_window, priv->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 
 	/* just destroy */
