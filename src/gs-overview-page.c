@@ -903,7 +903,7 @@ gs_overview_page_setup (GsPage *page,
 	/* create info bar if not already dismissed in initial-setup */
 	gs_overview_page_refresh_proprietary (self);
 	gtk_info_bar_add_button (GTK_INFO_BAR (priv->infobar_proprietary),
-				 /* TRANSLATORS: button to turn on proprietary software sources */
+				 /* TRANSLATORS: button to turn on proprietary software repositories */
 				 _("Enable"), GTK_RESPONSE_YES);
 	g_signal_connect (priv->infobar_proprietary, "response",
 			  G_CALLBACK (gs_overview_page_proprietary_response_cb), self);

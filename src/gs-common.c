@@ -211,7 +211,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	} else {
 		g_string_append_printf (title, "<b>%s</b>",
 					/* TRANSLATORS: window title */
-					_("Enable Third-Party Software Source?"));
+					_("Enable Third-Party Software Repository?"));
 	}
 	dialog = gtk_message_dialog_new (parent,
 					 GTK_DIALOG_MODAL,
@@ -227,7 +227,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
 					 * 1. Application name, e.g. "Firefox"
-					 * 2. Software source name, e.g. fedora-optional
+					 * 2. Software repository name, e.g. fedora-optional
 					 */
 					_("%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">"
 					  "free and open source software</a>, "
@@ -238,7 +238,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
 					 * 1. Application name, e.g. "Firefox"
-					 * 2. Software source name, e.g. fedora-optional */
+					 * 2. Software repository name, e.g. fedora-optional */
 					_("%s is provided by “%s”."),
 					gs_app_get_name (app),
 					origin_url);
@@ -248,8 +248,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	if (!already_enabled) {
 		g_string_append (body, " ");
 		g_string_append (body,
-				/* TRANSLATORS: a software source is a repo */
-				_("This software source must be "
+				_("This software repository must be "
 				  "enabled to continue installation."));
 	}
 

@@ -327,7 +327,7 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 			/* TRANSLATORS: this is a button that allows the apps to
 			 * be installed.
 			 * The ellipsis indicates that further steps are required,
-			 * e.g. enabling software sources or the like */
+			 * e.g. enabling software repositories or the like */
 			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install…"));
 		}
 		break;

@@ -104,39 +104,39 @@ get_source_installed_text (GPtrArray *sources)
 
 	/* nothing! */
 	if (cnt_apps == 0 && cnt_addon == 0) {
-		/* TRANSLATORS: This string describes a software source that
+		/* TRANSLATORS: This string describes a software repository that
 		   has no software installed from it. */
 		return g_strdup (_("No applications or addons installed; other software might still be"));
 	}
 	if (cnt_addon == 0) {
 		/* TRANSLATORS: This string is used to construct the 'X applications
-		   installed' sentence, describing a software source. */
+		   installed' sentence, describing a software repository. */
 		return g_strdup_printf (ngettext ("%u application installed",
 						  "%u applications installed",
 						  cnt_apps), cnt_apps);
 	}
 	if (cnt_apps == 0) {
 		/* TRANSLATORS: This string is used to construct the 'X add-ons
-		   installed' sentence, describing a software source. */
+		   installed' sentence, describing a software repository. */
 		return g_strdup_printf (ngettext ("%u add-on installed",
 						  "%u add-ons installed",
 						  cnt_addon), cnt_addon);
 	}
 
 	/* TRANSLATORS: This string is used to construct the 'X applications
-	   and y add-ons installed' sentence, describing a software source.
+	   and y add-ons installed' sentence, describing a software repository.
 	   The correct form here depends on the number of applications. */
 	apps_text = g_strdup_printf (ngettext ("%u application",
 					       "%u applications",
 					       cnt_apps), cnt_apps);
 	/* TRANSLATORS: This string is used to construct the 'X applications
-	   and y add-ons installed' sentence, describing a software source.
+	   and y add-ons installed' sentence, describing a software repository.
 	   The correct form here depends on the number of add-ons. */
 	addons_text = g_strdup_printf (ngettext ("%u add-on",
 						 "%u add-ons",
 						 cnt_addon), cnt_addon);
 	/* TRANSLATORS: This string is used to construct the 'X applications
-	   and y add-ons installed' sentence, describing a software source.
+	   and y add-ons installed' sentence, describing a software repository.
 	   The correct form here depends on the total number of
 	   applications and add-ons. */
 	return g_strdup_printf (ngettext ("%s and %s installed",
@@ -394,7 +394,7 @@ reload_sources (GsReposDialog *dialog)
 	gtk_widget_hide (dialog->button_back);
 	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
 
-	/* get the list of non-core software sources */
+	/* get the list of non-core software repositories */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED,
@@ -676,15 +676,15 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	                  dialog);
 	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_proprietary),
 	                              /* TRANSLATORS: list header */
-	                              _("Proprietary Software Sources"));
+	                              _("Proprietary Software Repositories"));
 	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), TRUE);
 	gs_repos_dialog_refresh_proprietary_apps (dialog);
 
 	os_name = get_os_name ();
-	/* TRANSLATORS: This is the text displayed in the Software Sources
-	   dialog when no OS-provided software sources are enabled. %s gets
+	/* TRANSLATORS: This is the text displayed in the Software Repositories
+	   dialog when no OS-provided software repositories are enabled. %s gets
 	   replaced by the name of the actual distro, e.g. Fedora. */
-	label_text = g_strdup_printf (_("Software sources can be downloaded from the internet. They give you access to additional software that is not provided by %s."),
+	label_text = g_strdup_printf (_("Software repositories can be downloaded from the internet. They give you access to additional software that is not provided by %s."),
 	                              os_name);
 	gtk_label_set_text (GTK_LABEL (dialog->label_empty), label_text);
 
