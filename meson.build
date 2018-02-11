@@ -123,9 +123,9 @@ if get_option('enable-gnome-desktop')
   conf.set('HAVE_GNOME_DESKTOP', 1)
 endif
 
-if get_option('enable-gtkspell')
-  gtkspell = dependency('gtkspell3-3.0')
-  conf.set('HAVE_GTKSPELL', 1)
+if get_option('enable-gspell')
+  gspell = dependency('gspell-1')
+  conf.set('HAVE_GSPELL', 1)
 endif
 
 if get_option('enable-polkit')
