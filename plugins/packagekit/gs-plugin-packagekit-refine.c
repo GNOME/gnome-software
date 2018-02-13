@@ -312,6 +312,8 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 			g_ptr_array_add (package_ids, g_strdup (package_id));
 		}
 	}
+	if (package_ids->len == 0)
+		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
 	data.plugin = plugin;
