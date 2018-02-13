@@ -248,30 +248,11 @@ static void
 refresh_third_party_repo (GsReposDialog *dialog)
 {
 	gboolean switch_active;
-	g_autofree gchar *uri = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	if (dialog->third_party_repo == NULL) {
 		gtk_widget_hide (dialog->frame_third_party);
 		return;
 	}
-
-	/* TRANSLATORS: nonfree software */
-	g_string_append (str, _("Typically has restrictions on use and "
-				"access to source code."));
-	g_string_append (str, "\n");
-
-	/* optional URL */
-	uri = g_settings_get_string (dialog->settings, "nonfree-software-uri");
-	if (uri != NULL) {
-		g_string_append_printf (str, "<a href=\"%s\">%s</a>", uri,
-					/* TRANSLATORS: this is the clickable
-					 * link on the proprietary info bar */
-					_("Find out more…"));
-	}
-
-	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (dialog->row_third_party), str->str);
-	gs_repos_dialog_row_set_description (GS_REPOS_DIALOG_ROW (dialog->row_third_party), NULL);
 
 	/* if the third party repo package is installed, show the switch as active */
 	switch_active = (gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_INSTALLED);
@@ -620,11 +601,15 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 {
 	g_autofree gchar *label_text = NULL;
 	g_autofree gchar *os_name = NULL;
+	g_autofree gchar *uri = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	dialog->cancellable = g_cancellable_new ();
 	dialog->settings = g_settings_new ("org.gnome.software");
+
+	os_name = get_os_name ();
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->listbox),
 				      list_header_func,
@@ -648,13 +633,31 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	g_signal_connect (dialog->row_third_party, "notify::switch-active",
 	                  G_CALLBACK (third_party_switch_switch_active_cb),
 	                  dialog);
-	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
-	                              /* TRANSLATORS: list header */
-	                              _("Proprietary Software Repositories"));
 	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_third_party), TRUE);
+	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
+	                              /* TRANSLATORS: info bar title in the software repositories dialog */
+	                              _("Third Party Repositories"));
+	g_string_printf (str,
+	                 /* TRANSLATORS: this is the third party repositories info bar.
+	                    %s gets replaced by the distro name, e.g. Fedora */
+	                 _("Access additional software that is not supplied by %s through select third party repositories."),
+	                 os_name);
+	g_string_append (str, " ");
+	g_string_append (str,
+	                 /* TRANSLATORS: this is the third party repositories info bar. */
+	                 _("Some of this software is proprietary and therefore has restrictions on use and access to source code."));
+	/* optional URL */
+	uri = g_settings_get_string (dialog->settings, "nonfree-software-uri");
+	if (uri != NULL && uri[0] != '\0') {
+		g_string_append_printf (str, " <a href=\"%s\">%s</a>", uri,
+					/* TRANSLATORS: this is the clickable
+					 * link on the third party repositories info bar */
+					_("Find out more…"));
+	}
+	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (dialog->row_third_party), str->str);
+	gs_repos_dialog_row_set_description (GS_REPOS_DIALOG_ROW (dialog->row_third_party), NULL);
 	refresh_third_party_repo (dialog);
 
-	os_name = get_os_name ();
 	/* TRANSLATORS: This is the text displayed in the Software Repositories
 	   dialog when no OS-provided software repositories are enabled. %s gets
 	   replaced by the name of the actual distro, e.g. Fedora. */
