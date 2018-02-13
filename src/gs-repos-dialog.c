@@ -34,23 +34,22 @@ struct _GsReposDialog
 {
 	GtkDialog	 parent_instance;
 	GSettings	*settings;
-	GsAppList	*nonfree_source_list;
+	GsApp		*third_party_repo;
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*button_back;
-	GtkWidget	*frame_proprietary;
+	GtkWidget	*frame_third_party;
 	GtkWidget	*grid_noresults;
 	GtkWidget	*label2;
 	GtkWidget	*label_empty;
 	GtkWidget	*label_header;
 	GtkWidget	*listbox;
 	GtkWidget	*listbox_apps;
-	GtkWidget	*row_proprietary;
+	GtkWidget	*row_third_party;
 	GtkWidget	*scrolledwindow_apps;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
-	gint		 nonfree_search_cnt;
 };
 
 G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, GTK_TYPE_DIALOG)
@@ -68,8 +67,8 @@ install_data_free (InstallData *install_data)
 }
 
 static void reload_sources (GsReposDialog *dialog);
-static void reload_nonfree_sources (GsReposDialog *dialog);
-static void gs_repos_dialog_refresh_proprietary_apps (GsReposDialog *dialog);
+static void reload_third_party_repo (GsReposDialog *dialog);
+static void refresh_third_party_repo (GsReposDialog *dialog);
 
 static gchar *
 get_source_installed_text (GPtrArray *sources)
@@ -174,9 +173,9 @@ add_source (GtkListBox *listbox, GsApp *app)
 }
 
 static void
-source_installed_cb (GObject *source,
-                     GAsyncResult *res,
-                     gpointer user_data)
+third_party_repo_installed_cb (GObject *source,
+                               GAsyncResult *res,
+                               gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	InstallData *install_data = (InstallData *) user_data;
@@ -186,15 +185,15 @@ source_installed_cb (GObject *source,
 		const gchar *action_str = gs_plugin_action_to_string (install_data->action);
 
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
-			g_debug ("%s cancelled", action_str);
+			g_debug ("third party repo %s cancelled", action_str);
 			goto out;
 		}
 
-		g_warning ("failed to %s: %s", action_str, error->message);
-		gs_repos_dialog_refresh_proprietary_apps (install_data->dialog);
+		g_warning ("failed to %s third party repo: %s", action_str, error->message);
+		refresh_third_party_repo (install_data->dialog);
 	} else {
 		reload_sources (install_data->dialog);
-		reload_nonfree_sources (install_data->dialog);
+		reload_third_party_repo (install_data->dialog);
 	}
 
 out:
@@ -202,77 +201,58 @@ out:
 }
 
 static void
-gs_repos_dialog_install_proprietary_sources (GsReposDialog *dialog, gboolean install)
+install_third_party_repo (GsReposDialog *dialog, gboolean install)
 {
-	for (guint i = 0; i < gs_app_list_length (dialog->nonfree_source_list); i++) {
-		GsApp *app = gs_app_list_index (dialog->nonfree_source_list, i);
-		GsPluginAction action;
-		InstallData *install_data;
-		g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsPluginAction action;
+	InstallData *install_data;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-		if (install && gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
-			action = GS_PLUGIN_ACTION_INSTALL;
-		} else if (!install && gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-			action = GS_PLUGIN_ACTION_REMOVE;
-		} else {
-			g_debug ("app in state %s when %s, skipping",
-			         as_app_state_to_string (gs_app_get_state (app)),
-			         install ? "installing" : "removing");
-			continue;
-		}
-
-		install_data = g_slice_new0 (InstallData);
-		install_data->dialog = g_object_ref (dialog);
-		install_data->action = action;
-
-		plugin_job = gs_plugin_job_newv (action,
-		                                 "app", app,
-		                                 NULL);
-		gs_plugin_loader_job_process_async (dialog->plugin_loader,
-		                                    plugin_job,
-		                                    dialog->cancellable,
-		                                    source_installed_cb,
-		                                    install_data);
+	if (install && gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_AVAILABLE) {
+		action = GS_PLUGIN_ACTION_INSTALL;
+	} else if (!install && gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_INSTALLED) {
+		action = GS_PLUGIN_ACTION_REMOVE;
+	} else {
+		g_debug ("third party repo package in state %s when %s, skipping",
+		         as_app_state_to_string (gs_app_get_state (dialog->third_party_repo)),
+		         install ? "installing" : "removing");
+		return;
 	}
+
+	install_data = g_slice_new0 (InstallData);
+	install_data->dialog = g_object_ref (dialog);
+	install_data->action = action;
+
+	plugin_job = gs_plugin_job_newv (action,
+	                                 "app", dialog->third_party_repo,
+	                                 NULL);
+	gs_plugin_loader_job_process_async (dialog->plugin_loader,
+	                                    plugin_job,
+	                                    dialog->cancellable,
+	                                    third_party_repo_installed_cb,
+	                                    install_data);
 }
 
 static void
-gs_repos_dialog_switch_active_cb (GsReposDialogRow *row,
-                                  GParamSpec *pspec,
-                                  GsReposDialog *dialog)
+third_party_switch_switch_active_cb (GsReposDialogRow *row,
+                                     GParamSpec *pspec,
+                                     GsReposDialog *dialog)
 {
 	gboolean active;
 
-	active = gs_repos_dialog_row_get_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_proprietary));
-	gs_repos_dialog_install_proprietary_sources (dialog, active);
+	active = gs_repos_dialog_row_get_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_third_party));
+	install_third_party_repo (dialog, active);
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
 }
 
-static gboolean
-all_apps_installed (GsAppList *list)
-{
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
-			return FALSE;
-	}
-	return TRUE;
-}
-
 static void
-gs_repos_dialog_refresh_proprietary_apps (GsReposDialog *dialog)
+refresh_third_party_repo (GsReposDialog *dialog)
 {
 	gboolean switch_active;
 	g_autofree gchar *uri = NULL;
-	g_auto(GStrv) nonfree_ids = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
-	/* get from GSettings, as some distros want to override this */
-	nonfree_ids = g_settings_get_strv (dialog->settings, "nonfree-sources");
-	if (g_strv_length (nonfree_ids) == 0 ||
-	    gs_app_list_length (dialog->nonfree_source_list) == 0) {
-		/* no apps in the nonfree list */
-		gtk_widget_hide (dialog->frame_proprietary);
+	if (dialog->third_party_repo == NULL) {
+		gtk_widget_hide (dialog->frame_third_party);
 		return;
 	}
 
@@ -290,15 +270,15 @@ gs_repos_dialog_refresh_proprietary_apps (GsReposDialog *dialog)
 					_("Find out more…"));
 	}
 
-	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), str->str);
-	gs_repos_dialog_row_set_description (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), NULL);
+	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (dialog->row_third_party), str->str);
+	gs_repos_dialog_row_set_description (GS_REPOS_DIALOG_ROW (dialog->row_third_party), NULL);
 
-	/* if all the apps are installed, show the switch as active */
-	switch_active = all_apps_installed (dialog->nonfree_source_list);
-	gs_repos_dialog_row_set_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_proprietary),
+	/* if the third party repo package is installed, show the switch as active */
+	switch_active = (gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_INSTALLED);
+	gs_repos_dialog_row_set_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
 	                                       switch_active);
 
-	gtk_widget_show (dialog->frame_proprietary);
+	gtk_widget_show (dialog->frame_third_party);
 }
 
 static void
@@ -352,14 +332,12 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-get_resolve_nonfree_sources_cb (GsPluginLoader *plugin_loader,
-                                GAsyncResult *res,
-                                GsReposDialog *dialog)
+resolve_third_party_repo_cb (GsPluginLoader *plugin_loader,
+                             GAsyncResult *res,
+                             GsReposDialog *dialog)
 {
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-
-	dialog->nonfree_search_cnt--;
 
 	/* get the results */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
@@ -367,21 +345,21 @@ get_resolve_nonfree_sources_cb (GsPluginLoader *plugin_loader,
 		if (g_error_matches (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_CANCELLED)) {
-			g_debug ("get nonfree-sources cancelled");
+			g_debug ("resolve third party repo cancelled");
 			return;
 		} else {
-			g_warning ("failed to get nonfree-sources: %s", error->message);
+			g_warning ("failed to resolve third party repo: %s", error->message);
+			return;
 		}
-		return;
 	}
 
 	/* save results for later */
-	g_clear_object (&dialog->nonfree_source_list);
-	dialog->nonfree_source_list = g_object_ref (list);
+	g_clear_object (&dialog->third_party_repo);
+	if (gs_app_list_length (list) > 0)
+		dialog->third_party_repo = g_object_ref (gs_app_list_index (list, 0));
 
 	/* refresh widget */
-	if (dialog->nonfree_search_cnt == 0)
-		gs_repos_dialog_refresh_proprietary_apps (dialog);
+	refresh_third_party_repo (dialog);
 }
 
 static void
@@ -405,32 +383,43 @@ reload_sources (GsReposDialog *dialog)
 					    dialog);
 }
 
-static void
-reload_nonfree_sources (GsReposDialog *dialog)
+static gboolean
+is_fedora (void)
 {
-	g_auto(GStrv) nonfree_ids = NULL;
+	const gchar *id = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
 
-	/* search already ongoing */
-	if (dialog->nonfree_search_cnt > 0)
+	os_release = gs_os_release_new (NULL);
+	if (os_release == NULL)
+		return FALSE;
+
+	id = gs_os_release_get_id (os_release);
+	if (g_strcmp0 (id, "fedora") == 0)
+		return TRUE;
+
+	return FALSE;
+}
+
+static void
+reload_third_party_repo (GsReposDialog *dialog)
+{
+	const gchar *third_party_repo_package = "fedora-workstation-repositories";
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* Fedora-specific functionality */
+	if (!is_fedora ())
 		return;
 
-	/* resolve any packages from nonfree-sources GSetting */
-	nonfree_ids = g_settings_get_strv (dialog->settings, "nonfree-sources");
-	for (guint i = 0; nonfree_ids[i] != NULL; i++) {
-		g_autoptr(GsPluginJob) plugin_job = NULL;
-
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
-		                                 "search", nonfree_ids[i],
-		                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-		                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-		                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-		                                 NULL);
-		gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-		                                    dialog->cancellable,
-		                                    (GAsyncReadyCallback) get_resolve_nonfree_sources_cb,
-		                                    dialog);
-		dialog->nonfree_search_cnt++;
-	}
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
+	                                 "search", third_party_repo_package,
+	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+	                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+	                                 NULL);
+	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
+	                                    dialog->cancellable,
+	                                    (GAsyncReadyCallback) resolve_third_party_repo_cb,
+	                                    dialog);
 }
 
 static void
@@ -595,7 +584,7 @@ updates_changed_cb (GsPluginLoader *plugin_loader,
                     GsReposDialog *dialog)
 {
 	reload_sources (dialog);
-	reload_nonfree_sources (dialog);
+	reload_third_party_repo (dialog);
 }
 
 static void
@@ -604,17 +593,6 @@ set_plugin_loader (GsReposDialog *dialog, GsPluginLoader *plugin_loader)
 	dialog->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (dialog->plugin_loader, "updates-changed",
 	                  G_CALLBACK (updates_changed_cb), dialog);
-}
-
-static void
-settings_changed_cb (GSettings *settings,
-		     const gchar *key,
-		     GsReposDialog *dialog)
-{
-	if (g_strcmp0 (key, "nonfree-software-uri") == 0 ||
-	    g_strcmp0 (key, "nonfree-sources") == 0) {
-		gs_repos_dialog_refresh_proprietary_apps (dialog);
-	}
 }
 
 static void
@@ -632,7 +610,7 @@ gs_repos_dialog_dispose (GObject *object)
 		g_clear_object (&dialog->cancellable);
 	}
 	g_clear_object (&dialog->settings);
-	g_clear_object (&dialog->nonfree_source_list);
+	g_clear_object (&dialog->third_party_repo);
 
 	G_OBJECT_CLASS (gs_repos_dialog_parent_class)->dispose (object);
 }
@@ -645,12 +623,8 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	dialog->nonfree_source_list = gs_app_list_new ();
 	dialog->cancellable = g_cancellable_new ();
 	dialog->settings = g_settings_new ("org.gnome.software");
-	g_signal_connect (dialog->settings, "changed",
-			  G_CALLBACK (settings_changed_cb),
-			  dialog);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->listbox),
 				      list_header_func,
@@ -671,14 +645,14 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 				    dialog, NULL);
 
 	/* set up third party repository row */
-	g_signal_connect (dialog->row_proprietary, "notify::switch-active",
-	                  G_CALLBACK (gs_repos_dialog_switch_active_cb),
+	g_signal_connect (dialog->row_third_party, "notify::switch-active",
+	                  G_CALLBACK (third_party_switch_switch_active_cb),
 	                  dialog);
-	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_proprietary),
+	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
 	                              /* TRANSLATORS: list header */
 	                              _("Proprietary Software Repositories"));
-	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_proprietary), TRUE);
-	gs_repos_dialog_refresh_proprietary_apps (dialog);
+	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_third_party), TRUE);
+	refresh_third_party_repo (dialog);
 
 	os_name = get_os_name ();
 	/* TRANSLATORS: This is the text displayed in the Software Repositories
@@ -709,14 +683,14 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, button_back);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame_proprietary);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, grid_noresults);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label2);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, listbox);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, listbox_apps);
-	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, row_proprietary);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, row_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, scrolledwindow_apps);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
@@ -734,7 +708,7 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 			       NULL);
 	set_plugin_loader (dialog, plugin_loader);
 	reload_sources (dialog);
-	reload_nonfree_sources (dialog);
+	reload_third_party_repo (dialog);
 
 	return GTK_WIDGET (dialog);
 }
