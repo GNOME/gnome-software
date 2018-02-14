@@ -52,9 +52,10 @@ typedef struct
 	gchar			*category_of_day;
 	GHashTable		*category_hash;		/* id : GsCategory */
 	GSettings		*settings;
+	GsApp			*third_party_repo;
 
-	GtkWidget		*infobar_proprietary;
-	GtkWidget		*label_proprietary;
+	GtkWidget		*infobar_third_party;
+	GtkWidget		*label_third_party;
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
@@ -547,6 +548,97 @@ gs_overview_page_get_random_categories (void)
 }
 
 static void
+refresh_third_party_repo (GsOverviewPage *self)
+{
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
+
+	/* only show if never prompted and third party repo is available */
+	if (g_settings_get_boolean (priv->settings, "show-nonfree-prompt") &&
+	    priv->third_party_repo != NULL &&
+	    gs_app_get_state (priv->third_party_repo) == AS_APP_STATE_AVAILABLE) {
+		gtk_widget_set_visible (priv->infobar_third_party, TRUE);
+	} else {
+		gtk_widget_set_visible (priv->infobar_third_party, FALSE);
+	}
+}
+
+static void
+resolve_third_party_repo_cb (GsPluginLoader *plugin_loader,
+                             GAsyncResult *res,
+                             GsOverviewPage *self)
+{
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get the results */
+	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED)) {
+			g_debug ("resolve third party repo cancelled");
+			return;
+		} else {
+			g_warning ("failed to resolve third party repo: %s", error->message);
+			return;
+		}
+	}
+
+	/* save results for later */
+	g_clear_object (&priv->third_party_repo);
+	if (gs_app_list_length (list) > 0)
+		priv->third_party_repo = g_object_ref (gs_app_list_index (list, 0));
+
+	/* refresh widget */
+	refresh_third_party_repo (self);
+}
+
+static gboolean
+is_fedora (void)
+{
+	const gchar *id = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+
+	os_release = gs_os_release_new (NULL);
+	if (os_release == NULL)
+		return FALSE;
+
+	id = gs_os_release_get_id (os_release);
+	if (g_strcmp0 (id, "fedora") == 0)
+		return TRUE;
+
+	return FALSE;
+}
+
+static void
+reload_third_party_repo (GsOverviewPage *self)
+{
+	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
+	const gchar *third_party_repo_package = "fedora-workstation-repositories";
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* only show if never prompted */
+	if (!g_settings_get_boolean (priv->settings, "show-nonfree-prompt"))
+		return;
+
+	/* Fedora-specific functionality */
+	if (!is_fedora ())
+		return;
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
+	                                 "search", third_party_repo_package,
+	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
+	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+	                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+	                                 NULL);
+	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
+	                                    priv->cancellable,
+	                                    (GAsyncReadyCallback) resolve_third_party_repo_cb,
+	                                    self);
+}
+
+static void
 gs_overview_page_load (GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
@@ -666,6 +758,8 @@ gs_overview_page_load (GsOverviewPage *self)
 							  self);
 		priv->action_cnt++;
 	}
+
+	reload_third_party_repo (self);
 }
 
 static void
@@ -744,138 +838,44 @@ gs_overview_page_categories_expander_up_cb (GtkButton *button, GsOverviewPage *s
 }
 
 static void
-gs_overview_page_get_sources_cb (GsPluginLoader *plugin_loader,
-                                 GAsyncResult *res,
-                                 GsOverviewPage *self)
-{
-	guint i;
-	g_auto(GStrv) nonfree_ids = NULL;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
-
-	/* get the results */
-	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_CANCELLED)) {
-			g_debug ("get sources cancelled");
-		} else {
-			g_warning ("failed to get sources: %s", error->message);
-		}
-		return;
-	}
-
-	/* enable each */
-	nonfree_ids = g_settings_get_strv (priv->settings, "nonfree-sources");
-	for (i = 0; nonfree_ids[i] != NULL; i++) {
-		GsApp *app;
-		g_autofree gchar *unique_id = NULL;
-
-		/* match the ID from GSettings to an actual GsApp */
-		unique_id = gs_utils_build_unique_id_kind (AS_APP_KIND_SOURCE,
-							   nonfree_ids[i]);
-		app = gs_app_list_lookup (list, unique_id);
-		if (app == NULL) {
-			g_warning ("no source for %s", unique_id);
-			continue;
-		}
-
-		/* depending on the new policy, add or remove the source */
-		if (g_settings_get_boolean (priv->settings, "show-nonfree-software")) {
-			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE) {
-				gs_page_install_app (GS_PAGE (self), app,
-						     GS_SHELL_INTERACTION_FULL,
-						     priv->cancellable);
-			}
-		} else {
-			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-				gs_page_remove_app (GS_PAGE (self), app,
-						    priv->cancellable);
-			}
-		}
-	}
-}
-
-static void
-gs_overview_page_rescan_proprietary_sources (GsOverviewPage *self)
-{
-	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION,
-					 NULL);
-	gs_plugin_loader_job_process_async (priv->plugin_loader,
-					    plugin_job,
-					    priv->cancellable,
-					    (GAsyncReadyCallback) gs_overview_page_get_sources_cb,
-					    self);
-}
-
-static void
-gs_overview_page_proprietary_response_cb (GtkInfoBar *info_bar,
-                                          gint response_id,
-                                          GsOverviewPage *self)
+third_party_response_cb (GtkInfoBar *info_bar,
+                         gint response_id,
+                         GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	g_settings_set_boolean (priv->settings, "show-nonfree-prompt", FALSE);
 	if (response_id == GTK_RESPONSE_CLOSE) {
-		gtk_widget_hide (priv->infobar_proprietary);
+		gtk_widget_hide (priv->infobar_third_party);
 		return;
 	}
 	if (response_id != GTK_RESPONSE_YES)
 		return;
-	g_settings_set_boolean (priv->settings, "show-nonfree-software", TRUE);
 
-	/* actually call into the plugin loader and do the action */
-	gs_overview_page_rescan_proprietary_sources (self);
+	if (gs_app_get_state (priv->third_party_repo) == AS_APP_STATE_AVAILABLE) {
+		gs_page_install_app (GS_PAGE (self), priv->third_party_repo,
+		                     GS_SHELL_INTERACTION_FULL,
+		                     priv->cancellable);
+	}
+
+	refresh_third_party_repo (self);
 }
 
-static void
-gs_overview_page_refresh_proprietary (GsOverviewPage *self)
+static gchar *
+get_os_name (void)
 {
-	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
-	g_auto(GStrv) nonfree_ids = NULL;
+	gchar *name = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
 
-	/* only show if never prompted and have nonfree repos */
-	nonfree_ids = g_settings_get_strv (priv->settings, "nonfree-sources");
-	if (g_settings_get_boolean (priv->settings, "show-nonfree-prompt") &&
-	    !g_settings_get_boolean (priv->settings, "show-nonfree-software") &&
-	    g_strv_length (nonfree_ids) > 0) {
-		g_autoptr(GString) str = g_string_new (NULL);
-		g_autofree gchar *uri = NULL;
-
-		/* get from GSettings, as some distros want to override this */
-		uri = g_settings_get_string (priv->settings, "nonfree-software-uri");
-
-		/* TRANSLATORS: this is the proprietary info bar */
-		g_string_append (str, _("Provides access to additional software, "
-					"including web browsers and games."));
-		g_string_append (str, " ");
-		/* TRANSLATORS: this is the proprietary info bar */
-		g_string_append (str, _("Proprietary software has restrictions "
-					"on use and access to source code."));
-		if (uri != NULL && uri[0] != '\0') {
-			g_string_append (str, "\n");
-			g_string_append_printf (str, "<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: this is the clickable
-						 * link on the proprietary info bar */
-						uri, _("Find out more…"));
-		}
-		gtk_label_set_markup (GTK_LABEL (priv->label_proprietary), str->str);
-#if 0
-		gtk_widget_set_visible (priv->infobar_proprietary, TRUE);
-#else
-		/* temporarily disabled until we've updated the text and synced
-		 * up with what gnome-initial-setup is doing */
-		gtk_widget_set_visible (priv->infobar_proprietary, FALSE);
-#endif
-	} else {
-		gtk_widget_set_visible (priv->infobar_proprietary, FALSE);
+	os_release = gs_os_release_new (NULL);
+	if (os_release != NULL)
+		name = g_strdup (gs_os_release_get_name (os_release));
+	if (name == NULL) {
+		/* TRANSLATORS: this is the fallback text we use if we can't
+		   figure out the name of the operating system */
+		name = g_strdup (_("the operating system"));
 	}
+
+	return name;
 }
 
 static gboolean
@@ -891,6 +891,9 @@ gs_overview_page_setup (GsPage *page,
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
+	g_autofree gchar *os_name = NULL;
+	g_autofree gchar *uri = NULL;
+	g_autoptr(GString) str = g_string_new (NULL);
 
 	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
 
@@ -900,13 +903,36 @@ gs_overview_page_setup (GsPage *page,
 	priv->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, (GDestroyNotify) g_object_unref);
 
+	os_name = get_os_name ();
+
+	g_string_printf (str,
+			 /* TRANSLATORS: this is the third party repositories info bar.
+	                    %s gets replaced by the distro name, e.g. Fedora */
+	                 _("Access additional software that is not supplied by %s through select third party repositories."),
+	                 os_name);
+	g_string_append (str, " ");
+	g_string_append (str,
+			 /* TRANSLATORS: this is the third party repositories info bar. */
+	                 _("Some of this software is proprietary and therefore has restrictions on use and access to source code."));
+	/* optional URL */
+	uri = g_settings_get_string (priv->settings, "nonfree-software-uri");
+	if (uri != NULL && uri[0] != '\0') {
+		g_string_append (str, "\n");
+	        g_string_append_printf (str, "<a href=\"%s\">%s</a>", uri,
+	                                /* TRANSLATORS: this is the clickable
+	                                 * link on the third party repositories info bar */
+	                                _("Find out more…"));
+	}
+	gtk_label_set_markup (GTK_LABEL (priv->label_third_party), str->str);
+
 	/* create info bar if not already dismissed in initial-setup */
-	gs_overview_page_refresh_proprietary (self);
-	gtk_info_bar_add_button (GTK_INFO_BAR (priv->infobar_proprietary),
-				 /* TRANSLATORS: button to turn on proprietary software repositories */
+	refresh_third_party_repo (self);
+	reload_third_party_repo (self);
+	gtk_info_bar_add_button (GTK_INFO_BAR (priv->infobar_third_party),
+				 /* TRANSLATORS: button to turn on third party software repositories */
 				 _("Enable"), GTK_RESPONSE_YES);
-	g_signal_connect (priv->infobar_proprietary, "response",
-			  G_CALLBACK (gs_overview_page_proprietary_response_cb), self);
+	g_signal_connect (priv->infobar_third_party, "response",
+			  G_CALLBACK (third_party_response_cb), self);
 
 	/* avoid a ref cycle */
 	priv->shell = shell;
@@ -936,27 +962,11 @@ gs_overview_page_setup (GsPage *page,
 }
 
 static void
-settings_changed_cb (GSettings *settings,
-		     const gchar *key,
-		     GsOverviewPage *self)
-{
-	if (g_strcmp0 (key, "show-nonfree-software") == 0 ||
-	    g_strcmp0 (key, "show-nonfree-prompt") == 0 ||
-	    g_strcmp0 (key, "nonfree-software-uri") == 0 ||
-	    g_strcmp0 (key, "nonfree-sources") == 0) {
-		gs_overview_page_refresh_proprietary (self);
-	}
-}
-
-static void
 gs_overview_page_init (GsOverviewPage *self)
 {
 	GsOverviewPagePrivate *priv = gs_overview_page_get_instance_private (self);
 	gtk_widget_init_template (GTK_WIDGET (self));
 	priv->settings = g_settings_new ("org.gnome.software");
-	g_signal_connect (priv->settings, "changed",
-			  G_CALLBACK (settings_changed_cb),
-			  self);
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
 	g_signal_connect (priv->categories_more, "notify::child-revealed",
 			  G_CALLBACK (categories_more_revealer_changed_cb),
@@ -973,6 +983,7 @@ gs_overview_page_dispose (GObject *object)
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
 	g_clear_object (&priv->settings);
+	g_clear_object (&priv->third_party_repo);
 	g_clear_pointer (&priv->category_of_day, g_free);
 	g_clear_pointer (&priv->category_hash, g_hash_table_unref);
 
@@ -1013,8 +1024,8 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-overview-page.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, infobar_proprietary);
-	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, label_proprietary);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, infobar_third_party);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, label_third_party);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, bin_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOverviewPage, box_popular);

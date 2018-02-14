@@ -17,7 +17,7 @@
             <property name="orientation">vertical</property>
 
             <child>
-              <object class="GtkInfoBar" id="infobar_proprietary">
+              <object class="GtkInfoBar" id="infobar_third_party">
                 <property name="visible">True</property>
                 <property name="app_paintable">True</property>
                 <property name="can_focus">False</property>
@@ -42,11 +42,11 @@
                     <property name="spacing">6</property>
                     <property name="border_width">12</property>
                     <child>
-                      <object class="GtkLabel" id="label_proprietary_title">
+                      <object class="GtkLabel" id="label_third_party_title">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
-                        <property name="label" translatable="yes">Enable Proprietary Software Repositories?</property>
+                        <property name="label" translatable="yes">Enable Third Party Software Repositories?</property>
                         <attributes>
                           <attribute name="weight" value="bold"/>
                         </attributes>
@@ -58,7 +58,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label_proprietary">
+                      <object class="GtkLabel" id="label_third_party">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
