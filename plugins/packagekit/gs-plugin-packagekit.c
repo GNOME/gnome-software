@@ -197,6 +197,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_origin (app),
 					 TRUE,
@@ -204,9 +205,14 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_app_set_state_recover (app);
 		gs_utils_error_add_unique_id (error, app);
 		return FALSE;
 	}
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
 	return TRUE;
 }
 
@@ -414,6 +420,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 FALSE,
@@ -421,9 +428,14 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_app_set_state_recover (app);
 		gs_utils_error_add_unique_id (error, app);
 		return FALSE;
 	}
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
 	return TRUE;
 }
 
