@@ -18,10 +18,31 @@
             <property name="orientation">vertical</property>
             <property name="spacing">4</property>
             <child>
-              <object class="GtkLabel" id="name_label">
+              <object class="GtkBox" id="hbox">
                 <property name="visible">True</property>
-                <property name="halign">start</property>
-                <property name="ellipsize">end</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">4</property>
+                <child>
+                  <object class="GtkLabel" id="name_label">
+                    <property name="visible">True</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="status_label">
+                    <property name="visible">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="pack-type">end</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -34,18 +55,6 @@
                 <property name="halign">start</property>
                 <property name="xalign">0</property>
                 <property name="wrap">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="description_label">
-                <property name="visible">True</property>
-                <property name="halign">start</property>
-                <property name="xalign">0</property>
-                <property name="wrap">True</property>
                 <style>
                   <class name="dim-label"/>
                 </style>
@@ -54,6 +63,86 @@
                 <property name="expand">False</property>
                 <property name="fill">False</property>
               </packing>
+            </child>
+            <child>
+              <object class="GtkRevealer" id="details_revealer">
+                <property name="visible">True</property>
+                <property name="transition-type">slide-down</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">4</property>
+                    <child>
+                      <object class="GtkBox" id="url_box">
+                        <property name="visible">True</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">8</property>
+                        <child>
+                          <object class="GtkLabel" id="url_title_label">
+                            <property name="visible">True</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="label" translatable="yes">URL</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="url_value_label">
+                            <property name="visible">True</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="ellipsize">end</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="spacing">8</property>
+                        <child>
+                          <object class="GtkButton" id="button">
+                            <property name="visible">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="width_request">105</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+              </object>
             </child>
           </object>
           <packing>
@@ -66,7 +155,7 @@
             <property name="visible">False</property>
             <property name="can_focus">True</property>
             <property name="halign">end</property>
-            <property name="valign">start</property>
+            <property name="valign">center</property>
           </object>
           <packing>
             <property name="expand">False</property>

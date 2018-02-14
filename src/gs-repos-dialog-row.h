@@ -22,13 +22,20 @@
 #ifndef GS_REPOS_DIALOG_ROW_H
 #define GS_REPOS_DIALOG_ROW_H
 
+#include "gnome-software-private.h"
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_REPOS_DIALOG_ROW (gs_repos_dialog_row_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsReposDialogRow, gs_repos_dialog_row, GS, REPOS_DIALOG_ROW, GtkListBoxRow)
+G_DECLARE_DERIVABLE_TYPE (GsReposDialogRow, gs_repos_dialog_row, GS, REPOS_DIALOG_ROW, GtkListBoxRow)
+
+struct _GsReposDialogRowClass
+{
+	GtkListBoxRowClass	  parent_class;
+	void			(*button_clicked)	(GsReposDialogRow	*row);
+};
 
 GtkWidget	*gs_repos_dialog_row_new		(void);
 void		 gs_repos_dialog_row_set_switch_enabled	(GsReposDialogRow	*row,
@@ -40,8 +47,14 @@ void		 gs_repos_dialog_row_set_name		(GsReposDialogRow	*row,
 							 const gchar		*name);
 void		 gs_repos_dialog_row_set_comment	(GsReposDialogRow	*row,
 							 const gchar		*comment);
-void		 gs_repos_dialog_row_set_description	(GsReposDialogRow	*row,
-							 const gchar		*description);
+void		 gs_repos_dialog_row_set_url		(GsReposDialogRow	*row,
+							 const gchar		*url);
+void		 gs_repos_dialog_row_set_repo		(GsReposDialogRow	*row,
+							 GsApp			*repo);
+GsApp		*gs_repos_dialog_row_get_repo		(GsReposDialogRow	*row);
+void		 gs_repos_dialog_row_show_details	(GsReposDialogRow	*row);
+void		 gs_repos_dialog_row_hide_details	(GsReposDialogRow	*row);
+void		 gs_repos_dialog_row_show_status	(GsReposDialogRow	*row);
 
 G_END_DECLS
 
