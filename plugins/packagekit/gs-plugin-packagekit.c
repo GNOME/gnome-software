@@ -183,10 +183,42 @@ gs_plugin_add_sources (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_app_source_enable (GsPlugin *plugin,
-			     GsApp *app,
-			     GCancellable *cancellable,
-			     GError **error)
+gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
+                                  GsApp *app,
+                                  GCancellable *cancellable,
+                                  GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	ProgressData data = { 0 };
+	g_autoptr(PkResults) results = NULL;
+
+	data.plugin = plugin;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_repo_enable (PK_CLIENT (priv->task),
+	                                 gs_app_get_origin (app),
+	                                 TRUE,
+	                                 cancellable,
+	                                 gs_plugin_packagekit_progress_cb, &data,
+	                                 error);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		gs_utils_error_add_unique_id (error, app);
+		return FALSE;
+	}
+
+	/* now that the repo is enabled, the app (not the repo!) moves from
+	 * UNAVAILABLE state to AVAILABLE */
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_repo_enable (GsPlugin *plugin,
+                       GsApp *app,
+                       GCancellable *cancellable,
+                       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data = { 0 };
@@ -199,7 +231,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
-					 gs_app_get_origin (app),
+					 gs_app_get_id (app),
 					 TRUE,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
@@ -241,15 +273,22 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
+	/* enable repo */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE &&
+	    gs_app_get_source_ids (app)->len == 0) {
+		/* KIND_SOURCE can be both a repository, or a package that
+		 * includes .repo files. If it has no source ids, then it's the
+		 * former and we can directly enable it here. */
+		return gs_plugin_repo_enable (plugin, app, cancellable, error);
+	}
+
 	/* queue for install if installation needs the network */
 	if (!gs_plugin_get_network_available (plugin)) {
 		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 		return TRUE;
 	}
 
-	/* we enable the repo */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
-
 		/* get everything up front we need */
 		source_ids = gs_app_get_source_ids (app);
 		if (source_ids->len == 0) {
@@ -262,8 +301,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		package_ids = g_new0 (gchar *, 2);
 		package_ids[0] = g_strdup (g_ptr_array_index (source_ids, 0));
 
-		/* enable the source */
-		if (!gs_plugin_app_source_enable (plugin, app, cancellable, error))
+		/* enable the repo where the unavailable app is coming from */
+		if (!gs_plugin_app_origin_repo_enable (plugin, app, cancellable, error))
 			return FALSE;
 
 		/* FIXME: this is a hack, to allow PK time to re-initialize
@@ -272,7 +311,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 		g_usleep (G_USEC_PER_SEC * 3);
 
 		/* actually install the package */
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		results = pk_task_install_packages_sync (priv->task,
 							 package_ids,
@@ -406,10 +444,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_app_source_disable (GsPlugin *plugin,
-			      GsApp *app,
-			      GCancellable *cancellable,
-			      GError **error)
+gs_plugin_repo_disable (GsPlugin *plugin,
+                        GsApp *app,
+                        GCancellable *cancellable,
+                        GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data = { 0 };
@@ -462,11 +500,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* remove repo and all apps in it */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
-		return gs_plugin_app_source_disable (plugin, app,
-		                                     cancellable, error);
-	}
+	/* disable repo */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+		return gs_plugin_repo_disable (plugin, app, cancellable, error);
 
 	/* get the list of available package ids to install */
 	source_ids = gs_app_get_source_ids (app);
