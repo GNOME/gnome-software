@@ -47,7 +47,7 @@
 #include "gs-shell-search-provider.h"
 #include "gs-folders.h"
 
-#define ENABLE_SOFTWARE_SOURCES_CONF_KEY "enable-software-sources"
+#define ENABLE_REPOS_DIALOG_CONF_KEY "enable-repos-dialog"
 
 struct _GsApplication {
 	GtkApplication	 parent;
@@ -836,7 +836,7 @@ gs_application_update_software_sources_presence (GApplication *self)
 	action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (self),
 							      "sources"));
 	enable_sources = g_settings_get_boolean (app->settings,
-						 ENABLE_SOFTWARE_SOURCES_CONF_KEY);
+						 ENABLE_REPOS_DIALOG_CONF_KEY);
 	g_simple_action_set_enabled (action, enable_sources);
 }
 
@@ -845,7 +845,7 @@ gs_application_settings_changed_cb (GApplication *self,
 				    const gchar *key,
 				    gpointer data)
 {
-	if (g_strcmp0 (key, ENABLE_SOFTWARE_SOURCES_CONF_KEY) == 0) {
+	if (g_strcmp0 (key, ENABLE_REPOS_DIALOG_CONF_KEY) == 0) {
 		gs_application_update_software_sources_presence (self);
 	}
 }

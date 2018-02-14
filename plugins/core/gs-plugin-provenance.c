@@ -44,7 +44,7 @@ gs_plugin_provenance_get_sources (GsPlugin *plugin)
 		g_debug ("using custom provenance sources of %s", tmp);
 		return g_strsplit (tmp, ",", -1);
 	}
-	return g_settings_get_strv (priv->settings, "official-sources");
+	return g_settings_get_strv (priv->settings, "official-repos");
 }
 
 static void
@@ -53,7 +53,7 @@ gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 					  GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (g_strcmp0 (key, "official-sources") == 0) {
+	if (g_strcmp0 (key, "official-repos") == 0) {
 		g_strfreev (priv->sources);
 		priv->sources = gs_plugin_provenance_get_sources (plugin);
 	}

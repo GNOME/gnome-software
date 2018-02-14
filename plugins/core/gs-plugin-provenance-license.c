@@ -47,7 +47,7 @@ gs_plugin_provenance_license_get_sources (GsPlugin *plugin)
 		g_debug ("using custom provenance_license sources of %s", tmp);
 		return g_strsplit (tmp, ",", -1);
 	}
-	return g_settings_get_strv (priv->settings, "free-sources");
+	return g_settings_get_strv (priv->settings, "free-repos");
 }
 
 static gchar *
@@ -62,7 +62,7 @@ gs_plugin_provenance_license_get_id (GsPlugin *plugin)
 		g_debug ("using custom license generic sources of %s", tmp);
 		url = g_strdup (tmp);
 	} else {
-		url = g_settings_get_string (priv->settings, "free-sources-url");
+		url = g_settings_get_string (priv->settings, "free-repos-url");
 		if (url == NULL)
 			return g_strdup ("LicenseRef-free");
 	}
@@ -75,11 +75,11 @@ gs_plugin_provenance_license_changed_cb (GSettings *settings,
 					 GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (g_strcmp0 (key, "free-sources") == 0) {
+	if (g_strcmp0 (key, "free-repos") == 0) {
 		g_strfreev (priv->sources);
 		priv->sources = gs_plugin_provenance_license_get_sources (plugin);
 	}
-	if (g_strcmp0 (key, "free-sources-url") == 0) {
+	if (g_strcmp0 (key, "free-repos-url") == 0) {
 		g_free (priv->license_id);
 		priv->license_id = gs_plugin_provenance_license_get_id (plugin);
 	}
