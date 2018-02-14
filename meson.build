@@ -16,7 +16,7 @@ gs_plugin_api_version = '11'
 conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 
 # install docs
-install_data('README', install_dir : 'share/doc/gnome-software')
+install_data('README.md', install_dir : 'share/doc/gnome-software')
 
 # get suported warning flags
 test_args = [
