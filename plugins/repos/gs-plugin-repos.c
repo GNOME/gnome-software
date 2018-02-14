@@ -187,11 +187,22 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return FALSE;
 
 	/* find hostname */
-	if (gs_app_get_origin (app) == NULL)
-		return TRUE;
-	tmp = g_hash_table_lookup (priv->urls, gs_app_get_origin (app));
-	if (tmp != NULL)
-		gs_app_set_origin_hostname (app, tmp);
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_SOURCE:
+		if (gs_app_get_id (app) == NULL)
+			return TRUE;
+		tmp = g_hash_table_lookup (priv->urls, gs_app_get_id (app));
+		if (tmp != NULL)
+			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, tmp);
+		break;
+	default:
+		if (gs_app_get_origin (app) == NULL)
+			return TRUE;
+		tmp = g_hash_table_lookup (priv->urls, gs_app_get_origin (app));
+		if (tmp != NULL)
+			gs_app_set_origin_hostname (app, tmp);
+		break;
+	}
 
 	return TRUE;
 }
