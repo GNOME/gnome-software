@@ -1379,6 +1379,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 				fwupd_remote_get_metadata_uri (remote));
 		gs_app_set_metadata (app, "fwupd::remote-id",
 				     fwupd_remote_get_id (remote));
+		gs_app_set_management_plugin (app, "fwupd");
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
