@@ -1185,12 +1185,20 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 			     gs_app_get_unique_id (app));
 		return FALSE;
 	}
-	return fwupd_client_modify_remote (priv->client,
-					   remote_id,
-					   "Enabled",
-					   enabled ? "true" : "false",
-					   cancellable,
-					   error);
+	gs_app_set_state (app, enabled ?
+	                  AS_APP_STATE_INSTALLING : AS_APP_STATE_REMOVING);
+	if (!fwupd_client_modify_remote (priv->client,
+	                                 remote_id,
+	                                 "Enabled",
+	                                 enabled ? "true" : "false",
+	                                 cancellable,
+	                                 error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+	gs_app_set_state (app, enabled ?
+	                  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+	return TRUE;
 }
 
 gboolean
