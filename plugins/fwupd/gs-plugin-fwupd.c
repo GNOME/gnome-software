@@ -1224,7 +1224,7 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 		return TRUE;
 
 	/* source -> remote */
-	return gs_plugin_fwupd_modify_source (plugin, app, TRUE, cancellable, error);
+	return gs_plugin_fwupd_modify_source (plugin, app, FALSE, cancellable, error);
 }
 
 gboolean
