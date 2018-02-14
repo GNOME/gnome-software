@@ -427,38 +427,6 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_app_source_remove (GsPlugin *plugin,
-			     GsApp *app,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data = { 0 };
-	g_autoptr(GError) error_local = NULL;
-	g_autoptr(PkResults) results = NULL;
-
-	data.plugin = plugin;
-
-	/* do sync call */
-	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_repo_remove (PK_CLIENT (priv->task),
-					 pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_NONE, -1),
-					 gs_app_get_id (app),
-					 TRUE,
-					 cancellable,
-					 gs_plugin_packagekit_progress_cb, &data,
-					 &error_local);
-	if (results == NULL) {
-		/* fall back to disabling it */
-		g_warning ("ignoring source remove error, trying disable: %s",
-			   error_local->message);
-		return gs_plugin_app_source_disable (plugin, app,
-						     cancellable, error);
-	}
-	return TRUE;
-}
-
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -484,8 +452,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* remove repo and all apps in it */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
-		return gs_plugin_app_source_remove (plugin, app,
-						    cancellable, error);
+		return gs_plugin_app_source_disable (plugin, app,
+		                                     cancellable, error);
 	}
 
 	/* get the list of available package ids to install */
