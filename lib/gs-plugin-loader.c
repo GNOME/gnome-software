@@ -3222,7 +3222,7 @@ gs_plugin_loader_maybe_flush_pending_install_queue (GsPluginLoader *plugin_loade
 							 NULL);
 		}
 		gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-						    NULL,
+						    gs_app_get_cancellable (app),
 						    gs_plugin_loader_app_installed_cb,
 						    g_object_ref (app));
 	}
