@@ -2934,14 +2934,15 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 				     GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	gboolean metered = g_network_monitor_get_network_metered (priv->network_monitor);
 
 	g_debug ("network status change: %s [%s]",
 		 available ? "online" : "offline",
-		 g_network_monitor_get_network_metered (priv->network_monitor) ? "metered" : "unmetered");
+		 metered ? "metered" : "unmetered");
 
 	g_object_notify (G_OBJECT (plugin_loader), "network-available");
 
-	if (available) {
+	if (available && !metered) {
 		g_autoptr(GsAppList) queue = NULL;
 		g_mutex_lock (&priv->pending_apps_mutex);
 		queue = gs_app_list_new ();
