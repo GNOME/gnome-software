@@ -62,6 +62,7 @@ struct _GsCategoryPage
 	GtkWidget	*sort_rating_button;
 	GtkWidget	*sort_name_button;
 	GtkWidget	*featured_grid;
+	GtkWidget	*featured_heading;
 	GtkWidget	*header_filter_box;
 };
 
@@ -239,6 +240,7 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 
 	gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
 	gtk_widget_hide (self->featured_grid);
+	gtk_widget_hide (self->featured_heading);
 
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
 						    res,
@@ -267,6 +269,7 @@ gs_category_page_get_featured_apps_cb (GObject *source_object,
 	}
 
 	gtk_widget_show (self->featured_grid);
+	gtk_widget_show (self->featured_heading);
 }
 
 static void
@@ -467,13 +470,22 @@ gs_category_page_create_filter (GsCategoryPage *self,
 	gtk_widget_set_visible (self->subcats_filter_button, !use_header_filter);
 	gtk_widget_set_visible (self->header_filter_box, use_header_filter);
 
-	/* set up the placeholders as having the featured category is a good
-	 * indicator that there will be featured apps */
 	if (featured_category_found) {
+		g_autofree gchar *featured_heading = NULL;
+
+		/* set up the placeholders as having the featured category is a good
+		 * indicator that there will be featured apps */
 		gs_category_page_set_featured_placeholders (self);
+
+		/* TRANSLATORS: This is a heading on the categories page. %s gets
+		   replaced by the category name, e.g. 'Graphics & Photography' */
+		featured_heading = g_strdup_printf (_("Featured %s"), gs_category_get_name (self->category));
+		gtk_label_set_label (GTK_LABEL (self->featured_heading), featured_heading);
+		gtk_widget_show (self->featured_heading);
 	} else {
 		gs_container_remove_all (GTK_CONTAINER (self->featured_grid));
 		gtk_widget_hide (self->featured_grid);
+		gtk_widget_hide (self->featured_heading);
 	}
 }
 
@@ -594,6 +606,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_name_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, header_filter_box);
 }
 
