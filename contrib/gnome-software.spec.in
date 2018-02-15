@@ -171,7 +171,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files -f %{name}.lang
-%doc AUTHORS README
+%doc AUTHORS README.md
 %license COPYING
 %{_bindir}/gnome-software
 %{_datadir}/applications/gnome-software-local-file.desktop
@@ -209,7 +209,6 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_modalias.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_odrs.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_os-release.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_ostree.so
 %if %{with packagekit}
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-history.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-local.so
@@ -226,7 +225,6 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_repos.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rewrite-resource.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm-ostree.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_shell-extensions.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_steam.so
 %if %{with packagekit}
