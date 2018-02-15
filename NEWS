@@ -1,3 +1,27 @@
+Version 3.27.90
+~~~~~~~~~~~~~~~
+Released: 2018-02-14
+
+This is an unstable release in the 3.27 development series, with the following
+improvements:
+ * The Software Sources dialog was renamed to Software Repositories and
+   rewritten
+ * Fedora Workstation third party repository handling was rewritten and should
+   be more robust
+ * Improved handling of metered network connections, making sure we cancel any
+   downloads when changing to a metered connection
+ * Limit the number of parallel operations depending on the installed CPU
+ * Improved handling of pending installs when there's no network connection
+ * Unused ostree and rpm plugins were dropped
+ * Switch from GtkSpell to gspell
+ * Improve alignment on the updates page
+ * Do not show missing screenshot error for fonts that have screenshots
+ * Fix various issues on Ubuntu when purchasing apps
+ * Fix an issue that led to duplicate categories appearing on the overview page
+ * Various memory leak and correctness fixes
+
+This release also updates translations.
+
 Version 3.27.4
 ~~~~~~~~~~~~~~
 Released: 2018-01-08

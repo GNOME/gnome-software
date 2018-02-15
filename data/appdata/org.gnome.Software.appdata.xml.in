@@ -46,6 +46,29 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-02-14" version="3.27.90">
+      <description>
+        <p>
+          This is an unstable release in the 3.27 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>The Software Sources dialog was renamed to Software Repositories and rewritten</li>
+          <li>Fedora Workstation third party repository handling was rewritten and should be more robust</li>
+          <li>Improved handling of metered network connections, making sure we cancel any downloads when changing to a metered connection</li>
+          <li>Limit the number of parallel operations depending on the installed CPU</li>
+          <li>Improved handling of pending installs when there's no network connection</li>
+          <li>Unused ostree and rpm plugins were dropped</li>
+          <li>Switch from GtkSpell to gspell</li>
+          <li>Improve alignment on the updates page</li>
+          <li>Do not show missing screenshot error for fonts that have screenshots</li>
+          <li>Fix various issues on Ubuntu when purchasing apps</li>
+          <li>Fix an issue that led to duplicate categories appearing on the overview page</li>
+          <li>Various memory leak and correctness fixes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-01-08" version="3.27.4">
       <description>
         <p>
