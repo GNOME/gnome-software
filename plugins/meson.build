@@ -11,7 +11,6 @@ subdir('dpkg')
 subdir('dummy')
 subdir('epiphany')
 subdir('fedora-pkgdb-collections')
-subdir('fedora-tagger-usage')
 
 if get_option('enable-flatpak')
   subdir('flatpak')
