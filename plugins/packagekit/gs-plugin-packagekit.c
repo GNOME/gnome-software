@@ -274,13 +274,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* enable repo */
-	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE &&
-	    gs_app_get_source_ids (app)->len == 0) {
-		/* KIND_SOURCE can be both a repository, or a package that
-		 * includes .repo files. If it has no source ids, then it's the
-		 * former and we can directly enable it here. */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return gs_plugin_repo_enable (plugin, app, cancellable, error);
-	}
 
 	/* queue for install if installation needs the network */
 	if (!gs_plugin_get_network_available (plugin)) {
