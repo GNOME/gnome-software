@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-01-31 01:49+0000\n"
-"PO-Revision-Date: 2018-02-11 00:12+0100\n"
+"POT-Creation-Date: 2018-02-14 23:52+0000\n"
+"PO-Revision-Date: 2018-02-15 17:37+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -168,39 +168,27 @@ msgstr ""
 "Lista używanych programów, zastępująca programy określone przez system."
 
 #: data/org.gnome.software.gschema.xml:47
-msgid "The list of extra sources that have been previously enabled"
-msgstr "Lista dodatkowych źródeł, które zostały poprzednio włączone"
-
-#: data/org.gnome.software.gschema.xml:48
-msgid ""
-"The list of sources that have been previously enabled when installing third-"
-"party applications."
-msgstr ""
-"Lista źródeł, które zostały poprzednio włączone podczas instalowania "
-"programów dostarczanych przez stronę trzecią."
-
-#: data/org.gnome.software.gschema.xml:52
 msgid "The last update check timestamp"
 msgstr "Czas ostatniego sprawdzenia aktualizacji"
 
-#: data/org.gnome.software.gschema.xml:56
+#: data/org.gnome.software.gschema.xml:51
 msgid "The last upgrade notification timestamp"
 msgstr "Czas ostatniego powiadomienia o aktualizacji"
 
-#: data/org.gnome.software.gschema.xml:60
+#: data/org.gnome.software.gschema.xml:55
 msgid "The timestamp of the first security update, cleared after update"
 msgstr "Czas pierwszej aktualizacji bezpieczeństwa, czyszczony po aktualizacji"
 
-#: data/org.gnome.software.gschema.xml:64
+#: data/org.gnome.software.gschema.xml:59
 msgid "The last update timestamp"
 msgstr "Czas ostatniej aktualizacji"
 
-#: data/org.gnome.software.gschema.xml:68
+#: data/org.gnome.software.gschema.xml:63
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr ""
 "Czas w sekundach do sprawdzania, czy zrzut ekranu jest nadal prawidłowy"
 
-#: data/org.gnome.software.gschema.xml:69
+#: data/org.gnome.software.gschema.xml:64
 msgid ""
 "Choosing a larger value will mean less round-trips to the remote server but "
 "updates to the screenshots may take longer to show to the user. A value of 0 "
@@ -211,90 +199,83 @@ msgstr ""
 "oznacza, że serwer nigdy nie zostanie sprawdzony, jeśli obraz już istnieje "
 "w pamięci podręcznej."
 
-#: data/org.gnome.software.gschema.xml:78
+#: data/org.gnome.software.gschema.xml:73
 msgid "The server to use for application reviews"
 msgstr "Serwer używany do wyświetlania recenzji programów"
 
-#: data/org.gnome.software.gschema.xml:82
+#: data/org.gnome.software.gschema.xml:77
 msgid "The minimum karma score for reviews"
 msgstr "Minimalna karma recenzji"
 
-#: data/org.gnome.software.gschema.xml:83
+#: data/org.gnome.software.gschema.xml:78
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Recenzje o niższej karmie nie będą wyświetlane."
 
-#: data/org.gnome.software.gschema.xml:87
-msgid "A list of official sources that should not be considered 3rd party"
+#: data/org.gnome.software.gschema.xml:82
+msgid "A list of official repositories that should not be considered 3rd party"
 msgstr ""
-"Lista oficjalnych źródeł, które powinny być traktowane jako dostarczane "
-"przez stronę trzecią"
+"Lista oficjalnych repozytoriów, które powinny być traktowane jako "
+"dostarczane przez stronę trzecią"
 
-#: data/org.gnome.software.gschema.xml:91
-msgid "A list of official sources that should be considered free software"
+#: data/org.gnome.software.gschema.xml:86
+msgid "A list of official repositories that should be considered free software"
 msgstr ""
-"Lista oficjalnych źródeł, które powinny być traktowane jako wolne "
+"Lista oficjalnych repozytoriów, które powinny być traktowane jako wolne "
 "oprogramowanie"
 
-#: data/org.gnome.software.gschema.xml:95
+#: data/org.gnome.software.gschema.xml:90
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "Adres URL licencji używanej, kiedy program powinien być traktowany jako "
 "wolne oprogramowanie"
 
-#: data/org.gnome.software.gschema.xml:99
+#: data/org.gnome.software.gschema.xml:94
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Instalowanie pakietów dla wszystkich użytkowników systemu tam, gdzie to "
 "możliwe"
 
-#: data/org.gnome.software.gschema.xml:103
+#: data/org.gnome.software.gschema.xml:98
 msgid "Show the folder management UI"
 msgstr "Wyświetlanie interfejsu do zarządzania katalogami"
 
-#: data/org.gnome.software.gschema.xml:107
-msgid "Allow access to the Software Sources dialog"
-msgstr "Zezwolenie na używanie okna źródeł oprogramowania"
+#: data/org.gnome.software.gschema.xml:102
+msgid "Allow access to the Software Repositories dialog"
+msgstr "Zezwolenie na używanie okna repozytoriów oprogramowania"
 
-#: data/org.gnome.software.gschema.xml:111
+#: data/org.gnome.software.gschema.xml:106
 msgid "Offer upgrades for pre-releases"
 msgstr "Oferowanie aktualizacji do wydań testowych"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:110
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Wyświetlanie elementu interfejsu informującego użytkownika, że program jest "
 "własnościowy"
 
-#: data/org.gnome.software.gschema.xml:119
-msgid "Show the prompt to install nonfree software sources"
+#: data/org.gnome.software.gschema.xml:114
+msgid "Show the prompt to install nonfree software repositories"
 msgstr ""
-"Wyświetlanie zapytania o instalowanie źródeł oprogramowania własnościowego"
+"Wyświetlanie zapytania o instalowanie repozytoriów oprogramowania "
+"własnościowego"
 
-#: data/org.gnome.software.gschema.xml:123
-msgid "Show non-free software in search results"
-msgstr "Wyświetlanie własnościowego oprogramowania w wynikach wyszukiwania"
-
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:118
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
 "Wyświetlanie rozmiaru zainstalowanych programów na liście zainstalowanych "
 "programów"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:131
+#: data/org.gnome.software.gschema.xml:122
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://pl.wikipedia.org/wiki/Zamknięte_oprogramowanie'"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:123
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "Adres URI wyjaśniający własnościowe oprogramowanie"
 
-#: data/org.gnome.software.gschema.xml:136
-msgid "A list of non-free sources that can be optionally enabled"
-msgstr "Lista własnościowych źródeł, które mogą być opcjonalnie włączone"
-
-#: data/org.gnome.software.gschema.xml:140
+#: data/org.gnome.software.gschema.xml:127
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -302,7 +283,7 @@ msgstr ""
 "Lista adresów URL wskazujących na pliki AppStream, które będą pobierane do "
 "katalogu „app-info”"
 
-#: data/org.gnome.software.gschema.xml:144
+#: data/org.gnome.software.gschema.xml:131
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "Instalowanie plików AppStream w położeniu systemowym dla wszystkich "
@@ -333,8 +314,7 @@ msgstr "Odznacz wszystko"
 msgid "Software"
 msgstr "Oprogramowanie"
 
-#: src/gnome-software.ui:43 src/gs-sources-dialog.ui:23
-#: src/gs-update-dialog.ui:21
+#: src/gnome-software.ui:43 src/gs-update-dialog.ui:21
 msgid "Go back"
 msgstr "Wstecz"
 
@@ -358,10 +338,9 @@ msgid "Search"
 msgstr "Wyszukaj"
 
 #. button in the info bar
-#: src/gnome-software.ui:350 src/gs-sources-dialog.ui:6
-#: src/gs-sources-dialog.ui:46
-msgid "Software Sources"
-msgstr "Źródła oprogramowania"
+#: src/gnome-software.ui:350 src/gs-repos-dialog.ui:6 src/gs-repos-dialog.ui:20
+msgid "Software Repositories"
+msgstr "Repozytoria oprogramowania"
 
 #. button in the info bar
 #: src/gnome-software.ui:361
@@ -402,7 +381,10 @@ msgstr "Instalowanie"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
+#. TRANSLATORS: this is a button in the software repositories dialog
+#. that shows the status of a repo being removed
 #: src/gs-app-addon-row.c:109 src/gs-app-row.c:225
+#: src/gs-repos-dialog-row.c:162
 msgid "Removing"
 msgstr "Usuwanie"
 
@@ -539,7 +521,7 @@ msgstr "Anuluj"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:193 src/gs-common.c:279 src/gs-page.c:544
+#: src/gs-app-row.c:193 src/gs-common.c:278 src/gs-page.c:565
 msgid "Install"
 msgstr "Zainstaluj"
 
@@ -552,7 +534,9 @@ msgstr "Zaktualizuj"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: src/gs-app-row.c:204 src/gs-app-row.c:213 src/gs-page.c:700
+#. TRANSLATORS: this is button text to remove the repo
+#: src/gs-app-row.c:204 src/gs-app-row.c:213 src/gs-page.c:722
+#: src/gs-repos-dialog.c:268
 msgid "Remove"
 msgstr "Usuń"
 
@@ -723,12 +707,12 @@ msgstr "Zainstalować oprogramowanie dostarczane przez stronę trzecią?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:214
-msgid "Enable Third-Party Software Source?"
-msgstr "Włączyć źródło oprogramowania dostarczane przez stronę trzecią?"
+msgid "Enable Third-Party Software Repository?"
+msgstr "Włączyć repozytorium oprogramowania dostarczane przez stronę trzecią?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
-#. * 2. Software source name, e.g. fedora-optional
+#. * 2. Software repository name, e.g. fedora-optional
 #.
 #: src/gs-common.c:232
 #, c-format
@@ -742,20 +726,20 @@ msgstr ""
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
-#. * 2. Software source name, e.g. fedora-optional
+#. * 2. Software repository name, e.g. fedora-optional
 #: src/gs-common.c:242
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "Program %s jest dostarczany przez źródło „%s”."
 
-#. TRANSLATORS: a software source is a repo
-#: src/gs-common.c:252
-msgid "This software source must be enabled to continue installation."
+#: src/gs-common.c:251
+msgid "This software repository must be enabled to continue installation."
 msgstr ""
-"To źródło oprogramowania musi zostać włączone, aby kontynuować instalację."
+"To repozytorium oprogramowania musi zostać włączone, aby kontynuować "
+"instalację."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:262
+#: src/gs-common.c:261
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
@@ -763,30 +747,30 @@ msgstr ""
 "krajach."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:268
+#: src/gs-common.c:267
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Zainstalowanie lub używanie tego kodeku może być nielegalne w niektórych "
 "krajach."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:275
+#: src/gs-common.c:274
 msgid "Don’t Warn Again"
 msgstr "Bez ostrzegania ponownie"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:284
+#: src/gs-common.c:283
 msgid "Enable and Install"
 msgstr "Włącz i zainstaluj"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:429
+#: src/gs-common.c:428
 msgid "Detailed errors from the package manager follow:"
 msgstr "Szczegółowe błędy z menedżera pakietów:"
 
-#: src/gs-common.c:448 src/gs-details-page.ui:596
+#: src/gs-common.c:447 src/gs-details-page.ui:596
 msgid "Details"
 msgstr "Informacje"
 
@@ -1368,7 +1352,7 @@ msgstr "Z_aktualizuj"
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
-#. * e.g. enabling software sources or the like
+#. * e.g. enabling software repositories or the like
 #: src/gs-details-page.c:331
 msgid "_Install…"
 msgstr "_Zainstaluj…"
@@ -1423,46 +1407,46 @@ msgid "Unknown"
 msgstr "Nieznane"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1418
+#: src/gs-details-page.c:1409
 msgid "You need internet access to write a review"
 msgstr "Wymagany jest dostęp do Internetu, aby napisać recenzję"
 
-#: src/gs-details-page.c:1552
+#: src/gs-details-page.c:1543
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nie można odnaleźć „%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2156
+#: src/gs-details-page.c:2147
 msgid "Public domain"
 msgstr "Domena publiczna"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2159
+#: src/gs-details-page.c:2150
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://pl.wikipedia.org/wiki/Domena_publiczna"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2166
+#: src/gs-details-page.c:2157
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.pl.html"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2176 src/gs-details-page.ui:1384
+#: src/gs-details-page.c:2167 src/gs-details-page.ui:1384
 msgid "Free Software"
 msgstr "Wolne oprogramowanie"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2233
+#: src/gs-details-page.c:2224
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Użytkowników obowiązuje ta licencja:"
 msgstr[1] "Użytkowników obowiązują te licencje:"
 msgstr[2] "Użytkowników obowiązują te licencje:"
 
-#: src/gs-details-page.c:2260 src/gs-details-page.ui:1493
+#: src/gs-details-page.c:2251 src/gs-details-page.ui:1493
 msgid "More information"
 msgstr "Więcej informacji"
 
@@ -1490,28 +1474,28 @@ msgid "No screenshot provided"
 msgstr "Brak zrzutów ekranu"
 
 #: src/gs-details-page.ui:493
-msgid "Software Source Included"
-msgstr "Dołączono źródło oprogramowania"
+msgid "Software Repository Included"
+msgstr "Dołączono repozytorium oprogramowania"
 
 #: src/gs-details-page.ui:494
 msgid ""
-"This application includes a software source which provides updates, as well "
-"as access to other software."
+"This application includes a software repository which provides updates, as "
+"well as access to other software."
 msgstr ""
-"Ten program zawiera źródło oprogramowania dostarczające aktualizacje "
+"Ten program zawiera repozytorium oprogramowania dostarczające aktualizacje "
 "i dostęp do innego oprogramowania."
 
 #: src/gs-details-page.ui:507
-msgid "No Software Source Included"
-msgstr "Nie dołączono źródła oprogramowania"
+msgid "No Software Repository Included"
+msgstr "Nie dołączono repozytorium oprogramowania"
 
 #: src/gs-details-page.ui:508
 msgid ""
-"This application does not include a software source. It will not be updated "
-"with new versions."
+"This application does not include a software repository. It will not be "
+"updated with new versions."
 msgstr ""
-"Ten program nie zawiera źródła oprogramowania. Nie będzie on aktualizowany "
-"do nowszych wersji."
+"Ten program nie zawiera repozytorium oprogramowania. Nie będzie on "
+"aktualizowany do nowszych wersji."
 
 #: src/gs-details-page.ui:522
 msgid ""
@@ -1523,20 +1507,20 @@ msgstr ""
 
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:535
-msgid "Software Source Identified"
-msgstr "Rozpoznano źródło oprogramowania"
+msgid "Software Repository Identified"
+msgstr "Rozpoznano repozytorium oprogramowania"
 
 #: src/gs-details-page.ui:536
 msgid ""
-"Adding this software source will give you access to additional software and "
-"upgrades."
+"Adding this software repository will give you access to additional software "
+"and upgrades."
 msgstr ""
-"Dodanie tego źródła oprogramowania umożliwi dostęp do dodatkowego "
+"Dodanie tego repozytorium oprogramowania umożliwi dostęp do dodatkowego "
 "oprogramowania i aktualizacji."
 
 #: src/gs-details-page.ui:537
-msgid "Only use software sources that you trust."
-msgstr "Należy używać tylko zaufanych źródeł oprogramowania."
+msgid "Only use software repositories that you trust."
+msgstr "Należy używać tylko zaufanych repozytoriów oprogramowania."
 
 #: src/gs-details-page.ui:553
 msgid "_Website"
@@ -1566,7 +1550,7 @@ msgstr "Integracja z systemem"
 msgid "Sandboxed"
 msgstr "Zabezpieczone"
 
-#: src/gs-details-page.ui:775 src/gs-sources-dialog.ui:359
+#: src/gs-details-page.ui:775
 msgid "Version"
 msgstr "Wersja"
 
@@ -2113,8 +2097,8 @@ msgid "Starting up…"
 msgstr "Uruchamianie…"
 
 #: src/gs-menus.ui:7
-msgid "_Software Sources"
-msgstr "Ź_ródła oprogramowania"
+msgid "_Software Repositories"
+msgstr "_Repozytoria oprogramowania"
 
 #: src/gs-menus.ui:14
 msgid "_About"
@@ -2133,56 +2117,69 @@ msgid "There are no reviews to moderate"
 msgstr "Brak recenzji do moderacji"
 
 #. add button
-#: src/gs-overview-page.c:328
+#: src/gs-overview-page.c:329
 msgid "More…"
 msgstr "Więcej…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:494
+#: src/gs-overview-page.c:495
 msgid "Recommended Audio & Video Applications"
 msgstr "Polecane programy dźwiękowe i wideo"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:499
+#: src/gs-overview-page.c:500
 msgid "Recommended Games"
 msgstr "Polecane gry"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:504
+#: src/gs-overview-page.c:505
 msgid "Recommended Graphics Applications"
 msgstr "Polecane programy graficzne"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:509
+#: src/gs-overview-page.c:510
 msgid "Recommended Productivity Applications"
 msgstr "Polecane programy biurowe"
 
-#. TRANSLATORS: this is the proprietary info bar
-#: src/gs-overview-page.c:855
-msgid ""
-"Provides access to additional software, including web browsers and games."
-msgstr ""
-"Dodaje dostęp do dodatkowego oprogramowania, w tym przeglądarek WWW i gier."
+#. TRANSLATORS: this is the fallback text we use if we can't
+#. figure out the name of the operating system
+#: src/gs-overview-page.c:875 src/gs-repos-dialog.c:613
+msgid "the operating system"
+msgstr "operacyjny"
 
-#. TRANSLATORS: this is the proprietary info bar
-#: src/gs-overview-page.c:859
-msgid "Proprietary software has restrictions on use and access to source code."
+#. TRANSLATORS: this is the third party repositories info bar.
+#. %s gets replaced by the distro name, e.g. Fedora
+#: src/gs-overview-page.c:911 src/gs-repos-dialog.c:698
+#, c-format
+msgid ""
+"Access additional software that is not supplied by %s through select third "
+"party repositories."
 msgstr ""
-"Własnościowe oprogramowanie ma ograniczenia użytku i dostępu do kodu "
-"źródłowego."
+"Uzyskaj dostęp do dodatkowego oprogramowania, które nie jest dostarczane "
+"przez system %s dzięki wybranym repozytoriom dostarczanym przez stronę "
+"trzecią."
+
+#. TRANSLATORS: this is the third party repositories info bar.
+#: src/gs-overview-page.c:916 src/gs-repos-dialog.c:703
+msgid ""
+"Some of this software is proprietary and therefore has restrictions on use "
+"and access to source code."
+msgstr ""
+"Część tego oprogramowania jest własnościowa, więc ma ograniczenia użytku "
+"i dostępu do kodu źródłowego."
 
 #. TRANSLATORS: this is the clickable
-#. * link on the proprietary info bar
-#: src/gs-overview-page.c:866 src/gs-sources-dialog.c:272
+#. * link on the third party repositories info bar
+#: src/gs-overview-page.c:924 src/gs-repos-dialog.c:710
 msgid "Find out more…"
 msgstr "Więcej informacji…"
 
-#. TRANSLATORS: button to turn on proprietary software sources
-#: src/gs-overview-page.c:901
+#. TRANSLATORS: button to turn on third party software repositories
+#: src/gs-overview-page.c:933
 msgid "Enable"
 msgstr "Włącz"
 
@@ -2191,8 +2188,8 @@ msgid "Overview page"
 msgstr "Strona przeglądu"
 
 #: src/gs-overview-page.ui:49
-msgid "Enable Proprietary Software Sources?"
-msgstr "Włączyć źródła oprogramowania własnościowego?"
+msgid "Enable Third Party Software Repositories?"
+msgstr "Włączyć repozytoria oprogramowania dostarczane przez stronę trzecią?"
 
 #: src/gs-overview-page.ui:117
 msgid "Featured Application"
@@ -2218,38 +2215,38 @@ msgstr "Nie odnaleziono danych programu"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:445
+#: src/gs-page.c:465
 #, c-format
 msgid "Are you sure you want to purchase %s?"
 msgstr "Na pewno kupić program %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:449
+#: src/gs-page.c:469
 #, c-format
 msgid "%s will be installed, and you will be charged %s."
 msgstr "Program %s zostanie zainstalowany, za co zostanie pobrane %s."
 
 #. TRANSLATORS: this is button text to purchase the application
-#: src/gs-page.c:462
+#: src/gs-page.c:482
 msgid "Purchase"
 msgstr "Kup"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:535
+#: src/gs-page.c:556
 #, c-format
 msgid "Prepare %s"
 msgstr "Przygotuj program %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * source name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:669
+#: src/gs-page.c:691
 #, c-format
 msgid "Are you sure you want to remove the %s source?"
 msgstr "Na pewno usunąć źródło „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:673
+#: src/gs-page.c:695
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2260,13 +2257,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:681
+#: src/gs-page.c:703
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:684
+#: src/gs-page.c:706
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -2366,63 +2363,211 @@ msgstr "Niezgodne oprogramowanie"
 msgid "_Continue"
 msgstr "_Kontynuuj"
 
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software repository.
+#: src/gs-repos-dialog.c:109
+#, c-format
+msgid "%u application installed"
+msgid_plural "%u applications installed"
+msgstr[0] "Zainstalowano %u program"
+msgstr[1] "Zainstalowano %u programy"
+msgstr[2] "Zainstalowano %u programów"
+
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software repository.
+#: src/gs-repos-dialog.c:116
+#, c-format
+msgid "%u add-on installed"
+msgid_plural "%u add-ons installed"
+msgstr[0] "Zainstalowano %u dodatek"
+msgstr[1] "Zainstalowano %u dodatki"
+msgstr[2] "Zainstalowano %u dodatków"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software repository.
+#. The correct form here depends on the number of applications.
+#: src/gs-repos-dialog.c:124
+#, c-format
+msgid "%u application"
+msgid_plural "%u applications"
+msgstr[0] "%u program"
+msgstr[1] "%u programy"
+msgstr[2] "%u programów"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software repository.
+#. The correct form here depends on the number of add-ons.
+#: src/gs-repos-dialog.c:130
+#, c-format
+msgid "%u add-on"
+msgid_plural "%u add-ons"
+msgstr[0] "%u dodatek"
+msgstr[1] "%u dodatki"
+msgstr[2] "%u dodatków"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software repository.
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: src/gs-repos-dialog.c:137
+#, c-format
+msgid "%s and %s installed"
+msgid_plural "%s and %s installed"
+msgstr[0] "Zainstalowano %s i %s"
+msgstr[1] "Zainstalowano %s i %s"
+msgstr[2] "Zainstalowano %s i %s"
+
+#. TRANSLATORS: this is a prompt message, and '%s' is a
+#. * repository name, e.g. 'GNOME Nightly'
+#: src/gs-repos-dialog.c:244
+#, c-format
+msgid "Remove “%s”?"
+msgstr "Usunąć repozytorium „%s”?"
+
+#. TRANSLATORS: this is a prompt message, and '%s' is a
+#. * repository name, e.g. 'GNOME Nightly'
+#: src/gs-repos-dialog.c:249
+#, c-format
+msgid "Disable “%s”?"
+msgstr "Wyłączyć repozytorium „%s”?"
+
+#. TRANSLATORS: longer dialog text
+#: src/gs-repos-dialog.c:253
+msgid ""
+"Software that has been installed from this repository will no longer receive "
+"updates, including security fixes."
+msgstr ""
+"Oprogramowanie zainstalowane z tego repozytorium nie będzie już "
+"aktualizowane (co obejmuje poprawki bezpieczeństwa)."
+
+#. TRANSLATORS: this is button text to remove the repo
+#: src/gs-repos-dialog.c:271
+msgid "Disable"
+msgstr "Wyłącz"
+
+#. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
+#. %s gets replaced by the name of the actual distro, e.g. Fedora.
+#: src/gs-repos-dialog.c:683 src/gs-repos-dialog.c:717
+#, c-format
+msgid "These repositories supplement the default software provided by %s."
+msgstr ""
+"Te repozytoria uzupełniają domyślne oprogramowanie dostarczane przez system "
+"%s."
+
+#. TRANSLATORS: info bar title in the software repositories dialog
+#: src/gs-repos-dialog.c:694
+msgid "Third Party Repositories"
+msgstr "Repozytoria dostarczane przez stronę trzecią"
+
+#: src/gs-repos-dialog.ui:82
+msgid "No Additional Repositories"
+msgstr "Brak dodatkowych repozytoriów"
+
+#. TRANSLATORS: this is a button in the software repositories
+#. dialog for enabling a repo
+#: src/gs-repos-dialog-row.c:132
+msgid "_Enable"
+msgstr "_Włącz"
+
+#. TRANSLATORS: this is a button in the software repositories dialog
+#. for removing a repo. The ellipsis indicates that further
+#. steps are required
+#: src/gs-repos-dialog-row.c:141
+msgid "_Remove…"
+msgstr "_Usuń…"
+
+#. TRANSLATORS: this is a button in the software repositories dialog
+#. for disabling a repo. The ellipsis indicates that further
+#. steps are required
+#: src/gs-repos-dialog-row.c:146
+msgid "_Disable…"
+msgstr "Wyłą_cz…"
+
+#. TRANSLATORS: this is a button in the software repositories dialog
+#. that shows the status of a repo being enabled
+#: src/gs-repos-dialog-row.c:154
+msgid "Enabling"
+msgstr "Włączanie"
+
+#. TRANSLATORS: this is a button in the software repositories dialog
+#. that shows the status of a repo being disabled
+#: src/gs-repos-dialog-row.c:166
+msgid "Disabling"
+msgstr "Wyłączanie"
+
+#. TRANSLATORS: this is a label in the software repositories
+#. dialog that indicates that a repo is enabled.
+#: src/gs-repos-dialog-row.c:180
+msgid "Enabled"
+msgstr "Włączone"
+
+#. TRANSLATORS: this is a label in the software repositories
+#. dialog that indicates that a repo is disabled.
+#: src/gs-repos-dialog-row.c:186
+msgid "Disabled"
+msgstr "Wyłączone"
+
+#: src/gs-repos-dialog-row.ui:86
+msgid "URL"
+msgstr "Adres URL"
+
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
-#: src/gs-review-dialog.c:98
+#: src/gs-review-dialog.c:95
 msgid "Hate it"
 msgstr "Zły"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
-#: src/gs-review-dialog.c:102
+#: src/gs-review-dialog.c:99
 msgid "Don’t like it"
 msgstr "Słaby"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
-#: src/gs-review-dialog.c:106
+#: src/gs-review-dialog.c:103
 msgid "It’s OK"
 msgstr "W porządku"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
-#: src/gs-review-dialog.c:110
+#: src/gs-review-dialog.c:107
 msgid "Like it"
 msgstr "Dobry"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
-#: src/gs-review-dialog.c:114
+#: src/gs-review-dialog.c:111
 msgid "Love it"
 msgstr "Wspaniały"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: src/gs-review-dialog.c:136
+#: src/gs-review-dialog.c:133
 msgid "Please take more time writing the review"
 msgstr "Proszę poświęcić więcej czasu na napisanie recenzji"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:140
+#: src/gs-review-dialog.c:137
 msgid "Please choose a star rating"
 msgstr "Proszę wybrać ocenę"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:144
+#: src/gs-review-dialog.c:141
 msgid "The summary is too short"
 msgstr "Podsumowanie jest za krótkie"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:148
+#: src/gs-review-dialog.c:145
 msgid "The summary is too long"
 msgstr "Podsumowanie jest za długie"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:152
+#: src/gs-review-dialog.c:149
 msgid "The description is too short"
 msgstr "Opis jest za krótki"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:156
+#: src/gs-review-dialog.c:153
 msgid "The description is too long"
 msgstr "Opis jest za długi"
 
@@ -2985,131 +3130,6 @@ msgstr ""
 #: src/gs-shell.c:1548
 msgid "AC power is required"
 msgstr "Wymagane jest zasilanie sieciowe"
-
-#. TRANSLATORS: This string describes a software source that
-#. has no software installed from it.
-#: src/gs-sources-dialog.c:98
-msgid "No applications or addons installed; other software might still be"
-msgstr ""
-"Nie zainstalowano żadnych programów ani dodatków. Inne oprogramowanie może "
-"nadal być zainstalowane."
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. installed' sentence, describing a software source.
-#: src/gs-sources-dialog.c:103
-#, c-format
-msgid "%u application installed"
-msgid_plural "%u applications installed"
-msgstr[0] "Zainstalowano %u program"
-msgstr[1] "Zainstalowano %u programy"
-msgstr[2] "Zainstalowano %u programów"
-
-#. TRANSLATORS: This string is used to construct the 'X add-ons
-#. installed' sentence, describing a software source.
-#: src/gs-sources-dialog.c:110
-#, c-format
-msgid "%u add-on installed"
-msgid_plural "%u add-ons installed"
-msgstr[0] "Zainstalowano %u dodatek"
-msgstr[1] "Zainstalowano %u dodatki"
-msgstr[2] "Zainstalowano %u dodatków"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. and y add-ons installed' sentence, describing a software source.
-#. The correct form here depends on the number of applications.
-#: src/gs-sources-dialog.c:118
-#, c-format
-msgid "%u application"
-msgid_plural "%u applications"
-msgstr[0] "%u program"
-msgstr[1] "%u programy"
-msgstr[2] "%u programów"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. and y add-ons installed' sentence, describing a software source.
-#. The correct form here depends on the number of add-ons.
-#: src/gs-sources-dialog.c:124
-#, c-format
-msgid "%u add-on"
-msgid_plural "%u add-ons"
-msgstr[0] "%u dodatek"
-msgstr[1] "%u dodatki"
-msgstr[2] "%u dodatków"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. and y add-ons installed' sentence, describing a software source.
-#. The correct form here depends on the total number of
-#. applications and add-ons.
-#: src/gs-sources-dialog.c:131
-#, c-format
-msgid "%s and %s installed"
-msgid_plural "%s and %s installed"
-msgstr[0] "Zainstalowano %s i %s"
-msgstr[1] "Zainstalowano %s i %s"
-msgstr[2] "Zainstalowano %s i %s"
-
-#. TRANSLATORS: nonfree software
-#: src/gs-sources-dialog.c:262
-msgid "Typically has restrictions on use and access to source code."
-msgstr "Zwykle ma ograniczenia użytku i dostępu do kodu źródłowego."
-
-#. TRANSLATORS: list header
-#: src/gs-sources-dialog.c:283
-msgid "Proprietary Software Sources"
-msgstr "Źródła oprogramowania własnościowego"
-
-#. TRANSLATORS: this is the fallback text we use if we can't
-#. figure out the name of the operating system
-#: src/gs-sources-dialog.c:581
-msgid "the operating system"
-msgstr "operacyjny"
-
-#. TRANSLATORS: This is the text displayed in the Software Sources
-#. dialog when no OS-provided software sources are enabled. %s gets
-#. replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-sources-dialog.c:674
-#, c-format
-msgid ""
-"Software sources can be downloaded from the internet. They give you access "
-"to additional software that is not provided by %s."
-msgstr ""
-"Można pobrać źródła oprogramowania z Internetu. Dają one dostęp do "
-"dodatkowego oprogramowania, które nie jest dostarczane przez system %s."
-
-#: src/gs-sources-dialog.ui:155
-msgid "Additional Sources"
-msgstr "Dodatkowe źródła"
-
-#: src/gs-sources-dialog.ui:175
-msgid ""
-"Removing a source will also remove any software you have installed from it."
-msgstr ""
-"Usunięcie źródła spowoduje także usunięcie oprogramowania, które zostało "
-"z niego zainstalowane."
-
-#: src/gs-sources-dialog.ui:260
-msgid "No software installed from this source"
-msgstr "Żadne oprogramowanie nie zostało zainstalowane z tego źródła"
-
-#: src/gs-sources-dialog.ui:287
-msgid "Installed from this Source"
-msgstr "Zainstalowane z tego źródła"
-
-#: src/gs-sources-dialog.ui:333
-msgid "Source Details"
-msgstr "Informacje o źródle"
-
-#: src/gs-sources-dialog.ui:390
-msgid "Last Checked"
-msgstr "Ostatnio wyszukano"
-
-#: src/gs-sources-dialog.ui:407
-msgid "Added"
-msgstr "Dodano"
-
-#: src/gs-sources-dialog.ui:424
-msgid "Website"
-msgstr "Witryna"
 
 #: src/gs-summary-tile.c:80
 #, c-format
@@ -4115,7 +4135,7 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Pobieranie metadanych Flatpak dla %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2645
+#: plugins/flatpak/gs-flatpak.c:2788
 msgid "Getting runtime source…"
 msgstr "Pobieranie źródła środowiska wykonawczego…"
 
