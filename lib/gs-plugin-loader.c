@@ -2985,7 +2985,7 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 							 NULL);
 			gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
-							    NULL,
+							    gs_app_get_cancellable (app),
 							    gs_plugin_loader_app_installed_cb,
 							    g_object_ref (app));
 		}
