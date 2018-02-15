@@ -3298,7 +3298,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
 				g_autoptr(AsIcon) ic = as_icon_new ();
 				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-				if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+				if (gs_app_has_quirk (app, AS_APP_QUIRK_HAS_SOURCE))
 					as_icon_set_name (ic, "x-package-repository");
 				else
 					as_icon_set_name (ic, "application-x-executable");
