@@ -1809,9 +1809,15 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	names = g_strsplit (contents, "\n", 0);
 	for (guint i = 0; names[i] != NULL; i++) {
 		g_autoptr(GsApp) app = NULL;
-		if (strlen (names[i]) == 0)
+		const gchar *id = names[i];
+
+		if (strlen (id) == 0)
 			continue;
-		app = gs_app_new (names[i]);
+		if (!as_utils_unique_id_valid (id))
+			continue;
+
+		app = gs_app_new (NULL);
+		gs_app_set_from_unique_id (app, id);
 		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 		gs_app_list_add (list, app);
 	}
@@ -1857,7 +1863,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 		GsApp *app;
 		app = g_ptr_array_index (pending_apps, i);
 		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
-			g_string_append (s, gs_app_get_id (app));
+			g_string_append (s, gs_app_get_unique_id (app));
 			g_string_append_c (s, '\n');
 		}
 	}
