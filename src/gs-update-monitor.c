@@ -217,7 +217,7 @@ should_show_upgrade_notification (GsUpdateMonitor *monitor)
 
 	now = g_date_time_new_now_local ();
 	d = g_date_time_difference (now, then);
-	if (d >= 30 * G_TIME_SPAN_DAY)
+	if (d >= 7 * G_TIME_SPAN_DAY)
 		return TRUE;
 
 	return FALSE;
@@ -267,6 +267,7 @@ get_upgrades_finished_cb (GObject *object,
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
 	GsApp *app;
 	g_autofree gchar *body = NULL;
+	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GNotification) n = NULL;
 	g_autoptr(GsAppList) apps = NULL;
@@ -296,6 +297,11 @@ get_upgrades_finished_cb (GObject *object,
 	/* only nag about upgrades once per month */
 	if (!should_show_upgrade_notification (monitor))
 		return;
+
+	g_debug ("showing distro upgrade notification");
+	now = g_date_time_new_now_local ();
+	g_settings_set (monitor->settings, "upgrade-notification-timestamp", "x",
+	                g_date_time_to_unix (now));
 
 	/* just get the first result : FIXME, do we sort these by date? */
 	app = gs_app_list_index (apps, 0);
