@@ -253,18 +253,10 @@ out:
 	gs_shell_profile_dump (self->shell);
 }
 
-static void
-gs_installed_page_load (GsInstalledPage *self)
+static GsPluginRefineFlags
+gs_installed_page_get_refine_flags (GsInstalledPage *self)
 {
 	GsPluginRefineFlags flags;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	if (self->waiting)
-		return;
-	self->waiting = TRUE;
-
-	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
 
 	flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 		GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
@@ -280,10 +272,25 @@ gs_installed_page_load (GsInstalledPage *self)
 	if (should_show_installed_size (self))
 		flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
 
+	return flags;
+}
+
+static void
+gs_installed_page_load (GsInstalledPage *self)
+{
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	if (self->waiting)
+		return;
+	self->waiting = TRUE;
+
+	/* remove old entries */
+	gs_container_remove_all (GTK_CONTAINER (self->list_box_install));
+
 	/* get installed apps */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-					 "refine-flags", flags,
+					 "refine-flags", gs_installed_page_get_refine_flags (self),
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    plugin_job,
@@ -548,44 +555,74 @@ gs_installed_page_has_app (GsInstalledPage *self,
 }
 
 static void
-gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
-                                           GsInstalledPage *self)
+gs_installed_page_pending_apps_refined_cb (GObject *source,
+					   GAsyncResult *res,
+					   gpointer user_data)
 {
-	GsApp *app;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (user_data);
 	GtkWidget *widget;
-	guint i;
-	guint cnt = 0;
-	g_autoptr(GsAppList) pending = NULL;
+	guint pending_apps_count = 0;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = gs_plugin_loader_job_process_finish (plugin_loader,
+									 res,
+									 &error);
+	if (list == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to refine pending apps: %s", error->message);
+		goto out;
+	}
 
-	/* add new apps to the list */
-	pending = gs_plugin_loader_get_pending (plugin_loader);
-	for (i = 0; i < gs_app_list_length (pending); i++) {
-		app = gs_app_list_index (pending, i);
+	for (guint i = 0; i < gs_app_list_length (list); ++i) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (gs_app_is_installed (app))
+			continue;
 
 		/* never show OS upgrades, we handle the scheduling and
 		 * cancellation in GsUpgradeBanner */
 		if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE)
 			continue;
 
-		/* do not to add pending apps more than once. */
-		if (gs_installed_page_has_app (self, app) == FALSE)
-			gs_installed_page_add_app (self, pending, app);
+		if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
+			gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 
-		/* incremement the label */
-		cnt++;
+		++pending_apps_count;
+		if (!gs_installed_page_has_app (self, app))
+			gs_installed_page_add_app (self, list, app);
 	}
 
 	/* show a label with the number of on-going operations */
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
 						     "button_installed_counter"));
-	if (cnt == 0) {
+	if (pending_apps_count == 0) {
 		gtk_widget_hide (widget);
 	} else {
 		g_autofree gchar *label = NULL;
-		label = g_strdup_printf ("%u", cnt);
+		label = g_strdup_printf ("%u", pending_apps_count);
 		gtk_label_set_label (GTK_LABEL (widget), label);
 		gtk_widget_show (widget);
 	}
+
+ out:
+	gs_shell_profile_dump (self->shell);
+}
+
+static void
+gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
+                                           GsInstalledPage *self)
+{
+	g_autoptr(GsAppList) pending = gs_plugin_loader_get_pending (plugin_loader);
+	g_autoptr(GsPluginJob) plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+								"list", pending,
+								"failure-flags",
+								GS_PLUGIN_FAILURE_FLAGS_NONE,
+								"refine-flags",
+								gs_installed_page_get_refine_flags (self),
+								NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_installed_page_pending_apps_refined_cb,
+					    self);
 }
 
 static void
