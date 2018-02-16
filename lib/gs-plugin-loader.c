@@ -1785,7 +1785,6 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *pending_apps;
 	gboolean ret;
-	gint i;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GString) s = NULL;
 	g_autofree gchar *file = NULL;
@@ -1793,7 +1792,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	s = g_string_new ("");
 	pending_apps = priv->pending_apps;
 	g_mutex_lock (&priv->pending_apps_mutex);
-	for (i = (gint) pending_apps->len - 1; i >= 0; i--) {
+	for (guint i = 0; i < pending_apps->len; ++i) {
 		const gchar *id = g_ptr_array_index (pending_apps, i);
 		GsApp *app = gs_app_list_lookup (priv->global_cache, id);
 
