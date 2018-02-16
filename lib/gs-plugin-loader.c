@@ -1677,6 +1677,28 @@ emit_pending_apps_idle (gpointer loader)
 	return G_SOURCE_REMOVE;
 }
 
+static gint
+get_pending_app_index (GsPluginLoader *plugin_loader,
+		       const gchar *app_id)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	for (guint i = 0; i < priv->pending_apps->len; ++i) {
+		const gchar *id = g_ptr_array_index (priv->pending_apps, i);
+		if (g_strcmp0 (id, app_id) == 0)
+			return i;
+	}
+	return -1;
+}
+
+static void
+add_pending_app (GsPluginLoader *plugin_loader,
+		 const gchar *app_id)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	if (get_pending_app_index (plugin_loader, app_id) == -1)
+		g_ptr_array_add (priv->pending_apps, g_strdup (app_id));
+}
+
 static void
 gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 				   GsPluginLoaderHelper *helper)
@@ -1688,8 +1710,7 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		g_ptr_array_add (priv->pending_apps,
-				 g_strdup (gs_app_get_unique_id (app)));
+		add_pending_app (plugin_loader, gs_app_get_unique_id (app));
 		/* make sure the progress is properly initialized */
 		gs_app_set_progress (app, 0);
 	}
@@ -1700,11 +1721,10 @@ static gboolean
 remove_pending_app (GsPluginLoader *plugin_loader,
 		    const gchar *app_id)
 {
-	for (guint i = 0; i < priv->pending_apps->len; ++i) {
-		if (g_strcmp0 (gs_app_get_unique_id (app), app_id) == 0)
-			break;
-	}
-	if (i != priv->pending_apps->len) {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	gint index = get_pending_app_index (plugin_loader, app_id);
+
+	if (index != -1) {
 		g_ptr_array_remove_index (priv->pending_apps, index);
 		return TRUE;
 	}
@@ -1784,7 +1804,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		g_debug ("adding pending app %s", gs_app_get_unique_id (app));
-		g_ptr_array_add (priv->pending_apps, g_object_ref (app));
+		add_pending_app (plugin_loader, gs_app_get_unique_id (app));
 	}
 	g_mutex_unlock (&priv->pending_apps_mutex);
 
@@ -1838,7 +1858,7 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 
 	/* queue the app itself */
 	g_mutex_lock (&priv->pending_apps_mutex);
-	g_ptr_array_add (priv->pending_apps, g_strdup (app_id));
+	add_pending_app (plugin_loader, app_id);
 	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
@@ -1863,7 +1883,6 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	gboolean ret;
 	guint i;
 	guint id;
-	guint index = -1;
 
 	g_mutex_lock (&priv->pending_apps_mutex);
 	ret = remove_pending_app (plugin_loader, gs_app_get_unique_id (app));
