@@ -223,7 +223,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 		/* we have less packages returned than source packages */
 		tmp = gs_app_to_string (app);
 		g_debug ("Failed to find all packages for:\n%s", tmp);
-		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 	}
 }
 
