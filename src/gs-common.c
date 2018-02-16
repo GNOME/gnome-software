@@ -26,6 +26,10 @@
 #include <errno.h>
 #include <fnmatch.h>
 
+#ifdef HAVE_FIRMWARE
+#include <fwupd.h>
+#endif
+
 #include "gs-app.h"
 #include "gs-common.h"
 #include "gs-plugin.h"
@@ -716,7 +720,20 @@ gs_utils_widget_set_css_app (GsApp *app,
 const gchar *
 gs_user_agent (void)
 {
+#ifdef HAVE_FIRMWARE
+	static gchar *user_agent = NULL;
+	if (user_agent == NULL) {
+		user_agent = g_strdup_printf ("%s/%s fwupd/%i.%i.%i",
+					      PACKAGE_NAME,
+					      PACKAGE_VERSION,
+					      FWUPD_MAJOR_VERSION,
+					      FWUPD_MINOR_VERSION,
+					      FWUPD_MICRO_VERSION);
+	}
+	return user_agent;
+#else
 	return PACKAGE_NAME "/" PACKAGE_VERSION;
+#endif
 }
 
 static void
