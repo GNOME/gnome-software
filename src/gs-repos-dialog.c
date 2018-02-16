@@ -692,15 +692,13 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
 	                              /* TRANSLATORS: info bar title in the software repositories dialog */
 	                              _("Third Party Repositories"));
-	g_string_printf (str,
-	                 /* TRANSLATORS: this is the third party repositories info bar.
-	                    %s gets replaced by the distro name, e.g. Fedora */
-	                 _("Access additional software that is not supplied by %s through select third party repositories."),
-	                 os_name);
+	g_string_append (str,
+	                 /* TRANSLATORS: this is the third party repositories info bar. */
+	                 _("Access additional software from selected third party sources."));
 	g_string_append (str, " ");
 	g_string_append (str,
 	                 /* TRANSLATORS: this is the third party repositories info bar. */
-	                 _("Some of this software is proprietary and therefore has restrictions on use and access to source code."));
+	                 _("Some of this software is proprietary and therefore has restrictions on use, sharing, and access to source code."));
 	/* optional URL */
 	uri = g_settings_get_string (dialog->settings, "nonfree-software-uri");
 	if (uri != NULL && uri[0] != '\0') {

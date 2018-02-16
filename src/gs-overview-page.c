@@ -860,24 +860,6 @@ third_party_response_cb (GtkInfoBar *info_bar,
 	refresh_third_party_repo (self);
 }
 
-static gchar *
-get_os_name (void)
-{
-	gchar *name = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
-
-	os_release = gs_os_release_new (NULL);
-	if (os_release != NULL)
-		name = g_strdup (gs_os_release_get_name (os_release));
-	if (name == NULL) {
-		/* TRANSLATORS: this is the fallback text we use if we can't
-		   figure out the name of the operating system */
-		name = g_strdup (_("the operating system"));
-	}
-
-	return name;
-}
-
 static gboolean
 gs_overview_page_setup (GsPage *page,
                         GsShell *shell,
@@ -891,7 +873,6 @@ gs_overview_page_setup (GsPage *page,
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
-	g_autofree gchar *os_name = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -903,22 +884,17 @@ gs_overview_page_setup (GsPage *page,
 	priv->category_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, (GDestroyNotify) g_object_unref);
 
-	os_name = get_os_name ();
-
-	g_string_printf (str,
-			 /* TRANSLATORS: this is the third party repositories info bar.
-	                    %s gets replaced by the distro name, e.g. Fedora */
-	                 _("Access additional software that is not supplied by %s through select third party repositories."),
-	                 os_name);
+	g_string_append (str,
+	                 /* TRANSLATORS: this is the third party repositories info bar. */
+	                 _("Access additional software from selected third party sources."));
 	g_string_append (str, " ");
 	g_string_append (str,
 			 /* TRANSLATORS: this is the third party repositories info bar. */
-	                 _("Some of this software is proprietary and therefore has restrictions on use and access to source code."));
+	                 _("Some of this software is proprietary and therefore has restrictions on use, sharing, and access to source code."));
 	/* optional URL */
 	uri = g_settings_get_string (priv->settings, "nonfree-software-uri");
 	if (uri != NULL && uri[0] != '\0') {
-		g_string_append (str, "\n");
-	        g_string_append_printf (str, "<a href=\"%s\">%s</a>", uri,
+	        g_string_append_printf (str, " <a href=\"%s\">%s</a>", uri,
 	                                /* TRANSLATORS: this is the clickable
 	                                 * link on the third party repositories info bar */
 	                                _("Find out more…"));
