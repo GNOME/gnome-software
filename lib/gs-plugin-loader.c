@@ -1696,17 +1696,55 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 }
 
 static void
+save_install_queue (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GString) s = NULL;
+	g_autofree gchar *file = NULL;
+
+	s = g_string_new ("");
+	g_mutex_lock (&priv->pending_apps_mutex);
+	for (guint i = 0; i < gs_app_list_length (priv->pending_apps); ++i) {
+		GsApp *app = gs_app_list_index (priv->pending_apps, i);
+		g_string_append (s, gs_app_get_unique_id (app));
+		g_string_append_c (s, '\n');
+	}
+	g_mutex_unlock (&priv->pending_apps_mutex);
+
+	/* save file */
+	file = g_build_filename (g_get_user_data_dir (),
+				 "gnome-software",
+				 "install-queue",
+				 NULL);
+	if (!gs_mkdir_parent (file, &error)) {
+		g_warning ("failed to create dir for %s: %s",
+			   file, error->message);
+		return;
+	}
+	g_debug ("saving install queue to %s", file);
+	ret = g_file_set_contents (file, s->str, (gssize) s->len, &error);
+	if (!ret)
+		g_warning ("failed to save install queue: %s", error->message);
+}
+
+static void
 gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 				      GsPluginLoaderHelper *helper)
 {
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->pending_apps_mutex);
+	gboolean save_queue = FALSE;
 
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		gs_app_list_remove (priv->pending_apps, app);
+		if (gs_app_get_state (app) != AS_APP_STATE_QUEUED_FOR_INSTALL) {
+			save_queue = TRUE;
+			gs_app_list_remove (priv->pending_apps, app);
+		}
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
@@ -1721,6 +1759,10 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 			break;
 		}
 
+	}
+	if (save_queue) {
+		g_clear_pointer (&locker, g_mutex_locker_free);
+		save_install_queue (plugin_loader);
 	}
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
@@ -1764,40 +1806,6 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	}
 
 	return TRUE;
-}
-
-static void
-save_install_queue (GsPluginLoader *plugin_loader)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GString) s = NULL;
-	g_autofree gchar *file = NULL;
-
-	s = g_string_new ("");
-	g_mutex_lock (&priv->pending_apps_mutex);
-	for (guint i = 0; i < gs_app_list_length (priv->pending_apps); ++i) {
-		GsApp *app = gs_app_list_index (priv->pending_apps, i);
-		g_string_append (s, gs_app_get_unique_id (app));
-		g_string_append_c (s, '\n');
-	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
-
-	/* save file */
-	file = g_build_filename (g_get_user_data_dir (),
-				 "gnome-software",
-				 "install-queue",
-				 NULL);
-	if (!gs_mkdir_parent (file, &error)) {
-		g_warning ("failed to create dir for %s: %s",
-			   file, error->message);
-		return;
-	}
-	g_debug ("saving install queue to %s", file);
-	ret = g_file_set_contents (file, s->str, (gssize) s->len, &error);
-	if (!ret)
-		g_warning ("failed to save install queue: %s", error->message);
 }
 
 static void
