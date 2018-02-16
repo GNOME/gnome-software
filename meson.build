@@ -146,7 +146,6 @@ endif
 
 if get_option('enable-fwupd')
   fwupd = dependency('fwupd', version : '>= 0.9.7')
-  conf.set('HAVE_FWUPD', '1')
 endif
 
 if get_option('enable-flatpak')
