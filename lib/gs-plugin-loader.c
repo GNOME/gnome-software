@@ -1768,26 +1768,19 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 static void
 save_install_queue (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GPtrArray *pending_apps;
-	gboolean ret;
+	GsAppList *pending_apps = gs_plugin_loader_get_pending (plugin_loader);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GString) s = NULL;
 	g_autofree gchar *file = NULL;
 
 	s = g_string_new ("");
-	pending_apps = priv->pending_apps;
-	g_mutex_lock (&priv->pending_apps_mutex);
-	for (guint i = 0; i < pending_apps->len; ++i) {
-		const gchar *id = g_ptr_array_index (pending_apps, i);
-		GsApp *app = gs_app_list_lookup (priv->global_cache, id);
-
-		if (app != NULL && gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+	for (guint i = 0; i < gs_app_list_length (pending_apps); ++i) {
+		GsApp *app = gs_app_list_index (pending_apps, i);
+		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
 			g_string_append (s, gs_app_get_unique_id (app));
 			g_string_append_c (s, '\n');
 		}
 	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	/* save file */
 	file = g_build_filename (g_get_user_data_dir (),
@@ -1800,8 +1793,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 		return;
 	}
 	g_debug ("saving install queue to %s", file);
-	ret = g_file_set_contents (file, s->str, (gssize) s->len, &error);
-	if (!ret)
+	if (!g_file_set_contents (file, s->str, (gssize) s->len, &error))
 		g_warning ("failed to save install queue: %s", error->message);
 }
 
