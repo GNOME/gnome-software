@@ -69,6 +69,10 @@ if get_option('enable-polkit')
   librarydeps += polkit
 endif
 
+if get_option('enable-fwupd')
+  librarydeps += fwupd
+endif
+
 libgnomesoftware = static_library(
   'libgnomesoftware',
   sources : [
