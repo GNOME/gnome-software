@@ -1696,6 +1696,21 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
+static gboolean
+remove_pending_app (GsPluginLoader *plugin_loader,
+		    const gchar *app_id)
+{
+	for (guint i = 0; i < priv->pending_apps->len; ++i) {
+		if (g_strcmp0 (gs_app_get_unique_id (app), app_id) == 0)
+			break;
+	}
+	if (i != priv->pending_apps->len) {
+		g_ptr_array_remove_index (priv->pending_apps, index);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 static void
 gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 				      GsPluginLoaderHelper *helper)
@@ -1707,11 +1722,7 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 	g_assert (gs_app_list_length (list) > 0);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		const gchar *id = gs_app_get_unique_id (app);
-		guint index = -1;
-		if (g_ptr_array_find_with_equal_func (priv->pending_apps, id,
-						      g_str_equal, &index))
-			g_ptr_array_remove_index (priv->pending_apps, index);
+		remove_pending_app (plugin_loader, gs_app_get_unique_id (app));
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
@@ -1855,11 +1866,7 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	guint index = -1;
 
 	g_mutex_lock (&priv->pending_apps_mutex);
-	ret = g_ptr_array_find_with_equal_func (priv->pending_apps,
-						gs_app_get_unique_id (app),
-						g_str_equal, &index);
-	if (ret)
-		g_ptr_array_remove_index (priv->pending_apps, index);
+	ret = remove_pending_app (plugin_loader, gs_app_get_unique_id (app));
 	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	if (ret) {
