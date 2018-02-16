@@ -60,7 +60,7 @@ libgnomesoftware_a_SOURCES =				\
 	gs-utils.c					\
 	gs-utils.h
 
-libgnomesoftware_a_CFLAGS = $(GS_PRIVATE_CFLAGS)
+libgnomesoftware_a_CFLAGS = $(GS_PRIVATE_CFLAGS) $(FWUPD_CFLAGS)
 
 libexec_PROGRAMS =					\
 	gnome-software-cmd
