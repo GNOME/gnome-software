@@ -251,8 +251,14 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPluginLoaderHelper, gs_plugin_loader_helper_free
 static gint
 gs_plugin_loader_app_sort_name_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	return g_strcmp0 (gs_app_get_name (app1),
-			  gs_app_get_name (app2));
+	g_autofree gchar *casefolded_name1 = NULL;
+	g_autofree gchar *casefolded_name2 = NULL;
+
+	if (gs_app_get_name (app1) != NULL)
+		casefolded_name1 = g_utf8_casefold (gs_app_get_name (app1), -1);
+	if (gs_app_get_name (app2) != NULL)
+		casefolded_name2 = g_utf8_casefold (gs_app_get_name (app2), -1);
+	return g_strcmp0 (casefolded_name1, casefolded_name2);
 }
 
 GsPlugin *
