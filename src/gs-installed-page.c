@@ -707,6 +707,13 @@ gs_installed_page_pending_apps_refined_cb (GObject *source,
 		if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE)
 			gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
 
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL &&
+		    gs_plugin_loader_get_network_available (plugin_loader) &&
+		    !gs_plugin_loader_get_network_metered (plugin_loader))
+			gs_page_install_app (GS_PAGE (self), app,
+					     GS_SHELL_INTERACTION_FULL,
+					     gs_app_get_cancellable (app));
+
 		++pending_apps_count;
 		if (!gs_installed_page_has_app (self, app))
 			gs_installed_page_add_app (self, list, app);
