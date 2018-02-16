@@ -1771,14 +1771,13 @@ save_install_queue (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret;
-	gint i = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GString) s = NULL;
 	g_autofree gchar *file = NULL;
 
 	s = g_string_new ("");
 	g_mutex_lock (&priv->pending_apps_mutex);
-	for (i = (gint) gs_app_list_length (priv->pending_apps) - 1; i >= 0; i--) {
+	for (guint i = 0; i < gs_app_list_length (priv->pending_apps); ++i) {
 		GsApp *app = gs_app_list_index (priv->pending_apps, i);
 		g_string_append (s, gs_app_get_unique_id (app));
 		g_string_append_c (s, '\n');
