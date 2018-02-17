@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-16 11:46+0000\n"
-"PO-Revision-Date: 2018-02-16 17:24+0100\n"
+"POT-Creation-Date: 2018-02-16 16:26+0000\n"
+"PO-Revision-Date: 2018-02-17 02:53+0100\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -2149,40 +2149,30 @@ msgstr "Aplicazions di grafiche conseadis"
 msgid "Recommended Productivity Applications"
 msgstr "Aplicazions di produtivitât conseadis"
 
-#. TRANSLATORS: this is the fallback text we use if we can't
-#. figure out the name of the operating system
-#: src/gs-overview-page.c:875 src/gs-repos-dialog.c:613
-msgid "the operating system"
-msgstr "il sisteme operatîf"
+#. TRANSLATORS: this is the third party repositories info bar.
+#: src/gs-overview-page.c:889 src/gs-repos-dialog.c:697
+msgid "Access additional software from selected third party sources."
+msgstr ""
+"Rive a doprâ software adizionâl che al ven di sorzints di tiercis parts "
+"selezionadis."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#. %s gets replaced by the distro name, e.g. Fedora
-#: src/gs-overview-page.c:911 src/gs-repos-dialog.c:698
-#, c-format
+#: src/gs-overview-page.c:893 src/gs-repos-dialog.c:701
 msgid ""
-"Access additional software that is not supplied by %s through select third "
-"party repositories."
+"Some of this software is proprietary and therefore has restrictions on use, "
+"sharing, and access to source code."
 msgstr ""
-"Rive a doprâ software adizionâl che nol ven furnît di %s midiant la selezion "
-"di repository di tiercis parts."
-
-#. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:916 src/gs-repos-dialog.c:703
-msgid ""
-"Some of this software is proprietary and therefore has restrictions on use "
-"and access to source code."
-msgstr ""
-"Alc di chest software al è proprietari e duncje al à restrizions sul ûs e "
-"sul acès al codiç sorzint."
+"Alc di chest software al è proprietari e duncje al à restrizions sul ûs, su "
+"la condivision e sul acès al codiç sorzint."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:924 src/gs-repos-dialog.c:710
+#: src/gs-overview-page.c:900 src/gs-repos-dialog.c:708
 msgid "Find out more…"
 msgstr "Par savê di plui…"
 
 #. TRANSLATORS: button to turn on third party software repositories
-#: src/gs-overview-page.c:933
+#: src/gs-overview-page.c:909
 msgid "Enable"
 msgstr "Abilite"
 
@@ -2441,9 +2431,15 @@ msgstr ""
 msgid "Disable"
 msgstr "Disabilite"
 
+#. TRANSLATORS: this is the fallback text we use if we can't
+#. figure out the name of the operating system
+#: src/gs-repos-dialog.c:613
+msgid "the operating system"
+msgstr "il sisteme operatîf"
+
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:683 src/gs-repos-dialog.c:717
+#: src/gs-repos-dialog.c:683 src/gs-repos-dialog.c:715
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Chescj repository a integrin il software predefinît furnît di %s."
@@ -2501,7 +2497,7 @@ msgstr "Abilitât"
 msgid "Disabled"
 msgstr "Disabilitât"
 
-#: src/gs-repos-dialog-row.ui:86
+#: src/gs-repos-dialog-row.ui:89
 msgid "URL"
 msgstr "URL"
 
