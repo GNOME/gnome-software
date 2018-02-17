@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-14 23:52+0000\n"
-"PO-Revision-Date: 2018-02-15 10:14+0200\n"
+"POT-Creation-Date: 2018-02-16 20:54+0000\n"
+"PO-Revision-Date: 2018-02-17 01:14+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
 "Language-Team: Galician\n"
 "Language: gl\n"
@@ -67,7 +67,7 @@ msgstr "Panel de actualizacións"
 msgid "The update details"
 msgstr "Os detalles da actualización"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:984
+#: data/appdata/org.gnome.Software.appdata.xml.in:1007
 msgid "The GNOME Project"
 msgstr "O Proxecto GNOME"
 
@@ -216,13 +216,11 @@ msgid "Reviews with karma less than this number will not be shown."
 msgstr "As revisións cun karma menor que este número non se mostrarán."
 
 #: data/org.gnome.software.gschema.xml:82
-#| msgid "A list of official sources that should not be considered 3rd party"
 msgid "A list of official repositories that should not be considered 3rd party"
 msgstr ""
 "Unha lista de repositorios oficiais que non se deberían considerar terceiros"
 
 #: data/org.gnome.software.gschema.xml:86
-#| msgid "A list of official sources that should be considered free software"
 msgid "A list of official repositories that should be considered free software"
 msgstr ""
 "Unha lista de repositorios oficiais que se deberían considerar software libre"
@@ -243,7 +241,6 @@ msgid "Show the folder management UI"
 msgstr "Mostrar a IU de xestión de cartafoles"
 
 #: data/org.gnome.software.gschema.xml:102
-#| msgid "Allow access to the Software Sources dialog"
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Permitir o acceso ao diálogo de Repositorios de software"
 
@@ -258,7 +255,6 @@ msgstr ""
 "non é libre"
 
 #: data/org.gnome.software.gschema.xml:114
-#| msgid "Show the prompt to install nonfree software sources"
 msgid "Show the prompt to install nonfree software repositories"
 msgstr ""
 "Mostrar un diálogo de pregunta para instalar repositorios de software non "
@@ -341,7 +337,6 @@ msgstr "Buscar"
 
 #. button in the info bar
 #: src/gnome-software.ui:350 src/gs-repos-dialog.ui:6 src/gs-repos-dialog.ui:20
-#| msgid "Software Sources"
 msgid "Software Repositories"
 msgstr "Repositorios de software"
 
@@ -623,14 +618,22 @@ msgid "Featured"
 msgstr "Destacado"
 
 #. TRANSLATORS: button text when apps have been sorted alphabetically
-#: src/gs-category-page.c:99
+#: src/gs-category-page.c:100
 msgid "Sorted by Name"
 msgstr "Ordenado por nome"
 
 #. TRANSLATORS: button text when apps have been sorted by their rating
-#: src/gs-category-page.c:102
+#: src/gs-category-page.c:103
 msgid "Sorted by Rating"
 msgstr "Ordenado por valoracións"
+
+#. TRANSLATORS: This is a heading on the categories page. %s gets
+#. replaced by the category name, e.g. 'Graphics & Photography'
+#: src/gs-category-page.c:482
+#, c-format
+#| msgid "Featured"
+msgid "Featured %s"
+msgstr "Destacados en %s"
 
 #. Translators: A label for a button to sort apps by their rating.
 #: src/gs-category-page.ui:24
@@ -642,11 +645,11 @@ msgstr "Mellor valorados"
 msgid "Name"
 msgstr "Nome"
 
-#: src/gs-category-page.ui:117
+#: src/gs-category-page.ui:137
 msgid "Extension Settings"
 msgstr "Preferencias da extensión"
 
-#: src/gs-category-page.ui:146
+#: src/gs-category-page.ui:166
 msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
@@ -654,11 +657,11 @@ msgstr ""
 "Use os engadidos baixo o seu propio risco. Se ten calquera problema no "
 "sistema é recomendábel desactivalos."
 
-#: src/gs-category-page.ui:182
+#: src/gs-category-page.ui:202
 msgid "Subcategories filter menu"
 msgstr "Menú de filtrado por subcategorías"
 
-#: src/gs-category-page.ui:235
+#: src/gs-category-page.ui:255
 msgid "Subcategories sorting menu"
 msgstr "Menú de ordenador por subcategorías"
 
@@ -712,7 +715,6 @@ msgstr "Desexa instalar software de terceiros?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:214
-#| msgid "Enable Third-Party Software Source?"
 msgid "Enable Third-Party Software Repository?"
 msgstr "Desexa activar os Repositorios de software de terceiros?"
 
@@ -739,7 +741,6 @@ msgid "%s is provided by “%s”."
 msgstr "%s é fornecido por «%s». "
 
 #: src/gs-common.c:251
-#| msgid "This software source must be enabled to continue installation."
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Este repositorios de software debe activarse para continuar a instalación."
@@ -1377,7 +1378,6 @@ msgstr "Instalación pendente…"
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
 #: src/gs-details-page.c:472
-#| msgid "Setting up updates…"
 msgid "Pending update…"
 msgstr "Actualización pendente…"
 
@@ -1426,7 +1426,6 @@ msgstr "Dominio público"
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
 #: src/gs-details-page.c:2150
-#| msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://gl.wikipedia.org/wiki/Dominio_p%C3%BAblico"
 
@@ -1476,14 +1475,10 @@ msgid "No screenshot provided"
 msgstr "Non se forneceu unha captura de pantalla"
 
 #: src/gs-details-page.ui:493
-#| msgid "Software Source Included"
 msgid "Software Repository Included"
 msgstr "Inclúe repositorio de software"
 
 #: src/gs-details-page.ui:494
-#| msgid ""
-#| "This application includes a software source which provides updates, as "
-#| "well as access to other software."
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1492,14 +1487,10 @@ msgstr ""
 "actualizacións, así como acceso a outro software."
 
 #: src/gs-details-page.ui:507
-#| msgid "No Software Source Included"
 msgid "No Software Repository Included"
 msgstr "Non inclúe repositorio de software"
 
 #: src/gs-details-page.ui:508
-#| msgid ""
-#| "This application does not include a software source. It will not be "
-#| "updated with new versions."
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1517,14 +1508,10 @@ msgstr ""
 
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:535
-#| msgid "Software Source Identified"
 msgid "Software Repository Identified"
 msgstr "Repositorio de software identificado"
 
 #: src/gs-details-page.ui:536
-#| msgid ""
-#| "Adding this software source will give you access to additional software "
-#| "and upgrades."
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1533,7 +1520,6 @@ msgstr ""
 "adicionais."
 
 #: src/gs-details-page.ui:537
-#| msgid "Only use software sources that you trust."
 msgid "Only use software repositories that you trust."
 msgstr "Use só repositorios de software nas que confíe."
 
@@ -2113,7 +2099,6 @@ msgid "Starting up…"
 msgstr "Iniciando…"
 
 #: src/gs-menus.ui:7
-#| msgid "_Software Sources"
 msgid "_Software Repositories"
 msgstr "Repositorios de _software"
 
@@ -2162,40 +2147,34 @@ msgstr "Aplicativos de gráficos recomendados"
 msgid "Recommended Productivity Applications"
 msgstr "Aplicativos de productividade recomendados"
 
-#. TRANSLATORS: this is the fallback text we use if we can't
-#. figure out the name of the operating system
-#: src/gs-overview-page.c:875 src/gs-repos-dialog.c:613
-msgid "the operating system"
-msgstr "o sistema operativo"
-
 #. TRANSLATORS: this is the third party repositories info bar.
-#. %s gets replaced by the distro name, e.g. Fedora
-#: src/gs-overview-page.c:911 src/gs-repos-dialog.c:698
-#, c-format
-msgid ""
-"Access additional software that is not supplied by %s through select third "
-"party repositories."
-msgstr ""
-"Acceso a software adicional que non é ofrecido por %s mediante repositorios "
-"de terceiros seleccionados."
-
-#. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:916 src/gs-repos-dialog.c:703
+#: src/gs-overview-page.c:889 src/gs-repos-dialog.c:697
 #| msgid ""
-#| "Proprietary software has restrictions on use and access to source code."
+#| "Access additional software that is not supplied by %s through select "
+#| "third party repositories."
+msgid "Access additional software from selected third party sources."
+msgstr "Acceso a software adicional dende orixes de terceiros seleccionados."
+
+#. TRANSLATORS: this is the third party repositories info bar.
+#: src/gs-overview-page.c:893 src/gs-repos-dialog.c:701
+#| msgid ""
+#| "Some of this software is proprietary and therefore has restrictions on "
+#| "use and access to source code."
 msgid ""
-"Some of this software is proprietary and therefore has restrictions on use "
-"and access to source code."
-msgstr "Algún deste software ten restricións de uso e acceso ao código fonte."
+"Some of this software is proprietary and therefore has restrictions on use, "
+"sharing, and access to source code."
+msgstr ""
+"Algún deste software é privativo e polo tanto ten restricións para compartir "
+"e acceso ao código fonte."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:924 src/gs-repos-dialog.c:710
+#: src/gs-overview-page.c:900 src/gs-repos-dialog.c:708
 msgid "Find out more…"
 msgstr "Saber máis…"
 
 #. TRANSLATORS: button to turn on third party software repositories
-#: src/gs-overview-page.c:933
+#: src/gs-overview-page.c:909
 msgid "Enable"
 msgstr "Activar"
 
@@ -2204,7 +2183,6 @@ msgid "Overview page"
 msgstr "Páxina de vista previa"
 
 #: src/gs-overview-page.ui:49
-#| msgid "Enable Third-Party Software Source?"
 msgid "Enable Third Party Software Repositories?"
 msgstr "Desexa activar os repositoirios de software de terceiros?"
 
@@ -2430,7 +2408,6 @@ msgstr[1] "%s e %s instalados"
 #. * repository name, e.g. 'GNOME Nightly'
 #: src/gs-repos-dialog.c:244
 #, c-format
-#| msgid "“%s”"
 msgid "Remove “%s”?"
 msgstr "Desexa eliminar «%s»?"
 
@@ -2438,7 +2415,6 @@ msgstr "Desexa eliminar «%s»?"
 #. * repository name, e.g. 'GNOME Nightly'
 #: src/gs-repos-dialog.c:249
 #, c-format
-#| msgid "Unable to find “%s”"
 msgid "Disable “%s”?"
 msgstr "Desexa desactivar «%s»?"
 
@@ -2453,16 +2429,22 @@ msgstr ""
 
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-repos-dialog.c:271
-#| msgid "Enable"
 msgid "Disable"
 msgstr "Desactivar"
 
+#. TRANSLATORS: this is the fallback text we use if we can't
+#. figure out the name of the operating system
+#: src/gs-repos-dialog.c:613
+msgid "the operating system"
+msgstr "o sistema operativo"
+
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:683 src/gs-repos-dialog.c:717
+#: src/gs-repos-dialog.c:683 src/gs-repos-dialog.c:715
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
-msgstr "Estos repositorios suplementan o software fornecido por omisión por %s."
+msgstr ""
+"Estos repositorios suplementan o software fornecido por omisión por %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
 #: src/gs-repos-dialog.c:694
@@ -2470,14 +2452,12 @@ msgid "Third Party Repositories"
 msgstr "Repositorios de terceiros"
 
 #: src/gs-repos-dialog.ui:82
-#| msgid "Additional Sources"
 msgid "No Additional Repositories"
 msgstr "Non hai repositorios adicionais"
 
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for enabling a repo
 #: src/gs-repos-dialog-row.c:132
-#| msgid "Enable"
 msgid "_Enable"
 msgstr "_Activar"
 
@@ -2485,7 +2465,6 @@ msgstr "_Activar"
 #. for removing a repo. The ellipsis indicates that further
 #. steps are required
 #: src/gs-repos-dialog-row.c:141
-#| msgid "Remove…"
 msgid "_Remove…"
 msgstr "_Retirar…"
 
@@ -2499,21 +2478,18 @@ msgstr "_Desactivar…"
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being enabled
 #: src/gs-repos-dialog-row.c:154
-#| msgid "Enable"
 msgid "Enabling"
 msgstr "Activando"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being disabled
 #: src/gs-repos-dialog-row.c:166
-#| msgid "Installing"
 msgid "Disabling"
 msgstr "Desactivando"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
 #: src/gs-repos-dialog-row.c:180
-#| msgid "Enable"
 msgid "Enabled"
 msgstr "Activado"
 
@@ -2523,7 +2499,7 @@ msgstr "Activado"
 msgid "Disabled"
 msgstr "Desactivado"
 
-#: src/gs-repos-dialog-row.ui:86
+#: src/gs-repos-dialog-row.ui:89
 msgid "URL"
 msgstr "URL"
 
@@ -3234,54 +3210,54 @@ msgstr "Suba de versión para continuar recibindo anovacións de seguranza."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:309
+#: src/gs-update-monitor.c:315
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Hai unha nova versión de %s dispoñíbel para instalar"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:313
+#: src/gs-update-monitor.c:319
 msgid "Software Upgrade Available"
 msgstr "Hai actualizacións de software dispoñíbeis"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:626
+#: src/gs-update-monitor.c:632
 msgid "Software Updates Failed"
 msgstr "Produciuse un erro ao actualizar o software"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:628
+#: src/gs-update-monitor.c:634
 msgid "An important OS update failed to be installed."
 msgstr ""
 "Produciuse un erro ao instalar unha actualización do sistema operativo "
 "importante."
 
-#: src/gs-update-monitor.c:629
+#: src/gs-update-monitor.c:635
 msgid "Show Details"
 msgstr "Mostrar información"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:652
+#: src/gs-update-monitor.c:658
 msgid "System Upgrade Complete"
 msgstr "Actualización do sistema completada"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:657
+#: src/gs-update-monitor.c:663
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Benvida a %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:663
+#: src/gs-update-monitor.c:669
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Actualización de software instalada"
 msgstr[1] "Actualizacións de software instaladas"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:667
+#: src/gs-update-monitor.c:673
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Instalouse unha actualización do sistema operativo importante."
@@ -3292,30 +3268,30 @@ msgstr[1] "Instaláronse actualizacións do sistema operativo importantes."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:678
+#: src/gs-update-monitor.c:684
 msgctxt "updates"
 msgid "Review"
 msgstr "Revisar"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:727
+#: src/gs-update-monitor.c:733
 msgid "Failed To Update"
 msgstr "Produciuse un erro ao actualizar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:733
+#: src/gs-update-monitor.c:739
 msgid "The system was already up to date."
 msgstr "O sistema xa está actualizado."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:738
+#: src/gs-update-monitor.c:744
 msgid "The update was cancelled."
 msgstr "A actualización foi cancelada."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:744
+#: src/gs-update-monitor.c:750
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3324,7 +3300,7 @@ msgstr ""
 "acceso a internet e probe de novo."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:750
+#: src/gs-update-monitor.c:756
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3333,7 +3309,7 @@ msgstr ""
 "fornecedor de software para obter máis información."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:756
+#: src/gs-update-monitor.c:762
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -3341,7 +3317,7 @@ msgstr ""
 "novo."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:761
+#: src/gs-update-monitor.c:767
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
