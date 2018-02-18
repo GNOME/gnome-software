@@ -108,8 +108,16 @@ G_DEFINE_QUARK (gs-plugin-loader-error-quark, gs_plugin_loader_error)
 static gint
 gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
 {
-	return g_strcmp0 (gs_app_get_name (GS_APP ((gpointer) a)),
-			  gs_app_get_name (GS_APP ((gpointer) b)));
+	GsApp *app1 = GS_APP ((gpointer) a);
+	GsApp *app2 = GS_APP ((gpointer) b);
+	g_autofree gchar *casefolded_name1 = NULL;
+	g_autofree gchar *casefolded_name2 = NULL;
+
+	if (gs_app_get_name (app1) != NULL)
+		casefolded_name1 = g_utf8_casefold (gs_app_get_name (app1), -1);
+	if (gs_app_get_name (app2) != NULL)
+		casefolded_name2 = g_utf8_casefold (gs_app_get_name (app2), -1);
+	return g_strcmp0 (casefolded_name1, casefolded_name2);
 }
 
 static gint
