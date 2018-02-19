@@ -287,6 +287,10 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	g_autofree gchar *id = NULL;
 	g_autoptr(AsIcon) icon = NULL;
 
+	/* older versions of fwups didn't record this for historical devices */
+	if (fwupd_release_get_appstream_id (rel) == NULL)
+		return NULL;
+
 	/* get from cache */
 	id = as_utils_unique_id_build (AS_APP_SCOPE_SYSTEM,
 				       AS_BUNDLE_KIND_UNKNOWN,
@@ -533,6 +537,14 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 	/* parse */
 	app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
+	if (app == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to build result for %s",
+			     fwupd_device_get_id (dev));
+		return FALSE;
+	}
 	gs_app_list_add (list, app);
 	return TRUE;
 }
