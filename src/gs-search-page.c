@@ -235,9 +235,6 @@ gs_search_page_get_app_sort_key (GsApp *app)
 	/* sort by kudos */
 	g_string_append_printf (key, "%03u:", gs_app_get_kudos_percentage (app));
 
-	/* tie-break with id */
-	g_string_append (key, gs_app_get_unique_id (app));
-
 	return g_string_free (key, FALSE);
 }
 
