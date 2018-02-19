@@ -189,7 +189,23 @@
                                 <property name="margin_start">24</property>
                                 <property name="margin_end">24</property>
                                 <property name="margin_top">24</property>
-
+                                <property name="spacing">9</property>
+                                <child>
+                                  <object class="GtkLabel" id="subcats_filter_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Show</property>
+                                    <property name="margin_start">2</property>
+                                    <accessibility>
+                                      <relation target="subcats_filter_button" type="label-for"/>
+                                    </accessibility>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="pack-type">start</property>
+                                  </packing>
+                                </child>
                                 <child>
                                   <object class="GtkMenuButton" id="subcats_filter_button">
                                     <property name="visible">True</property>
@@ -197,6 +213,7 @@
                                     <property name="receives_default">True</property>
                                     <property name="relief">normal</property>
                                     <property name="popover">categories_popover</property>
+                                    <property name="margin_end">24</property>
                                     <child internal-child="accessible">
                                       <object class="AtkObject">
                                         <property name="accessible-name" translatable="yes">Subcategories filter menu</property>
@@ -236,6 +253,22 @@
                                     <style>
                                       <class name="text-button"/>
                                     </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="pack-type">start</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="subcats_sort_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">Sort</property>
+                                    <property name="margin_start">2</property>
+                                    <accessibility>
+                                      <relation target="subcats_sort_button" type="label-for"/>
+                                    </accessibility>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -294,7 +327,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="pack-type">end</property>
+                                    <property name="pack-type">start</property>
                                   </packing>
                                 </child>
                               </object>

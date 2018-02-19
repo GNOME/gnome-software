@@ -54,9 +54,11 @@ struct _GsCategoryPage
 	GtkWidget	*button_category_shell_extensions;
 	GtkWidget	*category_detail_box;
 	GtkWidget	*scrolledwindow_category;
+	GtkWidget	*subcats_filter_label;
 	GtkWidget	*subcats_filter_button_label;
 	GtkWidget	*subcats_filter_button;
 	GtkWidget	*popover_filter_box;
+	GtkWidget	*subcats_sort_label;
 	GtkWidget	*subcats_sort_button;
 	GtkWidget	*subcats_sort_button_label;
 	GtkWidget	*sort_rating_button;
@@ -328,14 +330,17 @@ gs_category_page_reload (GsPage *page)
 		if (g_strcmp0 (gs_category_get_id (self->subcategory), "shell-extensions") != 0) {
 			/* we don't want to show the sort button on the addons that
 			 * cannot be rated */
+			gtk_widget_set_visible (self->subcats_sort_label, FALSE);
 			gtk_widget_set_visible (self->subcats_sort_button, FALSE);
 		} else {
 			/* show the shell extensions header and the sort button */
 			gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
+			gtk_widget_set_visible (self->subcats_sort_label, TRUE);
 			gtk_widget_set_visible (self->subcats_sort_button, TRUE);
 		}
 	} else {
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
+		gtk_widget_set_visible (self->subcats_sort_label, TRUE);
 		gtk_widget_set_visible (self->subcats_sort_button, TRUE);
 	}
 
@@ -467,6 +472,7 @@ gs_category_page_create_filter (GsCategoryPage *self,
 		filter_button_activated (first_subcat, self);
 
 	/* show only the adequate filter */
+	gtk_widget_set_visible (self->subcats_filter_label, !use_header_filter);
 	gtk_widget_set_visible (self->subcats_filter_button, !use_header_filter);
 	gtk_widget_set_visible (self->header_filter_box, use_header_filter);
 
@@ -598,9 +604,11 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, infobar_category_shell_extensions);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, button_category_shell_extensions);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, scrolledwindow_category);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_filter_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, popover_filter_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, subcats_sort_button_label);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, sort_rating_button);
