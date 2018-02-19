@@ -95,14 +95,12 @@ static void
 gs_category_page_sort_by_type (GsCategoryPage *self,
 			       SubcategorySortType sort_type)
 {
-	const gchar *button_label;
+	g_autofree gchar *button_label;
 
 	if (sort_type == SUBCATEGORY_SORT_TYPE_NAME)
-		/* TRANSLATORS: button text when apps have been sorted alphabetically */
-		button_label = _("Sorted by Name");
+		g_object_get (self->sort_name_button, "text", &button_label, NULL);
 	else
-		/* TRANSLATORS: button text when apps have been sorted by their rating */
-		button_label = _("Sorted by Rating");
+		g_object_get (self->sort_rating_button, "text", &button_label, NULL);
 
 	gtk_label_set_text (GTK_LABEL (self->subcats_sort_button_label), button_label);
 
