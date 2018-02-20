@@ -1698,7 +1698,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	}
 	if (ref != NULL) {
 		g_debug ("marking %s as installed with flatpak",
-			 gs_app_get_id (app));
+			 gs_app_get_unique_id (app));
 		gs_flatpak_set_metadata_installed (self, app, ref);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -1720,12 +1720,12 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 			if (flatpak_remote_get_disabled (xremote)) {
 				g_debug ("%s is available with flatpak "
 					 "but %s is disabled",
-					 gs_app_get_id (app),
+					 gs_app_get_unique_id (app),
 					 flatpak_remote_get_name (xremote));
 				gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 			} else {
 				g_debug ("marking %s as available with flatpak",
-					 gs_app_get_id (app));
+					 gs_app_get_unique_id (app));
 				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 			}
 		} else {
@@ -2026,7 +2026,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 			return FALSE;
 		if (gs_app_get_state (app_runtime) == AS_APP_STATE_INSTALLED) {
 			g_debug ("runtime %s is already installed, so not adding size",
-				 gs_app_get_id (app_runtime));
+				 gs_app_get_unique_id (app_runtime));
 		} else {
 			if (!gs_plugin_refine_item_size (self,
 							 app_runtime,
