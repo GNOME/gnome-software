@@ -23,6 +23,7 @@
 
 #include <errno.h>
 #include <glib/gi18n.h>
+#include <glib/gstdio.h>
 #include <json-glib/json-glib.h>
 
 #include <gnome-software.h>
@@ -44,6 +45,7 @@ struct GsPluginData {
 	GDBusProxy	*proxy;
 	gchar		*shell_version;
 	GsApp		*cached_origin;
+	GSettings	*settings;
 };
 
 typedef enum {
@@ -73,6 +75,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_origin_hostname (priv->cached_origin, SHELL_EXTENSIONS_API_URI);
 
+	priv->settings = g_settings_new ("org.gnome.software");
+
 	/* add the source to the plugin cache which allows us to match the
 	 * unique ID to a GsApp when creating an event */
 	gs_plugin_cache_add (plugin,
@@ -88,6 +92,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	if (priv->proxy != NULL)
 		g_object_unref (priv->proxy);
 	g_object_unref (priv->cached_origin);
+	g_object_unref (priv->settings);
 }
 
 void
@@ -356,6 +361,33 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		/* add to results */
 		gs_app_list_add (list, app);
 	}
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_sources (GsPlugin *plugin,
+                       GsAppList *list,
+                       GCancellable *cancellable,
+                       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsApp) app = NULL;
+
+	/* create something that we can use to enable/disable */
+	app = gs_app_new ("org.gnome.extensions");
+	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+	gs_app_set_scope (app, AS_APP_SCOPE_USER);
+	if (g_settings_get_boolean (priv->settings, "enable-shell-extensions-repo"))
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	else
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
+	                 _("GNOME Shell Extensions Repository"));
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+	                SHELL_EXTENSIONS_API_URI);
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_list_add (list, app);
 	return TRUE;
 }
 
@@ -710,13 +742,20 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 				    GCancellable *cancellable,
 				    GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *app;
+	gboolean repo_enabled;
 	const gchar *fn_test;
 	guint i;
 	g_autofree gchar *fn = NULL;
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) file = NULL;
+
+	/* repo disabled? */
+	repo_enabled = g_settings_get_boolean (priv->settings, "enable-shell-extensions-repo");
+	if (!repo_enabled)
+		return TRUE;
 
 	/* no longer interesting */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
@@ -801,6 +840,23 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
+	/* disable repository */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+		g_autofree gchar *fn = NULL;
+
+		gs_app_set_state (app, AS_APP_STATE_REMOVING);
+		g_settings_set_boolean (priv->settings, "enable-shell-extensions-repo", FALSE);
+		/* remove appstream data */
+		fn = g_build_filename (g_get_user_data_dir (),
+		                       "app-info",
+		                       "xmls",
+		                       "extensions-web.xml",
+		                       NULL);
+		g_unlink (fn);
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		return TRUE;
+	}
+
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
@@ -850,6 +906,22 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
+
+	/* enable repository */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
+		gboolean ret;
+
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		g_settings_set_boolean (priv->settings, "enable-shell-extensions-repo", TRUE);
+		/* refresh metadata */
+		ret = gs_plugin_shell_extensions_refresh (plugin,
+		                                          G_MAXUINT,
+		                                          GS_PLUGIN_REFRESH_FLAGS_METADATA,
+		                                          cancellable,
+		                                          error);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		return ret;
+	}
 
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
