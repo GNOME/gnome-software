@@ -1047,6 +1047,15 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+is_core_repo (const gchar *id)
+{
+	if (g_strcmp0 (id, "lvfs") == 0)
+		return TRUE;
+
+	return FALSE;
+}
+
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
 		       GsAppList *list,
@@ -1067,6 +1076,10 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		/* ignore these, they're built in */
 		if (fwupd_remote_get_kind (remote) == FWUPD_REMOTE_KIND_LOCAL)
+			continue;
+
+		/* ignore core repos that users shouldn't disable */
+		if (is_core_repo (fwupd_remote_get_id (remote)))
 			continue;
 
 		/* create something that we can use to enable/disable */
