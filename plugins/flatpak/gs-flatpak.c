@@ -944,7 +944,8 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 					   error_local->message);
 				continue;
 			}
-			gs_app_set_state (related, AS_APP_STATE_INSTALLED);
+			if (gs_app_get_state (related) == AS_APP_STATE_UNKNOWN)
+				gs_app_set_state (related, AS_APP_STATE_INSTALLED);
 			gs_app_add_related (app, related);
 		}
 	}
