@@ -98,8 +98,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
-	if (gs_app_get_kind (app) == AS_APP_KIND_SHELL_EXTENSION)
+	if (gs_app_get_kind (app) == AS_APP_KIND_SHELL_EXTENSION &&
+	    gs_app_get_scope (app) == AS_APP_SCOPE_USER) {
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	}
 }
 
 static AsAppState
@@ -400,13 +402,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	const gchar *uuid;
 
-	/* only process this these kinds */
-	if (gs_app_get_kind (app) != AS_APP_KIND_SHELL_EXTENSION)
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
-
-	/* adopt any here */
-	if (gs_app_get_management_plugin (app) == NULL)
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 
 	/* can we get the AppStream-created app state using the cache */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
