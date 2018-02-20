@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-16 14:44+0000\n"
-"PO-Revision-Date: 2018-02-16 21:53+0100\n"
+"POT-Creation-Date: 2018-02-20 09:15+0000\n"
+"PO-Revision-Date: 2018-02-20 13:48+0100\n"
 "Last-Translator: gogo <trebelnik2@gmail.com>\n"
 "Language-Team: Croatian <hr@li.org>\n"
 "Language: hr\n"
@@ -465,7 +465,7 @@ msgstr "Preferiraj lokalne izvore paketa za AppStream"
 msgid "Show version number"
 msgstr "Prikaži broj inačice"
 
-#: src/gs-application.c:344
+#: src/gs-application.c:343
 msgid "translator-credits"
 msgstr ""
 "Launchpad Contributions:\n"
@@ -474,13 +474,13 @@ msgstr ""
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:351
+#: src/gs-application.c:350
 #, c-format
 msgid "About %s"
 msgstr "O %s"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:355
+#: src/gs-application.c:354
 msgid "A nice way to manage the software on your system."
 msgstr "Jednostavniji način za upravljanje softverom na vašem sustavu."
 
@@ -605,19 +605,9 @@ msgstr "Sve"
 msgid "Featured"
 msgstr "Popularno"
 
-#. TRANSLATORS: button text when apps have been sorted alphabetically
-#: src/gs-category-page.c:100
-msgid "Sorted by Name"
-msgstr "Razvrstano po nazivu"
-
-#. TRANSLATORS: button text when apps have been sorted by their rating
-#: src/gs-category-page.c:103
-msgid "Sorted by Rating"
-msgstr "Razvrstano po ocjeni"
-
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:482
+#: src/gs-category-page.c:486
 #, c-format
 msgid "Featured %s"
 msgstr "Popularno %s"
@@ -644,11 +634,21 @@ msgstr ""
 "Proširenja koristite na vlastit rizik. Ako imate bilo kakvih problema sa "
 "sustavom, preporučeno je njihovo onemogućavanje."
 
-#: src/gs-category-page.ui:202
+#. TRANSLATORS: This is a label for the category filter drop down, which all together can read e.g. 'Show Vector Graphics'.
+#: src/gs-category-page.ui:197
+msgid "Show"
+msgstr "Prikaz"
+
+#: src/gs-category-page.ui:219
 msgid "Subcategories filter menu"
 msgstr "Izbornik filtra podkategorija"
 
-#: src/gs-category-page.ui:255
+#. TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.
+#: src/gs-category-page.ui:267
+msgid "Sort"
+msgstr "Razvrstaj"
+
+#: src/gs-category-page.ui:288
 msgid "Subcategories sorting menu"
 msgstr "Izbornik razvrstavanja podkategorija"
 
@@ -1882,7 +1882,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:390 lib/gs-plugin-loader.c:1451
+#: src/gs-extras-page.c:390 lib/gs-plugin-loader.c:1457
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nema dostupnih dodatka kôdeka za %s format."
@@ -2245,7 +2245,7 @@ msgstr ""
 "%s će biti uklonjen i trebat ćete ga ponovno instalirati kako bi ga mogli "
 "koristiti."
 
-#: lib/gs-plugin-loader.c:1454
+#: lib/gs-plugin-loader.c:1460
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2485,7 +2485,7 @@ msgstr "Omogućeno"
 msgid "Disabled"
 msgstr "Onemogućeno"
 
-#: src/gs-repos-dialog-row.ui:86
+#: src/gs-repos-dialog-row.ui:89
 msgid "URL"
 msgstr "URL"
 
@@ -4097,17 +4097,17 @@ msgid "Getting runtime source…"
 msgstr "Dobivanje izvora komponente izvršavanja…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:864 plugins/fwupd/gs-plugin-fwupd.c:963
+#: plugins/fwupd/gs-plugin-fwupd.c:694
 msgid "Downloading firmware update signature…"
 msgstr "Preuzimanje potpisa nadopune frimvera…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:905 plugins/fwupd/gs-plugin-fwupd.c:1009
+#: plugins/fwupd/gs-plugin-fwupd.c:735
 msgid "Downloading firmware update metadata…"
 msgstr "Preuzimanje metapodataka nadopune frimvera…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:1100
+#: plugins/fwupd/gs-plugin-fwupd.c:825
 msgid "Downloading firmware update…"
 msgstr "Preuzimanje nadopune frimvera…"
 
@@ -4171,6 +4171,12 @@ msgstr "Steam podrška"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Ultimativna platforma za zabavu od Valvea"
+
+#~ msgid "Sorted by Name"
+#~ msgstr "Razvrstano po nazivu"
+
+#~ msgid "Sorted by Rating"
+#~ msgstr "Razvrstano po ocjeni"
 
 #~ msgid "The list of extra sources that have been previously enabled"
 #~ msgstr "Popis dodatnih repozitorija koji su prije omogućeni"
