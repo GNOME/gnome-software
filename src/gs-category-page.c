@@ -150,10 +150,14 @@ gs_category_page_get_apps_cb (GObject *source_object,
 
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
-		tile = gs_popular_tile_new (app);
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
-		    gs_utils_list_has_app_fuzzy (list, app))
-			gs_popular_tile_show_source (GS_POPULAR_TILE (tile), TRUE);
+		if (g_strcmp0 (gs_category_get_id (self->category), "addons") == 0) {
+			tile = gs_summary_tile_new (app);
+		} else {
+			tile = gs_popular_tile_new (app);
+			if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
+			    gs_utils_list_has_app_fuzzy (list, app))
+				gs_popular_tile_show_source (GS_POPULAR_TILE (tile), TRUE);
+		}
 
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
@@ -361,7 +365,10 @@ gs_category_page_reload (GsPage *page)
 
 	count = MIN(30, gs_category_get_size (self->subcategory));
 	for (i = 0; i < count; i++) {
-		tile = gs_popular_tile_new (NULL);
+		if (g_strcmp0 (gs_category_get_id (self->category), "addons") == 0)
+			tile = gs_summary_tile_new (NULL);
+		else
+			tile = gs_popular_tile_new (NULL);
 		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 	}
