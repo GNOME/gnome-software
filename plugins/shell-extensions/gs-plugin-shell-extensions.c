@@ -123,21 +123,21 @@ gs_plugin_shell_extensions_convert_state (guint value)
 	return AS_APP_STATE_UNKNOWN;
 }
 
-static gboolean
-gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
-				    GsApp *app,
-				    const gchar *uuid,
-				    GVariantIter *iter,
-				    GError **error)
+static GsApp *
+gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
+                                            const gchar *uuid,
+                                            GVariantIter *iter,
+                                            GError **error)
 {
 	const gchar *tmp;
 	gchar *str;
 	GVariant *val;
 	g_autofree gchar *id = NULL;
 	g_autoptr(AsIcon) ic = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	id = as_utils_appstream_id_build (uuid);
-	gs_app_set_id (app, id);
+	app = gs_app_new (id);
 	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
@@ -156,7 +156,7 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 			tmp2 = as_markup_convert_simple (tmp1, error);
 			if (tmp2 == NULL) {
 				gs_utils_error_convert_appstream (error);
-				return FALSE;
+				return NULL;
 			}
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, tmp2);
 			continue;
@@ -225,7 +225,7 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 	gs_app_add_category (app, "Addon");
 	gs_app_add_category (app, "ShellExtension");
 
-	return TRUE;
+	return g_steal_pointer (&app);
 }
 
 static void
@@ -317,7 +317,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GVariantIter *ext_iter;
-	gboolean ret;
 	gchar *ext_uuid;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) retval = NULL;
@@ -349,13 +348,11 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		}
 
 		/* parse the data into an GsApp */
-		app = gs_app_new (NULL);
-		ret = gs_plugin_shell_extensions_add_app (plugin,
-							  app,
-							  ext_uuid,
-							  ext_iter,
-							  error);
-		if (!ret)
+		app = gs_plugin_shell_extensions_parse_installed (plugin,
+		                                                  ext_uuid,
+		                                                  ext_iter,
+		                                                  error);
+		if (app == NULL)
 			return FALSE;
 
 		/* save in the cache */
