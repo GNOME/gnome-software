@@ -314,7 +314,6 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	GsApp *cached_app;
 	g_autoptr(GsApp) app = NULL;
 	SnapdConfinement confinement;
-	GEnumClass *enum_class;
 
 	switch (snapd_snap_get_snap_type (snap)) {
 	case SNAPD_SNAP_TYPE_APP:
@@ -348,9 +347,11 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 
 	confinement = snapd_snap_get_confinement (snap);
-	enum_class = g_type_class_ref (SNAPD_TYPE_CONFINEMENT);
-	gs_app_set_metadata (app, "snap::confinement", g_enum_get_value (enum_class, confinement)->value_nick);
-	g_type_class_unref (enum_class);
+	if (confinement != SNAPD_CONFINEMENT_UNKNOWN) {
+		GEnumClass *enum_class = g_type_class_ref (SNAPD_TYPE_CONFINEMENT);
+		gs_app_set_metadata (app, "snap::confinement", g_enum_get_value (enum_class, confinement)->value_nick);
+		g_type_class_unref (enum_class);
+	}
 
 	if (priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT && confinement == SNAPD_CONFINEMENT_STRICT)
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
