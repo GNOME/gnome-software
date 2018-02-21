@@ -353,14 +353,14 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	}
 
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION) {
-		/* TRANSLATORS: A label for a button to show the settings for
-		   the selected shell extension. */
 		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
+		                      /* TRANSLATORS: A label for a button to show the settings for
+		                         the selected shell extension. */
 		                      _("Extension Settings"));
 	} else {
-		/* TRANSLATORS: A label for a button to execute the selected
-		   application. */
 		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
+		                      /* TRANSLATORS: A label for a button to execute the selected
+		                         application. */
 		                      _("_Launch"));
 	}
 
