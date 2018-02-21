@@ -138,7 +138,6 @@ gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
 
 	id = as_utils_appstream_id_build (uuid);
 	app = gs_app_new (id);
-	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
@@ -175,8 +174,10 @@ gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
 			guint val_int = (guint) g_variant_get_double (val);
 			switch (val_int) {
 			case GS_PLUGIN_SHELL_EXTENSION_KIND_SYSTEM:
+				gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+				break;
 			case GS_PLUGIN_SHELL_EXTENSION_KIND_PER_USER:
-				gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
+				gs_app_set_scope (app, AS_APP_SCOPE_USER);
 				break;
 			default:
 				g_warning ("%s unknown type %u", uuid, val_int);
@@ -354,6 +355,10 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		                                                  error);
 		if (app == NULL)
 			return FALSE;
+
+		/* ignore system installed */
+		if (gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM)
+			continue;
 
 		/* save in the cache */
 		gs_plugin_cache_add (plugin, ext_uuid, app);
