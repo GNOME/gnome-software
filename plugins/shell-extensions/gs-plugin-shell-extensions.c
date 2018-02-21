@@ -343,12 +343,13 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 		/* search in the cache */
 		app = gs_plugin_cache_lookup (plugin, ext_uuid);
-		if (app == NULL) {
-			app = gs_app_new (NULL);
+		if (app != NULL) {
 			gs_app_list_add (list, app);
+			continue;
 		}
 
 		/* parse the data into an GsApp */
+		app = gs_app_new (NULL);
 		ret = gs_plugin_shell_extensions_add_app (plugin,
 							  app,
 							  ext_uuid,
