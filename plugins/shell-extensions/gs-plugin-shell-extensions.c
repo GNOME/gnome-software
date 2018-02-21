@@ -104,6 +104,12 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	}
 }
 
+static gchar *
+gs_plugin_shell_extensions_id_from_uuid (const gchar *uuid)
+{
+	return g_strdup_printf ("%s.shell-extension", uuid);
+}
+
 static AsAppState
 gs_plugin_shell_extensions_convert_state (guint value)
 {
@@ -136,7 +142,7 @@ gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
 	g_autoptr(AsIcon) ic = NULL;
 	g_autoptr(GsApp) app = NULL;
 
-	id = as_utils_appstream_id_build (uuid);
+	id = gs_plugin_shell_extensions_id_from_uuid (uuid);
 	app = gs_app_new (id);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
@@ -533,7 +539,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	tmp = json_object_get_string_member (json_app, "uuid");
 	if (tmp != NULL) {
 		g_autofree gchar *id = NULL;
-		id = as_utils_appstream_id_build (tmp);
+		id = gs_plugin_shell_extensions_id_from_uuid (tmp);
 		as_app_set_id (app, id);
 		as_app_add_metadata (app, "shell-extensions::uuid", tmp);
 	}
