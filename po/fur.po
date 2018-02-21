@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-16 16:26+0000\n"
-"PO-Revision-Date: 2018-02-17 02:53+0100\n"
+"POT-Creation-Date: 2018-02-20 09:15+0000\n"
+"PO-Revision-Date: 2018-02-21 06:01+0100\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -485,20 +485,20 @@ msgstr "Preferìs lis sorzints di file locâi par AppStream"
 msgid "Show version number"
 msgstr "Mostre il numar di version"
 
-#: src/gs-application.c:344
+#: src/gs-application.c:343
 msgid "translator-credits"
 msgstr "Fabio Tomat <f.t.public@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:351
+#: src/gs-application.c:350
 #, c-format
 msgid "About %s"
 msgstr "Informazions su %s"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:355
+#: src/gs-application.c:354
 msgid "A nice way to manage the software on your system."
 msgstr "Un biel mût di ministrâ il software sul sisteme."
 
@@ -623,19 +623,9 @@ msgstr "Dutis"
 msgid "Featured"
 msgstr "In risalt"
 
-#. TRANSLATORS: button text when apps have been sorted alphabetically
-#: src/gs-category-page.c:100
-msgid "Sorted by Name"
-msgstr "Ordenât par non"
-
-#. TRANSLATORS: button text when apps have been sorted by their rating
-#: src/gs-category-page.c:103
-msgid "Sorted by Rating"
-msgstr "Ordenât par valutazion"
-
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:482
+#: src/gs-category-page.c:486
 #, c-format
 msgid "Featured %s"
 msgstr "In risalt par %s"
@@ -662,11 +652,21 @@ msgstr ""
 "Lis estensions a son dopradis cun to pericul. Se tu âs cualsisei probleme di "
 "sisteme, al è conseât di disabilitâlis."
 
-#: src/gs-category-page.ui:202
+#. TRANSLATORS: This is a label for the category filter drop down, which all together can read e.g. 'Show Vector Graphics'.
+#: src/gs-category-page.ui:197
+msgid "Show"
+msgstr "Mostre"
+
+#: src/gs-category-page.ui:219
 msgid "Subcategories filter menu"
 msgstr "Menù filtrament sot-categoriis"
 
-#: src/gs-category-page.ui:255
+#. TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.
+#: src/gs-category-page.ui:267
+msgid "Sort"
+msgstr "Ordene"
+
+#: src/gs-category-page.ui:288
 msgid "Subcategories sorting menu"
 msgstr "Menù ordenament sot-categoriis"
 
@@ -1901,7 +1901,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:390 lib/gs-plugin-loader.c:1451
+#: src/gs-extras-page.c:390 lib/gs-plugin-loader.c:1457
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nol è disponibil nissun codec pal formât %s."
@@ -2261,7 +2261,7 @@ msgstr "Sigûrs di gjavâ %s?"
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s e vegnarà gjavade e par podêle doprâ di gnûf tu varâs di instalâle."
 
-#: lib/gs-plugin-loader.c:1454
+#: lib/gs-plugin-loader.c:1460
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -4109,17 +4109,17 @@ msgid "Getting runtime source…"
 msgstr "Daûr a recuperâ il sorzint dal runtime…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:864 plugins/fwupd/gs-plugin-fwupd.c:963
+#: plugins/fwupd/gs-plugin-fwupd.c:694
 msgid "Downloading firmware update signature…"
 msgstr "Daûr a discjariâ la firme dal inzornament dal firmware…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:905 plugins/fwupd/gs-plugin-fwupd.c:1009
+#: plugins/fwupd/gs-plugin-fwupd.c:735
 msgid "Downloading firmware update metadata…"
 msgstr "Daûr a discjariâ i metadâts dal inzornament dal firmware…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:1100
+#: plugins/fwupd/gs-plugin-fwupd.c:825
 msgid "Downloading firmware update…"
 msgstr "Daûr a discjariâ l'inzornament dal firmware…"
 
@@ -4188,6 +4188,12 @@ msgstr "Supuart Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "La plateforme finâl di intratigniment di Valve"
+
+#~ msgid "Sorted by Name"
+#~ msgstr "Ordenât par non"
+
+#~ msgid "Sorted by Rating"
+#~ msgstr "Ordenât par valutazion"
 
 #~ msgid "The list of extra sources that have been previously enabled"
 #~ msgstr ""
