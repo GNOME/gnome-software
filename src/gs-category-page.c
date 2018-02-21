@@ -425,6 +425,7 @@ gs_category_page_create_filter (GsCategoryPage *self,
 	gboolean use_header_filter = gs_category_page_should_use_header_filter (category);
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
+	gs_container_remove_all (GTK_CONTAINER (self->header_filter_box));
 	gs_container_remove_all (GTK_CONTAINER (self->popover_filter_box));
 
 	children = gs_category_get_children (category);
