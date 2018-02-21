@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-19 02:53+0000\n"
-"PO-Revision-Date: 2018-02-20 10:10+0200\n"
+"POT-Creation-Date: 2018-02-20 10:54+0000\n"
+"PO-Revision-Date: 2018-02-21 09:59+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -458,20 +458,20 @@ msgstr ""
 msgid "Show version number"
 msgstr "Näytä versionumero"
 
-#: src/gs-application.c:344
+#: src/gs-application.c:343
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:351
+#: src/gs-application.c:350
 #, c-format
 msgid "About %s"
 msgstr "Tietoja - %s"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:355
+#: src/gs-application.c:354
 msgid "A nice way to manage the software on your system."
 msgstr "Mukava tapa hallita järjestelmän ohjelmistoja."
 
@@ -596,19 +596,9 @@ msgstr "Kaikki"
 msgid "Featured"
 msgstr "Nostot"
 
-#. TRANSLATORS: button text when apps have been sorted alphabetically
-#: src/gs-category-page.c:100
-msgid "Sorted by Name"
-msgstr "Lajiteltu nimen mukaan"
-
-#. TRANSLATORS: button text when apps have been sorted by their rating
-#: src/gs-category-page.c:103
-msgid "Sorted by Rating"
-msgstr "Lajiteltu arvostelun mukaan"
-
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:482
+#: src/gs-category-page.c:486
 #, c-format
 msgid "Featured %s"
 msgstr "Nostot — %s"
@@ -635,11 +625,21 @@ msgstr ""
 "Käytä laajennuksia omalla vastuullasi. Jos kohtaat ongelmia järjestelmän "
 "toiminnassa, poista laajennukset käytöstä."
 
-#: src/gs-category-page.ui:202
+#. TRANSLATORS: This is a label for the category filter drop down, which all together can read e.g. 'Show Vector Graphics'.
+#: src/gs-category-page.ui:197
+msgid "Show"
+msgstr "Näytä"
+
+#: src/gs-category-page.ui:219
 msgid "Subcategories filter menu"
 msgstr "Alaluokkien suodatusvalikko"
 
-#: src/gs-category-page.ui:255
+#. TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.
+#: src/gs-category-page.ui:267
+msgid "Sort"
+msgstr "Järjestä"
+
+#: src/gs-category-page.ui:288
 msgid "Subcategories sorting menu"
 msgstr "Alaluokkien lajitteluvalikko"
 
@@ -2377,7 +2377,6 @@ msgstr[1] "%s ja %s asennettu"
 #. * repository name, e.g. 'GNOME Nightly'
 #: src/gs-repos-dialog.c:244
 #, c-format
-#| msgid "“%s”"
 msgid "Remove “%s”?"
 msgstr "Poistetaanko ohjelmistolähde “%s”?"
 
@@ -2385,7 +2384,6 @@ msgstr "Poistetaanko ohjelmistolähde “%s”?"
 #. * repository name, e.g. 'GNOME Nightly'
 #: src/gs-repos-dialog.c:249
 #, c-format
-#| msgid "Unable to find “%s”"
 msgid "Disable “%s”?"
 msgstr "Poistetaanko ohjelmistolähde “%s” käytöstä?"
 
@@ -4101,17 +4099,17 @@ msgid "Getting runtime source…"
 msgstr "Noudetaan runtime-lähdettä…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:864 plugins/fwupd/gs-plugin-fwupd.c:963
+#: plugins/fwupd/gs-plugin-fwupd.c:694
 msgid "Downloading firmware update signature…"
 msgstr "Ladataan laiteohjelmiston päivitysallekirjoituksia…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:905 plugins/fwupd/gs-plugin-fwupd.c:1009
+#: plugins/fwupd/gs-plugin-fwupd.c:735
 msgid "Downloading firmware update metadata…"
 msgstr "Ladataan laiteohjelmiston päivityksen metatietoja…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:1100
+#: plugins/fwupd/gs-plugin-fwupd.c:825
 msgid "Downloading firmware update…"
 msgstr "Ladataan laiteohjelmiston päivitystä…"
 
@@ -4174,6 +4172,12 @@ msgstr "Steam-tuki"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Valven tarjoama viihdealusta"
+
+#~ msgid "Sorted by Name"
+#~ msgstr "Lajiteltu nimen mukaan"
+
+#~ msgid "Sorted by Rating"
+#~ msgstr "Lajiteltu arvostelun mukaan"
 
 #~ msgid "The list of extra sources that have been previously enabled"
 #~ msgstr "Luettelo lisälähteistä, jotka on otettu aiemmin käyttöön"
