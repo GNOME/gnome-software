@@ -23,52 +23,49 @@
 
 #include <gnome-software.h>
 
+struct GsPluginData {
+	GsApp			*app_system;
+};
+
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* we might change the app-id */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->app_system = gs_app_new ("system");
+	gs_app_set_kind (priv->app_system, AS_APP_KIND_OS_UPGRADE);
+	gs_app_set_state (priv->app_system, AS_APP_STATE_INSTALLED);
+}
+
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->app_system);
 }
 
 gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *cpe_name;
 	const gchar *home_url;
 	const gchar *name;
 	const gchar *version;
 	g_autoptr(GsOsRelease) os_release = NULL;
 
-	/* match meta-id */
-	if (g_strcmp0 (gs_app_get_id (app), "system") != 0)
-		return TRUE;
-
-	/* avoid setting again */
-	if (gs_app_get_metadata_item (app, "GnomeSoftware::CpeName") != NULL)
-		return TRUE;
-
-	/* hardcoded */
-	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-
-	/* get visible data */
+	/* parse os-release, wherever it may be */
 	os_release = gs_os_release_new (error);
 	if (os_release == NULL)
 		return FALSE;
 	cpe_name = gs_os_release_get_cpe_name (os_release);
 	if (cpe_name != NULL)
-		gs_app_set_metadata (app, "GnomeSoftware::CpeName", cpe_name);
+		gs_app_set_metadata (priv->app_system, "GnomeSoftware::CpeName", cpe_name);
 	name = gs_os_release_get_name (os_release);
 	if (name != NULL)
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, name);
+		gs_app_set_name (priv->app_system, GS_APP_QUALITY_LOWEST, name);
 	version = gs_os_release_get_version_id (os_release);
 	if (version != NULL)
-		gs_app_set_version (app, version);
+		gs_app_set_version (priv->app_system, version);
 
 	/* use libsoup to convert a URL */
 	home_url = gs_os_release_get_home_url (os_release);
@@ -76,7 +73,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		g_autoptr(SoupURI) uri = NULL;
 
 		/* homepage */
-		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, home_url);
+		gs_app_set_url (priv->app_system, AS_URL_KIND_HOMEPAGE, home_url);
 
 		/* build ID from the reverse-DNS URL and the name version */
 		uri = soup_uri_new (home_url);
@@ -91,11 +88,29 @@ gs_plugin_refine_app (GsPlugin *plugin,
 						      split[0],
 						      name,
 						      version);
-				/* set the new ID and update the cache */
-				gs_app_set_id (app, id);
-				gs_plugin_cache_add (plugin, NULL, app);
+				gs_app_set_id (priv->app_system, id);
 			}
 		}
+	}
+
+	/* success */
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine_wildcard (GsPlugin *plugin,
+			   GsApp *app,
+			   GsAppList *list,
+			   GsPluginRefineFlags flags,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* match meta-id */
+	if (g_strcmp0 (gs_app_get_id (app), "system") == 0) {
+		gs_app_list_add (list, priv->app_system);
+		return TRUE;
 	}
 
 	/* success */
