@@ -111,7 +111,6 @@ GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
 void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_loader,
                                                         guint           num_ops);
-GsAppList	*gs_plugin_loader_get_global_cache	(GsPluginLoader	*plugin_loader);
 
 
 G_END_DECLS
