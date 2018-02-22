@@ -208,6 +208,7 @@ main (int argc, char **argv)
 		"    <name>test</name>\n"
 		"    <summary>Test</summary>\n"
 		"    <icon type=\"stock\">system-file-manager</icon>\n"
+		"    <pkgname>arachne</pkgname>\n"
 		"  </component>\n"
 		"  <component type=\"os-upgrade\">\n"
 		"    <id>org.fedoraproject.Fedora-25</id>\n"
