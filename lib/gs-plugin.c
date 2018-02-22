@@ -1594,6 +1594,11 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 			g_critical ("key %s is not a unique_id", key);
 			return;
 		}
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+			g_critical ("not adding wildcard to the global cache: %s",
+				    gs_app_get_unique_id (app));
+			return;
+		}
 		gs_app_list_add (priv->global_cache, app);
 		return;
 	}
