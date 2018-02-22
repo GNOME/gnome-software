@@ -22,6 +22,7 @@
  */
 
 #include <config.h>
+#include <glib/gi18n.h>
 
 #include <gnome-software.h>
 #include "gs-external-appstream-utils.h"
@@ -101,7 +102,7 @@ gs_plugin_external_appstream_get_modification_date (const gchar *file_path)
 }
 
 static gboolean
-gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
+gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 					  const gchar *url,
 					  guint cache_age,
 					  GCancellable *cancellable,
@@ -209,6 +210,59 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 	return file_written;
 }
 
+static gboolean
+gs_plugin_external_appstream_refresh_user (GsPlugin *plugin,
+					   const gchar *url,
+					   guint cache_age,
+					   GCancellable *cancellable,
+					   GError **error)
+{
+	guint file_age;
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *fullpath = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+
+	/* check age */
+	basename = g_path_get_basename (url);
+	fullpath = g_build_filename (g_get_user_data_dir (),
+				     "app-info",
+				     "xmls",
+				     basename,
+				     NULL);
+	file = g_file_new_for_path (fullpath);
+	file_age = gs_utils_get_file_age (file);
+	if (file_age < cache_age) {
+		g_debug ("skipping %s: cache age is older than file", fullpath);
+		return TRUE;
+	}
+
+	/* download file */
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading extra metadata files…"));
+	return gs_plugin_download_file (plugin, app_dl, url, fullpath,
+					cancellable, error);
+}
+
+static gboolean
+gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
+					  const gchar *url,
+					  guint cache_age,
+					  GCancellable *cancellable,
+					  GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (g_settings_get_strv (priv->settings, "external-appstream-urls")) {
+		return gs_plugin_external_appstream_refresh_sys (plugin, url,
+								 cache_age,
+								 cancellable,
+								 error);
+	}
+	return gs_plugin_external_appstream_refresh_user (plugin, url, cache_age,
+							  cancellable, error);
+}
+
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -217,22 +271,14 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	guint i;
 	g_auto(GStrv) appstream_urls = NULL;
 
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
 
-	/* check we want system-wide */
-	if (!g_settings_get_boolean (priv->settings,
-				     "external-appstream-system-wide")) {
-		g_debug ("not system-wide for external appstream");
-		return TRUE;
-	}
-
 	appstream_urls = g_settings_get_strv (priv->settings,
 					      "external-appstream-urls");
-	for (i = 0; appstream_urls[i] != NULL; ++i) {
+	for (guint i = 0; appstream_urls[i] != NULL; ++i) {
 		g_autoptr(GError) local_error = NULL;
 		if (!g_str_has_prefix (appstream_urls[i], "https")) {
 			g_warning ("Not considering %s as an external "

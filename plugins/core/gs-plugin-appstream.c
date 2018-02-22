@@ -660,41 +660,6 @@ gs_plugin_add_recent (GsPlugin *plugin,
 					cancellable, error);
 }
 
-static gboolean
-gs_plugin_appstream_refresh_url (GsPlugin *plugin,
-				 const gchar *url,
-				 guint cache_age,
-				 GCancellable *cancellable,
-				 GError **error)
-{
-	guint file_age;
-	g_autofree gchar *basename = NULL;
-	g_autofree gchar *fullpath = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-
-	/* check age */
-	basename = g_path_get_basename (url);
-	fullpath = g_build_filename (g_get_user_data_dir (),
-				     "app-info",
-				     "xmls",
-				     basename,
-				     NULL);
-	file = g_file_new_for_path (fullpath);
-	file_age = gs_utils_get_file_age (file);
-	if (file_age < cache_age) {
-		g_debug ("skipping %s: cache age is older than file", fullpath);
-		return TRUE;
-	}
-
-	/* download file */
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading extra metadata files…"));
-	return gs_plugin_download_file (plugin, app_dl, url, fullpath,
-					cancellable, error);
-}
-
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -703,39 +668,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_auto(GStrv) appstream_urls = NULL;
 
 	/* ensure the token cache */
 	if (cache_age == G_MAXUINT)
 		as_store_load_search_cache (priv->store);
-
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
-		return TRUE;
-
-	/* check we want per-user */
-	if (g_settings_get_boolean (priv->settings,
-				    "external-appstream-system-wide")) {
-		g_debug ("not per-user for external appstream");
-		return TRUE;
-	}
-	appstream_urls = g_settings_get_strv (priv->settings,
-					      "external-appstream-urls");
-	for (guint i = 0; appstream_urls[i] != NULL; ++i) {
-		g_autoptr(GError) local_error = NULL;
-		if (!g_str_has_prefix (appstream_urls[i], "https")) {
-			g_warning ("cannot use AppStream source %s: use https://",
-				   appstream_urls[i]);
-			continue;
-		}
-		if (!gs_plugin_appstream_refresh_url (plugin,
-						      appstream_urls[i],
-						      cache_age,
-						      cancellable,
-						      &local_error)) {
-			g_warning ("failed to update external AppStream file: %s",
-				   local_error->message);
-		}
-	}
 
 	return TRUE;
 }
