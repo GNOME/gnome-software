@@ -44,6 +44,7 @@ struct _GsShellSearchProvider {
 	GCancellable *cancellable;
 
 	GHashTable *metas_cache;
+	GHashTable *apps_cache;		/* id -> GsApp */
 };
 
 G_DEFINE_TYPE (GsShellSearchProvider, gs_shell_search_provider, G_TYPE_OBJECT)
@@ -79,6 +80,9 @@ search_done_cb (GObject *source,
 	GVariantBuilder builder;
 	g_autoptr(GsAppList) list = NULL;
 
+	/* cache no longer valid */
+	g_hash_table_remove_all (self->apps_cache);
+
 	list = gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
 		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
@@ -96,6 +100,11 @@ search_done_cb (GObject *source,
 		if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
 			continue;
 		g_variant_builder_add (&builder, "s", gs_app_get_unique_id (app));
+
+		/* cache this in case we need the app in GetResultMetas */
+		g_hash_table_insert (self->apps_cache,
+				     g_strdup (gs_app_get_unique_id (app)),
+				     g_object_ref (app));
 	}
 	g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", &builder));
 
@@ -234,16 +243,16 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 	g_debug ("****** GetResultMetas");
 
 	for (i = 0; results[i]; i++) {
-		g_autoptr(GsApp) app = NULL;
+		GsApp *app;
 
 		/* already built */
 		if (g_hash_table_lookup (self->metas_cache, results[i]) != NULL)
 			continue;
 
-		/* find the application with this ID */
-		app = gs_plugin_loader_app_create (self->plugin_loader, results[i]);
-		if (gs_app_get_summary (app) == NULL) {
-			g_warning ("failed to refine find app %s in global cache", results[i]);
+		/* get previously found app */
+		app = g_hash_table_lookup (self->apps_cache, results[i]);
+		if (app == NULL) {
+			g_warning ("failed to refine find app %s in cache", results[i]);
 			continue;
 		}
 
@@ -341,6 +350,10 @@ search_provider_dispose (GObject *obj)
 		g_hash_table_destroy (self->metas_cache);
 		self->metas_cache = NULL;
 	}
+	if (self->apps_cache != NULL) {
+		g_hash_table_destroy (self->apps_cache);
+		self->apps_cache = NULL;
+	}
 
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->skeleton);
@@ -355,6 +368,8 @@ gs_shell_search_provider_init (GsShellSearchProvider *self)
 						   (GEqualFunc) as_utils_unique_id_equal,
 						   g_free,
 						   (GDestroyNotify) g_variant_unref);
+	self->apps_cache = g_hash_table_new_full (g_str_hash, g_str_equal,
+						  g_free, (GDestroyNotify) g_object_unref);
 
 	self->skeleton = gs_shell_search_provider2_skeleton_new ();
 
