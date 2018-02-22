@@ -178,9 +178,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 				   AS_APP_SEARCH_MATCH_KEYWORD |
 				   AS_APP_SEARCH_MATCH_ID);
 
-	/* set plugin flags */
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
-
 	/* need package name */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
 
