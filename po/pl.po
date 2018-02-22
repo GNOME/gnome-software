@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-21 15:52+0000\n"
-"PO-Revision-Date: 2018-02-21 16:58+0100\n"
+"POT-Creation-Date: 2018-02-22 11:32+0000\n"
+"PO-Revision-Date: 2018-02-22 17:25+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <community-poland@mozilla.org>\n"
 "Language: pl\n"
@@ -625,7 +625,7 @@ msgstr "Polecane"
 
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:485
+#: src/gs-category-page.c:493
 #, c-format
 msgid "Featured %s"
 msgstr "%s — polecane"
@@ -1129,13 +1129,15 @@ msgstr "Wyszukiwanie najnowszej wersji programu"
 #. v1.1
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:273
-msgid "Sharing diagnostic data not identifiable to the user"
-msgstr "Udostępnianie danych diagnostycznych nieidentyfikujących użytkownika"
+msgid "Sharing diagnostic data that does not let others identify the user"
+msgstr ""
+"Udostępnianie danych diagnostycznych nieumożliwiających identyfikację "
+"użytkownika"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:276
-msgid "Sharing information identifiable to the user"
-msgstr "Udostępnianie informacji identyfikujących użytkownika"
+msgid "Sharing information that lets others identify the user"
+msgstr "Udostępnianie informacji umożliwiających identyfikację użytkownika"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:279
@@ -4063,11 +4065,6 @@ msgstr "Źródła"
 msgid "Utilities"
 msgstr "Narzędzia"
 
-#. TRANSLATORS: status text when downloading
-#: plugins/core/gs-plugin-appstream.c:693
-msgid "Downloading extra metadata files…"
-msgstr "Pobieranie dodatkowych plików metadanych…"
-
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
 #: plugins/core/gs-plugin-generic-updates.c:65
@@ -4121,6 +4118,11 @@ msgstr "Sprawdzenie poprawności typu treści się nie powiodło"
 #: plugins/external-appstream/gs-install-appstream.c:143
 msgid "Failed to copy"
 msgstr "Skopiowanie się nie powiodła"
+
+#. TRANSLATORS: status text when downloading
+#: plugins/external-appstream/gs-plugin-external-appstream.c:243
+msgid "Downloading extra metadata files…"
+msgstr "Pobieranie dodatkowych plików metadanych…"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:217
