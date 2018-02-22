@@ -2,6 +2,7 @@
  *
  * Copyright (C) 2015 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2015 Matthias Klumpp <matthias@tenstral.net>
+ * Copyright (C) 2015 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *

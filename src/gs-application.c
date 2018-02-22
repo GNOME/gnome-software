@@ -2,6 +2,7 @@
  *
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -326,12 +327,13 @@ about_activated (GSimpleAction *action,
 	const gchar *authors[] = {
 		"Richard Hughes",
 		"Matthias Clasen",
+		"Kalev Lember",
 		"Allan Day",
 		"Ryan Lerch",
 		"William Jon McCann",
 		NULL
 	};
-	const gchar *copyright = "Copyright \xc2\xa9 2016 Richard Hughes, Matthias Clasen";
+	const gchar *copyright = "Copyright \xc2\xa9 2016 Richard Hughes, Matthias Clasen, Kalev Lember";
 	GtkAboutDialog *dialog;
 	g_autofree gchar *title = NULL;
 

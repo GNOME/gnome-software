@@ -2,6 +2,7 @@
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
  * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
