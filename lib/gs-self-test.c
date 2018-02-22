@@ -193,42 +193,6 @@ gs_plugin_download_rewrite_func (void)
 }
 
 static void
-gs_plugin_global_cache_func (void)
-{
-	const gchar *unique_id;
-	g_autoptr(GsPlugin) plugin1 = NULL;
-	g_autoptr(GsPlugin) plugin2 = NULL;
-	g_autoptr(GsAppList) list = gs_app_list_new ();
-	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
-	g_autoptr(GsApp) app1 = NULL;
-	g_autoptr(GsApp) app2 = NULL;
-
-	plugin1 = gs_plugin_new ();
-	gs_plugin_set_global_cache (plugin1, list);
-
-	plugin2 = gs_plugin_new ();
-	gs_plugin_set_global_cache (plugin2, list);
-
-	/* both plugins not opted into the global cache */
-	unique_id = gs_app_get_unique_id (app);
-	gs_plugin_cache_add (plugin1, unique_id, app);
-	g_assert (gs_plugin_cache_lookup (plugin2, unique_id) == NULL);
-	app1 = gs_plugin_cache_lookup (plugin1, unique_id);
-	g_assert (app1 != NULL);
-
-	/* one plugin opted in */
-	gs_plugin_add_flags (plugin1, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
-	gs_plugin_cache_add (plugin1, unique_id, app);
-	g_assert (gs_plugin_cache_lookup (plugin2, unique_id) == NULL);
-
-	/* both plugins opted in */
-	gs_plugin_add_flags (plugin2, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
-	gs_plugin_cache_add (plugin1, unique_id, app);
-	app2 = gs_plugin_cache_lookup (plugin2, unique_id);
-	g_assert (app2 != NULL);
-}
-
-static void
 gs_plugin_func (void)
 {
 	GsAppList *list;
@@ -669,7 +633,6 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/lib/plugin{download-rewrite}", gs_plugin_download_rewrite_func);
-	g_test_add_func ("/gnome-software/lib/plugin{global-cache}", gs_plugin_global_cache_func);
 	g_test_add_func ("/gnome-software/lib/auth{secret}", gs_auth_secret_func);
 
 	return g_test_run ();

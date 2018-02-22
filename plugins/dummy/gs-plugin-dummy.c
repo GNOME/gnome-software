@@ -62,9 +62,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 		return;
 	}
 
-	/* set plugin flags */
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
-
 	/* toggle this */
 	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
 		priv->allow_updates_id = g_timeout_add_seconds (10,

@@ -90,9 +90,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* Override hardcoded popular apps */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "hardcoded-popular");
 
-	/* set plugin flags */
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_GLOBAL_CACHE);
-
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Snap");
 }

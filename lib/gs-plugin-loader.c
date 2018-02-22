@@ -46,7 +46,6 @@ typedef struct
 	GPtrArray		*locations;
 	gchar			*locale;
 	gchar			*language;
-	GsAppList		*global_cache;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
 	GPtrArray		*auth_array;
@@ -2174,7 +2173,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_language (plugin, priv->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
-	gs_plugin_set_global_cache (plugin, priv->global_cache);
 	gs_plugin_set_network_monitor (plugin, priv->network_monitor);
 	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
@@ -2278,7 +2276,6 @@ gs_plugin_loader_clear_caches (GsPluginLoader *plugin_loader)
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		gs_plugin_cache_invalidate (plugin);
 	}
-	gs_app_list_remove_all (priv->global_cache);
 }
 
 /**
@@ -2728,7 +2725,6 @@ gs_plugin_loader_finalize (GObject *object)
 	g_ptr_array_unref (priv->locations);
 	g_free (priv->locale);
 	g_free (priv->language);
-	g_object_unref (priv->global_cache);
 	g_ptr_array_unref (priv->file_monitors);
 	g_hash_table_unref (priv->events_by_id);
 	g_hash_table_unref (priv->disallow_updates);
@@ -2830,7 +2826,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	guint i;
 
 	priv->scale = 1;
-	priv->global_cache = gs_app_list_new ();
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->queued_ops_pool = g_thread_pool_new (gs_plugin_loader_process_in_thread_pool_cb,
@@ -3720,19 +3715,34 @@ gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
 GsApp *
 gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_id)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsApp *app;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 
-	/* already exists */
-	app = gs_app_list_lookup (priv->global_cache, unique_id);
-	if (app != NULL)
-		return g_object_ref (app);
-
-	/* create and add */
+	/* use the plugin loader to convert a wildcard app*/
 	app = gs_app_new (NULL);
+	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 	gs_app_set_from_unique_id (app, unique_id);
-	gs_app_list_add (priv->global_cache, app);
-	return app;
+	gs_app_list_add (list, app);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
+	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+	if (!gs_plugin_loader_run_refine (helper, list, NULL, &error)) {
+		g_error ("%s", error->message);
+		return NULL;
+	}
+
+	/* return the first returned app that's not a wildcard */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app_tmp = gs_app_list_index (list, i);
+		if (!gs_app_has_quirk (app_tmp, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			return g_object_ref (app_tmp);
+	}
+
+	/* does not exist */
+	g_warning ("failed to create an app for %s", unique_id);
+	return NULL;
 }
 
 /**

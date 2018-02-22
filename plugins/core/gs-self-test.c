@@ -27,66 +27,6 @@
 #include "gs-test.h"
 
 static void
-gs_plugins_core_app_creation_func (GsPluginLoader *plugin_loader)
-{
-	AsApp *as_app = NULL;
-	GsPlugin *plugin;
-	gboolean ret;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsApp) app2 = NULL;
-	g_autoptr(GsApp) cached_app = NULL;
-	g_autoptr(GsApp) cached_app2 = NULL;
-	g_autoptr(AsStore) store = NULL;
-	g_autoptr(GError) error = NULL;
-	const gchar *test_icon_root = g_getenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT");
-	g_autofree gchar *xml = g_strdup ("<?xml version=\"1.0\"?>\n"
-					  "<components version=\"0.9\">\n"
-					  "  <component type=\"desktop\">\n"
-					  "    <id>demeter.desktop</id>\n"
-					  "    <name>Demeter</name>\n"
-					  "    <summary>An agriculture application</summary>\n"
-					  "  </component>\n"
-					  "</components>\n");
-
-	/* drop all caches */
-	gs_plugin_loader_setup_again (plugin_loader);
-
-	app = gs_plugin_loader_app_create (plugin_loader,
-					   "*/*/*/desktop/demeter.desktop/*");
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-
-	cached_app = gs_plugin_loader_app_create (plugin_loader,
-						  "*/*/*/desktop/demeter.desktop/*");
-
-	g_assert (app == cached_app);
-
-	/* Make sure the app still has the match-any-prefix quirk*/
-	g_assert(gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX));
-
-	/* Ensure gs_appstream creates a new app when a matching one is cached but
-	 * has the match-any-prefix quirk */
-	store = as_store_new ();
-	ret = as_store_from_xml (store, xml, test_icon_root, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	as_app = as_store_get_app_by_id (store, "demeter.desktop");
-	g_assert (as_app != NULL);
-
-	plugin = gs_plugin_loader_find_plugin (plugin_loader, "appstream");
-	g_assert (plugin != NULL);
-
-	app2 = gs_appstream_create_app (plugin, as_app, NULL);
-	g_assert (app2 != NULL);
-	g_assert (cached_app != app2);
-	g_assert (!gs_app_has_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX));
-
-	cached_app2 = gs_plugin_loader_app_create (plugin_loader,
-						   "*/*/*/desktop/demeter.desktop/*");
-	g_assert (cached_app2 == app2);
-}
-
-static void
 gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -237,9 +177,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/core/search-repo-name",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_core_search_repo_name_func);
-	g_test_add_data_func ("/gnome-software/plugins/core/app-creation",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugins_core_app_creation_func);
 	g_test_add_data_func ("/gnome-software/plugins/core/os-release",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_core_os_release_func);
