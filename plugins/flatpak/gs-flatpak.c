@@ -2330,6 +2330,13 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		AsApp *item = NULL;
 		g_autoptr(GsApp) new = NULL;
 
+		/* is compatible */
+		if (!as_utils_unique_id_equal (gs_app_get_unique_id (app),
+					       as_app_get_unique_id (item))) {
+			g_debug ("does not match unique ID constraints");
+			continue;
+		}
+
 		/* does the app have an installation method */
 		item = g_ptr_array_index (items, i);
 		if (as_app_get_bundle_default (item) == NULL) {
