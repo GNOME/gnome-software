@@ -1103,6 +1103,11 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 
 	/* show or hide the end of life notification */
 	app = gs_plugin_loader_get_system_app (plugin_loader);
+	if (app == NULL) {
+		g_warning ("failed to get system app");
+		gtk_widget_set_visible (self->box_end_of_life, FALSE);
+		return;
+	}
 	if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE) {
 		gtk_widget_set_visible (self->box_end_of_life, FALSE);
 		return;
