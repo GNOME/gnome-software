@@ -2250,14 +2250,13 @@ gs_plugin_loader_plugin_dir_changed_cb (GFileMonitor *monitor,
 					GFileMonitorEvent event_type,
 					GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsApp *app;
+	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
 	g_autoptr(GError) error = NULL;
 
 	/* add app */
 	gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_SETUP);
-	app = gs_app_list_lookup (priv->global_cache,
+	app = gs_plugin_loader_app_create (plugin_loader,
 		"system/*/*/*/org.gnome.Software.desktop/*");
 	if (app != NULL)
 		gs_plugin_event_set_app (event, app);
