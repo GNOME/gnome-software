@@ -337,23 +337,21 @@ gs_category_page_reload (GsPage *page)
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (self->subcategory));
 
+	/* don't show the sort button on addons that cannot be rated */
 	if (g_strcmp0 (gs_category_get_id (self->category), "addons") == 0) {
-		if (g_strcmp0 (gs_category_get_id (self->subcategory), "shell-extensions") != 0) {
-			/* we don't want to show the sort button on the addons that
-			 * cannot be rated */
-			gtk_widget_set_visible (self->subcats_sort_label, FALSE);
-			gtk_widget_set_visible (self->subcats_sort_button, FALSE);
-		} else {
-			/* show the shell extensions header and the sort button */
-			gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
-			gtk_widget_set_visible (self->subcats_sort_label, TRUE);
-			gtk_widget_set_visible (self->subcats_sort_button, TRUE);
-		}
+		gtk_widget_set_visible (self->subcats_sort_label, FALSE);
+		gtk_widget_set_visible (self->subcats_sort_button, FALSE);
+
 	} else {
-		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
 		gtk_widget_set_visible (self->subcats_sort_label, TRUE);
 		gtk_widget_set_visible (self->subcats_sort_button, TRUE);
 	}
+
+	/* show the shell extensions header */
+	if (g_strcmp0 (gs_category_get_id (self->subcategory), "shell-extensions") == 0)
+		gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
+	else
+		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
 
 	if (self->sort_rating_handler_id > 0) {
 		g_signal_handler_disconnect (self->sort_rating_button,
