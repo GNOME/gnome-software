@@ -125,7 +125,6 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app3 = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GError) error = NULL;
@@ -158,12 +157,6 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 
 	/* this comes from appstream */
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Fedora Workstation");
-
-	/* get using the new name */
-	app2 = gs_plugin_loader_app_create (plugin_loader,
-					    "*/*/*/*/org.fedoraproject.Fedora-25/*");
-	g_assert (app2 != NULL);
-	g_assert (app2 == app);
 
 	/* check we can get this by the old name too */
 	app3 = gs_plugin_loader_get_system_app (plugin_loader);
