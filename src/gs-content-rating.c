@@ -270,10 +270,10 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Checking for the latest application version") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_MODERATE,	/* v1.1 */
 	/* TRANSLATORS: content rating description */
-	_("Sharing diagnostic data not identifiable to the user") },
+	_("Sharing diagnostic data that does not let others identify the user") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Sharing information identifiable to the user") },
+	_("Sharing information that lets others identify the user") },
 	{ "social-location",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("No sharing of physical location to other users") },
