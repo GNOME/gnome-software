@@ -1490,7 +1490,6 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *runtime;
-	GsApp *extension;
 	GsApp *app_tmp;
 	gboolean got_progress_installing = FALSE;
 	gboolean ret;
@@ -1505,11 +1504,11 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_autofree gchar *repodir2_fn = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app_source = NULL;
+	g_autoptr(GsApp) extension = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) list_updates = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
-	GsAppList *global_cache = NULL;
 
 	/* drop all caches */
 	gs_plugin_loader_setup_again (plugin_loader);
@@ -1590,8 +1589,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 
 	/* check if the extension was installed */
-	global_cache = gs_plugin_loader_get_global_cache (plugin_loader);
-	extension = gs_app_list_lookup (global_cache, "user/flatpak/*/runtime/org.test.Chiron.Extension/master");
+	extension = gs_plugin_loader_app_create (plugin_loader,
+			"user/flatpak/*/runtime/org.test.Chiron.Extension/master");
 	g_assert_nonnull (extension);
 	g_assert_cmpint (gs_app_get_state (extension), ==, AS_APP_STATE_INSTALLED);
 
