@@ -243,7 +243,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 	g_debug ("****** GetResultMetas");
 
 	for (i = 0; results[i]; i++) {
-		g_autoptr(GsApp) app = NULL;
+		GsApp *app;
 
 		/* already built */
 		if (g_hash_table_lookup (self->metas_cache, results[i]) != NULL)
