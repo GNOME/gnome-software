@@ -293,6 +293,7 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 	}
 
 	app_row = gs_app_row_new (app);
+	gs_app_row_set_colorful (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
 	    gs_utils_list_has_app_fuzzy (list, app))
