@@ -54,7 +54,6 @@ typedef struct
 	gboolean	 show_folders;
 	gboolean	 show_buttons;
 	gboolean	 show_source;
-	gboolean	 show_codec;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
 	gboolean	 selectable;
@@ -760,15 +759,6 @@ gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_source = show_source;
-	gs_app_row_refresh (app_row);
-}
-
-void
-gs_app_row_set_show_codec (GsAppRow *app_row, gboolean show_codec)
-{
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	priv->show_codec = show_codec;
 	gs_app_row_refresh (app_row);
 }
 
