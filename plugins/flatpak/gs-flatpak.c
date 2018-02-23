@@ -2327,7 +2327,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	/* find all apps when matching any prefixes */
 	items = as_store_get_apps_by_id (self->store, id);
 	for (i = 0; i < items->len; i++) {
-		AsApp *item = NULL;
+		AsApp *item = g_ptr_array_index (items, i);
 		g_autoptr(GsApp) new = NULL;
 
 		/* is compatible */
@@ -2338,7 +2338,6 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		}
 
 		/* does the app have an installation method */
-		item = g_ptr_array_index (items, i);
 		if (as_app_get_bundle_default (item) == NULL) {
 			g_debug ("not using %s for wildcard as no bundle",
 				 as_app_get_id (item));
