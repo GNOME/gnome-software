@@ -699,7 +699,6 @@ gs_app_row_init (GsAppRow *app_row)
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 	gs_star_widget_set_icon_size (GS_STAR_WIDGET (priv->star), 12);
 
-	priv->colorful = TRUE;
 	priv->settings = g_settings_new ("org.gnome.software");
 
 	g_signal_connect (priv->button, "clicked",

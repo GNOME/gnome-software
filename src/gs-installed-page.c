@@ -186,7 +186,6 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	GtkWidget *app_row;
 
 	app_row = gs_app_row_new (app);
-	gs_app_row_set_colorful (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_folders (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||

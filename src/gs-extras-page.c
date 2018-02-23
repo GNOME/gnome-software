@@ -292,6 +292,7 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, SearchData *search_data)
 	}
 
 	app_row = gs_app_row_new (app);
+	gs_app_row_set_colorful (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 
 	g_object_set_data_full (G_OBJECT (app_row), "missing-title", g_strdup (search_data->title), g_free);

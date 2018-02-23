@@ -142,7 +142,6 @@ gs_moderate_page_add_app (GsModeratePage *self, GsApp *app)
 
 	/* add top level app */
 	app_row = gs_app_row_new (app);
-	gs_app_row_set_colorful (GS_APP_ROW (app_row), FALSE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
 	gtk_container_add (GTK_CONTAINER (self->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
