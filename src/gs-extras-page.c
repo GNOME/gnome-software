@@ -275,15 +275,15 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 }
 
 static void
-gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, SearchData *search_data)
+gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchData *search_data)
 {
 	GtkWidget *app_row;
 	GList *l;
-	g_autoptr(GList) list = NULL;
+	g_autoptr(GList) existing_apps = NULL;
 
 	/* Don't add same app twice */
-	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
-	for (l = list; l != NULL; l = l->next) {
+	existing_apps = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
+	for (l = existing_apps; l != NULL; l = l->next) {
 		GsApp *existing_app;
 
 		existing_app = gs_app_row_get_app (GS_APP_ROW (l->data));
@@ -294,6 +294,9 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, SearchData *search_data)
 
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
+	    gs_utils_list_has_app_fuzzy (list, app))
+		gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 
 	g_object_set_data_full (G_OBJECT (app_row), "missing-title", g_strdup (search_data->title), g_free);
 
@@ -554,7 +557,7 @@ search_files_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_extras_page_add_app (self, app, search_data);
+		gs_extras_page_add_app (self, app, list, search_data);
 	}
 
 	self->pending_search_cnt--;
@@ -601,7 +604,7 @@ file_to_app_cb (GObject *source_object,
 	}
 
 	g_debug ("%s\n\n", gs_app_to_string (app));
-	gs_extras_page_add_app (self, app, search_data);
+	gs_extras_page_add_app (self, app, list, search_data);
 
 	self->pending_search_cnt--;
 
@@ -649,7 +652,7 @@ get_search_what_provides_cb (GObject *source_object,
 		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_extras_page_add_app (self, app, search_data);
+		gs_extras_page_add_app (self, app, list, search_data);
 	}
 
 	self->pending_search_cnt--;
