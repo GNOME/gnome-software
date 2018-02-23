@@ -305,37 +305,37 @@ repo_button_clicked_cb (GsReposDialogRow *row,
 }
 
 static void
-add_repo (GsReposDialog *dialog, GsApp *app)
+add_repo (GsReposDialog *dialog, GsApp *repo)
 {
 	GtkWidget *row;
 	g_autofree gchar *text = NULL;
 	AsAppState state;
 
-	state = gs_app_get_state (app);
+	state = gs_app_get_state (repo);
 	if (!(state == AS_APP_STATE_AVAILABLE ||
 	      state == AS_APP_STATE_AVAILABLE_LOCAL ||
 	      state == AS_APP_STATE_INSTALLED ||
 	      state == AS_APP_STATE_INSTALLING ||
 	      state == AS_APP_STATE_REMOVING)) {
 		g_warning ("repo %s in invalid state %s",
-		           gs_app_get_id (app),
+		           gs_app_get_id (repo),
 		           as_app_state_to_string (state));
 		return;
 	}
 
 	row = gs_repos_dialog_row_new ();
 	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (row),
-	                              gs_app_get_name (app));
-	text = get_repo_installed_text (app);
+	                              gs_app_get_name (repo));
+	text = get_repo_installed_text (repo);
 	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (row), text);
 	gs_repos_dialog_row_set_url (GS_REPOS_DIALOG_ROW (row),
-	                             gs_app_get_url (app, AS_URL_KIND_HOMEPAGE));
+	                             gs_app_get_url (repo, AS_URL_KIND_HOMEPAGE));
 	gs_repos_dialog_row_show_status (GS_REPOS_DIALOG_ROW (row));
-	gs_repos_dialog_row_set_repo (GS_REPOS_DIALOG_ROW (row), app);
+	gs_repos_dialog_row_set_repo (GS_REPOS_DIALOG_ROW (row), repo);
 
 	g_object_set_data_full (G_OBJECT (row),
 	                        "sort",
-	                        g_utf8_casefold (gs_app_get_name (app), -1),
+	                        g_utf8_casefold (gs_app_get_name (repo), -1),
 	                        g_free);
 
 	g_signal_connect (row, "button-clicked",
