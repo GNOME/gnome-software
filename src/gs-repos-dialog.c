@@ -309,6 +309,19 @@ add_repo (GsReposDialog *dialog, GsApp *app)
 {
 	GtkWidget *row;
 	g_autofree gchar *text = NULL;
+	AsAppState state;
+
+	state = gs_app_get_state (app);
+	if (!(state == AS_APP_STATE_AVAILABLE ||
+	      state == AS_APP_STATE_AVAILABLE_LOCAL ||
+	      state == AS_APP_STATE_INSTALLED ||
+	      state == AS_APP_STATE_INSTALLING ||
+	      state == AS_APP_STATE_REMOVING)) {
+		g_warning ("repo %s in invalid state %s",
+		           gs_app_get_id (app),
+		           as_app_state_to_string (state));
+		return;
+	}
 
 	row = gs_repos_dialog_row_new ();
 	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (row),
