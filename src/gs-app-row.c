@@ -182,8 +182,6 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows to cancel a queued install of the application */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
-		/* TRANSLATORS: this is a label that describes an application
-		 * that has been queued for installation */
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
