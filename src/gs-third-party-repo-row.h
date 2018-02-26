@@ -34,14 +34,17 @@ G_DECLARE_DERIVABLE_TYPE (GsThirdPartyRepoRow, gs_third_party_repo_row, GS, THIR
 struct _GsThirdPartyRepoRowClass
 {
 	GtkListBoxRowClass	  parent_class;
+	void			(*button_clicked)	(GsThirdPartyRepoRow	*row);
 };
 
 GtkWidget	*gs_third_party_repo_row_new		(void);
-GtkWidget	*gs_third_party_repo_row_get_switch	(GsThirdPartyRepoRow	*row);
 void		 gs_third_party_repo_row_set_name	(GsThirdPartyRepoRow	*row,
 							 const gchar		*name);
 void		 gs_third_party_repo_row_set_comment	(GsThirdPartyRepoRow	*row,
 							 const gchar		*comment);
+void		 gs_third_party_repo_row_set_app	(GsThirdPartyRepoRow	*row,
+							 GsApp			*app);
+GsApp		*gs_third_party_repo_row_get_app	(GsThirdPartyRepoRow	*row);
 
 G_END_DECLS
 

@@ -48,7 +48,6 @@ struct _GsReposDialog
 	GtkWidget	*row_third_party;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
-	GtkWidget	*switch_third_party;
 };
 
 G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, GTK_TYPE_DIALOG)
@@ -71,7 +70,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(InstallRemoveData, install_remove_data_free);
 
 static void reload_sources (GsReposDialog *dialog);
 static void reload_third_party_repo (GsReposDialog *dialog);
-static void refresh_third_party_repo (GsReposDialog *dialog);
 
 static gchar *
 get_repo_installed_text (GsApp *repo)
@@ -347,15 +345,6 @@ add_repo (GsReposDialog *dialog, GsApp *repo)
 	gtk_widget_show (row);
 }
 
-static gboolean
-repo_is_installed (GsApp *repo)
-{
-	if (gs_app_get_state (repo) == AS_APP_STATE_INSTALLED)
-		return TRUE;
-
-	return FALSE;
-}
-
 static void
 third_party_repo_installed_cb (GObject *source,
                                GAsyncResult *res,
@@ -374,40 +363,23 @@ third_party_repo_installed_cb (GObject *source,
 		}
 
 		g_warning ("failed to %s third party repo: %s", action_str, error->message);
-		gtk_switch_set_state (GTK_SWITCH (install_data->dialog->switch_third_party),
-		                      repo_is_installed (install_data->dialog->third_party_repo));
-	} else {
-		gtk_switch_set_state (GTK_SWITCH (install_data->dialog->switch_third_party),
-		                      repo_is_installed (install_data->dialog->third_party_repo));
-		reload_sources (install_data->dialog);
+		return;
 	}
+
+	reload_sources (install_data->dialog);
 }
 
 static void
 install_third_party_repo (GsReposDialog *dialog, gboolean install)
 {
-	GsPluginAction action;
 	InstallRemoveData *install_data;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
-	if (install && gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_AVAILABLE) {
-		action = GS_PLUGIN_ACTION_INSTALL;
-	} else if (!install && gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_INSTALLED) {
-		action = GS_PLUGIN_ACTION_REMOVE;
-	} else {
-		g_debug ("third party repo package in state %s when %s, skipping",
-		         as_app_state_to_string (gs_app_get_state (dialog->third_party_repo)),
-		         install ? "installing" : "removing");
-		gtk_switch_set_state (GTK_SWITCH (dialog->switch_third_party),
-		                      repo_is_installed (dialog->third_party_repo));
-		return;
-	}
-
 	install_data = g_slice_new0 (InstallRemoveData);
 	install_data->dialog = g_object_ref (dialog);
-	install_data->action = action;
+	install_data->action = install ? GS_PLUGIN_ACTION_INSTALL : GS_PLUGIN_ACTION_REMOVE;
 
-	plugin_job = gs_plugin_job_newv (action,
+	plugin_job = gs_plugin_job_newv (install_data->action,
 	                                 "app", dialog->third_party_repo,
 	                                 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader,
@@ -418,29 +390,42 @@ install_third_party_repo (GsReposDialog *dialog, gboolean install)
 }
 
 static void
-third_party_switch_state_set_cb (GtkSwitch *switch_third_party,
-                                 gboolean state,
-                                 gpointer *user_data)
+third_party_repo_button_clicked_cb (GsThirdPartyRepoRow *row,
+                                    gpointer user_data)
 {
 	GsReposDialog *dialog = (GsReposDialog *) user_data;
+	GsApp *app;
 
-	install_third_party_repo (dialog, state);
+	app = gs_third_party_repo_row_get_app (row);
+
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_UNAVAILABLE:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+		install_third_party_repo (dialog, TRUE);
+		break;
+	case AS_APP_STATE_UPDATABLE_LIVE:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
+		install_third_party_repo (dialog, FALSE);
+		break;
+	default:
+		g_warning ("third party repo %s button clicked in unexpected state %s",
+		           gs_app_get_id (app),
+		           as_app_state_to_string (gs_app_get_state (app)));
+		break;
+	}
+
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
 }
 
 static void
 refresh_third_party_repo (GsReposDialog *dialog)
 {
-	gboolean switch_active;
-
 	if (dialog->third_party_repo == NULL) {
 		gtk_widget_hide (dialog->frame_third_party);
 		return;
 	}
-
-	/* if the third party repo package is installed, show the switch as active */
-	switch_active = (gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_INSTALLED);
-	gtk_switch_set_active (GTK_SWITCH (dialog->switch_third_party), switch_active);
 
 	gtk_widget_show (dialog->frame_third_party);
 }
@@ -501,6 +486,7 @@ resolve_third_party_repo_cb (GsPluginLoader *plugin_loader,
                              GAsyncResult *res,
                              GsReposDialog *dialog)
 {
+	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -518,10 +504,14 @@ resolve_third_party_repo_cb (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	/* save results for later */
-	g_clear_object (&dialog->third_party_repo);
+	/* we should only get one result */
 	if (gs_app_list_length (list) > 0)
-		dialog->third_party_repo = g_object_ref (gs_app_list_index (list, 0));
+		app = gs_app_list_index (list, 0);
+	else
+		app = NULL;
+
+	g_set_object (&dialog->third_party_repo, app);
+	gs_third_party_repo_row_set_app (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party), app);
 
 	/* refresh widget */
 	refresh_third_party_repo (dialog);
@@ -708,10 +698,8 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gtk_label_set_text (GTK_LABEL (dialog->label_description), label_description_text);
 
 	/* set up third party repository row */
-	dialog->switch_third_party = gs_third_party_repo_row_get_switch (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party));
-	g_signal_connect (dialog->switch_third_party, "state-set",
-	                  G_CALLBACK (third_party_switch_state_set_cb),
-	                  dialog);
+	g_signal_connect (dialog->row_third_party, "button-clicked",
+	                  G_CALLBACK (third_party_repo_button_clicked_cb), dialog);
 	gs_third_party_repo_row_set_name (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party),
 	                                  /* TRANSLATORS: info bar title in the software repositories dialog */
 	                                  _("Third Party Repositories"));

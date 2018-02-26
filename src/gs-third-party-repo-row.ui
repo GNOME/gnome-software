@@ -61,9 +61,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkSwitch" id="active_switch">
+          <object class="GsProgressButton" id="button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="use_underline">True</property>
+            <property name="width_request">105</property>
+            <property name="receives_default">True</property>
             <property name="halign">end</property>
             <property name="valign">center</property>
           </object>
