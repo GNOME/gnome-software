@@ -375,12 +375,10 @@ third_party_repo_installed_cb (GObject *source,
 		g_warning ("failed to %s third party repo: %s", action_str, error->message);
 		gtk_switch_set_state (GTK_SWITCH (install_data->dialog->switch_third_party),
 		                      repo_is_installed (install_data->dialog->third_party_repo));
-		refresh_third_party_repo (install_data->dialog);
 	} else {
 		gtk_switch_set_state (GTK_SWITCH (install_data->dialog->switch_third_party),
 		                      repo_is_installed (install_data->dialog->third_party_repo));
 		reload_sources (install_data->dialog);
-		reload_third_party_repo (install_data->dialog);
 	}
 }
 
@@ -472,6 +470,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
+	/* remove previous */
+	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
+
 	/* stop the spinner */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
 
@@ -529,10 +530,6 @@ static void
 reload_sources (GsReposDialog *dialog)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
-	gs_start_spinner (GTK_SPINNER (dialog->spinner));
-	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
 
 	/* get the list of non-core software repositories */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
@@ -774,6 +771,8 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 			       "modal", TRUE,
 			       NULL);
 	set_plugin_loader (dialog, plugin_loader);
+	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "waiting");
+	gs_start_spinner (GTK_SPINNER (dialog->spinner));
 	reload_sources (dialog);
 	reload_third_party_repo (dialog);
 
