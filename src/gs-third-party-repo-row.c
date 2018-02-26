@@ -86,7 +86,7 @@ refresh_ui (GsThirdPartyRepoRow *row)
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed.
 		 * The ellipsis indicates that further steps are required */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("_Install……"));
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("_Install…"));
 		/* enable button */
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
