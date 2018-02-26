@@ -28,7 +28,6 @@
 typedef struct
 {
 	GsApp		*repo;
-	GtkWidget	*active_switch;
 	GtkWidget	*button;
 	GtkWidget	*name_label;
 	GtkWidget	*comment_label;
@@ -47,14 +46,6 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
-
-void
-gs_repo_row_set_switch_enabled (GsRepoRow *row,
-                                gboolean switch_enabled)
-{
-	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
-	gtk_widget_set_visible (priv->active_switch, switch_enabled);
-}
 
 void
 gs_repo_row_set_name (GsRepoRow *row, const gchar *name)
@@ -251,14 +242,6 @@ button_clicked_cb (GtkWidget *widget, GsRepoRow *row)
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0);
 }
 
-GtkWidget *
-gs_repo_row_get_switch (GsRepoRow *row)
-{
-	GsRepoRowPrivate *priv = gs_repo_row_get_instance_private (row);
-
-	return priv->active_switch;
-}
-
 static void
 gs_repo_row_destroy (GtkWidget *object)
 {
@@ -305,7 +288,6 @@ gs_repo_row_class_init (GsRepoRowClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repo-row.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, active_switch);
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, name_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsRepoRow, comment_label);

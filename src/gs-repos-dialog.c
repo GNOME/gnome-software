@@ -29,6 +29,7 @@
 #include "gs-common.h"
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
+#include "gs-third-party-repo-row.h"
 #include <glib/gi18n.h>
 
 struct _GsReposDialog
@@ -707,14 +708,13 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gtk_label_set_text (GTK_LABEL (dialog->label_description), label_description_text);
 
 	/* set up third party repository row */
-	dialog->switch_third_party = gs_repo_row_get_switch (GS_REPO_ROW (dialog->row_third_party));
+	dialog->switch_third_party = gs_third_party_repo_row_get_switch (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party));
 	g_signal_connect (dialog->switch_third_party, "state-set",
 	                  G_CALLBACK (third_party_switch_state_set_cb),
 	                  dialog);
-	gs_repo_row_set_switch_enabled (GS_REPO_ROW (dialog->row_third_party), TRUE);
-	gs_repo_row_set_name (GS_REPO_ROW (dialog->row_third_party),
-	                      /* TRANSLATORS: info bar title in the software repositories dialog */
-	                      _("Third Party Repositories"));
+	gs_third_party_repo_row_set_name (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party),
+	                                  /* TRANSLATORS: info bar title in the software repositories dialog */
+	                                  _("Third Party Repositories"));
 	g_string_append (str,
 	                 /* TRANSLATORS: this is the third party repositories info bar. */
 	                 _("Access additional software from selected third party sources."));
@@ -730,7 +730,7 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 					 * link on the third party repositories info bar */
 					_("Find out more…"));
 	}
-	gs_repo_row_set_comment (GS_REPO_ROW (dialog->row_third_party), str->str);
+	gs_third_party_repo_row_set_comment (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party), str->str);
 	refresh_third_party_repo (dialog);
 
 	/* TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
