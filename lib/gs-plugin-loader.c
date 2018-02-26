@@ -3261,9 +3261,15 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	}
 
 	/* pick up new source id */
-	if (add_to_pending_array) {
+	switch (action) {
+	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_REMOVE:
 		gs_plugin_job_add_refine_flags (helper->plugin_job,
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN);
+		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+		                                GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
+		break;
+	default:
+		break;
 	}
 
 	/* run refine() on each one if required */
