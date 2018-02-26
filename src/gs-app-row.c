@@ -274,11 +274,11 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		switch (gs_app_get_state (priv->app)) {
 		case AS_APP_STATE_INSTALLING:
 		case AS_APP_STATE_REMOVING:
-			gtk_widget_set_sensitive (priv->button, FALSE);
-			break;
-		default:
 			gtk_widget_set_sensitive (priv->button,
 						  gs_app_get_allow_cancel (priv->app));
+			break;
+		default:
+			gtk_widget_set_sensitive (priv->button, TRUE);
 			break;
 		}
 	}
