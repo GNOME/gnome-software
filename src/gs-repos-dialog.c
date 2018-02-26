@@ -352,7 +352,7 @@ third_party_repo_installed_cb (GObject *source,
                                gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	InstallRemoveData *install_data = (InstallRemoveData *) user_data;
+	g_autoptr(InstallRemoveData) install_data = (InstallRemoveData *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
@@ -360,7 +360,7 @@ third_party_repo_installed_cb (GObject *source,
 
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
 			g_debug ("third party repo %s cancelled", action_str);
-			goto out;
+			return;
 		}
 
 		g_warning ("failed to %s third party repo: %s", action_str, error->message);
@@ -369,9 +369,6 @@ third_party_repo_installed_cb (GObject *source,
 		reload_sources (install_data->dialog);
 		reload_third_party_repo (install_data->dialog);
 	}
-
-out:
-	install_remove_data_free (install_data);
 }
 
 static void
