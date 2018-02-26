@@ -47,7 +47,7 @@ gnome_software_sources = [
   'gs-progress-button.c',
   'gs-removal-dialog.c',
   'gs-repos-dialog.c',
-  'gs-repos-dialog-row.c',
+  'gs-repo-row.c',
   'gs-review-bar.c',
   'gs-review-dialog.c',
   'gs-review-histogram.c',

@@ -28,7 +28,7 @@
 #include "gnome-software-private.h"
 #include "gs-common.h"
 #include "gs-os-release.h"
-#include "gs-repos-dialog-row.h"
+#include "gs-repo-row.h"
 #include <glib/gi18n.h>
 
 struct _GsReposDialog
@@ -282,12 +282,12 @@ remove_confirm_repo (GsReposDialog *dialog, GsApp *repo)
 }
 
 static void
-repo_button_clicked_cb (GsReposDialogRow *row,
+repo_button_clicked_cb (GsRepoRow *row,
                         GsReposDialog *dialog)
 {
-        GsApp *repo;
+	GsApp *repo;
 
-        repo = gs_repos_dialog_row_get_repo (row);
+	repo = gs_repo_row_get_repo (row);
 
 	switch (gs_app_get_state (repo)) {
 	case AS_APP_STATE_AVAILABLE:
@@ -324,15 +324,15 @@ add_repo (GsReposDialog *dialog, GsApp *repo)
 		return;
 	}
 
-	row = gs_repos_dialog_row_new ();
-	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (row),
-	                              gs_app_get_name (repo));
+	row = gs_repo_row_new ();
+	gs_repo_row_set_name (GS_REPO_ROW (row),
+	                      gs_app_get_name (repo));
 	text = get_repo_installed_text (repo);
-	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (row), text);
-	gs_repos_dialog_row_set_url (GS_REPOS_DIALOG_ROW (row),
-	                             gs_app_get_url (repo, AS_URL_KIND_HOMEPAGE));
-	gs_repos_dialog_row_show_status (GS_REPOS_DIALOG_ROW (row));
-	gs_repos_dialog_row_set_repo (GS_REPOS_DIALOG_ROW (row), repo);
+	gs_repo_row_set_comment (GS_REPO_ROW (row), text);
+	gs_repo_row_set_url (GS_REPO_ROW (row),
+	                     gs_app_get_url (repo, AS_URL_KIND_HOMEPAGE));
+	gs_repo_row_show_status (GS_REPO_ROW (row));
+	gs_repo_row_set_repo (GS_REPO_ROW (row), repo);
 
 	g_object_set_data_full (G_OBJECT (row),
 	                        "sort",
@@ -610,13 +610,13 @@ list_row_activated_cb (GtkListBox *list_box,
 {
 	GtkListBoxRow *other_row;
 
-	gs_repos_dialog_row_show_details (GS_REPOS_DIALOG_ROW (row));
+	gs_repo_row_show_details (GS_REPO_ROW (row));
 
 	for (guint i = 0; (other_row = gtk_list_box_get_row_at_index (list_box, i)) != NULL; i++) {
 		if (other_row == row)
 			continue;
 
-		gs_repos_dialog_row_hide_details (GS_REPOS_DIALOG_ROW (other_row));
+		gs_repo_row_hide_details (GS_REPO_ROW (other_row));
 	}
 }
 
@@ -707,14 +707,14 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gtk_label_set_text (GTK_LABEL (dialog->label_description), label_description_text);
 
 	/* set up third party repository row */
-	dialog->switch_third_party = gs_repos_dialog_row_get_switch (GS_REPOS_DIALOG_ROW (dialog->row_third_party));
+	dialog->switch_third_party = gs_repo_row_get_switch (GS_REPO_ROW (dialog->row_third_party));
 	g_signal_connect (dialog->switch_third_party, "state-set",
 	                  G_CALLBACK (third_party_switch_state_set_cb),
 	                  dialog);
-	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_third_party), TRUE);
-	gs_repos_dialog_row_set_name (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
-	                              /* TRANSLATORS: info bar title in the software repositories dialog */
-	                              _("Third Party Repositories"));
+	gs_repo_row_set_switch_enabled (GS_REPO_ROW (dialog->row_third_party), TRUE);
+	gs_repo_row_set_name (GS_REPO_ROW (dialog->row_third_party),
+	                      /* TRANSLATORS: info bar title in the software repositories dialog */
+	                      _("Third Party Repositories"));
 	g_string_append (str,
 	                 /* TRANSLATORS: this is the third party repositories info bar. */
 	                 _("Access additional software from selected third party sources."));
@@ -730,7 +730,7 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 					 * link on the third party repositories info bar */
 					_("Find out more…"));
 	}
-	gs_repos_dialog_row_set_comment (GS_REPOS_DIALOG_ROW (dialog->row_third_party), str->str);
+	gs_repo_row_set_comment (GS_REPO_ROW (dialog->row_third_party), str->str);
 	refresh_third_party_repo (dialog);
 
 	/* TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
