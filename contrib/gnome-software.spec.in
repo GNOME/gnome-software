@@ -1,26 +1,16 @@
 %global glib2_version 2.46.0
 %global gtk3_version 3.22.4
-%global json_glib_version 1.1.1
+%global json_glib_version 1.2.0
 %global packagekit_version 1.1.1
-%global appstream_glib_version 0.7.0
-%global libsoup_version 2.51.92
-%global gsettings_desktop_schemas_version 3.11.5
-%global gnome_desktop_version 3.17.92
-%global fwupd_version 0.9.3
-%global flatpak_version 0.8.0
+%global appstream_glib_version 0.7.3
+%global libsoup_version 2.52.0
+%global gsettings_desktop_schemas_version 3.12.0
+%global gnome_desktop_version 3.18.0
+%global fwupd_version 1.0.3
+%global flatpak_version 0.9.4
 
 %define alphatag                        #ALPHATAG#
 %define distrotag                       23
-
-# verified arches from snapd upstream
-%global snap_archs %{ix86} x86_64 %{arm} aarch64 ppc64le s390x
-
-%ifarch %{snap_archs}
-%global have_snap 1
-%endif
-
-# this should be set using "--without packagekit" when atomic
-%bcond_without packagekit
 
 Name:      gnome-software
 Version:   #VERSION#
@@ -29,7 +19,7 @@ Summary:   A software center for GNOME
 
 License:   GPLv2+
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   https://download.gnome.org/sources/gnome-software/3.25/%{name}-%{version}.tar.xz
+Source0:   https://download.gnome.org/sources/gnome-software/3.27/%{name}-%{version}.tar.xz
 
 BuildRequires: gettext
 BuildRequires: libxslt
@@ -39,28 +29,23 @@ BuildRequires: fwupd-devel >= %{fwupd_version}
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: gnome-desktop3-devel
 BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
+BuildRequires: gspell-devel
 BuildRequires: gtk3-devel >= %{gtk3_version}
 BuildRequires: gtk-doc
-BuildRequires: sqlite-devel
-BuildRequires: gspell-devel
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
 BuildRequires: libsoup-devel
 BuildRequires: meson
-%if %{with packagekit}
 BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
-%endif
 BuildRequires: polkit-devel
 BuildRequires: libsecret-devel
 BuildRequires: flatpak-devel >= %{flatpak_version}
 BuildRequires: ostree-devel
-BuildRequires: rpm-devel
+BuildRequires: rpm-ostree-devel
 BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
-%ifarch %{snap_archs}
 BuildRequires: liboauth-devel
 BuildRequires: snapd-glib-devel
-%endif
 
 Requires: appstream-data
 %if 0%{?fedora}
@@ -105,35 +90,27 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description editor
 Editor for designing banners for GNOME Software.
 
-%ifarch %{snap_archs}
 %package snap
 Summary: Support for Ubuntu Snap packages
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: snapd-login-service
+Supplements: (gnome-software%{?_isa} and snapd%{?_isa})
 
 %description snap
-Adds support for Snap packages from the Ubuntu store.
-%endif
+Adds support for Snap packages from the Snap store.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %meson \
-%if 0%{?have_snap}
     -Denable-snap=true \
-%else
-    -Denable-snap=false \
-%endif
     -Denable-gudev=true \
-%if %{with packagekit}
     -Denable-packagekit=true \
-%else
-    -Denable-packagekit=false \
-%endif
     -Denable-external-appstream=false \
     -Denable-rpm-ostree=true \
     -Denable-tests=false \
+    -Denable-ubuntuone=false \
     -Denable-ubuntu-reviews=false
 %meson_build
 
@@ -147,7 +124,7 @@ desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.deskto
 # set up for Fedora
 cat >> %{buildroot}%{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override << FOE
 [org.gnome.software]
-official-repos = [ 'fedora', 'fedora-debuginfo', 'fedora-source', 'koji-override-0', 'koji-override-1', 'rawhide', 'rawhide-debuginfo', 'rawhide-source', 'updates', 'updates-debuginfo', 'updates-source', 'updates-testing', 'updates-testing-debuginfo', 'updates-testing-source', 'fedora-cisco-openh264' ]
+official-repos = [ 'fedora', 'fedora-debuginfo', 'fedora-source', 'koji-override-0', 'koji-override-1', 'rawhide', 'rawhide-debuginfo', 'rawhide-source', 'updates', 'updates-debuginfo', 'updates-source', 'updates-testing', 'updates-testing-debuginfo', 'updates-testing-source' ]
 FOE
 
 %find_lang %name --with-gnome
@@ -155,20 +132,6 @@ FOE
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 DESTDIR=%{buildroot} appstream-util check-root
-
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ]; then
-    touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
-    glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
-glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files -f %{name}.lang
 %doc AUTHORS README.md
@@ -208,7 +171,6 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_modalias.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_odrs.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_os-release.so
-%if %{with packagekit}
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-history.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-local.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-offline.so
@@ -216,9 +178,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-refine.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-refresh.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-upgrade.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit-url-to-app.so
-%endif
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_packagekit.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_provenance-license.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_provenance.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_repos.so
@@ -226,14 +187,9 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm-ostree.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_shell-extensions.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_steam.so
-%if %{with packagekit}
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_systemd-updates.so
-%endif
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_ubuntuone.so
 %{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
-%if %{with packagekit}
 %{_datadir}/dbus-1/services/org.freedesktop.PackageKit.service
-%endif
 %{_datadir}/dbus-1/services/org.gnome.Software.service
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
@@ -241,11 +197,9 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_libexecdir}/gnome-software-cmd
 %{_libexecdir}/gnome-software-restarter
 
-%ifarch %{snap_archs}
 %files snap
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
-%endif
 
 %files devel
 %{_libdir}/pkgconfig/gnome-software.pc
