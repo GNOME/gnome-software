@@ -42,12 +42,6 @@ typedef struct
 G_DEFINE_TYPE_WITH_PRIVATE (GsReposDialogRow, gs_repos_dialog_row, GTK_TYPE_LIST_BOX_ROW)
 
 enum {
-	PROP_0,
-	PROP_SWITCH_ACTIVE,
-	PROP_LAST
-};
-
-enum {
 	SIGNAL_BUTTON_CLICKED,
 	SIGNAL_LAST
 };
@@ -60,14 +54,6 @@ gs_repos_dialog_row_set_switch_enabled (GsReposDialogRow *row,
 {
 	GsReposDialogRowPrivate *priv = gs_repos_dialog_row_get_instance_private (row);
 	gtk_widget_set_visible (priv->active_switch, switch_enabled);
-}
-
-void
-gs_repos_dialog_row_set_switch_active (GsReposDialogRow *row,
-                                       gboolean switch_active)
-{
-	GsReposDialogRowPrivate *priv = gs_repos_dialog_row_get_instance_private (row);
-	gtk_switch_set_active (GTK_SWITCH (priv->active_switch), switch_active);
 }
 
 void
@@ -265,38 +251,12 @@ button_clicked_cb (GtkWidget *widget, GsReposDialogRow *row)
 	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0);
 }
 
-static void
-gs_repos_dialog_switch_active_cb (GtkSwitch *active_switch,
-                                  GParamSpec *pspec,
-                                  GsReposDialogRow *row)
-{
-	g_object_notify (G_OBJECT (row), "switch-active");
-}
-
-gboolean
-gs_repos_dialog_row_get_switch_active (GsReposDialogRow *row)
+GtkWidget *
+gs_repos_dialog_row_get_switch (GsReposDialogRow *row)
 {
 	GsReposDialogRowPrivate *priv = gs_repos_dialog_row_get_instance_private (row);
 
-	return gtk_switch_get_active (GTK_SWITCH (priv->active_switch));
-}
-
-static void
-gs_repos_dialog_row_get_property (GObject *object,
-                                  guint prop_id,
-                                  GValue *value,
-                                  GParamSpec *pspec)
-{
-	GsReposDialogRow *row = GS_REPOS_DIALOG_ROW (object);
-	switch (prop_id) {
-	case PROP_SWITCH_ACTIVE:
-		g_value_set_boolean (value,
-				     gs_repos_dialog_row_get_switch_active (row));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
+	return priv->active_switch;
 }
 
 static void
@@ -324,8 +284,6 @@ gs_repos_dialog_row_init (GsReposDialogRow *row)
 	GsReposDialogRowPrivate *priv = gs_repos_dialog_row_get_instance_private (row);
 
 	gtk_widget_init_template (GTK_WIDGET (row));
-	g_signal_connect (priv->active_switch, "notify::active",
-			  G_CALLBACK (gs_repos_dialog_switch_active_cb), row);
 	g_signal_connect (priv->button, "clicked",
 	                  G_CALLBACK (button_clicked_cb), row);
 }
@@ -333,16 +291,10 @@ gs_repos_dialog_row_init (GsReposDialogRow *row)
 static void
 gs_repos_dialog_row_class_init (GsReposDialogRowClass *klass)
 {
-	GParamSpec *pspec;
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->get_property = gs_repos_dialog_row_get_property;
 	widget_class->destroy = gs_repos_dialog_row_destroy;
-
-	pspec = g_param_spec_string ("switch-active", NULL, NULL, FALSE,
-				     G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_SWITCH_ACTIVE, pspec);
 
 	signals [SIGNAL_BUTTON_CLICKED] =
 		g_signal_new ("button-clicked",

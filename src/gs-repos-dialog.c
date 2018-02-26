@@ -47,6 +47,7 @@ struct _GsReposDialog
 	GtkWidget	*row_third_party;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
+	GtkWidget	*switch_third_party;
 };
 
 G_DEFINE_TYPE (GsReposDialog, gs_repos_dialog, GTK_TYPE_DIALOG)
@@ -406,13 +407,13 @@ install_third_party_repo (GsReposDialog *dialog, gboolean install)
 }
 
 static void
-third_party_switch_switch_active_cb (GsReposDialogRow *row,
+third_party_switch_switch_active_cb (GtkSwitch *switch_third_party,
                                      GParamSpec *pspec,
                                      GsReposDialog *dialog)
 {
 	gboolean active;
 
-	active = gs_repos_dialog_row_get_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_third_party));
+	active = gtk_switch_get_active (GTK_SWITCH (dialog->switch_third_party));
 	install_third_party_repo (dialog, active);
 	g_settings_set_boolean (dialog->settings, "show-nonfree-prompt", FALSE);
 }
@@ -429,8 +430,7 @@ refresh_third_party_repo (GsReposDialog *dialog)
 
 	/* if the third party repo package is installed, show the switch as active */
 	switch_active = (gs_app_get_state (dialog->third_party_repo) == AS_APP_STATE_INSTALLED);
-	gs_repos_dialog_row_set_switch_active (GS_REPOS_DIALOG_ROW (dialog->row_third_party),
-	                                       switch_active);
+	gtk_switch_set_active (GTK_SWITCH (dialog->switch_third_party), switch_active);
 
 	gtk_widget_show (dialog->frame_third_party);
 }
@@ -699,7 +699,8 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gtk_label_set_text (GTK_LABEL (dialog->label_description), label_description_text);
 
 	/* set up third party repository row */
-	g_signal_connect (dialog->row_third_party, "notify::switch-active",
+	dialog->switch_third_party = gs_repos_dialog_row_get_switch (GS_REPOS_DIALOG_ROW (dialog->row_third_party));
+	g_signal_connect (dialog->switch_third_party, "notify::active",
 	                  G_CALLBACK (third_party_switch_switch_active_cb),
 	                  dialog);
 	gs_repos_dialog_row_set_switch_enabled (GS_REPOS_DIALOG_ROW (dialog->row_third_party), TRUE);

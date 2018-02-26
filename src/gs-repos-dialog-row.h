@@ -40,9 +40,7 @@ struct _GsReposDialogRowClass
 GtkWidget	*gs_repos_dialog_row_new		(void);
 void		 gs_repos_dialog_row_set_switch_enabled	(GsReposDialogRow	*row,
 							 gboolean		 switch_enabled);
-void		 gs_repos_dialog_row_set_switch_active	(GsReposDialogRow	*row,
-							 gboolean		 switch_active);
-gboolean	 gs_repos_dialog_row_get_switch_active	(GsReposDialogRow	*row);
+GtkWidget	*gs_repos_dialog_row_get_switch		(GsReposDialogRow	*row);
 void		 gs_repos_dialog_row_set_name		(GsReposDialogRow	*row,
 							 const gchar		*name);
 void		 gs_repos_dialog_row_set_comment	(GsReposDialogRow	*row,
