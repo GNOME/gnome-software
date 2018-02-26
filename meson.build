@@ -93,14 +93,14 @@ add_global_link_arguments(
 add_project_arguments('-D_XOPEN_SOURCE=500', language : 'c')
 
 appstream_glib = dependency('appstream-glib', version : '>= 0.7.3')
-gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.31.5')
+gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 gio_unix = dependency('gio-unix-2.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk+-3.0', version : '>= 3.22.4')
-json_glib = dependency('json-glib-1.0', version : '>= 1.1.1')
+json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsecret = dependency('libsecret-1')
-libsoup = dependency('libsoup-2.4', version : '>= 2.51.92')
+libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
 sqlite3 = dependency('sqlite3')
 
 if get_option('enable-valgrind')
@@ -119,7 +119,7 @@ else
 endif
 
 if get_option('enable-gnome-desktop')
-  gnome_desktop = dependency('gnome-desktop-3.0', version : '>= 3.17.92')
+  gnome_desktop = dependency('gnome-desktop-3.0', version : '>= 3.18.0')
   conf.set('HAVE_GNOME_DESKTOP', 1)
 endif
 
