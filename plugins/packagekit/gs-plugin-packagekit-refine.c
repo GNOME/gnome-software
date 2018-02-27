@@ -40,8 +40,6 @@
 struct GsPluginData {
 	PkControl		*control;
 	PkClient		*client;
-	GHashTable		*sources;
-	AsProfileTask		*ptask;
 };
 
 static void
