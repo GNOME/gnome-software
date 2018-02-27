@@ -51,6 +51,22 @@ shared_module(
 )
 
 shared_module(
+  'gs_plugin_packagekit-refine-repos',
+  sources : [
+    'gs-plugin-packagekit-refine-repos.c',
+    'packagekit-common.c',
+  ],
+  include_directories : [
+    include_directories('../..'),
+    include_directories('../../lib'),
+  ],
+  install : true,
+  install_dir: plugin_dir,
+  c_args : cargs,
+  dependencies : [ plugin_libs, packagekit ]
+)
+
+shared_module(
   'gs_plugin_packagekit-refresh',
   sources : [
     'gs-plugin-packagekit-refresh.c',

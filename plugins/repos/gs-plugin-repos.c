@@ -25,6 +25,7 @@
 #include <gnome-software.h>
 
 struct GsPluginData {
+	GHashTable	*fns;		/* origin : filename */
 	GHashTable	*urls;		/* origin : url */
 	GFileMonitor	*monitor;
 	GMutex		 mutex;
@@ -51,6 +52,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 
 	/* we also watch this for changes */
+	priv->fns = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	priv->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
 	/* need application IDs */
@@ -62,6 +64,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_free (priv->reposdir);
+	if (priv->fns != NULL)
+		g_hash_table_unref (priv->fns);
 	if (priv->urls != NULL)
 		g_hash_table_unref (priv->urls);
 	if (priv->monitor != NULL)
@@ -82,6 +86,7 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 		return TRUE;
 
 	/* clear existing */
+	g_hash_table_remove_all (priv->fns);
 	g_hash_table_remove_all (priv->urls);
 
 	/* search all files */
@@ -113,6 +118,11 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 		groups = g_key_file_get_groups (kf, NULL);
 		for (i = 0; groups[i] != NULL; i++) {
 			g_autofree gchar *tmp = NULL;
+
+			g_hash_table_insert (priv->fns,
+			                     g_strdup (groups[i]),
+			                     g_strdup (filename));
+
 			tmp = g_key_file_get_string (kf, groups[i], "baseurl", NULL);
 			if (tmp != NULL) {
 				g_hash_table_insert (priv->urls,
@@ -120,6 +130,7 @@ gs_plugin_repos_setup (GsPlugin *plugin, GCancellable *cancellable, GError **err
 						     g_strdup (tmp));
 				continue;
 			}
+
 			tmp = g_key_file_get_string (kf, groups[i], "metalink", NULL);
 			if (tmp != NULL) {
 				g_hash_table_insert (priv->urls,
@@ -202,6 +213,19 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		tmp = g_hash_table_lookup (priv->urls, gs_app_get_origin (app));
 		if (tmp != NULL)
 			gs_app_set_origin_hostname (app, tmp);
+		break;
+	}
+
+	/* find filename */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_SOURCE:
+		if (gs_app_get_id (app) == NULL)
+			return TRUE;
+		tmp = g_hash_table_lookup (priv->fns, gs_app_get_id (app));
+		if (tmp != NULL)
+			gs_app_set_metadata (app, "repos::repo-filename", tmp);
+		break;
+	default:
 		break;
 	}
 
