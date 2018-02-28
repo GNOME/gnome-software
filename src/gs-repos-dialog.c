@@ -312,8 +312,8 @@ get_list_box_for_repo (GsReposDialog *dialog, GsApp *repo)
 		const gchar *source_repo;
 		const gchar *source_third_party_package;
 
-		source_repo = gs_app_get_source_default (repo);
-		source_third_party_package = gs_app_get_source_default (dialog->third_party_repo);
+		source_repo = gs_app_get_source_id_default (repo);
+		source_third_party_package = gs_app_get_source_id_default (dialog->third_party_repo);
 
 		/* group repos from the same repo-release package together */
 		if (g_strcmp0 (source_repo, source_third_party_package) == 0)

@@ -90,7 +90,6 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	if (packages->len == 1) {
 		PkPackage *package = g_ptr_array_index (packages, 0);
-		gs_app_add_source (app, pk_package_get_name (package));
 		gs_app_add_source_id (app, pk_package_get_id (package));
 	} else {
 		g_debug ("failed to find one package for repo %s, %s, [%u]",
