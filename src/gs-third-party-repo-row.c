@@ -102,8 +102,8 @@ refresh_ui (GsThirdPartyRepoRow *row)
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		/* TRANSLATORS: this is a button in the software repositories
-		   dialog for removing a repo */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("_Remove"));
+		   dialog for removing multiple repos */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("_Remove All"));
 		/* enable button */
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
