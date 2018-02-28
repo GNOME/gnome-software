@@ -209,6 +209,18 @@ gs_utils_parse_evr_func (void)
 		g_autofree gchar *version = NULL;
 		g_autofree gchar *release = NULL;
 
+		ret = gs_utils_parse_evr ("3:1.6~git20131207+dfsg-2ubuntu1~14.04.3", &epoch, &version, &release);
+		g_assert (ret);
+		g_assert_cmpstr (epoch, ==, "3");
+		g_assert_cmpstr (version, ==, "1.6~git20131207+dfsg");
+		g_assert_cmpstr (release, ==, "2ubuntu1~14.04.3");
+	}
+
+	{
+		g_autofree gchar *epoch = NULL;
+		g_autofree gchar *version = NULL;
+		g_autofree gchar *release = NULL;
+
 		ret = gs_utils_parse_evr ("1-2-3-4-5-6", &epoch, &version, &release);
 		g_assert (!ret);
 	}
