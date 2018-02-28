@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2015 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2015-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -1039,6 +1039,68 @@ gs_utils_get_memory_total (void)
 	struct sysinfo si = { 0 };
 	sysinfo (&si);
 	return si.totalram / MB_IN_BYTES / si.mem_unit;
+}
+
+/**
+ * gs_utils_parse_evr:
+ * @out_epoch: (out): return location for the epoch string
+ * @out_version: (out): return location for the version string
+ * @out_release: (out): return location for the release string
+ *
+ * Splits EVR into epoch-version-release strings.
+ *
+ * Returns: %TRUE for success
+ **/
+gboolean
+gs_utils_parse_evr (const gchar *evr,
+                    gchar **out_epoch,
+                    gchar **out_version,
+                    gchar **out_release)
+{
+	const gchar *version_release;
+	g_auto(GStrv) split_colon = NULL;
+	g_auto(GStrv) split_dash = NULL;
+
+	/* split on : to get epoch */
+	split_colon = g_strsplit (evr, ":", -1);
+	switch (g_strv_length (split_colon)) {
+	case 1:
+		/* epoch is 0 when not set */
+		*out_epoch = g_strdup ("0");
+		version_release = split_colon[0];
+		break;
+	case 2:
+		/* epoch set */
+		*out_epoch = g_strdup (split_colon[0]);
+		version_release = split_colon[1];
+		break;
+	default:
+		/* error */
+		return FALSE;
+	}
+
+	/* split on - to get version and release */
+	split_dash = g_strsplit (version_release, "-", -1);
+	switch (g_strv_length (split_dash)) {
+	case 1:
+		/* all of the string is version */
+		*out_version = g_strdup (split_dash[0]);
+		*out_release = g_strdup ("0");
+		break;
+	case 2:
+		/* both version and release set */
+		*out_version = g_strdup (split_dash[0]);
+		*out_release = g_strdup (split_dash[1]);
+		break;
+	default:
+		/* error */
+		return FALSE;
+	}
+
+	g_assert (*out_epoch != NULL);
+	g_assert (*out_version != NULL);
+	g_assert (*out_release != NULL);
+	return TRUE;
 }
 
 /* vim: set noexpandtab: */

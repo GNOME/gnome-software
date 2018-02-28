@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -93,6 +94,10 @@ void		 gs_utils_append_key_value	(GString	*str,
 						 const gchar	*key,
 						 const gchar	*value);
 guint		 gs_utils_get_memory_total	(void);
+gboolean	 gs_utils_parse_evr		(const gchar	 *evr,
+						 gchar		**out_epoch,
+						 gchar		**out_version,
+						 gchar		**out_release);
 
 G_END_DECLS
 
