@@ -45,6 +45,7 @@ struct _GsReposDialog
 	GtkWidget	*label_empty;
 	GtkWidget	*label_header;
 	GtkWidget	*listbox;
+	GtkWidget	*listbox_third_party;
 	GtkWidget	*row_third_party;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
@@ -304,6 +305,24 @@ repo_button_clicked_cb (GsRepoRow *row,
 	}
 }
 
+static GtkListBox *
+get_list_box_for_repo (GsReposDialog *dialog, GsApp *repo)
+{
+	if (dialog->third_party_repo != NULL) {
+		const gchar *source_repo;
+		const gchar *source_third_party_package;
+
+		source_repo = gs_app_get_source_default (repo);
+		source_third_party_package = gs_app_get_source_default (dialog->third_party_repo);
+
+		/* group repos from the same repo-release package together */
+		if (g_strcmp0 (source_repo, source_third_party_package) == 0)
+			return GTK_LIST_BOX (dialog->listbox_third_party);
+	}
+
+	return GTK_LIST_BOX (dialog->listbox);
+}
+
 static void
 add_repo (GsReposDialog *dialog, GsApp *repo)
 {
@@ -333,15 +352,10 @@ add_repo (GsReposDialog *dialog, GsApp *repo)
 	gs_repo_row_show_status (GS_REPO_ROW (row));
 	gs_repo_row_set_repo (GS_REPO_ROW (row), repo);
 
-	g_object_set_data_full (G_OBJECT (row),
-	                        "sort",
-	                        g_utf8_casefold (gs_app_get_name (repo), -1),
-	                        g_free);
-
 	g_signal_connect (row, "button-clicked",
 	                  G_CALLBACK (repo_button_clicked_cb), dialog);
 
-	gtk_list_box_prepend (GTK_LIST_BOX (dialog->listbox), row);
+	gtk_list_box_prepend (get_list_box_for_repo (dialog, repo), row);
 	gtk_widget_show (row);
 }
 
@@ -431,6 +445,21 @@ refresh_third_party_repo (GsReposDialog *dialog)
 }
 
 static void
+remove_all_repo_rows_cb (GtkWidget *widget, gpointer user_data)
+{
+	GtkContainer *container = GTK_CONTAINER (user_data);
+
+	if (GS_IS_REPO_ROW (widget))
+		gtk_container_remove (container, widget);
+}
+
+static void
+container_remove_all_repo_rows (GtkContainer *container)
+{
+	gtk_container_foreach (container, remove_all_repo_rows_cb, container);
+}
+
+static void
 get_sources_cb (GsPluginLoader *plugin_loader,
 		GAsyncResult *res,
 		GsReposDialog *dialog)
@@ -458,6 +487,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	/* remove previous */
 	gs_container_remove_all (GTK_CONTAINER (dialog->listbox));
+	container_remove_all_repo_rows (GTK_CONTAINER (dialog->listbox_third_party));
 
 	/* stop the spinner */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
@@ -584,13 +614,35 @@ list_header_func (GtkListBoxRow *row,
 	gtk_list_box_row_set_header (row, header);
 }
 
+static gchar *
+get_row_sort_key (GtkListBoxRow *row)
+{
+	GsApp *app;
+	guint sort_order;
+	g_autofree gchar *sort_key = NULL;
+
+	/* sort third party repo rows first */
+	if (GS_IS_THIRD_PARTY_REPO_ROW (row)) {
+		sort_order = 1;
+		app = gs_third_party_repo_row_get_app (GS_THIRD_PARTY_REPO_ROW (row));
+	} else {
+		sort_order = 2;
+		app = gs_repo_row_get_repo (GS_REPO_ROW (row));
+	}
+
+	sort_key = g_utf8_casefold (gs_app_get_name (app), -1);
+	return g_strdup_printf ("%u:%s", sort_order, sort_key);
+}
+
 static gint
 list_sort_func (GtkListBoxRow *a,
 		GtkListBoxRow *b,
 		gpointer user_data)
 {
-	const gchar *key1 = g_object_get_data (G_OBJECT (a), "sort");
-	const gchar *key2 = g_object_get_data (G_OBJECT (b), "sort");
+	g_autofree gchar *key1 = get_row_sort_key (a);
+	g_autofree gchar *key2 = get_row_sort_key (b);
+
+	/* compare the keys according to the algorithm above */
 	return g_strcmp0 (key1, key2);
 }
 
@@ -601,9 +653,14 @@ list_row_activated_cb (GtkListBox *list_box,
 {
 	GtkListBoxRow *other_row;
 
+	if (!GS_IS_REPO_ROW (row))
+		return;
+
 	gs_repo_row_show_details (GS_REPO_ROW (row));
 
 	for (guint i = 0; (other_row = gtk_list_box_get_row_at_index (list_box, i)) != NULL; i++) {
+		if (!GS_IS_REPO_ROW (other_row))
+			continue;
 		if (other_row == row)
 			continue;
 
@@ -698,6 +755,15 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	gtk_label_set_text (GTK_LABEL (dialog->label_description), label_description_text);
 
 	/* set up third party repository row */
+	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->listbox_third_party),
+	                              list_header_func,
+	                              dialog,
+	                              NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (dialog->listbox_third_party),
+	                            list_sort_func,
+	                            dialog, NULL);
+	g_signal_connect (dialog->listbox_third_party, "row-activated",
+	                  G_CALLBACK (list_row_activated_cb), dialog);
 	g_signal_connect (dialog->row_third_party, "button-clicked",
 	                  G_CALLBACK (third_party_repo_button_clicked_cb), dialog);
 	gs_third_party_repo_row_set_name (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party),
@@ -743,6 +809,7 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_header);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, listbox);
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, listbox_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, row_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, stack);
