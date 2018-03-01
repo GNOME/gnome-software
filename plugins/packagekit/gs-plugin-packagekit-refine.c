@@ -85,10 +85,11 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 }
 
 static gboolean
-gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
-				       GsAppList *list,
-				       GCancellable *cancellable,
-				       GError **error)
+gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
+                                                   GsAppList *list,
+                                                   PkBitfield filter,
+                                                   GCancellable *cancellable,
+                                                   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *sources;
@@ -124,7 +125,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 
 	/* resolve them all at once */
 	results = pk_client_resolve (priv->client,
-				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
+				     filter,
 				     (gchar **) package_ids->pdata,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, &data,
@@ -150,6 +151,28 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 			continue;
 		gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
 	}
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
+                                       GsAppList *list,
+                                       GCancellable *cancellable,
+                                       GError **error)
+{
+	PkBitfield filter;
+
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+	                                 PK_FILTER_ENUM_ARCH,
+	                                 -1);
+	if (!gs_plugin_packagekit_resolve_packages_with_filter (plugin,
+	                                                        list,
+	                                                        filter,
+	                                                        cancellable,
+	                                                        error)) {
+		return FALSE;
+	}
+
 	return TRUE;
 }
 
