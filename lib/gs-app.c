@@ -88,6 +88,7 @@ typedef struct
 	GsAppQuality		 license_quality;
 	gchar			**menu_path;
 	gchar			*origin;
+	gchar			*origin_appstream;
 	gchar			*origin_hostname;
 	gchar			*update_version;
 	gchar			*update_version_ui;
@@ -535,6 +536,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "branch", priv->branch);
 	if (priv->origin != NULL && priv->origin[0] != '\0')
 		gs_app_kv_lpad (str, "origin", priv->origin);
+	if (priv->origin_appstream != NULL && priv->origin_appstream[0] != '\0')
+		gs_app_kv_lpad (str, "origin-appstream", priv->origin_appstream);
 	if (priv->origin_hostname != NULL && priv->origin_hostname[0] != '\0')
 		gs_app_kv_lpad (str, "origin-hostname", priv->origin_hostname);
 	if (priv->rating != -1)
@@ -2477,6 +2480,50 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 }
 
 /**
+ * gs_app_get_origin_appstream:
+ * @app: a #GsApp
+ *
+ * Gets the appstream origin for the application, e.g. "fedora".
+ *
+ * Returns: a string, or %NULL for unset
+ *
+ * Since: 3.28
+ **/
+const gchar *
+gs_app_get_origin_appstream (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->origin_appstream;
+}
+
+/**
+ * gs_app_set_origin_appstream:
+ * @app: a #GsApp
+ * @origin_appstream: a string, or %NULL
+ *
+ * The appstream origin is the appstream source of the application e.g. "fedora"
+ *
+ * Since: 3.28
+ **/
+void
+gs_app_set_origin_appstream (GsApp *app, const gchar *origin_appstream)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	/* same */
+	if (g_strcmp0 (origin_appstream, priv->origin_appstream) == 0)
+		return;
+
+	g_free (priv->origin_appstream);
+	priv->origin_appstream = g_strdup (origin_appstream);
+}
+
+/**
  * gs_app_get_origin_hostname:
  * @app: a #GsApp
  *
@@ -4154,6 +4201,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->license);
 	g_strfreev (priv->menu_path);
 	g_free (priv->origin);
+	g_free (priv->origin_appstream);
 	g_free (priv->origin_hostname);
 	g_ptr_array_unref (priv->sources);
 	g_ptr_array_unref (priv->source_ids);
