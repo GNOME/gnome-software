@@ -61,6 +61,7 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 		plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
 		break;
 	case PK_STATUS_ENUM_INSTALL:
+	case PK_STATUS_ENUM_UPDATE:
 		plugin_status = GS_PLUGIN_STATUS_INSTALLING;
 		break;
 	case PK_STATUS_ENUM_CLEANUP:
