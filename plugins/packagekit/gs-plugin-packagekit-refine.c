@@ -161,12 +161,34 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
                                        GError **error)
 {
 	PkBitfield filter;
+	GsAppList *resolve2_list;
 
+	/* first, try to resolve packages with ARCH filter */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 	                                 PK_FILTER_ENUM_ARCH,
 	                                 -1);
 	if (!gs_plugin_packagekit_resolve_packages_with_filter (plugin,
 	                                                        list,
+	                                                        filter,
+	                                                        cancellable,
+	                                                        error)) {
+		return FALSE;
+	}
+
+	/* if any packages remaing in UNKNOWN state, try to resolve them again,
+	 * but this time without ARCH filter */
+	resolve2_list = gs_app_list_new ();
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_list_add (resolve2_list, app);
+	}
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+	                                 PK_FILTER_ENUM_NOT_ARCH,
+	                                 PK_FILTER_ENUM_NOT_SOURCE,
+	                                 -1);
+	if (!gs_plugin_packagekit_resolve_packages_with_filter (plugin,
+	                                                        resolve2_list,
 	                                                        filter,
 	                                                        cancellable,
 	                                                        error)) {
