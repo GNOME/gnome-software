@@ -790,12 +790,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 			    "A major upgrade, with new features and added polish.");
-	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
-				"Dummy Core is a unfinished, overdesigned, "
-				"hard to use operating system unikernel for "
-				"Apollo industrial flight computers, with an "
-				"incomplete set of tools for almost everyone "
-				"including idiots of all kinds.");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 			"https://fedoraproject.org/wiki/Releases/24/Schedule");
 	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);

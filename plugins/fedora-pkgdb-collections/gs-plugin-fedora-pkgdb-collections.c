@@ -309,12 +309,6 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 			    /* TRANSLATORS: this is a title for Fedora distro upgrades */
 			    _("Upgrade your Fedora system to the latest features and improvements."));
-	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
-				"Fedora Workstation is a polished, "
-				"easy to use operating system for "
-				"laptop and desktop computers, with a "
-				"complete set of tools for developers "
-				"and makers of all kinds.");
 	gs_app_set_version (app, app_version);
 	gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
 	gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
