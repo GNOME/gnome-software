@@ -220,12 +220,11 @@ static void
 gs_flatpak_remove_prefixed_names (AsApp *app)
 {
 	GHashTable *names;
-	GList *l;
 	g_autoptr(GList) keys = NULL;
 
 	names = as_app_get_names (app);
 	keys = g_hash_table_get_keys (names);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *locale = l->data;
 		const gchar *value = g_hash_table_lookup (names, locale);
 		if (value == NULL)

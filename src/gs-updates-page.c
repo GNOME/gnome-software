@@ -176,7 +176,6 @@ _get_app_section (GsApp *app)
 static GsAppList *
 _get_apps_for_section (GsUpdatesPage *self, GsUpdatePageSection section)
 {
-	GList *l;
 	GsAppList *apps;
 	GtkContainer *container;
 	g_autoptr(GList) children = NULL;
@@ -186,7 +185,7 @@ _get_apps_for_section (GsUpdatesPage *self, GsUpdatePageSection section)
 		return apps;
 	container = GTK_CONTAINER (self->listboxes[section]);
 	children = gtk_container_get_children (container);
-	for (l = children; l != NULL; l = l->next) {
+	for (GList *l = children; l != NULL; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		GsApp *app = gs_app_row_get_app (app_row);
 		if (_get_app_section (app) != section)

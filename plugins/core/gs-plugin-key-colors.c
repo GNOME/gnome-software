@@ -71,7 +71,6 @@ _convert_from_rgb8 (guchar val)
 static void
 gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 {
-	GList *l;
 	gint rowstride, n_channels;
 	gint x, y;
 	guchar *pixels, *p;
@@ -132,7 +131,7 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 			/* order by most popular */
 			values = g_hash_table_get_values (hash);
 			values = g_list_sort (values, gs_color_bin_sort_cb);
-			for (l = values; l != NULL; l = l->next) {
+			for (GList *l = values; l != NULL; l = l->next) {
 				GsColorBin *s = l->data;
 				g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
 				color->red = s->color.red / s->cnt;

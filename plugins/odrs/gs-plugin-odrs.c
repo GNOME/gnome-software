@@ -121,7 +121,6 @@ static gboolean
 gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GList *l;
 	JsonNode *json_root;
 	JsonObject *json_item;
 	g_autoptr(GList) apps = NULL;
@@ -155,7 +154,7 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	/* parse each app */
 	json_item = json_node_get_object (json_root);
 	apps = json_object_get_members (json_item);
-	for (l = apps; l != NULL; l = l->next) {
+	for (GList *l = apps; l != NULL; l = l->next) {
 		const gchar *app_id = (const gchar *) l->data;
 		JsonObject *json_app = json_object_get_object_member (json_item, app_id);
 		g_autoptr(GArray) ratings = NULL;;

@@ -1899,7 +1899,6 @@ gs_plugin_loader_get_allow_updates (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GList) list = NULL;
-	GList *l;
 
 	/* nothing */
 	if (g_hash_table_size (priv->disallow_updates) == 0)
@@ -1907,7 +1906,7 @@ gs_plugin_loader_get_allow_updates (GsPluginLoader *plugin_loader)
 
 	/* list */
 	list = g_hash_table_get_values (priv->disallow_updates);
-	for (l = list; l != NULL; l = l->next) {
+	for (GList *l = list; l != NULL; l = l->next) {
 		const gchar *reason = l->data;
 		g_debug ("managed updates inhibited by %s", reason);
 	}
@@ -1956,13 +1955,12 @@ gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *events = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	GList *l;
 	g_autoptr(GList) keys = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 
 	/* just add everything */
 	keys = g_hash_table_get_keys (priv->events_by_id);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		GsPluginEvent *event = g_hash_table_lookup (priv->events_by_id, key);
 		if (event == NULL) {
@@ -1987,13 +1985,12 @@ GsPluginEvent *
 gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GList *l;
 	g_autoptr(GList) keys = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
 
 	/* just add everything */
 	keys = g_hash_table_get_keys (priv->events_by_id);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		GsPluginEvent *event = g_hash_table_lookup (priv->events_by_id, key);
 		if (event == NULL) {

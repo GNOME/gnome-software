@@ -71,7 +71,6 @@ static void
 gs_plugin_modalias_ensure_devices (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GList *l;
 	g_autoptr(GList) list = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
@@ -86,7 +85,7 @@ gs_plugin_modalias_ensure_devices (GsPlugin *plugin)
 
 	/* get the devices, and assume ownership of each */
 	list = g_udev_client_query_by_subsystem (priv->client, NULL);
-	for (l = list; l != NULL; l = l->next) {
+	for (GList *l = list; l != NULL; l = l->next) {
 		GUdevDevice *device = G_UDEV_DEVICE (l->data);
 		if (g_udev_device_get_sysfs_attr (device, "modalias") == NULL) {
 			g_object_unref (device);

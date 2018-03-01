@@ -304,12 +304,11 @@ static void
 gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 {
 	GHashTable *hash;
-	GList *l;
 	g_autoptr(GList) keys = NULL;
 
 	hash = as_app_get_metadata (item);
 	keys = g_hash_table_get_keys (hash);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		const gchar *value = g_hash_table_lookup (hash, key);
 		if (gs_app_get_metadata_item (app, key) != NULL)
@@ -619,10 +618,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	urls = as_app_get_urls (item);
 	if (g_hash_table_size (urls) > 0 &&
 	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
-		GList *l;
 		g_autoptr(GList) keys = NULL;
 		keys = g_hash_table_get_keys (urls);
-		for (l = keys; l != NULL; l = l->next) {
+		for (GList *l = keys; l != NULL; l = l->next) {
 			gs_app_set_url (app,
 					as_url_kind_from_string (l->data),
 					g_hash_table_lookup (urls, l->data));

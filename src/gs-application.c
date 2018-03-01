@@ -106,10 +106,9 @@ gboolean
 gs_application_has_active_window (GsApplication *application)
 {
 	GList *windows;
-	GList *l;
 
 	windows = gtk_application_get_windows (GTK_APPLICATION (application));
-	for (l = windows; l != NULL; l = l->next) {
+	for (GList *l = windows; l != NULL; l = l->next) {
 		if (gtk_window_is_active (GTK_WINDOW (l->data)))
 			return TRUE;
 	}

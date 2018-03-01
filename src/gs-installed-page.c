@@ -112,11 +112,10 @@ static void
 gs_installed_page_app_removed (GsPage *page, GsApp *app)
 {
 	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
-	GList *l;
 	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (l = children; l; l = l->next) {
+	for (GList *l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		if (gs_app_row_get_app (app_row) == app) {
 			gs_installed_page_unreveal_row (app_row);
@@ -534,12 +533,11 @@ static gboolean
 gs_installed_page_has_app (GsInstalledPage *self,
                            GsApp *app)
 {
-	GList *l;
 	gboolean ret = FALSE;
 	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (l = children; l; l = l->next) {
+	for (GList *l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		if (gs_app_row_get_app (app_row) == app) {
 			ret = TRUE;
@@ -593,7 +591,6 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 static void
 set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 {
-	GList *l;
 	GtkWidget *header;
 	GtkWidget *widget;
 	GtkStyleContext *context;
@@ -632,7 +629,7 @@ set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 	}
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (l = children; l; l = l->next) {
+	for (GList *l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		GsApp *app = gs_app_row_get_app (app_row);
 		gs_app_row_set_selectable (app_row,
@@ -654,12 +651,12 @@ selection_mode_cb (GtkButton *button, GsInstalledPage *self)
 static GList *
 get_selected_apps (GsInstalledPage *self)
 {
-	GList *l, *list;
+	GList *list;
 	g_autoptr(GList) children = NULL;
 
 	list = NULL;
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (l = children; l; l = l->next) {
+	for (GList *l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		if (gs_app_row_get_selected (app_row)) {
 			list = g_list_prepend (list, gs_app_row_get_app (app_row));
@@ -671,7 +668,6 @@ get_selected_apps (GsInstalledPage *self)
 static void
 selection_changed (GsInstalledPage *self)
 {
-	GList *l;
 	GsApp *app;
 	gboolean has_folders, has_nonfolders;
 	g_autoptr(GList) apps = NULL;
@@ -680,7 +676,7 @@ selection_changed (GsInstalledPage *self)
 	folders = gs_folders_get ();
 	has_folders = has_nonfolders = FALSE;
 	apps = get_selected_apps (self);
-	for (l = apps; l; l = l->next) {
+	for (GList *l = apps; l; l = l->next) {
 		app = l->data;
 		if (gs_folders_get_app_folder (folders,
 					       gs_app_get_id (app),
@@ -723,14 +719,13 @@ show_folder_dialog (GtkButton *button, GsInstalledPage *self)
 static void
 remove_folders (GtkButton *button, GsInstalledPage *self)
 {
-	GList *l;
 	GsApp *app;
 	g_autoptr(GList) apps = NULL;
 	g_autoptr(GsFolders) folders = NULL;
 
 	folders = gs_folders_get ();
 	apps = get_selected_apps (self);
-	for (l = apps; l; l = l->next) {
+	for (GList *l = apps; l; l = l->next) {
 		app = l->data;
 		gs_folders_set_app_folder (folders,
 					   gs_app_get_id (app),
@@ -746,11 +741,10 @@ remove_folders (GtkButton *button, GsInstalledPage *self)
 static void
 select_all_cb (GtkMenuItem *item, GsInstalledPage *self)
 {
-	GList *l;
 	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (l = children; l; l = l->next) {
+	for (GList *l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		gs_app_row_set_selected (app_row, TRUE);
 	}
@@ -759,11 +753,10 @@ select_all_cb (GtkMenuItem *item, GsInstalledPage *self)
 static void
 select_none_cb (GtkMenuItem *item, GsInstalledPage *self)
 {
-	GList *l;
 	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
-	for (l = children; l; l = l->next) {
+	for (GList *l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		gs_app_row_set_selected (app_row, FALSE);
 	}

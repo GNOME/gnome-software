@@ -226,10 +226,9 @@ gs_plugin_steam_dump_apps (GPtrArray *apps)
 
 	for (i = 0; i < apps->len; i++) {
 		g_autoptr(GList) keys = NULL;
-		GList *l;
 		app = g_ptr_array_index (apps, i);
 		keys = g_hash_table_get_keys (app);
-		for (l = keys; l != NULL; l = l->next) {
+		for (GList *l = keys; l != NULL; l = l->next) {
 			const gchar *tmp;
 			GVariant *value;
 			tmp = l->data;

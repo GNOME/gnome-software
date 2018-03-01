@@ -456,10 +456,9 @@ gs_auth_store_load (GsAuth *auth, GsAuthStoreFlags flags,
 
 	/* metadata */
 	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
-		GList *l;
 		g_autoptr(GList) keys = NULL;
 		keys = g_hash_table_get_keys (auth->metadata);
-		for (l = keys; l != NULL; l = l->next) {
+		for (GList *l = keys; l != NULL; l = l->next) {
 			g_autofree gchar *tmp = NULL;
 			const gchar *key = l->data;
 			const gchar *value = g_hash_table_lookup (auth->metadata, key);
@@ -538,10 +537,9 @@ gs_auth_store_save (GsAuth *auth, GsAuthStoreFlags flags,
 
 	/* metadata */
 	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
-		GList *l;
 		g_autoptr(GList) keys = NULL;
 		keys = g_hash_table_get_keys (auth->metadata);
-		for (l = keys; l != NULL; l = l->next) {
+		for (GList *l = keys; l != NULL; l = l->next) {
 			const gchar *key = l->data;
 			const gchar *value = g_hash_table_lookup (auth->metadata, key);
 			if (value == NULL)

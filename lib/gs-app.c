@@ -392,7 +392,6 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	AsImage *im;
 	GList *keys;
-	GList *l;
 	const gchar *tmp;
 	guint i;
 
@@ -510,7 +509,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	if (tmp != NULL)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
 	keys = g_hash_table_get_keys (priv->launchables);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		g_autofree gchar *key = NULL;
 		key = g_strdup_printf ("launchable{%s}", (const gchar *) l->data);
 		tmp = g_hash_table_lookup (priv->launchables, l->data);
@@ -595,7 +594,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		}
 	}
 	keys = g_hash_table_get_keys (priv->metadata);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		GVariant *val;
 		const GVariantType *val_type;
 		g_autofree gchar *key = NULL;

@@ -71,7 +71,6 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
 	GsApp *app;
-	GList *l;
 	guint cnt = 0;
 	g_autoptr(GHashTable) app_hash = NULL;
 	g_autoptr(GList) keys = NULL;
@@ -80,7 +79,7 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 	/* find packages that have been added */
 	app_hash = gs_plugin_appstream_create_app_hash (priv->store);
 	keys = g_hash_table_get_keys (app_hash);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		item = g_hash_table_lookup (priv->app_hash_old, key);
 		if (item == NULL) {
@@ -95,7 +94,7 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 
 	/* find packages that have been removed */
 	keys_old = g_hash_table_get_keys (priv->app_hash_old);
-	for (l = keys_old; l != NULL; l = l->next) {
+	for (GList *l = keys_old; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		item = g_hash_table_lookup (app_hash, key);
 		if (item == NULL) {
@@ -207,7 +206,6 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 {
 	AsApp *app;
 	GHashTable *origins = NULL;
-	GList *l;
 	const gchar *tmp;
 	gdouble perc;
 	guint *cnt;
@@ -232,7 +230,7 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 
 	/* convert the cnt to a percentage */
 	keys = g_hash_table_get_keys (origins);
-	for (l = keys; l != NULL; l = l->next) {
+	for (GList *l = keys; l != NULL; l = l->next) {
 		tmp = l->data;
 		if (tmp == NULL || tmp[0] == '\0')
 			continue;

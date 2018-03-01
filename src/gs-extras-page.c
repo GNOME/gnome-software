@@ -278,12 +278,11 @@ static void
 gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchData *search_data)
 {
 	GtkWidget *app_row;
-	GList *l;
 	g_autoptr(GList) existing_apps = NULL;
 
 	/* Don't add same app twice */
 	existing_apps = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
-	for (l = existing_apps; l != NULL; l = l->next) {
+	for (GList *l = existing_apps; l != NULL; l = l->next) {
 		GsApp *existing_app;
 
 		existing_app = gs_app_row_get_app (GS_APP_ROW (l->data));
@@ -439,7 +438,6 @@ create_missing_app (SearchData *search_data)
 static gchar *
 build_no_results_label (GsExtrasPage *self)
 {
-	GList *l;
 	GsApp *app = NULL;
 	guint num;
 	g_autofree gchar *codec_titles = NULL;
@@ -453,7 +451,7 @@ build_no_results_label (GsExtrasPage *self)
 	g_assert (num > 0);
 
 	array = g_ptr_array_new ();
-	for (l = list; l != NULL; l = l->next) {
+	for (GList *l = list; l != NULL; l = l->next) {
 		app = gs_app_row_get_app (GS_APP_ROW (l->data));
 		g_ptr_array_add (array,
 		                 g_object_get_data (G_OBJECT (l->data), "missing-title"));
@@ -478,7 +476,6 @@ static void
 show_search_results (GsExtrasPage *self)
 {
 	GsApp *app;
-	GList *l;
 	guint n_children;
 	guint n_missing;
 	g_autoptr(GList) list = NULL;
@@ -488,7 +485,7 @@ show_search_results (GsExtrasPage *self)
 
 	/* count the number of rows with missing codecs */
 	n_missing = 0;
-	for (l = list; l != NULL; l = l->next) {
+	for (GList *l = list; l != NULL; l = l->next) {
 		app = gs_app_row_get_app (GS_APP_ROW (l->data));
 		if (g_strcmp0 (gs_app_get_id (app), "missing-codec") == 0) {
 			n_missing++;

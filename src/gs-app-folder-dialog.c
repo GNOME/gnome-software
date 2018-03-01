@@ -62,14 +62,13 @@ static void
 apply_changes (GsAppFolderDialog *dialog)
 {
 	const gchar *folder;
-	GList *l;
 	
 	if (dialog->selected_row)
 		folder = (const gchar *)g_object_get_data (G_OBJECT (dialog->selected_row), "folder");
 	else
 		folder = NULL;
 
-	for (l = dialog->apps; l; l = l->next) {
+	for (GList *l = dialog->apps; l; l = l->next) {
 		GsApp *app = l->data;
 		gs_folders_set_app_folder (dialog->folders,
 					   gs_app_get_id (app),
