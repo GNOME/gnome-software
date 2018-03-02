@@ -1239,7 +1239,7 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 
-	str_app = gs_shell_get_title_from_app (app);
+	str_app = g_strdup_printf ("%s %s", gs_app_get_name (app), gs_app_get_version (app));
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
 		if (origin != NULL) {
