@@ -301,13 +301,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 		if (!gs_plugin_app_origin_repo_enable (plugin, app, cancellable, error))
 			return FALSE;
 
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
 		/* FIXME: this is a hack, to allow PK time to re-initialize
 		 * everything in order to match an actual result. The root cause
 		 * is probably some kind of hard-to-debug race in the daemon. */
 		g_usleep (G_USEC_PER_SEC * 3);
 
 		/* actually install the package */
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		results = pk_task_install_packages_sync (priv->task,
 							 package_ids,
 							 cancellable,
