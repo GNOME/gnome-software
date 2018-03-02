@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-02-23 11:03+0000\n"
-"PO-Revision-Date: 2018-02-23 14:33+0200\n"
+"POT-Creation-Date: 2018-03-01 15:54+0000\n"
+"PO-Revision-Date: 2018-03-02 11:38+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -333,7 +333,7 @@ msgstr "Tutki levy"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:372 src/gs-updates-page.c:1419
+#: src/gnome-software.ui:372 src/gs-updates-page.c:1423
 msgid "Network Settings"
 msgstr "Verkkoasetukset"
 
@@ -347,7 +347,7 @@ msgstr "Käynnistä uudelleen nyt"
 msgid "More Information"
 msgstr "Lisätietoja"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:432
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:429
 msgid "Pending"
 msgstr "Odottaa"
 
@@ -358,7 +358,10 @@ msgstr "Asennettu"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: src/gs-app-addon-row.c:106 src/gs-app-row.c:220 src/gs-details-page.c:463
+#. TRANSLATORS: this is a button in the software repositories dialog
+#. that shows the status of a repo being installed
+#: src/gs-app-addon-row.c:106 src/gs-app-row.c:217 src/gs-details-page.c:463
+#: src/gs-third-party-repo-row.c:113
 msgid "Installing"
 msgstr "Asennetaan"
 
@@ -366,23 +369,23 @@ msgstr "Asennetaan"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:110 src/gs-app-row.c:226
-#: src/gs-repos-dialog-row.c:163
+#: src/gs-app-addon-row.c:110 src/gs-app-row.c:223 src/gs-repo-row.c:140
+#: src/gs-third-party-repo-row.c:120
 msgid "Removing"
 msgstr "Poistetaan"
 
-#: src/gs-app-folder-dialog.c:310
+#: src/gs-app-folder-dialog.c:309
 msgid "Folder Name"
 msgstr "Kansion nimi"
 
-#: src/gs-app-folder-dialog.c:321 src/gs-app-folder-dialog.ui:16
+#: src/gs-app-folder-dialog.c:320 src/gs-app-folder-dialog.ui:16
 #: src/gs-details-page.ui:329 src/gs-editor.c:623 src/gs-editor.c:655
-#: src/gs-installed-page.c:612 src/gs-removal-dialog.ui:33
+#: src/gs-installed-page.c:610 src/gs-removal-dialog.ui:33
 #: src/gs-review-dialog.ui:23 src/gs-upgrade-banner.ui:131
 msgid "_Cancel"
 msgstr "_Peru"
 
-#: src/gs-app-folder-dialog.c:326 src/gs-app-folder-dialog.ui:24
+#: src/gs-app-folder-dialog.c:325 src/gs-app-folder-dialog.ui:24
 msgid "_Add"
 msgstr "_Lisää"
 
@@ -391,110 +394,110 @@ msgid "Add to Application Folder"
 msgstr "Lisää sovelluskansioon"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:125
+#: src/gs-application.c:124
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Käynnistystila, joko \"updates\", \"updated\", \"installed\" tai \"overview\""
 
-#: src/gs-application.c:125
+#: src/gs-application.c:124
 msgid "MODE"
 msgstr "TILA"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:126
 msgid "Search for applications"
 msgstr "Etsi sovelluksia"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:126
 msgid "SEARCH"
 msgstr ""
 
-#: src/gs-application.c:129
+#: src/gs-application.c:128
 msgid "Show application details (using application ID)"
 msgstr "Näytä sovelluksen tiedot (käyttäen sovelluksen tunnistetta)"
 
-#: src/gs-application.c:129 src/gs-application.c:133
+#: src/gs-application.c:128 src/gs-application.c:132
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:130
 msgid "Show application details (using package name)"
 msgstr "Näytä sovelluksen tiedot (käyttäen paketin nimeä)"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:130
 msgid "PKGNAME"
 msgstr ""
 
-#: src/gs-application.c:133
+#: src/gs-application.c:132
 msgid "Install the application (using application ID)"
 msgstr "Asenna sovellus (käyttäen sovelluksen tunnistetta)"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:134
 msgid "Open a local package file"
 msgstr "Avaa paikallinen pakettitiedosto"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:134
 msgid "FILENAME"
 msgstr "TIEDOSTONIMI"
 
-#: src/gs-application.c:137
+#: src/gs-application.c:136
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
 msgstr ""
 
-#: src/gs-application.c:140
+#: src/gs-application.c:139
 msgid "Show verbose debugging information"
 msgstr "Näytä runsasta vianselvitystietoa"
 
-#: src/gs-application.c:142
+#: src/gs-application.c:141
 msgid "Show profiling information for the service"
 msgstr "Näytä palvelun profilointitietoja"
 
-#: src/gs-application.c:144
+#: src/gs-application.c:143
 msgid "Quit the running instance"
 msgstr "Lopeta käynnissä oleva instanssi"
 
-#: src/gs-application.c:146
+#: src/gs-application.c:145
 msgid "Prefer local file sources to AppStream"
 msgstr ""
 
-#: src/gs-application.c:148
+#: src/gs-application.c:147
 msgid "Show version number"
 msgstr "Näytä versionumero"
 
-#: src/gs-application.c:345
+#: src/gs-application.c:344
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:352
+#: src/gs-application.c:351
 #, c-format
 msgid "About %s"
 msgstr "Tietoja - %s"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:356
+#: src/gs-application.c:355
 msgid "A nice way to manage the software on your system."
 msgstr "Mukava tapa hallita järjestelmän ohjelmistoja."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:173
+#: src/gs-app-row.c:172
 msgid "Visit website"
 msgstr "Käy verkkosivustolla"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:178
+#: src/gs-app-row.c:177
 msgid "Install…"
 msgstr "Asenna…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:185
+#: src/gs-app-row.c:184
 msgid "Cancel"
 msgstr "Peru"
 
@@ -502,13 +505,13 @@ msgstr "Peru"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:194 src/gs-common.c:279 src/gs-page.c:566
+#: src/gs-app-row.c:191 src/gs-common.c:279 src/gs-page.c:566
 msgid "Install"
 msgstr "Asenna"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:201
+#: src/gs-app-row.c:198
 msgid "Update"
 msgstr "Päivitä"
 
@@ -516,19 +519,19 @@ msgstr "Päivitä"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:205 src/gs-app-row.c:214 src/gs-page.c:723
-#: src/gs-repos-dialog.c:269
+#: src/gs-app-row.c:202 src/gs-app-row.c:211 src/gs-page.c:723
+#: src/gs-repos-dialog.c:270
 msgid "Remove"
 msgstr "Poista"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:332
+#: src/gs-app-row.c:329
 msgid "Device cannot be used during update."
 msgstr "Laitetta ei voi käyttää päivityksen aikana."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:342 src/gs-details-page.ui:988
+#: src/gs-app-row.c:339 src/gs-details-page.ui:988
 msgid "Source"
 msgstr "Lähde"
 
@@ -1325,8 +1328,11 @@ msgstr "Etsi ohjelmistoista"
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
+#. TRANSLATORS: this is a button in the software repositories
+#. dialog for installing a repo
 #: src/gs-details-page.c:285 src/gs-details-page.c:313
-#: src/gs-details-page.ui:206 src/gs-upgrade-banner.ui:146
+#: src/gs-details-page.ui:206 src/gs-third-party-repo-row.c:97
+#: src/gs-upgrade-banner.ui:146
 msgid "_Install"
 msgstr "_Asenna"
 
@@ -1340,7 +1346,10 @@ msgstr "_Päivitä"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software repositories or the like
-#: src/gs-details-page.c:331
+#. TRANSLATORS: this is a button in the software repositories
+#. dialog for installing a repo.
+#. The ellipsis indicates that further steps are required
+#: src/gs-details-page.c:331 src/gs-third-party-repo-row.c:89
 msgid "_Install…"
 msgstr "_Asenna…"
 
@@ -1409,35 +1418,35 @@ msgid "Unable to find “%s”"
 msgstr "Kohdetta “%s” ei löytynyt"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2159
+#: src/gs-details-page.c:2158
 msgid "Public domain"
 msgstr "Public domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2162
+#: src/gs-details-page.c:2161
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://fi.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2169
+#: src/gs-details-page.c:2168
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2179 src/gs-details-page.ui:1383
+#: src/gs-details-page.c:2178 src/gs-details-page.ui:1383
 msgid "Free Software"
 msgstr "Vapaa ohjelmisto"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2236
+#: src/gs-details-page.c:2235
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Käyttäjiä sitoo seuraava lisenssi:"
 msgstr[1] "Käyttäjiä sitovat seuraavat lisenssit:"
 
-#: src/gs-details-page.c:2263 src/gs-details-page.ui:1492
+#: src/gs-details-page.c:2262 src/gs-details-page.ui:1492
 msgid "More information"
 msgstr "Lisätietoja"
 
@@ -1809,26 +1818,26 @@ msgid "Unable to Find Requested Software"
 msgstr "Pyydettyä ohjelmistoa ei löydy"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:325
+#: src/gs-extras-page.c:328
 #, c-format
 msgid "%s not found"
 msgstr "Kohdetta %s ei löydy"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:329
+#: src/gs-extras-page.c:332
 msgid "on the website"
 msgstr "verkkosivustolla"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:336
+#: src/gs-extras-page.c:339
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Tiedostoa %s tarjoavaa sovellusta ei ole saatavilla."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:340 src/gs-extras-page.c:351 src/gs-extras-page.c:362
+#: src/gs-extras-page.c:343 src/gs-extras-page.c:354 src/gs-extras-page.c:365
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1839,21 +1848,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:347 src/gs-extras-page.c:369
+#: src/gs-extras-page.c:350 src/gs-extras-page.c:372
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Sovelluksia \"%s\"-tuen tarjoamiseksi ei ole saatavilla."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:358
+#: src/gs-extras-page.c:361
 #, c-format
 msgid "%s is not available."
 msgstr "%s ei ole saatavilla."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:373
+#: src/gs-extras-page.c:376
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1864,14 +1873,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:380
+#: src/gs-extras-page.c:383
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Fontteja ei ole saatavilla \"%s\"-skriptituen tarjoamiseksi."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:384
+#: src/gs-extras-page.c:387
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1882,14 +1891,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:391 lib/gs-plugin-loader.c:1458
+#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1466
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s-muotoa varten ei ole lisäkoodekkeja saatavilla."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:395
+#: src/gs-extras-page.c:398
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1900,14 +1909,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:402
+#: src/gs-extras-page.c:405
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Plasma-resursseja ei ole saatavilla \"%s\"-tuen tarjoamiseksi."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:406
+#: src/gs-extras-page.c:409
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1918,14 +1927,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:413
+#: src/gs-extras-page.c:416
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Tulostinajureita ei ole saatavilla tulostimelle %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:417
+#: src/gs-extras-page.c:420
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1935,12 +1944,12 @@ msgstr ""
 "saattaa olla tarjolla tällä %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:462
+#: src/gs-extras-page.c:464
 msgid "this website"
 msgstr "tältä verkkosivulta"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: src/gs-extras-page.c:466
+#: src/gs-extras-page.c:468
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1953,11 +1962,11 @@ msgstr[0] ""
 msgstr[1] ""
 "Valitettavasti etsimiäsi koodekkeja %s ei löydy. Katso lisätietoja %s."
 
-#: src/gs-extras-page.c:538 src/gs-extras-page.c:594 src/gs-extras-page.c:633
+#: src/gs-extras-page.c:539 src/gs-extras-page.c:595 src/gs-extras-page.c:634
 msgid "Failed to find any search results"
 msgstr "Hakutuloksia ei löytynyt"
 
-#: src/gs-extras-page.c:827
+#: src/gs-extras-page.c:828
 #, c-format
 msgid "%s file format"
 msgstr "%s-tiedostomuoto"
@@ -2036,11 +2045,11 @@ msgstr "Historia"
 msgid "System Applications"
 msgstr "Järjestelmäsovellukset"
 
-#: src/gs-installed-page.c:620
+#: src/gs-installed-page.c:618
 msgid "Click on items to select them"
 msgstr "Napsauta kohdetta valitaksesi sen"
 
-#: src/gs-installed-page.c:826
+#: src/gs-installed-page.c:820
 msgid "Select"
 msgstr "Valitse"
 
@@ -2128,12 +2137,12 @@ msgid "Recommended Productivity Applications"
 msgstr "Suositut tuottavuussovellukset"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:890 src/gs-repos-dialog.c:698
+#: src/gs-overview-page.c:890 src/gs-repos-dialog.c:774
 msgid "Access additional software from selected third party sources."
 msgstr "Käytä lisäohjelmistoja kolmansien osapuolten ohjelmistolähteistä."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:894 src/gs-repos-dialog.c:702
+#: src/gs-overview-page.c:894 src/gs-repos-dialog.c:778
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2143,7 +2152,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:901 src/gs-repos-dialog.c:709
+#: src/gs-overview-page.c:901 src/gs-repos-dialog.c:785
 msgid "Find out more…"
 msgstr "Lue lisää…"
 
@@ -2238,7 +2247,7 @@ msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "%s poistetaan. Jos haluat käyttää sitä jatkossa, se pitää asentaa uudelleen."
 
-#: lib/gs-plugin-loader.c:1461
+#: lib/gs-plugin-loader.c:1469
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2333,7 +2342,7 @@ msgstr "_Jatka"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:109
+#: src/gs-repos-dialog.c:110
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2342,7 +2351,7 @@ msgstr[1] "%u sovellusta asennettu"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:116
+#: src/gs-repos-dialog.c:117
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2352,7 +2361,7 @@ msgstr[1] "%u lisäosaa asennettu"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repos-dialog.c:124
+#: src/gs-repos-dialog.c:125
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2362,7 +2371,7 @@ msgstr[1] "%u sovellusta"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repos-dialog.c:130
+#: src/gs-repos-dialog.c:131
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2373,7 +2382,7 @@ msgstr[1] "%u lisäosaa"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repos-dialog.c:137
+#: src/gs-repos-dialog.c:138
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -2382,20 +2391,20 @@ msgstr[1] "%s ja %s asennettu"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:245
+#: src/gs-repos-dialog.c:246
 #, c-format
 msgid "Remove “%s”?"
 msgstr "Poistetaanko ohjelmistolähde “%s”?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:250
+#: src/gs-repos-dialog.c:251
 #, c-format
 msgid "Disable “%s”?"
 msgstr "Poistetaanko ohjelmistolähde “%s” käytöstä?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:254
+#: src/gs-repos-dialog.c:255
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2404,19 +2413,19 @@ msgstr ""
 "minkäänlaisia päivityksiä, ei edes tietoturvapäivityksiä."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:272
+#: src/gs-repos-dialog.c:273
 msgid "Disable"
 msgstr "Poista käytöstä"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:614
+#: src/gs-repos-dialog.c:683
 msgid "the operating system"
 msgstr "käyttöjärjestelmä"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:684 src/gs-repos-dialog.c:716
+#: src/gs-repos-dialog.c:753 src/gs-repos-dialog.c:792
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -2424,7 +2433,7 @@ msgstr ""
 "tarjoaa."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:695
+#: src/gs-repos-dialog.c:771
 msgid "Third Party Repositories"
 msgstr "Kolmansien osapuolten ohjelmistolähteet"
 
@@ -2434,49 +2443,49 @@ msgstr "Ei erillisiä ohjelmistolähteitä"
 
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for enabling a repo
-#: src/gs-repos-dialog-row.c:133
+#: src/gs-repo-row.c:110
 msgid "_Enable"
 msgstr "_Käytä"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for removing a repo. The ellipsis indicates that further
 #. steps are required
-#: src/gs-repos-dialog-row.c:142
+#: src/gs-repo-row.c:119
 msgid "_Remove…"
 msgstr "_Poista…"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for disabling a repo. The ellipsis indicates that further
 #. steps are required
-#: src/gs-repos-dialog-row.c:147
+#: src/gs-repo-row.c:124
 msgid "_Disable…"
 msgstr "_Poista käytöstä…"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being enabled
-#: src/gs-repos-dialog-row.c:155
+#: src/gs-repo-row.c:132
 msgid "Enabling"
 msgstr "Otetaan käyttöön"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being disabled
-#: src/gs-repos-dialog-row.c:167
+#: src/gs-repo-row.c:144
 msgid "Disabling"
 msgstr "Poistetaan käytöstä"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
-#: src/gs-repos-dialog-row.c:181
+#: src/gs-repo-row.c:158
 msgid "Enabled"
 msgstr "Käytössä"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is disabled.
-#: src/gs-repos-dialog-row.c:187
+#: src/gs-repo-row.c:164
 msgid "Disabled"
 msgstr "Poistettu käytöstä"
 
-#: src/gs-repos-dialog-row.ui:89
+#: src/gs-repo-row.ui:89
 msgid "URL"
 msgstr "Osoite"
 
@@ -3106,6 +3115,12 @@ msgstr "%s (Asennetaan)"
 msgid "%s (Removing)"
 msgstr "%s (Poistetaan)"
 
+#. TRANSLATORS: this is a button in the software repositories
+#. dialog for removing multiple repos
+#: src/gs-third-party-repo-row.c:106
+msgid "_Remove All"
+msgstr "_Poista kaikki"
+
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
 #: src/gs-update-dialog.c:130
@@ -3128,25 +3143,25 @@ msgstr "Asennetut päivitykset"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:421
+#: src/gs-update-dialog.c:445
 msgid "Additions"
 msgstr "Lisäykset"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:425
+#: src/gs-update-dialog.c:449
 msgid "Removals"
 msgstr "Poistot"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:429
+#: src/gs-update-dialog.c:453
 msgid "Updates"
 msgstr "Päivitykset"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:433
+#: src/gs-update-dialog.c:457
 msgid "Downgrades"
 msgstr "Version muutokset alempaan"
 
@@ -3176,7 +3191,7 @@ msgstr ""
 "Tärkeitä järjestelmä- ja sovelluspäivityksiä on valmiina asennettavaksi"
 
 #. TRANSLATORS: button text
-#: src/gs-update-monitor.c:105 src/gs-updates-page.c:742
+#: src/gs-update-monitor.c:105 src/gs-updates-page.c:741
 msgid "Not Now"
 msgstr "Ei nyt"
 
@@ -3310,105 +3325,105 @@ msgstr ""
 "ja yritä uudelleen. Jos ongelma jatkuu, ota yhteys ohjelmistojen tarjoajaan."
 
 #. TRANSLATORS: Time in 24h format
-#: src/gs-updates-page.c:299
+#: src/gs-updates-page.c:298
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: src/gs-updates-page.c:302
+#: src/gs-updates-page.c:301
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: src/gs-updates-page.c:308
+#: src/gs-updates-page.c:307
 msgid "Yesterday, %R"
 msgstr "Eilen, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: src/gs-updates-page.c:312
+#: src/gs-updates-page.c:311
 msgid "Yesterday, %l:%M %p"
 msgstr "Eilen, %l:%M %p"
 
-#: src/gs-updates-page.c:315
+#: src/gs-updates-page.c:314
 msgid "Two days ago"
 msgstr "Kaksi päivää sitten"
 
-#: src/gs-updates-page.c:317
+#: src/gs-updates-page.c:316
 msgid "Three days ago"
 msgstr "Kolme päivää sitten"
 
-#: src/gs-updates-page.c:319
+#: src/gs-updates-page.c:318
 msgid "Four days ago"
 msgstr "Neljä päivää sitten"
 
-#: src/gs-updates-page.c:321
+#: src/gs-updates-page.c:320
 msgid "Five days ago"
 msgstr "Viisi päivää sitten"
 
-#: src/gs-updates-page.c:323
+#: src/gs-updates-page.c:322
 msgid "Six days ago"
 msgstr "Kuusi päivää sitten"
 
-#: src/gs-updates-page.c:325
+#: src/gs-updates-page.c:324
 msgid "One week ago"
 msgstr "Viikko sitten"
 
-#: src/gs-updates-page.c:327
+#: src/gs-updates-page.c:326
 msgid "Two weeks ago"
 msgstr "Kaksi viikkoa sitten"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-updates-page.c:331
+#: src/gs-updates-page.c:330
 msgid "%e %B %Y"
 msgstr "%e. %Bta %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: src/gs-updates-page.c:344
+#: src/gs-updates-page.c:343
 msgid "Downloading new updates…"
 msgstr "Ladataan uusia päivityksiä…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:348
+#: src/gs-updates-page.c:347
 msgid "Looking for new updates…"
 msgstr "Etsitään uusia päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:389
+#: src/gs-updates-page.c:388
 msgid "Setting up updates…"
 msgstr "Asetetaan päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:390 src/gs-updates-page.c:397
+#: src/gs-updates-page.c:389 src/gs-updates-page.c:396
 msgid "(This could take a while)"
 msgstr "(Tämä saattaa kestää hetken)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:502
+#: src/gs-updates-page.c:501
 #, c-format
 msgid "Last checked: %s"
 msgstr "Viimeksi tarkistettu: %s"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-updates-page.c:738
+#: src/gs-updates-page.c:737
 msgid "Updates have been installed"
 msgstr "Päivitykset on asennettu"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-updates-page.c:740
+#: src/gs-updates-page.c:739
 msgid "A restart is required for them to take effect."
 msgstr "Muutosten voimaan tulemiseksi vaaditaan uudelleenkäynnistys."
 
 #. TRANSLATORS: button text
-#: src/gs-updates-page.c:744
+#: src/gs-updates-page.c:743
 msgid "Restart"
 msgstr "Käynnistä uudelleen"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-page.c:814
+#: src/gs-updates-page.c:813
 msgid "Integrated Firmware"
 msgstr "Integroitu laiteohjelmisto"
 
@@ -3416,76 +3431,76 @@ msgstr "Integroitu laiteohjelmisto"
 #. * system firmware
 #. TRANSLATORS: This is the button for upgrading all
 #. * offline updates
-#: src/gs-updates-page.c:817 src/gs-updates-page.c:827
+#: src/gs-updates-page.c:816 src/gs-updates-page.c:826
 msgid "Restart & Update"
 msgstr "Käynnistä uudelleen ja päivitä"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-page.c:824
+#: src/gs-updates-page.c:823
 msgid "Requires Restart"
 msgstr "Vaatii uudelleenkäynnistyksen"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-page.c:834
+#: src/gs-updates-page.c:833
 msgid "Application Updates"
 msgstr "Sovelluspäivitykset"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-page.c:837
+#: src/gs-updates-page.c:836
 msgid "Update All"
 msgstr "Päivitä kaikki"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-page.c:844
+#: src/gs-updates-page.c:843
 msgid "Device Firmware"
 msgstr "Laitteen laiteohjelmisto"
 
 #. TRANSLATORS: this is an offline update
-#: src/gs-updates-page.c:1033
+#: src/gs-updates-page.c:1032
 msgid "_Restart & Update"
 msgstr "Käynnistä uu_delleen ja asenna"
 
 #. TRANSLATORS: all updates will be installed
-#: src/gs-updates-page.c:1037
+#: src/gs-updates-page.c:1036
 msgid "U_pdate All"
 msgstr "Päivitä _kaikki"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:1116
+#: src/gs-updates-page.c:1120
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "%s %s ei ole enää tuettu."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:1121
+#: src/gs-updates-page.c:1125
 msgid "Your OS is no longer supported."
 msgstr "Käyttöjärjestelmäsi ei ole enää tuettu."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:1126
+#: src/gs-updates-page.c:1130
 msgid "This means that it does not receive security updates."
 msgstr ""
 "Tämä tarkoittaa, ettei käyttöjärjestelmään ole saatavilla enää "
 "tietoturvapäivityksiä."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:1130
+#: src/gs-updates-page.c:1134
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "On suositeltavaa, että päivität käyttöjärjestelmän uudempaan versioon."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:1387
+#: src/gs-updates-page.c:1391
 msgid "Charges may apply"
 msgstr "Saattaa aiheuttaa lisäkuluja"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:1391
+#: src/gs-updates-page.c:1395
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3495,26 +3510,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:1395
+#: src/gs-updates-page.c:1399
 msgid "Check Anyway"
 msgstr "Tarkista silti"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:1411
+#: src/gs-updates-page.c:1415
 msgid "No Network"
 msgstr "Ei verkkoa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:1415
+#: src/gs-updates-page.c:1419
 msgid "Internet access is required to check for updates."
 msgstr "Päivitysten tarkistaminen vaatii internetyhteyden."
 
-#: src/gs-updates-page.c:1820
+#: src/gs-updates-page.c:1824
 msgid "Restart & _Install"
 msgstr "Käynnistä uudelleen ja _asenna"
 
-#: src/gs-updates-page.c:1838
+#: src/gs-updates-page.c:1842
 msgid "Check for updates"
 msgstr "Tarkista päivitykset"
 
@@ -4095,13 +4110,13 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak on viitekehys Linux-työpöytäsovelluksille"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:608
+#: plugins/flatpak/gs-flatpak.c:607
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Noudetaan flatpak-metatietoja kohteelle %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2790
+#: plugins/flatpak/gs-flatpak.c:2795
 msgid "Getting runtime source…"
 msgstr "Noudetaan runtime-lähdettä…"
 
@@ -4137,7 +4152,7 @@ msgid "Limba provides developers a way to easily create software bundles"
 msgstr "Limba tarjoaa kehittäjille helpon tavan luoda ohjelmistopaketteja"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:206
+#: plugins/odrs/gs-plugin-odrs.c:205
 msgid "Downloading application ratings…"
 msgstr "Ladataan sovellusarvosteluja…"
 
@@ -4159,7 +4174,7 @@ msgid "Downloading shell extension metadata…"
 msgstr "Ladataan Shell-laajennuksen metatietoja…"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:214
+#: plugins/snap/gs-plugin-snap.c:211
 msgid "Snap Store"
 msgstr "Snap-kauppa"
 
@@ -4172,7 +4187,7 @@ msgid "A snap is a universal Linux package"
 msgstr "Snap on yleinen Linux-paketti"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/steam/gs-plugin-steam.c:601
+#: plugins/steam/gs-plugin-steam.c:600
 msgid "Downloading application page…"
 msgstr "Ladataan sovellussivua…"
 
