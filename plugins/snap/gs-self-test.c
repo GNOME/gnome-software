@@ -44,6 +44,11 @@ snapd_client_new (void)
 }
 
 void
+snapd_client_set_allow_interaction (SnapdClient *client, gboolean allow_interaction)
+{
+}
+
+void
 snapd_client_set_auth_data (SnapdClient *client, SnapdAuthData *auth_data)
 {
 }
@@ -69,7 +74,10 @@ snapd_client_set_user_agent (SnapdClient *client, const gchar *user_agent)
 SnapdSystemInformation *
 snapd_client_get_system_information_sync (SnapdClient *client, GCancellable *cancellable, GError **error)
 {
-	return g_object_new (SNAPD_TYPE_SYSTEM_INFORMATION, NULL);
+	return g_object_new (SNAPD_TYPE_SYSTEM_INFORMATION,
+			     "version", "2.31",
+			     "confinement", SNAPD_SYSTEM_CONFINEMENT_STRICT,
+			     NULL);
 }
 
 static SnapdSnap *
