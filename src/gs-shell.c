@@ -866,6 +866,18 @@ gs_shell_show_detailed_error (GsShell *shell, const GError *error)
 	return FALSE;
 }
 
+static gchar *
+get_first_line (const gchar *str)
+{
+	g_auto(GStrv) lines;
+
+	lines = g_strsplit (str, "\n", 2);
+	if (lines != NULL && g_strv_length (lines) != 0)
+		return g_strdup (lines[0]);
+
+	return NULL;
+}
+
 static gboolean
 gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 {
@@ -957,8 +969,11 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1113,8 +1128,11 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1219,8 +1237,11 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1323,8 +1344,11 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1393,8 +1417,11 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1454,8 +1481,11 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1492,8 +1522,11 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 		return FALSE;
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1569,8 +1602,11 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	}
 
 	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
+	if (gs_shell_show_detailed_error (shell, error)) {
+		g_autofree gchar *first_line = get_first_line (error->message);
+		if (first_line != NULL)
+			g_string_append_printf (str, ":\n%s", first_line);
+	}
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
