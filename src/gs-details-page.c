@@ -73,6 +73,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*box_progress;
+	GtkWidget		*box_progress2;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
 	GtkWidget		*box_details_screenshot_main;
@@ -518,10 +519,13 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	case AS_APP_STATE_REMOVING:
 		gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
 		gtk_widget_set_visible (self->spinner_remove, TRUE);
+		/* align text together with the spinner if we're showing it */
+		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
 		break;
 	default:
 		gtk_widget_set_visible (self->spinner_remove, FALSE);
 		gtk_spinner_stop (GTK_SPINNER (self->spinner_remove));
+		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_CENTER);
 		break;
 	}
 
@@ -2404,6 +2408,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_main);
