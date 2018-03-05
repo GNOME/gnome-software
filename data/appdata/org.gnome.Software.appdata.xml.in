@@ -46,6 +46,30 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-03-05" version="3.27.92">
+      <description>
+        <p>
+          This is an unstable release in the 3.27 development series,
+          marking the end of the development cycle. Next release will be 3.28.0!
+        </p>
+        <ul>
+          <li>Removal of global plugin cache, simplifying gnome-software internals</li>
+          <li>Software Repositories dialog got another batch of improvements and UI changes</li>
+          <li>GNOME Shell Extensions repository and fwupd repositories are now shown in the Software Repositories dialog</li>
+          <li>Shell extensions handling through PackageKit was improved, fixing a long standing bug where we were unable to remove shell extension packages</li>
+          <li>Category page rewrite that landed earlier this cycle went through UI review and got a number of fixes</li>
+          <li>Package version comparison in the updates dialog was fixed and should no longer incorrectly show updates as downgrades</li>
+          <li>Distro upgrade notifications are now rate limited to once per week</li>
+          <li>Install buttons in codec install view that got lost in the 3.22 cycle are now back</li>
+          <li>Various paper cuts with distro upgrades were fixed</li>
+          <li>Various fixes to installing apps from yum repos that have enabled=0 enabled_metadata=1</li>
+          <li>Various other correctness and warning fixes</li>
+          <li>Distros: Minimum supported fwupd version is now 1.0.3</li>
+          <li>Distros: We've released PackageKit 1.1.9 that has string changes to match gnome-software 3.28</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-02-14" version="3.27.90">
       <description>
         <p>

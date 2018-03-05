@@ -1,3 +1,33 @@
+Version 3.27.92
+~~~~~~~~~~~~~~~
+Released: 2018-03-05
+
+This is an unstable release in the 3.27 development series, marking the end of
+the development cycle. Next release will be 3.28.0!
+ * Removal of global plugin cache, simplifying gnome-software internals
+ * Software Repositories dialog got another batch of improvements and UI
+   changes
+ * GNOME Shell Extensions repository and fwupd repositories are now shown in
+   the Software Repositories dialog
+ * Shell extensions handling through PackageKit was improved, fixing a long
+   standing bug where we were unable to remove shell extension packages
+ * Category page rewrite that landed earlier this cycle went through UI review
+   and got a number of fixes
+ * Package version comparison in the updates dialog was fixed and should no
+   longer incorrectly show updates as downgrades
+ * Distro upgrade notifications are now rate limited to once per week
+ * Install buttons in codec install view that got lost in the 3.22 cycle are
+   now back
+ * Various paper cuts with distro upgrades were fixed
+ * Various fixes to installing apps from yum repos that have enabled=0
+   enabled_metadata=1
+ * Various other correctness and warning fixes
+ * Distros: Minimum supported fwupd version is now 1.0.3
+ * Distros: We've released PackageKit 1.1.9 that has string changes to match
+   gnome-software 3.28
+
+This release also updates translations.
+
 Version 3.27.90
 ~~~~~~~~~~~~~~~
 Released: 2018-02-14
