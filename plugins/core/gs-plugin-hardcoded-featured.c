@@ -59,7 +59,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	guint i;
 
 	/* we've already got enough featured apps */
-	if (gs_app_list_length (list) >= 5)
+	if (gs_app_list_length (list) >= 9)
 		return TRUE;
 
 	/* just add all */
