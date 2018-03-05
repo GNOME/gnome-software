@@ -58,6 +58,7 @@ struct _GsUpdateDialog
 	GtkWidget	*label_summary;
 	GtkWidget	*list_boxes[GS_UPDATE_DIALOG_SECTION_LAST];
 	GtkWidget	*list_box_installed_updates;
+	GtkWidget	*os_update_description;
 	GtkWidget	*os_update_box;
 	GtkWidget	*scrolledwindow;
 	GtkWidget	*scrolledwindow_details;
@@ -549,6 +550,9 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 		GsUpdateDialogSection section;
 		GtkWidget *row;
 
+		gtk_label_set_text (GTK_LABEL (dialog->os_update_description),
+		                    gs_app_get_description (app));
+
 		/* clear existing data */
 		for (guint i = 0; i < GS_UPDATE_DIALOG_SECTION_LAST; i++) {
 			if (dialog->list_boxes[i] == NULL)
@@ -730,6 +734,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_name);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_summary);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, os_update_description);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, os_update_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow_details);
