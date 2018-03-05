@@ -102,7 +102,7 @@ gs_page_authenticate (GsPage *page,
 	g_autoptr(GError) error = NULL;
 
 	helper = g_slice_new0 (GsPageHelper);
-	helper->page = page;
+	helper->page = g_object_ref (page);
 	helper->callback = callback;
 	helper->callback_data = user_data;
 
