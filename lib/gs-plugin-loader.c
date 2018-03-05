@@ -846,6 +846,12 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 }
 
 static gboolean
+gs_plugin_loader_app_is_non_wildcard (GsApp *app, gpointer user_data)
+{
+	return !gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+}
+
+static gboolean
 gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 				      GsAppList *list,
 				      GCancellable *cancellable,
@@ -1013,6 +1019,8 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 							   cancellable,
 							   error))
 			goto out;
+		/* filter any MATCH_ANY_PREFIX apps left in the list */
+		gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
 	}
 
 	/* remove any addons that have the same source as the parent app */
