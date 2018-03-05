@@ -109,6 +109,13 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 
 	/* match meta-id */
 	if (g_strcmp0 (gs_app_get_id (app), "system") == 0) {
+		/* copy over interesting metadata */
+		if (gs_app_get_install_date (app) != 0 &&
+		    gs_app_get_install_date (priv->app_system) == 0) {
+			gs_app_set_install_date (priv->app_system,
+			                         gs_app_get_install_date (app));
+		}
+
 		gs_app_list_add (list, priv->app_system);
 		return TRUE;
 	}
