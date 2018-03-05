@@ -103,7 +103,7 @@ gs_page_authenticate (GsPage *page,
 
 	helper = g_slice_new0 (GsPageHelper);
 	helper->callback = callback;
-	helper->callback = user_data = user_data;
+	helper->callback_data = user_data;
 
 	dialog = gs_auth_dialog_new (priv->plugin_loader,
 				     app,
