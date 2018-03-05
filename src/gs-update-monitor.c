@@ -703,7 +703,7 @@ cleanup_notifications_cb (gpointer user_data)
 	g_debug ("getting historical updates for fresh session");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
