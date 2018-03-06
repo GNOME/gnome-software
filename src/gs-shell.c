@@ -801,7 +801,7 @@ gs_shell_show_event_app_notify (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_no_space"));
 	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0);
 
-	/* no-space button */
+	/* network settings button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_network_settings"));
 	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0);
 
