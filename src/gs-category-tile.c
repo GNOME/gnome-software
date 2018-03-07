@@ -24,6 +24,9 @@
 #include "gs-category-tile.h"
 #include "gs-common.h"
 
+#define COLORFUL_TILE_CLASS "colorful"
+#define COLORFUL_TILE_PROVIDER_KEY "GnomeSoftware::colorful-tile-provider"
+
 struct _GsCategoryTile
 {
 	GtkButton	 parent_instance;
@@ -48,6 +51,10 @@ static void
 gs_category_tile_refresh (GsCategoryTile *tile)
 {
 	GPtrArray *key_colors;
+	GtkStyleContext *context;
+
+	/* get the style context */
+	context = gtk_widget_get_style_context (GTK_WIDGET (tile));
 
 	/* set labels */
 	gtk_label_set_label (GTK_LABEL (tile->label),
@@ -60,12 +67,30 @@ gs_category_tile_refresh (GsCategoryTile *tile)
 	key_colors = gs_category_get_key_colors (tile->cat);
 	if (tile->colorful && key_colors->len > 0) {
 		GdkRGBA *tmp = g_ptr_array_index (key_colors, 0);
+		g_autoptr(GtkCssProvider) provider = NULL;
 		g_autofree gchar *css = NULL;
-		g_autofree gchar *color = gdk_rgba_to_string (tmp);;
-		css = g_strdup_printf ("border-bottom: 3px solid %s", color);
-		gs_utils_widget_set_css (GTK_WIDGET (tile), css);
+		g_autofree gchar *color = gdk_rgba_to_string (tmp);
+
+		css = g_strdup_printf ("@define-color gs_tile_color %s;", color);
+
+		provider = gtk_css_provider_new ();
+		gtk_css_provider_load_from_data (provider, css, -1, NULL);
+
+		gtk_style_context_add_class (context, COLORFUL_TILE_CLASS);
+		gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider),
+						GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+		g_object_set_data_full (G_OBJECT (tile),
+					COLORFUL_TILE_PROVIDER_KEY,
+					g_object_ref (provider),
+					g_object_unref);
 	} else {
-		gs_utils_widget_set_css (GTK_WIDGET (tile), NULL);
+		GtkStyleProvider *provider = g_object_get_data (G_OBJECT (tile),
+							        COLORFUL_TILE_PROVIDER_KEY);
+		if (provider) {
+			gtk_style_context_remove_class (context, COLORFUL_TILE_CLASS);
+			gtk_style_context_remove_provider (context, provider);
+		}
 	}
 }
 
