@@ -194,6 +194,7 @@ enable_repo (GsReposDialog *dialog, GsApp *repo)
 	g_debug ("enabling repo %s", gs_app_get_id (install_data->repo));
 	plugin_job = gs_plugin_job_newv (install_data->action,
 	                                 "app", repo,
+	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 	                                 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 	                                    dialog->cancellable,
@@ -220,6 +221,7 @@ remove_repo_response_cb (GtkDialog *confirm_dialog,
 	g_debug ("removing repo %s", gs_app_get_id (remove_data->repo));
 	plugin_job = gs_plugin_job_newv (remove_data->action,
 					 "app", remove_data->repo,
+					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
@@ -395,6 +397,7 @@ install_third_party_repo (GsReposDialog *dialog, gboolean install)
 
 	plugin_job = gs_plugin_job_newv (install_data->action,
 	                                 "app", dialog->third_party_repo,
+	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 	                                 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader,
 	                                    plugin_job,
