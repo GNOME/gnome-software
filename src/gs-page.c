@@ -327,6 +327,7 @@ gs_page_purchase_authenticate_cb (GsPage *page,
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_PURCHASE,
 					 "app", helper->app,
+					 "price", gs_app_get_price (helper->app),
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
