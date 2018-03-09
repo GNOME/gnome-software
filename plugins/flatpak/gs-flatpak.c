@@ -1269,9 +1269,16 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 
-		main_app = get_real_app_for_update (self, app, cancellable, error);
-		if (main_app == NULL)
-			return FALSE;
+		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
+		if (main_app == NULL) {
+			g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+			gs_flatpak_error_convert (&error_local);
+			gs_plugin_event_set_app (event, app);
+			gs_plugin_event_set_error (event, error_local);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (self->plugin, event);
+			continue;
+		}
 
 		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_update_details (main_app, NULL);
