@@ -1201,9 +1201,6 @@ get_real_app_for_update (GsFlatpak *self,
 		 * not-found error, so we only report other types of errors */
 		if (error_local != NULL &&
 		    !g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-			g_warning ("Couldn't get the main app for related app %s: %s",
-				   gs_app_get_unique_id (app),
-				   error_local->message);
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			gs_flatpak_error_convert (error);
 			return NULL;
@@ -1269,9 +1266,13 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 
-		main_app = get_real_app_for_update (self, app, cancellable, error);
-		if (main_app == NULL)
-			return FALSE;
+		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
+		if (main_app == NULL) {
+			g_debug ("Couldn't get the main app for updatable app extension %s: "
+				 "%s; adding the app itself to the updates list...",
+				 gs_app_get_unique_id (app), error_local->message);
+			main_app = g_object_ref (app);
+		}
 
 		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_update_details (main_app, NULL);
@@ -1315,9 +1316,13 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 
-		main_app = get_real_app_for_update (self, app, cancellable, error);
-		if (main_app == NULL)
-			return FALSE;
+		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
+		if (main_app == NULL) {
+			g_debug ("Couldn't get the main app for updatable app extension %s: "
+				 "%s; adding the app itself to the pending updates list...",
+				 gs_app_get_unique_id (app), error_local->message);
+			main_app = g_object_ref (app);
+		}
 
 		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 
