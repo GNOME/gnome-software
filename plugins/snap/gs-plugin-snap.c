@@ -954,17 +954,17 @@ gs_plugin_launch (GsPlugin *plugin,
 	if (launch_desktop) {
 		info = (GAppInfo *)g_desktop_app_info_new_from_filename (launch_desktop);
 	} else {
-		g_autofree gchar *binary_name = NULL;
+		g_autofree gchar *commandline = NULL;
 		GAppInfoCreateFlags flags = G_APP_INFO_CREATE_NONE;
 
 		if (g_strcmp0 (launch_name, gs_app_get_id (app)) == 0)
-			binary_name = g_strdup_printf ("/snap/bin/%s", launch_name);
+			commandline = g_strdup_printf ("snap run %s", launch_name);
 		else
-			binary_name = g_strdup_printf ("/snap/bin/%s.%s", gs_app_get_id (app), launch_name);
+			commandline = g_strdup_printf ("snap run %s.%s", gs_app_get_id (app), launch_name);
 
 		if (!is_graphical (plugin, app, cancellable))
 			flags |= G_APP_INFO_CREATE_NEEDS_TERMINAL;
-		info = g_app_info_create_from_commandline (binary_name, NULL, flags, error);
+		info = g_app_info_create_from_commandline (commandline, NULL, flags, error);
 	}
 
 	if (info == NULL)
