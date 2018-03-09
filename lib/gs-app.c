@@ -994,7 +994,6 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 			   gs_app_get_unique_id_unlocked (app),
 			   as_app_state_to_string (priv->state),
 			   as_app_state_to_string (state));
-		return FALSE;
 	}
 
 	priv->state = state;
