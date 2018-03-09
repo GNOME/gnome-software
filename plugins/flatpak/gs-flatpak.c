@@ -1269,9 +1269,13 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 
-		main_app = get_real_app_for_update (self, app, cancellable, error);
-		if (main_app == NULL)
-			return FALSE;
+		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
+		if (main_app == NULL) {
+			g_debug ("Couldn't get the main app for updatable app extension %s: "
+				 "%s; adding the app itself to the updates list...",
+				 gs_app_get_unique_id (app), error_local->message);
+			main_app = g_object_ref (app);
+		}
 
 		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_update_details (main_app, NULL);
