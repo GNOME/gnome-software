@@ -863,6 +863,8 @@ gs_shell_show_detailed_error (GsShell *shell, const GError *error)
 {
 	if (error->code == GS_PLUGIN_ERROR_FAILED)
 		return TRUE;
+	if (error->code == GS_PLUGIN_ERROR_DOWNLOAD_FAILED)
+		return TRUE;
 	return FALSE;
 }
 
