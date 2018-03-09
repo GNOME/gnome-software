@@ -758,6 +758,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* get information from local snaps and store */
 	local_snap = snapd_client_list_one_sync (client, id, cancellable, NULL);
 	store_snap = get_store_snap (plugin, id, cancellable, NULL);
+	if (local_snap == NULL && store_snap == NULL)
+		return TRUE;
 
 	if (local_snap != NULL)
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
