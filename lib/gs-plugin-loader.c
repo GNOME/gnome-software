@@ -3749,7 +3749,7 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
 	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
 	if (!gs_plugin_loader_run_refine (helper, list, NULL, &error)) {
-		g_error ("%s", error->message);
+		g_warning ("%s", error->message);
 		return NULL;
 	}
 
