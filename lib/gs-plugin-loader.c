@@ -1357,6 +1357,13 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
+static gint
+gs_plugin_loader_app_sort_version_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	return g_strcmp0 (gs_app_get_version (app1),
+			  gs_app_get_version (app2));
+}
+
 static void
 gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
 						gpointer object,
@@ -1377,6 +1384,9 @@ gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
 	/* filter duplicates with priority */
 	gs_app_list_filter (job->list, gs_plugin_loader_app_set_prio, plugin_loader);
 	gs_app_list_filter_duplicates (job->list, GS_APP_LIST_FILTER_FLAG_NONE);
+
+	/* sort with the chronologically newest release last */
+	gs_app_list_sort (job->list, gs_plugin_loader_app_sort_version_cb, NULL);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (job->list), (GDestroyNotify) g_object_unref);
