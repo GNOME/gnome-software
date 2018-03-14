@@ -2455,7 +2455,7 @@ gs_flatpak_get_list_for_remove (GsFlatpak *self, GsApp *app,
 	if (related == NULL) {
 		g_prefix_error (error, "using origin %s: ", gs_app_get_origin (app));
 		gs_flatpak_error_convert (error);
-		return FALSE;
+		return NULL;
 	}
 
 	/* any extra bits */
@@ -2595,7 +2595,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 								    error);
 	if (xrefs_installed == NULL) {
 		gs_flatpak_error_convert (error);
-		return FALSE;
+		return NULL;
 	}
 	hash_installed = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	for (guint i = 0; i < xrefs_installed->len; i++) {
@@ -2606,7 +2606,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 
 	/* add runtime */
 	if (!gs_flatpak_refine_runtime_for_install (self, app, cancellable, error))
-		return FALSE;
+		return NULL;
 	runtime = gs_app_get_update_runtime (app);
 	if (runtime != NULL) {
 		g_autofree gchar *ref_display = NULL;
@@ -2634,7 +2634,7 @@ gs_flatpak_get_list_for_install (GsFlatpak *self, GsApp *app,
 	if (related == NULL) {
 		g_prefix_error (error, "using origin %s: ", gs_app_get_origin (app));
 		gs_flatpak_error_convert (error);
-		return FALSE;
+		return NULL;
 	}
 
 	/* any extra bits */
@@ -2780,16 +2780,16 @@ gs_flatpak_create_runtime_repo (GsFlatpak *self,
 						GS_UTILS_CACHE_FLAG_WRITEABLE,
 						error);
 	if (cache_fn == NULL)
-		return FALSE;
+		return NULL;
 	if (!gs_plugin_download_file (self->plugin, app_dl, uri, cache_fn, cancellable, error))
-		return FALSE;
+		return NULL;
 
 	/* get GsApp for local file */
 	file = g_file_new_for_path (cache_fn);
 	app = gs_flatpak_app_new_from_repo_file (file, cancellable, error);
 	if (app == NULL) {
 		g_prefix_error (error, "cannot create source from %s: ", cache_fn);
-		return FALSE;
+		return NULL;
 	}
 	gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
@@ -3430,7 +3430,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			g_autoptr(GsApp) app_src = NULL;
 			app_src = gs_flatpak_create_runtime_repo (self, uri, cancellable, error);
 			if (app_src == NULL)
-				return FALSE;
+				return NULL;
 			gs_flatpak_app_set_runtime_repo (app, app_src);
 
 			/* lets install this, so we can get the size */
@@ -3451,7 +3451,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* get extra AppStream data if available */
 	if (!gs_flatpak_refine_appstream (self, app, error))
-		return FALSE;
+		return NULL;
 
 	/* success */
 	return g_steal_pointer (&app);
