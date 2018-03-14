@@ -792,15 +792,14 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* add information specific to store snaps */
 	if (store_snap != NULL) {
-		GPtrArray *screenshots;
-
 		gs_app_set_origin (app, priv->store_name);
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
 
-		screenshots = snapd_snap_get_screenshots (store_snap);
-		if (screenshots != NULL && gs_app_get_screenshots (app)->len == 0) {
+		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS && gs_app_get_screenshots (app)->len == 0) {
+			GPtrArray *screenshots;
 			guint i;
 
+			screenshots = snapd_snap_get_screenshots (store_snap);
 			for (i = 0; i < screenshots->len; i++) {
 				SnapdScreenshot *screenshot = screenshots->pdata[i];
 				const gchar *url;
