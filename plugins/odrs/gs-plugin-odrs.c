@@ -482,14 +482,11 @@ static GPtrArray *
 _gs_app_get_reviewable_ids (GsApp *app)
 {
 	GPtrArray *ids = g_ptr_array_new_with_free_func (g_free);
-#if AS_CHECK_VERSION(0,7,1)
 	GPtrArray *provides = gs_app_get_provides (app);
-#endif
 
 	/* add the main component id */
 	g_ptr_array_add (ids, g_strdup (gs_app_get_id (app)));
 
-#if AS_CHECK_VERSION(0,7,1)
 	/* add any ID provides */
 	for (guint i = 0; i < provides->len; i++) {
 		AsProvide *provide = g_ptr_array_index (provides, i);
@@ -498,7 +495,6 @@ _gs_app_get_reviewable_ids (GsApp *app)
 			g_ptr_array_add (ids, g_strdup (as_provide_get_value (provide)));
 		}
 	}
-#endif
 	return ids;
 }
 
@@ -559,7 +555,6 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 static JsonNode *
 gs_plugin_odrs_get_compat_ids (GsApp *app)
 {
-#if AS_CHECK_VERSION(0,7,1)
 	GPtrArray *provides = gs_app_get_provides (app);
 	g_autoptr(JsonArray) json_array = json_array_new ();
 	g_autoptr(JsonNode) json_node = json_node_new (JSON_NODE_ARRAY);
@@ -575,9 +570,6 @@ gs_plugin_odrs_get_compat_ids (GsApp *app)
 		return NULL;
 	json_node_set_array (json_node, json_array);
 	return g_steal_pointer (&json_node);
-#else
-	return NULL;
-#endif
 }
 
 static GPtrArray *
