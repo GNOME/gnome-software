@@ -527,11 +527,28 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		g_autoptr(GsApp) new = NULL;
 
 		/* is compatible */
+#if AS_CHECK_VERSION(0,7,8)
+		if (!as_utils_unique_id_match (gs_app_get_unique_id (app),
+		                               as_app_get_unique_id (item),
+		                               AS_UNIQUE_ID_MATCH_FLAG_SCOPE |
+		                               AS_UNIQUE_ID_MATCH_FLAG_BUNDLE_KIND |
+		                               /* don't match origin as AsApp appstream
+		                                * origin can differ from package origin */
+		                               AS_UNIQUE_ID_MATCH_FLAG_KIND |
+		                               AS_UNIQUE_ID_MATCH_FLAG_ID |
+		                               AS_UNIQUE_ID_MATCH_FLAG_BRANCH)) {
+			g_debug ("does not match unique ID constraints: %s, %s",
+			         gs_app_get_unique_id (app),
+			         as_app_get_unique_id (item));
+			continue;
+		}
+#else
 		if (!as_utils_unique_id_equal (gs_app_get_unique_id (app),
 					       as_app_get_unique_id (item))) {
 			g_debug ("does not match unique ID constraints");
 			continue;
 		}
+#endif
 
 		/* does the app have an installation method */
 		if (as_app_get_pkgname_default (item) == NULL &&
