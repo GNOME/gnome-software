@@ -338,8 +338,13 @@ gs_search_page_set_text (GsSearchPage *self, const gchar *value)
 {
 	if (value == self->value)
 		return;
+	if (g_strcmp0 (value, self->value) == 0)
+		return;
+
 	g_free (self->value);
 	self->value = g_strdup (value);
+
+	gs_search_page_load (self);
 }
 
 static void
@@ -369,8 +374,6 @@ gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
-
-	gs_search_page_load (self);
 }
 
 static void
