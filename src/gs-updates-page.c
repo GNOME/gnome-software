@@ -1510,7 +1510,8 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 
 	if (self->cancellable_upgrade_download != NULL)
 		g_object_unref (self->cancellable_upgrade_download);
-	self->cancellable_upgrade_download = g_cancellable_new ();
+	self->cancellable_upgrade_download = g_object_ref (gs_app_get_cancellable (app));
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					 "app", app,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
@@ -1782,6 +1783,15 @@ static void
 gs_updates_page_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
                                    GsUpdatesPage *self)
 {
+	/* we need to check if the cancellable needs to be reassigned to cover the
+	 * case where the cancel button shows up because the upgrade GsApp changed to
+	 * the "installing" state without the user having clicked "download" (for
+	 * example in automatic downloads) */
+	if (self->cancellable_upgrade_download == NULL) {
+		GsApp *app = gs_upgrade_banner_get_app (upgrade_banner);
+		self->cancellable_upgrade_download = g_object_ref (gs_app_get_cancellable (app));
+	}
+
 	g_cancellable_cancel (self->cancellable_upgrade_download);
 }
 
