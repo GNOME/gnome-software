@@ -4020,6 +4020,7 @@ gs_app_get_cancellable (GsApp *app)
 {
 	g_autoptr(GCancellable) cancellable = NULL;
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	if (priv->cancellable == NULL || g_cancellable_is_cancelled (priv->cancellable)) {
 		cancellable = g_cancellable_new ();
