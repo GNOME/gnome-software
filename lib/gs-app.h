@@ -381,5 +381,6 @@ void		 gs_app_set_permissions		(GsApp		*app,
 GsAppPermissions gs_app_get_update_permissions	(GsApp		*app);
 void		 gs_app_set_update_permissions	(GsApp		*app,
 						 GsAppPermissions update_permissions);
+GCancellable	*gs_app_get_cancellable		(GsApp		*app);
 
 G_END_DECLS
