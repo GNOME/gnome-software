@@ -410,7 +410,10 @@ get_app_section (GsApp *app)
 			section = GS_UPDATE_DIALOG_SECTION_UPDATES;
 		break;
 	default:
-		g_assert_not_reached ();
+		g_warning ("get_app_section: unhandled state %s for %s",
+		           as_app_state_to_string (gs_app_get_state (app)),
+		           gs_app_get_unique_id (app));
+		section = GS_UPDATE_DIALOG_SECTION_UPDATES;
 		break;
 	}
 
