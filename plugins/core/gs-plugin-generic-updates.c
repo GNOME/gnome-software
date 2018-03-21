@@ -96,6 +96,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* do we have any packages left that are not apps? */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app_tmp = gs_app_list_index (list, i);
+		if (gs_app_has_quirk (app_tmp, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
 		if (gs_plugin_generic_updates_merge_os_update (app_tmp))
 			gs_app_list_add (os_updates, app_tmp);
 	}
