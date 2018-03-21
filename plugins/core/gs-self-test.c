@@ -104,6 +104,83 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	g_assert (app3 == app);
 }
 
+static void
+gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	GsApp *os_update;
+	GPtrArray *related;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsPluginJob) plugin_job2 = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app1 = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsApp) app_wildcard = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) list_wildcard = NULL;
+
+	/* drop all caches */
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* create a list with generic apps */
+	list = gs_app_list_new ();
+	app1 = gs_app_new ("package1");
+	app2 = gs_app_new ("package2");
+	gs_app_set_kind (app1, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app2, AS_APP_KIND_GENERIC);
+	gs_app_set_state (app1, AS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app2, AS_APP_STATE_UPDATABLE);
+	gs_app_add_source (app1, "package1");
+	gs_app_add_source (app2, "package2");
+	gs_app_list_add (list, app1);
+	gs_app_list_add (list, app2);
+
+	/* refine to make the generic-updates plugin merge them into a single OsUpdate item */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+	                                 "list", list,
+	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+	                                 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* make sure there is one entry, the os update */
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	os_update = gs_app_list_index (list, 0);
+
+	/* make sure the os update is valid */
+	g_assert_cmpstr (gs_app_get_id (os_update), ==, "org.gnome.Software.OsUpdate");
+	g_assert_cmpint (gs_app_get_kind (os_update), ==, AS_APP_KIND_OS_UPDATE);
+	g_assert (gs_app_has_quirk (os_update, AS_APP_QUIRK_IS_PROXY));
+
+	/* must have two related apps, the ones we added earlier */
+	related = gs_app_get_related (os_update);
+	g_assert_cmpint (related->len, ==, 2);
+
+	/* another test to make sure that we don't get an OsUpdate item created for wildcard apps */
+	list_wildcard = gs_app_list_new ();
+	app_wildcard = gs_app_new ("nosuchapp.desktop");
+	gs_app_add_quirk (app_wildcard, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_set_kind (app_wildcard, AS_APP_KIND_GENERIC);
+	gs_app_list_add (list_wildcard, app_wildcard);
+	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+	                                  "list", list_wildcard,
+	                                  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS,
+	                                  NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job2, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* no OsUpdate item created */
+	for (guint i = 0; i < gs_app_list_length (list_wildcard); i++) {
+		GsApp *app_tmp = gs_app_list_index (list_wildcard, i);
+		g_assert_cmpint (gs_app_get_kind (app_tmp), !=, AS_APP_KIND_OS_UPDATE);
+		g_assert (!gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY));
+	}
+}
+
 int
 main (int argc, char **argv)
 {
@@ -115,6 +192,7 @@ main (int argc, char **argv)
 	const gchar *xml;
 	const gchar *whitelist[] = {
 		"appstream",
+		"generic-updates",
 		"icons",
 		"os-release",
 		NULL
@@ -180,6 +258,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/core/os-release",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_core_os_release_func);
+	g_test_add_data_func ("/gnome-software/plugins/core/generic-updates",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_core_generic_updates_func);
 	return g_test_run ();
 }
 
