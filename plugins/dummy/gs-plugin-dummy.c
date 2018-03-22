@@ -384,6 +384,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_update_details (app, "Fix several memory leaks.");
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	gs_app_add_source (app, "libvirt-glib-devel");
 	gs_app_add_source_id (app, "libvirt-glib-devel;0.0.1;noarch;fedora");
@@ -398,6 +400,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_update_details (app, "Do not crash when using libvirt.");
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_add_source (app, "chiron-libs");
 	gs_app_add_source_id (app, "chiron-libs;0.0.1;i386;updates-testing");
