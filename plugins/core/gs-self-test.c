@@ -128,6 +128,10 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	app2 = gs_app_new ("package2");
 	gs_app_set_kind (app1, AS_APP_KIND_GENERIC);
 	gs_app_set_kind (app2, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app1, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_bundle_kind (app2, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app1, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_scope (app2, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app1, AS_APP_STATE_UPDATABLE);
 	gs_app_set_state (app2, AS_APP_STATE_UPDATABLE);
 	gs_app_add_source (app1, "package1");
