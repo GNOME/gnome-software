@@ -33,10 +33,16 @@ gs_plugin_initialize (GsPlugin *plugin)
 static gboolean
 gs_plugin_generic_updates_merge_os_update (GsApp *app)
 {
+	/* this is only for grouping system-installed packages */
+	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE ||
+	    gs_app_get_scope (app) != AS_APP_SCOPE_SYSTEM)
+		return FALSE;
+
 	if (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)
 		return TRUE;
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return TRUE;
+
 	return FALSE;
 }
 
