@@ -320,6 +320,8 @@ make_app (GVariant *variant)
 	gs_app_set_management_plugin (app, "rpm-ostree");
 	gs_app_set_size_download (app, 0);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 
 	details = g_variant_get_child_value (variant, 2);
 	g_return_val_if_fail (details != NULL, NULL);
