@@ -23,8 +23,10 @@
     <!-- The system root path -->
     <property name="Path" type="s" access="read"/>
 
-    <!-- The values are (method-name, sender-name) -->
+    <!-- The values are (method-name, sender-name, object path) -->
     <property name="ActiveTransaction" type="(sss)" access="read"/>
+    <!-- A DBus address - connect to it to access its methods -->
+    <property name="ActiveTransactionPath" type="s" access="read"/>
 
     <!-- (Currently) optional method to denote the client plans
          to either invoke methods on the daemon, or monitor status.
@@ -47,6 +49,9 @@
 
     <method name="ReloadConfig">
     </method>
+
+    <!-- none, check -->
+    <property name="AutomaticUpdatePolicy" type="s" access="read"/>
 
     <method name="CreateOSName">
       <arg type="s" name="name"/>
@@ -74,12 +79,36 @@
        'timestamp' (type 't')
        'origin' (type 's')
        'signatures' (type 'av')
+       'gpg-enabled' (type 'b')
+       'ref-has-new-commit' (type 'b')
+          TRUE if 'checksum' refers to a new base commit we're not booted in.
+       'rpm-diff' (type 'a{sv}')
+          'upgraded' (type 'a(us(ss)(ss))')
+          'downgraded' (type 'a(us(ss)(ss))')
+          'removed' (type 'a(usss)')
+          'added' (type 'a(usss)')
+       'advisories' (type 'a(suuasa{sv})')
     -->
     <property name="CachedUpdate" type="a{sv}" access="read"/>
     <property name="HasCachedUpdateRpmDiff" type="b" access="read"/>
 
-    <!-- NONE, DIFF, PREPARE, REBOOT -->
-    <property name="AutomaticUpdatePolicy" type="s" access="read"/>
+    <!-- Available options:
+         "mode" (type 's')
+            One of auto, none, check. Defaults to auto, which follows configured
+            policy (available in AutomaticUpdatePolicy property).
+         "output-to-self" (type 'b')
+            Whether output should go to the daemon itself rather than the
+            transaction. Defaults to TRUE.
+
+         If automatic updates are not enabled, @enabled will be FALSE and
+         @transaction_address will be the empty string.
+    -->
+    <method name="AutomaticUpdateTrigger">
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="b" name="enabled" direction="out"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
     <property name="Name" type="s" access="read"/>
 
     <method name="GetDeploymentsRpmDiff">
@@ -218,8 +247,31 @@
       <arg type="s" name="transaction_address" direction="out"/>
     </method>
 
+   <!-- Available options:
+        "reboot" (type 'b')
+    -->
+    <method name="KernelArgs">
+      <arg type="s" name="existing_kernel_arg_string"/>
+      <arg type="as" name="kernel_args_added" direction="in"/>
+      <arg type="as" name="kernel_args_replaced" direction="in"/>
+      <arg type="as" name="kernel_args_removed" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <method name="GetDeploymentBootConfig">
+      <arg type="s" name="deployid" />
+      <arg type="b" name="is_pending" direction="in"/>
+      <arg type="a{sv}" name="bootconfig" direction="out"/>
+    </method>
+
     <method name="Cleanup">
       <arg type="as" name="elements" direction="in"/>
+      <arg type="s" name="transaction_address" direction="out"/>
+    </method>
+
+    <method name="RefreshMd">
+      <arg type="a{sv}" name="options" direction="in"/>
       <arg type="s" name="transaction_address" direction="out"/>
     </method>
 
@@ -229,6 +281,10 @@
          "install-packages" (type 'as')
          "uninstall-packages" (type 'as')
          "install-local-packages" (type 'ah')
+         "override-remove-packages" (type 'as')
+         "override-reset-packages" (type 'as')
+         "override-replace-packages" (type 'as')
+         "override-replace-local-packages" (type 'ah')
 
          Available options:
          "reboot" (type 'b')
@@ -244,8 +300,20 @@
             Do not pull a base layer from the remote. Not valid if
             either "set-refspec" or "set-revision" is specified.
          "dry-run" (type 'b')
-            Stop short of deploying the new tree. If
-            layering packages, the pkg diff is printed.
+            Stop short of deploying the new tree. If layering packages,
+            the pkg diff is printed but packages are not downloaded or
+            imported.
+         "no-overrides" (type 'b')
+            Remove all active overrides. Not valid if any override
+            modifiers are specified.
+         "cache-only" (type 'b')
+            Do not update rpmmd repo metadata cache or ostree refspec.
+            Not valid if "download-only" is specified.
+         "download-only" (type 'b')
+            Update rpmmd repo metadata cache and ostree refspec. Do not
+            perform any deployments. This is like "dry-run" except that
+            the latter does not download and import packages. Not valid
+            if "cache-only" or "dry-run" is specified.
     -->
     <method name="UpdateDeployment">
       <arg type="a{sv}" name="modifiers" direction="in"/>
@@ -272,6 +340,9 @@
   </interface>
 
   <interface name="org.projectatomic.rpmostree1.Transaction">
+
+    <!-- A single-line human-readable string -->
+    <property name="Title" type="s" access="read"/>
 
     <!-- Yes, we can. -->
     <method name="Cancel"/>
