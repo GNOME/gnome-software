@@ -6,6 +6,9 @@ compiled_schemas = gnome.compile_schemas()
 install_data('org.gnome.software.gschema.xml',
              install_dir : 'share/glib-2.0/schemas')
 
+install_data('org.gnome.Software.desktop',
+             install_dir : 'share/ubuntu/applications')
+
 if get_option('external_appstream')
   # replace @libexecdir@
   conf_data = configuration_data()
