@@ -253,9 +253,13 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		package = g_ptr_array_index (array_filtered, i);
 
-		app = gs_app_new (NULL);
-		gs_app_add_source (app, pk_package_get_name (package));
-		gs_app_add_source_id (app, pk_package_get_id (package));
+		app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
+		if (app == NULL) {
+			app = gs_app_new (NULL);
+			gs_app_add_source (app, pk_package_get_name (package));
+			gs_app_add_source_id (app, pk_package_get_id (package));
+			gs_plugin_cache_add (plugin, pk_package_get_id (package), app);
+		}
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
 				 pk_package_get_name (package));
