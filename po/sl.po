@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2018-03-10 17:20+0000\n"
-"PO-Revision-Date: 2018-03-10 20:11+0100\n"
+"PO-Revision-Date: 2018-03-27 20:51+0200\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
 "%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Generator: Poedit 2.0.4\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -94,22 +94,16 @@ msgstr ""
 "To je seznam skladnih projektov, ki so na voljo, kot so GNOME, KDE in XFCE."
 
 #: data/org.gnome.software.gschema.xml:10
-#, fuzzy
-#| msgid "Whether to manage updates in GNOME Software"
 msgid "Whether to manage updates and upgrades in GNOME Software"
 msgstr "Ali naj bodo posodobitve upravljane s privzetim programom GNOME"
 
 #: data/org.gnome.software.gschema.xml:11
-#, fuzzy
-#| msgid ""
-#| "If disabled, GNOME Software will hide the updates panel and not perform "
-#| "any automatic updates actions."
 msgid ""
 "If disabled, GNOME Software will hide the updates panel, not perform any "
 "automatic updates actions or prompt for upgrades."
 msgstr ""
 "Če možnost ni omogočena, program skrije okno posodobitev in ne izvaja "
-"samodejnih posodobitev."
+"samodejnih posodobitev, niti ne obvešča o novostih."
 
 #: data/org.gnome.software.gschema.xml:15
 msgid "Whether to automatically download updates"
@@ -219,16 +213,12 @@ msgstr ""
 "Mnenja uporabnikov, s karmo, manjšo od te vrednosti, ne bodo uporabljena."
 
 #: data/org.gnome.software.gschema.xml:82
-#, fuzzy
-#| msgid "A list of official sources that should not be considered 3rd party"
 msgid "A list of official repositories that should not be considered 3rd party"
-msgstr "Seznam uradnih virov, vodenih kot programska oprema tretjih oseb"
+msgstr "Seznam uradnih virov, opredeljenih kot programska oprema tretjih oseb"
 
 #: data/org.gnome.software.gschema.xml:86
-#, fuzzy
-#| msgid "A list of official sources that should be considered free software"
 msgid "A list of official repositories that should be considered free software"
-msgstr "Seznam uradnih virov, vodenih kot prosta programska oprema"
+msgstr "Seznam uradnih virov, opredeljenih kot prosta programska oprema"
 
 #: data/org.gnome.software.gschema.xml:90
 msgid ""
@@ -246,8 +236,6 @@ msgid "Show the folder management UI"
 msgstr "Pokaži vmesnik upravljanja map"
 
 #: data/org.gnome.software.gschema.xml:102
-#, fuzzy
-#| msgid "Allow access to the Software Sources dialog"
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Dovoli dostop do nastavitev programskih virov"
 
@@ -260,8 +248,6 @@ msgid "Show some UI elements informing the user that an app is non-free"
 msgstr "Pokaži vidne oznake, ki kažejo, da programska oprema ni brezplačna"
 
 #: data/org.gnome.software.gschema.xml:114
-#, fuzzy
-#| msgid "Show the prompt to install nonfree software sources"
 msgid "Show the prompt to install nonfree software repositories"
 msgstr "Pokaži potrditveno okno pred nameščanjem plačljive programske opreme"
 
@@ -346,8 +332,6 @@ msgstr "Iskanje"
 
 #. button in the info bar
 #: src/gnome-software.ui:350 src/gs-repos-dialog.ui:6 src/gs-repos-dialog.ui:20
-#, fuzzy
-#| msgid "Software Sources"
 msgid "Software Repositories"
 msgstr "Viri programske opreme"
 
@@ -729,10 +713,8 @@ msgstr "Ali naj bo nameščena programska oprema tretjih virov?"
 
 #. TRANSLATORS: window title
 #: src/gs-common.c:214
-#, fuzzy
-#| msgid "Enable Third-Party Software Source?"
 msgid "Enable Third-Party Software Repository?"
-msgstr "Ali naj bodo omogočeni tudi programski viri tretje roke?"
+msgstr "Ali naj bodo omogočeni tudi programski viri tretjih oseb?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -756,8 +738,6 @@ msgid "%s is provided by “%s”."
 msgstr "Program %s ponuja ponudnik “%s”."
 
 #: src/gs-common.c:249
-#, fuzzy
-#| msgid "This software source must be enabled to continue installation."
 msgid "This software repository must be enabled to continue installation."
 msgstr "Ta programski vir mora biti omogočen za nadaljevanje namestitve."
 
@@ -1038,10 +1018,8 @@ msgstr "Izrecna sklicevanja na določene blagovne znamke ali izdelke"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:219
-#, fuzzy
-#| msgid "Players are encouraged to purchase specific real-world items"
 msgid "Users are encouraged to purchase specific real-world items"
-msgstr "Igralce spodbuja k nakupu določenih pravih predmetov"
+msgstr "Uporabnike spodbuja k nakupu določenih fizičnih predmetov"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:222
@@ -1072,10 +1050,8 @@ msgstr "Možnost uporabe pravega denarja"
 #. v1.1
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:237
-#, fuzzy
-#| msgid "Players are encouraged to purchase specific real-world items"
 msgid "Users are encouraged to donate real money"
-msgstr "Igralce spodbuja k nakupu določenih pravih predmetov"
+msgstr "Uporabnike spodbuja k donaciji uradnih denarnih valut"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:240
@@ -1084,45 +1060,33 @@ msgstr "Možnost uporabe pravega denarja znotraj igre"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:243
-#, fuzzy
-#| msgid "No way to chat with other players"
 msgid "No way to chat with other users"
-msgstr "Ni možnosti klepeta z drugimi igralci."
+msgstr "Ni možnosti klepeta z drugimi uporabniki"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:246
-#, fuzzy
-#| msgid "Player-to-player game interactions without chat functionality"
 msgid "User-to-user game interactions without chat functionality"
-msgstr "Interakcije med igralci znotraj igre brez funkcije za klepet"
+msgstr "Interakcije med uporabniki znotraj igre brez funkcije za klepet"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:249
-#, fuzzy
-#| msgid "Uncontrolled chat functionality between players"
 msgid "Moderated chat functionality between users"
-msgstr "Nenadzorovana možnost klepeta med igralci"
+msgstr "Nadzorovana možnost klepeta med uporabniki"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:252
-#, fuzzy
-#| msgid "Uncontrolled chat functionality between players"
 msgid "Uncontrolled chat functionality between users"
-msgstr "Nenadzorovana možnost klepeta med igralci"
+msgstr "Nenadzorovana možnost klepeta med uporabniki"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:255
-#, fuzzy
-#| msgid "No way to talk with other players"
 msgid "No way to talk with other users"
-msgstr "Ni možnosti pogovora z drugimi igralci."
+msgstr "Ni možnosti lepeta ali pogovora z drugimi uporabniki"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:258
-#, fuzzy
-#| msgid "Uncontrolled audio or video chat functionality between players"
 msgid "Uncontrolled audio or video chat functionality between users"
-msgstr "Nenadzorovana možnost zvočnega ali video klepeta med igralci"
+msgstr "Nenadzorovana možnost zvočnega ali video klepeta med uporabniki"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:261
@@ -1154,10 +1118,8 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:276
-#, fuzzy
-#| msgid "Sharing user information with 3rd parties"
 msgid "Sharing information that lets others identify the user"
-msgstr "Objavljanje podrobnosti o uporabniku tretjim osebam"
+msgstr "Objavljanje podrobnosti o uporabniku"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:279
@@ -1171,17 +1133,13 @@ msgstr "Objavljanje trenutnega mesta drugim uporabnikom"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:287
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "No references to homosexuality"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Brez omenjanja homoseksualnosti"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:290
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "Indirect references to homosexuality"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Posredno namigovanje na homoseksualnost"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:293
@@ -1195,24 +1153,18 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:299
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "No references to prostitution"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Brez omenjanja prostitucije"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:302
-#, fuzzy
-#| msgid "Provocative references or depictions"
 msgid "Indirect references to prostitution"
-msgstr "Izzivalno obnašanje ali upodobljanje"
+msgstr "Posredno namigovanje na prostitucijo"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:305
-#, fuzzy
-#| msgid "Provocative references or depictions"
 msgid "Direct references of prostitution"
-msgstr "Izzivalno obnašanje ali upodobljanje"
+msgstr "Neposredno omenjanje prostitucije"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:308
@@ -1221,24 +1173,18 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:311
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "No references to adultery"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Brez omenjanja nezvestobe"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:314
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "Indirect references to adultery"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Posredno namigovanje na nezvestobo"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:317
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "Direct references of adultery"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Neposredno omenjanje nezvestobe"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:320
@@ -1247,10 +1193,8 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:323
-#, fuzzy
-#| msgid "No sexual violence"
 msgid "No sexualized characters"
-msgstr "Brez spolnega nasilja"
+msgstr "Brez izrazitega spolnega izražanja"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:326
@@ -1287,12 +1231,12 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:344
 msgid "No visible dead human remains"
-msgstr ""
+msgstr "Ni vidnih delov mrtvih ljudi"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:347
 msgid "Visible dead human remains"
-msgstr ""
+msgstr "Vidni deli mrtvih ljudi"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:350
@@ -1306,10 +1250,8 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:356
-#, fuzzy
-#| msgid "No references to alcohol"
 msgid "No references to slavery"
-msgstr "Brez omenjanja alkoholnih pijač"
+msgstr "Brez omenjanja suženjstva"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:359
@@ -1444,10 +1386,8 @@ msgstr ""
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
 #: src/gs-details-page.c:485
-#, fuzzy
-#| msgid "Setting up updates…"
 msgid "Pending update…"
-msgstr "poteka nastavljanje posodobitev ..."
+msgstr "Poteka nastavljanje posodobitev ..."
 
 #. TRANSLATORS: this is the warning box
 #: src/gs-details-page.c:802
@@ -1539,26 +1479,18 @@ msgid "No screenshot provided"
 msgstr "Ni pripadajoče zaslonske slike"
 
 #: src/gs-details-page.ui:492
-#, fuzzy
-#| msgid "Software Source Included"
 msgid "Software Repository Included"
 msgstr "Programski vir je vključen"
 
 #: src/gs-details-page.ui:493
-#, fuzzy
-#| msgid ""
-#| "This application includes a software source which provides updates, as "
-#| "well as access to other software."
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
 msgstr ""
-"Program vključuje tudi programski vir z posodobitvami in dostopom do dodatne "
+"Program vključuje tudi programski vir s posodobitvami in dostopom do dodatne "
 "programske opreme."
 
 #: src/gs-details-page.ui:506
-#, fuzzy
-#| msgid "No Software Source Included"
 msgid "No Software Repository Included"
 msgstr "Ni vključenega programskega vira"
 
@@ -2240,8 +2172,9 @@ msgstr "Priporočeni pisarniški programi"
 
 #. TRANSLATORS: this is the third party repositories info bar.
 #: src/gs-overview-page.c:890 src/gs-repos-dialog.c:777
+#, fuzzy
 msgid "Access additional software from selected third party sources."
-msgstr ""
+msgstr "Dostop do dodatne programske opreme prek izbranih virov tretjih oseb."
 
 #. TRANSLATORS: this is the third party repositories info bar.
 #: src/gs-overview-page.c:894 src/gs-repos-dialog.c:781
@@ -2252,8 +2185,8 @@ msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
 msgstr ""
-"Lastniška programska oprema ima omejitve uporabe in dostopa do programske "
-"kode."
+"Nekateri izmed programskih virov so lastniški in imajo zato omejitve na "
+"uporabo, izmenjavo in dostop do izvorne kode."
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
@@ -2594,10 +2527,8 @@ msgstr "Nameščanje"
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
 #: src/gs-repo-row.c:158
-#, fuzzy
-#| msgid "Enable"
 msgid "Enabled"
-msgstr "Omogoči"
+msgstr "Omogočeno"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is disabled.
@@ -3357,7 +3288,7 @@ msgstr "Pokaži podrobnosti"
 #. TRANSLATORS: Notification title when we've done a distro upgrade
 #: src/gs-update-monitor.c:659
 msgid "System Upgrade Complete"
-msgstr ""
+msgstr "Sistemska posodobitev je končana"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
