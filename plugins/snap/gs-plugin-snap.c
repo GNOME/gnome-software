@@ -264,7 +264,6 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 	if (client == NULL)
 		return NULL;
 
-	g_printerr ("find %u %s %s\n", flags, section, query);
 	snaps = snapd_client_find_section_sync (client, flags, section, query, NULL, cancellable, error);
 	if (snaps == NULL) {
 		snapd_error_convert (error);
