@@ -73,15 +73,17 @@ get_proxy_http (GsPlugin *plugin)
 	}
 
 	/* make PackageKit proxy string */
-	string = g_string_new (host);
+	string = g_string_new ("");
+	if (username != NULL || password != NULL) {
+		if (username != NULL)
+			g_string_append_printf (string, "%s", username);
+		if (password != NULL)
+			g_string_append_printf (string, ":%s", password);
+		g_string_append (string, "@");
+	}
+	g_string_append (string, host);
 	if (port > 0)
 		g_string_append_printf (string, ":%i", port);
-	if (username != NULL && password != NULL)
-		g_string_append_printf (string, "@%s:%s", username, password);
-	else if (username != NULL)
-		g_string_append_printf (string, "@%s", username);
-	else if (password != NULL)
-		g_string_append_printf (string, "@:%s", password);
 	return g_string_free (string, FALSE);
 }
 
