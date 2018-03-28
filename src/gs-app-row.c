@@ -209,11 +209,11 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		gtk_style_context_remove_class (context, "destructive-action");
 	} else {
 		switch (gs_app_get_state (priv->app)) {
-		case AS_APP_STATE_UPDATABLE:
 		case AS_APP_STATE_INSTALLED:
-		case AS_APP_STATE_UPDATABLE_LIVE:
 			gtk_style_context_add_class (context, "destructive-action");
 			break;
+		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
 		default:
 			gtk_style_context_remove_class (context, "destructive-action");
 			break;
