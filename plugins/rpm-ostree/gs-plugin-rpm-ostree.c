@@ -364,6 +364,29 @@ make_app (GVariant *variant)
 	return g_steal_pointer (&app);
 }
 
+static GVariant *
+make_rpmostree_options_variant (gboolean reboot,
+                                gboolean allow_downgrade,
+                                gboolean cache_only,
+                                gboolean download_only,
+                                gboolean skip_purge,
+                                gboolean no_pull_base,
+                                gboolean dry_run,
+                                gboolean no_overrides)
+{
+	GVariantDict dict;
+	g_variant_dict_init (&dict, NULL);
+	g_variant_dict_insert (&dict, "reboot", "b", reboot);
+	g_variant_dict_insert (&dict, "allow-downgrade", "b", allow_downgrade);
+	g_variant_dict_insert (&dict, "cache-only", "b", cache_only);
+	g_variant_dict_insert (&dict, "download-only", "b", download_only);
+	g_variant_dict_insert (&dict, "skip-purge", "b", skip_purge);
+	g_variant_dict_insert (&dict, "no-pull-base", "b", no_pull_base);
+	g_variant_dict_insert (&dict, "dry-run", "b", dry_run);
+	g_variant_dict_insert (&dict, "no-overrides", "b", no_overrides);
+	return g_variant_ref_sink (g_variant_dict_end (&dict));
+}
+
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
                    guint cache_age,
@@ -375,11 +398,23 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
 		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GVariant) options = NULL;
 
-		if (!gs_rpmostree_os_call_download_update_rpm_diff_sync (priv->os_proxy,
-		                                                         &transaction_address,
-		                                                         cancellable,
-		                                                         error)) {
+		options = make_rpmostree_options_variant (FALSE,  /* reboot */
+		                                          FALSE,  /* allow-downgrade */
+		                                          FALSE,  /* cache-only */
+		                                          TRUE,   /* download-only */
+		                                          FALSE,  /* skip-purge */
+		                                          FALSE,  /* no-pull-base */
+		                                          FALSE,  /* dry-run */
+		                                          FALSE); /* no-overrides */
+		if (!gs_rpmostree_os_call_upgrade_sync (priv->os_proxy,
+		                                        options,
+		                                        NULL /* fd list */,
+		                                        &transaction_address,
+		                                        NULL /* fd list out */,
+		                                        cancellable,
+		                                        error)) {
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
