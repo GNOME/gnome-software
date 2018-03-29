@@ -303,16 +303,14 @@ out:
 }
 
 static GsApp *
-make_app (GVariant *variant)
+app_from_modified_pkg_variant (GVariant *variant)
 {
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GVariant) details = NULL;
-	const char *old_name, *old_evr, *old_arch;
-	const char *new_name, *new_evr, *new_arch;
-	gboolean have_old = FALSE;
-	gboolean have_new = FALSE;
+	const char *name;
+	const char *old_evr, *old_arch;
+	const char *new_evr, *new_arch;
 
-	app = gs_app_new (NULL);
+	g_variant_get (variant, "(us(ss)(ss))", NULL /* type*/, &name, &old_evr, &old_arch, &new_evr, &new_arch);
 
 	/* create new app */
 	app = gs_app_new (NULL);
@@ -323,42 +321,51 @@ make_app (GVariant *variant)
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 
-	details = g_variant_get_child_value (variant, 2);
-	g_return_val_if_fail (details != NULL, NULL);
+	/* update or downgrade */
+	gs_app_add_source (app, name);
+	gs_app_set_version (app, old_evr);
+	gs_app_set_update_version (app, new_evr);
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 
-	have_old = g_variant_lookup (details,
-	                             "PreviousPackage", "(&s&s&s)",
-	                             &old_name, &old_evr, &old_arch);
+	g_debug ("!%s-%s-%s\n", name, old_evr, old_arch);
+	g_debug ("=%s-%s-%s\n", name, new_evr, new_arch);
 
-	have_new = g_variant_lookup (details,
-	                             "NewPackage", "(&s&s&s)",
-	                             &new_name, &new_evr, &new_arch);
+	return g_steal_pointer (&app);
+}
 
-	if (have_old && have_new) {
-		g_assert (g_strcmp0 (old_name, new_name) == 0);
+static GsApp *
+app_from_single_pkg_variant (GVariant *variant, gboolean addition)
+{
+	g_autoptr(GsApp) app = NULL;
+	const char *name;
+	const char *evr;
+	const char *arch;
 
-		/* update */
-		gs_app_add_source (app, old_name);
-		gs_app_set_version (app, old_evr);
-		gs_app_set_update_version (app, new_evr);
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	g_variant_get (variant, "(usss)", NULL /* type*/, &name, &evr, &arch);
 
-		g_print ("!%s-%s-%s\n", old_name, old_evr, old_arch);
-		g_print ("=%s-%s-%s\n", new_name, new_evr, new_arch);
-	} else if (have_old) {
-		/* removal */
-		gs_app_add_source (app, old_name);
-		gs_app_set_version (app, old_evr);
-		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+	/* create new app */
+	app = gs_app_new (NULL);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+	gs_app_set_management_plugin (app, "rpm-ostree");
+	gs_app_set_size_download (app, 0);
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 
-		g_print ("-%s-%s-%s\n", old_name, old_evr, old_arch);
-	} else if (have_new) {
-		/* install */
-		gs_app_add_source (app, new_name);
-		gs_app_set_version (app, new_evr);
+	if (addition) {
+		/* addition */
+		gs_app_add_source (app, name);
+		gs_app_set_version (app, evr);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
-		g_print ("+%s-%s-%s\n", new_name, new_evr, new_arch);
+		g_debug ("+%s-%s-%s\n", name, evr, arch);
+	} else {
+		/* removal */
+		gs_app_add_source (app, name);
+		gs_app_set_version (app, evr);
+		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+
+		g_debug ("-%s-%s-%s\n", name, evr, arch);
 	}
 
 	return g_steal_pointer (&app);
@@ -438,33 +445,110 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GVariant) result = NULL;
-	g_autoptr(GVariant) details = NULL;
-	GVariantIter iter;
-	GVariant *child;
+	g_autoptr(GVariant) cached_update = NULL;
+	g_autoptr(GVariant) rpm_diff = NULL;
+	const gchar *checksum = NULL;
+	const gchar *version = NULL;
+	g_auto(GVariantDict) cached_update_dict;
 
-	if (!gs_rpmostree_os_call_get_cached_update_rpm_diff_sync (priv->os_proxy,
-	                                                           "",
-	                                                           &result,
-	                                                           &details,
-	                                                           cancellable,
-	                                                           error)) {
-		gs_utils_error_convert_gio (error);
+	cached_update = gs_rpmostree_os_dup_cached_update (priv->os_proxy);
+	g_variant_dict_init (&cached_update_dict, cached_update);
+
+	if (!g_variant_dict_lookup (&cached_update_dict, "checksum", "&s", &checksum)) {
+		g_set_error_literal (error,
+		                     GS_PLUGIN_ERROR,
+		                     GS_PLUGIN_ERROR_INVALID_FORMAT,
+		                     "no 'checksum' in CachedUpdate dict");
 		return FALSE;
 	}
+	if (!g_variant_dict_lookup (&cached_update_dict, "version", "&s", &version)) {
+		g_set_error_literal (error,
+		                     GS_PLUGIN_ERROR,
+		                     GS_PLUGIN_ERROR_INVALID_FORMAT,
+		                     "no 'version' in CachedUpdate dict");
+		return FALSE;
+	}
+	g_debug ("got CachedUpdate version '%s', checksum '%s'", version, checksum);
 
-	if (g_variant_n_children (result) == 0)
-		return TRUE;
+	rpm_diff = g_variant_dict_lookup_value (&cached_update_dict, "rpm-diff", G_VARIANT_TYPE ("a{sv}"));
+	if (rpm_diff != NULL) {
+		GVariantIter iter;
+		GVariant *child;
+		g_autoptr(GVariant) upgraded = NULL;
+		g_autoptr(GVariant) downgraded = NULL;
+		g_autoptr(GVariant) removed = NULL;
+		g_autoptr(GVariant) added = NULL;
+		g_auto(GVariantDict) rpm_diff_dict;
+		g_variant_dict_init (&rpm_diff_dict, rpm_diff);
 
-	/* GVariant format should be a(sua{sv}) */
-	g_variant_iter_init (&iter, result);
-
-	while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-		g_autoptr(GsApp) app = make_app (child);
-		if (app != NULL) {
-			gs_app_list_add (list, app);
+		upgraded = g_variant_dict_lookup_value (&rpm_diff_dict, "upgraded", G_VARIANT_TYPE ("a(us(ss)(ss))"));
+		if (upgraded == NULL) {
+			g_set_error_literal (error,
+			                     GS_PLUGIN_ERROR,
+			                     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			                     "no 'upgraded' in rpm-diff dict");
+			return FALSE;
 		}
-		g_variant_unref (child);
+		downgraded = g_variant_dict_lookup_value (&rpm_diff_dict, "downgraded", G_VARIANT_TYPE ("a(us(ss)(ss))"));
+		if (downgraded == NULL) {
+			g_set_error_literal (error,
+			                     GS_PLUGIN_ERROR,
+			                     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			                     "no 'downgraded' in rpm-diff dict");
+			return FALSE;
+		}
+		removed = g_variant_dict_lookup_value (&rpm_diff_dict, "removed", G_VARIANT_TYPE ("a(usss)"));
+		if (removed == NULL) {
+			g_set_error_literal (error,
+			                     GS_PLUGIN_ERROR,
+			                     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			                     "no 'removed' in rpm-diff dict");
+			return FALSE;
+		}
+		added = g_variant_dict_lookup_value (&rpm_diff_dict, "added", G_VARIANT_TYPE ("a(usss)"));
+		if (added == NULL) {
+			g_set_error_literal (error,
+			                     GS_PLUGIN_ERROR,
+			                     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			                     "no 'added' in rpm-diff dict");
+			return FALSE;
+		}
+
+		/* iterate over all upgraded packages and add them */
+		g_variant_iter_init (&iter, upgraded);
+		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
+			g_autoptr(GsApp) app = app_from_modified_pkg_variant (child);
+			if (app != NULL)
+				gs_app_list_add (list, app);
+			g_variant_unref (child);
+		}
+
+		/* iterate over all downgraded packages and add them */
+		g_variant_iter_init (&iter, downgraded);
+		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
+			g_autoptr(GsApp) app = app_from_modified_pkg_variant (child);
+			if (app != NULL)
+				gs_app_list_add (list, app);
+			g_variant_unref (child);
+		}
+
+		/* iterate over all removed packages and add them */
+		g_variant_iter_init (&iter, removed);
+		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
+			g_autoptr(GsApp) app = app_from_single_pkg_variant (child, FALSE);
+			if (app != NULL)
+				gs_app_list_add (list, app);
+			g_variant_unref (child);
+		}
+
+		/* iterate over all added packages and add them */
+		g_variant_iter_init (&iter, added);
+		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
+			g_autoptr(GsApp) app = app_from_single_pkg_variant (child, TRUE);
+			if (app != NULL)
+				gs_app_list_add (list, app);
+			g_variant_unref (child);
+		}
 	}
 
 	return TRUE;
