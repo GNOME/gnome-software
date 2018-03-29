@@ -455,20 +455,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	cached_update = gs_rpmostree_os_dup_cached_update (priv->os_proxy);
 	g_variant_dict_init (&cached_update_dict, cached_update);
 
-	if (!g_variant_dict_lookup (&cached_update_dict, "checksum", "&s", &checksum)) {
-		g_set_error_literal (error,
-		                     GS_PLUGIN_ERROR,
-		                     GS_PLUGIN_ERROR_INVALID_FORMAT,
-		                     "no 'checksum' in CachedUpdate dict");
-		return FALSE;
-	}
-	if (!g_variant_dict_lookup (&cached_update_dict, "version", "&s", &version)) {
-		g_set_error_literal (error,
-		                     GS_PLUGIN_ERROR,
-		                     GS_PLUGIN_ERROR_INVALID_FORMAT,
-		                     "no 'version' in CachedUpdate dict");
-		return FALSE;
-	}
+	if (!g_variant_dict_lookup (&cached_update_dict, "checksum", "&s", &checksum))
+		return TRUE;
+	if (!g_variant_dict_lookup (&cached_update_dict, "version", "&s", &version))
+		return TRUE;
+
 	g_debug ("got CachedUpdate version '%s', checksum '%s'", version, checksum);
 
 	rpm_diff = g_variant_dict_lookup_value (&cached_update_dict, "rpm-diff", G_VARIANT_TYPE ("a{sv}"));
