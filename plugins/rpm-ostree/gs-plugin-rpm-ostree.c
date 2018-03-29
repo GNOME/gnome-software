@@ -436,6 +436,34 @@ gs_plugin_refresh (GsPlugin *plugin,
 		}
 	}
 
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
+		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GVariant) options = NULL;
+		GVariantDict dict;
+
+		g_variant_dict_init (&dict, NULL);
+		g_variant_dict_insert (&dict, "mode", "s", "check");
+		options = g_variant_ref_sink (g_variant_dict_end (&dict));
+
+		if (!gs_rpmostree_os_call_automatic_update_trigger_sync (priv->os_proxy,
+		                                                         options,
+		                                                         NULL,
+		                                                         &transaction_address,
+		                                                         cancellable,
+		                                                         error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+
+		if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+		                                                 transaction_address,
+		                                                 cancellable,
+		                                                 error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+	}
+
 	return TRUE;
 }
 
