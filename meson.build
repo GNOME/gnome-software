@@ -154,7 +154,7 @@ endif
 
 if get_option('enable-rpm-ostree')
   ostree = dependency('ostree-1')
-  rpm_ostree = dependency('rpm-ostree-1')
+  rpm_ostree = dependency('rpm-ostree-1', version : '>= 2018.4')
 endif
 
 if get_option('enable-ubuntu-reviews')
