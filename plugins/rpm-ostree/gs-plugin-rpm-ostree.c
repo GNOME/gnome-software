@@ -35,6 +35,7 @@ struct GsPluginData {
 	GsRPMOSTreeSysroot	*sysroot_proxy;
 	OstreeRepo		*ot_repo;
 	OstreeSysroot		*ot_sysroot;
+	gboolean		 update_triggered;
 };
 
 void
@@ -551,6 +552,85 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		}
 	}
 
+	return TRUE;
+}
+
+static gboolean
+trigger_rpmostree_update (GsPlugin *plugin,
+                          GsApp *app,
+                          GCancellable *cancellable,
+                          GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GVariant) options = NULL;
+
+	/* if we can process this online do not require a trigger */
+	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+		return TRUE;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* already in correct state */
+	if (priv->update_triggered)
+		return TRUE;
+
+	/* trigger the update */
+	options = make_rpmostree_options_variant (FALSE,  /* reboot */
+	                                          FALSE,  /* allow-downgrade */
+	                                          TRUE,   /* cache-only */
+	                                          FALSE,  /* download-only */
+	                                          FALSE,  /* skip-purge */
+	                                          FALSE,  /* no-pull-base */
+	                                          FALSE,  /* dry-run */
+	                                          FALSE); /* no-overrides */
+	if (!gs_rpmostree_os_call_upgrade_sync (priv->os_proxy,
+	                                        options,
+	                                        NULL /* fd list */,
+	                                        &transaction_address,
+	                                        NULL /* fd list out */,
+	                                        cancellable,
+	                                        error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	priv->update_triggered = TRUE;
+
+	/* success */
+	return TRUE;
+}
+
+gboolean
+gs_plugin_update_app (GsPlugin *plugin,
+                      GsApp *app,
+                      GCancellable *cancellable,
+                      GError **error)
+{
+	GPtrArray *related = gs_app_get_related (app);
+
+	/* we don't currently don't put all updates in the OsUpdate proxy app */
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+		return trigger_rpmostree_update (plugin, app, cancellable, error);
+
+	/* try to trigger each related app */
+	for (guint i = 0; i < related->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (related, i);
+		if (!trigger_rpmostree_update (plugin, app_tmp, cancellable, error))
+			return FALSE;
+	}
+
+	/* success */
 	return TRUE;
 }
 
