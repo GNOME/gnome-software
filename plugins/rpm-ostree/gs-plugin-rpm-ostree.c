@@ -404,7 +404,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
 		g_autofree gchar *transaction_address = NULL;
 		g_autoptr(GVariant) options = NULL;
 
