@@ -24,10 +24,12 @@
 #include <config.h>
 
 #include <gio/gio.h>
+#include <glib/gi18n.h>
 #include <string.h>
 
 #include "gs-shell-search-provider-generated.h"
 #include "gs-shell-search-provider.h"
+#include "gs-common.h"
 
 #define GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS	20
 
@@ -187,7 +189,8 @@ execute_search (GsShellSearchProvider  *self,
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", value,
 					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
 					 "max-results", GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
 					 NULL);
 	gs_plugin_job_set_sort_func (plugin_job, gs_shell_search_provider_sort_cb);
@@ -242,6 +245,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 
 	for (i = 0; results[i]; i++) {
 		GsApp *app;
+		g_autofree gchar *description = NULL;
 
 		/* already built */
 		if (g_hash_table_lookup (self->metas_cache, results[i]) != NULL)
@@ -260,7 +264,20 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		pixbuf = gs_app_get_pixbuf (app);
 		if (pixbuf != NULL)
 			g_variant_builder_add (&meta, "{sv}", "icon", g_icon_serialize (G_ICON (pixbuf)));
-		g_variant_builder_add (&meta, "{sv}", "description", g_variant_new_string (gs_app_get_summary (app)));
+
+		if (gs_utils_list_has_app_fuzzy (self->search_results, app) &&
+		    gs_app_get_origin_hostname (app) != NULL) {
+			/* TRANSLATORS: this refers to where the app came from */
+			g_autofree gchar *source_text = g_strdup_printf (_("Source: %s"),
+			                                                 gs_app_get_origin_hostname (app));
+			description = g_strdup_printf ("%s     %s",
+			                               gs_app_get_summary (app),
+			                               source_text);
+		} else {
+			description = g_strdup (gs_app_get_summary (app));
+		}
+		g_variant_builder_add (&meta, "{sv}", "description", g_variant_new_string (description));
+
 		meta_variant = g_variant_builder_end (&meta);
 		g_hash_table_insert (self->metas_cache,
 				     g_strdup (gs_app_get_unique_id (app)),
