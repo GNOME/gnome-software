@@ -44,7 +44,7 @@ struct _GsShellSearchProvider {
 	GCancellable *cancellable;
 
 	GHashTable *metas_cache;
-	GHashTable *apps_cache;		/* id -> GsApp */
+	GsAppList *search_results;
 };
 
 G_DEFINE_TYPE (GsShellSearchProvider, gs_shell_search_provider, G_TYPE_OBJECT)
@@ -81,7 +81,7 @@ search_done_cb (GObject *source,
 	g_autoptr(GsAppList) list = NULL;
 
 	/* cache no longer valid */
-	g_hash_table_remove_all (self->apps_cache);
+	gs_app_list_remove_all (self->search_results);
 
 	list = gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
@@ -102,9 +102,7 @@ search_done_cb (GObject *source,
 		g_variant_builder_add (&builder, "s", gs_app_get_unique_id (app));
 
 		/* cache this in case we need the app in GetResultMetas */
-		g_hash_table_insert (self->apps_cache,
-				     g_strdup (gs_app_get_unique_id (app)),
-				     g_object_ref (app));
+		gs_app_list_add (self->search_results, app);
 	}
 	g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", &builder));
 
@@ -250,7 +248,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 			continue;
 
 		/* get previously found app */
-		app = g_hash_table_lookup (self->apps_cache, results[i]);
+		app = gs_app_list_lookup (self->search_results, results[i]);
 		if (app == NULL) {
 			g_warning ("failed to refine find app %s in cache", results[i]);
 			continue;
@@ -350,11 +348,8 @@ search_provider_dispose (GObject *obj)
 		g_hash_table_destroy (self->metas_cache);
 		self->metas_cache = NULL;
 	}
-	if (self->apps_cache != NULL) {
-		g_hash_table_destroy (self->apps_cache);
-		self->apps_cache = NULL;
-	}
 
+	g_clear_object (&self->search_results);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->skeleton);
 
@@ -368,9 +363,8 @@ gs_shell_search_provider_init (GsShellSearchProvider *self)
 						   (GEqualFunc) as_utils_unique_id_equal,
 						   g_free,
 						   (GDestroyNotify) g_variant_unref);
-	self->apps_cache = g_hash_table_new_full (g_str_hash, g_str_equal,
-						  g_free, (GDestroyNotify) g_object_unref);
 
+	self->search_results = gs_app_list_new ();
 	self->skeleton = gs_shell_search_provider2_skeleton_new ();
 
 	g_signal_connect (self->skeleton, "handle-get-initial-result-set",
