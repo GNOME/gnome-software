@@ -874,7 +874,6 @@ gs_overview_page_setup (GsPage *page,
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
-	g_autofree gchar *uri = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	g_return_val_if_fail (GS_IS_OVERVIEW_PAGE (self), TRUE);
@@ -892,14 +891,11 @@ gs_overview_page_setup (GsPage *page,
 	g_string_append (str,
 			 /* TRANSLATORS: this is the third party repositories info bar. */
 	                 _("Some of this software is proprietary and therefore has restrictions on use, sharing, and access to source code."));
-	/* optional URL */
-	uri = g_settings_get_string (priv->settings, "nonfree-software-uri");
-	if (uri != NULL && uri[0] != '\0') {
-	        g_string_append_printf (str, " <a href=\"%s\">%s</a>", uri,
-	                                /* TRANSLATORS: this is the clickable
-	                                 * link on the third party repositories info bar */
-	                                _("Find out more…"));
-	}
+	g_string_append_printf (str, " <a href=\"%s\">%s</a>",
+	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
+	                        /* TRANSLATORS: this is the clickable
+	                         * link on the third party repositories info bar */
+	                        _("Find out more…"));
 	gtk_label_set_markup (GTK_LABEL (priv->label_third_party), str->str);
 
 	/* create info bar if not already dismissed in initial-setup */

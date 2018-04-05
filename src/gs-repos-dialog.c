@@ -731,7 +731,6 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	g_autofree gchar *label_description_text = NULL;
 	g_autofree gchar *label_empty_text = NULL;
 	g_autofree gchar *os_name = NULL;
-	g_autofree gchar *uri = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
@@ -779,14 +778,11 @@ gs_repos_dialog_init (GsReposDialog *dialog)
 	g_string_append (str,
 	                 /* TRANSLATORS: this is the third party repositories info bar. */
 	                 _("Some of this software is proprietary and therefore has restrictions on use, sharing, and access to source code."));
-	/* optional URL */
-	uri = g_settings_get_string (dialog->settings, "nonfree-software-uri");
-	if (uri != NULL && uri[0] != '\0') {
-		g_string_append_printf (str, " <a href=\"%s\">%s</a>", uri,
-					/* TRANSLATORS: this is the clickable
-					 * link on the third party repositories info bar */
-					_("Find out more…"));
-	}
+	g_string_append_printf (str, " <a href=\"%s\">%s</a>",
+	                        "https://fedoraproject.org/wiki/Workstation/Third_Party_Software_Repositories",
+	                        /* TRANSLATORS: this is the clickable
+	                         * link on the third party repositories info bar */
+	                        _("Find out more…"));
 	gs_third_party_repo_row_set_comment (GS_THIRD_PARTY_REPO_ROW (dialog->row_third_party), str->str);
 	refresh_third_party_repo (dialog);
 
