@@ -76,7 +76,7 @@ app_state_changed_idle (gpointer user_data)
 					gs_app_get_name (tile->app));
 		break;
 	case AS_APP_STATE_INSTALLING:
-		installed = TRUE;
+		installed = FALSE;
 		name = g_strdup_printf (_("%s (Installing)"),
 					gs_app_get_name (tile->app));
 		break;

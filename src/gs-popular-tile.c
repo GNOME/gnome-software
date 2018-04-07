@@ -61,7 +61,6 @@ app_state_changed_idle (gpointer user_data)
 
 	switch (gs_app_get_state (tile->app)) {
 	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
@@ -71,6 +70,7 @@ app_state_changed_idle (gpointer user_data)
 					gs_app_get_name (tile->app));
 		break;
 	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_INSTALLING:
 	default:
 		installed = FALSE;
 		name = g_strdup (gs_app_get_name (tile->app));
