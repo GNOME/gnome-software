@@ -1,33 +1,28 @@
-image: fedora:28
+image: snapcore/snapcraft:stable
 
 stages:
   - build
 
 before_script:
-  # Update and use base build deps
-  - dnf update -y && dnf -y install dnf-plugins-core @buildsys-build
-  - dnf install -y https://people.freedesktop.org/~hughsient/temp/libappstream-glib-0.7.14-0.641.20181015git.fc29.x86_64.rpm https://people.freedesktop.org/~hughsient/temp/libappstream-glib-devel-0.7.14-0.641.20181015git.fc29.x86_64.rpm
-  - dnf --enablerepo updates-testing -y builddep gnome-software
-  # Some deps may not be sync'd
-  - dnf -y install rpm-ostree-devel
+  - export LC_ALL=C.UTF-8
+  - export LANG=C.UTF-8
+  - export SNAP_ARCH=amd64
+  - apt-get -y update
+  - apt-get install -y software-properties-common openssl
+  - add-apt-repository -y ppa:ubuntu-desktop/gnome-3-26
+  - apt-get -y update
+  - apt-get -y dist-upgrade
 
-build-gnome-software:
+build-gnome-software-snap:
   stage: build
+  only:
+    variables:
+      - $CI_COMMIT_REF_NAME == "snap-only"
   script:
-  - meson -Denable-fwupd=false -Denable-rpm-ostree=true _build .
-  - ninja -v -C _build
-  - mkdir -p /run/dbus
-  - mkdir -p /var
-  - ln -s /var/run /run
-  - dbus-daemon --system --fork
-  - meson test -v -C _build gs-self-test-lib
-  - meson test -v -C _build gs-self-test-core
-  - meson test -v -C _build gs-self-test-dpkg
-  - meson test -v -C _build gs-self-test-dummy
-  - meson test -v -C _build gs-self-test-epiphany
-  - meson test -v -C _build gs-self-test-fwupd
-  - meson test -v -C _build gs-self-test-modalias
-  - meson test -v -C _build gs-self-test-repos
-  - meson test -v -C _build gs-self-test-src
-  - meson test -v -C _build gs-self-test-shell-extensions
-  - meson test -v -C _build gs-self-test-flatpak
+    - openssl aes-256-cbc -d -in snap/.snapcraft.encrypted -out snap/.snapcraft.exported -k $KEY
+    - snapcraft login --with snap/.snapcraft.exported
+    - SNAPCRAFT_SETUP_CORE=1 snapcraft
+    - snapcraft push gnome-software*.snap --release edge
+    - snapcraft logout
+    - rm -f snap/.snapcraft.exported
+    - rm $HOME/.config/snapcraft/snapcraft.cfg
