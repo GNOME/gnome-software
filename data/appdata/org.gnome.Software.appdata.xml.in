@@ -46,6 +46,31 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-04-09" version="3.28.1">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Fix a regression with opening results from gnome-shell search</li>
+          <li>Show "Source: " tag in gnome-shell search when we have multiple matches</li>
+          <li>Improve unknown license tag color scheme on details page</li>
+          <li>Don't show installed icon on app tiles while still installing</li>
+          <li>Fix empty items appearing under OS Updates</li>
+          <li>Fix a regression that caused duplicate results in codec search</li>
+          <li>Fix an issue with passing username/password to packagekit proxy</li>
+          <li>Avoid crashing during first run with no network access</li>
+          <li>A number of rpm-ostree fixes, making it possible to trigger offline updates</li>
+          <li>Stop searching multiple times on search page</li>
+          <li>Update Fedora third party repositories "Find out more..." link</li>
+          <li>Fix an issue with in-app notifications failing with invalid markup errors</li>
+          <li>Improve purchase failure handling for the snap store</li>
+          <li>Fix a possible crash in snap plugin when adding screenshots</li>
+          <li>Various other crash and correctness fixes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-03-12" version="3.28.0">
       <description>
         <p>
