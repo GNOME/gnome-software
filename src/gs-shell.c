@@ -871,7 +871,7 @@ gs_shell_show_detailed_error (GsShell *shell, const GError *error)
 static gchar *
 get_first_line (const gchar *str)
 {
-	g_auto(GStrv) lines;
+	g_auto(GStrv) lines = NULL;
 
 	lines = g_strsplit (str, "\n", 2);
 	if (lines != NULL && g_strv_length (lines) != 0)
