@@ -362,6 +362,9 @@ is_downgrade (const gchar *evr1,
 	g_autofree gchar *release1 = NULL;
 	g_autofree gchar *release2 = NULL;
 
+	if (evr1 == NULL || evr2 == NULL)
+		return FALSE;
+
 	/* split into epoch-version-release */
 	if (!gs_utils_parse_evr (evr1, &epoch1, &version1, &release1))
 		return FALSE;
