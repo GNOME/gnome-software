@@ -1398,7 +1398,11 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			g_clear_error (&error_local);
 			main_app = g_object_ref (app);
 		}
-		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
+
+		/* if for some reason the app is already getting updated, then
+		 * don't change its state */
+		if (gs_app_get_state (main_app) != AS_APP_STATE_INSTALLING)
+			gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 
 		/* already downloaded */
 		if (g_strcmp0 (commit, latest_commit) != 0) {
