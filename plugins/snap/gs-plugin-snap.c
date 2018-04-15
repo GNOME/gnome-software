@@ -789,6 +789,9 @@ load_store_icon (GsApp *app, SnapdSnap *snap)
 static gboolean
 load_icon (GsPlugin *plugin, SnapdClient *client, GsApp *app, const gchar *id, SnapdSnap *local_snap, SnapdSnap *store_snap, GCancellable *cancellable)
 {
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GError) error = NULL;
+
 	if (local_snap != NULL) {
 		if (load_snap_icon (app, client, local_snap, cancellable))
 			return TRUE;
@@ -798,9 +801,19 @@ load_icon (GsPlugin *plugin, SnapdClient *client, GsApp *app, const gchar *id, S
 
 	if (store_snap == NULL)
 		store_snap = get_store_snap (plugin, gs_app_get_metadata_item (app, "snap::name"), FALSE, cancellable, NULL);
-	if (store_snap != NULL)
-		return load_store_icon (app, store_snap);
+	if (store_snap != NULL) {
+		if (load_store_icon (app, store_snap))
+			return TRUE;
+	}
 
+	/* Default to built-in icon */
+	pixbuf = gdk_pixbuf_new_from_resource_at_scale ("/org/gnome/Software/Snap/default-snap-icon.svg", 64, 64, TRUE, &error);
+	if (pixbuf != NULL) {
+		gs_app_set_pixbuf (app, pixbuf);
+		return TRUE;
+	}
+
+	g_warning ("Failed to load built-in icon: %s", error->message);
 	return FALSE;
 }
 

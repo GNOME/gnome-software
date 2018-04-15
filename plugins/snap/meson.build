@@ -1,7 +1,15 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginSnap"']
 
+resources_src = gnome.compile_resources(
+  'gs-plugin-snap-resources',
+  'gs-plugin-snap.gresource.xml',
+  source_dir : '.',
+  c_name : 'gs_plugin_snap'
+)
+
 shared_module(
   'gs_plugin_snap',
+  resources_src,
   sources : [
     'gs-plugin-snap.c'
   ],
