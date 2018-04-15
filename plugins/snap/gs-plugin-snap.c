@@ -619,7 +619,8 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 {
 	const gchar *icon_url;
 	g_autoptr(SnapdIcon) icon = NULL;
-	g_autoptr(GdkPixbufLoader) loader = NULL;
+	g_autoptr(GInputStream) input_stream = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GError) error = NULL;
 
 	icon_url = snapd_snap_get_icon (snap);
@@ -632,18 +633,13 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 		return FALSE;
 	}
 
-	loader = gdk_pixbuf_loader_new ();
-	if (!gdk_pixbuf_loader_write (loader,
-				      (const guchar *) g_bytes_get_data (snapd_icon_get_data (icon), NULL),
-				      g_bytes_get_size (snapd_icon_get_data (icon)), &error)) {
+	input_stream = g_memory_input_stream_new_from_bytes (snapd_icon_get_data (icon));
+	pixbuf = gdk_pixbuf_new_from_stream_at_scale (input_stream, 64, 64, TRUE, cancellable, &error);
+	if (pixbuf == NULL) {
 		g_warning ("Failed to decode snap icon %s: %s", icon_url, error->message);
 		return FALSE;
 	}
-	if (!gdk_pixbuf_loader_close (loader, &error)) {
-		g_warning ("Failed to decode snap icon %s: %s", icon_url, error->message);
-		return FALSE;
-	}
-	gs_app_set_pixbuf (app, gdk_pixbuf_loader_get_pixbuf (loader));
+	gs_app_set_pixbuf (app, pixbuf);
 
 	return TRUE;
 }
