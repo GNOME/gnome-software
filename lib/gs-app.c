@@ -71,6 +71,7 @@ typedef struct
 	GPtrArray		*source_ids;
 	gchar			*project_group;
 	gchar			*developer_name;
+	gchar			*agreement;
 	gchar			*version;
 	gchar			*version_ui;
 	gchar			*summary;
@@ -1686,6 +1687,44 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 		return;
 	}
 	g_ptr_array_add (priv->icons, g_object_ref (icon));
+}
+
+/**
+ * gs_app_get_agreement:
+ * @app: a #GsApp
+ *
+ * Gets the agreement text for the application.
+ *
+ * Returns: a string in AppStream description format, or %NULL for unset
+ *
+ * Since: 3.28
+ **/
+const gchar *
+gs_app_get_agreement (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->agreement;
+}
+
+/**
+ * gs_app_set_agreement:
+ * @app: a #GsApp
+ * @agreement: The agreement text, e.g. "<p>Foobar</p>"
+ *
+ * Sets the application end-user agreement (e.g. a EULA) in AppStream
+ * description format.
+ *
+ * Since: 3.28
+ **/
+void
+gs_app_set_agreement (GsApp *app, const gchar *agreement)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+	_g_set_str (&priv->agreement, agreement);
 }
 
 /**
@@ -4208,6 +4247,7 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->source_ids);
 	g_free (priv->project_group);
 	g_free (priv->developer_name);
+	g_free (priv->agreement);
 	g_free (priv->version);
 	g_free (priv->version_ui);
 	g_free (priv->summary);

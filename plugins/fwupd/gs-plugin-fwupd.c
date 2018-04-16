@@ -1080,6 +1080,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 				 fwupd_remote_get_title (remote));
+#if FWUPD_CHECK_VERSION(1,0,7)
+		gs_app_set_agreement (app, fwupd_remote_get_agreement (remote));
+#endif
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 				fwupd_remote_get_metadata_uri (remote));
 		gs_app_set_metadata (app, "fwupd::remote-id",

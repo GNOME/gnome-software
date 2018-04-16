@@ -181,25 +181,89 @@ repo_enabled_cb (GObject *source,
 }
 
 static void
-enable_repo (GsReposDialog *dialog, GsApp *repo)
+_enable_repo (InstallRemoveData *install_data)
 {
-	InstallRemoveData *install_data;
+	GsReposDialog *dialog = install_data->dialog;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	install_data = g_slice_new0 (InstallRemoveData);
-	install_data->action = GS_PLUGIN_ACTION_INSTALL;
-	install_data->repo = g_object_ref (repo);
-	install_data->dialog = g_object_ref (dialog);
-
 	g_debug ("enabling repo %s", gs_app_get_id (install_data->repo));
 	plugin_job = gs_plugin_job_newv (install_data->action,
-	                                 "app", repo,
+	                                 "app", install_data->repo,
 	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 	                                 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 	                                    dialog->cancellable,
 	                                    repo_enabled_cb,
 	                                    install_data);
+}
+
+static void
+enable_repo_response_cb (GtkDialog *confirm_dialog,
+			 gint response,
+			 gpointer user_data)
+{
+	g_autoptr(InstallRemoveData) install_data = (InstallRemoveData *) user_data;
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (confirm_dialog));
+
+	/* not agreed */
+	if (response != GTK_RESPONSE_OK)
+		return;
+
+	_enable_repo (g_steal_pointer (&install_data));
+}
+
+static void
+enable_repo (GsReposDialog *dialog, GsApp *repo)
+{
+	g_autoptr(InstallRemoveData) install_data = NULL;
+
+	install_data = g_slice_new0 (InstallRemoveData);
+	install_data->action = GS_PLUGIN_ACTION_INSTALL;
+	install_data->repo = g_object_ref (repo);
+	install_data->dialog = g_object_ref (dialog);
+
+	/* user needs to confirm acceptance of an agreement */
+	if (gs_app_get_agreement (repo) != NULL) {
+		GtkWidget *confirm_dialog;
+		g_autofree gchar *message = NULL;
+		g_autoptr(GError) error = NULL;
+
+		/* convert from AppStream markup */
+		message = as_markup_convert_simple (gs_app_get_agreement (repo), &error);
+		if (message == NULL) {
+			/* failed, so just try and show the original markup */
+			message = g_strdup (gs_app_get_agreement (repo));
+			g_warning ("Failed to process AppStream markup: %s",
+				   error->message);
+		}
+
+		/* ask for confirmation */
+		confirm_dialog = gtk_message_dialog_new (GTK_WINDOW (dialog),
+							 GTK_DIALOG_MODAL,
+							 GTK_MESSAGE_QUESTION,
+							 GTK_BUTTONS_CANCEL,
+							 /* TRANSLATORS: window title */
+							 "%s", _("Enable Third-Party Software Repository?"));
+		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (confirm_dialog),
+							  "%s", message);
+
+		/* TRANSLATORS: button to accept the agreement */
+		gtk_dialog_add_button (GTK_DIALOG (confirm_dialog), _("Enable"),
+				       GTK_RESPONSE_OK);
+
+		/* handle this async */
+		g_signal_connect (confirm_dialog, "response",
+				  G_CALLBACK (enable_repo_response_cb),
+				  g_steal_pointer (&install_data));
+
+		gtk_window_set_modal (GTK_WINDOW (confirm_dialog), TRUE);
+		gtk_window_present (GTK_WINDOW (confirm_dialog));
+		return;
+	}
+
+	/* no prompt required */
+	_enable_repo (g_steal_pointer (&install_data));
 }
 
 static void

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2014-2015 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -166,6 +166,9 @@ void		 gs_app_set_project_group	(GsApp		*app,
 const gchar	*gs_app_get_developer_name	(GsApp		*app);
 void		 gs_app_set_developer_name	(GsApp		*app,
 						 const gchar	*developer_name);
+const gchar	*gs_app_get_agreement		(GsApp		*app);
+void		 gs_app_set_agreement		(GsApp		*app,
+						 const gchar	*agreement);
 const gchar	*gs_app_get_version		(GsApp		*app);
 const gchar	*gs_app_get_version_ui		(GsApp		*app);
 void		 gs_app_set_version		(GsApp		*app,
