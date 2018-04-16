@@ -884,7 +884,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	}
 
 	/* load icon if requested */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON)
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_pixbuf (app) == NULL)
 		load_icon (plugin, client, app, id, local_snap, store_snap, cancellable);
 
 	return TRUE;
