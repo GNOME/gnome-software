@@ -1002,8 +1002,14 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		}
 	}
 	else {
-		if (store_snap != NULL && snapd_snap_get_status (store_snap) == SNAPD_SNAP_STATUS_PRICED)
+		if (store_snap != NULL && snapd_snap_get_status (store_snap) == SNAPD_SNAP_STATUS_PRICED) {
+			if (g_getenv ("GNOME_SOFTWARE_SHOW_PAID") == NULL) {
+				g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED, "Paid snaps not supported");
+				return FALSE;
+			}
+
 			gs_app_set_state (app, AS_APP_STATE_PURCHASABLE);
+		}
 		else
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	}
