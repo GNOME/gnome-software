@@ -1009,6 +1009,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case AS_APP_STATE_PURCHASING:
 		/* transient, so ignore */
 		break;
 	default:
