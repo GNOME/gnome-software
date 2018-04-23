@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-04-10 13:41+0000\n"
-"PO-Revision-Date: 2018-04-12 17:55+0200\n"
+"POT-Creation-Date: 2018-04-22 16:44+0000\n"
+"PO-Revision-Date: 2018-04-23 22:15+0200\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -533,7 +533,7 @@ msgstr "Posodobi"
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-app-row.c:202 src/gs-app-row.c:211 src/gs-page.c:746
-#: src/gs-repos-dialog.c:272
+#: src/gs-repos-dialog.c:336
 msgid "Remove"
 msgstr "Odstrani"
 
@@ -712,7 +712,7 @@ msgid "Install Third-Party Software?"
 msgstr "Ali naj bo nameščena programska oprema tretjih virov?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:214
+#: src/gs-common.c:214 src/gs-repos-dialog.c:247
 msgid "Enable Third-Party Software Repository?"
 msgstr "Ali naj bodo omogočeni tudi programski viri tretjih oseb?"
 
@@ -1906,7 +1906,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1480
+#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1510
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Za zapis %s ni na voljo dodatnih kodekov."
@@ -2159,12 +2159,12 @@ msgid "Recommended Productivity Applications"
 msgstr "Priporočeni pisarniški programi"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:889 src/gs-repos-dialog.c:776
+#: src/gs-overview-page.c:889 src/gs-repos-dialog.c:840
 msgid "Access additional software from selected third party sources."
 msgstr "Dostop do dodatne programske opreme prek izbranih virov tretjih oseb."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:893 src/gs-repos-dialog.c:780
+#: src/gs-overview-page.c:893 src/gs-repos-dialog.c:844
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2174,12 +2174,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:898 src/gs-repos-dialog.c:785
+#: src/gs-overview-page.c:898 src/gs-repos-dialog.c:849
 msgid "Find out more…"
 msgstr "Več o tem …"
 
 #. TRANSLATORS: button to turn on third party software repositories
-#: src/gs-overview-page.c:906
+#. TRANSLATORS: button to accept the agreement
+#: src/gs-overview-page.c:906 src/gs-repos-dialog.c:252
 msgid "Enable"
 msgstr "Omogoči"
 
@@ -2269,7 +2270,7 @@ msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "Program %s bo odstranjen. Za ponovno uporabo ga bo treba znova namestiti."
 
-#: lib/gs-plugin-loader.c:1483
+#: lib/gs-plugin-loader.c:1513
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2422,20 +2423,20 @@ msgstr[3] "Nameščeno: %s in %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:312
 #, c-format
 msgid "Remove “%s”?"
 msgstr "Ali želite odstraniti »%s«?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:253
+#: src/gs-repos-dialog.c:317
 #, c-format
 msgid "Disable “%s”?"
 msgstr "Ali želite onemogočiti »%s«?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:257
+#: src/gs-repos-dialog.c:321
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2444,25 +2445,25 @@ msgstr ""
 "niti nujnih varnostnih popravkov."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:275
+#: src/gs-repos-dialog.c:339
 msgid "Disable"
 msgstr "Onemogoči"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:686
+#: src/gs-repos-dialog.c:750
 msgid "the operating system"
 msgstr "operacijski sistem"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:755 src/gs-repos-dialog.c:791
+#: src/gs-repos-dialog.c:819 src/gs-repos-dialog.c:855
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Ta skladišča so dodatek v privzeti programski opremi sistema %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:773
+#: src/gs-repos-dialog.c:837
 msgid "Third Party Repositories"
 msgstr "Skladišča tretjih virov"
 
@@ -3130,42 +3131,59 @@ msgid "Unable to launch %s: %s is not installed"
 msgstr "Ni mogoče zagnati %s: %s ni nameščen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1513 src/gs-shell.c:1561 src/gs-shell.c:1609
+#: src/gs-shell.c:1513 src/gs-shell.c:1564 src/gs-shell.c:1605
+#: src/gs-shell.c:1653
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Ni dovolj prostora na disku. Sprostite ga in poskusite znova."
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1521 src/gs-shell.c:1569 src/gs-shell.c:1636
+#: src/gs-shell.c:1521 src/gs-shell.c:1572 src/gs-shell.c:1613
+#: src/gs-shell.c:1680
 msgid "Sorry, something went wrong"
 msgstr "Opravila ni bilo mogoče izvesti!"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1556
+msgid "Failed to install file: not supported"
+msgstr "Namestitev datoteke je spodletela: vrsta ni podprta"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1560
 msgid "Failed to install file: authentication failed"
 msgstr "Namestitev paketa je prekinjena: overitev je spodletela"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1597
+msgid "Failed to install: not supported"
+msgstr "Namestitev je spodletela: opravilo ni podprto"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1601
+msgid "Failed to install: authentication failed"
+msgstr "Namestitev je spodletela: ni mogoče izvesti overitve"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1603
+#: src/gs-shell.c:1647
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Povezava s spletiščem %s ni mogoča."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1618
+#: src/gs-shell.c:1662
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Program %s je treba pred uporabo novih vstavkov ponovno zagnati"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1623
+#: src/gs-shell.c:1667
 msgid "This application needs to be restarted to use new plugins."
 msgstr "Program je treba pred uporabo novih vstavkov ponovno zagnati."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1630
+#: src/gs-shell.c:1674
 msgid "AC power is required"
 msgstr "Zahtevan je priklop napajanja iz omrežja"
 
