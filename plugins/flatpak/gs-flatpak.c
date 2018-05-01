@@ -1395,6 +1395,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 		g_autoptr(FlatpakInstalledRef) xref2 = NULL;
 		g_autoptr(GsApp) app_dl = NULL;
 		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
+		g_autoptr(GError) error_local = NULL;
 
 		/* try to create a GsApp so we can do progress reporting */
 		app_dl = gs_flatpak_create_installed (self, xref, NULL);
@@ -1410,8 +1411,15 @@ gs_flatpak_refresh (GsFlatpak *self,
 						     flatpak_ref_get_arch (FLATPAK_REF (xref)),
 						     flatpak_ref_get_branch (FLATPAK_REF (xref)),
 						     gs_flatpak_progress_cb, phelper,
-						     cancellable, error);
+						     cancellable, &error_local);
 		if (xref2 == NULL) {
+			if (g_error_matches (error_local,
+					     FLATPAK_ERROR,
+					     FLATPAK_ERROR_ALREADY_INSTALLED)) {
+				g_debug ("ignoring: %s", error_local->message);
+				continue;
+			}
+			g_propagate_error (error, g_steal_pointer (&error_local));
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
