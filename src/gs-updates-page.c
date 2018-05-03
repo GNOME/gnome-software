@@ -1325,7 +1325,7 @@ static void
 gs_updates_page_show_network_settings (GsUpdatesPage *self)
 {
 	g_autoptr(GError) error = NULL;
-	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
+	if (!g_spawn_command_line_async ("gnome-control-center wifi", &error))
 		g_warning ("Failed to open the control center: %s", error->message);
 }
 
