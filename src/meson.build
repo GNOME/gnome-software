@@ -38,6 +38,7 @@ gnome_software_sources = [
   'gs-language.c',
   'gs-loading-page.c',
   'gs-main.c',
+  'gs-metered-data-dialog.c',
   'gs-moderate-page.c',
   'gs-overview-page.c',
   'gs-origin-popover-row.c',

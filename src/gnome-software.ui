@@ -438,85 +438,141 @@
             </child>
 
             <child>
-              <object class="GtkStack" id="stack_main">
+              <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="homogeneous">False</property>
+                <property name="orientation">vertical</property>
+
                 <child>
-                  <object class="GsOverviewPage" id="overview_page">
+                  <object class="GtkInfoBar" id="metered_updates_bar">
                     <property name="visible">True</property>
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">12</property>
+                    <property name="message-type">GTK_MESSAGE_INFO</property>
+                    <property name="show-close-button">False</property>
+                    <property name="revealed">False</property>
+                    <child internal-child="content_area">
+                      <object class="GtkBox">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">6</property>
+                        <property name="margin_top">6</property>
+                        <property name="margin_left">6</property>
+                        <property name="margin_bottom">6</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Automatic Updates Paused</property>
+                            <property name="xalign">0.0</property>
+                            <attributes>
+                              <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child internal-child="action_area">
+                      <object class="GtkButtonBox">
+                        <property name="visible">True</property>
+                        <property name="margin_right">6</property>
+                        <child>
+                          <object class="GtkButton" id="metered_updates_button">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="can_default">True</property>
+                            <property name="use_underline">True</property>
+                            <property name="label" translatable="yes">Find Out _More</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <action-widgets>
+                      <action-widget response="GTK_RESPONSE_OK">metered_updates_button</action-widget>
+                    </action-widgets>
                   </object>
-                  <packing>
-                    <property name="name">overview</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsInstalledPage" id="installed_page">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">installed</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsModeratePage" id="moderate_page">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">moderate</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsLoadingPage" id="loading_page">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">loading</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsSearchPage" id="search_page">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">search</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsUpdatesPage" id="updates_page">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">updates</property>
-                  </packing>
                 </child>
 
                 <child>
-                  <object class="GsDetailsPage" id="details_page">
+                  <object class="GtkStack" id="stack_main">
                     <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">details</property>
-                  </packing>
-                </child>
+                    <property name="homogeneous">False</property>
+                    <child>
+                      <object class="GsOverviewPage" id="overview_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">overview</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsInstalledPage" id="installed_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">installed</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsModeratePage" id="moderate_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">moderate</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsLoadingPage" id="loading_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">loading</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsSearchPage" id="search_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">search</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsUpdatesPage" id="updates_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">updates</property>
+                      </packing>
+                    </child>
 
-                <child>
-                  <object class="GsCategoryPage" id="category_page">
-                    <property name="visible">True</property>
+                    <child>
+                      <object class="GsDetailsPage" id="details_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">details</property>
+                      </packing>
+                    </child>
+
+                    <child>
+                      <object class="GsCategoryPage" id="category_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">category</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsExtrasPage" id="extras_page">
+                        <property name="visible">True</property>
+                      </object>
+                      <packing>
+                        <property name="name">extras</property>
+                      </packing>
+                    </child>
                   </object>
-                  <packing>
-                    <property name="name">category</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsExtrasPage" id="extras_page">
-                    <property name="visible">True</property>
-                  </object>
-                  <packing>
-                    <property name="name">extras</property>
-                  </packing>
                 </child>
               </object>
-
             </child>
           </object>
         </child>

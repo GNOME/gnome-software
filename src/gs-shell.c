@@ -12,10 +12,15 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#ifdef HAVE_MOGWAI
+#include <libmogwai-schedule-client/scheduler.h>
+#endif
+
 #include "gs-common.h"
 #include "gs-shell.h"
 #include "gs-details-page.h"
 #include "gs-installed-page.h"
+#include "gs-metered-data-dialog.h"
 #include "gs-moderate-page.h"
 #include "gs-loading-page.h"
 #include "gs-search-page.h"
@@ -51,6 +56,7 @@ typedef struct {
 
 typedef struct
 {
+	GSettings		*settings;
 	gboolean		 ignore_primary_buttons;
 	GCancellable		*cancellable;
 	GsPluginLoader		*plugin_loader;
@@ -66,6 +72,11 @@ typedef struct
 	gchar			*events_info_uri;
 	gboolean		 in_mode_change;
 	GsPage			*page;
+
+#ifdef HAVE_MOGWAI
+	MwscScheduler		*scheduler;
+	gulong			 scheduler_invalidated_handler;
+#endif  /* HAVE_MOGWAI */
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -185,6 +196,171 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 		g_object_unref (old_widget);
 	}
 }
+
+static void
+gs_shell_refresh_auto_updates_ui (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	gboolean automatic_updates_paused;
+	gboolean automatic_updates_enabled;
+	GtkInfoBar *metered_updates_bar;
+
+	automatic_updates_enabled = g_settings_get_boolean (priv->settings, "download-updates");
+
+	metered_updates_bar = GTK_INFO_BAR (gtk_builder_get_object (priv->builder, "metered_updates_bar"));
+
+#ifdef HAVE_MOGWAI
+	automatic_updates_paused = (priv->scheduler == NULL || !mwsc_scheduler_get_allow_downloads (priv->scheduler));
+#else
+	automatic_updates_paused = gs_plugin_loader_get_network_metered (priv->plugin_loader);
+#endif
+
+	gtk_info_bar_set_revealed (metered_updates_bar,
+				   priv->mode != GS_SHELL_MODE_LOADING &&
+				   automatic_updates_enabled &&
+				   automatic_updates_paused);
+	gtk_info_bar_set_default_response (metered_updates_bar, GTK_RESPONSE_OK);
+}
+
+static void
+gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
+					  gint        response_id,
+					  gpointer    user_data)
+{
+	GsShell *shell = GS_SHELL (user_data);
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkDialog *dialog;
+
+	dialog = GTK_DIALOG (gs_metered_data_dialog_new (priv->main_window));
+	gs_shell_modal_dialog_present (shell, dialog);
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
+}
+
+static void
+gs_shell_download_updates_changed_cb (GSettings   *settings,
+				      const gchar *key,
+				      gpointer     user_data)
+{
+	GsShell *shell = user_data;
+
+	gs_shell_refresh_auto_updates_ui (shell);
+}
+
+static void
+gs_shell_network_metered_notify_cb (GsPluginLoader *plugin_loader,
+				    GParamSpec     *pspec,
+				    gpointer        user_data)
+{
+#ifndef HAVE_MOGWAI
+	GsShell *shell = user_data;
+
+	/* @automatic_updates_paused only depends on network-metered if we’re
+	 * compiled without Mogwai. */
+	gs_shell_refresh_auto_updates_ui (shell);
+#endif
+}
+
+#ifdef HAVE_MOGWAI
+static void
+scheduler_invalidated_cb (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	/* The scheduler shouldn’t normally be invalidated, since we Hold() it
+	 * until we’re done with it. However, if the scheduler is stopped by
+	 * systemd (`systemctl stop mogwai-scheduled`) this signal will be
+	 * emitted. It may also be invalidated while our main window is hidden,
+	 * as we release our Hold() then. */
+	g_signal_handler_disconnect (priv->scheduler,
+				     priv->scheduler_invalidated_handler);
+	priv->scheduler_invalidated_handler = 0;
+
+	g_clear_object (&priv->scheduler);
+}
+
+static void
+scheduler_allow_downloads_changed_cb (GsShell *shell)
+{
+	gs_shell_refresh_auto_updates_ui (shell);
+}
+
+static void
+scheduler_hold_cb (GObject *source_object,
+		   GAsyncResult *result,
+		   gpointer data)
+{
+	g_autoptr(GError) error_local = NULL;
+	MwscScheduler *scheduler = (MwscScheduler *) source_object;
+	g_autoptr(GsShell) shell = data;  /* reference added when starting the async operation */
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	if (!mwsc_scheduler_hold_finish (scheduler, result, &error_local)) {
+		g_warning ("Couldn't hold the Mogwai Scheduler daemon: %s",
+			   error_local->message);
+		return;
+	}
+
+	priv->scheduler_invalidated_handler =
+		g_signal_connect_swapped (scheduler, "invalidated",
+					  (GCallback) scheduler_invalidated_cb,
+					  shell);
+
+	g_signal_connect_object (scheduler, "notify::allow-downloads",
+				 (GCallback) scheduler_allow_downloads_changed_cb,
+				 shell,
+				 G_CONNECT_SWAPPED);
+
+	g_assert (priv->scheduler == NULL);
+	priv->scheduler = scheduler;
+
+	/* Update the UI accordingly. */
+	gs_shell_refresh_auto_updates_ui (shell);
+}
+
+static void
+scheduler_release_cb (GObject *source_object,
+		      GAsyncResult *result,
+		      gpointer data)
+{
+	MwscScheduler *scheduler = (MwscScheduler *) source_object;
+	g_autoptr(GsShell) shell = data;  /* reference added when starting the async operation */
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	g_autoptr(GError) error_local = NULL;
+
+	if (!mwsc_scheduler_release_finish (scheduler, result, &error_local))
+		g_warning ("Couldn't release the Mogwai Scheduler daemon: %s",
+			   error_local->message);
+
+	g_clear_object (&priv->scheduler);
+}
+
+static void
+scheduler_ready_cb (GObject *source_object,
+		    GAsyncResult *result,
+		    gpointer data)
+{
+	MwscScheduler *scheduler;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GsShell) shell = data;  /* reference added when starting the async operation */
+
+	scheduler = mwsc_scheduler_new_finish (result, &error_local);
+
+	if (scheduler == NULL) {
+		g_warning ("%s: Error getting Mogwai Scheduler: %s", G_STRFUNC,
+			   error_local->message);
+		return;
+	}
+
+	mwsc_scheduler_hold_async (scheduler,
+				   "monitoring allow-downloads property",
+				   NULL,
+				   scheduler_hold_cb,
+				   g_object_ref (shell));
+}
+#endif  /* HAVE_MOGWAI */
 
 static void
 free_back_entry (BackEntry *entry)
@@ -346,6 +522,16 @@ gs_shell_change_mode (GsShell *shell,
 
 	widget = gs_page_get_header_end_widget (page);
 	gs_shell_set_header_end_widget (shell, widget);
+
+	/* refresh the updates bar when moving out of the loading mode, but only
+	 * if the Mogwai scheduler state is already known, to avoid spuriously
+	 * showing the updates bar */
+#ifdef HAVE_MOGWAI
+	if (priv->scheduler != NULL)
+#else
+	if (TRUE)
+#endif
+		gs_shell_refresh_auto_updates_ui (shell);
 
 	/* destroy any existing modals */
 	if (priv->modal_dialogs != NULL) {
@@ -740,6 +926,21 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
 	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 
+	/* release our hold on the download scheduler */
+#ifdef HAVE_MOGWAI
+	if (priv->scheduler != NULL) {
+		if (priv->scheduler_invalidated_handler > 0)
+			g_signal_handler_disconnect (priv->scheduler,
+						     priv->scheduler_invalidated_handler);
+		priv->scheduler_invalidated_handler = 0;
+
+		mwsc_scheduler_release_async (priv->scheduler,
+					      NULL,
+					      scheduler_release_cb,
+					      g_object_ref (shell));
+	}
+#endif  /* HAVE_MOGWAI */
+
 	gs_shell_clean_back_entry_stack (shell);
 	gtk_widget_hide (dialog);
 	return TRUE;
@@ -751,6 +952,18 @@ gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gs_plugin_loader_set_scale (priv->plugin_loader,
 				    (guint) gtk_widget_get_scale_factor (widget));
+
+	/* Set up the updates bar. Do this here rather than in gs_shell_setup()
+	 * since we only want to hold the scheduler open while the gnome-software
+	 * main window is visible, and not while we’re running in the background. */
+#ifdef HAVE_MOGWAI
+	if (priv->scheduler == NULL)
+		mwsc_scheduler_new_async (priv->cancellable,
+					  (GAsyncReadyCallback) scheduler_ready_cb,
+					  g_object_ref (shell));
+#else
+	gs_shell_refresh_auto_updates_ui (shell);
+#endif  /* HAVE_MOGWAI */
 }
 
 static void
@@ -1910,7 +2123,12 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect_object (priv->plugin_loader, "notify::allow-updates",
 				 G_CALLBACK (gs_shell_allow_updates_notify_cb),
 				 shell, 0);
+	g_signal_connect_object (priv->plugin_loader, "notify::network-metered",
+				 G_CALLBACK (gs_shell_network_metered_notify_cb),
+				 shell, 0);
 	priv->cancellable = g_object_ref (cancellable);
+
+	priv->settings = g_settings_new ("org.gnome.software");
 
 	/* get UI */
 	priv->builder = gtk_builder_new_from_resource ("/org/gnome/Software/gnome-software.ui");
@@ -2024,6 +2242,14 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "extras_page"));
 	g_hash_table_insert (priv->pages, g_strdup ("extras"), page);
 	gs_shell_setup_pages (shell);
+
+	/* set up the metered data info bar and mogwai */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "metered_updates_bar"));
+	g_signal_connect (widget, "response",
+			  (GCallback) gs_shell_metered_updates_bar_response_cb, shell);
+
+	g_signal_connect (priv->settings, "changed::download-updates",
+			  (GCallback) gs_shell_download_updates_changed_cb, shell);
 
 	/* set up search */
 	g_signal_connect (priv->main_window, "key-press-event",
@@ -2233,6 +2459,20 @@ gs_shell_dispose (GObject *object)
 	g_clear_pointer (&priv->pages, g_hash_table_unref);
 	g_clear_pointer (&priv->events_info_uri, g_free);
 	g_clear_pointer (&priv->modal_dialogs, g_ptr_array_unref);
+	g_clear_object (&priv->settings);
+
+#ifdef HAVE_MOGWAI
+	if (priv->scheduler != NULL) {
+		if (priv->scheduler_invalidated_handler > 0)
+			g_signal_handler_disconnect (priv->scheduler,
+						     priv->scheduler_invalidated_handler);
+
+		mwsc_scheduler_release_async (priv->scheduler,
+					      NULL,
+					      scheduler_release_cb,
+					      g_object_ref (shell));
+	}
+#endif  /* HAVE_MOGWAI */
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
