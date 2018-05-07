@@ -94,9 +94,9 @@ gs_app_row_get_description (GsAppRow *app_row)
 
 	/* try all these things in order */
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
-		tmp = gs_app_get_description (priv->app);
-	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_summary (priv->app);
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
+		tmp = gs_app_get_description (priv->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_name (priv->app);
 	if (tmp == NULL)
