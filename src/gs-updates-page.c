@@ -1691,20 +1691,6 @@ gs_updates_page_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
 	gs_shell_show_uri (self->shell, uri);
 }
 
-static void
-gs_updates_page_invalidate_downloaded_upgrade (GsUpdatesPage *self)
-{
-	GsApp *app;
-	app = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
-	if (app == NULL)
-		return;
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
-		return;
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	g_debug ("resetting %s to AVAILABLE as the updates have changed",
-		 gs_app_get_id (app));
-}
-
 static gboolean
 gs_shell_update_are_updates_in_progress (GsUpdatesPage *self)
 {
@@ -1728,10 +1714,6 @@ static void
 gs_updates_page_changed_cb (GsPluginLoader *plugin_loader,
                             GsUpdatesPage *self)
 {
-	/* if we do a live update and the upgrade is waiting to be deployed
-	 * then make sure all new packages are downloaded */
-	gs_updates_page_invalidate_downloaded_upgrade (self);
-
 	/* check to see if any apps in the app list are in a processing state */
 	if (gs_shell_update_are_updates_in_progress (self)) {
 		g_debug ("ignoring updates-changed as updates in progress");
@@ -1748,20 +1730,6 @@ gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
                                    GsPluginStatus status,
                                    GsUpdatesPage *self)
 {
-	switch (status) {
-	case GS_PLUGIN_STATUS_INSTALLING:
-	case GS_PLUGIN_STATUS_REMOVING:
-		if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE &&
-		    gs_app_get_id (app) != NULL) {
-			/* if we do a install or remove then make sure all new
-			 * packages are downloaded */
-			gs_updates_page_invalidate_downloaded_upgrade (self);
-		}
-		break;
-	default:
-		break;
-	}
-
 	self->last_status = status;
 	gs_updates_page_update_ui_state (self);
 }
