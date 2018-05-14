@@ -813,6 +813,38 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	gs_plugin_loader_set_max_parallel_ops (plugin_loader, 0);
 }
 
+static void
+gs_plugin_dummy_progress_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GsApp) app = gs_app_new ("chiron-paid.desktop");
+	gs_app_set_management_plugin (app, "dummy");
+
+	/* check available state */
+	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_progress (app, 50);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 50);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 0);
+
+	/* check installed state */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_progress (app, 50);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 50);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 0);
+
+	/* check purchasable state */
+	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+	gs_app_set_state (app, AS_APP_STATE_PURCHASABLE);
+	gs_app_set_state (app, AS_APP_STATE_PURCHASING);
+	gs_app_set_progress (app, 50);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 50);
+	gs_app_set_state (app, AS_APP_STATE_PURCHASABLE);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 0);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -966,6 +998,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/limit-parallel-ops",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_limit_parallel_ops_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/progress",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_dummy_progress_func);
 	return g_test_run ();
 }
 
