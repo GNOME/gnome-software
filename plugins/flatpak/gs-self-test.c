@@ -1712,6 +1712,31 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 
 	/* verify that the extension has been removed by the app's removal */
 	g_assert_false (gs_app_is_installed (extension));
+
+	/* remove the runtime */
+	app_tmp = gs_app_get_runtime (app);
+	g_assert_nonnull (app_tmp);
+
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app_tmp,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_tmp), ==, AS_APP_STATE_AVAILABLE);
+
+	/* remove the remote */
+	g_object_unref (plugin_job);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+					 "app", app_source,
+					 NULL);
+	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_AVAILABLE);
 }
 
 int
