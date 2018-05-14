@@ -1004,6 +1004,16 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	    state == AS_APP_STATE_AVAILABLE)
 		priv->install_date = 0;
 
+	/* reset the progress on non-action states */
+	if (priv->progress != 0 &&
+	    (state == AS_APP_STATE_INSTALLED ||
+	     state == AS_APP_STATE_AVAILABLE_LOCAL ||
+	     state == AS_APP_STATE_AVAILABLE ||
+	     state == AS_APP_STATE_PURCHASABLE)) {
+		priv->progress = 0;
+		gs_app_queue_notify (app, "progress");
+	}
+
 	/* save this to simplify error handling in the plugins */
 	switch (state) {
 	case AS_APP_STATE_INSTALLING:
