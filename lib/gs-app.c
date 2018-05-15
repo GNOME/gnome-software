@@ -1544,6 +1544,7 @@ gs_app_add_source_id (GsApp *app, const gchar *source_id)
 	guint i;
 
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (source_id != NULL);
 
 	/* only add if not already present */
 	for (i = 0; i < priv->source_ids->len; i++) {
@@ -3391,6 +3392,7 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (app2));
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
@@ -3447,6 +3449,7 @@ gs_app_add_history (GsApp *app, GsApp *app2)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (app2));
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_ptr_array_add (priv->history, g_object_ref (app2));
 }
