@@ -335,7 +335,7 @@ gs_auth_dialog_new (GsPluginLoader *plugin_loader,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "no auth-provider given for %s",
-			     gs_app_get_id (app));
+			     app != NULL ? gs_app_get_id (app) : NULL);
 		return NULL;
 	}
 	auth = gs_plugin_loader_get_auth_by_id (plugin_loader, provider_id);
@@ -344,7 +344,8 @@ gs_auth_dialog_new (GsPluginLoader *plugin_loader,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "no auth-provider %s for %s",
-			     provider_id, gs_app_get_id (app));
+			     provider_id,
+			     app != NULL ? gs_app_get_id (app) : NULL);
 		return NULL;
 	}
 
@@ -353,7 +354,7 @@ gs_auth_dialog_new (GsPluginLoader *plugin_loader,
 			       "use-header-bar", TRUE,
 			       NULL);
 	dialog->plugin_loader = g_object_ref (plugin_loader);
-	dialog->app = g_object_ref (app);
+	dialog->app = app != NULL ? g_object_ref (app) : NULL;
 	dialog->auth = g_object_ref (auth);
 	gs_auth_dialog_setup (dialog);
 
