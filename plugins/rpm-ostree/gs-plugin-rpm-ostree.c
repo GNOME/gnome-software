@@ -30,6 +30,11 @@
 
 #include "gs-rpmostree-generated.h"
 
+/* This shows up in the `rpm-ostree status` as the software that
+ * initiated the update.
+ */
+#define GS_RPMOSTREE_CLIENT_ID PACKAGE_NAME
+
 struct GsPluginData {
 	GsRPMOSTreeOS		*os_proxy;
 	GsRPMOSTreeSysroot	*sysroot_proxy;
@@ -85,6 +90,7 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GVariantBuilder) options_builder = NULL;
 
 	/* Create a proxy for sysroot */
 	if (priv->sysroot_proxy == NULL) {
@@ -127,9 +133,12 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		}
 	}
 
+	options_builder = g_variant_builder_new (G_VARIANT_TYPE ("a{sv}"));
+	g_variant_builder_add (options_builder, "{sv}", "id",
+			       g_variant_new_string (GS_RPMOSTREE_CLIENT_ID));
 	/* Register as a client so that the rpm-ostree daemon doesn't exit */
 	if (!gs_rpmostree_sysroot_call_register_client_sync (priv->sysroot_proxy,
-	                                                     g_variant_new ("a{sv}", NULL),
+	                                                     g_variant_new ("a{sv}", g_variant_builder_end (options_builder)),
 	                                                     cancellable,
 	                                                     error)) {
 		gs_utils_error_convert_gio (error);
