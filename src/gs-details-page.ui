@@ -1600,4 +1600,26 @@
     </child>
   </object>
 
+  <object class="GtkPopoverMenu" id="popover_menu">
+    <property name="name">popover_menu</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">6</property>
+        <child>
+          <object class="GtkModelButton" id="button_signin">
+            <property name="visible">True</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkModelButton" id="button_signout">
+            <property name="visible">True</property>
+            <property name="text" translatable="yes">Sing Out</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
 </interface>
