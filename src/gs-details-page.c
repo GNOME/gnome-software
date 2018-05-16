@@ -145,6 +145,10 @@ struct _GsDetailsPage
 	GtkWidget		*label_content_rating_none;
 	GtkWidget		*button_details_rating_value;
 	GtkWidget		*label_details_rating_title;
+	GtkWidget		*button_menu;
+	GtkWidget		*popover_menu;
+	GtkWidget		*button_signin;
+	GtkWidget		*button_signout;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -249,6 +253,27 @@ app_has_pending_action (GsApp *app)
 }
 
 static void
+gs_shell_update_button_menu_visibility (GsDetailsPage *self)
+{
+	const gchar *mamangement_plugin = gs_app_get_management_plugin (self->app);
+	gboolean show_button_menu = FALSE;
+
+	if (mamangement_plugin != NULL) {
+		GsPlugin *plugin = gs_plugin_loader_find_plugin (self->plugin_loader, mamangement_plugin);
+		if (plugin != NULL) {
+			const gchar *default_auth = gs_plugin_get_default_auth (plugin);
+			if (default_auth != NULL) {
+				GsAuth *auth = gs_plugin_get_auth_by_id (plugin, default_auth);
+				g_object_set_data (G_OBJECT (self->button_menu), "auth", auth);
+				show_button_menu =  auth != NULL;
+			}
+		}
+	}
+
+	gtk_widget_set_visible (self->button_menu, show_button_menu);
+}
+
+static void
 gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
@@ -272,6 +297,8 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	/* not set, perhaps file-to-app */
 	if (self->app == NULL)
 		return;
+
+	gs_shell_update_button_menu_visibility (self);
 
 	state = gs_app_get_state (self->app);
 
@@ -2282,6 +2309,77 @@ gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
 	gs_details_page_refresh_reviews (self);
 }
 
+static void
+gs_details_page_button_signin_cb (GtkWidget *widget,
+				  GsDetailsPage *self)
+{
+	GsAuth *auth = GS_AUTH (g_object_get_data (G_OBJECT (self->button_menu), "auth"));
+
+	gs_page_authenticate (GS_PAGE (self),
+			      self->app,
+			      gs_auth_get_provider_id (auth),
+			      self->cancellable,
+			      NULL, NULL);
+}
+
+static void
+gs_details_page_logout_cb (GObject *source,
+			   GAsyncResult *res,
+			   gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to logout: %s",  error->message);
+		return;
+	}
+}
+
+static void
+gs_details_page_button_signout_cb (GtkWidget *widget,
+				   GsDetailsPage *self)
+{
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGOUT,
+					 "auth", g_object_get_data (G_OBJECT (self->button_menu), "auth"),
+					 NULL);
+
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    gs_details_page_logout_cb,
+					    self);
+
+}
+
+static void
+gs_details_page_button_menu_cb (GtkButton *button,
+                                GsDetailsPage *self)
+{
+	GsAuth *auth = GS_AUTH (g_object_get_data (G_OBJECT (self->button_menu), "auth"));
+	gboolean logged_in;
+
+	g_return_if_fail (auth != NULL);
+
+	logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
+
+	if (logged_in) {
+		g_autofree gchar *signin_label;
+		signin_label = g_strdup_printf (_("Signed in as %s"), gs_auth_get_username (auth));
+		gtk_button_set_label (GTK_BUTTON (self->button_signin), signin_label);
+	} else {
+		gtk_button_set_label (GTK_BUTTON (self->button_signin), _("Sign In…"));
+	}
+
+	gtk_widget_set_sensitive (self->button_signin, !logged_in);
+	gtk_widget_set_sensitive (self->button_signout, logged_in);
+
+	gtk_popover_set_relative_to (GTK_POPOVER (self->popover_menu), GTK_WIDGET (self->button_menu));
+	gtk_popover_popup (GTK_POPOVER (self->popover_menu));
+}
+
 static gboolean
 gs_details_page_setup (GsPage *page,
                        GsShell *shell,
@@ -2291,6 +2389,7 @@ gs_details_page_setup (GsPage *page,
                        GError **error)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
+	AtkObject *accessible;
 	GtkAdjustment *adj;
 
 	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
@@ -2313,6 +2412,14 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_details_page_network_available_notify_cb),
 				 self, 0);
+
+	self->button_menu = gtk_button_new_from_icon_name ("open-menu-symbolic", GTK_ICON_SIZE_MENU);
+	accessible = gtk_widget_get_accessible (self->button_menu);
+	if (accessible != NULL)
+		atk_object_set_name (accessible, _("Menu"));
+	gs_page_set_header_end_widget (GS_PAGE (self), self->button_menu);
+	g_signal_connect (self->button_menu, "clicked",
+			  G_CALLBACK (gs_details_page_button_menu_cb), self);
 
 	/* setup details */
 	g_signal_connect (self->button_install, "clicked",
@@ -2359,6 +2466,12 @@ gs_details_page_setup (GsPage *page,
 			  self);
 	g_signal_connect (self->label_license_nonfree_details, "activate-link",
 			  G_CALLBACK (gs_details_page_activate_link_cb),
+			  self);
+	g_signal_connect (self->button_signin, "clicked",
+			  G_CALLBACK (gs_details_page_button_signin_cb),
+			  self);
+	g_signal_connect (self->button_signout, "clicked",
+			  G_CALLBACK (gs_details_page_button_signout_cb),
 			  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
@@ -2480,6 +2593,9 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_none);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_rating_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_menu);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_signin);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_signout);
 }
 
 static void

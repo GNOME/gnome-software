@@ -78,6 +78,7 @@ typedef struct
 	gchar			*language;		/* allow-none */
 	gchar			*name;
 	gchar			*appstream_id;
+	gchar			*default_auth;
 	guint			 scale;
 	guint			 order;
 	guint			 priority;
@@ -220,6 +221,7 @@ gs_plugin_finalize (GObject *object)
 		g_source_remove (priv->timer_id);
 	g_free (priv->name);
 	g_free (priv->appstream_id);
+	g_free (priv->default_auth);
 	g_free (priv->data);
 	g_free (priv->locale);
 	g_free (priv->language);
@@ -719,6 +721,43 @@ gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
 			return auth;
 	}
 	return NULL;
+}
+
+/**
+ * gs_plugin_get_default_auth:
+ * @plugin: a #GsPlugin
+ *
+ * Gets the default auth object.
+ *
+ * Returns: the #GsAuth, or %NULL if not found
+ *
+ * Since: 3.30
+ **/const gchar *
+gs_plugin_get_default_auth (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+	return priv->default_auth;
+}
+
+/**
+ * gs_plugin_set_default_auth:
+ * @plugin: a #GsPlugin
+ * @default_auth: a #GsAuth
+ *
+ * Sets the default auth object.
+ *
+ * Returns: the #GsAuth, or %NULL if not found
+ *
+ * Since: 3.30
+ **/
+void
+gs_plugin_set_default_auth (GsPlugin *plugin, const gchar *default_auth)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_free (priv->default_auth);
+	priv->default_auth = g_strdup (default_auth);
 }
 
 /**
