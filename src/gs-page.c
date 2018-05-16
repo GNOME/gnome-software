@@ -85,7 +85,8 @@ gs_page_authenticate_cb (GtkDialog *dialog,
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	helper->callback (helper->page, response_type == GTK_RESPONSE_OK, helper->callback_data);
+	if (helper->callback != NULL)
+		helper->callback (helper->page, response_type == GTK_RESPONSE_OK, helper->callback_data);
 }
 
 void
