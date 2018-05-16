@@ -2144,8 +2144,12 @@ gs_flatpak_create_app_from_repo_dir (GsFlatpak *self,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Removable Media Repo");
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_metadata (app, "GnomeSoftware::RemovableMediaCategory", "usb");
-	if (reload_overview)
+	if (reload_overview) {
 		gs_app_set_metadata (app, "GnomeSoftware::ReloadOverview", "true");
+		/* also make it load the updates again since there may be some
+		 * available USB remotes */
+		gs_plugin_updates_changed (self->plugin);
+	}
 
 	return g_steal_pointer (&app);
 }
