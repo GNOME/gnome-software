@@ -91,6 +91,9 @@ void		 gs_plugin_add_auth			(GsPlugin	*plugin,
 							 GsAuth		*auth);
 GsAuth		*gs_plugin_get_auth_by_id		(GsPlugin	*plugin,
 							 const gchar	*provider_id);
+void		 gs_plugin_set_default_auth		(GsPlugin       *plugin,
+							 const gchar    *default_auth);
+const gchar	*gs_plugin_get_default_auth		(GsPlugin       *plugin);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,
 							 const gchar	*name);

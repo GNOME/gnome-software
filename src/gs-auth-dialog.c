@@ -195,6 +195,7 @@ gs_auth_dialog_setup (GsAuthDialog *dialog)
 		gtk_entry_set_text (GTK_ENTRY (dialog->entry_username),
 				    gs_auth_get_username (dialog->auth));
 	}
+
 	if (gs_auth_get_password (dialog->auth) != NULL) {
 		gtk_entry_set_text (GTK_ENTRY (dialog->entry_password),
 				    gs_auth_get_password (dialog->auth));

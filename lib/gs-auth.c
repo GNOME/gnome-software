@@ -558,6 +558,68 @@ gs_auth_store_save (GsAuth *auth, GsAuthStoreFlags flags,
 	return TRUE;
 }
 
+gboolean
+gs_auth_store_clear (GsAuth *auth, GsAuthStoreFlags flags,
+		     GCancellable *cancellable, GError **error)
+{
+	SecretSchema schema = {
+		auth->provider_schema,
+		SECRET_SCHEMA_NONE,
+		{ { "key", SECRET_SCHEMA_ATTRIBUTE_STRING } }
+	};
+
+	/* no schema */
+	if (auth->provider_schema == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "No provider schema set for %s",
+			     auth->provider_id);
+		return FALSE;
+	}
+
+	/* username */
+	if ((flags & GS_AUTH_STORE_FLAG_USERNAME) > 0) {
+		if (!secret_password_clear_sync (&schema,
+						 cancellable, error,
+						 "key", "username", NULL))
+			return FALSE;
+	}
+
+	g_free (auth->username);
+	auth->username = NULL;
+
+	/* password */
+	if ((flags & GS_AUTH_STORE_FLAG_PASSWORD) > 0) {
+		if (!secret_password_clear_sync (&schema,
+						 cancellable, error,
+						 "key", "password", NULL))
+			return FALSE;
+	}
+
+	g_free (auth->password);
+	auth->password = NULL;
+
+	/* metadata */
+	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
+		g_autoptr(GList) keys = NULL;
+		keys = g_hash_table_get_keys (auth->metadata);
+		for (GList *l = keys; l != NULL; l = l->next) {
+			const gchar *key = l->data;
+			if (!secret_password_clear_sync (&schema,
+							 cancellable, error,
+							 "key", key, NULL))
+				return FALSE;
+
+		}
+	}
+
+	g_hash_table_remove_all (auth->metadata);
+
+	/* success */
+	return TRUE;
+}
+
 static void
 gs_auth_get_property (GObject *object, guint prop_id,
 			GValue *value, GParamSpec *pspec)
