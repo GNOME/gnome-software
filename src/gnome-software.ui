@@ -17,6 +17,18 @@
       </object>
     </child>
   </object>
+  <object class="GtkPopoverMenu" id="account_popover">
+    <child>
+      <object class="GtkBox" id="account_box">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">6</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkApplicationWindow" id="window_software">
     <property name="can_focus">False</property>
     <property name="default-width">1200</property>
@@ -264,7 +276,27 @@
                 </child>
               </object>
               <packing>
+                <property name="position">1</property>
                 <property name="pack-type">end</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="account_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="sensitive">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">open-menu-symbolic</property>
+                    <property name="icon_size">1</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="pack-type">end</property>
+                <property name="position">0</property>
               </packing>
             </child>
           </object>
@@ -274,7 +306,6 @@
             <property name="position">0</property>
           </packing>
         </child>
-
         <child>
           <object class="GtkSearchBar" id="search_bar">
             <property name="visible">True</property>

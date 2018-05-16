@@ -85,7 +85,8 @@ gs_page_authenticate_cb (GtkDialog *dialog,
 	/* unmap the dialog */
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	helper->callback (helper->page, response_type == GTK_RESPONSE_OK, helper->callback_data);
+	if (helper->callback != NULL)
+		helper->callback (helper->page, response_type == GTK_RESPONSE_OK, helper->callback_data);
 }
 
 void
@@ -102,6 +103,7 @@ gs_page_authenticate (GsPage *page,
 	g_autoptr(GError) error = NULL;
 
 	helper = g_slice_new0 (GsPageHelper);
+	helper->app = app != NULL ? g_object_ref (app) : NULL;
 	helper->page = g_object_ref (page);
 	helper->callback = callback;
 	helper->callback_data = user_data;

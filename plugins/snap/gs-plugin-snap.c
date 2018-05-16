@@ -79,7 +79,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	priv->auth = gs_auth_new ("snapd");
 	gs_auth_set_provider_name (priv->auth, "Snap Store");
-	gs_auth_set_provider_schema (priv->auth, "com.ubuntu.UbuntuOne.GnomeSoftware");
+	gs_auth_set_provider_schema (priv->auth, "com.ubuntu.SnapStore.GnomeSoftware");
 	gs_plugin_add_auth (plugin, priv->auth);
 
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "desktop-categories");
@@ -188,6 +188,7 @@ load_auth (GsPlugin *plugin)
 	g_variant_get (macaroon_variant, "(&s^as)", &macaroon, &discharges);
 	g_clear_object (&priv->auth_data);
 	priv->auth_data = snapd_auth_data_new (macaroon, discharges);
+	gs_auth_add_flags (priv->auth, GS_AUTH_FLAG_VALID);
 }
 
 gboolean
@@ -1095,6 +1096,27 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 
 	gs_auth_add_flags (priv->auth, GS_AUTH_FLAG_VALID);
 
+	return TRUE;
+}
+
+gboolean
+gs_plugin_auth_logout (GsPlugin *plugin, GsAuth *auth,
+		       GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	if (auth != priv->auth)
+		return TRUE;
+
+	/* clear */
+	if (!gs_auth_store_clear (auth,
+				  GS_AUTH_STORE_FLAG_USERNAME |
+				  GS_AUTH_STORE_FLAG_METADATA,
+				  cancellable, error))
+		return FALSE;
+
+	g_clear_object (&priv->auth_data);
+	gs_auth_set_flags (priv->auth, 0);
 	return TRUE;
 }
 
