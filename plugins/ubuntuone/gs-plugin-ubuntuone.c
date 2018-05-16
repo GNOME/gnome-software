@@ -234,6 +234,27 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 }
 
 gboolean
+gs_plugin_auth_logout (GsPlugin *plugin, GsAuth *auth,
+		       GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	if (auth != priv->auth)
+		return TRUE;
+
+	/* clear */
+	if (!gs_auth_store_clear (auth,
+				  GS_AUTH_STORE_FLAG_USERNAME |
+				  GS_AUTH_STORE_FLAG_METADATA,
+				  cancellable, error))
+		return FALSE;
+
+	gs_auth_set_flags (priv->auth, 0);
+	return TRUE;
+}
+
+
+gboolean
 gs_plugin_auth_lost_password (GsPlugin *plugin, GsAuth *auth,
 			      GCancellable *cancellable, GError **error)
 {

@@ -108,6 +108,10 @@ gboolean	 gs_auth_store_save		(GsAuth		*auth,
 						 GsAuthStoreFlags flags,
 						 GCancellable	*cancellable,
 						 GError		**error);
+gboolean	 gs_auth_store_clear		(GsAuth		*auth,
+						 GsAuthStoreFlags flags,
+						 GCancellable	*cancellable,
+						 GError		**error);
 
 G_END_DECLS
 

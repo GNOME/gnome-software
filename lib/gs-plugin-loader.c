@@ -2266,6 +2266,13 @@ gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
 	return NULL;
 }
 
+GPtrArray *
+gs_plugin_loader_get_auths (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->auth_array;
+}
+
 void
 gs_plugin_loader_add_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
