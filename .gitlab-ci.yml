@@ -4,44 +4,15 @@ stages:
   - build
 
 before_script:
-  - dnf update -y
-  - >
-    dnf install -y \
-      desktop-file-utils \
-      docbook-style-xsl \
-      dpkg \
-      flatpak-devel \
-      fwupd-devel \
-      gcc \
-      gettext \
-      glib2-devel \
-      gnome-desktop3-devel \
-      gsettings-desktop-schemas-devel \
-      gtk3-devel \
-      gtk-doc \
-      gspell-devel \
-      json-glib-devel \
-      libappstream-glib-devel \
-      libgudev1-devel \
-      liboauth-devel \
-      libsecret-devel \
-      libsoup-devel \
-      libxslt \
-      meson \
-      ninja-build \
-      ostree-devel \
-      PackageKit \
-      PackageKit-glib-devel \
-      polkit-devel \
-      rpm-devel \
-      snapd-glib-devel \
-      sqlite-devel \
-      valgrind-devel
+  # Update and use base build deps
+  - yum update -y && yum -y builddep gnome-software
+  # Some deps may not be sync'd
+  - yum -y install rpm-ostree-devel
 
 build-gnome-software:
   stage: build
   script:
-  - meson -Denable-fwupd=false _build .
+  - meson -Denable-fwupd=false -Denable-rpm-ostree=true _build .
   - ninja -v -C _build
   - mkdir -p /run/dbus
   - mkdir -p /var
