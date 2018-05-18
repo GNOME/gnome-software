@@ -145,41 +145,45 @@ gs_plugin_flatpak_report_warning (GsPlugin *plugin,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	g_autoptr(GPtrArray) installations = NULL;
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint num_installations_added = 0;
 
 	/* clear in case we're called from resetup in the self tests */
 	g_ptr_array_set_size (priv->flatpaks, 0);
 
-	/* we use a permissions helper to elevate privs */
-	if (priv->has_system_helper && priv->destdir_for_tests == NULL) {
+	/* if we're not just running the tests */
+	if (priv->destdir_for_tests == NULL) {
 		g_autoptr(GError) local_error = NULL;
-		g_autoptr(GPtrArray) installations = NULL;
+		g_autoptr(FlatpakInstallation) installation = NULL;
 
-		installations = flatpak_get_system_installations (cancellable,
-								  &local_error);
-		if (installations == NULL) {
-			gs_plugin_flatpak_report_warning (plugin, &local_error);
-		} else {
-			for (guint i = 0; i < installations->len; i++) {
-				FlatpakInstallation *installation =
-					g_ptr_array_index (installations, i);
-				if (!gs_plugin_flatpak_add_installation (plugin,
-									 installation,
-									 cancellable,
-									 &local_error)) {
-					gs_plugin_flatpak_report_warning (plugin,
+		/* include the system installations */
+		if (priv->has_system_helper) {
+			installations = flatpak_get_system_installations (cancellable,
 									  &local_error);
-					g_clear_error (&local_error);
-					continue;
-				}
-				++num_installations_added;
+			if (installations == NULL) {
+				gs_plugin_flatpak_report_warning (plugin, &local_error);
+				g_clear_error (&local_error);
 			}
 		}
-	}
 
-	/* in gs-self-test */
-	if (priv->destdir_for_tests != NULL) {
+		/* include the user installation */
+		installation = flatpak_installation_new_user (cancellable,
+							      &local_error);
+		if (installation == NULL) {
+			/* if some error happened, report it as an event, but
+			 * do not return it, otherwise it will disable the whole
+			 * plugin (meaning that support for Flatpak will not be
+			 * possible even if a system installation is working) */
+			gs_plugin_flatpak_report_warning (plugin, &local_error);
+		} else {
+			if (installations == NULL)
+				installations = g_ptr_array_new_with_free_func (g_object_unref);
+
+			g_ptr_array_add (installations, g_steal_pointer (&installation));
+		}
+	} else {
+		/* use the test installation */
 		g_autofree gchar *full_path = g_build_filename (priv->destdir_for_tests,
 								"flatpak",
 								NULL);
@@ -193,38 +197,29 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
-		if (!gs_plugin_flatpak_add_installation (plugin, installation,
-							 cancellable, error)) {
-			return FALSE;
+
+		installations = g_ptr_array_new_with_free_func (g_object_unref);
+		g_ptr_array_add (installations, g_steal_pointer (&installation));
+	}
+
+	/* add the installations */
+	for (guint i = 0; installations != NULL && i < installations->len; i++) {
+		g_autoptr(GError) local_error = NULL;
+		FlatpakInstallation *installation = g_ptr_array_index (installations, i);
+		if (!gs_plugin_flatpak_add_installation (plugin,
+							 installation,
+							 cancellable,
+							 &local_error)) {
+			gs_plugin_flatpak_report_warning (plugin,
+							  &local_error);
+			continue;
 		}
 		++num_installations_added;
 	}
 
-	/* per-user installations always available when not in self tests */
-	if (priv->destdir_for_tests == NULL) {
-		g_autoptr(FlatpakInstallation) installation = NULL;
-		g_autoptr(GError) local_error = NULL;
-
-		installation = flatpak_installation_new_user (cancellable,
-							      &local_error);
-		if (installation != NULL)
-			gs_plugin_flatpak_add_installation (plugin, installation,
-							    cancellable, &local_error);
-
-		if (local_error != NULL) {
-			/* if some error happened, report it as an event, but
-			 * do not return it, otherwise it will disable the whole
-			 * plugin (meaning that support for Flatpak will not be
-			 * possible even if a system installation is working) */
-			gs_plugin_flatpak_report_warning (plugin, &local_error);
-		} else {
-			++num_installations_added;
-		}
-	}
-
+	/* when no installation has been loaded, return the error so the
+	 * plugin gets disabled */
 	if (num_installations_added == 0) {
-		/* when no installation has been loaded, return the error so the
-		 * plugin gets disabled */
 		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
 			     "Failed to load any Flatpak installation...");
 		return FALSE;
