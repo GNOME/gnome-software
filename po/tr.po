@@ -8,16 +8,16 @@
 # İbrahim Aydın <brhm.1995@hotmail.com>, 2017.
 # Yunus Can Kapucu <yunus_can.kapucu@hotmail.com>, 2017.
 # Furkan Ahmet Kara <furkanahmetkara.fk@gmail.com>, 2018.
-# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2018.
 # Muhammet Kara <muhammetk@gmail.com>, 2014, 2015, 2016, 2017, 2018.
+# Emin Tufan Çetin <etcetin@gmail.com>, 2017, 2018.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-03-23 16:05+0000\n"
-"PO-Revision-Date: 2018-03-25 12:53+0300\n"
-"Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
+"POT-Creation-Date: 2018-04-17 11:43+0000\n"
+"PO-Revision-Date: 2018-05-18 01:51+0300\n"
+"Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
 "MIME-Version: 1.0\n"
@@ -76,17 +76,17 @@ msgstr "Güncellemeler bölmesi"
 msgid "The update details"
 msgstr "Güncelleme ayrıntıları"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1050
+#: data/appdata/org.gnome.Software.appdata.xml.in:1075
 msgid "The GNOME Project"
 msgstr "GNOME Projesi"
 
 #: data/org.gnome.software.external-appstream.policy.in:11
 msgid "Install an appstream file into a system location"
-msgstr "Bir appstream dosyasını sistem konumuna yükle"
+msgstr "Appstream dosyasını sistem konumuna kur"
 
 #: data/org.gnome.software.external-appstream.policy.in:12
 msgid "Installing an appstream file into a system location"
-msgstr "Bir appstream dosyası sistem konumuna yükleniyor"
+msgstr "Appstream dosyası sistem konumuna kuruluyor"
 
 #: data/org.gnome.software.gschema.xml:5
 msgid "A list of compatible projects"
@@ -235,7 +235,7 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:94
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Mümkün olduğunda yığın uygulamaları sistemdeki tüm kullanıcılar için yükle"
+"Mümkün olduğunda yığın uygulamaları sistemdeki tüm kullanıcılar için kur"
 
 #: data/org.gnome.software.gschema.xml:98
 msgid "Show the folder management UI"
@@ -259,7 +259,7 @@ msgstr "Özgür olmayan yazılım depolarını kurmak için hatırlatıcıyı g�
 
 #: data/org.gnome.software.gschema.xml:118
 msgid "Show the installed size for apps in the list of installed applications"
-msgstr "Yüklenen uygulamalar listesinde uygulamalar için yüklü boyutu göster"
+msgstr "Kurulan uygulamalar listesinde uygulamalar için kurulu boyutu göster"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:122
@@ -367,7 +367,7 @@ msgid "Pending"
 msgstr "Beklemede"
 
 #: src/gs-app-addon-row.c:102 src/gs-app-row.ui:209 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:88
+#: src/gs-feature-tile.c:87
 msgid "Installed"
 msgstr "Kuruldu"
 
@@ -445,7 +445,7 @@ msgstr "PKTADI"
 
 #: src/gs-application.c:132
 msgid "Install the application (using application ID)"
-msgstr "Uygulama yükle (uygulama kimliğini kullanarak)"
+msgstr "Uygulama kur (uygulama kimliğini kullanarak)"
 
 #: src/gs-application.c:134
 msgid "Open a local package file"
@@ -539,7 +539,7 @@ msgstr "Güncelle"
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-app-row.c:202 src/gs-app-row.c:211 src/gs-page.c:746
-#: src/gs-repos-dialog.c:272
+#: src/gs-repos-dialog.c:336
 msgid "Remove"
 msgstr "Kaldır"
 
@@ -547,7 +547,7 @@ msgstr "Kaldır"
 #. * will restart into a special update-only mode
 #: src/gs-app-row.c:328
 msgid "Device cannot be used during update."
-msgstr "Cihaz güncelleme sırasında kullanılamaz."
+msgstr "Aygıt güncelleme sırasında kullanılamaz."
 
 #. TRANSLATORS: this refers to where the app came from
 #: src/gs-app-row.c:338 src/gs-details-page.ui:988
@@ -692,7 +692,7 @@ msgstr "İS güncellemeleri kuruldu"
 #. * have been successfully installed
 #: src/gs-common.c:139
 msgid "Recently installed updates are available to review"
-msgstr "Son olarak yüklenen güncellemeler gözden geçirme için uygun"
+msgstr "Son olarak kurulan güncellemeler gözden geçirme için uygun"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -718,7 +718,7 @@ msgid "Install Third-Party Software?"
 msgstr "Üçüncü Taraf Yazılım Kurulsun mu?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:214
+#: src/gs-common.c:214 src/gs-repos-dialog.c:247
 msgid "Enable Third-Party Software Repository?"
 msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin mi?"
 
@@ -1619,7 +1619,7 @@ msgstr "Eklentiler"
 
 #: src/gs-details-page.ui:1176
 msgid "Selected add-ons will be installed with the application."
-msgstr "Seçilen eklentiler, uygulama ile birlikte yüklenecek."
+msgstr "Seçilen eklentiler, uygulama ile birlikte kurulacak."
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-details-page.ui:1219
@@ -1907,7 +1907,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1480
+#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1510
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s biçimi için kullanılabilir ek kodek yok."
@@ -2153,12 +2153,12 @@ msgid "Recommended Productivity Applications"
 msgstr "Önerilen Verimlilik Uygulamaları"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:890 src/gs-repos-dialog.c:777
+#: src/gs-overview-page.c:889 src/gs-repos-dialog.c:840
 msgid "Access additional software from selected third party sources."
 msgstr "Seçilen üçüncü taraf kaynaklardan ek yazılıma erişin."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:894 src/gs-repos-dialog.c:781
+#: src/gs-overview-page.c:893 src/gs-repos-dialog.c:844
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2168,12 +2168,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:901 src/gs-repos-dialog.c:788
+#: src/gs-overview-page.c:898 src/gs-repos-dialog.c:849
 msgid "Find out more…"
 msgstr "Daha çoğunu öğren…"
 
 #. TRANSLATORS: button to turn on third party software repositories
-#: src/gs-overview-page.c:910
+#. TRANSLATORS: button to accept the agreement
+#: src/gs-overview-page.c:906 src/gs-repos-dialog.c:252
 msgid "Enable"
 msgstr "Etkinleştir"
 
@@ -2218,7 +2219,7 @@ msgstr "%s uygulamasını satın almak istediğinizden emin misiniz?"
 #: src/gs-page.c:493
 #, c-format
 msgid "%s will be installed, and you will be charged %s."
-msgstr "%s uygulaması yüklenecek ve %s ile ücretlendirileceksiniz."
+msgstr "%s uygulaması kurulacak ve %s ile ücretlendirileceksiniz."
 
 #. TRANSLATORS: this is button text to purchase the application
 #: src/gs-page.c:506
@@ -2262,7 +2263,7 @@ msgstr "%s uygulamasını kaldırmak istediğinizden emin misiniz?"
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s kaldırılacak ve tekrar kullanmak için yeniden kurmanız gerekecek."
 
-#: lib/gs-plugin-loader.c:1483
+#: lib/gs-plugin-loader.c:1513
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2272,13 +2273,13 @@ msgstr ""
 "nasıl edinebileceğinizle ilgili seçenekleri, web sitesinde bulabilirsiniz."
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:70 src/gs-summary-tile.c:75
+#: src/gs-popular-tile.c:69 src/gs-summary-tile.c:75
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Kuruldu)"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-popular-tile.c:205
+#: src/gs-popular-tile.c:205 src/gs-shell-search-provider.c:271
 #, c-format
 msgid "Source: %s"
 msgstr "Kaynak: %s"
@@ -2400,47 +2401,47 @@ msgstr[0] "%s ve %s kuruldu"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:248
+#: src/gs-repos-dialog.c:312
 #, c-format
 msgid "Remove “%s”?"
 msgstr "“%s” deposunu kaldır?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:253
+#: src/gs-repos-dialog.c:317
 #, c-format
 msgid "Disable “%s”?"
 msgstr "“%s” deposunu devre dışı bırak?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:257
+#: src/gs-repos-dialog.c:321
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
 msgstr ""
-"Bu depodan yüklenen yazılımlar, güvenlik düzeltmeleri de dahil olmak üzere "
+"Bu depodan kurulan yazılımlar, güvenlik düzeltmeleri de dahil olmak üzere "
 "artık güncelleme almayacak."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:275
+#: src/gs-repos-dialog.c:339
 msgid "Disable"
 msgstr "Devre dışı bırak"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:686
+#: src/gs-repos-dialog.c:750
 msgid "the operating system"
 msgstr "işletim sistemi"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:756 src/gs-repos-dialog.c:795
+#: src/gs-repos-dialog.c:819 src/gs-repos-dialog.c:855
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Bu depolar %s tarafından sağlanan öntanımlı yazılımı tamamlar."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:774
+#: src/gs-repos-dialog.c:837
 msgid "Third Party Repositories"
 msgstr "Üçüncü Şahıs Depolar"
 
@@ -2534,7 +2535,7 @@ msgstr "Lütfen incelemeyi yazmaya biraz daha çok zaman ayırın"
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:137
 msgid "Please choose a star rating"
-msgstr "Lütfen bir yıldız puanlaması seçin"
+msgstr "Lütfen yıldız puanlaması seçin"
 
 #. TRANSLATORS: the review is not acceptable
 #: src/gs-review-dialog.c:141
@@ -2607,8 +2608,8 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
-"Bir kere rapor edildikten sonra; inceleme, bir yönetici tarafından "
-"denetlenene dek gizlenecektir."
+"İnceleme raporlandıktan sonra yönetici tarafından denetlenene dek "
+"gizlenecektir."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
@@ -2718,25 +2719,25 @@ msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:900
+#: src/gs-shell.c:910
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "%s’den donanım yazılımı güncellemeleri indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:906
+#: src/gs-shell.c:916
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "%s’den güncellemeler indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:913
+#: src/gs-shell.c:923
 msgid "Unable to download updates"
 msgstr "Güncellemeler indirilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:918
+#: src/gs-shell.c:928
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2745,88 +2746,83 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:927
+#: src/gs-shell.c:937
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "%s’den güncellemeler indirilemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:932
+#: src/gs-shell.c:942
 msgid "Unable to download updates: not enough disk space"
 msgstr "Güncellemeler indirilemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:940
+#: src/gs-shell.c:950
 msgid "Unable to download updates: authentication was required"
 msgstr "Güncellemeler indirilemiyor: yetkilendirme gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:945
+#: src/gs-shell.c:955
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Güncellemeler indirilemiyor: yetkilendirme geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:950
+#: src/gs-shell.c:960
 msgid ""
 "Unable to download updates: you do not have permission to install software"
-msgstr "Güncellemeler indirilemiyor: yazılım yükleme izniniz yok"
+msgstr "Güncellemeler indirilemiyor: yazılım kurma izniniz yok"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:957
+#: src/gs-shell.c:967
 msgid "Unable to get list of updates"
 msgstr "Güncellemelerin listesi alınamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:999
+#: src/gs-shell.c:1006
 #, c-format
-#| msgid "Unable to update %s: authentication was required"
 msgid "Unable to purchase %s: authentication was required"
 msgstr "%s satın alınamıyor: kimlik doğrulama gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1006
+#: src/gs-shell.c:1013
 #, c-format
-#| msgid "Unable to update %s: authentication was invalid"
 msgid "Unable to purchase %s: authentication was invalid"
 msgstr "%s satın alınamıyor: kimlik doğrulama geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1013
+#: src/gs-shell.c:1020
 #, c-format
-#| msgid "Unable to update %s: not enough disk space"
 msgid "Unable to purchase %s: no payment method setup"
 msgstr "%s satın alınamıyor: ayarlanmış ödeme yöntemi yok"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1020
+#: src/gs-shell.c:1027
 #, c-format
-#| msgid "Unable to update %s: authentication was required"
 msgid "Unable to purchase %s: payment was declined"
 msgstr "%s satın alınamıyor: ödeme reddedildi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1027
+#: src/gs-shell.c:1034
 #, c-format
-#| msgid "Unable to update %s"
 msgid "Unable to purchase %s"
 msgstr "%s satın alınamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1066
+#: src/gs-shell.c:1070
 #, c-format
 msgid "Unable to install %s as download failed from %s"
-msgstr "%2$s’den indirme başarısız olduğundan %1$s yüklenemiyor"
+msgstr "%2$s’den indirme başarısız olduğundan %1$s kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1072
+#: src/gs-shell.c:1076
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "İndirme başarısız olduğundan %s yüklenemiyor"
@@ -2835,109 +2831,109 @@ msgstr "İndirme başarısız olduğundan %s yüklenemiyor"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1084
+#: src/gs-shell.c:1088
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
-msgstr "%2$s çalışma zamanı olmadığından %1$s yüklenemiyor"
+msgstr "%2$s çalışma zamanı olmadığından %1$s kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1090
+#: src/gs-shell.c:1094
 #, c-format
 msgid "Unable to install %s as not supported"
-msgstr "Desteklenmediğinden %s yüklenemiyor"
+msgstr "Desteklenmediğinden %s kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1097
+#: src/gs-shell.c:1101
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
-"Yüklenemiyor: İnternet bağlantısı gerekiyordu fakat kullanılabilir değildi."
+"Kurulamıyor: İnternet bağlantısı gerekiyordu ancak kullanılabilir değildi."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1103
+#: src/gs-shell.c:1107
 msgid "Unable to install: the application has an invalid format"
 msgstr "Kurulamıyor: uygulama geçersiz biçime sahip"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1108
+#: src/gs-shell.c:1112
 #, c-format
 msgid "Unable to install %s: not enough disk space"
-msgstr "%s yüklenemiyor: yetersiz disk alanı"
+msgstr "%s kurulamıyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1116
+#: src/gs-shell.c:1120
 #, c-format
 msgid "Unable to install %s: authentication was required"
-msgstr "%s yüklenemiyor: yetkilendirme gerekiyor"
+msgstr "%s kurulamıyor: yetkilendirme gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1123
+#: src/gs-shell.c:1127
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
-msgstr "%s yüklenemiyor: yetkilendirme geçersiz"
+msgstr "%s kurulamıyor: yetkilendirme geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1130
+#: src/gs-shell.c:1134
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
-msgstr "%s yüklenemiyor: yazılım yükleme izniniz yok"
+msgstr "%s kurulamıyor: yazılım kurma izniniz yok"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: src/gs-shell.c:1143
+#: src/gs-shell.c:1147
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "%s hesabınız askıya alındı."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1147
+#: src/gs-shell.c:1151
 msgid "It is not possible to install software until this has been resolved."
-msgstr "Bu çözülene dek yazılım yüklenmesi mümkün değildir."
+msgstr "Bu çözülene dek yazılım kurulması mümkün değildir."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: src/gs-shell.c:1158
+#: src/gs-shell.c:1162
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Daha çok bilgi için %s adresini ziyaret et."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1167
+#: src/gs-shell.c:1171
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "%s kurulamıyor: AC güç gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1176
+#: src/gs-shell.c:1180
 #, c-format
 msgid "Unable to install %s"
-msgstr "%s yüklenemiyor"
+msgstr "%s kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1225
+#: src/gs-shell.c:1226
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "%2$s’den %1$s’e güncellenemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1231
+#: src/gs-shell.c:1232
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "İndirme başarısız olduğundan %s güncellenemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1237
+#: src/gs-shell.c:1238
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Güncellenemiyor: İnternet bağlantısı gerekiyordu fakat kullanılabilir "
@@ -2945,42 +2941,42 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1245
+#: src/gs-shell.c:1246
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "%s güncellenemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1254
+#: src/gs-shell.c:1255
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "%s güncellenemiyor: yetkilendirme gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1261
+#: src/gs-shell.c:1262
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "%s güncellenemiyor: yetkilendirme geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1268
+#: src/gs-shell.c:1269
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "%s güncellenemiyor: yazılım güncellemeye yetkiniz yok"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1276
+#: src/gs-shell.c:1277
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "%s güncellenemiyor: AC güç gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1285
+#: src/gs-shell.c:1286
 #, c-format
 msgid "Unable to update %s"
 msgstr "%s yükseltilemiyor"
@@ -2988,20 +2984,20 @@ msgstr "%s yükseltilemiyor"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1333
+#: src/gs-shell.c:1331
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "%2$s’den %1$s’e yükseltilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1338
+#: src/gs-shell.c:1336
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "İndirme başarısız olduğundan %s yükseltilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1345
+#: src/gs-shell.c:1343
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr ""
 "Yükseltilemiyor: İnternet bağlantısı gerekiyordu fakat kullanılabilir "
@@ -3009,77 +3005,77 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1353
+#: src/gs-shell.c:1351
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "%s’e yükseltilemiyor: yetersiz disk alanı"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1362
+#: src/gs-shell.c:1360
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "%s’e yükseltilemiyor: yetkilendirme gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1369
+#: src/gs-shell.c:1367
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "%s’e yükseltilemiyor: yetkilendirme geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1376
+#: src/gs-shell.c:1374
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Unable to upgrade to %s: yükseltme için izniniz yok"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1383
+#: src/gs-shell.c:1381
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "%s’e yükseltilemiyor: AC güç gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1392
+#: src/gs-shell.c:1390
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "%s’e yükseltilemiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1437
+#: src/gs-shell.c:1432
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "%s kaldırılamıyor: yetkilendirme gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1443
+#: src/gs-shell.c:1438
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "%s kaldırılamıyor: yetkilendirme geçersiz"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1449
+#: src/gs-shell.c:1444
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "%s kaldırılamıyor: yazılım kaldırma izniniz yok "
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1456
+#: src/gs-shell.c:1451
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "%s kaldırılamıyor: AC güç gerekiyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1465
+#: src/gs-shell.c:1460
 #, c-format
 msgid "Unable to remove %s"
 msgstr "%s kaldırılamıyor"
@@ -3088,49 +3084,69 @@ msgstr "%s kaldırılamıyor"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1506
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
-msgstr "%s başlatılamıyor: %s yüklü değil"
+msgstr "%s başlatılamıyor: %s kurulmamış"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1521 src/gs-shell.c:1572 src/gs-shell.c:1623
+#: src/gs-shell.c:1513 src/gs-shell.c:1564 src/gs-shell.c:1605
+#: src/gs-shell.c:1653
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Yetersiz disk alanı — biraz yer aç ve yeniden dene."
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1529 src/gs-shell.c:1580 src/gs-shell.c:1650
+#: src/gs-shell.c:1521 src/gs-shell.c:1572 src/gs-shell.c:1613
+#: src/gs-shell.c:1680
 msgid "Sorry, something went wrong"
 msgstr "Üzgünüz, bir şeyler yanlış gitti"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1567
+#: src/gs-shell.c:1556
+#| msgid "Unable to install %s as not supported"
+msgid "Failed to install file: not supported"
+msgstr "Dosya kurulamadı: desteklenmiyor"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1560
 msgid "Failed to install file: authentication failed"
 msgstr "Dosya kurulamıyor: yetkilendirme başarısız"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1597
+#| msgid "Unable to install %s as not supported"
+msgid "Failed to install: not supported"
+msgstr "Kurulamadı: desteklenmiyor"
+
+#. TRANSLATORS: failure text for the in-app notification
+#: src/gs-shell.c:1601
+#| msgid "Failed to install file: authentication failed"
+msgid "Failed to install: authentication failed"
+msgstr "Kurulamadı: yetkilendirme başarısız"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1617
+#: src/gs-shell.c:1647
 #, c-format
 msgid "Unable to contact %s"
 msgstr "%s ile iletişim kurulamıyor"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1632
+#: src/gs-shell.c:1662
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Yeni eklentileri kullanmak için %s yeniden başlatılmalıdır."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1667
 msgid "This application needs to be restarted to use new plugins."
 msgstr ""
 "Yeni eklentileri kullanmak için bu uygulamanın yeniden başlatılması gerekiyor"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1644
+#: src/gs-shell.c:1674
 msgid "AC power is required"
 msgstr "AC güç gerekiyor"
 
@@ -3168,35 +3184,35 @@ msgstr "%s’de yüklendi"
 #. TRANSLATORS: this is the title of the installed updates dialog window
 #: src/gs-update-dialog.c:246
 msgid "Installed Updates"
-msgstr "Yüklü Güncellemeler"
+msgstr "Kurulu Güncellemeler"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:449
+#: src/gs-update-dialog.c:452
 msgid "Additions"
 msgstr "Eklentiler"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:453
+#: src/gs-update-dialog.c:456
 msgid "Removals"
 msgstr "Kaldırılanlar"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:457
+#: src/gs-update-dialog.c:460
 msgid "Updates"
 msgstr "Güncellemeler"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:461
+#: src/gs-update-dialog.c:464
 msgid "Downgrades"
 msgstr "Sürüm düşürmeler"
 
 #: src/gs-update-dialog.ui:111
 msgid "No updates have been installed on this system."
-msgstr "Bu sisteme hiç bir güncelleme kurulmadı."
+msgstr "Bu sisteme hiçbir güncelleme kurulmadı."
 
 #: src/gs-update-monitor.c:93
 msgid "Security Updates Pending"
@@ -3346,7 +3362,7 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
-"Özür dileriz: güncelleme yükleme başarısız. Lütfen başka bir güncellemeyi "
+"Özür dileriz: güncelleme kurma başarısız. Lütfen başka bir güncellemeyi "
 "bekleyin ve yeniden deneyin. Eğer sorun devam ederse, yazılım sağlayıcınızla "
 "görüşün."
 
@@ -3587,7 +3603,7 @@ msgstr "_Ağ Ayarları"
 
 #: src/gs-updates-page.ui:393
 msgid "Updates are automatically managed"
-msgstr "Güncellemeler kendiliğinden yüklenir"
+msgstr "Güncellemeler kendiliğinden kurulur"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
@@ -4077,7 +4093,7 @@ msgstr "Gözde web uygulamalarını tarayıcıda çalıştır"
 #. TRANSLATORS: tool that is used when copying profiles system-wide
 #: plugins/external-appstream/gs-install-appstream.c:112
 msgid "GNOME Software AppStream system-wide installer"
-msgstr "GNOME Yazılımlar AppStream sistem geneli yüklecisi"
+msgstr "GNOME Yazılımlar AppStream sistem geneli kurucusu"
 
 #: plugins/external-appstream/gs-install-appstream.c:114
 msgid "Failed to parse command line arguments"
@@ -4124,7 +4140,7 @@ msgstr "Flatpak Desteği"
 
 #: plugins/flatpak/org.gnome.Software.Plugin.Flatpak.metainfo.xml.in:7
 msgid "Flatpak is a framework for desktop applications on Linux"
-msgstr "Flatpak, Linux’taki masaüstü uygulamaları için bir çerçevedir"
+msgstr "Flatpak, Linux’taki masaüstü uygulamaları için çerçevedir"
 
 #. TRANSLATORS: status text when downloading new metadata
 #: plugins/flatpak/gs-flatpak.c:607
@@ -4179,7 +4195,7 @@ msgstr "Açık Masaüstü Derecelendirme Desteği"
 
 #: plugins/odrs/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:7
 msgid "ODRS is a service providing user reviews of applications"
-msgstr "AMDD uygulamaların kullanıcı görüşlerini sağlayan bir hizmettir"
+msgstr "AMDD uygulamaların kullanıcı görüşlerini sağlayan hizmettir"
 
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:392
 msgid "GNOME Shell Extensions Repository"
@@ -4201,7 +4217,7 @@ msgstr "Snappy Desteği"
 
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
-msgstr "Bir snap evrensel bir Linux paketidir"
+msgstr "Snap, evrensel bir Linux paketidir"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/steam/gs-plugin-steam.c:600
