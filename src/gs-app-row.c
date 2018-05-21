@@ -89,9 +89,7 @@ gs_app_row_get_description (GsAppRow *app_row)
 	const gchar *tmp = NULL;
 
 	/* convert the markdown update description into PangoMarkup */
-	if (priv->show_update &&
-	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
-	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
+	if (priv->show_update) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL && tmp[0] != '\0')
 			return g_string_new (tmp);
@@ -370,9 +368,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_label_set_label (GTK_LABEL (priv->name_label),
 				     gs_app_get_name (priv->app));
 	}
-	if (priv->show_update &&
-	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
-	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
+	if (priv->show_update) {
 		g_autofree gchar *verstr = NULL;
 		verstr = gs_app_row_format_version_update (priv->app);
 		gtk_label_set_label (GTK_LABEL (priv->version_label), verstr);
