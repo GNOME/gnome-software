@@ -1191,6 +1191,8 @@ gs_appstream_add_extra_info (GsPlugin *plugin, AsApp *app)
 	case AS_APP_KIND_SHELL_EXTENSION:
 		as_app_add_category (app, "Addon");
 		as_app_add_category (app, "ShellExtension");
+		if (g_hash_table_size (as_app_get_comments (app)) == 0)
+			as_app_set_comment (app, NULL, "GNOME Shell Extension");
 		icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		as_icon_set_name (icon, "application-x-addon-symbolic");

@@ -565,12 +565,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 			return NULL;
 	}
 
-	/* required to match categories in gnome-software */
-	as_app_add_category (app, "Addon");
-	as_app_add_category (app, "ShellExtension");
-
 	/* we have no data :/ */
-	as_app_set_comment (app, NULL, "GNOME Shell Extension");
 	as_app_add_metadata (app, "GnomeSoftware::Plugin",
 			     gs_plugin_get_name (plugin));
 	as_app_add_metadata (app, "GnomeSoftware::OriginHostnameUrl",
