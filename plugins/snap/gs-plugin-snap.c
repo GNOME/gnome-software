@@ -29,7 +29,6 @@
 struct GsPluginData {
 	SnapdAuthData		*auth_data;
 	gchar			*store_name;
-	gboolean		 snapd_supports_polkit;
 	SnapdSystemConfinement	 system_confinement;
 	GsAuth			*auth;
 
@@ -192,7 +191,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	g_autoptr(SnapdSystemInformation) system_information = NULL;
-	g_auto(GStrv) version = NULL;
 
 	client = get_client (plugin, error);
 	if (client == NULL)
@@ -206,15 +204,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		priv->store_name = g_strdup (/* TRANSLATORS: default snap store name */
 					     _("Snap Store"));
 	priv->system_confinement = snapd_system_information_get_confinement (system_information);
-
-	version = g_strsplit (snapd_system_information_get_version (system_information), ".", -1);
-	if (g_strv_length (version) >= 2) {
-		int major = g_ascii_strtoull (version[0], NULL, 10);
-		int minor = g_ascii_strtoull (version[1], NULL, 10);
-
-		if (major > 2 || (major == 2 && minor >= 28))
-			priv->snapd_supports_polkit = TRUE;
-	}
 
 	/* load from disk */
 	gs_auth_add_metadata (priv->auth, "macaroon", NULL);
@@ -1042,33 +1031,27 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 		      GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(SnapdUserInformation) user_information = NULL;
 	g_autoptr(GVariant) macaroon_variant = NULL;
 	g_autofree gchar *serialized_macaroon = NULL;
 
 	if (auth != priv->auth)
 		return TRUE;
 
-	/* snapd < 2.28 required root access to login, so we went via a D-Bus service (snapd-login-service).
-	 * For newer versions we just access it directly */
 	g_clear_object (&priv->auth_data);
-	if (priv->snapd_supports_polkit) {
-		g_autoptr(SnapdClient) client = NULL;
-		g_autoptr(SnapdUserInformation) user_information = NULL;
 
-		client = get_client (plugin, error);
-		if (client == NULL)
-			return FALSE;
+	client = get_client (plugin, error);
+	if (client == NULL)
+		return FALSE;
 
-		user_information = snapd_client_login2_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
-		if (user_information != NULL)
-			priv->auth_data = g_object_ref (snapd_user_information_get_auth_data (user_information));
-	}
-	else
-		priv->auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
-	if (priv->auth_data == NULL) {
+	user_information = snapd_client_login2_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
+	if (user_information == NULL) {
 		snapd_error_convert (error);
 		return FALSE;
 	}
+
+	priv->auth_data = g_object_ref (snapd_user_information_get_auth_data (user_information));
 
 	macaroon_variant = g_variant_new ("(s^as)",
 					  snapd_auth_data_get_macaroon (priv->auth_data),
