@@ -47,10 +47,6 @@ get_client (GsPlugin *plugin, GError **error)
 
 	client = snapd_client_new ();
 	snapd_client_set_allow_interaction (client, TRUE);
-#ifndef SNAPD_GLIB_VERSION_1_24
-	if (!snapd_client_connect_sync (client, NULL, error))
-		return NULL;
-#endif
 	old_user_agent = snapd_client_get_user_agent (client);
 	user_agent = g_strdup_printf ("%s %s", gs_user_agent (), old_user_agent);
 	snapd_client_set_user_agent (client, user_agent);
@@ -1057,21 +1053,15 @@ gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
 	g_clear_object (&priv->auth_data);
 	if (priv->snapd_supports_polkit) {
 		g_autoptr(SnapdClient) client = NULL;
-#ifdef SNAPD_GLIB_VERSION_1_26
 		g_autoptr(SnapdUserInformation) user_information = NULL;
-#endif
 
 		client = get_client (plugin, error);
 		if (client == NULL)
 			return FALSE;
 
-#ifdef SNAPD_GLIB_VERSION_1_26
 		user_information = snapd_client_login2_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
 		if (user_information != NULL)
 			priv->auth_data = g_object_ref (snapd_user_information_get_auth_data (user_information));
-#else
-		priv->auth_data = snapd_client_login_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
-#endif
 	}
 	else
 		priv->auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
