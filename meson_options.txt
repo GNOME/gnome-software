@@ -3,6 +3,7 @@ option('enable-gspell', type : 'boolean', value : true, description : 'enable gs
 option('enable-gnome-desktop', type : 'boolean', value : true, description : 'enable gnome-desktop')
 option('enable-man', type : 'boolean', value : true, description : 'enable man pages')
 option('enable-packagekit', type : 'boolean', value : true, description : 'enable PackageKit support')
+option('enable-packagekit-autoremove', type : 'boolean', value : false, description : 'autoremove packages in PackageKit')
 option('enable-polkit', type : 'boolean', value : true, description : 'enable PolKit support')
 option('enable-fwupd', type : 'boolean', value : true, description : 'enable fwupd support')
 option('enable-flatpak', type : 'boolean', value : true, description : 'enable Flatpak support')
