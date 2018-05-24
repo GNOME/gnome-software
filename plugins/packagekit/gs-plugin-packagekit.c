@@ -530,7 +530,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	results = pk_task_remove_packages_sync (priv->task,
 						package_ids,
-						TRUE, FALSE,
+						TRUE, GS_PACKAGEKIT_AUTOREMOVE,
 						cancellable,
 						gs_plugin_packagekit_progress_cb, &data,
 						error);

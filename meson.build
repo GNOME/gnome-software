@@ -138,6 +138,11 @@ if get_option('enable-packagekit')
   conf.set('HAVE_PACKAGEKIT', '1')
   add_project_arguments('-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE',
                         language : 'c')
+  if get_option('enable-packagekit-autoremove')
+      conf.set('GS_PACKAGEKIT_AUTOREMOVE', 'TRUE')
+  else
+      conf.set('GS_PACKAGEKIT_AUTOREMOVE', 'FALSE')
+  endif
 endif
 
 if get_option('enable-fwupd')
