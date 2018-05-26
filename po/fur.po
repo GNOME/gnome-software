@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-04-17 11:43+0000\n"
-"PO-Revision-Date: 2018-04-17 20:18+0200\n"
+"POT-Creation-Date: 2018-05-23 00:10+0000\n"
+"PO-Revision-Date: 2018-05-26 10:55+0200\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.0.7\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -67,7 +67,7 @@ msgstr "Panel inzornaments"
 msgid "The update details"
 msgstr "I detais dal inzornament"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1075
+#: data/appdata/org.gnome.Software.appdata.xml.in:1103
 msgid "The GNOME Project"
 msgstr "Il progjet GNOME"
 
@@ -371,7 +371,7 @@ msgstr "Torne invie cumò"
 msgid "More Information"
 msgstr "Plui informazions"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:428
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:424
 msgid "Pending"
 msgstr "In spiete"
 
@@ -384,7 +384,7 @@ msgstr "Instalât"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:106 src/gs-app-row.c:217 src/gs-details-page.c:464
+#: src/gs-app-addon-row.c:106 src/gs-app-row.c:215 src/gs-details-page.c:464
 #: src/gs-third-party-repo-row.c:113
 msgid "Installing"
 msgstr "Instalazion"
@@ -393,7 +393,7 @@ msgstr "Instalazion"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:110 src/gs-app-row.c:223 src/gs-repo-row.c:140
+#: src/gs-app-addon-row.c:110 src/gs-app-row.c:221 src/gs-repo-row.c:140
 #: src/gs-third-party-repo-row.c:120
 msgid "Removing"
 msgstr "Rimozion"
@@ -511,20 +511,20 @@ msgstr "Un biel mût di ministrâ il software sul sisteme."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:172
+#: src/gs-app-row.c:170
 msgid "Visit website"
 msgstr "Visite il sît web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:177
+#: src/gs-app-row.c:175
 msgid "Install…"
 msgstr "Instale…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:184
+#: src/gs-app-row.c:182
 msgid "Cancel"
 msgstr "Anule"
 
@@ -532,13 +532,13 @@ msgstr "Anule"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:191 src/gs-common.c:276 src/gs-page.c:589
+#: src/gs-app-row.c:189 src/gs-common.c:276 src/gs-page.c:589
 msgid "Install"
 msgstr "Instale"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:198
+#: src/gs-app-row.c:196
 msgid "Update"
 msgstr "Inzorne"
 
@@ -546,19 +546,19 @@ msgstr "Inzorne"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:202 src/gs-app-row.c:211 src/gs-page.c:746
+#: src/gs-app-row.c:200 src/gs-app-row.c:209 src/gs-page.c:746
 #: src/gs-repos-dialog.c:336
 msgid "Remove"
 msgstr "Gjave"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:328
+#: src/gs-app-row.c:326
 msgid "Device cannot be used during update."
 msgstr "Il dispositîf nol pues jessi doprât intant che si inzorne."
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-app-row.c:338 src/gs-details-page.ui:988
+#: src/gs-app-row.c:336 src/gs-details-page.ui:988
 msgid "Source"
 msgstr "Sorzint"
 
@@ -1550,6 +1550,7 @@ msgstr "Sît _web"
 msgid "_Donate"
 msgstr "_Done"
 
+# aplicazion
 #: src/gs-details-page.ui:701
 msgid "Localized in your Language"
 msgstr "Localizade te tô lenghe"
@@ -1566,9 +1567,10 @@ msgstr "Ativitât di publicazion"
 msgid "System Integration"
 msgstr "Integrazion tal sisteme"
 
+# aplicazion
 #: src/gs-details-page.ui:749
 msgid "Sandboxed"
-msgstr "Isolât"
+msgstr "Isolade"
 
 #: src/gs-details-page.ui:774
 msgid "Version"
@@ -4182,7 +4184,7 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Daûr a otignî i metadâts flatpak par %s…"
 
 #. TRANSLATORS: status text when downloading the RuntimeRepo
-#: plugins/flatpak/gs-flatpak.c:2773
+#: plugins/flatpak/gs-flatpak.c:2781
 msgid "Getting runtime source…"
 msgstr "Daûr a recuperâ il sorzint dal runtime…"
 
@@ -4245,7 +4247,7 @@ msgid "Downloading shell extension metadata…"
 msgstr "Daûr a discjariâ i metadâts de estension de shell…"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:211
+#: plugins/snap/gs-plugin-snap.c:207
 msgid "Snap Store"
 msgstr "Archivi Snap"
 
