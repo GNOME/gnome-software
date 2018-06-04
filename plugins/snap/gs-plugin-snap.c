@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2015-2016 Canonical Ltd
+ * Copyright (C) 2015-2018 Canonical Ltd
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -59,6 +59,9 @@ get_client (GsPlugin *plugin, GError **error)
 	return g_steal_pointer (&client);
 }
 
+static void
+auth_changed_cb (GsAuth *auth, const gchar *account_id, gpointer data);
+
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -77,10 +80,15 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->store_snaps = g_hash_table_new_full (g_str_hash, g_str_equal,
 						   g_free, (GDestroyNotify) g_object_unref);
 
-	priv->auth = gs_auth_new ("snapd");
+	priv->auth = gs_auth_new ("snapd", "ubuntusso");
 	gs_auth_set_provider_name (priv->auth, "Snap Store");
-	gs_auth_set_provider_schema (priv->auth, "com.ubuntu.SnapStore.GnomeSoftware");
+	gs_auth_set_header (priv->auth, _("To continue, you need to use an Ubuntu One account."),
+					_("To continue, you need to use your Ubuntu One account."),
+					_("To continue, you need to use an Ubuntu One account."));
 	gs_plugin_add_auth (plugin, priv->auth);
+	g_signal_connect_object (priv->auth, "changed",
+				 G_CALLBACK (auth_changed_cb),
+				 plugin, 0);
 
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "desktop-categories");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "ubuntu-reviews");
@@ -121,9 +129,6 @@ snapd_error_convert (GError **perror)
 			error->code = GS_PLUGIN_ERROR_AUTH_REQUIRED;
 			g_free (error->message);
 			error->message = g_strdup ("Requires authentication with @snapd");
-			break;
-		case SNAPD_ERROR_TWO_FACTOR_REQUIRED:
-			error->code = GS_PLUGIN_ERROR_PIN_REQUIRED;
 			break;
 		case SNAPD_ERROR_AUTH_DATA_INVALID:
 		case SNAPD_ERROR_TWO_FACTOR_INVALID:
@@ -167,34 +172,64 @@ snapd_error_convert (GError **perror)
 static void
 load_auth (GsPlugin *plugin)
 {
+
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsAuth *auth;
-	const gchar *serialized_macaroon;
-	g_autoptr(GVariant) macaroon_variant = NULL;
-	const gchar *macaroon;
-	g_auto(GStrv) discharges = NULL;
+	GoaObject *goa_object;
+	GoaPasswordBased *password_based;
+	g_autofree gchar *macaroon = NULL;
+	g_autofree gchar* discharges_str = NULL;
+	g_autoptr(GVariant) discharges_var = NULL;
+	g_autofree const gchar **discharges = NULL;
 	g_autoptr(SnapdAuthData) auth_data = NULL;
+	g_autoptr(GError) error = NULL;
 
 	auth = gs_plugin_get_auth_by_id (plugin, "snapd");
 	if (auth == NULL)
 		return;
 
-	serialized_macaroon = gs_auth_get_metadata_item (auth, "macaroon");
-	if (serialized_macaroon == NULL)
-		return;
-
-	macaroon_variant = g_variant_parse (G_VARIANT_TYPE ("(sas)"),
-					    serialized_macaroon,
-					    NULL,
-					    NULL,
-					    NULL);
-	if (macaroon_variant == NULL)
-		return;
-
-	g_variant_get (macaroon_variant, "(&s^as)", &macaroon, &discharges);
 	g_clear_object (&priv->auth_data);
+	goa_object = gs_auth_get_account (auth);
+	if (goa_object == NULL)
+		return;
+
+	password_based = goa_object_peek_password_based (goa_object);
+	if (password_based == NULL)
+		return;
+
+	goa_password_based_call_get_password_sync (password_based,
+						   "macaroon",
+						   &macaroon,
+						   NULL, &error);
+	if (error != NULL) {
+		g_warning ("Failed to get macaroon: %s", error->message);
+		return;
+	}
+
+	goa_password_based_call_get_password_sync (password_based,
+						   "discharges",
+						   &discharges_str,
+						   NULL, &error);
+	if (error != NULL) {
+		g_warning ("Failed to get discharges %s", error->message);
+		return;
+	}
+
+	if (discharges_str)
+		discharges_var = g_variant_parse (G_VARIANT_TYPE ("as"),
+						  discharges_str,
+						  NULL, NULL, NULL);
+	if (discharges_var)
+		discharges = g_variant_get_strv (discharges_var, NULL);
+
 	priv->auth_data = snapd_auth_data_new (macaroon, discharges);
-	gs_auth_add_flags (priv->auth, GS_AUTH_FLAG_VALID);
+}
+
+static void
+auth_changed_cb (GsAuth *auth, const gchar *account_id, gpointer data)
+{
+	GsPlugin *plugin = GS_PLUGIN (data);
+	load_auth (plugin);
 }
 
 gboolean
@@ -228,13 +263,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	/* load from disk */
-	gs_auth_add_metadata (priv->auth, "macaroon", NULL);
-	if (!gs_auth_store_load (priv->auth,
-				 GS_AUTH_STORE_FLAG_USERNAME |
-				 GS_AUTH_STORE_FLAG_METADATA,
-				 cancellable, error))
-		return FALSE;
-	load_auth (plugin);
+	if (gs_auth_store_load (priv->auth))
+		load_auth (plugin);
 
 	/* success */
 	return TRUE;
@@ -1091,118 +1121,4 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	return TRUE;
-}
-
-gboolean
-gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
-		      GCancellable *cancellable, GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GVariant) macaroon_variant = NULL;
-	g_autofree gchar *serialized_macaroon = NULL;
-
-	if (auth != priv->auth)
-		return TRUE;
-
-	/* snapd < 2.28 required root access to login, so we went via a D-Bus service (snapd-login-service).
-	 * For newer versions we just access it directly */
-	g_clear_object (&priv->auth_data);
-	if (priv->snapd_supports_polkit) {
-		g_autoptr(SnapdClient) client = NULL;
-#ifdef SNAPD_GLIB_VERSION_1_26
-		g_autoptr(SnapdUserInformation) user_information = NULL;
-#endif
-
-		client = get_client (plugin, error);
-		if (client == NULL)
-			return FALSE;
-
-#ifdef SNAPD_GLIB_VERSION_1_26
-		user_information = snapd_client_login2_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
-		if (user_information != NULL)
-			priv->auth_data = g_object_ref (snapd_user_information_get_auth_data (user_information));
-#else
-		priv->auth_data = snapd_client_login_sync (client, gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
-#endif
-	}
-	else
-		priv->auth_data = snapd_login_sync (gs_auth_get_username (auth), gs_auth_get_password (auth), gs_auth_get_pin (auth), NULL, error);
-	if (priv->auth_data == NULL) {
-		snapd_error_convert (error);
-		return FALSE;
-	}
-
-	macaroon_variant = g_variant_new ("(s^as)",
-					  snapd_auth_data_get_macaroon (priv->auth_data),
-					  snapd_auth_data_get_discharges (priv->auth_data));
-	serialized_macaroon = g_variant_print (macaroon_variant, FALSE);
-	gs_auth_add_metadata (auth, "macaroon", serialized_macaroon);
-
-	/* store */
-	if (!gs_auth_store_save (auth,
-				 GS_AUTH_STORE_FLAG_USERNAME |
-				 GS_AUTH_STORE_FLAG_METADATA,
-				 cancellable, error))
-		return FALSE;
-
-	gs_auth_add_flags (priv->auth, GS_AUTH_FLAG_VALID);
-
-	return TRUE;
-}
-
-gboolean
-gs_plugin_auth_logout (GsPlugin *plugin, GsAuth *auth,
-		       GCancellable *cancellable, GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	if (auth != priv->auth)
-		return TRUE;
-
-	/* clear */
-	if (!gs_auth_store_clear (auth,
-				  GS_AUTH_STORE_FLAG_USERNAME |
-				  GS_AUTH_STORE_FLAG_METADATA,
-				  cancellable, error))
-		return FALSE;
-
-	g_clear_object (&priv->auth_data);
-	gs_auth_set_flags (priv->auth, 0);
-	return TRUE;
-}
-
-gboolean
-gs_plugin_auth_lost_password (GsPlugin *plugin, GsAuth *auth,
-			      GCancellable *cancellable, GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	if (auth != priv->auth)
-		return TRUE;
-
-	// FIXME: snapd might not be using Ubuntu One accounts
-	// https://bugs.launchpad.net/bugs/1598667
-	g_set_error_literal (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_AUTH_INVALID,
-			     "do online using @https://login.ubuntu.com/+forgot_password");
-	return FALSE;
-}
-
-gboolean
-gs_plugin_auth_register (GsPlugin *plugin, GsAuth *auth,
-			 GCancellable *cancellable, GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	if (auth != priv->auth)
-		return TRUE;
-
-	// FIXME: snapd might not be using Ubuntu One accounts
-	// https://bugs.launchpad.net/bugs/1598667
-	g_set_error_literal (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_AUTH_INVALID,
-			     "do online using @https://login.ubuntu.com/+login");
-	return FALSE;
 }

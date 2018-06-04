@@ -71,10 +71,10 @@ gnome_software_dependencies = [
   appstream_glib,
   gio_unix,
   gmodule,
+  goa,
   gtk,
   json_glib,
   libm,
-  libsecret,
   libsoup
 ]
 
@@ -293,10 +293,10 @@ if get_option('enable-tests')
       appstream_glib,
       gio_unix,
       gmodule,
+      goa,
       gtk,
       json_glib,
       libm,
-      libsecret,
       libsoup,
     ],
     link_with : [
