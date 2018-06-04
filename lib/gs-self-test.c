@@ -635,54 +635,6 @@ gs_app_func (void)
 	gs_app_set_state_recover (app);
 }
 
-static void
-gs_auth_secret_func (void)
-{
-	gboolean ret;
-	g_autoptr(GDBusConnection) conn = NULL;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAuth) auth1 = NULL;
-	g_autoptr(GsAuth) auth2 = NULL;
-
-	/* we not have an active session bus */
-	conn = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &error);
-	if (conn == NULL) {
-		g_prefix_error (&error, "no session bus available: ");
-		g_test_skip (error->message);
-		return;
-	}
-
-	/* save secrets to disk */
-	auth1 = gs_auth_new ("self-test");
-	gs_auth_set_provider_schema (auth1, "org.gnome.Software.Dummy");
-	gs_auth_set_username (auth1, "hughsie");
-	gs_auth_set_password (auth1, "foobarbaz");
-	gs_auth_add_metadata (auth1, "day", "monday");
-	ret = gs_auth_store_save (auth1,
-				  GS_AUTH_STORE_FLAG_USERNAME |
-				  GS_AUTH_STORE_FLAG_PASSWORD |
-				  GS_AUTH_STORE_FLAG_METADATA,
-				  NULL, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	/* load secrets from disk */
-	auth2 = gs_auth_new ("self-test");
-	gs_auth_add_metadata (auth2, "day", NULL);
-	gs_auth_add_metadata (auth2, "notgoingtoexist", NULL);
-	gs_auth_set_provider_schema (auth2, "org.gnome.Software.Dummy");
-	ret = gs_auth_store_load (auth2,
-				  GS_AUTH_STORE_FLAG_USERNAME |
-				  GS_AUTH_STORE_FLAG_PASSWORD |
-				  GS_AUTH_STORE_FLAG_METADATA,
-				  NULL, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-	g_assert_cmpstr (gs_auth_get_username (auth2), ==, "hughsie");
-	g_assert_cmpstr (gs_auth_get_password (auth2), ==, "foobarbaz");
-	g_assert_cmpstr (gs_auth_get_metadata_item (auth2, "day"), ==, "monday");
-}
-
 int
 main (int argc, char **argv)
 {
@@ -706,7 +658,6 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/lib/plugin{download-rewrite}", gs_plugin_download_rewrite_func);
-	g_test_add_func ("/gnome-software/lib/auth{secret}", gs_auth_secret_func);
 
 	return g_test_run ();
 }
