@@ -73,9 +73,6 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_NO_SPACE:			No disk space to allow action
  * @GS_PLUGIN_ERROR_AUTH_REQUIRED:		Authentication was required
  * @GS_PLUGIN_ERROR_AUTH_INVALID:		Provided authentication was invalid
- * @GS_PLUGIN_ERROR_PIN_REQUIRED:		PIN required for authentication
- * @GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED:		User account has been suspended
- * @GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED:	User account has been deactivated
  * @GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED:	The plugins installed are incompatible
  * @GS_PLUGIN_ERROR_DOWNLOAD_FAILED:		The download action failed
  * @GS_PLUGIN_ERROR_WRITE_FAILED:		The save-to-disk failed
@@ -98,9 +95,6 @@ typedef enum {
 	GS_PLUGIN_ERROR_NO_SPACE,
 	GS_PLUGIN_ERROR_AUTH_REQUIRED,
 	GS_PLUGIN_ERROR_AUTH_INVALID,
-	GS_PLUGIN_ERROR_PIN_REQUIRED,
-	GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED,
-	GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED,
 	GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED,
 	GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 	GS_PLUGIN_ERROR_WRITE_FAILED,
@@ -242,10 +236,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_REFINE:			Refine the application
  * @GS_PLUGIN_ACTION_REFRESH:			Refresh all the sources
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
- * @GS_PLUGIN_ACTION_AUTH_LOGIN:		Authentication login action
- * @GS_PLUGIN_ACTION_AUTH_LOGOUT:		Authentication logout action
- * @GS_PLUGIN_ACTION_AUTH_REGISTER:		Authentication register action
- * @GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:	Authentication lost password action
  * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the file to an application
  * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
@@ -291,10 +281,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_REFINE,
 	GS_PLUGIN_ACTION_REFRESH,
 	GS_PLUGIN_ACTION_FILE_TO_APP,
-	GS_PLUGIN_ACTION_AUTH_LOGIN,
-	GS_PLUGIN_ACTION_AUTH_LOGOUT,
-	GS_PLUGIN_ACTION_AUTH_REGISTER,
-	GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
 	GS_PLUGIN_ACTION_URL_TO_APP,
 	GS_PLUGIN_ACTION_GET_RECENT,
 	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
