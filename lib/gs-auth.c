@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2018 Canonical Ltd
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -32,51 +33,114 @@
 
 #include "config.h"
 
-#include <libsecret/secret.h>
-
 #include "gs-auth.h"
 #include "gs-plugin.h"
 
 struct _GsAuth
 {
-	GObject			 parent_instance;
+	GObject		 parent_instance;
 
-	GsAuthFlags		 flags;
-	gchar			*provider_id;
-	gchar			*provider_name;
-	gchar			*provider_logo;
-	gchar			*provider_uri;
-	gchar			*provider_schema;
-	gchar			*username;
-	gchar			*password;
-	gchar			*pin;
-	GHashTable		*metadata;	/* utf8: utf8 */
+	gchar		*header_none;
+	gchar		*header_single;
+	gchar		*header_multiple;
+
+	gchar		*auth_id;
+	gchar		*provider_name;
+	gchar		*provider_type;
+
+	GoaClient	*goa_client;
+	GoaObject	*goa_object;
+
+	GSettings	*settings;
+};
+
+static void gs_auth_initable_iface_init (GInitableIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GsAuth, gs_auth, G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE(G_TYPE_INITABLE, gs_auth_initable_iface_init))
+
+enum {
+	SIGNAL_CHANGED,
+	SIGNAL_LAST
 };
 
 enum {
 	PROP_0,
-	PROP_USERNAME,
-	PROP_PASSWORD,
-	PROP_PIN,
-	PROP_FLAGS,
+	PROP_AUTH_ID,
+	PROP_PROVIDER_TYPE,
+	PROP_GOA_OBJECT,
 	PROP_LAST
 };
 
-G_DEFINE_TYPE (GsAuth, gs_auth, G_TYPE_OBJECT)
+static guint signals [SIGNAL_LAST] = { 0 };
+
 
 /**
- * gs_auth_get_provider_id:
+ * gs_auth_get_header:
+ * @auth: a #GsAuth
+ * @n: the number of accounts
+ *
+ * Gets the header to be used in the authentication dialog in case there are @n
+ * available accounts.
+ *
+ * Returns: (transfer none) : a string
+ */
+const gchar *
+gs_auth_get_header (GsAuth *auth, guint n)
+{
+	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
+
+	if (n == 0)
+		return auth->header_none;
+	else if (n == 1)
+		return auth->header_single;
+	else
+		return auth->header_multiple;
+}
+
+/**
+ * gs_auth_set_header:
+ * @auth: a #GsAuth
+ * @header_none: the header to be used if no account is present
+ * @header_single: the header to be used if one account is present
+ * @header_multiple: the header to be used if two or more accounts are present
+ *
+ * Sets the headers to be used for the authentication dialog.
+ */
+void
+gs_auth_set_header (GsAuth *auth,
+		    const gchar *header_none,
+		    const gchar *header_single,
+		    const gchar *header_multiple)
+{
+	g_return_if_fail (GS_IS_AUTH (auth));
+	g_return_if_fail (header_none != NULL);
+	g_return_if_fail (header_single != NULL);
+	g_return_if_fail (header_multiple != NULL);
+
+	g_free (auth->header_none);
+	auth->header_none = g_strdup (header_none);
+
+	g_free (auth->header_single);
+	auth->header_single = g_strdup (header_single);
+
+	g_free (auth->header_multiple);
+	auth->header_multiple = g_strdup (header_multiple);
+}
+
+/**
+ * gs_auth_get_auth_id:
  * @auth: a #GsAuth
  *
  * Gets the authentication service ID.
  *
- * Returns: the string to use for searching, e.g. "UbuntuOne"
+ * Returns: (transfer none): a string
  */
 const gchar *
-gs_auth_get_provider_id (GsAuth *auth)
+gs_auth_get_auth_id (GsAuth *auth)
 {
 	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->provider_id;
+	return auth->auth_id;
 }
 
 /**
@@ -85,7 +149,7 @@ gs_auth_get_provider_id (GsAuth *auth)
  *
  * Gets the authentication service name.
  *
- * Returns: the string to show in the UI
+ * Returns: (transfer none): a string
  */
 const gchar *
 gs_auth_get_provider_name (GsAuth *auth)
@@ -97,7 +161,7 @@ gs_auth_get_provider_name (GsAuth *auth)
 /**
  * gs_auth_set_provider_name:
  * @auth: a #GsAuth
- * @provider_name: a service name, e.g. "GNOME Online Accounts"
+ * @provider_name: a service name, e.g. "Snap Store"
  *
  * Sets the name to be used for the authentication dialog.
  */
@@ -105,539 +169,171 @@ void
 gs_auth_set_provider_name (GsAuth *auth, const gchar *provider_name)
 {
 	g_return_if_fail (GS_IS_AUTH (auth));
+	g_return_if_fail (provider_name != NULL);
+
 	g_free (auth->provider_name);
 	auth->provider_name = g_strdup (provider_name);
 }
 
 /**
- * gs_auth_get_provider_logo:
+ * gs_auth_get_provider_type:
  * @auth: a #GsAuth
  *
- * Gets the authentication service image.
+ * Gets the GoaProvider type to be used for the authentication dialog.
  *
- * Returns: the filename of an image, or %NULL
+ * Returns: (transfer none): a string
  */
 const gchar *
-gs_auth_get_provider_logo (GsAuth *auth)
+gs_auth_get_provider_type (GsAuth *auth)
 {
 	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->provider_logo;
+	return auth->provider_type;
 }
 
 /**
- * gs_auth_set_provider_logo:
- * @auth: a #GsAuth
- * @provider_logo: an image, e.g. "/usr/share/icons/gnome-online.png"
- *
- * Sets the image to be used for the authentication dialog.
- */
-void
-gs_auth_set_provider_logo (GsAuth *auth, const gchar *provider_logo)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_free (auth->provider_logo);
-	auth->provider_logo = g_strdup (provider_logo);
-}
-
-/**
- * gs_auth_get_provider_uri:
+ * gs_auth_peek_goa_object:
  * @auth: a #GsAuth
  *
- * Gets the authentication service website.
+ * Gets the logged #GoaObject if any.
  *
- * Returns: the URI, or %NULL
+ * Returns: (transfer none) (nullable): a #GoaObject, or %NULL
  */
-const gchar *
-gs_auth_get_provider_uri (GsAuth *auth)
+GoaObject *
+gs_auth_peek_goa_object (GsAuth *auth)
 {
 	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->provider_uri;
-}
-
-/**
- * gs_auth_set_provider_uri:
- * @auth: a #GsAuth
- * @provider_uri: a URI, e.g. "http://www.gnome.org/sso"
- *
- * Sets the website to be used for the authentication dialog.
- */
-void
-gs_auth_set_provider_uri (GsAuth *auth, const gchar *provider_uri)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_free (auth->provider_uri);
-	auth->provider_uri = g_strdup (provider_uri);
-}
-
-/**
- * gs_auth_get_provider_schema:
- * @auth: a #GsAuth
- *
- * Gets the authentication schema ID.
- *
- * Returns: the URI, or %NULL
- */
-const gchar *
-gs_auth_get_provider_schema (GsAuth *auth)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->provider_schema;
-}
-
-/**
- * gs_auth_set_provider_schema:
- * @auth: a #GsAuth
- * @provider_schema: a URI, e.g. "com.distro.provider"
- *
- * Sets the schema ID to be used for saving the state to disk.
- */
-void
-gs_auth_set_provider_schema (GsAuth *auth, const gchar *provider_schema)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_free (auth->provider_schema);
-	auth->provider_schema = g_strdup (provider_schema);
-}
-
-/**
- * gs_auth_get_username:
- * @auth: a #GsAuth
- *
- * Gets the auth username.
- *
- * Returns: the username to be used for the authentication
- */
-const gchar *
-gs_auth_get_username (GsAuth *auth)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->username;
-}
-
-/**
- * gs_auth_set_username:
- * @auth: a #GsAuth
- * @username: a username, e.g. "hughsie"
- *
- * Sets the username to be used for the authentication.
- */
-void
-gs_auth_set_username (GsAuth *auth, const gchar *username)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_free (auth->username);
-	auth->username = g_strdup (username);
-}
-
-/**
- * gs_auth_get_password:
- * @auth: a #GsAuth
- *
- * Gets the password to be used for the authentication.
- *
- * Returns: the string, or %NULL
- **/
-const gchar *
-gs_auth_get_password (GsAuth *auth)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->password;
-}
-
-/**
- * gs_auth_set_password:
- * @auth: a #GsAuth
- * @password: password string, e.g. "p@ssw0rd"
- *
- * Sets the password to be used for the authentication.
- */
-void
-gs_auth_set_password (GsAuth *auth, const gchar *password)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_free (auth->password);
-	auth->password = g_strdup (password);
-}
-
-/**
- * gs_auth_get_flags:
- * @auth: a #GsAuth
- *
- * Gets any flags set on the authentication, for example if we should remember
- * credentials.
- *
- * Returns: a #GsAuthFlags, e.g. %GS_AUTH_FLAG_REMEMBER
- */
-GsAuthFlags
-gs_auth_get_flags (GsAuth *auth)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), 0);
-	return auth->flags;
-}
-
-/**
- * gs_auth_set_flags:
- * @auth: a #GsAuth
- * @flags: a #GsAuthFlags, e.g. %GS_AUTH_FLAG_REMEMBER
- *
- * Gets any flags set on the authentication.
- */
-void
-gs_auth_set_flags (GsAuth *auth, GsAuthFlags flags)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	auth->flags = flags;
-}
-
-/**
- * gs_auth_add_flags:
- * @auth: a #GsAuth
- * @flags: a #GsAuthFlags, e.g. %GS_AUTH_FLAG_REMEMBER
- *
- * Adds flags to an existing authentication without replacing the other flags.
- */
-void
-gs_auth_add_flags (GsAuth *auth, GsAuthFlags flags)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	auth->flags |= flags;
-}
-
-/**
- * gs_auth_has_flag:
- * @auth: a #GsAuth
- * @flags: a #GsAuthFlags, e.g. %GS_AUTH_FLAG_REMEMBER
- *
- * Finds out if the authentication has a flag.
- *
- * Returns: %TRUE if set
- */
-gboolean
-gs_auth_has_flag (GsAuth *auth, GsAuthFlags flags)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), FALSE);
-	return (auth->flags & flags) > 0;
-}
-
-/**
- * gs_auth_get_pin:
- * @auth: a #GsAuth
- *
- * Gets the PIN code.
- *
- * Returns: the 2 factor authentication PIN, or %NULL
- **/
-const gchar *
-gs_auth_get_pin (GsAuth *auth)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	return auth->pin;
-}
-
-/**
- * gs_auth_set_pin:
- * @auth: a #GsAuth
- * @pin: the PIN code, e.g. "12345"
- *
- * Sets the 2 factor authentication PIN, which can be left unset.
- */
-void
-gs_auth_set_pin (GsAuth *auth, const gchar *pin)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_free (auth->pin);
-	auth->pin = g_strdup (pin);
-}
-
-/**
- * gs_auth_get_metadata_item:
- * @auth: a #GsAuth
- * @key: a string
- *
- * Gets some metadata from a authentication object.
- * It is left for the the plugin to use this method as required, but a
- * typical use would be to retrieve some secure auth token.
- *
- * Returns: A string value, or %NULL for not found
- */
-const gchar *
-gs_auth_get_metadata_item (GsAuth *auth, const gchar *key)
-{
-	g_return_val_if_fail (GS_IS_AUTH (auth), NULL);
-	g_return_val_if_fail (key != NULL, NULL);
-	return g_hash_table_lookup (auth->metadata, key);
-}
-
-/**
- * gs_auth_add_metadata:
- * @auth: a #GsAuth
- * @key: a string
- * @value: a string
- *
- * Adds metadata to the authentication object.
- * It is left for the the plugin to use this method as required, but a
- * typical use would be to store some secure auth token.
- */
-void
-gs_auth_add_metadata (GsAuth *auth, const gchar *key, const gchar *value)
-{
-	g_return_if_fail (GS_IS_AUTH (auth));
-	g_hash_table_insert (auth->metadata, g_strdup (key), g_strdup (value));
+	return auth->goa_object;
 }
 
 static gboolean
-_g_error_is_set (GError **error)
+gs_auth_goa_account_equal (GoaAccount *acc1, GoaAccount *acc2)
 {
-	if (error == NULL)
+	if (acc1 == acc2)
+		return TRUE;
+
+	if (acc1 == NULL || acc2 == NULL)
 		return FALSE;
-	return *error != NULL;
+
+	return !g_strcmp0 (goa_account_get_id (acc1),
+			   goa_account_get_id (acc2));
+}
+
+static gboolean
+gs_auth_goa_object_equal (GoaObject *obj1, GoaObject *obj2)
+{
+	if (obj1 == obj2)
+		return TRUE;
+
+	if (obj1 == NULL || obj2 == NULL)
+		return FALSE;
+
+	return gs_auth_goa_account_equal(goa_object_peek_account (obj1),
+					 goa_object_peek_account (obj2));
+}
+
+static void
+gs_auth_account_changed_cb (GoaClient *client,
+			    GoaObject *goa_object,
+			    GsAuth *auth)
+{
+	if (!gs_auth_goa_object_equal (auth->goa_object, goa_object))
+		return;
+
+	g_signal_emit (auth, signals[SIGNAL_CHANGED], 0);
+}
+
+static void
+gs_auth_account_removed_cb (GoaClient *client,
+			    GoaObject *goa_object,
+			    GsAuth *auth)
+{
+	if (!gs_auth_goa_object_equal (auth->goa_object, goa_object))
+		return;
+
+	gs_auth_set_goa_object (auth, NULL);
 }
 
 /**
- * gs_auth_store_load:
+ * gs_auth_set_goa_object:
  * @auth: a #GsAuth
- * @flags: some #GsAuthStoreFlags, e.g. %GS_AUTH_STORE_FLAG_USERNAME
- * @cancellable: a #GCancellable or %NULL
- * @error: a #GError or %NULL
+ * @goa_object: (nullable) a #GoaObject
  *
- * Loads authentication tokens from disk in a secure way.
- * By default only the username and password are loaded, but they are not
- * overwritten if already set.
- *
- * If additional tokens are required to be loaded you must first tell the
- * GsAuth instance what metadata to load. This can be done using:
- * `gs_auth_add_metadata("additional-secret-key-name",NULL)`
- *
- * This function is expected to be called from gs_plugin_setup().
- *
- * Returns: %TRUE if the tokens were loaded correctly.
+ * Set the #GoaObject used to login in.
  */
-gboolean
-gs_auth_store_load (GsAuth *auth, GsAuthStoreFlags flags,
-		    GCancellable *cancellable, GError **error)
+void
+gs_auth_set_goa_object (GsAuth *auth,
+			GoaObject *goa_object)
 {
-	SecretSchema schema = {
-		auth->provider_schema,
-		SECRET_SCHEMA_NONE,
-		{ { "key", SECRET_SCHEMA_ATTRIBUTE_STRING } }
-	};
+	g_return_if_fail (GS_IS_AUTH (auth));
 
-	/* no schema */
-	if (auth->provider_schema == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "No provider schema set for %s",
-			     auth->provider_id);
-		return FALSE;
-	}
+	if (gs_auth_goa_object_equal (auth->goa_object, goa_object))
+		return;
 
-	/* username */
-	if ((flags & GS_AUTH_STORE_FLAG_USERNAME) > 0 && auth->username == NULL) {
-		auth->username = secret_password_lookup_sync (&schema,
-							      cancellable,
-							      error,
-							      "key", "username",
-							      NULL);
-		if (_g_error_is_set (error))
-			return FALSE;
-	}
+	g_clear_object (&auth->goa_object);
+	if (goa_object)
+		auth->goa_object = g_object_ref (goa_object);
 
-	/* password */
-	if ((flags & GS_AUTH_STORE_FLAG_PASSWORD) > 0 && auth->password == NULL) {
-		auth->password = secret_password_lookup_sync (&schema,
-							      cancellable,
-							      error,
-							      "key", "password",
-							      NULL);
-		if (_g_error_is_set (error))
-			return FALSE;
-	}
+	g_object_notify (G_OBJECT (auth), "goa-object");
+	g_signal_emit (auth, signals[SIGNAL_CHANGED], 0);
+}
 
-	/* metadata */
-	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
-		g_autoptr(GList) keys = NULL;
-		keys = g_hash_table_get_keys (auth->metadata);
-		for (GList *l = keys; l != NULL; l = l->next) {
-			g_autofree gchar *tmp = NULL;
-			const gchar *key = l->data;
-			const gchar *value = g_hash_table_lookup (auth->metadata, key);
-			if (value != NULL)
-				continue;
-			tmp = secret_password_lookup_sync (&schema,
-							   cancellable,
-							   error,
-							   "key", key,
-							   NULL);
-			if (_g_error_is_set (error))
-				return FALSE;
-			if (tmp != NULL)
-				gs_auth_add_metadata (auth, key, tmp);
-		}
-	}
+static gboolean
+string_to_goa_object (GValue   *value,
+		      GVariant *variant,
+		      gpointer  user_data)
+{
+	GsAuth *auth = GS_AUTH (user_data);
+	GoaObject *goa_object;
+	const gchar *account_id;
 
-	/* success */
+	account_id = g_variant_get_string (variant, NULL);
+
+	goa_object = goa_client_lookup_by_id (auth->goa_client, account_id);
+	if (!goa_object)
+		return TRUE;
+
+	g_value_take_object (value, goa_object);
 	return TRUE;
 }
 
-/**
- * gs_auth_store_save:
- * @auth: a #GsAuth
- * @flags: some #GsAuthStoreFlags, e.g. %GS_AUTH_STORE_FLAG_USERNAME
- * @cancellable: a #GCancellable or %NULL
- * @error: a #GError or %NULL
- *
- * Saves the username, password and all added metadata to disk in a secure way.
- *
- * This function is expected to be called from gs_plugin_setup().
- *
- * Returns: %TRUE if the tokens were all saved correctly.
- */
-gboolean
-gs_auth_store_save (GsAuth *auth, GsAuthStoreFlags flags,
-		    GCancellable *cancellable, GError **error)
+static GVariant *
+goa_object_to_string (const GValue       *value,
+		      const GVariantType *expected_type,
+		      gpointer            user_data)
 {
-	SecretSchema schema = {
-		auth->provider_schema,
-		SECRET_SCHEMA_NONE,
-		{ { "key", SECRET_SCHEMA_ATTRIBUTE_STRING } }
-	};
+	GObject *object = g_value_get_object (value);
 
-	/* no schema */
-	if (auth->provider_schema == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "No provider schema set for %s",
-			     auth->provider_id);
-		return FALSE;
-	}
+	GoaObject *goa_object = object != NULL ? GOA_OBJECT (object) : NULL;
+	GoaAccount *goa_account = goa_object != NULL ? goa_object_peek_account (goa_object) : NULL;
 
-	/* username */
-	if ((flags & GS_AUTH_STORE_FLAG_USERNAME) > 0 && auth->username != NULL) {
-		if (!secret_password_store_sync (&schema,
-						 NULL, /* collection */
-						 auth->provider_schema,
-						 auth->username,
-						 cancellable, error,
-						 "key", "username", NULL))
-			return FALSE;
-	}
-
-	/* password */
-	if ((flags & GS_AUTH_STORE_FLAG_PASSWORD) > 0 && auth->password != NULL) {
-		if (!secret_password_store_sync (&schema,
-						 NULL, /* collection */
-						 auth->provider_schema,
-						 auth->password,
-						 cancellable, error,
-						 "key", "password", NULL))
-			return FALSE;
-	}
-
-	/* metadata */
-	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
-		g_autoptr(GList) keys = NULL;
-		keys = g_hash_table_get_keys (auth->metadata);
-		for (GList *l = keys; l != NULL; l = l->next) {
-			const gchar *key = l->data;
-			const gchar *value = g_hash_table_lookup (auth->metadata, key);
-			if (value == NULL)
-				continue;
-			if (!secret_password_store_sync (&schema,
-							 NULL, /* collection */
-							 auth->provider_schema,
-							 value,
-							 cancellable, error,
-							 "key", key, NULL))
-				return FALSE;
-		}
-	}
-
-	/* success */
-	return TRUE;
+	if (goa_account != NULL)
+		return g_variant_new_string (goa_account_get_id (goa_account));
+	else
+		return g_variant_new_string ("");
 }
 
-gboolean
-gs_auth_store_clear (GsAuth *auth, GsAuthStoreFlags flags,
-		     GCancellable *cancellable, GError **error)
+/* GObject */
+
+static void
+gs_auth_init (GsAuth *auth)
 {
-	SecretSchema schema = {
-		auth->provider_schema,
-		SECRET_SCHEMA_NONE,
-		{ { "key", SECRET_SCHEMA_ATTRIBUTE_STRING } }
-	};
-
-	/* no schema */
-	if (auth->provider_schema == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "No provider schema set for %s",
-			     auth->provider_id);
-		return FALSE;
-	}
-
-	/* username */
-	if ((flags & GS_AUTH_STORE_FLAG_USERNAME) > 0) {
-		if (!secret_password_clear_sync (&schema,
-						 cancellable, error,
-						 "key", "username", NULL))
-			return FALSE;
-	}
-
-	g_free (auth->username);
-	auth->username = NULL;
-
-	/* password */
-	if ((flags & GS_AUTH_STORE_FLAG_PASSWORD) > 0) {
-		if (!secret_password_clear_sync (&schema,
-						 cancellable, error,
-						 "key", "password", NULL))
-			return FALSE;
-	}
-
-	g_free (auth->password);
-	auth->password = NULL;
-
-	/* metadata */
-	if (flags & GS_AUTH_STORE_FLAG_METADATA) {
-		g_autoptr(GList) keys = NULL;
-		keys = g_hash_table_get_keys (auth->metadata);
-		for (GList *l = keys; l != NULL; l = l->next) {
-			const gchar *key = l->data;
-			if (!secret_password_clear_sync (&schema,
-							 cancellable, error,
-							 "key", key, NULL))
-				return FALSE;
-
-		}
-	}
-
-	g_hash_table_remove_all (auth->metadata);
-
-	/* success */
-	return TRUE;
 }
 
 static void
 gs_auth_get_property (GObject *object, guint prop_id,
-			GValue *value, GParamSpec *pspec)
+		      GValue *value, GParamSpec *pspec)
 {
 	GsAuth *auth = GS_AUTH (object);
 
 	switch (prop_id) {
-	case PROP_USERNAME:
-		g_value_set_string (value, auth->username);
+	case PROP_AUTH_ID:
+		g_value_set_string (value, auth->auth_id);
 		break;
-	case PROP_PASSWORD:
-		g_value_set_string (value, auth->password);
+	case PROP_PROVIDER_TYPE:
+		g_value_set_string (value, auth->provider_type);
 		break;
-	case PROP_FLAGS:
-		g_value_set_uint64 (value, auth->flags);
-		break;
-	case PROP_PIN:
-		g_value_set_string (value, auth->pin);
+	case PROP_GOA_OBJECT:
+		g_value_set_object (value, auth->goa_object);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -647,22 +343,19 @@ gs_auth_get_property (GObject *object, guint prop_id,
 
 static void
 gs_auth_set_property (GObject *object, guint prop_id,
-			const GValue *value, GParamSpec *pspec)
+		      const GValue *value, GParamSpec *pspec)
 {
 	GsAuth *auth = GS_AUTH (object);
 
 	switch (prop_id) {
-	case PROP_USERNAME:
-		gs_auth_set_username (auth, g_value_get_string (value));
+	case PROP_AUTH_ID:
+		auth->auth_id = g_value_dup_string (value);
 		break;
-	case PROP_PASSWORD:
-		gs_auth_set_password (auth, g_value_get_string (value));
+	case PROP_PROVIDER_TYPE:
+		auth->provider_type = g_value_dup_string (value);
 		break;
-	case PROP_FLAGS:
-		gs_auth_set_flags (auth, g_value_get_uint64 (value));
-		break;
-	case PROP_PIN:
-		gs_auth_set_pin (auth, g_value_get_string (value));
+	case PROP_GOA_OBJECT:
+		gs_auth_set_goa_object (auth, g_value_get_object (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -675,15 +368,16 @@ gs_auth_finalize (GObject *object)
 {
 	GsAuth *auth = GS_AUTH (object);
 
-	g_free (auth->provider_id);
+	g_free (auth->header_none);
+	g_free (auth->header_single);
+	g_free (auth->header_multiple);
+	g_free (auth->auth_id);
 	g_free (auth->provider_name);
-	g_free (auth->provider_logo);
-	g_free (auth->provider_uri);
-	g_free (auth->provider_schema);
-	g_free (auth->username);
-	g_free (auth->password);
-	g_free (auth->pin);
-	g_hash_table_unref (auth->metadata);
+
+	g_clear_object (&auth->goa_client);
+	g_clear_object (&auth->goa_object);
+
+	g_clear_object (&auth->settings);
 
 	G_OBJECT_CLASS (gs_auth_parent_class)->finalize (object);
 }
@@ -693,64 +387,99 @@ gs_auth_class_init (GsAuthClass *klass)
 {
 	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
 	object_class->finalize = gs_auth_finalize;
 	object_class->get_property = gs_auth_get_property;
 	object_class->set_property = gs_auth_set_property;
 
-	/**
-	 * GsAuth:username:
-	 */
-	pspec = g_param_spec_string ("username", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_USERNAME, pspec);
+	pspec = g_param_spec_string ("auth-id", NULL, NULL, NULL,
+				     G_PARAM_READWRITE |
+				     G_PARAM_CONSTRUCT_ONLY);
+	g_object_class_install_property (object_class, PROP_AUTH_ID, pspec);
 
-	/**
-	 * GsAuth:password:
-	 */
-	pspec = g_param_spec_string ("password", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_PASSWORD, pspec);
+	pspec = g_param_spec_string ("provider-type", NULL, NULL, NULL,
+				     G_PARAM_READWRITE |
+				     G_PARAM_CONSTRUCT_ONLY);
+	g_object_class_install_property (object_class, PROP_PROVIDER_TYPE, pspec);
 
-	/**
-	 * GsAuth:flags:
-	 */
-	pspec = g_param_spec_uint64 ("flags", NULL, NULL,
-				     GS_AUTH_FLAG_NONE,
-				     GS_AUTH_FLAG_LAST,
-				     GS_AUTH_FLAG_NONE,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_FLAGS, pspec);
+	pspec = g_param_spec_object ("goa-object", NULL, NULL,
+				     GOA_TYPE_OBJECT,
+				     G_PARAM_READWRITE |
+				     G_PARAM_EXPLICIT_NOTIFY);
+	g_object_class_install_property (object_class, PROP_GOA_OBJECT, pspec);
 
-	/**
-	 * GsAuth:pin:
-	 */
-	pspec = g_param_spec_string ("pin", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_PIN, pspec);
+	signals [SIGNAL_CHANGED] =
+		g_signal_new ("changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 0);
+}
+
+/* GInitable */
+
+static gboolean
+gs_auth_initable_init (GInitable *initable,
+		       GCancellable *cancellable,
+		       GError  **error)
+{
+	GsAuth *self;
+	g_autofree gchar *path = NULL;
+
+	g_return_val_if_fail (GS_IS_AUTH (initable), FALSE);
+
+	self = GS_AUTH (initable);
+
+	self->goa_client = goa_client_new_sync (NULL, error);
+	if (self->goa_client == NULL)
+		return FALSE;
+
+	g_signal_connect (self->goa_client, "account-changed",
+			  G_CALLBACK (gs_auth_account_changed_cb), self);
+	g_signal_connect (self->goa_client, "account-removed",
+			  G_CALLBACK (gs_auth_account_removed_cb), self);
+
+	path = g_strdup_printf ("/org/gnome/software/auth/%s/", self->auth_id);
+	self->settings = g_settings_new_with_path ("org.gnome.software.auth", path);
+
+	g_settings_bind_with_mapping (self->settings, "account-id",
+				      self, "goa-object",
+				      G_SETTINGS_BIND_DEFAULT,
+				      string_to_goa_object,
+				      goa_object_to_string,
+				      self, NULL);
+
+	return TRUE;
 }
 
 static void
-gs_auth_init (GsAuth *auth)
+gs_auth_initable_iface_init (GInitableIface *iface)
 {
-	auth->metadata = g_hash_table_new_full (g_str_hash, g_str_equal,
-						g_free, g_free);
+	iface->init = gs_auth_initable_init;
 }
 
 /**
  * gs_auth_new:
- * @provider_id: a provider ID used for mapping, e.g. "GnomeSSO"
+ * @auth_id: an identifier used for mapping, e.g. "snapd"
+ * @provider_type: the name of the GoaProvider466 to be used, e.g. "ubuntusso"
+ * @error: A #GError
  *
- * Return value: a new #GsAuth object.
+ * Return value: (transfer full) (nullable): a new #GsAuth object.
  **/
 GsAuth *
-gs_auth_new (const gchar *provider_id)
+gs_auth_new (const gchar *auth_id,
+	     const gchar *provider_type,
+	     GError **error)
 {
 	GsAuth *auth;
-	auth = g_object_new (GS_TYPE_AUTH, NULL);
-	auth->provider_id = g_strdup (provider_id);
+
+	g_return_val_if_fail (auth_id != NULL, NULL);
+	g_return_val_if_fail (provider_type != NULL, NULL);
+
+	auth = g_initable_new (GS_TYPE_AUTH, NULL, error,
+			       "auth-id", auth_id,
+			       "provider-type", provider_type,
+			       NULL);
+
 	return GS_AUTH (auth);
 }
 

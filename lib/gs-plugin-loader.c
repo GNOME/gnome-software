@@ -720,17 +720,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   cancellable, &error_local);
 		}
 		break;
-	case GS_PLUGIN_ACTION_AUTH_LOGIN:
-	case GS_PLUGIN_ACTION_AUTH_LOGOUT:
-	case GS_PLUGIN_ACTION_AUTH_REGISTER:
-	case GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD:
-		{
-			GsPluginAuthFunc plugin_func = func;
-			ret = plugin_func (plugin,
-					   gs_plugin_job_get_auth (helper->plugin_job),
-					   cancellable, &error_local);
-		}
-		break;
 	default:
 		g_critical ("no handler for %s", helper->function_name);
 		break;
@@ -2140,7 +2129,7 @@ gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 
 GsAuth *
 gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
-				 const gchar *provider_id)
+				 const gchar *auth_id)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	guint i;
@@ -2148,7 +2137,7 @@ gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
 	/* match on ID */
 	for (i = 0; i < priv->auth_array->len; i++) {
 		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
-		if (g_strcmp0 (gs_auth_get_provider_id (auth), provider_id) == 0)
+		if (g_strcmp0 (gs_auth_get_auth_id (auth), auth_id) == 0)
 			return auth;
 	}
 	return NULL;
