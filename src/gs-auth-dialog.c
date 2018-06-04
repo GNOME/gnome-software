@@ -2,6 +2,7 @@
  *
  * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2017 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2018 Canonical Ltd
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -23,274 +24,353 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
+#define GOA_API_IS_SUBJECT_TO_CHANGE
+#include <goa/goa.h>
 
 #include "gs-auth-dialog.h"
 #include "gs-common.h"
 
 struct _GsAuthDialog
 {
-	GtkDialog	 parent_instance;
+	GtkDialog parent_instance;
 
-	GCancellable	*cancellable;
-	GsPluginLoader	*plugin_loader;
-	GsApp		*app;
-	GsAuth		*auth;
-	GtkWidget	*box_dialog;
-	GtkWidget	*box_error;
-	GtkWidget	*button_cancel;
-	GtkWidget	*button_continue;
-	GtkWidget	*checkbutton_remember;
-	GtkWidget	*entry_password;
-	GtkWidget	*entry_pin;
-	GtkWidget	*entry_username;
-	GtkWidget	*image_vendor;
-	GtkWidget	*label_error;
-	GtkWidget	*label_title;
-	GtkWidget	*radiobutton_already;
-	GtkWidget	*radiobutton_lost_pwd;
-	GtkWidget	*radiobutton_register;
-	GtkWidget	*stack;
+	GoaClient *goa_client;
+	GtkListStore *liststore_account;
+
+	GtkWidget *label_header;
+	GtkWidget *combobox_account;
+	GtkWidget *label_account;
+	GtkWidget *button_add_another;
+	GtkWidget *button_cancel;
+	GtkWidget *button_continue;
+
+	gboolean dispose_on_new_account;
+
+	GCancellable *cancellable;
+	GsPluginLoader *plugin_loader;
+	GsApp *app;
+	GsAuth *auth;
 };
 
-G_DEFINE_TYPE (GsAuthDialog, gs_auth_dialog, GTK_TYPE_DIALOG)
+static void gs_auth_dialog_initable_iface_init (GInitableIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GsAuthDialog, gs_auth_dialog, GTK_TYPE_DIALOG,
+			 G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE, gs_auth_dialog_initable_iface_init))
+
+enum {
+	COLUMN_ID,
+	COLUMN_EMAIL,
+	COLUMN_ACCOUNT,
+	N_COLUMNS
+};
+
+static gboolean
+gs_auth_dialog_ignore_account (GsAuthDialog *self, GoaAccount *account)
+{
+	return g_strcmp0 (goa_account_get_provider_type (account),
+			  gs_auth_get_provider_type (self->auth)) != 0;
+}
 
 static void
-gs_auth_dialog_check_ui (GsAuthDialog *dialog)
+gs_auth_dialog_set_header (GsAuthDialog *self,
+			   const gchar *text)
 {
-	g_autofree gchar *title = NULL;
-	const gchar *tmp;
-	const gchar *username = gtk_entry_get_text (GTK_ENTRY (dialog->entry_username));
-	const gchar *password = gtk_entry_get_text (GTK_ENTRY (dialog->entry_password));
+	g_autofree gchar *markup = NULL;
+	markup = g_strdup_printf ("<span size='larger' weight='bold'>%s</span>", text);
+	gtk_label_set_markup (GTK_LABEL (self->label_header), markup);
+}
 
-	/* set the header */
-	tmp = gs_auth_get_provider_name (dialog->auth);
-	if (tmp == NULL) {
-		/* TRANSLATORS: this is when the service name is not known */
-		title = g_strdup (_("To continue you need to sign in."));
-		gtk_label_set_label (GTK_LABEL (dialog->label_title), title);
-	} else {
-		/* TRANSLATORS: the %s is a service name, e.g. "Ubuntu One" */
-		title = g_strdup_printf (_("To continue you need to sign in to %s."), tmp);
-		gtk_label_set_label (GTK_LABEL (dialog->label_title), title);
+static gint
+gs_auth_dialog_get_naccounts (GsAuthDialog *self)
+{
+	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (self->liststore_account), NULL);
+}
+
+static gboolean
+gs_auth_dialog_get_nth_account_data (GsAuthDialog *self,
+				     gint n,
+				     ...)
+{
+	GtkTreeIter iter;
+	va_list var_args;
+
+	if (!gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (self->liststore_account), &iter, NULL, n))
+		return FALSE;
+
+	va_start (var_args, n);
+	gtk_tree_model_get_valist (GTK_TREE_MODEL (self->liststore_account), &iter, var_args);
+	va_end (var_args);
+
+	return TRUE;
+}
+
+static gboolean
+gs_auth_dialog_get_account_iter (GsAuthDialog *self,
+				 GoaAccount *account,
+				 GtkTreeIter *iter)
+{
+	gboolean valid;
+
+	valid = gtk_tree_model_iter_nth_child (GTK_TREE_MODEL (self->liststore_account), iter, NULL, 0);
+
+	while (valid) {
+		g_autofree gchar *id;
+		gtk_tree_model_get (GTK_TREE_MODEL (self->liststore_account), iter, COLUMN_ID, &id, -1);
+		if (g_strcmp0 (id, goa_account_get_id (account)) == 0)
+			return TRUE;
+		else
+			valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (self->liststore_account), iter);
 	}
 
-	/* set the vendor image */
-	tmp = gs_auth_get_provider_logo (dialog->auth);
-	if (tmp == NULL) {
-		gtk_widget_hide (dialog->image_vendor);
-	} else {
-		gtk_image_set_from_file (GTK_IMAGE (dialog->image_vendor), tmp);
-		gtk_widget_show (dialog->image_vendor);
-	}
+	return FALSE;
+}
 
-	/* need username and password to continue for known account */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_already))) {
-		gtk_widget_set_sensitive (dialog->button_continue,
-					  username[0] != '\0' && password[0] != '\0');
-		gtk_widget_set_sensitive (dialog->checkbutton_remember, TRUE);
+
+static void
+gs_auth_dialog_check_ui (GsAuthDialog *self,
+			 gboolean select)
+{
+	gint naccounts = gs_auth_dialog_get_naccounts (self);
+
+	gs_auth_dialog_set_header (self, gs_auth_get_header (self->auth, naccounts));
+
+	if (naccounts == 0) {
+		gtk_widget_set_visible (self->combobox_account, FALSE);
+		gtk_widget_set_visible (self->label_account, FALSE);
+		gtk_widget_set_visible (self->button_add_another, FALSE);
+		gtk_button_set_label (GTK_BUTTON (self->button_continue), _("Sign In / Register…"));
+	} else if (naccounts == 1) {
+		g_autofree gchar *email = NULL;
+
+		gtk_widget_set_visible (self->combobox_account, FALSE);
+		gtk_widget_set_visible (self->label_account, TRUE);
+		gtk_widget_set_visible (self->button_add_another, TRUE);
+		gtk_button_set_label (GTK_BUTTON (self->button_continue), _("Continue"));
+		gs_auth_dialog_get_nth_account_data (self, 0, COLUMN_EMAIL, &email, -1);
+		gtk_label_set_text (GTK_LABEL (self->label_account), email);
 	} else {
-		gtk_entry_set_text (GTK_ENTRY (dialog->entry_password), "");
-		gtk_widget_set_sensitive (dialog->button_continue,
-					  username[0] != '\0');
-		gtk_widget_set_sensitive (dialog->checkbutton_remember, FALSE);
+		gtk_widget_set_visible (self->combobox_account, TRUE);
+		gtk_widget_set_visible (self->label_account, FALSE);
+		gtk_widget_set_visible (self->button_add_another, TRUE);
+		gtk_button_set_label (GTK_BUTTON (self->button_continue), _("Use"));
+
+		if (select)
+			gtk_combo_box_set_active (GTK_COMBO_BOX (self->combobox_account), naccounts - 1);
+		else if (gtk_combo_box_get_active (GTK_COMBO_BOX (self->combobox_account)) == -1)
+			gtk_combo_box_set_active (GTK_COMBO_BOX (self->combobox_account), 0);
 	}
 }
 
 static void
-gs_auth_dialog_cancel_button_cb (GtkWidget *widget, GsAuthDialog *dialog)
+gs_auth_dialog_add_account (GsAuthDialog *self,
+			    GoaAccount *account,
+			    gboolean select)
 {
-	gtk_dialog_response (GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
+	GtkTreeIter iter;
+
+	if (gs_auth_dialog_ignore_account (self, account) ||
+	    gs_auth_dialog_get_account_iter (self, account, &iter))
+		return;
+
+	gtk_list_store_append (self->liststore_account, &iter);
+	gtk_list_store_set (self->liststore_account, &iter,
+			    COLUMN_ID, goa_account_get_id (account),
+			    COLUMN_EMAIL, goa_account_get_presentation_identity (account),
+			    COLUMN_ACCOUNT, account,
+			    -1);
+
+	gs_auth_dialog_check_ui (self, select);
 }
 
 static void
-gs_auth_dialog_authenticate_cb (GObject *source,
-				GAsyncResult *res,
-				gpointer user_data)
+gs_auth_dialog_remove_account (GsAuthDialog *self,
+			       GoaAccount *account)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsAuthDialog *dialog = GS_AUTH_DIALOG (user_data);
+	GtkTreeIter iter;
+
+	if (gs_auth_dialog_ignore_account (self, account) ||
+	    !gs_auth_dialog_get_account_iter (self, account, &iter))
+		return;
+
+
+	gtk_list_store_remove (self->liststore_account, &iter);
+	gs_auth_dialog_check_ui (self, FALSE);
+}
+
+static void
+gs_auth_dialog_setup_model (GsAuthDialog *self)
+{
+	g_autoptr(GList) accounts = goa_client_get_accounts (self->goa_client);
+
+	for (GList *l = accounts; l != NULL; l = l->next) {
+		gs_auth_dialog_add_account (self,  goa_object_peek_account (l->data), FALSE);
+		g_object_unref (l->data);
+	}
+}
+
+static GVariant*
+gs_auth_dialog_build_dbus_parameters (const gchar *action,
+				      const gchar *arg)
+{
+	GVariantBuilder builder;
+	GVariant *array[1], *params2[3];
+
+	g_variant_builder_init (&builder, G_VARIANT_TYPE ("av"));
+
+	if (!action && !arg) {
+		g_variant_builder_add (&builder, "v", g_variant_new_string (""));
+	} else {
+		if (action)
+			g_variant_builder_add (&builder, "v", g_variant_new_string (action));
+
+		if (arg)
+			g_variant_builder_add (&builder, "v", g_variant_new_string (arg));
+	}
+
+	array[0] = g_variant_new ("v", g_variant_new ("(sav)", "online-accounts", &builder));
+
+	params2[0] = g_variant_new_string ("launch-panel");
+	params2[1] = g_variant_new_array (G_VARIANT_TYPE ("v"), array, 1);
+	params2[2] = g_variant_new_array (G_VARIANT_TYPE ("{sv}"), NULL, 0);
+
+	return g_variant_new_tuple (params2, 3);
+}
+
+static void
+gs_auth_dialog_spawn_goa_with_args (const gchar *action,
+				    const gchar *arg)
+{
+	g_autoptr(GDBusProxy) proxy = NULL;
+
+	proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
+					       G_DBUS_PROXY_FLAGS_NONE,
+					       NULL,
+					       "org.gnome.ControlCenter",
+					       "/org/gnome/ControlCenter",
+					       "org.gtk.Actions",
+					       NULL,
+					       NULL);
+
+	if (!proxy)
+	{
+		g_warning ("Couldn't open Online Accounts panel");
+		return;
+	}
+
+	g_dbus_proxy_call_sync (proxy,
+				"Activate",
+				gs_auth_dialog_build_dbus_parameters (action, arg),
+				G_DBUS_CALL_FLAGS_NONE,
+				-1,
+				NULL,
+				NULL);
+}
+
+static void
+gs_auth_dialog_ensure_crendentials_cb (GObject *source_object,
+				       GAsyncResult *res,
+				       gpointer user_data)
+{
+	GsAuthDialog *self = (GsAuthDialog*) user_data;
+	GoaAccount *account = GOA_ACCOUNT (source_object);
 	g_autoptr(GError) error = NULL;
 
-	gtk_widget_set_sensitive (dialog->box_dialog, TRUE);
-	gtk_widget_set_sensitive (dialog->button_continue, TRUE);
-
-	gtk_widget_set_visible (dialog->box_error, FALSE);
-
-	/* we failed */
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		const gchar *url;
-
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_PIN_REQUIRED)) {
-			gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "2fa");
-			gtk_widget_grab_focus (dialog->entry_pin);
-			return;
-		}
-
-		/* have we been given a link */
-		url = gs_utils_get_error_value (error);
-		if (url != NULL) {
-			g_autoptr(GError) error_local = NULL;
-			g_debug ("showing link in: %s", error->message);
-			if (!gtk_show_uri_on_window (GTK_WINDOW (dialog),
-			                             url,
-			                             GDK_CURRENT_TIME,
-			                             &error_local)) {
-				g_warning ("failed to show URI %s: %s",
-				           url, error_local->message);
-			}
-			return;
-		}
-
-		g_warning ("failed to authenticate: %s", error->message);
-		gtk_label_set_label (GTK_LABEL (dialog->label_error), error->message);
-		gtk_widget_set_visible (dialog->box_error, TRUE);
-		return;
-	}
-
-	/* we didn't get authenticated */
-	if (!gs_auth_has_flag (dialog->auth, GS_AUTH_FLAG_VALID)) {
-		return;
-	}
-
-	/* success */
-	gtk_dialog_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
-}
-
-static void
-gs_auth_dialog_continue_cb (GtkWidget *widget, GsAuthDialog *dialog)
-{
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	gtk_widget_set_sensitive (dialog->box_dialog, FALSE);
-	gtk_widget_set_sensitive (dialog->button_continue, FALSE);
-
-	/* alternate actions */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_lost_pwd))) {
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD,
-						 "auth", dialog->auth,
-						 NULL);
-	} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_register))) {
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_REGISTER,
-						 "auth", dialog->auth,
-						 NULL);
+	if (!goa_account_call_ensure_credentials_finish (account, NULL, res, &error)) {
+		gs_auth_dialog_spawn_goa_with_args (goa_account_get_id (account), NULL);
 	} else {
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
-						 "auth", dialog->auth,
-						 NULL);
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		gs_auth_set_account_id (self->auth, goa_account_get_id (account));
+		gs_auth_store_save (self->auth);
+		gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_OK);
 	}
-	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
-					    dialog->cancellable,
-					    gs_auth_dialog_authenticate_cb,
-					    dialog);
 }
 
 static void
-gs_auth_dialog_setup (GsAuthDialog *dialog)
+gs_auth_dialog_response_if_valid (GsAuthDialog *self,
+				  GoaAccount *account)
 {
+	goa_account_call_ensure_credentials (account,
+					     self->cancellable,
+					     gs_auth_dialog_ensure_crendentials_cb,
+					     self);
+}
 
-	/* update widgets with known values */
-	if (gs_auth_get_username (dialog->auth) != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (dialog->entry_username),
-				    gs_auth_get_username (dialog->auth));
+static void
+gs_auth_dialog_account_added_cb (GoaClient *client,
+				 GoaObject *object,
+				 GsAuthDialog *self)
+{
+	GoaAccount *account = goa_object_peek_account (object);
+
+	if (gs_auth_dialog_ignore_account (self, account))
+		return;
+
+	if (!self->dispose_on_new_account)
+		gs_auth_dialog_add_account (self, account, FALSE);
+	else
+		gs_auth_dialog_response_if_valid (self, account);
+}
+
+static void
+gs_auth_dialog_account_removed_cb (GoaClient *client,
+				   GoaObject *object,
+				   GsAuthDialog *self)
+{
+	GoaAccount *account = goa_object_peek_account (object);
+	gs_auth_dialog_remove_account (self, account);
+}
+
+static void
+gs_auth_dialog_button_add_another_cb (GtkButton *button,
+				      GsAuthDialog *self)
+{
+	 gs_auth_dialog_spawn_goa_with_args ("add", gs_auth_get_provider_type (self->auth));
+	 self->dispose_on_new_account = TRUE;
+}
+
+static void
+gs_auth_dialog_button_cancel_cb (GtkButton *button,
+				 GsAuthDialog *self)
+{
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
+}
+
+static void
+gs_auth_dialog_button_continue_cb (GtkButton *button,
+				   GsAuthDialog *self)
+{
+	GoaAccount *account = NULL;
+	gint naccounts = gs_auth_dialog_get_naccounts (self);
+
+	if (naccounts == 1) {
+		gs_auth_dialog_get_nth_account_data (self, 0, COLUMN_ACCOUNT, &account, -1);
+	} else {
+		gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (self->combobox_account));
+		gs_auth_dialog_get_nth_account_data (self, active, COLUMN_ACCOUNT, &account, -1);
 	}
-	if (gs_auth_get_password (dialog->auth) != NULL) {
-		gtk_entry_set_text (GTK_ENTRY (dialog->entry_password),
-				    gs_auth_get_password (dialog->auth));
-	}
 
-	/* refresh UI */
-	gs_auth_dialog_check_ui (dialog);
+	if (account == NULL)
+		gs_auth_dialog_button_add_another_cb (GTK_BUTTON (self->button_add_another), self);
+	else
+		gs_auth_dialog_response_if_valid (self, account);
+
+	g_clear_object (&account);
 }
 
-static void
-gs_auth_dialog_notify_username_cb (GtkEntry *entry,
-				   GParamSpec *pspec,
-				   GsAuthDialog *dialog)
-{
-	gs_auth_set_username (dialog->auth, gtk_entry_get_text (entry));
-	gs_auth_dialog_check_ui (dialog);
-}
-
-static void
-gs_auth_dialog_notify_password_cb (GtkEntry *entry,
-				   GParamSpec *pspec,
-				   GsAuthDialog *dialog)
-{
-	gs_auth_set_password (dialog->auth, gtk_entry_get_text (entry));
-	gs_auth_dialog_check_ui (dialog);
-}
-
-static void
-gs_auth_dialog_notify_pin_cb (GtkEntry *entry,
-			      GParamSpec *pspec,
-			      GsAuthDialog *dialog)
-{
-	gs_auth_set_pin (dialog->auth, gtk_entry_get_text (entry));
-	gs_auth_dialog_check_ui (dialog);
-}
-
-static void
-gs_auth_dialog_toggled_cb (GtkToggleButton *togglebutton, GsAuthDialog *dialog)
-{
-	gs_auth_dialog_check_ui (dialog);
-}
-
-static void
-gs_auth_dialog_remember_cb (GtkToggleButton *togglebutton, GsAuthDialog *dialog)
-{
-	if (gtk_toggle_button_get_active (togglebutton))
-		gs_auth_add_flags (dialog->auth, GS_AUTH_FLAG_REMEMBER);
-	gs_auth_dialog_check_ui (dialog);
-}
+/* GObject */
 
 static void
 gs_auth_dialog_dispose (GObject *object)
 {
-	GsAuthDialog *dialog = GS_AUTH_DIALOG (object);
+	GsAuthDialog *self = GS_AUTH_DIALOG (object);
 
-	g_clear_object (&dialog->plugin_loader);
-	g_clear_object (&dialog->app);
-	g_clear_object (&dialog->auth);
+	g_clear_object (&self->goa_client);
 
-	if (dialog->cancellable != NULL) {
-		g_cancellable_cancel (dialog->cancellable);
-		g_clear_object (&dialog->cancellable);
-	}
+	g_cancellable_cancel (self->cancellable);
+	g_clear_object (&self->cancellable);
 
 	G_OBJECT_CLASS (gs_auth_dialog_parent_class)->dispose (object);
-}
-
-static void
-gs_auth_dialog_init (GsAuthDialog *dialog)
-{
-	gtk_widget_init_template (GTK_WIDGET (dialog));
-
-	dialog->cancellable = g_cancellable_new ();
-
-	g_signal_connect (dialog->entry_username, "notify::text",
-			  G_CALLBACK (gs_auth_dialog_notify_username_cb), dialog);
-	g_signal_connect (dialog->entry_password, "notify::text",
-			  G_CALLBACK (gs_auth_dialog_notify_password_cb), dialog);
-	g_signal_connect (dialog->entry_password, "activate",
-			  G_CALLBACK (gs_auth_dialog_continue_cb), dialog);
-	g_signal_connect (dialog->entry_pin, "notify::text",
-			  G_CALLBACK (gs_auth_dialog_notify_pin_cb), dialog);
-	g_signal_connect (dialog->entry_pin, "activate",
-			  G_CALLBACK (gs_auth_dialog_continue_cb), dialog);
-	g_signal_connect (dialog->checkbutton_remember, "toggled",
-			  G_CALLBACK (gs_auth_dialog_remember_cb), dialog);
-	g_signal_connect (dialog->radiobutton_already, "toggled",
-			  G_CALLBACK (gs_auth_dialog_toggled_cb), dialog);
-	g_signal_connect (dialog->radiobutton_register, "toggled",
-			  G_CALLBACK (gs_auth_dialog_toggled_cb), dialog);
-	g_signal_connect (dialog->radiobutton_lost_pwd, "toggled",
-			  G_CALLBACK (gs_auth_dialog_toggled_cb), dialog);
-	g_signal_connect (dialog->button_cancel, "clicked",
-			  G_CALLBACK (gs_auth_dialog_cancel_button_cb), dialog);
-	g_signal_connect (dialog->button_continue, "clicked",
-			  G_CALLBACK (gs_auth_dialog_continue_cb), dialog);
 }
 
 static void
@@ -303,22 +383,60 @@ gs_auth_dialog_class_init (GsAuthDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-auth-dialog.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, box_dialog);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, box_error);
+	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, label_header);
+	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, combobox_account);
+	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, label_account);
+	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, button_add_another);
 	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, button_cancel);
 	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, button_continue);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, checkbutton_remember);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, entry_password);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, entry_pin);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, entry_username);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, image_vendor);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, label_error);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, label_title);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, radiobutton_already);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, radiobutton_lost_pwd);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, radiobutton_register);
-	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, liststore_account);
+
+
+	gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), gs_auth_dialog_button_add_another_cb);
+	gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), gs_auth_dialog_button_cancel_cb);
+	gtk_widget_class_bind_template_callback (GTK_WIDGET_CLASS (klass), gs_auth_dialog_button_continue_cb);
 }
+
+static void
+gs_auth_dialog_init (GsAuthDialog *self)
+{
+	self->cancellable = g_cancellable_new ();
+
+	gtk_widget_init_template (GTK_WIDGET (self));
+	gtk_widget_grab_focus (self->button_continue);
+}
+
+/* GInitable */
+
+static gboolean
+gs_auth_dialog_initable_init (GInitable *initable,
+			      GCancellable *cancellable,
+			      GError  **error)
+{
+	GsAuthDialog *self;
+
+	g_return_val_if_fail (GS_IS_AUTH_DIALOG (initable), FALSE);
+
+	self = GS_AUTH_DIALOG (initable);
+
+	self->goa_client = goa_client_new_sync (NULL, error);
+	if (!self->goa_client)
+	return FALSE;
+
+	/* Be ready to other accounts */
+	g_signal_connect (self->goa_client, "account-added", G_CALLBACK (gs_auth_dialog_account_added_cb), self);
+	g_signal_connect (self->goa_client, "account-removed", G_CALLBACK (gs_auth_dialog_account_removed_cb), self);
+
+	return TRUE;
+}
+
+static void
+gs_auth_dialog_initable_iface_init (GInitableIface *iface)
+{
+	iface->init = gs_auth_dialog_initable_init;
+}
+
+/* Public API */
 
 GtkWidget *
 gs_auth_dialog_new (GsPluginLoader *plugin_loader,
@@ -350,13 +468,20 @@ gs_auth_dialog_new (GsPluginLoader *plugin_loader,
 	}
 
 	/* create dialog */
-	dialog = g_object_new (GS_TYPE_AUTH_DIALOG,
-			       "use-header-bar", TRUE,
-			       NULL);
+	dialog = g_initable_new (GS_TYPE_AUTH_DIALOG,
+				 NULL, error,
+				 "use-header-bar", FALSE,
+				 NULL);
+
+	if (dialog == NULL)
+		return NULL;
+
 	dialog->plugin_loader = g_object_ref (plugin_loader);
 	dialog->app = app != NULL ? g_object_ref (app) : NULL;
 	dialog->auth = g_object_ref (auth);
-	gs_auth_dialog_setup (dialog);
+
+	gs_auth_dialog_setup_model (dialog);
+	gs_auth_dialog_check_ui (dialog, FALSE);
 
 	return GTK_WIDGET (dialog);
 }

@@ -675,34 +675,12 @@ gs_shell_signin_button_cb (GtkButton *button, GsShell *shell)
 }
 
 static void
-gs_shell_logout_cb (GObject *source,
-		    GAsyncResult *res,
-		    gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to logout: %s",  error->message);
-		return;
-	}
-}
-
-static void
 gs_shell_signout_button_cb (GtkButton *button, GsShell *shell)
 {
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsAuth *auth = GS_AUTH (g_object_get_data (G_OBJECT (button), "auth"));
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGOUT,
-					 "auth", g_object_get_data (G_OBJECT (button), "auth"),
-					 NULL);
-
-	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
-					    priv->cancellable,
-					    gs_shell_logout_cb,
-					    shell);
-
+	gs_auth_set_account_id (auth, NULL);
+	gs_auth_store_save (auth);
 }
 
 static void
@@ -710,35 +688,39 @@ add_buttons_for_auth (GsShell *shell, GsAuth *auth)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *account_box;
-	gboolean logged_in;
+	GoaObject *goa_object;
 	GtkWidget *signin_button;
 	GtkWidget *signout_button;
 	g_autofree gchar *signout_label = NULL;
 	g_autofree gchar *signin_label = NULL;
 
 	account_box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "account_box"));
-	logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
 	signin_button = gtk_model_button_new ();
 	signout_button = gtk_model_button_new ();
 
 	signout_label = g_strdup_printf (_("Sign out from %s"),
 					 gs_auth_get_provider_name (auth));
-	if (logged_in)
+
+	goa_object = gs_auth_get_account (auth);
+	if (goa_object) {
+		GoaAccount *goa_account = goa_object_peek_account (goa_object);
+
 		signin_label = g_strdup_printf (_("Signed in into %s as %s"),
 						gs_auth_get_provider_name (auth),
-						gs_auth_get_username (auth));
-	else
+						goa_account_get_presentation_identity (goa_account));
+	} else {
 		signin_label = g_strdup_printf (_("Sign in to %s…"),
 						gs_auth_get_provider_name (auth));
+	}
 
 	g_object_set (signin_button,
 		      "text", signin_label,
-		      "sensitive", !logged_in, NULL);
+		      "sensitive", goa_object == NULL, NULL);
 	g_object_set_data (G_OBJECT (signin_button), "auth", auth);
 
 	g_object_set (signout_button,
 		      "text", signout_label,
-		      "sensitive", logged_in, NULL);
+		      "sensitive", goa_object != NULL, NULL);
 	g_object_set_data (G_OBJECT (signout_button), "auth", auth);
 
 	g_signal_connect (signin_button, "clicked",
@@ -1084,7 +1066,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to download updates: "
 				        "authentication was required"));
@@ -1139,7 +1120,6 @@ gs_shell_show_event_purchase (GsShell *shell, GsPluginEvent *event)
 	str_app = gs_shell_get_title_from_app (app);
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to purchase %s: "
@@ -1254,7 +1234,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "authentication was required"),
@@ -1274,35 +1253,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					       "you do not have permission to "
 					       "install software"),
 					str_app);
-		break;
-	case GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED:
-	case GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED:
-		if (origin != NULL) {
-			const gchar *url_homepage;
-
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * the %s is the name of the authentication service,
-			 * e.g. "Ubuntu One" */
-			g_string_append_printf (str, _("Your %s account has been suspended."),
-						gs_app_get_name (origin));
-			g_string_append (str, " ");
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("It is not possible to install "
-						"software until this has been resolved."));
-			url_homepage = gs_app_get_url (origin, AS_URL_KIND_HOMEPAGE);
-			if (url_homepage != NULL) {
-				g_autofree gchar *url = NULL;
-				url = g_strdup_printf ("<a href=\"%s\">%s</a>",
-						       url_homepage,
-						       url_homepage);
-				/* TRANSLATORS: failure text for the in-app notification,
-				 * where the %s is the clickable link (e.g.
-				 * "http://example.com/what-did-i-do-wrong/") */
-				msg = g_strdup_printf (_("For more information, visit %s."),
-							url);
-				g_string_append_printf (str, " %s", msg);
-			}
-		}
 		break;
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
@@ -1388,7 +1338,6 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s: "
@@ -1493,7 +1442,6 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
@@ -1565,7 +1513,6 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	str_app = gs_shell_get_title_from_app (app);
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: authentication was required"),
