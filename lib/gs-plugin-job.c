@@ -131,7 +131,7 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	}
 	if (self->auth != NULL) {
 		g_string_append_printf (str, " with auth=%s",
-					gs_auth_get_provider_id (self->auth));
+					gs_auth_get_auth_id (self->auth));
 	}
 	if (self->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (self->file);

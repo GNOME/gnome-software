@@ -32,10 +32,10 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsAuthDialog, gs_auth_dialog, GS, AUTH_DIALOG, GtkDialog)
 
-GtkWidget	*gs_auth_dialog_new		(GsPluginLoader	*plugin_loader,
-						 GsApp		*app,
-						 const gchar	*provider_id,
-						 GError		**error);
+GtkWidget	*gs_auth_dialog_new	(GsPluginLoader	*plugin_loader,
+					 GsApp		*app,
+					 const gchar	*auth_id,
+					 GError		**error);
 
 G_END_DECLS
 

@@ -139,5 +139,12 @@
       <default>true</default>
       <summary>Enable GNOME Shell extensions repository</summary>
     </key>
+    <child name="auth" schema="org.gnome.software.auth"/>
+  </schema>
+  <schema id="org.gnome.software.auth" gettext-domain="gnome-software">
+    <key name="account-id" type="s">
+      <default>''</default>
+      <summary>A string storing the gnome-online-account id used to login</summary>
+    </key>
   </schema>
 </schemalist>

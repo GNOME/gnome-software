@@ -567,86 +567,6 @@ gs_plugins_dummy_plugin_cache_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
-{
-	GsAuth *auth;
-	gboolean ret;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(AsReview) review = NULL;
-	g_autoptr(AsReview) review2 = NULL;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* check initial state */
-	auth = gs_plugin_loader_get_auth_by_id (plugin_loader, "dummy");
-	g_assert (GS_IS_AUTH (auth));
-	g_assert_cmpint (gs_auth_get_flags (auth), ==, 0);
-
-	/* do an action that returns a URL */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_REGISTER,
-					 "auth", auth,
-					 NULL);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
-	gs_test_flush_main_context ();
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
-	g_assert (list == NULL);
-	g_clear_error (&error);
-	g_assert (!gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
-
-	/* do an action that requires a login */
-	app = gs_app_new (NULL);
-	review = as_review_new ();
-	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_REMOVE,
-					 "app", app,
-					 "review", review,
-					 NULL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
-	gs_test_flush_main_context ();
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED);
-	g_assert (!ret);
-	g_clear_error (&error);
-
-	/* pretend to auth with no credentials */
-	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
-					 "auth", auth,
-					 NULL);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
-	gs_test_flush_main_context ();
-	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
-	g_assert (list == NULL);
-	g_clear_error (&error);
-	g_assert (!gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
-
-	/* auth again with correct credentials */
-	gs_auth_set_username (auth, "dummy");
-	gs_auth_set_password (auth, "dummy");
-	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
-						 "auth", auth,
-						 NULL);
-	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-	g_assert (gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
-
-	/* do the action that requires a login */
-	review2 = as_review_new ();
-	g_object_unref (plugin_job);
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_REMOVE,
-					 "app", app,
-					 "review", review2,
-					 NULL);
-	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
-	gs_test_flush_main_context ();
-	g_assert_no_error (error);
-	g_assert (ret);
-}
-
-static void
 gs_plugins_dummy_wildcard_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GError) error = NULL;
@@ -937,9 +857,6 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/wildcard",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_wildcard_func);
-	g_test_add_data_func ("/gnome-software/plugins/dummy/authentication",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugins_dummy_authentication_func);
 	g_test_add_data_func ("/gnome-software/plugins/dummy/plugin-cache",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_plugin_cache_func);

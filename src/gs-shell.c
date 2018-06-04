@@ -656,67 +656,49 @@ static void
 signin_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	const gchar *action_name, *provider_id;
+	const gchar *action_name, *auth_id;
 	GsAuth *auth;
 
 	action_name = g_action_get_name (G_ACTION (action));
 	g_return_if_fail (g_str_has_prefix (action_name, "signin-"));
-	provider_id = action_name + strlen ("signin-");
+	auth_id = action_name + strlen ("signin-");
 
-	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, provider_id);
+	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, auth_id);
 	g_return_if_fail (auth != NULL);
 
 	gs_page_authenticate (priv->page, NULL,
-			      gs_auth_get_provider_id (auth),
+			      gs_auth_get_auth_id (auth),
 			      priv->cancellable,
 			      NULL, NULL);
-}
-
-static void
-gs_shell_logout_cb (GObject *source,
-		    GAsyncResult *res,
-		    gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to logout: %s",  error->message);
-		return;
-	}
 }
 
 static void
 signout_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	const gchar *action_name, *provider_id;
+	const gchar *action_name, *auth_id;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsAuth *auth;
 
 	action_name = g_action_get_name (G_ACTION (action));
 	g_return_if_fail (g_str_has_prefix (action_name, "signout-"));
-	provider_id = action_name + strlen ("signout-");
+	auth_id = action_name + strlen ("signout-");
 
-	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, provider_id);
+	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, auth_id);
 	g_return_if_fail (auth != NULL);
 
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGOUT,
-					 "interactive", TRUE,
-					 "auth", auth,
-					 NULL);
-
-	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
-					    priv->cancellable,
-					    gs_shell_logout_cb,
-					    shell);
+	gs_auth_set_goa_object (auth, NULL);
 }
 
 static void
-menu_button_clicked_cb (GtkButton *button, GsShell *shell)
+gs_shell_reload_auth_menus (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GMenu *accounts_menu;
 	GPtrArray *auth_array;
+
+	accounts_menu = G_MENU (gtk_builder_get_object (priv->builder, "accounts_menu"));
+	g_menu_remove_all (accounts_menu);
 
 	auth_array = gs_plugin_loader_get_auths (priv->plugin_loader);
 	for (guint i = 0; i < auth_array->len; i++) {
@@ -724,18 +706,54 @@ menu_button_clicked_cb (GtkButton *button, GsShell *shell)
 		gboolean logged_in;
 		g_autofree gchar *signin_action_name = NULL;
 		GSimpleAction *signin_action;
+		g_autofree gchar *signin_target = NULL;
 		g_autofree gchar *signout_action_name = NULL;
 		GSimpleAction *signout_action;
+		g_autofree gchar *signout_target = NULL;
+		GoaObject *goa_object;
+		g_autofree gchar *signin_label = NULL;
+		g_autofree gchar *signout_label = NULL;
+		g_autoptr(GMenu) auth_menu = NULL;
+		g_autoptr(GMenuItem) signin_item = NULL;
+		g_autoptr(GMenuItem) signout_item = NULL;
 
-		logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
 
-		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_provider_id (auth));
+		goa_object = gs_auth_peek_goa_object (auth);
+		logged_in = goa_object != NULL;
+
+		auth_menu = g_menu_new ();
+		accounts_menu = G_MENU (gtk_builder_get_object (priv->builder, "accounts_menu"));
+		g_menu_append_section (accounts_menu, gs_auth_get_provider_name (auth), G_MENU_MODEL (auth_menu));
+
+		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_auth_id (auth));
 		signin_action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (priv->auth_actions), signin_action_name));
 		g_simple_action_set_enabled (signin_action, !logged_in);
 
-		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_provider_id (auth));
+		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_auth_id (auth));
 		signout_action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (priv->auth_actions), signout_action_name));
 		g_simple_action_set_enabled (signout_action, logged_in);
+
+
+		if (logged_in) {
+			GoaAccount *goa_account = goa_object_peek_account (goa_object);
+
+			/* TRANSLATORS: menu item that signs into the named account with a particular username */
+			signin_label = g_strdup_printf (_("Signed in as %s"),
+							goa_account_get_presentation_identity (goa_account));
+		} else {
+			/* TRANSLATORS: menu item that signs into the named account */
+			signin_label = g_strdup_printf (_("Sign in…"));
+		}
+
+		signin_target = g_strdup_printf ("auth.%s", signin_action_name);
+		signin_item = g_menu_item_new (signin_label, signin_target);
+		g_menu_append_item (auth_menu, signin_item);
+
+		/* TRANSLATORS: menu item for signing out from the named account */
+		signout_label = g_strdup_printf (_("Sign out"));
+		signout_target = g_strdup_printf ("auth.%s", signout_action_name);
+		signout_item = g_menu_item_new (signout_label, signout_target);
+		g_menu_append_item (auth_menu, signout_item);
 	}
 }
 
@@ -1030,7 +1048,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to download updates: "
 				        "authentication was required"));
@@ -1093,7 +1110,6 @@ gs_shell_show_event_purchase (GsShell *shell, GsPluginEvent *event)
 	str_app = gs_shell_get_title_from_app (app);
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to purchase %s: "
@@ -1208,7 +1224,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append_printf (str, _("Unable to install %s: "
 					       "authentication was required"),
@@ -1228,35 +1243,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					       "you do not have permission to "
 					       "install software"),
 					str_app);
-		break;
-	case GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED:
-	case GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED:
-		if (origin != NULL) {
-			const gchar *url_homepage;
-
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * the %s is the name of the authentication service,
-			 * e.g. "Ubuntu One" */
-			g_string_append_printf (str, _("Your %s account has been suspended."),
-						gs_app_get_name (origin));
-			g_string_append (str, " ");
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("It is not possible to install "
-						"software until this has been resolved."));
-			url_homepage = gs_app_get_url (origin, AS_URL_KIND_HOMEPAGE);
-			if (url_homepage != NULL) {
-				g_autofree gchar *url = NULL;
-				url = g_strdup_printf ("<a href=\"%s\">%s</a>",
-						       url_homepage,
-						       url_homepage);
-				/* TRANSLATORS: failure text for the in-app notification,
-				 * where the %s is the clickable link (e.g.
-				 * "http://example.com/what-did-i-do-wrong/") */
-				msg = g_strdup_printf (_("For more information, visit %s."),
-							url);
-				g_string_append_printf (str, " %s", msg);
-			}
-		}
 		break;
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
@@ -1342,7 +1328,6 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to update %s: "
@@ -1447,7 +1432,6 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s: "
@@ -1519,7 +1503,6 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	str_app = gs_shell_get_title_from_app (app);
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-	case GS_PLUGIN_ERROR_PIN_REQUIRED:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: authentication was required"),
@@ -2021,10 +2004,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	                  shell);
 
 	/* show the account popover when clicking on the account button */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "menu_button"));
+	/* widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "menu_button"));
 	g_signal_connect (widget, "clicked",
 	                  G_CALLBACK (menu_button_clicked_cb),
-	                  shell);
+	                  shell); */
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
@@ -2115,58 +2098,25 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	auth_array = gs_plugin_loader_get_auths (priv->plugin_loader);
 	for (guint i = 0; i < auth_array->len; i++) {
 		GsAuth *auth = g_ptr_array_index (auth_array, i);
-		GMenu *accounts_menu;
-		gboolean logged_in;
-		g_autoptr(GMenu) auth_menu = NULL;
 		g_autoptr(GSimpleAction) signin_action = NULL;
 		g_autofree gchar *signin_action_name = NULL;
-		g_autoptr(GMenuItem) signin_item = NULL;
-		g_autofree gchar *signin_label = NULL;
-		g_autofree gchar *signin_target = NULL;
 		g_autoptr(GSimpleAction) signout_action = NULL;
 		g_autofree gchar *signout_action_name = NULL;
-		g_autoptr(GMenuItem) signout_item = NULL;
-		g_autofree gchar *signout_label = NULL;
-		g_autofree gchar *signout_target = NULL;
 
-		logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
-
-		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_provider_id (auth));
+		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_auth_id (auth));
 		signin_action = g_simple_action_new (signin_action_name, NULL);
-		g_simple_action_set_enabled (signin_action, !logged_in);
 		g_signal_connect (signin_action, "activate", G_CALLBACK (signin_activated_cb), shell);
 		g_action_map_add_action (G_ACTION_MAP (priv->auth_actions), G_ACTION (signin_action));
 
-		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_provider_id (auth));
+		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_auth_id (auth));
 		signout_action = g_simple_action_new (signout_action_name, NULL);
-		g_simple_action_set_enabled (signout_action, logged_in);
 		g_signal_connect (signout_action, "activate", G_CALLBACK (signout_activated_cb), shell);
 		g_action_map_add_action (G_ACTION_MAP (priv->auth_actions), G_ACTION (signout_action));
 
-		auth_menu = g_menu_new ();
-		accounts_menu = G_MENU (gtk_builder_get_object (priv->builder, "accounts_menu"));
-		g_menu_append_section (accounts_menu, NULL, G_MENU_MODEL (auth_menu));
-
-		if (logged_in) {
-			/* TRANSLATORS: menu item that signs into the named account with a particular username */
-			signin_label = g_strdup_printf (_("Signed in into %s as %s"),
-							gs_auth_get_provider_name (auth),
-							gs_auth_get_username (auth));
-		} else {
-			/* TRANSLATORS: menu item that signs into the named account */
-			signin_label = g_strdup_printf (_("Sign in to %s…"),
-							gs_auth_get_provider_name (auth));
-		}
-		signin_target = g_strdup_printf ("auth.%s", signin_action_name);
-		signin_item = g_menu_item_new (signin_label, signin_target);
-		g_menu_append_item (auth_menu, signin_item);
-
-		/* TRANSLATORS: menu item for signing out from the named account */
-		signout_label = g_strdup_printf (_("Sign out from %s"),
-						 gs_auth_get_provider_name (auth));
-		signout_target = g_strdup_printf ("auth.%s", signout_action_name);
-		signout_item = g_menu_item_new (signout_label, signout_target);
-		g_menu_append_item (auth_menu, signout_item);
+		g_signal_connect_object (auth, "changed",
+					 G_CALLBACK (gs_shell_reload_auth_menus),
+					 shell, G_CONNECT_SWAPPED);
+		gs_shell_reload_auth_menus (shell);
 	}
 
 	/* show loading page, which triggers the initial refresh */

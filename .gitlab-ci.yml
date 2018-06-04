@@ -11,6 +11,7 @@ before_script:
   # Some deps may not be sync'd
   - dnf -y install rpm-ostree-devel
   - dnf -y install libstemmer-devel
+  - dnf -y install gnome-online-accounts-devel
 
 build-gnome-software:
   stage: build
