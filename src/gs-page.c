@@ -99,10 +99,10 @@ gs_page_authenticate_cb (GtkDialog *dialog,
 void
 gs_page_authenticate (GsPage *page,
 		      GsApp *app,
-		      const gchar *provider_id,
+		      const gchar *auth_id,
 		      GCancellable *cancellable,
-                      GsPageAuthCallback callback,
-                      gpointer user_data)
+		      GsPageAuthCallback callback,
+		      gpointer user_data)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	g_autoptr(GsPageHelper) helper = NULL;
@@ -117,7 +117,7 @@ gs_page_authenticate (GsPage *page,
 
 	dialog = gs_auth_dialog_new (priv->plugin_loader,
 				     app,
-				     provider_id,
+				     auth_id,
 				     &error);
 	if (dialog == NULL) {
 		g_warning ("%s", error->message);

@@ -80,7 +80,7 @@ gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_add_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
 GsAuth		*gs_plugin_loader_get_auth_by_id	(GsPluginLoader	*plugin_loader,
-							 const gchar	*provider_id);
+							 const gchar	*auth_id);
 GPtrArray	*gs_plugin_loader_get_auths		(GsPluginLoader *plugin_loader);
 guint		 gs_plugin_loader_get_scale		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_set_scale		(GsPluginLoader	*plugin_loader,

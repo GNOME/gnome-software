@@ -1,6 +1,7 @@
  /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2018 Canonical Ltd
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -24,6 +25,8 @@
 
 #include <glib-object.h>
 #include <gio/gio.h>
+#define GOA_API_IS_SUBJECT_TO_CHANGE
+#include <goa/goa.h>
 
 G_BEGIN_DECLS
 
@@ -31,88 +34,23 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsAuth, gs_auth, GS, AUTH, GObject)
 
-/**
- * GsAuthFlags:
- * @GS_AUTH_FLAG_NONE:			No special flags set
- * @GS_AUTH_FLAG_VALID:			Authorisation is valid
- * @GS_AUTH_FLAG_REMEMBER:		Remember this authentication if possible
- *
- * The flags for the auth.
- **/
-typedef enum {
-	GS_AUTH_FLAG_NONE	= 0,
-	GS_AUTH_FLAG_VALID	= 1 << 0,
-	GS_AUTH_FLAG_REMEMBER	= 1 << 1,
-	/*< private >*/
-	GS_AUTH_FLAG_LAST
-} GsAuthFlags;
-
-/**
- * GsAuthStoreFlags:
- * @GS_AUTH_STORE_FLAG_NONE:		No special flags set
- * @GS_AUTH_STORE_FLAG_USERNAME:	Load or save the username
- * @GS_AUTH_STORE_FLAG_PASSWORD:	Load or save the password
- * @GS_AUTH_STORE_FLAG_METADATA:	Load or save any metadata
- *
- * The flags used when loading or saving the authentication to disk.
- **/
-typedef enum {
-	GS_AUTH_STORE_FLAG_NONE	= 0,
-	GS_AUTH_STORE_FLAG_USERNAME	= 1 << 0,
-	GS_AUTH_STORE_FLAG_PASSWORD	= 1 << 1,
-	GS_AUTH_STORE_FLAG_METADATA	= 1 << 2,
-	/*< private >*/
-	GS_AUTH_STORE_FLAG_LAST
-} GsAuthStoreFlags;
-
-GsAuth		*gs_auth_new			(const gchar	*provider_id);
-const gchar	*gs_auth_get_provider_id	(GsAuth		*auth);
+GsAuth		*gs_auth_new			(const gchar	*auth_id,
+						 const gchar	*provider_type,
+						 GError	       **error);
+const gchar	*gs_auth_get_header		(GsAuth		*auth,
+						 guint		 n);
+void		 gs_auth_set_header		(GsAuth		*auth,
+						 const gchar	*header_none,
+						 const gchar	*header_single,
+						 const gchar	*header_multiple);
+const gchar	*gs_auth_get_auth_id		(GsAuth		*auth);
 const gchar	*gs_auth_get_provider_name	(GsAuth		*auth);
 void		 gs_auth_set_provider_name	(GsAuth		*auth,
 						 const gchar	*provider_name);
-const gchar	*gs_auth_get_provider_logo	(GsAuth		*auth);
-void		 gs_auth_set_provider_logo	(GsAuth		*auth,
-						 const gchar	*provider_logo);
-const gchar	*gs_auth_get_provider_uri	(GsAuth		*auth);
-void		 gs_auth_set_provider_uri	(GsAuth		*auth,
-						 const gchar	*provider_uri);
-const gchar	*gs_auth_get_provider_schema	(GsAuth		*auth);
-void		 gs_auth_set_provider_schema	(GsAuth		*auth,
-						 const gchar	*provider_schema);
-const gchar	*gs_auth_get_username		(GsAuth		*auth);
-void		 gs_auth_set_username		(GsAuth		*auth,
-						 const gchar	*username);
-const gchar	*gs_auth_get_password		(GsAuth		*auth);
-void		 gs_auth_set_password		(GsAuth		*auth,
-						 const gchar	*password);
-const gchar	*gs_auth_get_pin		(GsAuth		*auth);
-void		 gs_auth_set_pin		(GsAuth		*auth,
-						 const gchar	*pin);
-GsAuthFlags	 gs_auth_get_flags		(GsAuth		*auth);
-void		 gs_auth_set_flags		(GsAuth		*auth,
-						 GsAuthFlags	 flags);
-void		 gs_auth_add_flags		(GsAuth		*auth,
-						 GsAuthFlags	 flags);
-gboolean	 gs_auth_has_flag		(GsAuth		*auth,
-						 GsAuthFlags	 flags);
-const gchar	*gs_auth_get_metadata_item	(GsAuth		*auth,
-						 const gchar	*key);
-void		 gs_auth_add_metadata		(GsAuth		*auth,
-						 const gchar	*key,
-						 const gchar	*value);
-gboolean	 gs_auth_store_load		(GsAuth		*auth,
-						 GsAuthStoreFlags flags,
-						 GCancellable	*cancellable,
-						 GError		**error);
-gboolean	 gs_auth_store_save		(GsAuth		*auth,
-						 GsAuthStoreFlags flags,
-						 GCancellable	*cancellable,
-						 GError		**error);
-gboolean	 gs_auth_store_clear		(GsAuth		*auth,
-						 GsAuthStoreFlags flags,
-						 GCancellable	*cancellable,
-						 GError		**error);
-
+const gchar	*gs_auth_get_provider_type	(GsAuth		*auth);
+GoaObject	*gs_auth_peek_goa_object	(GsAuth		*auth);
+void		 gs_auth_set_goa_object		(GsAuth		*auth,
+						 GoaObject	*goa_object);
 G_END_DECLS
 
 #endif /* __GS_AUTH_H */

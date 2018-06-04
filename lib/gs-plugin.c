@@ -645,7 +645,7 @@ gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
 /**
  * gs_plugin_get_auth_by_id:
  * @plugin: a #GsPlugin
- * @provider_id: an ID, e.g. "dummy-sso"
+ * @auth_id: an ID, e.g. "dummy-sso"
  *
  * Gets a specific authentication object.
  *
@@ -654,7 +654,7 @@ gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
  * Since: 3.22
  **/
 GsAuth *
-gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
+gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *auth_id)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	guint i;
@@ -662,7 +662,7 @@ gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
 	/* match on ID */
 	for (i = 0; i < priv->auth_array->len; i++) {
 		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
-		if (g_strcmp0 (gs_auth_get_provider_id (auth), provider_id) == 0)
+		if (g_strcmp0 (gs_auth_get_auth_id (auth), auth_id) == 0)
 			return auth;
 	}
 	return NULL;
@@ -1544,12 +1544,6 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "auth-required";
 	if (error == GS_PLUGIN_ERROR_AUTH_INVALID)
 		return "auth-invalid";
-	if (error == GS_PLUGIN_ERROR_PIN_REQUIRED)
-		return "pin-required";
-	if (error == GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED)
-		return "account-suspended";
-	if (error == GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED)
-		return "account-deactivated";
 	if (error == GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED)
 		return "plugin-depsolve-failed";
 	if (error == GS_PLUGIN_ERROR_DOWNLOAD_FAILED)
@@ -1650,14 +1644,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_add_search_files";
 	if (action == GS_PLUGIN_ACTION_SEARCH_PROVIDES)
 		return "gs_plugin_add_search_what_provides";
-	if (action == GS_PLUGIN_ACTION_AUTH_LOGIN)
-		return "gs_plugin_auth_login";
-	if (action == GS_PLUGIN_ACTION_AUTH_LOGOUT)
-		return "gs_plugin_auth_logout";
-	if (action == GS_PLUGIN_ACTION_AUTH_REGISTER)
-		return "gs_plugin_auth_register";
-	if (action == GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD)
-		return "gs_plugin_auth_lost_password";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORY_APPS)
 		return "gs_plugin_add_category_apps";
 	if (action == GS_PLUGIN_ACTION_GET_CATEGORIES)
@@ -1756,14 +1742,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "file-to-app";
 	if (action == GS_PLUGIN_ACTION_URL_TO_APP)
 		return "url-to-app";
-	if (action == GS_PLUGIN_ACTION_AUTH_LOGIN)
-		return "auth-login";
-	if (action == GS_PLUGIN_ACTION_AUTH_LOGOUT)
-		return "auth-logout";
-	if (action == GS_PLUGIN_ACTION_AUTH_REGISTER)
-		return "auth-register";
-	if (action == GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD)
-		return "auth-lost-password";
 	if (action == GS_PLUGIN_ACTION_GET_RECENT)
 		return "get-recent";
 	if (action == GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL)
@@ -1860,14 +1838,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_FILE_TO_APP;
 	if (g_strcmp0 (action, "url-to-app") == 0)
 		return GS_PLUGIN_ACTION_URL_TO_APP;
-	if (g_strcmp0 (action, "auth-login") == 0)
-		return GS_PLUGIN_ACTION_AUTH_LOGIN;
-	if (g_strcmp0 (action, "auth-logout") == 0)
-		return GS_PLUGIN_ACTION_AUTH_LOGOUT;
-	if (g_strcmp0 (action, "auth-register") == 0)
-		return GS_PLUGIN_ACTION_AUTH_REGISTER;
-	if (g_strcmp0 (action, "auth-lost-password") == 0)
-		return GS_PLUGIN_ACTION_AUTH_LOST_PASSWORD;
 	if (g_strcmp0 (action, "get-recent") == 0)
 		return GS_PLUGIN_ACTION_GET_RECENT;
 	if (g_strcmp0 (action, "get-updates-historical") == 0)
