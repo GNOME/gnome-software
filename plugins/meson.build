@@ -2,6 +2,7 @@ plugin_dir = join_paths(get_option('libdir'), 'gs-plugins-' + gs_plugin_api_vers
 plugin_libs = [
   appstream_glib,
   gio_unix,
+  goa,
   gtk,
   json_glib,
   libsoup
