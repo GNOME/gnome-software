@@ -4,6 +4,7 @@ stages:
   - build
 
 before_script:
+<<<<<<< HEAD
   # Update and use base build deps
   - dnf update -y && dnf -y install dnf-plugins-core @buildsys-build
   - dnf -y builddep gnome-software
