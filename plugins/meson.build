@@ -44,12 +44,6 @@ endif
 if get_option('enable-steam')
   subdir('steam')
 endif
-if get_option('enable-ubuntuone')
-  subdir('ubuntuone')
-endif
-if get_option('enable-ubuntu-reviews')
-  subdir('ubuntu-reviews')
-endif
 if get_option('enable-external-appstream')
   subdir('external-appstream')
 endif
