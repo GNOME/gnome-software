@@ -44,7 +44,6 @@ BuildRequires: ostree-devel
 BuildRequires: rpm-ostree-devel
 BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
-BuildRequires: liboauth-devel
 BuildRequires: snapd-glib-devel
 
 Requires: appstream-data
@@ -109,9 +108,7 @@ Adds support for Snap packages from the Snap store.
     -Denable-packagekit=true \
     -Denable-external-appstream=false \
     -Denable-rpm-ostree=true \
-    -Denable-tests=false \
-    -Denable-ubuntuone=false \
-    -Denable-ubuntu-reviews=false
+    -Denable-tests=false
 %meson_build
 
 %install
