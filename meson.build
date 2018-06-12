@@ -162,10 +162,6 @@ if get_option('enable-rpm-ostree')
   rpm_ostree = dependency('rpm-ostree-1', version : '>= 2018.4')
 endif
 
-if get_option('enable-ubuntu-reviews')
-  oauth = dependency('oauth')
-endif
-
 if get_option('enable-gudev')
   gudev = dependency('gudev-1.0')
 endif
