@@ -124,6 +124,14 @@ snapd_error_convert (GError **perror)
 		case SNAPD_ERROR_TWO_FACTOR_INVALID:
 			error->code = GS_PLUGIN_ERROR_AUTH_INVALID;
 			break;
+		case SNAPD_ERROR_PAYMENT_NOT_SETUP:
+			error->code = GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP;
+			g_free (error->message);
+			error->message = g_strdup ("do online using @https://my.ubuntu.com/payment");
+			break;
+		case SNAPD_ERROR_PAYMENT_DECLINED:
+			error->code = GS_PLUGIN_ERROR_PURCHASE_DECLINED;
+			break;
 		case SNAPD_ERROR_CONNECTION_FAILED:
 		case SNAPD_ERROR_WRITE_FAILED:
 		case SNAPD_ERROR_READ_FAILED:
@@ -132,8 +140,6 @@ snapd_error_convert (GError **perror)
 		case SNAPD_ERROR_PERMISSION_DENIED:
 		case SNAPD_ERROR_FAILED:
 		case SNAPD_ERROR_TERMS_NOT_ACCEPTED:
-		case SNAPD_ERROR_PAYMENT_NOT_SETUP:
-		case SNAPD_ERROR_PAYMENT_DECLINED:
 		case SNAPD_ERROR_ALREADY_INSTALLED:
 		case SNAPD_ERROR_NOT_INSTALLED:
 		case SNAPD_ERROR_NO_UPDATE_AVAILABLE:
@@ -796,8 +802,12 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	if (local_snap != NULL)
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	else
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	else {
+		if (store_snap != NULL && snapd_snap_get_prices (store_snap)->len > 0)
+			gs_app_set_state (app, AS_APP_STATE_PURCHASABLE);
+		else
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	}
 
 	/* use store information for basic metadata over local information */
 	snap = store_snap != NULL ? store_snap : local_snap;
@@ -833,7 +843,16 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* add information specific to store snaps */
 	if (store_snap != NULL) {
+		GPtrArray *prices;
+
 		gs_app_set_origin (app, priv->store_name);
+
+		prices = snapd_snap_get_prices (store_snap);
+		if (prices->len > 0) {
+			SnapdPrice *price = prices->pdata[0];
+			gs_app_set_price (app, snapd_price_get_amount (price), snapd_price_get_currency (price));
+		}
+
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
 
 		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS && gs_app_get_screenshots (app)->len == 0) {
@@ -870,6 +889,38 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* load icon if requested */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_pixbuf (app) == NULL)
 		load_icon (plugin, client, app, gs_app_get_metadata_item (app, "snap::name"), local_snap, store_snap, cancellable);
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_app_purchase (GsPlugin *plugin,
+			GsApp *app,
+			GsPrice *price,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(SnapdClient) client = NULL;
+	const gchar *id;
+
+	/* We can only purchase apps we know of */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+		return TRUE;
+
+	client = get_client (plugin, error);
+	if (client == NULL)
+		return FALSE;
+
+	if (!snapd_client_check_buy_sync (client, cancellable, error)) {
+		snapd_error_convert (error);
+		return FALSE;
+	}
+
+	id = gs_app_get_metadata_item (app, "snap::id");
+	if (!snapd_client_buy_sync (client, id, gs_price_get_amount (price), gs_price_get_currency (price), cancellable, error)) {
+		snapd_error_convert (error);
+		return FALSE;
+	}
 
 	return TRUE;
 }
