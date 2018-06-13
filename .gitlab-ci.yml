@@ -6,7 +6,7 @@ stages:
 before_script:
   # Update and use base build deps
   - dnf update -y && dnf -y install dnf-plugins-core @buildsys-build
-  - dnf -y builddep gnome-software
+  - dnf -y builddep --spec contrib/gnome-software.spec.in
   # Some deps may not be sync'd
   - dnf -y install rpm-ostree-devel
 
