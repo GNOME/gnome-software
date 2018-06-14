@@ -223,18 +223,18 @@
   }
 
 .application-details-infobar.info {
-	background-color: #d3d7cf;
+	background-color: shade(@theme_bg_color, 0.9);
 	color: @theme_fg_color;
-	border-color: darker(#d3d7cf);
+	border-color: darker(shade(@theme_bg_color, 0.9));
 	border-style: solid;
 	border-width: 1px;
 	text-shadow: none;
 }
 
 .application-details-infobar {
-	background-color: #d3d7cf;
+	background-color: shade(@theme_bg_color, 0.9);
 	color: @theme_fg_color;
-	border-color: darker(#d3d7cf);
+	border-color: darker(shade(@theme_bg_color, 0.9));
 	border-style: solid;
 	border-width: 1px;
 	padding: 12px;
@@ -475,7 +475,8 @@ flowboxchild {
 	border-bottom-color: @theme_selected_bg_color;
 }
 
+/* uses theme_bg_color and a shade with the ratio of the original color */
 .category_page_header_filter_box {
-	background-color: #cfcfcd;
-	border-bottom: 1px solid darker(#cfcfcd);
+	background-color: shade(@theme_bg_color, 0.9);
+	border-bottom: 1px solid darker(shade(@theme_bg_color, 0.9));
 }
