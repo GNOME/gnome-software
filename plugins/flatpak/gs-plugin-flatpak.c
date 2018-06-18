@@ -54,10 +54,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	priv->flatpaks = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 
-	/* old names */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "flatpak-system");
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "flatpak-user");
-
 	/* getting app properties from appstream is quicker */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 
