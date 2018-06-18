@@ -34,7 +34,6 @@
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
-#include "gs-flatpak-symlinks.h"
 #include "gs-flatpak-utils.h"
 
 struct _GsFlatpak {
@@ -514,10 +513,6 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 	self->changed_id =
 		g_signal_connect (self->monitor, "changed",
 				  G_CALLBACK (gs_plugin_flatpak_changed_cb), self);
-
-	/* ensure the legacy AppStream symlink cache is deleted */
-	if (!gs_flatpak_symlinks_cleanup (self->installation, cancellable, error))
-		return FALSE;
 
 	/* success */
 	return TRUE;
