@@ -63,8 +63,10 @@ struct _GsInstalledPage
 
 G_DEFINE_TYPE (GsInstalledPage, gs_installed_page, GS_TYPE_PAGE)
 
-static void gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
-                                                       GsInstalledPage *self);
+static void gs_installed_page_pending_apps_refined_cb (GObject *source,
+						       GAsyncResult *res,
+						       gpointer user_data);
+static GsPluginRefineFlags gs_installed_page_get_refine_flags (GsInstalledPage *self);
 static void set_selection_mode (GsInstalledPage *self, gboolean selection_mode);
 
 static void
@@ -227,6 +229,8 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) pending = gs_plugin_loader_get_pending (plugin_loader);
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	gs_stop_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "view");
@@ -247,7 +251,19 @@ gs_installed_page_get_installed_cb (GObject *source_object,
 		gs_installed_page_add_app (self, list, app);
 	}
 out:
-	gs_installed_page_pending_apps_changed_cb (plugin_loader, self);
+	if (gs_app_list_length (pending) > 0) {
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+						 "list", pending,
+						 "failure-flags",
+						 GS_PLUGIN_FAILURE_FLAGS_NONE,
+						 "refine-flags",
+						 gs_installed_page_get_refine_flags (self),
+						 NULL);
+		gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+						    self->cancellable,
+						    gs_installed_page_pending_apps_refined_cb,
+						    self);
+	}
 
 	/* seems a good place */
 	gs_shell_profile_dump (self->shell);
@@ -555,28 +571,18 @@ gs_installed_page_has_app (GsInstalledPage *self,
 }
 
 static void
-gs_installed_page_pending_apps_refined_cb (GObject *source,
-					   GAsyncResult *res,
-					   gpointer user_data)
+gs_installed_page_add_pending_apps (GsInstalledPage *self,
+				    GsAppList *list,
+				    gboolean should_install)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsInstalledPage *self = GS_INSTALLED_PAGE (user_data);
 	GtkWidget *widget;
 	guint pending_apps_count = 0;
-	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = gs_plugin_loader_job_process_finish (plugin_loader,
-									 res,
-									 &error);
-	if (list == NULL) {
-		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-			g_warning ("failed to refine pending apps: %s", error->message);
-		goto out;
-	}
 
 	for (guint i = 0; i < gs_app_list_length (list); ++i) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_is_installed (app))
+		if (gs_app_is_installed (app)) {
 			continue;
+		}
 
 		/* never show OS upgrades, we handle the scheduling and
 		 * cancellation in GsUpgradeBanner */
@@ -586,9 +592,8 @@ gs_installed_page_pending_apps_refined_cb (GObject *source,
 		if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
 			gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 
-		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL &&
-		    gs_plugin_loader_get_network_available (plugin_loader) &&
-		    !gs_plugin_loader_get_network_metered (plugin_loader))
+		if (should_install &&
+		    gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
 			gs_page_install_app (GS_PAGE (self), app,
 					     GS_SHELL_INTERACTION_FULL,
 					     gs_app_get_cancellable (app));
@@ -609,6 +614,29 @@ gs_installed_page_pending_apps_refined_cb (GObject *source,
 		gtk_label_set_label (GTK_LABEL (widget), label);
 		gtk_widget_show (widget);
 	}
+}
+
+static void
+gs_installed_page_pending_apps_refined_cb (GObject *source,
+					   GAsyncResult *res,
+					   gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsInstalledPage *self = GS_INSTALLED_PAGE (user_data);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = gs_plugin_loader_job_process_finish (plugin_loader,
+									 res,
+									 &error);
+	if (list == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to refine pending apps: %s", error->message);
+		goto out;
+	}
+
+	/* we add the pending apps and install them because this is called after we
+	 * populate the page, and there may be pending apps coming from the saved list
+	 * (i.e. after loading the saved pending apps from the disk) */
+	gs_installed_page_add_pending_apps (self, list, TRUE);
 
  out:
 	gs_shell_profile_dump (self->shell);
@@ -619,17 +647,9 @@ gs_installed_page_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
                                            GsInstalledPage *self)
 {
 	g_autoptr(GsAppList) pending = gs_plugin_loader_get_pending (plugin_loader);
-	g_autoptr(GsPluginJob) plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-								"list", pending,
-								"failure-flags",
-								GS_PLUGIN_FAILURE_FLAGS_NONE,
-								"refine-flags",
-								gs_installed_page_get_refine_flags (self),
-								NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_installed_page_pending_apps_refined_cb,
-					    self);
+	/* we don't call install every time the pending apps list changes because
+	 * it may be queued in the plugin loader */
+	gs_installed_page_add_pending_apps (self, pending, FALSE);
 }
 
 static void
