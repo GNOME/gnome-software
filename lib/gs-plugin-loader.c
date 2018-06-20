@@ -3815,6 +3815,9 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 		/* set the pending-action to the app */
 		GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 		gs_app_set_pending_action (app, action);
+
+		if (action == GS_PLUGIN_ACTION_INSTALL)
+			add_app_to_install_queue (plugin_loader, app);
 	}
 	g_thread_pool_push (plugin_loader->queued_ops_pool, g_object_ref (task), NULL);
 }
