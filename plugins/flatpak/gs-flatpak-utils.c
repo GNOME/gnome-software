@@ -34,6 +34,13 @@ gs_flatpak_error_convert (GError **perror)
 	if (error == NULL)
 		return;
 
+	/* hardcode */
+	if (error->domain == G_IO_ERROR && error->code == G_IO_ERROR_FAILED) {
+		if (g_strstr_len (error->message, -1, "which was not found") != NULL) {
+			error->code = G_IO_ERROR_NOT_SUPPORTED;
+		}
+	}
+
 	/* this are allowed for low-level errors */
 	if (gs_utils_error_convert_gio (perror))
 		return;
@@ -58,8 +65,9 @@ gs_flatpak_error_convert (GError **perror)
 			break;
 		}
 	} else {
-		g_warning ("can't reliably fixup error from domain %s",
-			   g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error from domain %s: %s",
+			   g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 	}
 	error->domain = GS_PLUGIN_ERROR;

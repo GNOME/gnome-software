@@ -36,6 +36,7 @@
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
+#include "gs-flatpak-transaction.h"
 #include "gs-flatpak-utils.h"
 
 struct GsPluginData {
@@ -350,16 +351,118 @@ gs_plugin_launch (GsPlugin *plugin,
 	return gs_flatpak_launch (flatpak, app, cancellable, error);
 }
 
+/* ref full */
+static GsApp *
+_ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GCancellable *cancellable = NULL; //FIXME
+	g_autoptr(GError) error_local = NULL;
+
+	g_return_val_if_fail (GS_IS_FLATPAK_TRANSACTION (transaction), NULL);
+	g_return_val_if_fail (ref != NULL, NULL);
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+
+	g_debug ("finding ref %s", ref);
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak_tmp = g_ptr_array_index (priv->flatpaks, i);
+		g_autoptr(GsApp) app = NULL;
+		app = gs_flatpak_ref_to_app (flatpak_tmp, ref, cancellable, &error_local);
+		if (app == NULL) {
+			g_debug ("%s", error_local->message);
+			continue;
+		}
+		g_debug ("found ref=%s->%s", ref, gs_app_get_unique_id (app));
+		return g_steal_pointer (&app);
+	}
+	return NULL;
+}
+
+static FlatpakTransaction *
+_build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
+		    GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	FlatpakInstallation *installation;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+
+	/* create transaction */
+	installation = gs_flatpak_get_installation (flatpak);
+	transaction = gs_flatpak_transaction_new (installation, cancellable, error);
+	if (transaction == NULL) {
+		g_prefix_error (error, "failed to build transaction: ");
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* connect up signals */
+	g_signal_connect (transaction, "ref-to-app",
+			  G_CALLBACK (_ref_to_app), plugin);
+
+	/* add the counterpart installations */
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak_tmp = g_ptr_array_index (priv->flatpaks, i);
+		if (flatpak_tmp == flatpak)
+			continue;
+		installation = gs_flatpak_get_installation (flatpak_tmp);
+		flatpak_transaction_add_dependency_source (transaction, installation);
+	}
+	return g_steal_pointer (&transaction);
+}
+
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	GsFlatpak *flatpak;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autofree gchar *ref = NULL;
+
+	/* not supported */
+	flatpak = gs_plugin_flatpak_get_handler (plugin, app);
 	if (flatpak == NULL)
 		return TRUE;
-	return gs_flatpak_app_remove (flatpak, app, cancellable, error);
+
+	/* is a source */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+		return gs_flatpak_app_remove_source (flatpak, app, cancellable, error);
+
+	/* build and run transaction */
+	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	if (transaction == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	ref = gs_flatpak_app_get_ref_display (app);
+	if (!flatpak_transaction_add_uninstall (transaction, ref, error)) {
+		g_prefix_error (error, "failed to add uninstall ref %s: ", ref);
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	if (!flatpak_transaction_run (transaction, cancellable, error)) {
+		g_prefix_error (error, "failed to run transaction for %s: ", ref);
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* get any new state */
+	if (!gs_flatpak_refine_app (flatpak, app,
+				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    cancellable, error)) {
+		g_prefix_error (error, "failed to run refine for %s: ", ref);
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static gboolean
+app_has_local_source (GsApp *app)
+{
+	const gchar *url = gs_app_get_origin_hostname (app);
+	return url != NULL && g_str_has_prefix (url, "file://");
 }
 
 gboolean
@@ -370,6 +473,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsFlatpak *flatpak;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+
+	/* queue for install if installation needs the network */
+	if (!app_has_local_source (app) &&
+	    !gs_plugin_get_network_available (plugin)) {
+		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
+		return TRUE;
+	}
 
 	/* set the app scope */
 	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
@@ -388,11 +499,78 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 	}
 
-	/* actually install */
+	/* not supported */
 	flatpak = gs_plugin_flatpak_get_handler (plugin, app);
 	if (flatpak == NULL)
 		return TRUE;
-	return gs_flatpak_app_install (flatpak, app, cancellable, error);
+
+	/* is a source */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
+
+	/* build */
+	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	if (transaction == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* add flatpakref */
+	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "waiting for flatpak_transaction_add_install_ref()");
+		return FALSE;
+	}
+
+	/* add bundle */
+	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
+		GFile *file = gs_app_get_local_file (app);
+		if (file == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no local file set for bundle %s",
+				     gs_app_get_unique_id (app));
+			return FALSE;
+		}
+		if (!flatpak_transaction_add_install_bundle (transaction, file,
+							     NULL, error)) {
+			g_autofree gchar *fn = g_file_get_path (file);
+			g_prefix_error (error, "failed to add install ref %s: ", fn);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+	} else {
+		g_autofree gchar *ref = gs_flatpak_app_get_ref_display (app);
+		if (!flatpak_transaction_add_install (transaction,
+						      gs_app_get_origin (app),
+						      ref, NULL, error)) {
+			g_prefix_error (error, "failed to add install ref %s: ", ref);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+	}
+
+	/* run transaction */
+	if (!flatpak_transaction_run (transaction, cancellable, error)) {
+		g_prefix_error (error, "failed to run transaction for %s: ",
+				gs_app_get_unique_id (app));
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* get any new state */
+	if (!gs_flatpak_refine_app (flatpak, app,
+				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+				    cancellable, error)) {
+		g_prefix_error (error, "failed to run refine for %s: ",
+				gs_app_get_unique_id (app));
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 gboolean
@@ -401,10 +579,43 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	GsFlatpak *flatpak;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autofree gchar *ref = NULL;
+
+	/* not supported */
+	flatpak = gs_plugin_flatpak_get_handler (plugin, app);
 	if (flatpak == NULL)
 		return TRUE;
-	return gs_flatpak_update_app (flatpak, app, cancellable, error);
+
+	/* build and run transaction */
+	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	if (transaction == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	ref = gs_flatpak_app_get_ref_display (app);
+	if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+		g_prefix_error (error, "failed to add update ref %s: ", ref);
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	if (!flatpak_transaction_run (transaction, cancellable, error)) {
+		g_prefix_error (error, "failed to run transaction for %s: ", ref);
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	gs_plugin_updates_changed (plugin);
+
+	/* get any new state */
+	if (!gs_flatpak_refine_app (flatpak, app,
+				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+				    cancellable, error)) {
+		g_prefix_error (error, "failed to run refine for %s: ", ref);
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 static gboolean
