@@ -95,7 +95,6 @@ typedef struct
 	gchar			*update_version_ui;
 	gchar			*update_details;
 	AsUrgencyKind		 update_urgency;
-	GsApp			*update_runtime;
 	gchar			*management_plugin;
 	guint			 match_value;
 	guint			 priority;
@@ -630,10 +629,6 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	if (priv->runtime != NULL) {
 		g_string_append (str, "\n\tRuntime:\n\t");
 		gs_app_to_string_append (priv->runtime, str);
-	}
-	if (priv->update_runtime != NULL) {
-		g_string_append (str, "\n\tUpdate Runtime:\n\t");
-		gs_app_to_string_append (priv->update_runtime, str);
 	}
 	g_string_append_printf (str, "\n");
 }
@@ -1819,9 +1814,7 @@ gs_app_get_runtime (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	if (priv->runtime != NULL)
-		return priv->runtime;
-	return priv->update_runtime;
+	return priv->runtime;
 }
 
 /**
@@ -1842,46 +1835,6 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 	g_return_if_fail (app != runtime);
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->runtime, runtime);
-}
-
-/**
- * gs_app_get_update_runtime:
- * @app: a #GsApp
- *
- * Gets the runtime required for the application update.
- *
- * Returns: (transfer none): a #GsApp, or %NULL for unset
- *
- * Since: 3.22
- **/
-GsApp *
-gs_app_get_update_runtime (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	if (priv->update_runtime != NULL)
-		return priv->update_runtime;
-	return priv->runtime;
-}
-
-/**
- * gs_app_set_update_runtime:
- * @app: a #GsApp
- * @runtime: a #GsApp
- *
- * Sets the runtime that the application update requires.
- *
- * Since: 3.22
- **/
-void
-gs_app_set_update_runtime (GsApp *app, GsApp *runtime)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (app != runtime);
-	locker = g_mutex_locker_new (&priv->mutex);
-	g_set_object (&priv->update_runtime, runtime);
 }
 
 /**
@@ -3078,10 +3031,7 @@ gs_app_get_size_download (GsApp *app)
 	sz = priv->size_download;
 
 	/* add the runtime if this is not installed */
-	if (priv->update_runtime != NULL) {
-		if (gs_app_get_state (priv->update_runtime) == AS_APP_STATE_AVAILABLE)
-			sz += gs_app_get_size_installed (priv->update_runtime);
-	} else if (priv->runtime != NULL) {
+	if (priv->runtime != NULL) {
 		if (gs_app_get_state (priv->runtime) == AS_APP_STATE_AVAILABLE)
 			sz += gs_app_get_size_installed (priv->runtime);
 	}
@@ -4231,8 +4181,6 @@ gs_app_dispose (GObject *object)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
 	g_clear_object (&priv->runtime);
-	g_clear_object (&priv->update_runtime);
-
 	g_clear_pointer (&priv->addons, g_ptr_array_unref);
 	g_clear_pointer (&priv->history, g_ptr_array_unref);
 	g_clear_pointer (&priv->related, g_ptr_array_unref);

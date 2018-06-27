@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2017-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -49,7 +49,7 @@ const gchar		*gs_flatpak_app_get_object_id		(GsApp		*app);
 const gchar		*gs_flatpak_app_get_repo_gpgkey		(GsApp		*app);
 const gchar		*gs_flatpak_app_get_repo_url		(GsApp		*app);
 GsFlatpakAppFileKind	 gs_flatpak_app_get_file_kind		(GsApp		*app);
-GsApp			*gs_flatpak_app_get_runtime_repo	(GsApp		*app);
+const gchar		*gs_flatpak_app_get_runtime_url		(GsApp		*app);
 
 void			 gs_flatpak_app_set_ref_name		(GsApp		*app,
 								 const gchar	*val);
@@ -70,8 +70,8 @@ void			 gs_flatpak_app_set_repo_url		(GsApp		*app,
 								 const gchar	*val);
 void			 gs_flatpak_app_set_file_kind		(GsApp		*app,
 								 GsFlatpakAppFileKind	file_kind);
-void			 gs_flatpak_app_set_runtime_repo	(GsApp		*app,
-								 GsApp		*runtime_repo);
+void			 gs_flatpak_app_set_runtime_url		(GsApp		*app,
+								 const gchar	*val);
 void			 gs_flatpak_app_set_main_app_ref_name	(GsApp		*app,
 								 const gchar	*main_app_ref);
 const gchar		*gs_flatpak_app_get_main_app_ref_name	(GsApp		*app);
