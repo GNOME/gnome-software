@@ -690,7 +690,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 		gtk_widget_set_visible (self->box_details_screenshot,
 		                        screenshots->len > 0);
 		gtk_widget_set_visible (self->box_details_screenshot_fallback,
-		                        screenshots->len == 0);
+		                        FALSE /*screenshots->len == 0*/);
 		return;
 	}
 
@@ -710,7 +710,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 		break;
 	default:
 		gtk_widget_set_visible (self->box_details_screenshot_fallback,
-					screenshots->len == 0);
+					FALSE /*screenshots->len == 0*/);
 		break;
 	}
 
