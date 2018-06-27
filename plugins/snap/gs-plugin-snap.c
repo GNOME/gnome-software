@@ -265,14 +265,19 @@ static GsApp *
 snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GStrv common_ids;
 	g_autofree gchar *appstream_id = NULL;
 	g_autofree gchar *unique_id = NULL;
 	GsApp *cached_app;
 	g_autoptr(GsApp) app = NULL;
 	SnapdConfinement confinement;
 
-	/* generate an AppStream ID for this snap - when Snaps support an AppStream field we can override this */
-	appstream_id = g_strdup_printf ("io.snapcraft.%s-%s", snapd_snap_get_name (snap), snapd_snap_get_id (snap));
+	/* Get the AppStream ID from the snap, or generate a fallback one */
+	common_ids = snapd_snap_get_common_ids (snap);
+	if (g_strv_length (common_ids) == 1)
+		appstream_id = g_strdup (common_ids[0]);
+	else
+		appstream_id = g_strdup_printf ("io.snapcraft.%s-%s", snapd_snap_get_name (snap), snapd_snap_get_id (snap));
 
 	switch (snapd_snap_get_snap_type (snap)) {
 	case SNAPD_SNAP_TYPE_APP:

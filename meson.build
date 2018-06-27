@@ -171,7 +171,7 @@ if get_option('enable-gudev')
 endif
 
 if get_option('enable-snap')
-  snap = dependency('snapd-glib', version : '>= 1.19')
+  snap = dependency('snapd-glib', version : '>= 1.41')
 endif
 
 gnome = import('gnome')
