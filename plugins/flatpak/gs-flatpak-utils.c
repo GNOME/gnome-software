@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2017-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -51,6 +51,8 @@ gs_flatpak_error_convert (GError **perror)
 		switch (error->code) {
 		case FLATPAK_ERROR_ALREADY_INSTALLED:
 		case FLATPAK_ERROR_NOT_INSTALLED:
+		case FLATPAK_ERROR_REMOTE_NOT_FOUND:
+		case FLATPAK_ERROR_RUNTIME_NOT_FOUND:
 			error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
 		default:
@@ -58,8 +60,9 @@ gs_flatpak_error_convert (GError **perror)
 			break;
 		}
 	} else {
-		g_warning ("can't reliably fixup error from domain %s",
-			   g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error from domain %s: %s",
+			   g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 	}
 	error->domain = GS_PLUGIN_ERROR;
@@ -145,14 +148,13 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	/* create source */
 	repo_title = g_key_file_get_string (kf, "Flatpak Repo", "Title", NULL);
 	repo_url = g_key_file_get_string (kf, "Flatpak Repo", "Url", NULL);
-	repo_gpgkey = g_key_file_get_string (kf, "Flatpak Repo", "GPGKey", NULL);
-	if (repo_title == NULL || repo_url == NULL || repo_gpgkey == NULL ||
-	    repo_title[0] == '\0' || repo_url[0] == '\0' || repo_gpgkey[0] == '\0') {
+	if (repo_title == NULL || repo_url == NULL ||
+	    repo_title[0] == '\0' || repo_url[0] == '\0') {
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 				     "not enough data in file, "
-				     "expected Title, Url, GPGKey");
+				     "expected at least Title and Url");
 		return NULL;
 	}
 
@@ -168,16 +170,6 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 		}
 	}
 
-	/* user specified a URL */
-	if (g_str_has_prefix (repo_gpgkey, "http://") ||
-	    g_str_has_prefix (repo_gpgkey, "https://")) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Base64 encoded GPGKey required, not URL");
-		return NULL;
-	}
-
 	/* create source */
 	app = gs_flatpak_app_new (repo_id);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REPO);
@@ -185,9 +177,22 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
-	gs_flatpak_app_set_repo_gpgkey (app, repo_gpgkey);
 	gs_flatpak_app_set_repo_url (app, repo_url);
 	gs_app_set_origin_hostname (app, repo_url);
+
+	/* user specified a URL */
+	repo_gpgkey = g_key_file_get_string (kf, "Flatpak Repo", "GPGKey", NULL);
+	if (repo_gpgkey != NULL) {
+		if (g_str_has_prefix (repo_gpgkey, "http://") ||
+		    g_str_has_prefix (repo_gpgkey, "https://")) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "Base64 encoded GPGKey required, not URL");
+			return NULL;
+		}
+		gs_flatpak_app_set_repo_gpgkey (app, repo_gpgkey);
+	}
 
 	/* optional data */
 	repo_homepage = g_key_file_get_string (kf, "Flatpak Repo", "Homepage", NULL);

@@ -224,9 +224,6 @@ void		 gs_app_set_update_details	(GsApp		*app,
 AsUrgencyKind	 gs_app_get_update_urgency	(GsApp		*app);
 void		 gs_app_set_update_urgency	(GsApp		*app,
 						 AsUrgencyKind	 update_urgency);
-GsApp		*gs_app_get_update_runtime	(GsApp		*app);
-void		 gs_app_set_update_runtime	(GsApp		*app,
-						 GsApp		*runtime);
 const gchar	*gs_app_get_management_plugin	(GsApp		*app);
 void		 gs_app_set_management_plugin	(GsApp		*app,
 						 const gchar	*management_plugin);
