@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
- * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -42,6 +42,10 @@ typedef enum {
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
 						 FlatpakInstallation	*installation,
 						 GsFlatpakFlags		 flags);
+FlatpakInstallation *gs_flatpak_get_installation (GsFlatpak		*self);
+
+GsApp	*gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref, GCancellable *cancellable, GError **error);
+
 AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 const gchar	*gs_flatpak_get_id		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,
@@ -73,6 +77,10 @@ gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
 						 GsPluginRefineFlags	flags,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_refine_app_state	(GsFlatpak		*self,
+						 GsApp			*app,
+						 GCancellable		*cancellable,
+						 GError			**error);
 gboolean	gs_flatpak_refine_wildcard	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsAppList		*list,
@@ -83,15 +91,11 @@ gboolean	gs_flatpak_launch		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_app_remove		(GsFlatpak		*self,
+gboolean	gs_flatpak_app_remove_source	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_app_install		(GsFlatpak		*self,
-						 GsApp			*app,
-						 GCancellable		*cancellable,
-						 GError			**error);
-gboolean	gs_flatpak_update_app		(GsFlatpak		*self,
+gboolean	gs_flatpak_app_install_source	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
@@ -103,17 +107,8 @@ GsApp		*gs_flatpak_file_to_app_bundle	(GsFlatpak		*self,
 						 GFile			*file,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	 gs_flatpak_find_source_by_url	(GsFlatpak		*self,
+GsApp		*gs_flatpak_find_source_by_url	(GsFlatpak		*self,
 						 const gchar		*name,
-						 GsAppList		*list,
-						 GCancellable		*cancellable,
-						 GError			**error);
-gboolean	 gs_flatpak_find_app		(GsFlatpak		*self,
-						 FlatpakRefKind		 kind,
-						 const gchar		*id,
-						 const gchar		*arch,
-						 const gchar		*branch,
-						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_search		(GsFlatpak		*self,
