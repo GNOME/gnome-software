@@ -76,6 +76,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_progress2;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
+	GtkWidget		*box_details_screenshot;
 	GtkWidget		*box_details_screenshot_main;
 	GtkWidget		*box_details_screenshot_thumbnails;
 	GtkWidget		*box_details_license_list;
@@ -663,6 +664,8 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
 			gtk_widget_set_visible (ssimg, TRUE);
 		}
+		gtk_widget_set_visible (self->box_details_screenshot,
+		                        screenshots->len > 0);
 		gtk_widget_set_visible (self->box_details_screenshot_fallback,
 		                        screenshots->len == 0);
 		return;
@@ -690,6 +693,8 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 
 	/* set screenshots */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
+	gtk_widget_set_visible (self->box_details_screenshot,
+				screenshots->len > 0);
 	if (screenshots->len == 0) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
 		return;
@@ -2411,6 +2416,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_main);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_thumbnails);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_list);
