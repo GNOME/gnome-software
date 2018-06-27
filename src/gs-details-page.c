@@ -72,6 +72,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
+	GtkWidget		*box_details_support;
 	GtkWidget		*box_progress;
 	GtkWidget		*box_progress2;
 	GtkWidget		*star;
@@ -887,6 +888,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 kudos;
 	guint64 updated;
 	guint64 user_integration_bf;
+	gboolean show_support_box = FALSE;
 	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
@@ -924,15 +926,18 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_widget_set_visible (self->button_details_website, TRUE);
+		show_support_box = TRUE;
 	} else {
 		gtk_widget_set_visible (self->button_details_website, FALSE);
 	}
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_DONATION);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_widget_set_visible (self->button_donate, TRUE);
+		show_support_box = TRUE;
 	} else {
 		gtk_widget_set_visible (self->button_donate, FALSE);
 	}
+	gtk_widget_set_visible (self->box_details_support, show_support_box);
 
 	/* set the developer name, falling back to the project group */
 	tmp = gs_app_get_developer_name (self->app);
@@ -2412,6 +2417,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_support);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
