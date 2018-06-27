@@ -8,6 +8,7 @@ shared_module(
     'gs-appstream.c',
     'gs-flatpak-app.c',
     'gs-flatpak.c',
+    'gs-flatpak-transaction.c',
     'gs-flatpak-utils.c',
     'gs-plugin-flatpak.c'
   ],

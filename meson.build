@@ -150,7 +150,7 @@ if get_option('enable-fwupd')
 endif
 
 if get_option('enable-flatpak')
-  flatpak = dependency('flatpak', version : '>= 0.6.12')
+  flatpak = dependency('flatpak', version : '>= 0.99.3')
 endif
 
 if get_option('enable-limba')

@@ -51,6 +51,8 @@ gs_flatpak_error_convert (GError **perror)
 		switch (error->code) {
 		case FLATPAK_ERROR_ALREADY_INSTALLED:
 		case FLATPAK_ERROR_NOT_INSTALLED:
+		case FLATPAK_ERROR_REMOTE_NOT_FOUND:
+		case FLATPAK_ERROR_RUNTIME_NOT_FOUND:
 			error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
 		default:
@@ -58,8 +60,9 @@ gs_flatpak_error_convert (GError **perror)
 			break;
 		}
 	} else {
-		g_warning ("can't reliably fixup error from domain %s",
-			   g_quark_to_string (error->domain));
+		g_warning ("can't reliably fixup error from domain %s: %s",
+			   g_quark_to_string (error->domain),
+			   error->message);
 		error->code = GS_PLUGIN_ERROR_FAILED;
 	}
 	error->domain = GS_PLUGIN_ERROR;

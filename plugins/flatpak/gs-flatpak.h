@@ -42,6 +42,10 @@ typedef enum {
 GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
 						 FlatpakInstallation	*installation,
 						 GsFlatpakFlags		 flags);
+FlatpakInstallation *gs_flatpak_get_installation (GsFlatpak		*self);
+
+GsApp	*gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref, GCancellable *cancellable, GError **error);
+
 AsAppScope	gs_flatpak_get_scope		(GsFlatpak		*self);
 const gchar	*gs_flatpak_get_id		(GsFlatpak		*self);
 gboolean	gs_flatpak_setup		(GsFlatpak		*self,
@@ -83,15 +87,11 @@ gboolean	gs_flatpak_launch		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_app_remove		(GsFlatpak		*self,
+gboolean	gs_flatpak_app_remove_source	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_app_install		(GsFlatpak		*self,
-						 GsApp			*app,
-						 GCancellable		*cancellable,
-						 GError			**error);
-gboolean	gs_flatpak_update_app		(GsFlatpak		*self,
+gboolean	gs_flatpak_app_install_source	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
