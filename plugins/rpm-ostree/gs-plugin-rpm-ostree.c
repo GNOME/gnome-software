@@ -665,6 +665,65 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+gboolean
+gs_plugin_app_remove (GsPlugin *plugin,
+                      GsApp *app,
+                      GCancellable *cancellable,
+                      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GVariant) options = NULL;
+	g_auto(GStrv) packages_to_remove = NULL;
+	char *strv_empty[] = { NULL };
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+
+	options = make_rpmostree_options_variant (FALSE,  /* reboot */
+	                                          FALSE,  /* allow-downgrade */
+	                                          TRUE,   /* cache-only */
+	                                          FALSE,  /* download-only */
+	                                          FALSE,  /* skip-purge */
+	                                          TRUE,  /* no-pull-base */
+	                                          FALSE,  /* dry-run */
+	                                          FALSE); /* no-overrides */
+
+	packages_to_remove = g_new0 (gchar *, 2);
+	packages_to_remove[0] = g_strdup (gs_app_get_source_default (app));
+
+	if (!gs_rpmostree_os_call_pkg_change_sync (priv->os_proxy,
+	                                           options,
+	                                           (const gchar * const*)strv_empty /* packages to add */,
+	                                           (const gchar * const*)packages_to_remove,
+	                                           NULL /* fd list */,
+	                                           &transaction_address,
+	                                           NULL /* fd list out */,
+	                                           cancellable,
+	                                           error)) {
+		gs_utils_error_convert_gio (error);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_utils_error_convert_gio (error);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is not known: we don't know if we can re-install this app */
+	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+
+	return TRUE;
+}
+
 static void
 resolve_packages_app (GsPlugin *plugin,
                       GPtrArray *pkglist,
