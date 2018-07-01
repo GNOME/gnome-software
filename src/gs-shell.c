@@ -81,6 +81,7 @@ typedef struct
 	gchar			*events_info_uri;
 	gboolean		 in_mode_change;
 	GsPage			*page_last;
+	GSimpleActionGroup	*auth_actions;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -224,17 +225,6 @@ gs_shell_clean_back_entry_stack (GsShell *shell)
 	}
 }
 
-static void
-gs_shell_update_account_button_visibility (GsShell *shell)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GPtrArray *auths = gs_plugin_loader_get_auths (priv->plugin_loader);
-	GtkWidget *account_button;
-
-	account_button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "account_button"));
-	gtk_widget_set_visible (account_button, auths->len > 0);
-}
-
 void
 gs_shell_change_mode (GsShell *shell,
 		      GsShellMode mode,
@@ -373,8 +363,6 @@ gs_shell_change_mode (GsShell *shell,
 
 	widget = gs_page_get_header_end_widget (page);
 	gs_shell_set_header_end_widget (shell, widget);
-
-	gs_shell_update_account_button_visibility (shell);
 
 	/* destroy any existing modals */
 	if (priv->modal_dialogs != NULL) {
@@ -646,12 +634,19 @@ search_mode_enabled_cb (GtkSearchBar *search_bar, GParamSpec *pspec, GsShell *sh
 }
 
 static void
-gs_shell_signin_button_cb (GtkButton *button, GsShell *shell)
+signin_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	const gchar *action_name, *provider_id;
 	GsAuth *auth;
 
-	auth = GS_AUTH (g_object_get_data (G_OBJECT (button), "auth"));
+	action_name = g_action_get_name (G_ACTION (action));
+	g_return_if_fail (g_str_has_prefix (action_name, "signin-"));
+	provider_id = action_name + strlen ("signin-");
+
+	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, provider_id);
+	g_return_if_fail (auth != NULL);
+
 	gs_page_authenticate (priv->page_last, NULL,
 			      gs_auth_get_provider_id (auth),
 			      priv->cancellable,
@@ -673,103 +668,56 @@ gs_shell_logout_cb (GObject *source,
 }
 
 static void
-gs_shell_signout_button_cb (GtkButton *button, GsShell *shell)
+signout_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	const gchar *action_name, *provider_id;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GsAuth *auth;
+
+	action_name = g_action_get_name (G_ACTION (action));
+	g_return_if_fail (g_str_has_prefix (action_name, "signout-"));
+	provider_id = action_name + strlen ("signout-");
+
+	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, provider_id);
+	g_return_if_fail (auth != NULL);
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGOUT,
 					 "interactive", TRUE,
-					 "auth", g_object_get_data (G_OBJECT (button), "auth"),
+					 "auth", auth,
 					 NULL);
 
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					    priv->cancellable,
 					    gs_shell_logout_cb,
 					    shell);
-
 }
 
 static void
-add_buttons_for_auth (GsShell *shell, GsAuth *auth)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GtkWidget *account_box;
-	gboolean logged_in;
-	GtkWidget *signin_button;
-	GtkWidget *signout_button;
-	g_autofree gchar *signout_label = NULL;
-	g_autofree gchar *signin_label = NULL;
-
-	account_box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "account_box"));
-	logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
-	signin_button = gtk_model_button_new ();
-	signout_button = gtk_model_button_new ();
-
-	signout_label = g_strdup_printf (_("Sign out from %s"),
-					 gs_auth_get_provider_name (auth));
-	if (logged_in)
-		signin_label = g_strdup_printf (_("Signed in into %s as %s"),
-						gs_auth_get_provider_name (auth),
-						gs_auth_get_username (auth));
-	else
-		signin_label = g_strdup_printf (_("Sign in to %s…"),
-						gs_auth_get_provider_name (auth));
-
-	g_object_set (signin_button,
-		      "text", signin_label,
-		      "sensitive", !logged_in, NULL);
-	g_object_set_data (G_OBJECT (signin_button), "auth", auth);
-
-	g_object_set (signout_button,
-		      "text", signout_label,
-		      "sensitive", logged_in, NULL);
-	g_object_set_data (G_OBJECT (signout_button), "auth", auth);
-
-	g_signal_connect (signin_button, "clicked",
-			  G_CALLBACK (gs_shell_signin_button_cb), shell);
-	g_signal_connect (signout_button, "clicked",
-			  G_CALLBACK (gs_shell_signout_button_cb), shell);
-
-	gtk_widget_show (signin_button);
-	gtk_widget_show (signout_button);
-	gtk_box_pack_start (GTK_BOX (account_box), signin_button, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (account_box), signout_button, TRUE, TRUE, 0);
-}
-
-static void
-account_button_clicked_cb (GtkButton *button, GsShell *shell)
+menu_button_clicked_cb (GtkButton *button, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GPtrArray *auth_array;
-	GtkWidget *account_popover;
-	GtkWidget *account_box;
-	g_autoptr(GList) children = NULL;
 
 	auth_array = gs_plugin_loader_get_auths (priv->plugin_loader);
-	account_popover = GTK_WIDGET (gtk_builder_get_object (priv->builder, "account_popover"));
-	account_box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "account_box"));
-
-	/* Remove existing buttons... */
-	children = gtk_container_get_children (GTK_CONTAINER (account_box));
-	for (GList *l = children; l != NULL; l = l->next)
-		gtk_container_remove (GTK_CONTAINER (account_box), GTK_WIDGET (l->data));
-
-	/* Add new ones... */
 	for (guint i = 0; i < auth_array->len; i++) {
 		GsAuth *auth = g_ptr_array_index (auth_array, i);
-		add_buttons_for_auth (shell, auth);
+		gboolean logged_in;
+		g_autofree gchar *signin_action_name = NULL;
+		GSimpleAction *signin_action;
+		g_autofree gchar *signout_action_name = NULL;
+		GSimpleAction *signout_action;
 
-		/* Add sepeartor between each block */
-		if (i < auth_array->len - 1) {
-			GtkWidget *seprator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-			gtk_widget_show (seprator);
-			gtk_box_pack_start (GTK_BOX (account_box), seprator, TRUE, TRUE, 0);
-		}
+		logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
+
+		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_provider_id (auth));
+		signin_action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (priv->auth_actions), signin_action_name));
+		g_simple_action_set_enabled (signin_action, !logged_in);
+
+		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_provider_id (auth));
+		signout_action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (priv->auth_actions), signout_action_name));
+		g_simple_action_set_enabled (signout_action, logged_in);
 	}
-
-	gtk_popover_set_relative_to (GTK_POPOVER (account_popover), GTK_WIDGET (button));
-	gtk_popover_popup (GTK_POPOVER (account_popover));
 }
 
 static gboolean
@@ -1989,6 +1937,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	GtkWidget *widget;
 	GtkStyleContext *style_context;
 	GsPage *page;
+	GPtrArray *auth_array;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
 
@@ -2047,9 +1996,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	                  shell);
 
 	/* show the account popover when clicking on the account button */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "account_button"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "menu_button"));
 	g_signal_connect (widget, "clicked",
-	                  G_CALLBACK (account_button_clicked_cb),
+	                  G_CALLBACK (menu_button_clicked_cb),
 	                  shell);
 
 	/* setup buttons */
@@ -2131,6 +2080,62 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
+
+	/* auth menu */
+	priv->auth_actions = g_simple_action_group_new ();
+	gtk_widget_insert_action_group (GTK_WIDGET (priv->main_window), "auth", G_ACTION_GROUP (priv->auth_actions));
+	auth_array = gs_plugin_loader_get_auths (priv->plugin_loader);
+	for (guint i = 0; i < auth_array->len; i++) {
+		GsAuth *auth = g_ptr_array_index (auth_array, i);
+		g_autofree gchar *signin_action_name = NULL;
+		g_autoptr(GSimpleAction) signin_action = NULL;
+		g_autofree gchar *signout_action_name = NULL;
+		g_autoptr(GSimpleAction) signout_action = NULL;
+		g_autoptr(GMenu) auth_menu = NULL;
+		GMenu *accounts_menu;
+		gboolean logged_in;
+		g_autofree gchar *signin_label = NULL;
+		g_autofree gchar *signin_target = NULL;
+		g_autoptr(GMenuItem) signin_item = NULL;
+		g_autofree gchar *signout_label = NULL;
+		g_autofree gchar *signout_target = NULL;
+		g_autoptr(GMenuItem) signout_item = NULL;
+
+		logged_in = gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID);
+
+		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_provider_id (auth));
+		signin_action = g_simple_action_new (signin_action_name, NULL);
+		g_simple_action_set_enabled (signin_action, !logged_in);
+		g_signal_connect (signin_action, "activate", G_CALLBACK (signin_activated_cb), shell);
+		g_action_map_add_action (G_ACTION_MAP (priv->auth_actions), G_ACTION (signin_action));
+
+		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_provider_id (auth));
+		signout_action = g_simple_action_new (signout_action_name, NULL);
+		g_simple_action_set_enabled (signout_action, logged_in);
+		g_signal_connect (signout_action, "activate", G_CALLBACK (signout_activated_cb), shell);
+		g_action_map_add_action (G_ACTION_MAP (priv->auth_actions), G_ACTION (signout_action));
+
+		auth_menu = g_menu_new ();
+		accounts_menu = G_MENU (gtk_builder_get_object (priv->builder, "accounts_menu"));
+		g_menu_append_section (accounts_menu, NULL, G_MENU_MODEL (auth_menu));
+
+		if (logged_in)
+			signin_label = g_strdup_printf (_("Signed in into %s as %s"),
+							gs_auth_get_provider_name (auth),
+							gs_auth_get_username (auth));
+		else
+			signin_label = g_strdup_printf (_("Sign in to %s…"),
+							gs_auth_get_provider_name (auth));
+		signin_target = g_strdup_printf ("auth.%s", signin_action_name);
+		signin_item = g_menu_item_new (signin_label, signin_target);
+		g_menu_append_item (auth_menu, signin_item);
+
+		signout_label = g_strdup_printf (_("Sign out from %s"),
+						 gs_auth_get_provider_name (auth));
+		signout_target = g_strdup_printf ("auth.%s", signout_action_name);
+		signout_item = g_menu_item_new (signout_label, signout_target);
+		g_menu_append_item (auth_menu, signout_item);
+	}
 }
 
 void
@@ -2318,6 +2323,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_pointer (&priv->pages, g_hash_table_unref);
 	g_clear_pointer (&priv->events_info_uri, g_free);
 	g_clear_pointer (&priv->modal_dialogs, g_ptr_array_unref);
+	g_clear_object (&priv->auth_actions);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
