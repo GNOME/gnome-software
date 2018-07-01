@@ -29,6 +29,23 @@
       </object>
     </child>
   </object>
+  <menu id="primary_menu">
+    <section id="accounts_menu">
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Software Repositories</attribute>
+        <attribute name="action">app.sources</attribute>
+        <attribute name="hidden-when">action-disabled</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
   <object class="GtkApplicationWindow" id="window_software">
     <property name="can_focus">False</property>
     <property name="default-width">1200</property>
@@ -297,6 +314,26 @@
               <packing>
                 <property name="pack-type">end</property>
                 <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="menu_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="sensitive">True</property>
+                <property name="menu_model">primary_menu</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">open-menu-symbolic</property>
+                    <property name="icon_size">1</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="pack-type">end</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
