@@ -2198,10 +2198,21 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 
 	/* size */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
+		g_autoptr(GError) error_local = NULL;
 		if (!gs_plugin_refine_item_size (self, app,
-						 cancellable, error)) {
-			g_prefix_error (error, "failed to get size: ");
-			return FALSE;
+						 cancellable, &error_local)) {
+			if (!gs_plugin_get_network_available (self->plugin) &&
+			    g_error_matches (error_local, GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NO_NETWORK)) {
+				g_debug ("failed to get size while "
+					 "refining app %s: %s",
+					 gs_app_get_unique_id (app),
+					 error_local->message);
+			} else {
+				g_prefix_error (&error_local, "failed to get size: ");
+				g_propagate_error (error, g_steal_pointer (&error_local));
+				return FALSE;
+			}
 		}
 	}
 
@@ -2218,10 +2229,21 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	/* permissions */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME ||
 	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
+		g_autoptr(GError) local_error = NULL;
 		if (!gs_plugin_refine_item_metadata (self, app,
-						     cancellable, error)) {
-			g_prefix_error (error, "failed to get permissions: ");
-			return FALSE;
+						     cancellable, &local_error)) {
+			if (!gs_plugin_get_network_available (self->plugin) &&
+			    g_error_matches (local_error, GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NO_NETWORK)) {
+				g_warning ("failed to get permissions while "
+					   "refining app %s: %s",
+					   gs_app_get_unique_id (app),
+					   local_error->message);
+			} else {
+				g_prefix_error (&local_error, "failed to get permissions: ");
+				g_propagate_error (error, g_steal_pointer (&local_error));
+				return FALSE;
+			}
 		}
 	}
 
