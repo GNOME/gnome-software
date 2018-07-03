@@ -398,6 +398,7 @@ refresh_cache_finished_cb (GObject *object,
 			   gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
+	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (GS_PLUGIN_LOADER (object), res, &error)) {
@@ -405,6 +406,12 @@ refresh_cache_finished_cb (GObject *object,
 			g_warning ("failed to refresh the cache: %s", error->message);
 		return;
 	}
+
+	/* update the last checked timestamp */
+	now = g_date_time_new_now_local ();
+	g_settings_set (monitor->settings, "check-timestamp", "x",
+	                g_date_time_to_unix (now));
+
 	get_updates (monitor);
 }
 
@@ -424,7 +431,6 @@ check_updates (GsUpdateMonitor *monitor)
 	gint64 tmp;
 	gboolean refresh_on_metered;
 	g_autoptr(GDateTime) last_refreshed = NULL;
-	g_autoptr(GDateTime) now_refreshed = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_METADATA;
 
@@ -481,10 +487,6 @@ check_updates (GsUpdateMonitor *monitor)
 	}
 
 	g_debug ("Daily update check due");
-	now_refreshed = g_date_time_new_now_local ();
-	g_settings_set (monitor->settings, "check-timestamp", "x",
-			g_date_time_to_unix (now_refreshed));
-
 	if (gs_plugin_loader_get_allow_updates (monitor->plugin_loader) &&
 	    g_settings_get_boolean (monitor->settings, "download-updates")) {
 		g_debug ("Refreshing for metadata and payload");
