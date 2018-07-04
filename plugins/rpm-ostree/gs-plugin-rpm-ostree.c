@@ -795,6 +795,68 @@ gs_plugin_refine (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_app_upgrade_download (GsPlugin *plugin,
+                                GsApp *app,
+                                GCancellable *cancellable,
+                                GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const char *packages[] = { NULL };
+	g_autofree gchar *new_refspec = NULL;
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GVariant) options = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* check is distro-upgrade */
+	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+		return TRUE;
+
+	/* construct new refspec based on the distro version we're upgrading to */
+	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/workstation",
+	                               gs_app_get_version (app));
+
+	options = make_rpmostree_options_variant (FALSE,  /* reboot */
+	                                          FALSE,  /* allow-downgrade */
+	                                          FALSE,  /* cache-only */
+	                                          TRUE,   /* download-only */
+	                                          FALSE,  /* skip-purge */
+	                                          FALSE,  /* no-pull-base */
+	                                          FALSE,  /* dry-run */
+	                                          FALSE); /* no-overrides */
+
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	if (!gs_rpmostree_os_call_rebase_sync (priv->os_proxy,
+	                                       options,
+	                                       new_refspec,
+	                                       packages,
+	                                       NULL /* fd list */,
+	                                       &transaction_address,
+	                                       NULL /* fd list out */,
+	                                       cancellable,
+	                                       error)) {
+		gs_utils_error_convert_gio (error);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_utils_error_convert_gio (error);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	return TRUE;
+}
+
+gboolean
 gs_plugin_launch (GsPlugin *plugin,
                   GsApp *app,
                   GCancellable *cancellable,
