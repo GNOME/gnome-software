@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __APPSTREAM_CACHE_H
-#define __APPSTREAM_CACHE_H
+#ifndef __PACKAGEKIT_COMMON_H
+#define __PACKAGEKIT_COMMON_H
 
 #include <glib.h>
 #include <gnome-software.h>
@@ -59,4 +59,4 @@ void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
 
 G_END_DECLS
 
-#endif /* __APPSTREAM_CACHE_H */
+#endif /* __PACKAGEKIT_COMMON_H */
