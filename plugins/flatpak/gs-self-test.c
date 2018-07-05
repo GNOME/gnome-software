@@ -1500,6 +1500,7 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	guint progress_cnt = 0;
 	guint updates_changed_cnt = 0;
 	guint updates_changed_id;
+	GsPlugin *flatpak_plugin;
 	g_autofree gchar *repodir1_fn = NULL;
 	g_autofree gchar *repodir2_fn = NULL;
 	g_autoptr(GError) error = NULL;
@@ -1589,8 +1590,9 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 
 	/* check if the extension was installed */
-	extension = gs_plugin_loader_app_create (plugin_loader,
-			"user/flatpak/*/runtime/org.test.Chiron.Extension/master");
+	flatpak_plugin = gs_plugin_loader_find_plugin (plugin_loader, "flatpak");
+	extension = gs_plugin_cache_lookup (flatpak_plugin,
+					    "user/flatpak/*/runtime/org.test.Chiron.Extension/master");
 	g_assert_nonnull (extension);
 	g_assert_cmpint (gs_app_get_state (extension), ==, AS_APP_STATE_INSTALLED);
 
