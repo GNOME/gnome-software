@@ -78,6 +78,10 @@ build_flatpak('org.test.Runtime',
               'app-with-runtime',
               'app-with-runtime/repo',
               cleanrepodir=False)
+build_flatpak('org.test.Extension',
+              'app-with-runtime',
+              'app-with-runtime/repo',
+              cleanrepodir=False)
 
 # app referencing remote that cannot be found
 build_flatpak('org.test.Chiron',
@@ -90,6 +94,11 @@ build_flatpak('org.test.Runtime',
               'app-update/repo',
               branch='new_master',
               cleanrepodir=True)
+build_flatpak('org.test.Extension',
+              'app-with-runtime',
+              'app-update/repo',
+              branch='master',
+              cleanrepodir=False)
 build_flatpak('org.test.Chiron',
               'app-update',
               'app-update/repo',
@@ -99,6 +108,11 @@ build_flatpak('org.test.Chiron',
 build_flatpak('org.test.Runtime',
               'only-runtime',
               'only-runtime/repo')
+build_flatpak('org.test.Extension',
+              'only-runtime',
+              'only-runtime/repo',
+              branch='master',
+              cleanrepodir=False)
 
 # app with an extension
 copy_repo('only-runtime', 'app-extension')
