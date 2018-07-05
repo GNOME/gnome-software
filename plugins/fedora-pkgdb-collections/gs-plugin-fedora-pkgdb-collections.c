@@ -317,7 +317,6 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
 	gs_app_add_icon (app, ic);
-	gs_app_set_management_plugin (app, "packagekit");
 
 	/* show a Fedora magazine article for the release */
 	url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%u-workstation",
