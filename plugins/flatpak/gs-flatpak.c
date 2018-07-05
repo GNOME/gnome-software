@@ -76,11 +76,33 @@ gs_plugin_refine_item_scope (GsFlatpak *self, GsApp *app)
 }
 
 static void
+gs_flatpak_claim_app (GsFlatpak *self, GsApp *app)
+{
+	if (gs_app_get_management_plugin (app) != NULL)
+		return;
+	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_app_set_scope (app, self->scope);
+
+	/* ony when we have a non-temp object */
+	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0)
+		gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
+}
+
+static void
+gs_flatpak_claim_app_list (GsFlatpak *self, GsAppList *list)
+{
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		gs_flatpak_claim_app (self, app);
+	}
+}
+
+static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
 	/* core */
-	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
+	gs_flatpak_claim_app (self, app);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
 	gs_plugin_refine_item_scope (self, app);
 
@@ -90,10 +112,6 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_flatpak_app_set_ref_arch (app, flatpak_ref_get_arch (xref));
 	gs_flatpak_app_set_ref_branch (app, flatpak_ref_get_branch (xref));
 	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
-
-	/* ony when we have a non-temp object */
-	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0)
-		gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
 
 	/* map the flatpak kind to the gnome-software kind */
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
@@ -159,8 +177,7 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 
 	/* create a temp GsApp */
 	app = gs_flatpak_app_new_from_remote (xremote);
-	gs_app_set_scope (app, self->scope);
-	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+	gs_flatpak_claim_app (self, app);
 
 	/* we already have one, returned the ref'd cached copy */
 	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
@@ -1740,7 +1757,7 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
 }
 
 static GsApp *
-gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime)
+gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 {
 	g_autofree gchar *source = NULL;
 	g_auto(GStrv) split = NULL;
@@ -1754,15 +1771,14 @@ gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime
 
 	/* create the complete GsApp from the single string */
 	app = gs_app_new (split[0]);
+	gs_flatpak_claim_app (self, app);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
-	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
 	gs_app_set_branch (app, split[2]);
-	gs_app_set_scope (app, gs_app_get_scope (parent));
 
 	/* search in the cache */
-	app_cache = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app));
+	app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
 	if (app_cache != NULL) {
 		/* since the cached runtime can have been created somewhere else
 		 * (we're using a global cache), we need to make sure that a
@@ -1772,18 +1788,14 @@ gs_flatpak_create_runtime (GsPlugin *plugin, GsApp *parent, const gchar *runtime
 		return g_steal_pointer (&app_cache);
 	}
 
-
 	/* set superclassed app properties */
 	gs_flatpak_app_set_ref_kind (app, FLATPAK_REF_KIND_RUNTIME);
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
 	gs_flatpak_app_set_ref_branch (app, split[2]);
 
-	/* we own this */
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
-
 	/* save in the cache */
-	gs_plugin_cache_add (plugin, NULL, app);
+	gs_plugin_cache_add (self->plugin, NULL, app);
 	return g_steal_pointer (&app);
 }
 
@@ -1848,7 +1860,7 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED_SECURE);
 
 	/* create runtime */
-	app_runtime = gs_flatpak_create_runtime (self->plugin, app, runtime);
+	app_runtime = gs_flatpak_create_runtime (self, app, runtime);
 	if (app_runtime != NULL) {
 		gs_plugin_refine_item_scope (self, app_runtime);
 		gs_app_set_runtime (app, app_runtime);
@@ -2273,7 +2285,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		new = gs_appstream_create_app (self->plugin, item, NULL);
 		if (new == NULL)
 			return FALSE;
-		gs_app_set_scope (new, self->scope);
+		gs_flatpak_claim_app (self, new);
 		if (!gs_flatpak_refine_app (self, new, flags, cancellable, error))
 			return FALSE;
 		gs_app_list_add (list, new);
@@ -2387,8 +2399,7 @@ gs_flatpak_create_runtime_repo (GsFlatpak *self,
 		g_prefix_error (error, "cannot create source from %s: ", cache_fn);
 		return NULL;
 	}
-	gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
-	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
+	gs_flatpak_claim_app (self, app);
 	return g_steal_pointer (&app);
 }
 
@@ -2726,9 +2737,13 @@ gs_flatpak_search (GsFlatpak *self,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	return gs_appstream_store_search (self->plugin, self->store,
-					  values, list,
-					  cancellable, error);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!gs_appstream_store_search (self->plugin, self->store, values, list_tmp,
+					cancellable, error))
+		return FALSE;
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
 }
 
 gboolean
@@ -2738,9 +2753,14 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	return gs_appstream_store_add_category_apps (self->plugin, self->store,
-						     category, list,
-						     cancellable, error);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!gs_appstream_store_add_category_apps (self->plugin, self->store,
+						   category, list_tmp,
+						   cancellable, error))
+		return FALSE;
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
 }
 
 gboolean
@@ -2759,8 +2779,13 @@ gs_flatpak_add_popular (GsFlatpak *self,
 			GCancellable *cancellable,
 			GError **error)
 {
-	return gs_appstream_add_popular (self->plugin, self->store, list,
-					 cancellable, error);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!gs_appstream_add_popular (self->plugin, self->store, list_tmp,
+				       cancellable, error))
+		return FALSE;
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
 }
 
 gboolean
@@ -2769,8 +2794,13 @@ gs_flatpak_add_featured (GsFlatpak *self,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	return gs_appstream_add_featured (self->plugin, self->store, list,
-					  cancellable, error);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!gs_appstream_add_featured (self->plugin, self->store, list_tmp,
+					cancellable, error))
+		return FALSE;
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
 }
 
 gboolean
@@ -2780,8 +2810,13 @@ gs_flatpak_add_recent (GsFlatpak *self,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	return gs_appstream_add_recent (self->plugin, self->store, list, age,
-					cancellable, error);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!gs_appstream_add_recent (self->plugin, self->store, list_tmp, age,
+				      cancellable, error))
+		return FALSE;
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
 }
 
 static void
