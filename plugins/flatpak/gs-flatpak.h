@@ -77,6 +77,10 @@ gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
 						 GsPluginRefineFlags	flags,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_refine_app_state	(GsFlatpak		*self,
+						 GsApp			*app,
+						 GCancellable		*cancellable,
+						 GError			**error);
 gboolean	gs_flatpak_refine_wildcard	(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsAppList		*list,

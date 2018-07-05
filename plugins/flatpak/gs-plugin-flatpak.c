@@ -307,6 +307,38 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	return NULL;
 }
 
+static gboolean
+gs_plugin_flatpak_refine_app (GsPlugin *plugin,
+			      GsApp *app,
+			      GsPluginRefineFlags flags,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	GsFlatpak *flatpak = NULL;
+
+	/* we have to look for the app in all GsFlatpak stores */
+	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
+		for (guint i = 0; i < priv->flatpaks->len; i++) {
+			GsFlatpak *flatpak_tmp = g_ptr_array_index (priv->flatpaks, i);
+			g_autoptr(GError) error_local = NULL;
+			if (gs_flatpak_refine_app_state (flatpak_tmp, app,
+							 cancellable, &error_local)) {
+				flatpak = flatpak_tmp;
+				break;
+			} else {
+				g_debug ("%s", error_local->message);
+			}
+		}
+	} else {
+		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	}
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_refine_app (flatpak, app, flags, cancellable, error);
+}
+
+
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -314,10 +346,29 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-	if (flatpak == NULL)
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0) {
 		return TRUE;
-	return gs_flatpak_refine_app (flatpak, app, flags, cancellable, error);
+	}
+
+	/* get the runtime first */
+	if (!gs_plugin_flatpak_refine_app (plugin, app, flags, cancellable, error))
+		return FALSE;
+
+	/* the runtime might be installed in a different scope */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME) {
+		GsApp *runtime = gs_app_get_runtime (app);
+		if (runtime != NULL) {
+			if (!gs_plugin_flatpak_refine_app (plugin, app,
+							   flags,
+							   cancellable,
+							   error)) {
+				return FALSE;
+			}
+		}
+	}
+	return TRUE;
 }
 
 gboolean
