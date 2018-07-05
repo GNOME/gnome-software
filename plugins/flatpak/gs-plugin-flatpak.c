@@ -823,7 +823,6 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 					 gs_app_get_unique_id (runtime_old),
 					 gs_app_get_unique_id (runtime_app));
 				gs_app_set_runtime (app_tmp, runtime_old);
-				gs_app_set_update_runtime (app_tmp, runtime_old);
 				break;
 			}
 		}
