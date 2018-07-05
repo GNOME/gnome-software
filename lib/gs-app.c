@@ -3768,6 +3768,23 @@ gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 }
 
 /**
+ * gs_app_remove_kudo:
+ * @app: a #GsApp
+ * @kudo: a #GsAppKudo, e.g. %GS_APP_KUDO_MY_LANGUAGE
+ *
+ * Removes a kudo from the application.
+ *
+ * Since: 3.29
+ **/
+void
+gs_app_remove_kudo (GsApp *app, GsAppKudo kudo)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+	priv->kudos &= ~kudo;
+}
+
+/**
  * gs_app_has_kudo:
  * @app: a #GsApp
  * @kudo: a #GsAppKudo, e.g. %GS_APP_KUDO_MY_LANGUAGE
