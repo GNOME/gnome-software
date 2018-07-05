@@ -3269,15 +3269,15 @@ gs_app_set_metadata_variant (GsApp *app, const gchar *key, GVariant *value)
 			return;
 		if (g_variant_type_equal (g_variant_get_type (value), G_VARIANT_TYPE_STRING) &&
 		    g_variant_type_equal (g_variant_get_type (found), G_VARIANT_TYPE_STRING)) {
-			g_warning ("tried overwriting %s key %s from %s to %s",
-				   priv->id, key,
-				   g_variant_get_string (found, NULL),
-				   g_variant_get_string (value, NULL));
+			g_debug ("tried overwriting %s key %s from %s to %s",
+				 priv->id, key,
+				 g_variant_get_string (found, NULL),
+				 g_variant_get_string (value, NULL));
 		} else {
-			g_warning ("tried overwriting %s key %s (%s->%s)",
-				   priv->id, key,
-				   g_variant_get_type_string (found),
-				   g_variant_get_type_string (value));
+			g_debug ("tried overwriting %s key %s (%s->%s)",
+				 priv->id, key,
+				 g_variant_get_type_string (found),
+				 g_variant_get_type_string (value));
 		}
 		return;
 	}
