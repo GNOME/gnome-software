@@ -89,6 +89,7 @@ struct _GsUpdatesPage
 	GtkWidget		*button_refresh;
 	GtkWidget		*button_update_all;
 	GtkWidget		*header_spinner_start;
+	GtkWidget		*header_checking_label;
 	GtkWidget		*header_start_box;
 	GtkWidget		*header_end_box;
 	gboolean		 has_agreed_to_mobile_data;
@@ -395,6 +396,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 			gs_stop_spinner (GTK_SPINNER (self->spinner_updates));
 			gtk_spinner_start (GTK_SPINNER (self->header_spinner_start));
 			gtk_widget_show (self->header_spinner_start);
+			gtk_widget_show (self->header_checking_label);
 		} else {
 			gs_start_spinner (GTK_SPINNER (self->spinner_updates));
 		}
@@ -403,6 +405,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 		gs_stop_spinner (GTK_SPINNER (self->spinner_updates));
 		gtk_spinner_stop (GTK_SPINNER (self->header_spinner_start));
 		gtk_widget_hide (self->header_spinner_start);
+		gtk_widget_hide (self->header_checking_label);
 		break;
 	}
 
@@ -1844,6 +1847,9 @@ gs_updates_page_setup (GsPage *page,
 	gtk_widget_set_visible (self->header_start_box, TRUE);
 	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
 
+	/* This label indicates that the update check is in progress */
+	self->header_checking_label = gtk_label_new (_("Checking…"));
+	gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_checking_label, FALSE, FALSE, 0);
 	self->header_spinner_start = gtk_spinner_new ();
 	gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_spinner_start, FALSE, FALSE, 0);
 
