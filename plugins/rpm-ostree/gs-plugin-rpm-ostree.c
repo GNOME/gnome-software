@@ -477,6 +477,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 		}
 	}
 
+	/* update UI */
+	gs_plugin_updates_changed (plugin);
+
 	return TRUE;
 }
 
