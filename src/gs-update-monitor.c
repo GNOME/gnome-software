@@ -299,7 +299,7 @@ get_upgrades_finished_cb (GObject *object,
 	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
 		return;
 
-	/* only nag about upgrades once per month */
+	/* only nag about upgrades once per week */
 	if (!should_show_upgrade_notification (monitor))
 		return;
 
