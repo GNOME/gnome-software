@@ -242,7 +242,6 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				  GError **error)
 {
 	GPtrArray *apps;
-	guint i;
 	g_autofree gchar *appstream_dir_fn = NULL;
 	g_autofree gchar *appstream_fn = NULL;
 	g_autofree gchar *default_branch = NULL;
@@ -299,7 +298,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 	/* override the *AppStream* origin */
 	apps = as_store_get_apps (store);
-	for (i = 0; i < apps->len; i++) {
+	for (guint i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));
 	}
@@ -319,7 +318,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 	/* get all the apps and fix them up */
 	app_filtered = g_ptr_array_new ();
-	for (i = 0; i < apps->len; i++) {
+	for (guint i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 
 		/* filter to app */
@@ -377,7 +376,6 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 {
 	GPtrArray *icons;
 	const gchar *fn;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GFile) path = NULL;
 	g_autoptr(GDir) dir = NULL;
@@ -422,7 +420,7 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 
 		/* fix up icons */
 		icons = as_app_get_icons (app);
-		for (i = 0; i < icons->len; i++) {
+		for (guint i = 0; i < icons->len; i++) {
 			AsIcon *ic = g_ptr_array_index (icons, i);
 			if (as_icon_get_kind (ic) == AS_ICON_KIND_UNKNOWN) {
 				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
@@ -463,7 +461,6 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 				   GCancellable *cancellable,
 				   GError **error)
 {
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
@@ -484,7 +481,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	for (i = 0; i < xremotes->len; i++) {
+	for (guint i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 		if (flatpak_remote_get_disabled (xremote))
 			continue;
@@ -657,7 +654,6 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 {
 	gboolean ret;
 	gboolean something_changed = FALSE;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
@@ -675,7 +671,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	for (i = 0; i < xremotes->len; i++) {
+	for (guint i = 0; i < xremotes->len; i++) {
 		const gchar *remote_name;
 		guint tmp;
 		g_autoptr(GError) error_local = NULL;
@@ -859,7 +855,6 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 			  GError **error)
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
-	guint i;
 
 	/* get apps and runtimes */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -868,7 +863,7 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	for (i = 0; i < xrefs->len; i++) {
+	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		g_autoptr(GError) error_local = NULL;
 		g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref, &error_local);
@@ -891,8 +886,6 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
-	guint i;
-	guint j;
 
 	/* get installed apps and runtimes */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -911,7 +904,7 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	for (i = 0; i < xremotes->len; i++) {
+	for (guint i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autoptr(GsApp) app = NULL;
 
@@ -925,7 +918,7 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 		gs_app_list_add (list, app);
 
 		/* add related apps, i.e. what was installed from there */
-		for (j = 0; j < xrefs->len; j++) {
+		for (guint j = 0; j < xrefs->len; j++) {
 			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, j);
 			g_autoptr(GError) error_local = NULL;
 			g_autoptr(GsApp) related = NULL;
@@ -1357,7 +1350,6 @@ gs_flatpak_refresh (GsFlatpak *self,
 		    GCancellable *cancellable,
 		    GError **error)
 {
-	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
 	/* give all the repos a second chance */
@@ -1390,7 +1382,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	for (i = 0; i < xrefs->len; i++) {
+	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		g_autoptr(FlatpakInstalledRef) xref2 = NULL;
 		g_autoptr(GsApp) app_dl = NULL;

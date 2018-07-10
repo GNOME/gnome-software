@@ -66,11 +66,8 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 static AsIcon *
 gs_appstream_get_icon_by_kind (AsApp *app, AsIconKind icon_kind)
 {
-	GPtrArray *icons;
-	guint i;
-
-	icons = as_app_get_icons (app);
-	for (i = 0; i < icons->len; i++) {
+	GPtrArray *icons = as_app_get_icons (app);
+	for (guint i = 0; i < icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (icons, i);
 		if (as_icon_get_kind (icon) == icon_kind)
 			return icon;
@@ -81,11 +78,8 @@ gs_appstream_get_icon_by_kind (AsApp *app, AsIconKind icon_kind)
 static AsIcon *
 gs_appstream_get_icon_by_kind_and_size (AsApp *app, AsIconKind icon_kind, guint sz)
 {
-	GPtrArray *icons;
-	guint i;
-
-	icons = as_app_get_icons (app);
-	for (i = 0; i < icons->len; i++) {
+	GPtrArray *icons = as_app_get_icons (app);
+	for (guint i = 0; i < icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (icons, i);
 		if (as_icon_get_kind (icon) == icon_kind &&
 		    as_icon_get_width (icon) == sz &&
@@ -147,7 +141,6 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 				GError **error)
 {
 	GPtrArray *addons;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* we only care about addons to desktop apps */
@@ -164,7 +157,7 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 	if (addons == NULL)
 		return TRUE;
 
-	for (i = 0; i < addons->len; i++) {
+	for (guint i = 0; i < addons->len; i++) {
 		AsApp *as_addon = g_ptr_array_index (addons, i);
 		g_autoptr(GsApp) addon = NULL;
 
@@ -183,10 +176,7 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 static void
 gs_appstream_refine_add_screenshots (GsApp *app, AsApp *item)
 {
-	AsScreenshot *ss;
-	GPtrArray *images_as;
 	GPtrArray *screenshots_as;
-	guint i;
 
 	/* do we have any to add */
 	screenshots_as = as_app_get_screenshots (item);
@@ -199,10 +189,10 @@ gs_appstream_refine_add_screenshots (GsApp *app, AsApp *item)
 		return;
 
 	/* add any we know */
-	for (i = 0; i < screenshots_as->len &&
-		    i < GS_APPSTREAM_MAX_SCREENSHOTS; i++) {
-		ss = g_ptr_array_index (screenshots_as, i);
-		images_as = as_screenshot_get_images (ss);
+	for (guint i = 0; i < screenshots_as->len &&
+			  i < GS_APPSTREAM_MAX_SCREENSHOTS; i++) {
+		AsScreenshot *ss = g_ptr_array_index (screenshots_as, i);
+		GPtrArray *images_as = as_screenshot_get_images (ss);
 		if (images_as->len == 0)
 			continue;
 		if (as_screenshot_get_kind (ss) == AS_SCREENSHOT_KIND_UNKNOWN)
@@ -214,16 +204,14 @@ gs_appstream_refine_add_screenshots (GsApp *app, AsApp *item)
 static void
 gs_appstream_refine_add_reviews (GsApp *app, AsApp *item)
 {
-	AsReview *review;
 	GPtrArray *reviews;
-	guint i;
 
 	/* do we have any to add */
 	if (gs_app_get_reviews(app)->len > 0)
 		return;
 	reviews = as_app_get_reviews (item);
-	for (i = 0; i < reviews->len; i++) {
-		review = g_ptr_array_index (reviews, i);
+	for (guint i = 0; i < reviews->len; i++) {
+		AsReview *review = g_ptr_array_index (reviews, i);
 		gs_app_add_review (app, review);
 	}
 }
@@ -231,16 +219,14 @@ gs_appstream_refine_add_reviews (GsApp *app, AsApp *item)
 static void
 gs_appstream_refine_add_provides (GsApp *app, AsApp *item)
 {
-	AsProvide *provide;
 	GPtrArray *provides;
-	guint i;
 
 	/* do we have any to add */
 	if (gs_app_get_provides(app)->len > 0)
 		return;
 	provides = as_app_get_provides (item);
-	for (i = 0; i < provides->len; i++) {
-		provide = g_ptr_array_index (provides, i);
+	for (guint i = 0; i < provides->len; i++) {
+		AsProvide *provide = g_ptr_array_index (provides, i);
 		gs_app_add_provide (app, provide);
 	}
 }
@@ -271,13 +257,12 @@ gs_appstream_are_screenshots_perfect (AsApp *app)
 	AsScreenshot *screenshot;
 	GPtrArray *screenshots;
 	guint height;
-	guint i;
 	guint width;
 
 	screenshots = as_app_get_screenshots (app);
 	if (screenshots->len == 0)
 		return FALSE;
-	for (i = 0; i < screenshots->len; i++) {
+	for (guint i = 0; i < screenshots->len; i++) {
 
 		/* get the source image as the thumbs will be resized & padded */
 		screenshot = g_ptr_array_index (screenshots, i);
@@ -306,11 +291,8 @@ gs_appstream_are_screenshots_perfect (AsApp *app)
 static void
 gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 {
-	GHashTable *hash;
-	g_autoptr(GList) keys = NULL;
-
-	hash = as_app_get_metadata (item);
-	keys = g_hash_table_get_keys (hash);
+	GHashTable *hash = as_app_get_metadata (item);
+	g_autoptr(GList) keys = g_hash_table_get_keys (hash);
 	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		const gchar *value = g_hash_table_lookup (hash, key);
@@ -506,9 +488,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	GPtrArray *kudos;
 	const gchar *current_desktop;
 	const gchar *tmp;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_auto(GStrv) xdg_current_desktops = NULL;
 
 	/* search categories for the search term */
 	ptask = as_profile_start (gs_plugin_get_profile (plugin),
@@ -594,7 +574,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set content rating */
 	array = as_app_get_content_ratings (item);
-	for (i = 0; i < array->len; i++) {
+	for (guint i = 0; i < array->len; i++) {
 		AsContentRating *cr = g_ptr_array_index (array, i);
 		if (g_str_has_prefix (as_content_rating_get_kind (cr), "oars-1.")) {
 			gs_app_set_content_rating (app, cr);
@@ -632,7 +612,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* add launchables */
 	launchables = as_app_get_launchables (item);
-	for (i = 0; i < launchables->len; i++) {
+	for (guint i = 0; i < launchables->len; i++) {
 		AsLaunchable *launchable = g_ptr_array_index (launchables, i);
 		switch (as_launchable_get_kind (launchable)) {
 		case AS_LAUNCHABLE_KIND_DESKTOP_ID:
@@ -705,7 +685,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set categories */
 	array = as_app_get_categories (item);
 	if (array != NULL && gs_app_get_categories (app)->len == 0) {
-		for (i = 0; i < array->len; i++) {
+		for (guint i = 0; i < array->len; i++) {
 			tmp = g_ptr_array_index (array, i);
 			gs_app_add_category (app, tmp);
 		}
@@ -739,8 +719,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	array = as_app_get_compulsory_for_desktops (item);
 	current_desktop = g_getenv ("XDG_CURRENT_DESKTOP");
 	if (current_desktop != NULL) {
-		xdg_current_desktops = g_strsplit (current_desktop, ":", 0);
-		for (i = 0; i < array->len; i++) {
+		g_auto(GStrv) xdg_current_desktops = g_strsplit (current_desktop, ":", 0);
+		for (guint i = 0; i < array->len; i++) {
 			tmp = g_ptr_array_index (array, i);
 			/* if the value has a :, check the whole string */
 			if (g_strstr_len (tmp, -1, ":")) {
@@ -804,7 +784,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* add new-style kudos */
 	kudos = as_app_get_kudos (item);
-	for (i = 0; i < kudos->len; i++) {
+	for (guint i = 0; i < kudos->len; i++) {
 		tmp = g_ptr_array_index (kudos, i);
 		switch (as_kudo_kind_from_string (tmp)) {
 		case AS_KUDO_KIND_SEARCH_PROVIDER:
@@ -858,17 +838,15 @@ gs_appstream_store_search_item (GsPlugin *plugin,
 				GCancellable *cancellable,
 				GError **error)
 {
-	AsApp *item_tmp;
 	GPtrArray *addons;
-	guint i;
 	guint match_value;
 	g_autoptr(GsApp) app = NULL;
 
 	/* match against the app or any of the addons */
 	match_value = as_app_search_matches_all (item, values);
 	addons = as_app_get_addons (item);
-	for (i = 0; i < addons->len; i++) {
-		item_tmp = g_ptr_array_index (addons, i);
+	for (guint i = 0; i < addons->len; i++) {
+		AsApp *item_tmp = g_ptr_array_index (addons, i);
 		match_value |= as_app_search_matches_all (item_tmp, values);
 	}
 
@@ -893,10 +871,8 @@ gs_appstream_store_search (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	AsApp *item;
 	GPtrArray *array;
 	gboolean ret = TRUE;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* search categories for the search term */
@@ -904,13 +880,12 @@ gs_appstream_store_search (GsPlugin *plugin,
 					  "appstream::search");
 	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
-	for (i = 0; i < array->len; i++) {
+	for (guint i = 0; i < array->len; i++) {
+		AsApp *item = g_ptr_array_index (array, i);
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
-
-		item = g_ptr_array_index (array, i);
 		ret = gs_appstream_store_search_item (plugin, item,
 						      values, list,
 						      cancellable, error);
@@ -923,8 +898,7 @@ gs_appstream_store_search (GsPlugin *plugin,
 static gboolean
 _as_app_matches_desktop_group_set (AsApp *app, gchar **desktop_groups)
 {
-	guint i;
-	for (i = 0; desktop_groups[i] != NULL; i++) {
+	for (guint i = 0; desktop_groups[i] != NULL; i++) {
 		if (!as_app_has_category (app, desktop_groups[i]))
 			return FALSE;
 	}
@@ -943,18 +917,16 @@ gs_appstream_store_add_categories_for_app (GsCategory *parent, AsApp *app)
 {
 	GPtrArray *children;
 	GPtrArray *desktop_groups;
-	GsCategory *category;
-	guint i, j;
 
 	/* find all the sub-categories */
 	children = gs_category_get_children (parent);
-	for (j = 0; j < children->len; j++) {
+	for (guint j = 0; j < children->len; j++) {
 		gboolean matched = FALSE;
-		category = GS_CATEGORY (g_ptr_array_index (children, j));
+		GsCategory *category = GS_CATEGORY (g_ptr_array_index (children, j));
 
 		/* do any desktop_groups match this application */
 		desktop_groups = gs_category_get_desktop_groups (category);
-		for (i = 0; i < desktop_groups->len; i++) {
+		for (guint i = 0; i < desktop_groups->len; i++) {
 			const gchar *desktop_group = g_ptr_array_index (desktop_groups, i);
 			if (_as_app_matches_desktop_group (app, desktop_group)) {
 				matched = TRUE;
@@ -978,8 +950,6 @@ gs_appstream_store_add_category_apps (GsPlugin *plugin,
 {
 	GPtrArray *array;
 	GPtrArray *desktop_groups;
-	guint i;
-	guint j;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* just look at each app in turn */
@@ -992,12 +962,12 @@ gs_appstream_store_add_category_apps (GsPlugin *plugin,
 		g_warning ("no desktop_groups for %s", gs_category_get_id (category));
 		return TRUE;
 	}
-	for (j = 0; j < desktop_groups->len; j++) {
+	for (guint j = 0; j < desktop_groups->len; j++) {
 		const gchar *desktop_group = g_ptr_array_index (desktop_groups, j);
 		g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
 
 		/* match the app */
-		for (i = 0; i < array->len; i++) {
+		for (guint i = 0; i < array->len; i++) {
 			AsApp *item;
 			g_autoptr(GsApp) app = NULL;
 
@@ -1027,10 +997,7 @@ gs_appstream_store_add_categories (GsPlugin *plugin,
 				   GCancellable *cancellable,
 				   GError **error)
 {
-	AsApp *app;
 	GPtrArray *array;
-	guint i;
-	guint j;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
@@ -1038,13 +1005,13 @@ gs_appstream_store_add_categories (GsPlugin *plugin,
 					  "appstream::add-categories");
 	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
-	for (i = 0; i < array->len; i++) {
-		app = g_ptr_array_index (array, i);
+	for (guint i = 0; i < array->len; i++) {
+		AsApp *app = g_ptr_array_index (array, i);
 		if (as_app_get_id (app) == NULL)
 			continue;
 		if (as_app_get_priority (app) < 0)
 			continue;
-		for (j = 0; j < list->len; j++) {
+		for (guint j = 0; j < list->len; j++) {
 			GsCategory *parent = GS_CATEGORY (g_ptr_array_index (list, j));
 			gs_appstream_store_add_categories_for_app (parent, app);
 		}
@@ -1059,9 +1026,7 @@ gs_appstream_add_popular (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	AsApp *item;
 	GPtrArray *array;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
@@ -1069,9 +1034,9 @@ gs_appstream_add_popular (GsPlugin *plugin,
 					  "appstream::add-popular");
 	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
-	for (i = 0; i < array->len; i++) {
+	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
-		item = g_ptr_array_index (array, i);
+		AsApp *item = g_ptr_array_index (array, i);
 		if (as_app_get_id (item) == NULL)
 			continue;
 		if (!as_app_has_kudo (item, "GnomeSoftware::popular"))
@@ -1138,9 +1103,7 @@ gs_appstream_add_featured (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	AsApp *item;
 	GPtrArray *array;
-	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
@@ -1148,9 +1111,9 @@ gs_appstream_add_featured (GsPlugin *plugin,
 					  "appstream::add-featured");
 	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
-	for (i = 0; i < array->len; i++) {
+	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
-		item = g_ptr_array_index (array, i);
+		AsApp *item = g_ptr_array_index (array, i);
 		if (as_app_get_id (item) == NULL)
 			continue;
 		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
