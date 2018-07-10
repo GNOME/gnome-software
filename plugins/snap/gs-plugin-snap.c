@@ -817,6 +817,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (developer_name == NULL)
 		developer_name = snapd_snap_get_publisher_username (snap);
 	gs_app_set_developer_name (app, developer_name);
+	if (snapd_snap_get_publisher_validation (snap) == SNAPD_PUBLISHER_VALIDATION_VERIFIED)
+		gs_app_add_quirk (app, AS_APP_QUIRK_DEVELOPER_VERIFIED);
 
 	snap = local_snap != NULL ? local_snap : store_snap;
 	gs_app_set_version (app, snapd_snap_get_version (snap));
