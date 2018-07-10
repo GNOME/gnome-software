@@ -612,8 +612,6 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 		g_propagate_error (error, g_steal_pointer (&local_error));
 		return FALSE;
 	}
-
-#if FLATPAK_CHECK_VERSION(0,9,4)
 	phelper = gs_flatpak_progress_helper_new (self->plugin, app_dl);
 	if (!flatpak_installation_update_appstream_full_sync (self->installation,
 							      remote_name,
@@ -626,18 +624,6 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-#else
-	gs_app_set_progress (app_dl, 0);
-	if (!flatpak_installation_update_appstream_sync (self->installation,
-							 remote_name,
-							 NULL,
-							 NULL,
-							 cancellable,
-							 error)) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-#endif
 
 	/* success */
 	gs_app_set_progress (app_dl, 100);
