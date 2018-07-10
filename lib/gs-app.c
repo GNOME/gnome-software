@@ -72,6 +72,7 @@ typedef struct
 	GPtrArray		*source_ids;
 	gchar			*project_group;
 	gchar			*developer_name;
+	gboolean		 developer_verified;
 	gchar			*agreement;
 	gchar			*version;
 	gchar			*version_ui;
@@ -1587,6 +1588,24 @@ gs_app_get_developer_name (GsApp *app)
 }
 
 /**
+ * gs_app_get_developer_verified:
+ * @app: a #GsApp
+ *
+ * Gets if a developer has been verified.
+ *
+ * Returns: %TRUE if the developer has been verified.
+ *
+ * Since: 3.30
+ **/
+gboolean
+gs_app_get_developer_verified (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return priv->developer_verified;
+}
+
+/**
  * gs_app_set_project_group:
  * @app: a #GsApp
  * @project_group: The non-localized project group, e.g. "GNOME" or "KDE"
@@ -1622,6 +1641,25 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 	_g_set_str (&priv->developer_name, developer_name);
+}
+
+/**
+ * gs_app_set_developer_verified:
+ * @app: a #GsApp
+ * @developer_verified: %TRUE if the developer has been verified.
+ *
+ * Mark a developer as verified.
+ *
+ * Since: 3.30
+ **/
+void
+gs_app_set_developer_verified (GsApp *app, gboolean developer_verified)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+	priv->developer_verified = developer_verified;
 }
 
 /**
