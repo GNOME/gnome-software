@@ -813,6 +813,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (snap));
 	gs_app_set_developer_name (app, snapd_snap_get_publisher_username (snap));
+	gs_app_set_developer_verified (app, snapd_snap_get_publisher_validation (snap) == SNAPD_PUBLISHER_VALIDATION_VERIFIED);
 
 	snap = local_snap != NULL ? local_snap : store_snap;
 	gs_app_set_version (app, snapd_snap_get_version (snap));
