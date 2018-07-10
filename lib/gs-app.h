@@ -166,6 +166,9 @@ void		 gs_app_set_project_group	(GsApp		*app,
 const gchar	*gs_app_get_developer_name	(GsApp		*app);
 void		 gs_app_set_developer_name	(GsApp		*app,
 						 const gchar	*developer_name);
+gboolean	 gs_app_get_developer_verified	(GsApp		*app);
+void		 gs_app_set_developer_verified	(GsApp		*app,
+						 gboolean	 developer_verified);
 const gchar	*gs_app_get_agreement		(GsApp		*app);
 void		 gs_app_set_agreement		(GsApp		*app,
 						 const gchar	*agreement);
