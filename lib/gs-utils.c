@@ -220,7 +220,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 	if (g_file_query_exists (cachedir_file, NULL) &&
 	    flags & GS_UTILS_CACHE_FLAG_ENSURE_EMPTY) {
 		if (!gs_utils_rmtree (cachedir, error))
-			return FALSE;
+			return NULL;
 	}
 	if (!g_file_query_exists (cachedir_file, NULL) &&
 	    !g_file_make_directory_with_parents (cachedir_file, NULL, error))
