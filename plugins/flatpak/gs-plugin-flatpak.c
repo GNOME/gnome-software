@@ -566,6 +566,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	/* add to the transaction cache for quick look up -- other unrelated
+	 * refs will be matched using gs_plugin_flatpak_find_app_by_ref() */
+	gs_flatpak_transaction_add_app (transaction, app);
+
 	/* add flatpakref */
 	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF) {
 		g_set_error_literal (error,

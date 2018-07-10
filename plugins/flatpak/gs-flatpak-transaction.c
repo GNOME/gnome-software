@@ -27,6 +27,7 @@
 struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	FlatpakInstallation	*installation;
+	GHashTable		*refhash;	/* ref:GsApp */
 };
 
 enum {
@@ -53,16 +54,41 @@ gs_flatpak_transaction_finalize (GObject *object)
 	self = GS_FLATPAK_TRANSACTION (object);
 
 	g_assert (self != NULL);
+	g_hash_table_unref (self->refhash);
 
 	G_OBJECT_CLASS (gs_flatpak_transaction_parent_class)->finalize (object);
+}
+
+GsApp *
+gs_flatpak_transaction_get_app_by_ref (FlatpakTransaction *transaction, const gchar *ref)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	return g_hash_table_lookup (self->refhash, ref);
+}
+
+static void
+gs_flatpak_transaction_add_app_internal (GsFlatpakTransaction *self, GsApp *app)
+{
+	g_autofree gchar *ref = gs_flatpak_app_get_ref_display (app);
+	g_hash_table_insert (self->refhash, g_steal_pointer (&ref), g_object_ref (app));
+}
+
+void
+gs_flatpak_transaction_add_app (FlatpakTransaction *transaction, GsApp *app)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	gs_flatpak_transaction_add_app_internal (self, app);
+	if (gs_app_get_runtime (app) != NULL)
+		gs_flatpak_transaction_add_app_internal (self, gs_app_get_runtime (app));
 }
 
 static GsApp *
 _ref_to_app (GsFlatpakTransaction *self, const gchar *ref)
 {
-	GsApp *app;
+	GsApp *app = g_hash_table_lookup (self->refhash, ref);
+	if (app != NULL)
+		return g_object_ref (app);
 	g_signal_emit (self, signals[SIGNAL_REF_TO_APP], 0, ref, &app);
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	return app;
 }
 
@@ -297,6 +323,8 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 static void
 gs_flatpak_transaction_init (GsFlatpakTransaction *self)
 {
+	self->refhash = g_hash_table_new_full (g_str_hash, g_str_equal,
+					       g_free, (GDestroyNotify) g_object_unref);
 }
 
 FlatpakTransaction *
