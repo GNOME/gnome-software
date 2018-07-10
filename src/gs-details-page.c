@@ -101,6 +101,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
+	GtkWidget		*image_details_developer_verified;
 	GtkWidget		*button_details_license_free;
 	GtkWidget		*button_details_license_nonfree;
 	GtkWidget		*button_details_license_unknown;
@@ -951,6 +952,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_label_set_label (GTK_LABEL (self->label_details_developer_value), tmp);
 		gtk_widget_set_visible (self->label_details_developer_value, TRUE);
 	}
+	gtk_widget_set_visible (self->image_details_developer_verified, gs_app_has_quirk (self->app, AS_APP_QUIRK_DEVELOPER_VERIFIED));
 
 	/* set the license buttons */
 	tmp = gs_app_get_license (self->app);
@@ -2441,6 +2443,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_developer_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, image_details_developer_verified);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_free);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_nonfree);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_unknown);
