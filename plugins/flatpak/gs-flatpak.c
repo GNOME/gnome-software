@@ -928,123 +928,30 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 	return TRUE;
 }
 
-gboolean
+GsApp *
 gs_flatpak_find_source_by_url (GsFlatpak *self,
 			       const gchar *url,
-			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
 {
 	g_autoptr(GPtrArray) xremotes = NULL;
 
-	g_return_val_if_fail (url != NULL, FALSE);
+	g_return_val_if_fail (url != NULL, NULL);
 
 	xremotes = flatpak_installation_list_remotes (self->installation, cancellable, error);
 	if (xremotes == NULL)
-		return FALSE;
+		return NULL;
 	for (guint i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autofree gchar *url_tmp = flatpak_remote_get_url (xremote);
-		if (g_strcmp0 (url, url_tmp) == 0) {
-			g_autoptr(GsApp) app = gs_flatpak_create_source (self, xremote);
-			gs_app_list_add (list, app);
-		}
+		if (g_strcmp0 (url, url_tmp) == 0)
+			return gs_flatpak_create_source (self, xremote);
 	}
-	return TRUE;
-}
-
-gboolean
-gs_flatpak_find_app (GsFlatpak *self,
-		     FlatpakRefKind kind,
-		     const gchar *name,
-		     const gchar *arch,
-		     const gchar *branch,
-		     GsAppList *list,
-		     GCancellable *cancellable,
-		     GError **error)
-{
-	g_autoptr(GPtrArray) xremotes = NULL;
-	g_autoptr(GPtrArray) xrefs = NULL;
-
-	g_return_val_if_fail (name != NULL, FALSE);
-	g_return_val_if_fail (branch != NULL, FALSE);
-
-	/* get all the installed apps (no network I/O) */
-	xrefs = flatpak_installation_list_installed_refs (self->installation,
-							  cancellable,
-							  error);
-	if (xrefs == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-
-	/* look at each installed xref */
-	for (guint i = 0; i < xrefs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		if (flatpak_ref_get_kind (FLATPAK_REF (xref)) == kind &&
-		    g_strcmp0 (flatpak_ref_get_name (FLATPAK_REF (xref)), name) == 0 &&
-		    g_strcmp0 (flatpak_ref_get_arch (FLATPAK_REF (xref)), arch) == 0 &&
-		    g_strcmp0 (flatpak_ref_get_branch (FLATPAK_REF (xref)), branch) == 0) {
-			g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref, error);
-			if (app == NULL)
-				return FALSE;
-			gs_app_list_add (list, app);
-		}
-	}
-
-	/* look at each remote xref */
-	xremotes = flatpak_installation_list_remotes (self->installation, cancellable, error);
-	if (xremotes == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	for (guint i = 0; i < xremotes->len; i++) {
-		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
-		g_autoptr(GError) error_local = NULL;
-		g_autoptr(GPtrArray) refs_remote = NULL;
-
-		/* disabled */
-		if (flatpak_remote_get_disabled (xremote))
-			continue;
-		refs_remote = flatpak_installation_list_remote_refs_sync (self->installation,
-									  flatpak_remote_get_name (xremote),
-									  cancellable,
-									  &error_local);
-		if (refs_remote == NULL) {
-			g_debug ("failed to list refs in '%s': %s",
-				 flatpak_remote_get_name (xremote),
-				 error_local->message);
-			continue;
-		}
-		for (guint j = 0; j < refs_remote->len; j++) {
-			FlatpakRef *xref = g_ptr_array_index (refs_remote, j);
-			if (flatpak_ref_get_kind (FLATPAK_REF (xref)) == kind &&
-			    g_strcmp0 (flatpak_ref_get_name (xref), name) == 0 &&
-			    g_strcmp0 (flatpak_ref_get_arch (xref), arch) == 0 &&
-			    g_strcmp0 (flatpak_ref_get_branch (xref), branch) == 0) {
-				g_autoptr(GsApp) app = gs_flatpak_create_app (self, xref);
-
-				/* don't 'overwrite' installed apps */
-				if (gs_app_list_lookup (list, gs_app_get_unique_id (app)) != NULL) {
-					g_debug ("ignoring installed %s",
-						 gs_app_get_unique_id (app));
-					continue;
-				}
-
-				/* if we added a LOCAL runtime, and then we found
-				 * an already installed remote that provides the
-				 * exact same thing */
-				if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
-					gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-
-				gs_app_set_origin (app, flatpak_remote_get_name (xremote));
-				gs_app_list_add (list, app);
-			}
-		}
-	}
-
-	return TRUE;
+	g_set_error (error,
+		     GS_PLUGIN_ERROR,
+		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		     "cannot find %s", url);
+	return NULL;
 }
 
 /* transfer full */
@@ -1055,7 +962,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
-	g_return_val_if_fail (ref != NULL, FALSE);
+	g_return_val_if_fail (ref != NULL, NULL);
 
 	/* get all the installed apps (no network I/O) */
 	xrefs = flatpak_installation_list_installed_refs (self->installation,
@@ -1063,7 +970,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 							  error);
 	if (xrefs == NULL) {
 		gs_flatpak_error_convert (error);
-		return FALSE;
+		return NULL;
 	}
 	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
@@ -1077,7 +984,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 						      cancellable, error);
 	if (xremotes == NULL) {
 		gs_flatpak_error_convert (error);
-		return FALSE;
+		return NULL;
 	}
 	for (guint i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
@@ -1148,7 +1055,7 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 
 	/* decode GPG key if set */
 	gpg_key = gs_flatpak_app_get_repo_gpgkey (app);
-	if (gpg_key != NULL && g_strcmp0 (gpg_key, "FOOBAR==") != 0) {
+	if (gpg_key != NULL) {
 		gsize data_len = 0;
 		g_autofree guchar *data = NULL;
 		g_autoptr(GBytes) bytes = NULL;
@@ -2351,44 +2258,6 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 	return TRUE;
 }
 
-static GsApp *
-gs_flatpak_create_runtime_repo (GsFlatpak *self,
-				const gchar *uri,
-				GCancellable *cancellable,
-				GError **error)
-{
-	g_autofree gchar *cache_basename = NULL;
-	g_autofree gchar *cache_fn = NULL;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (self->plugin));
-
-	/* TRANSLATORS: status text when downloading the RuntimeRepo */
-	gs_app_set_summary_missing (app_dl, _("Getting runtime source…"));
-	gs_plugin_status_update (self->plugin, app_dl, GS_PLUGIN_STATUS_DOWNLOADING);
-
-	/* download file */
-	cache_basename = g_path_get_basename (uri);
-	cache_fn = gs_utils_get_cache_filename ("flatpak",
-						cache_basename,
-						GS_UTILS_CACHE_FLAG_WRITEABLE,
-						error);
-	if (cache_fn == NULL)
-		return NULL;
-	if (!gs_plugin_download_file (self->plugin, app_dl, uri, cache_fn, cancellable, error))
-		return NULL;
-
-	/* get GsApp for local file */
-	file = g_file_new_for_path (cache_fn);
-	app = gs_flatpak_app_new_from_repo_file (file, cancellable, error);
-	if (app == NULL) {
-		g_prefix_error (error, "cannot create source from %s: ", cache_fn);
-		return NULL;
-	}
-	gs_flatpak_claim_app (self, app);
-	return g_steal_pointer (&app);
-}
-
 GsApp *
 gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GFile *file,
@@ -2680,28 +2549,12 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	if (!gs_plugin_refine_item_metadata (self, app, cancellable, error))
 		return NULL;
 
-	/* if the runtime is not already installed, download the RuntimeRepo */
+	/* the new runtime is available from the RuntimeRepo */
 	runtime = gs_app_get_runtime (app);
-	if (runtime != NULL && gs_app_get_state (runtime) != AS_APP_STATE_INSTALLED) {
+	if (runtime != NULL && gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *uri = NULL;
 		uri = g_key_file_get_string (kf, "Flatpak Ref", "RuntimeRepo", NULL);
-		if (uri != NULL) {
-			g_autoptr(GsApp) app_src = NULL;
-			app_src = gs_flatpak_create_runtime_repo (self, uri, cancellable, error);
-			if (app_src == NULL)
-				return NULL;
-			gs_flatpak_app_set_runtime_repo (app, app_src);
-
-			/* lets install this, so we can get the size */
-			if (!gs_flatpak_app_install_source (self, app_src, cancellable, error))
-				return FALSE;
-
-			/* this is now available to be installed if required */
-			gs_app_set_state (runtime, AS_APP_STATE_AVAILABLE_LOCAL);
-
-			/* we can install the runtime from this source */
-			gs_app_set_origin (runtime, gs_app_get_id (app_src));
-		}
+		gs_flatpak_app_set_runtime_url (runtime, uri);
 	}
 
 	/* parse it */

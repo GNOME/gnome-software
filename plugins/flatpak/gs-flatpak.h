@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
- * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -107,17 +107,8 @@ GsApp		*gs_flatpak_file_to_app_bundle	(GsFlatpak		*self,
 						 GFile			*file,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	 gs_flatpak_find_source_by_url	(GsFlatpak		*self,
+GsApp		*gs_flatpak_find_source_by_url	(GsFlatpak		*self,
 						 const gchar		*name,
-						 GsAppList		*list,
-						 GCancellable		*cancellable,
-						 GError			**error);
-gboolean	 gs_flatpak_find_app		(GsFlatpak		*self,
-						 FlatpakRefKind		 kind,
-						 const gchar		*id,
-						 const gchar		*arch,
-						 const gchar		*branch,
-						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_search		(GsFlatpak		*self,

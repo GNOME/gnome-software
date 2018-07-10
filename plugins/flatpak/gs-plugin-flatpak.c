@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
- * Copyright (C) 2016-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2017 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -404,15 +404,11 @@ gs_plugin_launch (GsPlugin *plugin,
 
 /* ref full */
 static GsApp *
-_ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin)
+gs_plugin_flatpak_find_app_by_ref (GsPlugin *plugin, const gchar *ref,
+				   GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GCancellable *cancellable = NULL; //FIXME
 	g_autoptr(GError) error_local = NULL;
-
-	g_return_val_if_fail (GS_IS_FLATPAK_TRANSACTION (transaction), NULL);
-	g_return_val_if_fail (ref != NULL, NULL);
-	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
 
 	g_debug ("finding ref %s", ref);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
@@ -427,6 +423,18 @@ _ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin
 		return g_steal_pointer (&app);
 	}
 	return NULL;
+}
+
+/* ref full */
+static GsApp *
+_ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin)
+{
+	g_return_val_if_fail (GS_IS_FLATPAK_TRANSACTION (transaction), NULL);
+	g_return_val_if_fail (ref != NULL, NULL);
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+
+	/* search through each GsFlatpak */
+	return gs_plugin_flatpak_find_app_by_ref (plugin, ref, NULL, NULL);
 }
 
 static FlatpakTransaction *
@@ -572,15 +580,28 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* add flatpakref */
 	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF) {
-		g_set_error_literal (error,
+		GFile *file = gs_app_get_local_file (app);
+		g_autoptr(GBytes) blob = NULL;
+		if (file == NULL) {
+			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "waiting for flatpak_transaction_add_install_ref()");
-		return FALSE;
-	}
+				     "no local file set for bundle %s",
+				     gs_app_get_unique_id (app));
+			return FALSE;
+		}
+		blob = g_file_load_bytes (file, cancellable, NULL, error);
+		if (blob == NULL) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+		if (!flatpak_transaction_add_install_flatpakref (transaction, blob, error)) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
 
 	/* add bundle */
-	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
+	} else if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE) {
 		GFile *file = gs_app_get_local_file (app);
 		if (file == NULL) {
 			g_set_error (error,
@@ -597,6 +618,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
+
+	/* add normal ref */
 	} else {
 		g_autofree gchar *ref = gs_flatpak_app_get_ref_display (app);
 		if (!flatpak_transaction_add_install (transaction,
@@ -617,6 +640,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* get any new state */
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
+				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
+				 cancellable, error)) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
 	if (!gs_flatpak_refine_app (flatpak, app,
 				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 				    cancellable, error)) {
@@ -673,50 +702,38 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
+static GsApp *
 gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
-				    GsAppList *list,
 				    GFile *file,
 				    GCancellable *cancellable,
 				    GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GsApp) app_tmp = NULL;
-	g_autoptr(GsAppList) list_tmp = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	/* parse the repo file */
-	app_tmp = gs_flatpak_app_new_from_repo_file (file, cancellable, error);
-	if (app_tmp == NULL)
-		return FALSE;
+	app = gs_flatpak_app_new_from_repo_file (file, cancellable, error);
+	if (app == NULL)
+		return NULL;
 
-	/* does already exist in either the user or system scope */
-	list_tmp = gs_app_list_new ();
+	/* already exists */
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_source_by_url (flatpak,
-						    gs_flatpak_app_get_repo_url (app_tmp),
-						    list_tmp, cancellable, error))
-			return FALSE;
-	}
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app_old = gs_app_list_index (list_tmp, i);
-		if (gs_app_get_state (app_old) == AS_APP_STATE_INSTALLED) {
-			g_debug ("already have %s, using instead of %s",
-				 gs_app_get_unique_id (app_old),
-				 gs_app_get_unique_id (app_tmp));
-			gs_app_list_add (list, app_old);
-			return TRUE;
-		} else {
-			g_warning ("non-installed source %s : %s",
-				   gs_app_get_name (app_old),
-				   as_app_state_to_string (gs_app_get_state (app_old)));
+		g_autoptr(GError) error_local = NULL;
+		g_autoptr(GsApp) app_tmp = NULL;
+		app_tmp = gs_flatpak_find_source_by_url (flatpak,
+							 gs_flatpak_app_get_repo_url (app),
+							 cancellable, &error_local);
+		if (app_tmp == NULL) {
+			g_debug ("%s", error_local->message);
+			continue;
 		}
+		return g_steal_pointer (&app_tmp);
 	}
 
 	/* this is new */
-	gs_app_list_add (list, app_tmp);
-	gs_app_set_management_plugin (app_tmp, gs_plugin_get_name (plugin));
-	return TRUE;
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	return g_steal_pointer (&app);
 }
 
 static GsFlatpak *
@@ -746,69 +763,49 @@ gs_plugin_flatpak_create_temporary (GsPlugin *plugin, GCancellable *cancellable,
 	return gs_flatpak_new (plugin, installation, GS_FLATPAK_FLAG_IS_TEMPORARY);
 }
 
-static gboolean
+static GsApp *
 gs_plugin_flatpak_file_to_app_bundle (GsPlugin *plugin,
-				      GsAppList *list,
 				      GFile *file,
 				      GCancellable *cancellable,
 				      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *ref = NULL;
+	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
-	g_autoptr(GsAppList) list_tmp = NULL;
 	g_autoptr(GsFlatpak) flatpak_tmp = NULL;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
 	flatpak_tmp = gs_plugin_flatpak_create_temporary (plugin, cancellable, error);
 	if (flatpak_tmp == NULL)
-		return FALSE;
+		return NULL;
 
 	/* add object */
-	app_tmp = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, cancellable, error);
-	if (app_tmp == NULL)
-		return FALSE;
+	app = gs_flatpak_file_to_app_bundle (flatpak_tmp, file, cancellable, error);
+	if (app == NULL)
+		return NULL;
 
-	/* does already exist in either the user or system scope */
-	list_tmp = gs_app_list_new ();
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_app (flatpak,
-					  gs_flatpak_app_get_ref_kind (app_tmp),
-					  gs_flatpak_app_get_ref_name (app_tmp),
-					  gs_flatpak_app_get_ref_arch (app_tmp),
-					  gs_flatpak_app_get_ref_branch (app_tmp),
-					  list_tmp, cancellable, error))
-			return FALSE;
-	}
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app_old = gs_app_list_index (list_tmp, i);
-		if (gs_app_get_state (app_old) == AS_APP_STATE_INSTALLED) {
-			g_debug ("already have %s, using instead of %s",
-				 gs_app_get_unique_id (app_old),
-				 gs_app_get_unique_id (app_tmp));
-			gs_app_list_add (list, app_old);
-			return TRUE;
-		}
-	}
+	/* is this already installed or available in a configured remote */
+	ref = gs_flatpak_app_get_ref_display (app);
+	app_tmp = gs_plugin_flatpak_find_app_by_ref (plugin, ref, cancellable, NULL);
+	if (app_tmp != NULL)
+		return g_steal_pointer (&app);
 
 	/* force this to be 'any' scope for installation */
-	gs_app_set_scope (app_tmp, AS_APP_SCOPE_UNKNOWN);
+	gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
 
 	/* this is new */
-	gs_app_list_add (list, app_tmp);
-	gs_app_set_management_plugin (app_tmp, gs_plugin_get_name (plugin));
-	return TRUE;
+	return g_steal_pointer (&app);
 }
 
-static gboolean
+static GsApp *
 gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
-				   GsAppList *list,
 				   GFile *file,
 				   GCancellable *cancellable,
 				   GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsApp *runtime_app;
+	GsApp *runtime;
+	g_autofree gchar *ref = NULL;
+	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsAppList) list_tmp = NULL;
 	g_autoptr(GsFlatpak) flatpak_tmp = NULL;
@@ -816,77 +813,42 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	/* only use the temporary GsFlatpak to avoid the auth dialog */
 	flatpak_tmp = gs_plugin_flatpak_create_temporary (plugin, cancellable, error);
 	if (flatpak_tmp == NULL)
-		return FALSE;
+		return NULL;
 
 	/* add object */
-	app_tmp = gs_flatpak_file_to_app_ref (flatpak_tmp, file, cancellable, error);
-	if (app_tmp == NULL)
-		return FALSE;
+	app = gs_flatpak_file_to_app_ref (flatpak_tmp, file, cancellable, error);
+	if (app == NULL)
+		return NULL;
 
-	/* does already exist in either the user or system scope */
-	list_tmp = gs_app_list_new ();
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_find_app (flatpak,
-					  gs_flatpak_app_get_ref_kind (app_tmp),
-					  gs_flatpak_app_get_ref_name (app_tmp),
-					  gs_flatpak_app_get_ref_arch (app_tmp),
-					  gs_flatpak_app_get_ref_branch (app_tmp),
-					  list_tmp, cancellable, error)) {
-			g_prefix_error (error, "failed to find in existing remotes: ");
-			return FALSE;
-		}
-	}
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app_old = gs_app_list_index (list_tmp, i);
-		if (gs_app_get_state (app_old) == AS_APP_STATE_INSTALLED) {
-			g_debug ("already have %s, using instead of %s",
-				 gs_app_get_unique_id (app_old),
-				 gs_app_get_unique_id (app_tmp));
-			gs_app_list_add (list, app_old);
-			return TRUE;
-		}
-	}
+	/* is this already installed or available in a configured remote */
+	ref = gs_flatpak_app_get_ref_display (app);
+	app_tmp = gs_plugin_flatpak_find_app_by_ref (plugin, ref, cancellable, NULL);
+	if (app_tmp != NULL)
+		return g_steal_pointer (&app);
 
 	/* force this to be 'any' scope for installation */
-	gs_app_set_scope (app_tmp, AS_APP_SCOPE_UNKNOWN);
+	gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
 
 	/* do we have a system runtime available */
-	runtime_app = gs_app_get_runtime (app_tmp);
-	if (runtime_app != NULL &&
-	    gs_app_get_state (runtime_app) != AS_APP_STATE_INSTALLED) {
-		g_autofree gchar *ref_display = gs_flatpak_app_get_ref_display (runtime_app);
-		g_autoptr(GsAppList) list_runtimes = gs_app_list_new ();
-		for (guint i = 0; i < priv->flatpaks->len; i++) {
-			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-			g_debug ("looking for %s in %s",
-				 ref_display, gs_flatpak_get_id (flatpak));
-			if (!gs_flatpak_find_app (flatpak,
-						  gs_flatpak_app_get_ref_kind (runtime_app),
-						  gs_flatpak_app_get_ref_name (runtime_app),
-						  gs_flatpak_app_get_ref_arch (runtime_app),
-						  gs_flatpak_app_get_ref_branch (runtime_app),
-						  list_runtimes,
-						  cancellable, error))
-				return FALSE;
-		}
-		for (guint i = 0; i < gs_app_list_length (list_runtimes); i++) {
-			GsApp *runtime_old = gs_app_list_index (list_runtimes, i);
-			if (gs_app_get_state (runtime_old) == AS_APP_STATE_INSTALLED ||
-			    gs_app_get_state (runtime_old) == AS_APP_STATE_AVAILABLE) {
-				g_debug ("already have %s, using instead of %s",
-					 gs_app_get_unique_id (runtime_old),
-					 gs_app_get_unique_id (runtime_app));
-				gs_app_set_runtime (app_tmp, runtime_old);
-				break;
-			}
+	runtime = gs_app_get_runtime (app);
+	if (runtime != NULL) {
+		g_autoptr(GsApp) runtime_tmp = NULL;
+		g_autofree gchar *runtime_ref = gs_flatpak_app_get_ref_display (runtime);
+		runtime_tmp = gs_plugin_flatpak_find_app_by_ref (plugin,
+								 runtime_ref,
+								 cancellable,
+								 NULL);
+		if (runtime_tmp != NULL) {
+			gs_app_set_runtime (app, runtime_tmp);
+		} else {
+			/* the new runtime is available from the RuntimeRepo */
+			if (gs_flatpak_app_get_runtime_url (runtime) != NULL)
+				gs_app_set_state (runtime, AS_APP_STATE_AVAILABLE_LOCAL);
 		}
 	}
 
 	/* this is new */
-	gs_app_list_add (list, app_tmp);
-	gs_app_set_management_plugin (app_tmp, gs_plugin_get_name (plugin));
-	return TRUE;
+	return g_steal_pointer (&app);
 }
 
 gboolean
@@ -897,6 +859,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GError **error)
 {
 	g_autofree gchar *content_type = NULL;
+	g_autoptr(GsApp) app = NULL;
 	const gchar *mimetypes_bundle[] = {
 		"application/vnd.flatpak",
 		NULL };
@@ -912,26 +875,23 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	if (content_type == NULL)
 		return FALSE;
 	if (g_strv_contains (mimetypes_bundle, content_type)) {
-		return gs_plugin_flatpak_file_to_app_bundle (plugin,
-							     list,
-							     file,
-							     cancellable,
-							     error);
+		app = gs_plugin_flatpak_file_to_app_bundle (plugin, file,
+							    cancellable, error);
+		if (app == NULL)
+			return FALSE;
+	} else if (g_strv_contains (mimetypes_repo, content_type)) {
+		app = gs_plugin_flatpak_file_to_app_repo (plugin, file,
+							  cancellable, error);
+		if (app == NULL)
+			return FALSE;
+	} else if (g_strv_contains (mimetypes_ref, content_type)) {
+		app = gs_plugin_flatpak_file_to_app_ref (plugin, file,
+							 cancellable, error);
+		if (app == NULL)
+			return FALSE;
 	}
-	if (g_strv_contains (mimetypes_repo, content_type)) {
-		return gs_plugin_flatpak_file_to_app_repo (plugin,
-							   list,
-							   file,
-							   cancellable,
-							   error);
-	}
-	if (g_strv_contains (mimetypes_ref, content_type)) {
-		return gs_plugin_flatpak_file_to_app_ref (plugin,
-							  list,
-							  file,
-							  cancellable,
-							  error);
-	}
+	if (app != NULL)
+		gs_app_list_add (list, app);
 	return TRUE;
 }
 

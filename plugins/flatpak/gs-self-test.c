@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2017 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -44,7 +44,6 @@ gs_flatpak_test_write_repo_file (const gchar *fn, const gchar *testdir, GError *
 	g_string_append (str, "DefaultBranch=master\n");
 	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
 	g_string_append (str, "Homepage=http://foo.bar\n");
-	g_string_append (str, "GPGKey=FOOBAR==\n");
 	return g_file_set_contents (fn, str->str, -1, error);
 }
 
@@ -632,17 +631,6 @@ update_app_action_finish_sync (GObject *source, GAsyncResult *res, gpointer user
 	g_timeout_add_seconds (5, update_app_action_delay_cb, user_data);
 }
 
-static gboolean
-gs_plugins_flatpak_check_app_installing_cb (gpointer user_data)
-{
-	GsApp *app = GS_APP (user_data);
-	if (gs_app_get_state (app) != AS_APP_STATE_INSTALLING) {
-		g_autofree gchar *str = gs_app_to_string (app);
-		g_warning ("expected to be installing: %s", str);
-	}
-	return G_SOURCE_REMOVE;
-}
-
 static void
 gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 {
@@ -704,7 +692,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 
 	/* get runtime */
 	runtime = gs_app_get_runtime (app);
-	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/test/runtime/org.test.Runtime/master");
+	g_assert_cmpstr (gs_app_get_unique_id (runtime), ==, "user/flatpak/*/runtime/org.test.Runtime/master");
 	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* check the number of sources */
@@ -721,7 +709,6 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app,
 					 NULL);
-	g_timeout_add (10, gs_plugins_flatpak_check_app_installing_cb, app);
 	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 					    NULL,
 					    update_app_action_finish_sync,
@@ -764,7 +751,7 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	/* remove the remote */
 	app_source = gs_app_list_index (sources2, 0);
 	g_assert (app_source != NULL);
-	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/*/*/source/test/*");
+	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/flatpak/*/source/test/*");
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 					 "app", app_source,
@@ -926,7 +913,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	/* remove the remote */
 	app_source = gs_app_list_index (sources2, 0);
 	g_assert (app_source != NULL);
-	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/*/*/source/test/*");
+	g_assert_cmpstr (gs_app_get_unique_id (app_source), ==, "user/flatpak/*/source/test/*");
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 					 "app", app_source,
@@ -1785,16 +1772,16 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/app-missing-runtime",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_app_missing_runtime_func);
-if(0)	g_test_add_data_func ("/gnome-software/plugins/flatpak/ref",
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/ref",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_ref_func);
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/broken-remote",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_broken_remote_func);
-if(0)	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo",
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_runtime_repo_func);
-if(0)	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo-redundant",
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo-redundant",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_runtime_repo_redundant_func);
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/app-runtime-extension",
@@ -1803,10 +1790,10 @@ if(0)	g_test_add_data_func ("/gnome-software/plugins/flatpak/runtime-repo-redund
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/app-update-runtime",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_app_update_func);
-if(0)	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo",
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_repo_func);
-if(0)	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo{non-ascii}",
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo{non-ascii}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_repo_non_ascii_func);
 	return g_test_run ();
