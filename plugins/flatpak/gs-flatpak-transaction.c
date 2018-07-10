@@ -120,6 +120,7 @@ _transaction_ready (FlatpakTransaction *transaction)
 		g_autoptr(GsApp) app = _ref_to_app (self, ref);
 		if (app != NULL)
 			_transaction_operation_set_app (op, app);
+		g_object_unref (op);
 	}
 	return TRUE;
 }
