@@ -6,7 +6,7 @@
 A plugin system is used to access software from different sources.
 Plugins are provided for:
  - Traditional package installation via PackageKit (e.g. Debian package, RPM).
- - Next generation packages: [Flatpak](https://flatpak.org/), [Snap](https://snapcraft.io/) and [Limba](https://people.freedesktop.org/~mak/limba/).
+ - Next generation packages: [Flatpak](https://flatpak.org/) and [Snap](https://snapcraft.io/).
  - Firmware updates.
  - Ratings and reviews ([ODRS](https://odrs.gnome.org/) and Ubuntu reviews).
  - [Steam](http://store.steampowered.com/) games.
