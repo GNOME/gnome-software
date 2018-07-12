@@ -153,10 +153,6 @@ if get_option('enable-flatpak')
   flatpak = dependency('flatpak', version : '>= 0.6.12')
 endif
 
-if get_option('enable-limba')
-  limba = dependency('limba', version : '>= 0.5.6')
-endif
-
 if get_option('enable-rpm-ostree')
   ostree = dependency('ostree-1')
   rpm_ostree = dependency('rpm-ostree-1', version : '>= 2018.4')
