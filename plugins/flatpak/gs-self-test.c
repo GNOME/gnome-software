@@ -1032,6 +1032,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsApp) app2 = NULL;
 	g_autoptr(GsApp) app_source = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) search1 = NULL;
@@ -1173,17 +1174,17 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 					 NULL);
-	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
+	app2 = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
-	g_assert (app != NULL);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
-	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+	g_assert (app2 != NULL);
+	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
 		  "user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron.desktop/master"));
 
 	/* remove app */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "app", app,
+					 "app", app2,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
