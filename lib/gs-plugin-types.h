@@ -59,6 +59,7 @@ typedef enum {
  * @GS_PLUGIN_FLAGS_RUNNING_OTHER:	Another plugin is running
  * @GS_PLUGIN_FLAGS_EXCLUSIVE:		An exclusive action is running
  * @GS_PLUGIN_FLAGS_RECENT:		This plugin recently ran
+ * @GS_PLUGIN_FLAGS_INTERACTIVE:	User initiated the job
  *
  * The flags for the plugin at this point in time.
  **/
@@ -67,6 +68,7 @@ typedef enum {
 #define GS_PLUGIN_FLAGS_RUNNING_OTHER	(1u << 1)
 #define GS_PLUGIN_FLAGS_EXCLUSIVE	(1u << 2)
 #define GS_PLUGIN_FLAGS_RECENT		(1u << 3)
+#define GS_PLUGIN_FLAGS_INTERACTIVE	(1u << 4)
 typedef guint64 GsPluginFlags;
 
 /**
@@ -189,7 +191,6 @@ typedef guint64 GsPluginRefineFlags;
  * @GS_PLUGIN_REFRESH_FLAGS_NONE:	Generate new metadata if possible
  * @GS_PLUGIN_REFRESH_FLAGS_METADATA:	Download new metadata
  * @GS_PLUGIN_REFRESH_FLAGS_PAYLOAD:	Download any pending payload
- * @GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE: Running by user request
  *
  * The flags used for refresh. Regeneration and downloading is only
  * done if the cache is older than the %cache_age.
@@ -203,7 +204,6 @@ typedef guint64 GsPluginRefineFlags;
 #define GS_PLUGIN_REFRESH_FLAGS_NONE			((guint64) 0)
 #define GS_PLUGIN_REFRESH_FLAGS_METADATA		((guint64) 1 << 0)
 #define GS_PLUGIN_REFRESH_FLAGS_PAYLOAD			((guint64) 1 << 1)
-#define GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE		((guint64) 1 << 2)
 typedef guint64 GsPluginRefreshFlags;
 
 /**
@@ -319,29 +319,6 @@ typedef enum {
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;
-
-/**
- * GsPluginFailureFlags:
- * @GS_PLUGIN_FAILURE_FLAGS_NONE:		No flags set
- * @GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS:		Report errors as in-app-notifications
- * @GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY:		Abort after any plugin error
- * @GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH:		Abort after a authentication error
- * @GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE:		Do not show a message on the console
- * @GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE:	Abort after a purchase error
- *
- * The failure flags for the plugin action.
- *
- * When %GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS is specified plugin errors are not
- * treated as fatal errors and are reported to the in-app notification system
- * where they may or may not be shown depending on policy.
- **/
-#define GS_PLUGIN_FAILURE_FLAGS_NONE			((guint64) 0)
-#define GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS		((guint64) 1 << 0)
-#define GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY		((guint64) 1 << 1)
-#define GS_PLUGIN_FAILURE_FLAGS_FATAL_AUTH		((guint64) 1 << 2)
-#define GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE		((guint64) 1 << 3)
-#define GS_PLUGIN_FAILURE_FLAGS_FATAL_PURCHASE		((guint64) 1 << 4)
-typedef guint64 GsPluginFailureFlags;
 
 G_END_DECLS
 

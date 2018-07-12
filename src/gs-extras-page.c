@@ -695,8 +695,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_FILES,
 							 "search", search_data->search_filename,
-							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+									 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 							 NULL);
@@ -712,8 +711,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			file = g_file_new_for_path (search_data->package_filename);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 							 "file", file,
-							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+									 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 							 NULL);
@@ -727,8 +725,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			g_debug ("searching what provides: '%s'", search_data->search);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 							 "search", search_data->search,
-							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+									 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |

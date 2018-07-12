@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2017-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -33,7 +33,7 @@ struct _GsPluginJob
 	GsPluginRefineFlags	 refine_flags;
 	GsPluginRefineFlags	 filter_flags;
 	GsPluginRefreshFlags	 refresh_flags;
-	GsPluginFailureFlags	 failure_flags;
+	gboolean		 interactive;
 	guint			 max_results;
 	guint			 timeout;
 	guint64			 age;
@@ -60,7 +60,7 @@ enum {
 	PROP_REFINE_FLAGS,
 	PROP_FILTER_FLAGS,
 	PROP_REFRESH_FLAGS,
-	PROP_FAILURE_FLAGS,
+	PROP_INTERACTIVE,
 	PROP_AUTH,
 	PROP_APP,
 	PROP_LIST,
@@ -90,10 +90,8 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
 	}
-	if (self->failure_flags > 0) {
-		g_autofree gchar *tmp = gs_plugin_failure_flags_to_string (self->failure_flags);
-		g_string_append_printf (str, " with failure-flags=%s", tmp);
-	}
+	if (self->interactive)
+		g_string_append_printf (str, " with interactive=True");
 	if (self->timeout > 0)
 		g_string_append_printf (str, " with timeout=%u", self->timeout);
 	if (self->max_results > 0)
@@ -223,17 +221,17 @@ gs_plugin_job_remove_refine_flags (GsPluginJob *self, GsPluginRefineFlags refine
 }
 
 void
-gs_plugin_job_set_failure_flags (GsPluginJob *self, GsPluginFailureFlags failure_flags)
+gs_plugin_job_set_interactive (GsPluginJob *self, gboolean interactive)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->failure_flags = failure_flags;
+	self->interactive = interactive;
 }
 
-GsPluginFailureFlags
-gs_plugin_job_get_failure_flags (GsPluginJob *self)
+gboolean
+gs_plugin_job_get_interactive (GsPluginJob *self)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return self->failure_flags;
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), FALSE);
+	return self->interactive;
 }
 
 void
@@ -474,8 +472,8 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_REFRESH_FLAGS:
 		g_value_set_uint64 (value, self->refresh_flags);
 		break;
-	case PROP_FAILURE_FLAGS:
-		g_value_set_uint64 (value, self->failure_flags);
+	case PROP_INTERACTIVE:
+		g_value_set_uint64 (value, self->interactive);
 		break;
 	case PROP_SEARCH:
 		g_value_set_string (value, self->search);
@@ -534,8 +532,8 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_REFRESH_FLAGS:
 		gs_plugin_job_set_refresh_flags (self, g_value_get_uint64 (value));
 		break;
-	case PROP_FAILURE_FLAGS:
-		gs_plugin_job_set_failure_flags (self, g_value_get_uint64 (value));
+	case PROP_INTERACTIVE:
+		gs_plugin_job_set_interactive (self, g_value_get_uint64 (value));
 		break;
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
@@ -625,10 +623,10 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFRESH_FLAGS, pspec);
 
-	pspec = g_param_spec_uint64 ("failure-flags", NULL, NULL,
+	pspec = g_param_spec_uint64 ("interactive", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_FAILURE_FLAGS, pspec);
+	g_object_class_install_property (object_class, PROP_INTERACTIVE, pspec);
 
 	pspec = g_param_spec_string ("search", NULL, NULL,
 				     NULL,
@@ -684,7 +682,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 static void
 gs_plugin_job_init (GsPluginJob *self)
 {
-	self->failure_flags = GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY;
 	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	self->filter_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	self->refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;

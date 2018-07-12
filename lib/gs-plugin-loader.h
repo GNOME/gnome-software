@@ -72,7 +72,6 @@ GPtrArray	*gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_lo
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 gchar		**whitelist,
 							 gchar		**blacklist,
-							 GsPluginFailureFlags failure_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);
@@ -94,10 +93,6 @@ gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_func);
 
 GPtrArray	*gs_plugin_loader_get_events		(GsPluginLoader	*plugin_loader);
-GsPluginEvent	*gs_plugin_loader_get_event_by_id	(GsPluginLoader	*plugin_loader,
-							 const gchar	*unique_id);
-GsPluginEvent	*gs_plugin_loader_get_event_by_error	(GsPluginLoader	*plugin_loader,
-							 GsPluginError	 error_code);
 GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_remove_events		(GsPluginLoader	*plugin_loader);
 

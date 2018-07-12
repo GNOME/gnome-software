@@ -305,8 +305,8 @@ gs_category_page_set_featured_apps (GsCategoryPage *self)
 		return;
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
+					 "interactive", TRUE,
 					 "category", featured_subcat,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 					 NULL);
@@ -386,7 +386,6 @@ gs_category_page_reload (GsPage *page)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 					 "category", self->subcategory,
 					 "filter-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
