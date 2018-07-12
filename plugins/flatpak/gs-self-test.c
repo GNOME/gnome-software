@@ -89,8 +89,6 @@ gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
-							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					 NULL);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -136,8 +134,6 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
-							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					 NULL);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -458,8 +454,6 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 					 "app", app_source,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED);
@@ -568,8 +562,6 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NOT_SUPPORTED);
@@ -1411,8 +1403,6 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					 NULL);
 	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 					    NULL,
@@ -1658,8 +1648,6 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					 NULL);
 	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 					    NULL,
@@ -1737,6 +1725,7 @@ main (int argc, char **argv)
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_SELF_TEST_FLATPAK_DATADIR", tmp_root, TRUE);
+	g_setenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD", "1", TRUE);
 
 	/* allow dist'ing with no gnome-software installed */
 	if (g_getenv ("GS_SELF_TEST_SKIP_ALL") != NULL)
@@ -1772,7 +1761,6 @@ main (int argc, char **argv)
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      (gchar**) whitelist,
 				      NULL,
-				      GS_PLUGIN_FAILURE_FLAGS_NONE,
 				      NULL,
 				      &error);
 	g_assert_no_error (error);

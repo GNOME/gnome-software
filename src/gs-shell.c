@@ -695,6 +695,7 @@ gs_shell_signout_button_cb (GtkButton *button, GsShell *shell)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGOUT,
+					 "interactive", TRUE,
 					 "auth", g_object_get_data (G_OBJECT (button), "auth"),
 					 NULL);
 

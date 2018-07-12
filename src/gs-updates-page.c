@@ -686,7 +686,6 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	app = gs_app_list_index (apps, 0);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    gs_app_get_cancellable (app),
@@ -779,8 +778,8 @@ _update_all (GsUpdatesPage *self, GsAppList *apps)
 
 	g_set_object (&self->cancellable, cancellable);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
+					 "interactive", TRUE,
 					 "list", apps,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -1176,7 +1175,6 @@ gs_updates_page_load (GsUpdatesPage *self)
 	self->action_cnt++;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
 					 "refine-flags", refine_flags,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -1201,8 +1199,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 		g_object_unref (plugin_job);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
 						 "refine-flags", refine_flags,
-						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-						 NULL);
+							 NULL);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
@@ -1309,12 +1306,11 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 	}
 	self->cancellable_refresh = g_cancellable_new ();
 
-	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE;
 	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_METADATA;
 	if (g_settings_get_boolean (self->settings, "download-updates"))
 		refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
+					 "interactive", TRUE,
 					 "refresh-flags", refresh_flags,
 					 "age", (guint64) GS_REFRESH_MIN_AGE,
 					 NULL);
@@ -1515,8 +1511,8 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 		g_object_unref (self->cancellable_upgrade_download);
 	self->cancellable_upgrade_download = g_cancellable_new ();
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
+					 "interactive", TRUE,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_upgrade_download,
@@ -1554,7 +1550,6 @@ upgrade_reboot_failed_cb (GObject *source,
 	/* cancel trigger */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE_CANCEL,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -1603,8 +1598,8 @@ trigger_upgrade (GsUpdatesPage *self)
 	}
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_TRIGGER,
+					 "interactive", TRUE,
 					 "app", upgrade,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,

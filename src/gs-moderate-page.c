@@ -106,10 +106,9 @@ gs_moderate_page_review_clicked_cb (GsReviewRow *row,
 	GsApp *app = g_object_get_data (G_OBJECT (row), "GsApp");
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	plugin_job = gs_plugin_job_newv (action,
+					 "interactive", TRUE,
 					 "app", app,
 					 "review", gs_review_row_get_review (row),
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -223,7 +222,6 @@ gs_moderate_page_load (GsModeratePage *self)
 
 	/* get unvoted reviews as apps */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UNVOTED_REVIEWS,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |

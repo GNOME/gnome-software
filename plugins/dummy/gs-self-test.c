@@ -112,19 +112,11 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
-
-	/* get event by app-id */
-	event = gs_plugin_loader_get_event_by_id (plugin_loader,
-						  "*/*/*/source/dummy/*");
-	g_assert (event != NULL);
-	g_assert (gs_plugin_event_get_app (event) == app);
 
 	/* get last active event */
 	event = gs_plugin_loader_get_event_default (plugin_loader);
@@ -452,7 +444,6 @@ gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GPtrArray) events = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -462,18 +453,12 @@ gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "hang",
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS |
-							  GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE,
 					 "timeout", 1, /* seconds */
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, cancellable, &error);
 	gs_test_flush_main_context ();
 	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT);
 	g_assert (list == NULL);
-
-	/* ensure one event (plugin may also return error) */
-	events = gs_plugin_loader_get_events (plugin_loader);
-	g_assert_cmpint (events->len, ==, 1);
 }
 
 static void
@@ -565,8 +550,6 @@ gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
 	/* do an action that returns a URL */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_REGISTER,
 					 "auth", auth,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
-							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -582,8 +565,6 @@ gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_REMOVE,
 					 "app", app,
 					 "review", review,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
-							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -595,8 +576,6 @@ gs_plugins_dummy_authentication_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_AUTH_LOGIN,
 					 "auth", auth,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NO_CONSOLE |
-							  GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -905,7 +884,6 @@ main (int argc, char **argv)
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      (gchar**) whitelist,
 				      NULL,
-				      GS_PLUGIN_FAILURE_FLAGS_NONE,
 				      NULL,
 				      &error);
 	g_assert_no_error (error);

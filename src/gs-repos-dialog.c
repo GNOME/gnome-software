@@ -187,8 +187,8 @@ _enable_repo (InstallRemoveData *install_data)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_debug ("enabling repo %s", gs_app_get_id (install_data->repo));
 	plugin_job = gs_plugin_job_newv (install_data->action,
+					 "interactive", TRUE,
 	                                 "app", install_data->repo,
-	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 	                                 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 	                                    dialog->cancellable,
@@ -284,8 +284,8 @@ remove_repo_response_cb (GtkDialog *confirm_dialog,
 
 	g_debug ("removing repo %s", gs_app_get_id (remove_data->repo));
 	plugin_job = gs_plugin_job_newv (remove_data->action,
+					 "interactive", TRUE,
 					 "app", remove_data->repo,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader, plugin_job,
 					    dialog->cancellable,
@@ -460,8 +460,8 @@ install_third_party_repo (GsReposDialog *dialog, gboolean install)
 	install_data->action = install ? GS_PLUGIN_ACTION_INSTALL : GS_PLUGIN_ACTION_REMOVE;
 
 	plugin_job = gs_plugin_job_newv (install_data->action,
+					 "interactive", TRUE,
 	                                 "app", dialog->third_party_repo,
-	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 	                                 NULL);
 	gs_plugin_loader_job_process_async (dialog->plugin_loader,
 	                                    plugin_job,
@@ -621,7 +621,6 @@ reload_sources (GsReposDialog *dialog)
 
 	/* get the list of non-core software repositories */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_SOURCES,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED |
 					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
 					 NULL);
@@ -660,7 +659,6 @@ reload_third_party_repo (GsReposDialog *dialog)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 	                                 "search", third_party_repo_package,
-	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 	                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 	                                 NULL);

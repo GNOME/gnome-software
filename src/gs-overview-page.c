@@ -744,7 +744,6 @@ reload_third_party_repo (GsOverviewPage *self)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 	                                 "search", third_party_repo_package,
-	                                 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 	                                                 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 	                                 NULL);
@@ -768,8 +767,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		priv->loading_featured = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
 						 "max-results", 5,
-						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
 						    plugin_job,
@@ -785,8 +783,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		priv->loading_popular = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
 						 "max-results", 20,
-						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
@@ -804,8 +801,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
 						 "age", (guint64) (60 * 60 * 24 * 60),
 						 "max-results", 20,
-						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
@@ -848,8 +844,7 @@ gs_overview_page_load (GsOverviewPage *self)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 							 "max-results", 20,
 							 "category", featured_category,
-							 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+									 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 							 NULL);
 			gs_plugin_loader_job_process_async (priv->plugin_loader,
@@ -866,8 +861,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		priv->loading_categories = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES,
-						 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
-						 NULL);
+							 NULL);
 		gs_plugin_loader_job_get_categories_async (priv->plugin_loader, plugin_job,
 							  priv->cancellable,
 							  gs_overview_page_get_categories_cb,
