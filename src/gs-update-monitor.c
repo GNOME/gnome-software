@@ -338,7 +338,6 @@ get_updates (GsUpdateMonitor *monitor)
 	 * returns already downloaded-and-depsolved packages */
 	g_debug ("Getting updates");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY,
 					 NULL);
@@ -365,7 +364,6 @@ get_upgrades (GsUpdateMonitor *monitor)
 	 * package being up-to-date, or the metadata being auto-downloaded */
 	g_debug ("Getting upgrades");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,
 					    plugin_job,
@@ -384,7 +382,6 @@ get_system (GsUpdateMonitor *monitor)
 	app = gs_plugin_loader_get_system_app (monitor->plugin_loader);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader, plugin_job,
 					    monitor->cancellable,
@@ -496,7 +493,6 @@ check_updates (GsUpdateMonitor *monitor)
 	}
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refresh-flags", refresh_flags,
 					 "age", (guint64) (60 * 60 * 24),
 					 NULL);
@@ -704,7 +700,6 @@ cleanup_notifications_cb (gpointer user_data)
 	/* this doesn't do any network access */
 	g_debug ("getting historical updates for fresh session");
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
 					 NULL);
 	gs_plugin_loader_job_process_async (monitor->plugin_loader,

@@ -38,7 +38,7 @@ void			 gs_plugin_job_add_refine_flags		(GsPluginJob	*self,
 								 GsPluginRefineFlags refine_flags);
 void			 gs_plugin_job_remove_refine_flags	(GsPluginJob	*self,
 								 GsPluginRefineFlags refine_flags);
-GsPluginFailureFlags	 gs_plugin_job_get_failure_flags	(GsPluginJob	*self);
+gboolean		 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 guint			 gs_plugin_job_get_max_results		(GsPluginJob	*self);
 guint			 gs_plugin_job_get_timeout		(GsPluginJob	*self);
 guint64			 gs_plugin_job_get_age			(GsPluginJob	*self);

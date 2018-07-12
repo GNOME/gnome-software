@@ -250,7 +250,6 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,

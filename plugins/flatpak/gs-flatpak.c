@@ -692,6 +692,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 							   cancellable,
 							   &error_local);
 		if (!ret) {
+			g_autoptr(GsPluginEvent) event = NULL;
 			if (g_error_matches (error_local,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED)) {
@@ -703,19 +704,15 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 						     GUINT_TO_POINTER (1));
 				continue;
 			}
-			if ((flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) == 0) {
-				g_warning ("Failed to get AppStream metadata: %s [%s:%i]",
-					   error_local->message,
-					   g_quark_to_string (error_local->domain),
-					   error_local->code);
-				continue;
-			}
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Failed to get AppStream metadata: %s",
-				     error_local->message);
-			return FALSE;
+
+			/* allow the plugin loader to decide if this should be
+			 * shown the user, possibly only for interactive jobs */
+			event = gs_plugin_event_new ();
+			gs_flatpak_error_convert (&error_local);
+			gs_plugin_event_set_error (event, error_local);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (self->plugin, event);
+			continue;
 		}
 
 		/* add the new AppStream repo to the shared store */

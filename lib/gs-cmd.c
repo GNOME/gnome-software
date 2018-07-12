@@ -390,7 +390,6 @@ main (int argc, char **argv)
 	ret = gs_plugin_loader_setup (self->plugin_loader,
 				      plugin_whitelist,
 				      plugin_blacklist,
-				      GS_PLUGIN_FAILURE_FLAGS_NONE,
 				      NULL,
 				      &error);
 	if (!ret) {
