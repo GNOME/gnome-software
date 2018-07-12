@@ -56,10 +56,70 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->task);
 }
 
+static gboolean
+_download_only (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	ProgressData data = { 0 };
+	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(PkPackageSack) sack = NULL;
+	g_autoptr(PkResults) results2 = NULL;
+	g_autoptr(PkResults) results = NULL;
+
+	/* cache age of 0 is user-initiated */
+	pk_client_set_background (PK_CLIENT (priv->task), 0);
+
+	data.app = app_dl;
+	data.plugin = plugin;
+
+	/* refresh the metadata */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_get_updates (PK_CLIENT (priv->task),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, &data,
+					 error);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to get updates for refresh: ");
+		return FALSE;
+	}
+
+	/* FIXME: download all the packages themselves */
+	sack = pk_results_get_package_sack (results);
+	if (pk_package_sack_get_size (sack) == 0)
+		return TRUE;
+	package_ids = pk_package_sack_get_ids (sack);
+	results2 = pk_task_update_packages_sync (priv->task,
+						 package_ids,
+						 cancellable,
+						 gs_plugin_packagekit_progress_cb, &data,
+						 error);
+	if (results2 == NULL) {
+		gs_plugin_packagekit_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+gboolean
+gs_plugin_download (GsPlugin *plugin,
+		    GsAppList *list,
+		    GCancellable *cancellable,
+		    GError **error)
+{
+	/* any are us? */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") == 0)
+			return _download_only (plugin, cancellable, error);
+	}
+	return TRUE;
+}
+
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {
@@ -68,10 +128,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
 
-	/* nothing to re-generate */
-	if (flags == 0)
-		return TRUE;
-
 	/* cache age of 0 is user-initiated */
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 0);
 
@@ -79,44 +135,16 @@ gs_plugin_refresh (GsPlugin *plugin,
 	data.plugin = plugin;
 
 	/* refresh the metadata */
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA ||
-	    flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
-		PkBitfield filter;
-
-		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-		pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-		results = pk_client_get_updates (PK_CLIENT (priv->task),
-						 filter,
-						 cancellable,
-						 gs_plugin_packagekit_progress_cb, &data,
-						 error);
-		if (!gs_plugin_packagekit_results_valid (results, error)) {
-			g_prefix_error (error, "failed to get updates for refresh: ");
-			return FALSE;
-		}
-	}
-
-	/* download all the packages themselves */
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
-		g_auto(GStrv) package_ids = NULL;
-		g_autoptr(PkPackageSack) sack = NULL;
-		g_autoptr(PkResults) results2 = NULL;
-
-		sack = pk_results_get_package_sack (results);
-		if (pk_package_sack_get_size (sack) == 0)
-			return TRUE;
-		package_ids = pk_package_sack_get_ids (sack);
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-		results2 = pk_task_update_packages_sync (priv->task,
-							 package_ids,
-							 cancellable,
-							 gs_plugin_packagekit_progress_cb, &data,
-							 error);
-		if (results2 == NULL) {
-			gs_plugin_packagekit_error_convert (error);
-			return FALSE;
-		}
+	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_get_updates (PK_CLIENT (priv->task),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, &data,
+					 error);
+	if (!gs_plugin_packagekit_results_valid (results, error)) {
+		g_prefix_error (error, "failed to get updates for refresh: ");
+		return FALSE;
 	}
 
 	return TRUE;

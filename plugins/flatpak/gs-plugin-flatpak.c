@@ -236,36 +236,16 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_add_updates_pending (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_add_updates_pending (flatpak, list,
-						     cancellable, error)) {
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_refresh (flatpak, cache_age, flags,
-					 cancellable, error)) {
+		if (!gs_flatpak_refresh (flatpak, cache_age, cancellable, error))
 			return FALSE;
-		}
 	}
 	return TRUE;
 }
@@ -391,6 +371,18 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_download_app (GsPlugin *plugin,
+			GsApp *app,
+			GCancellable *cancellable,
+			GError **error)
+{
+	GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	if (flatpak == NULL)
+		return TRUE;
+	return gs_flatpak_download_app (flatpak, app, cancellable, error);
+}
+
+gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,
 		  GCancellable *cancellable,
@@ -507,9 +499,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
-				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
-				 cancellable, error)) {
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
@@ -646,9 +636,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
-				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
-				 cancellable, error)) {
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
@@ -698,9 +686,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 	gs_plugin_updates_changed (plugin);
 
 	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
-				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
-				 cancellable, error)) {
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}

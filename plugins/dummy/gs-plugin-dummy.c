@@ -816,23 +816,22 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_download_app (GsPlugin *plugin,
+			GsApp *app,
+			GCancellable *cancellable,
+			GError **error)
+{
+	return gs_plugin_dummy_delay (plugin, app, 5100, cancellable, error);
+}
+
+gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	guint delay_ms = 100;
 	g_autoptr(GsApp) app = gs_app_new (NULL);
-
-	/* each one takes more time */
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA)
-		delay_ms += 3000;
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD)
-		delay_ms += 5000;
-
-	/* do delay */
-	return gs_plugin_dummy_delay (plugin, app, delay_ms, cancellable, error);
+	return gs_plugin_dummy_delay (plugin, app, 3100, cancellable, error);
 }
 
 gboolean

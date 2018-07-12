@@ -160,7 +160,6 @@ typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc)		(GsPlugin	*plugin,
 							 guint		 cache_age,
-							 GsPluginRefreshFlags refresh_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginFileToAppFunc)	(GsPlugin	*plugin,
@@ -215,6 +214,7 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_UPDATE:
+	case GS_PLUGIN_ACTION_DOWNLOAD:
 		{
 			GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
 			if (app != NULL)
@@ -645,6 +645,19 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 				    gs_plugin_action_to_string (action));
 		}
 		break;
+	case GS_PLUGIN_ACTION_DOWNLOAD:
+		if (g_strcmp0 (helper->function_name, "gs_plugin_download_app") == 0) {
+			GsPluginActionFunc plugin_func = func;
+			ret = plugin_func (plugin, app, cancellable, &error_local);
+		} else if (g_strcmp0 (helper->function_name, "gs_plugin_download") == 0) {
+			GsPluginUpdateFunc plugin_func = func;
+			ret = plugin_func (plugin, list, cancellable, &error_local);
+		} else {
+			g_critical ("function_name %s invalid for %s",
+				    helper->function_name,
+				    gs_plugin_action_to_string (action));
+		}
+		break;
 	case GS_PLUGIN_ACTION_INSTALL:
 	case GS_PLUGIN_ACTION_REMOVE:
 	case GS_PLUGIN_ACTION_SET_RATING:
@@ -738,7 +751,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			GsPluginRefreshFunc plugin_func = func;
 			ret = plugin_func (plugin,
 					   gs_plugin_job_get_age (helper->plugin_job),
-					   gs_plugin_job_get_refresh_flags (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
@@ -3166,7 +3178,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginRefineFlags filter_flags;
 	GsPluginRefineFlags refine_flags;
 	gboolean add_to_pending_array = FALSE;
@@ -3207,22 +3218,19 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 			return;
 		}
-	}
-
-	/* remove from pending list */
-	if (add_to_pending_array)
-		gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
-
-	/* append extra things when we want the list of pending updates */
-	if (action == GS_PLUGIN_ACTION_GET_UPDATES &&
-	    !g_settings_get_boolean (priv->settings, "download-updates")) {
-		helper->function_name = "gs_plugin_add_updates_pending";
-		if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
+	} else if (action == GS_PLUGIN_ACTION_DOWNLOAD) {
+		helper->function_name = "gs_plugin_download_app";
+		if (!gs_plugin_loader_generic_update (plugin_loader, helper,
+						      cancellable, &error)) {
 			gs_utils_error_convert_gio (&error);
 			g_task_return_error (task, error);
 			return;
 		}
 	}
+
+	/* remove from pending list */
+	if (add_to_pending_array)
+		gs_plugin_loader_pending_apps_remove (plugin_loader, helper);
 
 	/* some functions are really required for proper operation */
 	switch (action) {
@@ -3231,6 +3239,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_GET_UPDATES:
 	case GS_PLUGIN_ACTION_INITIALIZE:
 	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_DOWNLOAD:
 	case GS_PLUGIN_ACTION_LAUNCH:
 	case GS_PLUGIN_ACTION_REFRESH:
 	case GS_PLUGIN_ACTION_REMOVE:

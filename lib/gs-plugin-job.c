@@ -32,7 +32,6 @@ struct _GsPluginJob
 	GObject			 parent_instance;
 	GsPluginRefineFlags	 refine_flags;
 	GsPluginRefineFlags	 filter_flags;
-	GsPluginRefreshFlags	 refresh_flags;
 	GsPluginFailureFlags	 failure_flags;
 	guint			 max_results;
 	guint			 timeout;
@@ -61,7 +60,6 @@ enum {
 	PROP_SEARCH,
 	PROP_REFINE_FLAGS,
 	PROP_FILTER_FLAGS,
-	PROP_REFRESH_FLAGS,
 	PROP_FAILURE_FLAGS,
 	PROP_AUTH,
 	PROP_APP,
@@ -189,20 +187,6 @@ gs_plugin_job_get_filter_flags (GsPluginJob *self)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
 	return self->filter_flags;
-}
-
-void
-gs_plugin_job_set_refresh_flags (GsPluginJob *self, GsPluginRefreshFlags refresh_flags)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	self->refresh_flags = refresh_flags;
-}
-
-GsPluginRefreshFlags
-gs_plugin_job_get_refresh_flags (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), 0);
-	return self->refresh_flags;
 }
 
 gboolean
@@ -492,9 +476,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_FILTER_FLAGS:
 		g_value_set_uint64 (value, self->filter_flags);
 		break;
-	case PROP_REFRESH_FLAGS:
-		g_value_set_uint64 (value, self->refresh_flags);
-		break;
 	case PROP_FAILURE_FLAGS:
 		g_value_set_uint64 (value, self->failure_flags);
 		break;
@@ -554,9 +535,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		break;
 	case PROP_FILTER_FLAGS:
 		gs_plugin_job_set_filter_flags (self, g_value_get_uint64 (value));
-		break;
-	case PROP_REFRESH_FLAGS:
-		gs_plugin_job_set_refresh_flags (self, g_value_get_uint64 (value));
 		break;
 	case PROP_FAILURE_FLAGS:
 		gs_plugin_job_set_failure_flags (self, g_value_get_uint64 (value));
@@ -649,11 +627,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILTER_FLAGS, pspec);
 
-	pspec = g_param_spec_uint64 ("refresh-flags", NULL, NULL,
-				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_REFRESH_FLAGS, pspec);
-
 	pspec = g_param_spec_uint64 ("failure-flags", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE);
@@ -716,7 +689,6 @@ gs_plugin_job_init (GsPluginJob *self)
 	self->failure_flags = GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY;
 	self->refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	self->filter_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
-	self->refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
 	self->list = gs_app_list_new ();
 	self->time_created = g_get_monotonic_time ();
 }

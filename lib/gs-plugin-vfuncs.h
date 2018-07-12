@@ -192,38 +192,16 @@ gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Get the list of pre-downloaded, pre-checked updates, with the write lock
- * held.
+ * Get the list of updates.
  *
- * NOTE: Actually downloading the updates is normally done in
- * gs_plugin_refresh() when called with %GS_PLUGIN_REFRESH_FLAGS_PAYLOAD.
+ * NOTE: Actually downloading the updates can be done in gs_plugin_download_app()
+ * or in gs_plugin_update_app().
  *
  * Plugins are expected to add new apps using gs_app_list_add().
  *
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
-							 GsAppList	*list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
- * gs_plugin_add_updates_pending:
- * @plugin: a #GsPlugin
- * @list: a #GsAppList
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Get the list of not-yet-downloaded updates, with the write lock held.
- *
- * NOTE: Actually downloading the updates is normally done in
- * gs_plugin_refresh() when called with %GS_PLUGIN_REFRESH_FLAGS_PAYLOAD.
- *
- * Plugins are expected to add new apps using gs_app_list_add().
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_add_updates_pending		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -692,6 +670,51 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
+ * gs_plugin_download_app:
+ * @plugin: a #GsPlugin
+ * @app: a #GsApp
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Downloads the application and any dependencies ready to be installed or
+ * updated.
+ *
+ * Plugins are expected to send progress notifications to the UI using
+ * gs_app_set_progress() using the passed in @app.
+ *
+ * All functions can block, but should sent progress notifications, e.g. using
+ * gs_app_set_progress() if they will take more than tens of milliseconds
+ * to complete.
+ *
+ * If the @app is already downloaded, do not return an error and return %TRUE.
+ *
+ * On failure the error message returned will usually only be shown on the
+ * console, but they can also be retrieved using gs_plugin_loader_get_events().
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_download_app			(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
+ * gs_plugin_download:
+ * @plugin: a #GsPlugin
+ * @apps: a #GsAppList
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Downloads a list of applications ready to be installed or updated.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_download			(GsPlugin	*plugin,
+							 GsAppList	*apps,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
  * gs_plugin_app_upgrade_download:
  * @plugin: a #GsPlugin
  * @app: a #GsApp, with kind %AS_APP_KIND_OS_UPGRADE
@@ -846,20 +869,12 @@ gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
  * gs_plugin_refresh:
  * @plugin: a #GsPlugin
  * @cache_age: the acceptable cache age in seconds, or MAXUINT for "any"
- * @flags: a bitfield of #GsPluginRefreshFlags, e.g. %GS_PLUGIN_REFRESH_FLAGS_METADATA
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Refreshes the state of all the plugins.
- *
- * The %GS_PLUGIN_REFRESH_FLAGS_METADATA flag can be used to make sure
+ * Refreshes the state of all the plugins. Plugins should make sure
  * there's enough metadata to start the application, for example lists of
  * available applications.
- *
- * The %GS_PLUGIN_REFRESH_FLAGS_PAYLOAD flag should only be used when
- * the session is idle and bandwidth is unmetered as the amount of data
- * and IO may be large.
- * This is used to pre-download package updates and firmware.
  *
  * All functions can block, but should sent progress notifications, e.g. using
  * gs_app_set_progress() if they will take more than tens of milliseconds
@@ -869,7 +884,6 @@ gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
 							 guint		 cache_age,
-							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
