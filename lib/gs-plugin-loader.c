@@ -2290,13 +2290,13 @@ gs_plugin_loader_add_location (GsPluginLoader *plugin_loader, const gchar *locat
 static gint
 gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 {
-	GsPlugin **pa = (GsPlugin **) a;
-	GsPlugin **pb = (GsPlugin **) b;
-	if (gs_plugin_get_order (*pa) < gs_plugin_get_order (*pb))
+	GsPlugin *pa = *((GsPlugin **) a);
+	GsPlugin *pb = *((GsPlugin **) b);
+	if (gs_plugin_get_order (pa) < gs_plugin_get_order (pb))
 		return -1;
-	if (gs_plugin_get_order (*pa) > gs_plugin_get_order (*pb))
+	if (gs_plugin_get_order (pa) > gs_plugin_get_order (pb))
 		return 1;
-	return 0;
+	return g_strcmp0 (gs_plugin_get_name (pa), gs_plugin_get_name (pb));
 }
 
 static void
