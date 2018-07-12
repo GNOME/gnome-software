@@ -109,9 +109,10 @@ static gboolean
 _transaction_ready (FlatpakTransaction *transaction)
 {
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
-	GList *ops = flatpak_transaction_get_operations (transaction);
+	g_autolist(GObject) ops = NULL;
 
 	/* nothing to do */
+	ops = flatpak_transaction_get_operations (transaction);
 	if (ops == NULL)
 		return TRUE; // FIXME: error?
 	for (GList *l = ops; l != NULL; l = l->next) {
@@ -120,7 +121,6 @@ _transaction_ready (FlatpakTransaction *transaction)
 		g_autoptr(GsApp) app = _ref_to_app (self, ref);
 		if (app != NULL)
 			_transaction_operation_set_app (op, app);
-		g_object_unref (op);
 	}
 	return TRUE;
 }
