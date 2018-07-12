@@ -449,7 +449,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		}
 	}
 
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
 		g_autofree gchar *transaction_address = NULL;
 		g_autoptr(GVariant) options = NULL;
 		GVariantDict dict;
