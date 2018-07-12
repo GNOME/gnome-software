@@ -236,36 +236,16 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_add_updates_pending (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_add_updates_pending (flatpak, list,
-						     cancellable, error)) {
-			return FALSE;
-		}
-	}
-	return TRUE;
-}
-
-gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-		if (!gs_flatpak_refresh (flatpak, cache_age, flags,
-					 cancellable, error)) {
+		if (!gs_flatpak_refresh (flatpak, cache_age, cancellable, error))
 			return FALSE;
-		}
 	}
 	return TRUE;
 }
@@ -470,6 +450,48 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 }
 
 gboolean
+gs_plugin_download (GsPlugin *plugin, GsAppList *list,
+		    GCancellable *cancellable, GError **error)
+{
+	GsFlatpak *flatpak = NULL;
+	g_autoptr(FlatpakTransaction) transaction = NULL;
+
+	/* not supported */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+		if (flatpak != NULL)
+			break;
+	}
+	if (flatpak == NULL)
+		return TRUE;
+
+	/* build and run non-deployed transaction */
+	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	if (transaction == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	flatpak_transaction_set_no_deploy (transaction, TRUE);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		g_autofree gchar *ref = NULL;
+
+		ref = gs_flatpak_app_get_ref_display (app);
+		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+			g_prefix_error (error, "failed to add update ref %s: ", ref);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+	}
+	if (!flatpak_transaction_run (transaction, cancellable, error)) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
@@ -507,9 +529,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
-				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
-				 cancellable, error)) {
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
@@ -646,9 +666,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
-				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
-				 cancellable, error)) {
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
@@ -698,9 +716,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 	gs_plugin_updates_changed (plugin);
 
 	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT,
-				 GS_PLUGIN_REFRESH_FLAGS_METADATA,
-				 cancellable, error)) {
+	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}

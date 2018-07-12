@@ -335,15 +335,16 @@ gs_plugin_add_installed (GsPlugin *plugin,
           On fast connections we should only show that for a couple of seconds,
           but it's a good idea to try any avoid that if at all possible in the
           plugin.
-          Once per day the <code>gs_plugin_refresh()</code> method is called again,
-          but this time with <code>GS_PLUGIN_REFRESH_FLAGS_PAYLOAD</code> set.
+          Once per day the <code>gs_plugin_get_updates()</code> method is called,
+          and then <code>gs_plugin_download_app()</code> may be called if the
+          user has configured automatic updates.
           This is where the Flatpak plugin would download any ostree trees (but
           not doing the deploy step) so that the applications can be updated live
           in the details panel without having to wait for the download to complete.
           In a similar way, the fwupd plugin downloads the tiny LVFS metadata with
-          <code>GS_PLUGIN_REFRESH_FLAGS_METADATA</code> and then downloads the
-          large firmware files themselves only when the
-          <code>GS_PLUGIN_REFRESH_FLAGS_PAYLOAD</code> flag is set.
+          <code>gs_plugin_refresh()</code> and then downloads the large firmware
+          files themselves when <code>gs_plugin_download_app()</code> or
+          <code>gs_plugin_download_app()</code> is called.
         </para>
         <para>
           If the <code>@app</code> parameter is set for
@@ -371,35 +372,25 @@ gs_plugin_add_installed (GsPlugin *plugin,
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
                    guint cache_age,
-                   GsPluginRefreshFlags flags,
                    GCancellable *cancellable,
                    GError **error)
 {
   const gchar *metadata_fn = "/var/cache/example/metadata.xml";
   const gchar *metadata_url = "http://www.example.com/new.xml";
+  g_autoptr(GFile) file = g_file_new_for_path (metadata_fn);
 
-  /* this is called at startup and once per day */
-  if (flags &amp; GS_PLUGIN_REFRESH_FLAGS_METADATA) {
-    g_autoptr(GFile) file = g_file_new_for_path (metadata_fn);
-
-    /* is the metadata missing or too old */
-    if (gs_utils_get_file_age (file) &gt; cache_age) {
-      if (!gs_plugin_download_file (plugin,
-                                    NULL,
-                                    metadata_url,
-                                    metadata_fn,
-                                    cancellable,
-                                    error)) {
-        /* it's okay to fail here */
-        return FALSE;
-      }
-      g_debug ("successfully downloaded new metadata");
+  /* is the metadata missing or too old */
+  if (gs_utils_get_file_age (file) &gt; cache_age) {
+    if (!gs_plugin_download_file (plugin,
+                                  NULL,
+                                  metadata_url,
+                                  metadata_fn,
+                                  cancellable,
+                                  error)) {
+      /* it's okay to fail here */
+      return FALSE;
     }
-  }
-
-  /* this is called when the session is idle */
-  if ((flags &amp; GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) == 0) {
-    // FIXME: download any required updates now
+    g_debug ("successfully downloaded new metadata");
   }
   return TRUE;
 }

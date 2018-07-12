@@ -12,8 +12,13 @@
     </key>
     <key name="download-updates" type="b">
       <default>true</default>
-      <summary>Whether to automatically download updates</summary>
-      <description>If enabled, GNOME Software automatically downloads updates in the background and prompts the user to install them when ready.</description>
+      <summary>Automatically download and install updates</summary>
+      <description>If enabled, GNOME Software automatically downloads software updates in the background, also installing ones that do not require a reboot.</description>
+    </key>
+    <key name="download-updates-notify" type="b">
+      <default>true</default>
+      <summary>Notify the user about software updated in the background</summary>
+      <description>If enabled, GNOME Software notifies the user about updates that happened whilst the user was idle.</description>
     </key>
     <key name="refresh-when-metered" type="b">
       <default>false</default>

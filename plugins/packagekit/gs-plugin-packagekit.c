@@ -27,6 +27,7 @@
 #include <gnome-software.h>
 
 #include "packagekit-common.h"
+#include "gs-packagekit-helper.h"
 
 /*
  * SECTION:
@@ -68,14 +69,12 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	GsApp *app;
 	GsApp *app_tmp;
 	PkBitfield filter;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	const gchar *id;
 	gboolean ret = TRUE;
 	g_autoptr(GsAppList) installed = gs_app_list_new ();
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
-
-	data.plugin = plugin;
 
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit::add-sources-related");
@@ -88,7 +87,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	results = pk_client_get_packages (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, &data,
+					   gs_packagekit_helper_cb, helper,
 					   error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to get sources related: ");
@@ -134,14 +133,12 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
 	PkRepoDetail *rd;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	const gchar *id;
 	guint i;
 	g_autoptr(GHashTable) hash = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
-
-	data.plugin = plugin;
 
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
@@ -151,7 +148,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	results = pk_client_get_repo_list (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, &data,
+					   gs_packagekit_helper_cb, helper,
 					   error);
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
@@ -191,10 +188,8 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
                                   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-
-	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -202,7 +197,7 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	                                 gs_app_get_origin (app),
 	                                 TRUE,
 	                                 cancellable,
-	                                 gs_plugin_packagekit_progress_cb, &data,
+	                                 gs_packagekit_helper_cb, helper,
 	                                 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_utils_error_add_unique_id (error, app);
@@ -223,20 +218,18 @@ gs_plugin_repo_enable (GsPlugin *plugin,
                        GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-
-	data.app = app;
-	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 TRUE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, &data,
+					 gs_packagekit_helper_cb, helper,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
@@ -259,16 +252,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsAppList *addons;
 	GPtrArray *source_ids;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	const gchar *package_id;
 	guint i, j;
 	g_autofree gchar *local_filename = NULL;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GPtrArray) array_package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
-
-	data.app = app;
-	data.plugin = plugin;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -310,10 +300,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		g_usleep (G_USEC_PER_SEC * 3);
 
 		/* actually install the package */
+		gs_packagekit_helper_add_app (helper, app);
 		results = pk_task_install_packages_sync (priv->task,
 							 package_ids,
 							 cancellable,
-							 gs_plugin_packagekit_progress_cb, &data,
+							 gs_packagekit_helper_cb, helper,
 							 error);
 		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			gs_app_set_state_recover (app);
@@ -383,10 +374,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_state (addon, AS_APP_STATE_INSTALLING);
 		}
+		gs_packagekit_helper_add_app (helper, app);
 		results = pk_task_install_packages_sync (priv->task,
 							 (gchar **) array_package_ids->pdata,
 							 cancellable,
-							 gs_plugin_packagekit_progress_cb, &data,
+							 gs_packagekit_helper_cb, helper,
 							 error);
 		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			gs_app_set_state_recover (app);
@@ -408,10 +400,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		local_filename = g_file_get_path (gs_app_get_local_file (app));
 		package_ids = g_strsplit (local_filename, "\t", -1);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		gs_packagekit_helper_add_app (helper, app);
 		results = pk_task_install_files_sync (priv->task,
 						      package_ids,
 						      cancellable,
-						      gs_plugin_packagekit_progress_cb, &data,
+						      gs_packagekit_helper_cb, helper,
 						      error);
 		if (!gs_plugin_packagekit_results_valid (results, error)) {
 			gs_app_set_state_recover (app);
@@ -448,20 +441,18 @@ gs_plugin_repo_disable (GsPlugin *plugin,
                         GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-
-	data.app = app;
-	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 FALSE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, &data,
+					 gs_packagekit_helper_cb, helper,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
@@ -484,14 +475,11 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	GPtrArray *source_ids;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	guint i;
 	guint cnt = 0;
 	g_autoptr(PkResults) results = NULL;
 	g_auto(GStrv) package_ids = NULL;
-
-	data.app = app;
-	data.plugin = plugin;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -528,11 +516,12 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* do the action */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_task_remove_packages_sync (priv->task,
 						package_ids,
 						TRUE, GS_PACKAGEKIT_AUTOREMOVE,
 						cancellable,
-						gs_plugin_packagekit_progress_cb, &data,
+						gs_packagekit_helper_cb, helper,
 						error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
@@ -548,6 +537,63 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
+static GsApp *
+gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
+{
+	GsApp *app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
+	if (app != NULL)
+		return app;
+	app = gs_app_new (NULL);
+	gs_app_add_source (app, pk_package_get_name (package));
+	gs_app_add_source_id (app, pk_package_get_id (package));
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
+			 pk_package_get_name (package));
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+			    pk_package_get_summary (package));
+	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, "packagekit");
+	gs_app_set_update_version (app, pk_package_get_version (package));
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	gs_plugin_cache_add (plugin, pk_package_get_id (package), app);
+	return app;
+}
+
+gboolean
+gs_plugin_add_updates (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_get_updates (PK_CLIENT (priv->task),
+					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
+					 cancellable,
+					 gs_packagekit_helper_cb, helper,
+					 error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
+		return FALSE;
+
+	/* add results */
+	array = pk_results_get_package_array (results);
+	for (guint i = 0; i < array->len; i++) {
+		PkPackage *package = g_ptr_array_index (array, i);
+		g_autoptr(GsApp) app = NULL;
+		app = gs_plugin_packagekit_build_update_app (plugin, package);
+		gs_app_list_add (list, app);
+	}
+	return TRUE;
+}
+
 gboolean
 gs_plugin_add_search_files (GsPlugin *plugin,
                             gchar **search,
@@ -557,10 +603,8 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-
-	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -571,7 +615,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	                                  filter,
 	                                  search,
 	                                  cancellable,
-	                                  gs_plugin_packagekit_progress_cb, &data,
+	                                  gs_packagekit_helper_cb, helper,
 	                                  error);
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
@@ -589,10 +633,8 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-
-	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -603,7 +645,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	                                   filter,
 	                                   search,
 	                                   cancellable,
-	                                   gs_plugin_packagekit_progress_cb, &data,
+	                                   gs_packagekit_helper_cb, helper,
 	                                   error);
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;

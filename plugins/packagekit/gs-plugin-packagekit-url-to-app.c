@@ -24,6 +24,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gnome-software.h>
 
+#include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
 struct GsPluginData {
@@ -66,12 +67,9 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 	g_autoptr(GPtrArray) details = NULL;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 
 	path = gs_utils_get_url_path (url);
-
-	data.app = app;
-	data.plugin = plugin;
 
 	/* only do this for apt:// on debian or debian-like distros */
 	os_release = gs_os_release_new (error);
@@ -100,7 +98,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     package_ids,
 				     cancellable,
-				     gs_plugin_packagekit_progress_cb, &data,
+				     gs_packagekit_helper_cb, helper,
 				     error);
 
 	if (!gs_plugin_packagekit_results_valid (results, error)) {

@@ -26,6 +26,7 @@
 #include <gnome-software.h>
 
 #include "gs-markdown.h"
+#include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
 /*
@@ -97,7 +98,7 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 	const gchar *pkgname;
 	guint i;
 	guint j;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
@@ -121,14 +122,12 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
-	data.plugin = plugin;
-
 	/* resolve them all at once */
 	results = pk_client_resolve (priv->client,
 				     filter,
 				     (gchar **) package_ids->pdata,
 				     cancellable,
-				     gs_plugin_packagekit_progress_cb, &data,
+				     gs_packagekit_helper_cb, helper,
 				     error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to resolve package_ids: ");
@@ -207,19 +206,17 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *to_array[] = { NULL, NULL };
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
-	data.app = app;
-	data.plugin = plugin;
-
 	to_array[0] = filename;
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_search_files (priv->client,
 					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					  (gchar **) to_array,
 					  cancellable,
-					  gs_plugin_packagekit_progress_cb, &data,
+					  gs_packagekit_helper_cb, helper,
 					  error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to search file %s: ", filename);
@@ -278,7 +275,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	GsApp *app;
 	guint cnt = 0;
 	PkUpdateDetail *update_detail;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autofree const gchar **package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -295,13 +292,11 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	if (cnt == 0)
 		return TRUE;
 
-	data.plugin = plugin;
-
 	/* get any update details */
 	results = pk_client_get_update_detail (priv->client,
 					       (gchar **) package_ids,
 					       cancellable,
-					       gs_plugin_packagekit_progress_cb, &data,
+					       gs_packagekit_helper_cb, helper,
 					       error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to get update details for %s: ",
@@ -342,7 +337,7 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	guint i, j;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -360,13 +355,11 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
-	data.plugin = plugin;
-
 	/* get any details */
 	results = pk_client_get_details (priv->client,
 					 (gchar **) package_ids->pdata,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, &data,
+					 gs_packagekit_helper_cb, helper,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
@@ -396,7 +389,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	PkBitfield filter;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -408,14 +401,12 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
 		return TRUE;
 
-	data.plugin = plugin;
-
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
 	results = pk_client_get_updates (priv->client,
 					 filter,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, &data,
+					 gs_packagekit_helper_cb, helper,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to get updates for urgency: ");
@@ -590,23 +581,21 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	GsApp *app2;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	guint cache_age_save;
 
-	data.app = app;
-	data.plugin = plugin;
-
 	/* ask PK to simulate upgrading the system */
 	cache_age_save = pk_client_get_cache_age (priv->client);
 	pk_client_set_cache_age (priv->client, 60 * 60 * 24 * 7); /* once per week */
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_upgrade_system (priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 					    gs_app_get_version (app),
 					    PK_UPGRADE_KIND_ENUM_COMPLETE,
 					    cancellable,
-					    gs_plugin_packagekit_progress_cb, &data,
+					    gs_packagekit_helper_cb, helper,
 					    error);
 	pk_client_set_cache_age (priv->client, cache_age_save);
 

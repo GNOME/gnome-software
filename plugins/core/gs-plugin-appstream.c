@@ -682,7 +682,6 @@ gs_plugin_add_recent (GsPlugin *plugin,
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {

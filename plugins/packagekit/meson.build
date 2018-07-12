@@ -5,6 +5,7 @@ shared_module(
   'gs_plugin_systemd-updates',
   sources : [
     'gs-plugin-systemd-updates.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -21,6 +22,7 @@ shared_module(
   'gs_plugin_packagekit',
   sources : [
     'gs-plugin-packagekit.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -38,6 +40,7 @@ shared_module(
   sources : [
     'gs-plugin-packagekit-refine.c',
     'gs-markdown.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -54,6 +57,7 @@ shared_module(
   'gs_plugin_packagekit-refine-repos',
   sources : [
     'gs-plugin-packagekit-refine-repos.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -70,6 +74,7 @@ shared_module(
   'gs_plugin_packagekit-refresh',
   sources : [
     'gs-plugin-packagekit-refresh.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -86,6 +91,7 @@ shared_module(
   'gs_plugin_packagekit-local',
   sources : [
     'gs-plugin-packagekit-local.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -115,6 +121,7 @@ shared_module(
   'gs_plugin_packagekit-upgrade',
   sources : [
     'gs-plugin-packagekit-upgrade.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [
@@ -156,6 +163,7 @@ shared_module(
   'gs_plugin_packagekit-url-to-app',
   sources : [
     'gs-plugin-packagekit-url-to-app.c',
+    'gs-packagekit-helper.c',
     'packagekit-common.c',
   ],
   include_directories : [

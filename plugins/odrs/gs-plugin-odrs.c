@@ -168,11 +168,11 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
-				guint cache_age,
-				GCancellable *cancellable,
-				GError **error)
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GCancellable *cancellable,
+		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *fn = NULL;
@@ -208,24 +208,6 @@ gs_plugin_odrs_refresh_ratings (GsPlugin *plugin,
 		return FALSE;
 	}
 	return gs_plugin_odrs_load_ratings (plugin, fn, error);
-}
-
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GsPluginRefreshFlags flags,
-		   GCancellable *cancellable,
-		   GError **error)
-{
-	/* get the reviews */
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
-		if (!gs_plugin_odrs_refresh_ratings (plugin,
-						     cache_age,
-						     cancellable,
-						     error))
-			return FALSE;
-	}
-	return TRUE;
 }
 
 void
