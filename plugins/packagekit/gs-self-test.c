@@ -272,7 +272,6 @@ main (int argc, char **argv)
 	ret = gs_plugin_loader_setup (plugin_loader,
 				      (gchar**) whitelist,
 				      NULL,
-				      GS_PLUGIN_FAILURE_FLAGS_NONE,
 				      NULL,
 				      &error);
 	g_assert_no_error (error);

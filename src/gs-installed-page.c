@@ -282,7 +282,6 @@ gs_installed_page_load (GsInstalledPage *self)
 
 	/* get installed apps */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", flags,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader,

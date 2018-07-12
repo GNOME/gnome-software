@@ -1239,8 +1239,6 @@ gs_details_page_authenticate_cb (GsPage *page,
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "app", helper->app,
 					 "review", helper->review,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (helper->self->plugin_loader, plugin_job,
 					    helper->self->cancellable,
@@ -1292,10 +1290,9 @@ gs_details_page_review_button_clicked_cb (GsReviewRow *row,
 	helper->review = g_object_ref (gs_review_row_get_review (row));
 	helper->action = action;
 	plugin_job = gs_plugin_job_newv (helper->action,
+					 "interactive", TRUE,
 					 "app", helper->app,
 					 "review", helper->review,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -1466,7 +1463,6 @@ gs_details_page_app_refine2 (GsDetailsPage *self)
 	 * of no huge importance if we don't get the required data */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_NONE,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
@@ -1702,7 +1698,6 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
@@ -1731,7 +1726,6 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
@@ -1760,7 +1754,6 @@ gs_details_page_load (GsDetailsPage *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
@@ -2016,10 +2009,9 @@ gs_details_page_review_response_cb (GtkDialog *dialog,
 	helper->review = g_object_ref (review);
 	helper->action = GS_PLUGIN_ACTION_REVIEW_SUBMIT;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REVIEW_SUBMIT,
+					 "interactive", TRUE,
 					 "app", helper->app,
 					 "review", helper->review,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_FATAL_ANY |
-							  GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
