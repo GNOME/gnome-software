@@ -300,7 +300,6 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) G_MAXUINT,
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
@@ -534,7 +533,6 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) G_MAXUINT,
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
@@ -1048,7 +1046,6 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) 0,
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
@@ -1283,7 +1280,6 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) G_MAXUINT,
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -1331,8 +1327,6 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) 0, /* force now */
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA |
-							  GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
@@ -1531,7 +1525,6 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) G_MAXUINT,
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -1581,8 +1574,6 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) 0, /* force now */
-					 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA |
-							  GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);

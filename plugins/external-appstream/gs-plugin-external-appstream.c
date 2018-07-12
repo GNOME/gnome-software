@@ -266,15 +266,11 @@ gs_plugin_external_appstream_refresh_url (GsPlugin *plugin,
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_auto(GStrv) appstream_urls = NULL;
-
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
-		return TRUE;
 
 	appstream_urls = g_settings_get_strv (priv->settings,
 					      "external-appstream-urls");

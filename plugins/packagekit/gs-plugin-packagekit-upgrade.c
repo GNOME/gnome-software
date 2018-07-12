@@ -26,6 +26,7 @@
 
 #include <gnome-software.h>
 
+#include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
 struct GsPluginData {
@@ -56,26 +57,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, "packagekit");
 }
 
-static void
-gs_plugin_packagekit_upgrade_progress_cb (PkProgress *progress,
-					  PkProgressType type,
-					  gpointer user_data)
-{
-	ProgressData *data = (ProgressData *) user_data;
-	GsPlugin *plugin = data->plugin;
-	if (type == PK_PROGRESS_TYPE_STATUS) {
-		GsPluginStatus plugin_status;
-		PkStatusEnum status = pk_progress_get_status (progress);
-		plugin_status = packagekit_status_enum_to_plugin_status (status);
-		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, NULL, plugin_status);
-	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
-		gint percentage = pk_progress_get_percentage (progress);
-		if (percentage >= 0 && percentage <= 100)
-			gs_app_set_progress (data->app, (guint) percentage);
-	}
-}
-
 gboolean
 gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GsApp *app,
@@ -83,7 +64,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -94,16 +75,14 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
 		return TRUE;
 
-	data.app = app;
-	data.plugin = plugin;
-
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_task_upgrade_system_sync (priv->task,
 					       gs_app_get_version (app),
 					       PK_UPGRADE_KIND_ENUM_COMPLETE,
 					       cancellable,
-					       gs_plugin_packagekit_upgrade_progress_cb, &data,
+					       gs_packagekit_helper_cb, helper,
 					       error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);

@@ -1,7 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2015 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -20,27 +19,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_UPDATE_MONITOR_H
-#define __GS_UPDATE_MONITOR_H
+#ifndef GS_PREFS_DIALOG_H
+#define GS_PREFS_DIALOG_H
 
-#include <glib-object.h>
+#include <gtk/gtk.h>
 
-#include "gs-application.h"
-#include "gs-shell.h"
+#include "gnome-software-private.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_UPDATE_MONITOR (gs_update_monitor_get_type ())
+#define GS_TYPE_PREFS_DIALOG (gs_prefs_dialog_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GObject)
+G_DECLARE_FINAL_TYPE (GsPrefsDialog, gs_prefs_dialog, GS, PREFS_DIALOG, GtkDialog)
 
-GsUpdateMonitor	*gs_update_monitor_new			(GsApplication	*app);
-void		 gs_update_monitor_get_updates		(GsUpdateMonitor *monitor);
-void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
-							 GsShell	*shell);
+GtkWidget	*gs_prefs_dialog_new		(GtkWindow	*parent,
+						 GsPluginLoader	*plugin_loader);
 
 G_END_DECLS
 
-#endif /* __GS_UPDATE_MONITOR_H */
+#endif /* GS_PREFS_DIALOG_H */
 
 /* vim: set noexpandtab: */

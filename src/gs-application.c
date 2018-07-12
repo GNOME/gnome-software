@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
- * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -139,6 +139,10 @@ gs_application_init (GsApplication *application)
 		  _("Show verbose debugging information"), NULL },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show profiling information for the service"), NULL },
+		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Installs any pending updates in the background"), NULL },
+		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show update preferences"), NULL },
 		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Quit the running instance"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
@@ -314,6 +318,12 @@ sources_activated (GSimpleAction *action,
 		   gpointer       app)
 {
 	gs_shell_show_sources (GS_APPLICATION (app)->shell);
+}
+
+static void
+prefs_activated (GSimpleAction *action, GVariant *parameter, gpointer app)
+{
+	gs_shell_show_prefs (GS_APPLICATION (app)->shell);
 }
 
 static void
@@ -767,6 +777,14 @@ show_offline_updates_error (GSimpleAction *action,
 }
 
 static void
+autoupdate_activated (GSimpleAction *action, GVariant *parameter, gpointer data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
+	gs_update_monitor_get_updates (app->update_monitor);
+}
+
+static void
 install_resources_activated (GSimpleAction *action,
                              GVariant      *parameter,
                              gpointer       data)
@@ -809,11 +827,13 @@ static GActionEntry actions[] = {
 	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
+	{ "autoupdate", autoupdate_activated, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 
 static GActionEntry actions_after_loading[] = {
 	{ "sources", sources_activated, NULL, NULL, NULL },
+	{ "prefs", prefs_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
@@ -1021,6 +1041,16 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	if (g_variant_dict_contains (options, "profile")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"profile",
+						NULL);
+	}
+	if (g_variant_dict_contains (options, "autoupdate")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"autoupdate",
+						NULL);
+	}
+	if (g_variant_dict_contains (options, "prefs")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"prefs",
 						NULL);
 	}
 	if (g_variant_dict_contains (options, "quit")) {

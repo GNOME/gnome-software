@@ -28,6 +28,7 @@
 #include <gnome-software.h>
 
 #include "packagekit-common.h"
+#include "gs-packagekit-helper.h"
 
 struct GsPluginData {
 	PkTask			*task;
@@ -48,28 +49,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->task);
 }
 
-static void
-gs_plugin_packagekit_local_progress_cb (PkProgress *progress,
-					PkProgressType type,
-					gpointer user_data)
-{
-	ProgressData *data = (ProgressData *) user_data;
-	GsPlugin *plugin = data->plugin;
-	if (type == PK_PROGRESS_TYPE_STATUS) {
-		GsPluginStatus plugin_status;
-		PkStatusEnum status = pk_progress_get_status (progress);
-		plugin_status = packagekit_status_enum_to_plugin_status (status);
-		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, data->app, plugin_status);
-	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
-		gint percentage = pk_progress_get_percentage (progress);
-		if (percentage >= 0 && percentage <= 100) {
-			if (data->app != NULL)
-				gs_app_set_progress (data->app, (guint) percentage);
-		}
-	}
-}
-
 static gboolean
 gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					   GsApp *app,
@@ -79,7 +58,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkFiles *item;
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	guint i;
 	guint j;
 	gchar **fns;
@@ -87,15 +66,13 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
-	data.app = app;
-	data.plugin = plugin;
-
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_get_files_local (PK_CLIENT (priv->task),
 					     files,
 					     cancellable,
-					     gs_plugin_packagekit_local_progress_cb, &data,
+					     gs_packagekit_helper_cb, helper,
 					     error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_utils_error_add_unique_id (error, app);
@@ -156,8 +133,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	PkDetails *item;
-	ProgressData data = { 0 };
-	g_autoptr (PkResults) results = NULL;
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
+	g_autoptr(PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
@@ -181,8 +158,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	if (!g_strv_contains (mimetypes, content_type))
 		return TRUE;
 
-	data.plugin = plugin;
-
 	/* get details */
 	filename = g_file_get_path (file);
 	files = g_strsplit (filename, "\t", -1);
@@ -190,7 +165,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	results = pk_client_get_details_local (PK_CLIENT (priv->task),
 					       files,
 					       cancellable,
-					       gs_plugin_packagekit_progress_cb, &data,
+					       gs_packagekit_helper_cb, helper,
 					       error);
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;

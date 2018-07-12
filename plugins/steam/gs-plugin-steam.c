@@ -712,7 +712,6 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {

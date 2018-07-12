@@ -29,8 +29,7 @@
 #include <gnome-software.h>
 
 /*
- * SECTION:
- * Add previously downloads apps to the update list and also allow
+ * Mark previously downloaded packages as zero size, and also allow
  * scheduling the offline update.
  */
 
@@ -39,18 +38,25 @@ struct GsPluginData {
 	GFileMonitor		*monitor_trigger;
 	GPermission		*permission;
 	gboolean		 is_triggered;
+	GHashTable		*hash_prepared;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refresh");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
+	priv->hash_prepared = g_hash_table_new_full (g_str_hash, g_str_equal,
+						     g_free, NULL);
 }
 
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_hash_table_unref (priv->hash_prepared);
 	if (priv->monitor != NULL)
 		g_object_unref (priv->monitor);
 	if (priv->monitor_trigger != NULL)
@@ -68,6 +74,39 @@ gs_plugin_systemd_updates_permission_cb (GPermission *permission,
 	gs_plugin_set_allow_updates (plugin, ret);
 }
 
+static gboolean
+gs_plugin_systemd_update_cache (GsPlugin *plugin, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GError) error_local = NULL;
+	g_auto(GStrv) package_ids = NULL;
+
+	/* invalidate */
+	g_hash_table_remove_all (priv->hash_prepared);
+
+	/* get new list of package-ids */
+	package_ids = pk_offline_get_prepared_ids (&error_local);
+	if (package_ids == NULL) {
+		if (g_error_matches (error_local,
+				     PK_OFFLINE_ERROR,
+				     PK_OFFLINE_ERROR_NO_DATA)) {
+			return TRUE;
+		}
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "Failed to get prepared IDs: %s",
+			     error_local->message);
+		return FALSE;
+	}
+	for (guint i = 0; package_ids[i] != NULL; i++) {
+		g_hash_table_insert (priv->hash_prepared,
+				     g_strdup (package_ids[i]),
+				     GUINT_TO_POINTER (1));
+	}
+	return TRUE;
+}
+
 static void
 gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 				      GFile *file, GFile *other_file,
@@ -77,6 +116,7 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 
 	/* update UI */
+	gs_plugin_systemd_update_cache (plugin, NULL);
 	gs_plugin_updates_changed (plugin);
 }
 
@@ -99,6 +139,34 @@ gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 	gs_plugin_systemd_updates_refresh_is_triggered (plugin, NULL);
+}
+
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *package_id;
+
+	/* not now */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0)
+		return TRUE;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
+
+	/* the package is already downloaded */
+	package_id = gs_app_get_source_id_default (app);
+	if (package_id == NULL)
+		return TRUE;
+	if (g_hash_table_lookup (priv->hash_prepared, package_id) != NULL)
+		gs_app_set_size_download (app, 0);
+
+	return TRUE;
 }
 
 gboolean
@@ -140,73 +208,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				  G_CALLBACK (gs_plugin_systemd_updates_permission_cb),
 				  plugin);
 	}
-	return TRUE;
-}
 
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	guint i;
-	g_autoptr(GError) error_local = NULL;
-	g_auto(GStrv) package_ids = NULL;
-
-	/* get the id's if the file exists */
-	package_ids = pk_offline_get_prepared_ids (&error_local);
-	if (package_ids == NULL) {
-		if (g_error_matches (error_local,
-				     PK_OFFLINE_ERROR,
-				     PK_OFFLINE_ERROR_NO_DATA)) {
-			return TRUE;
-		}
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_INVALID_FORMAT,
-			     "Failed to get prepared IDs: %s",
-			     error_local->message);
-		return FALSE;
-	}
-
-	/* add them to the new array */
-	for (i = 0; package_ids[i] != NULL; i++) {
-		g_autoptr(GsApp) app = NULL;
-		g_auto(GStrv) split = NULL;
-
-		/* search in the cache */
-		app = gs_plugin_cache_lookup (plugin, package_ids[i]);
-		if (app != NULL) {
-			gs_app_list_add (list, app);
-			continue;
-		}
-
-		/* get ID details */
-		split = pk_package_id_split (package_ids[i]);
-		if (split == NULL) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "invalid package-id: %s", package_ids[i]);
-			return FALSE;
-		}
-
-		/* create new app */
-		app = gs_app_new (NULL);
-		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
-		gs_app_set_management_plugin (app, "packagekit");
-		gs_app_add_source_id (app, package_ids[i]);
-		gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
-		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-		gs_app_set_size_download (app, 0);
-		gs_app_list_add (list, app);
-
-		/* save in the cache */
-		gs_plugin_cache_add (plugin, package_ids[i], app);
-	}
-	return TRUE;
+	/* get the list of currently downloaded packages */
+	return gs_plugin_systemd_update_cache (plugin, error);
 }
 
 static gboolean
@@ -244,22 +248,26 @@ _systemd_trigger_app (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_update_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+gs_plugin_update (GsPlugin *plugin,
+		  GsAppList *list,
+		  GCancellable *cancellable,
+		  GError **error)
 {
-	GsAppList *related = gs_app_get_related (app);
+	/* any are us? */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsAppList *related = gs_app_get_related (app);
 
-	/* not a proxy, which is somewhat odd... */
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
-		return _systemd_trigger_app (plugin, app, cancellable, error);
+		/* not a proxy, which is somewhat odd... */
+		if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+			return _systemd_trigger_app (plugin, app, cancellable, error);
 
-	/* try to trigger each related app */
-	for (guint i = 0; i < gs_app_list_length (related); i++) {
-		GsApp *app_tmp = gs_app_list_index (related, i);
-		if (!_systemd_trigger_app (plugin, app_tmp, cancellable, error))
-			return FALSE;
+		/* try to trigger each related app */
+		for (guint j = 0; j < gs_app_list_length (related); j++) {
+			GsApp *app_tmp = gs_app_list_index (related, j);
+			if (!_systemd_trigger_app (plugin, app_tmp, cancellable, error))
+				return FALSE;
+		}
 	}
 
 	/* success */

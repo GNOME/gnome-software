@@ -24,6 +24,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gnome-software.h>
 
+#include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
 /*
@@ -67,19 +68,17 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *to_array[] = { NULL, NULL };
-	ProgressData data = { 0 };
+	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
-	data.app = app;
-	data.plugin = plugin;
-
 	to_array[0] = filename;
+	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_search_files (priv->client,
 	                                  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 	                                  (gchar **) to_array,
 	                                  cancellable,
-	                                  gs_plugin_packagekit_progress_cb, &data,
+	                                  gs_packagekit_helper_cb, helper,
 	                                  error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to search file %s: ", filename);

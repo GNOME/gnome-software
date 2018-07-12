@@ -29,12 +29,6 @@
 
 G_BEGIN_DECLS
 
-typedef struct {
-	GsApp		*app;
-	GsPlugin	*plugin;
-	AsProfileTask	*ptask;
-} ProgressData;
-
 GsPluginStatus 	packagekit_status_enum_to_plugin_status		(PkStatusEnum	 status);
 
 gboolean	gs_plugin_packagekit_add_results		(GsPlugin	*plugin,
@@ -44,9 +38,6 @@ gboolean	gs_plugin_packagekit_add_results		(GsPlugin	*plugin,
 gboolean	gs_plugin_packagekit_error_convert		(GError		**error);
 gboolean	gs_plugin_packagekit_results_valid		(PkResults	*results,
 								 GError		**error);
-void		gs_plugin_packagekit_progress_cb		(PkProgress	*progress,
-								 PkProgressType	type,
-								 gpointer	user_data);
 void		gs_plugin_packagekit_resolve_packages_app	(GsPlugin *plugin,
 								 GPtrArray *packages,
 								 GsApp *app);

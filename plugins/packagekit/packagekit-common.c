@@ -362,47 +362,6 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 }
 
 void
-gs_plugin_packagekit_progress_cb (PkProgress *progress,
-				  PkProgressType type,
-				  gpointer user_data)
-{
-	ProgressData *data = (ProgressData *) user_data;
-	GsPlugin *plugin = data->plugin;
-
-	if (type == PK_PROGRESS_TYPE_STATUS) {
-		GsPluginStatus plugin_status;
-		PkStatusEnum status;
-		g_object_get (progress,
-			      "status", &status,
-			      NULL);
-
-		/* profile */
-		if (status == PK_STATUS_ENUM_SETUP) {
-			data->ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-						"packagekit-refine::transaction");
-		} else if (status == PK_STATUS_ENUM_FINISHED) {
-			g_clear_pointer (&data->ptask, as_profile_task_free);
-		}
-
-		plugin_status = packagekit_status_enum_to_plugin_status (status);
-		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, data->app, plugin_status);
-
-	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
-		gint percentage = pk_progress_get_percentage (progress);
-		if (data->app != NULL && percentage >= 0 && percentage <= 100)
-			gs_app_set_progress (data->app, (guint) percentage);
-	}
-
-	/* Only go from TRUE to FALSE - it doesn't make sense for a package
-	 * install to become uncancellable later on */
-	if (data->app != NULL && gs_app_get_allow_cancel (data->app)) {
-		gs_app_set_allow_cancel (data->app,
-					 pk_progress_get_allow_cancel (progress));
-	}
-}
-
-void
 gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
                                                 GsApp *app,
                                                 PkPackage *package)
@@ -424,8 +383,10 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 	/* set unavailable state */
 	if (pk_package_get_info (package) == PK_INFO_ENUM_UNAVAILABLE) {
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
-		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+		if (gs_app_get_size_installed (app) == 0)
+			gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+		if (gs_app_get_size_download (app) == 0)
+			gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	}
 	if (gs_app_get_version (app) == NULL)
 		gs_app_set_version (app, pk_package_get_version (package));
@@ -513,12 +474,19 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	}
 
 	/* the size is the size of all sources */
-	if (gs_app_is_installed (app)) {
-		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE) {
+		if (size > 0 && gs_app_get_size_installed (app) == 0)
+			gs_app_set_size_installed (app, size);
+		if (size > 0 && gs_app_get_size_download (app) == 0)
+			gs_app_set_size_download (app, size);
+	} else if (gs_app_is_installed (app)) {
+		if (gs_app_get_size_download (app) == 0)
+			gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 		if (size > 0 && gs_app_get_size_installed (app) == 0)
 			gs_app_set_size_installed (app, size);
 	} else {
-		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+		if (gs_app_get_size_installed (app) == 0)
+			gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
 		if (size > 0 && gs_app_get_size_download (app) == 0)
 			gs_app_set_size_download (app, size);
 	}
