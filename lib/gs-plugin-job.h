@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2017-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -50,6 +50,8 @@ void		 gs_plugin_job_set_timeout		(GsPluginJob	*self,
 							 guint		 timeout);
 void		 gs_plugin_job_set_age			(GsPluginJob	*self,
 							 guint64	 age);
+void		 gs_plugin_job_set_interactive		(GsPluginJob	*self,
+							 gboolean	 interactive);
 void		 gs_plugin_job_set_sort_func		(GsPluginJob	*self,
 							 GsAppListSortFunc sort_func);
 void		 gs_plugin_job_set_sort_func_data	(GsPluginJob	*self,

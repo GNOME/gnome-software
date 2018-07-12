@@ -191,7 +191,6 @@ typedef guint64 GsPluginRefineFlags;
  * @GS_PLUGIN_REFRESH_FLAGS_NONE:	Generate new metadata if possible
  * @GS_PLUGIN_REFRESH_FLAGS_METADATA:	Download new metadata
  * @GS_PLUGIN_REFRESH_FLAGS_PAYLOAD:	Download any pending payload
- * @GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE: Running by user request
  *
  * The flags used for refresh. Regeneration and downloading is only
  * done if the cache is older than the %cache_age.
@@ -205,7 +204,6 @@ typedef guint64 GsPluginRefineFlags;
 #define GS_PLUGIN_REFRESH_FLAGS_NONE			((guint64) 0)
 #define GS_PLUGIN_REFRESH_FLAGS_METADATA		((guint64) 1 << 0)
 #define GS_PLUGIN_REFRESH_FLAGS_PAYLOAD			((guint64) 1 << 1)
-#define GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE		((guint64) 1 << 2)
 typedef guint64 GsPluginRefreshFlags;
 
 /**

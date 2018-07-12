@@ -42,6 +42,7 @@ GsPluginFailureFlags	 gs_plugin_job_get_failure_flags	(GsPluginJob	*self);
 guint			 gs_plugin_job_get_max_results		(GsPluginJob	*self);
 guint			 gs_plugin_job_get_timeout		(GsPluginJob	*self);
 guint64			 gs_plugin_job_get_age			(GsPluginJob	*self);
+gboolean		 gs_plugin_job_get_interactive		(GsPluginJob	*self);
 GsAppListSortFunc	 gs_plugin_job_get_sort_func		(GsPluginJob	*self);
 gpointer		 gs_plugin_job_get_sort_func_data	(GsPluginJob	*self);
 const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
