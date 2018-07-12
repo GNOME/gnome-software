@@ -2387,6 +2387,31 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 	}
 }
 
+static gint
+gs_plugin_loader_path_sort_fn (gconstpointer a, gconstpointer b)
+{
+	const gchar *sa = *((const gchar **) a);
+	const gchar *sb = *((const gchar **) b);
+	return g_strcmp0 (sa, sb);
+}
+
+static GPtrArray *
+gs_plugin_loader_find_plugins (const gchar *path, GError **error)
+{
+	const gchar *fn_tmp;
+	g_autoptr(GPtrArray) fns = g_ptr_array_new_with_free_func (g_free);
+	g_autoptr(GDir) dir = g_dir_open (path, 0, error);
+	if (dir == NULL)
+		return NULL;
+	while ((fn_tmp = g_dir_read_name (dir)) != NULL) {
+		if (!g_str_has_suffix (fn_tmp, ".so"))
+			continue;
+		g_ptr_array_add (fns, g_build_filename (path, fn_tmp, NULL));
+	}
+	g_ptr_array_sort (fns, gs_plugin_loader_path_sort_fn);
+	return g_steal_pointer (&fns);
+}
+
 /**
  * gs_plugin_loader_setup:
  * @plugin_loader: a #GsPluginLoader
@@ -2408,7 +2433,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	const gchar *filename_tmp;
 	const gchar *plugin_name;
 	gboolean changes;
 	GPtrArray *deps;
@@ -2448,27 +2472,17 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	g_assert (ptask != NULL);
 	for (i = 0; i < priv->locations->len; i++) {
 		const gchar *location = g_ptr_array_index (priv->locations, i);
-		g_autoptr(GDir) dir = NULL;
+		g_autoptr(GPtrArray) fns = NULL;
 
 		/* search in the plugin directory for plugins */
-		dir = g_dir_open (location, 0, error);
-		if (dir == NULL)
-			return FALSE;
-
-		/* try to open each plugin */
 		g_debug ("searching for plugins in %s", location);
-		do {
-			g_autofree gchar *filename_plugin = NULL;
-			filename_tmp = g_dir_read_name (dir);
-			if (filename_tmp == NULL)
-				break;
-			if (!g_str_has_suffix (filename_tmp, ".so"))
-				continue;
-			filename_plugin = g_build_filename (location,
-							    filename_tmp,
-							    NULL);
-			gs_plugin_loader_open_plugin (plugin_loader, filename_plugin);
-		} while (TRUE);
+		fns = gs_plugin_loader_find_plugins (location, error);
+		if (fns == NULL)
+			return FALSE;
+		for (j = 0; j < fns->len; j++) {
+			const gchar *fn = g_ptr_array_index (fns, j);
+			gs_plugin_loader_open_plugin (plugin_loader, fn);
+		}
 	}
 
 	/* optional whitelist */
