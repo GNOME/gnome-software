@@ -736,7 +736,6 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 static gboolean
 gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 				    guint cache_age,
-				    GsPluginRefreshFlags flags,
 				    GCancellable *cancellable,
 				    GError **error)
 {
@@ -749,10 +748,6 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) file = NULL;
-
-	/* no longer interesting */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
-		return TRUE;
 
 	/* check age */
 	fn_test = g_getenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN");
@@ -814,13 +809,11 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
-		   GsPluginRefreshFlags flags,
 		   GCancellable *cancellable,
 		   GError **error)
 {
 	return gs_plugin_shell_extensions_refresh (plugin,
 						   cache_age,
-						   flags,
 						   cancellable,
 						   error);
 }
@@ -848,7 +841,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		/* remove appstream data */
 		ret = gs_plugin_shell_extensions_refresh (plugin,
 		                                          G_MAXUINT,
-		                                          GS_PLUGIN_REFRESH_FLAGS_METADATA,
 		                                          cancellable,
 		                                          error);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -914,7 +906,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 		/* refresh metadata */
 		ret = gs_plugin_shell_extensions_refresh (plugin,
 		                                          G_MAXUINT,
-		                                          GS_PLUGIN_REFRESH_FLAGS_METADATA,
 		                                          cancellable,
 		                                          error);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -1008,7 +999,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	/* just ensure there is any data, no matter how old */
 	return gs_plugin_shell_extensions_refresh (plugin,
 						   G_MAXUINT,
-						   GS_PLUGIN_REFRESH_FLAGS_NONE,
 						   cancellable,
 						   error);
 }

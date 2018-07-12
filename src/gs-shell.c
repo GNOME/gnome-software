@@ -38,6 +38,7 @@
 #include "gs-category-page.h"
 #include "gs-extras-page.h"
 #include "gs-repos-dialog.h"
+#include "gs-prefs-dialog.h"
 #include "gs-update-dialog.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
@@ -1867,6 +1868,7 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ACTION_PURCHASE:
 		return gs_shell_show_event_purchase (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:
+	case GS_PLUGIN_ACTION_DOWNLOAD:
 		return gs_shell_show_event_install (shell, event);
 	case GS_PLUGIN_ACTION_UPDATE:
 		return gs_shell_show_event_update (shell, event);
@@ -2191,6 +2193,20 @@ gs_shell_show_sources (GsShell *shell)
 		return;
 
 	dialog = gs_repos_dialog_new (priv->main_window, priv->plugin_loader);
+	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
+}
+
+void
+gs_shell_show_prefs (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *dialog;
+
+	dialog = gs_prefs_dialog_new (priv->main_window, priv->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 
 	/* just destroy */

@@ -283,18 +283,6 @@ gs_cmd_action_exec (GsCmdSelf *self, GsPluginAction action, const gchar *name, G
 					    NULL, error);
 }
 
-static GsPluginRefreshFlags
-gs_cmd_refresh_flag_from_string (const gchar *flag)
-{
-	if (flag == NULL || g_strcmp0 (flag, "all") == 0)
-		return G_MAXINT32;
-	if (g_strcmp0 (flag, "metadata") == 0)
-		return GS_PLUGIN_REFRESH_FLAGS_METADATA;
-	if (g_strcmp0 (flag, "payload") == 0)
-		return GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
-	return GS_PLUGIN_REFRESH_FLAGS_NONE;
-}
-
 static void
 gs_cmd_self_free (GsCmdSelf *self)
 {
@@ -417,7 +405,6 @@ main (int argc, char **argv)
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 						 "age", (guint64) G_MAXUINT,
-						 "refresh-flags", GS_PLUGIN_REFRESH_FLAGS_METADATA,
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);
@@ -679,12 +666,9 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc >= 2 && g_strcmp0 (argv[1], "refresh") == 0) {
-		GsPluginRefreshFlags refresh_flags;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
-		refresh_flags = gs_cmd_refresh_flag_from_string (argv[2]);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 						 "age", (guint64) cache_age,
-						 "refresh-flags", refresh_flags,
 						 NULL);
 		ret = gs_plugin_loader_job_action (self->plugin_loader, plugin_job,
 						    NULL, &error);

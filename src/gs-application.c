@@ -139,6 +139,8 @@ gs_application_init (GsApplication *application)
 		  _("Show verbose debugging information"), NULL },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show profiling information for the service"), NULL },
+		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show update preferences"), NULL },
 		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Quit the running instance"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
@@ -315,6 +317,12 @@ sources_activated (GSimpleAction *action,
 		   gpointer       app)
 {
 	gs_shell_show_sources (GS_APPLICATION (app)->shell);
+}
+
+static void
+prefs_activated (GSimpleAction *action, GVariant *parameter, gpointer app)
+{
+	gs_shell_show_prefs (GS_APPLICATION (app)->shell);
 }
 
 static void
@@ -815,6 +823,7 @@ static GActionEntry actions[] = {
 
 static GActionEntry actions_after_loading[] = {
 	{ "sources", sources_activated, NULL, NULL, NULL },
+	{ "prefs", prefs_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
@@ -1027,6 +1036,11 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	if (g_variant_dict_contains (options, "profile")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"profile",
+						NULL);
+	}
+	if (g_variant_dict_contains (options, "prefs")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"prefs",
 						NULL);
 	}
 	if (g_variant_dict_contains (options, "quit")) {

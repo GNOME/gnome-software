@@ -53,7 +53,6 @@ G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
 
 static gboolean
 gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
-			      GsPluginRefreshFlags flags,
 			      GCancellable *cancellable, GError **error);
 
 static gchar *
@@ -211,7 +210,7 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	}
 
 	/* if this is a new remote, get the AppStream data */
-	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, 0, NULL, &error_md)) {
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, NULL, &error_md)) {
 		g_warning ("failed to get initial available data: %s",
 			   error_md->message);
 	}
@@ -632,7 +631,6 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 
 static gboolean
 gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
-			      GsPluginRefreshFlags flags,
 			      GCancellable *cancellable, GError **error)
 {
 	gboolean ret;
@@ -692,6 +690,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 							   cancellable,
 							   &error_local);
 		if (!ret) {
+			g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
 			if (g_error_matches (error_local,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED)) {
@@ -703,19 +702,11 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 						     GUINT_TO_POINTER (1));
 				continue;
 			}
-			if ((flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) == 0) {
-				g_warning ("Failed to get AppStream metadata: %s [%s:%i]",
-					   error_local->message,
-					   g_quark_to_string (error_local->domain),
-					   error_local->code);
-				continue;
-			}
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Failed to get AppStream metadata: %s",
-				     error_local->message);
-			return FALSE;
+			gs_flatpak_error_convert (&error_local);
+			gs_plugin_event_set_error (event, error_local);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (self->plugin, event);
+			continue;
 		}
 
 		/* add the new AppStream repo to the shared store */
@@ -1177,10 +1168,10 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 {
 	g_autoptr(GPtrArray) xrefs = NULL;
 
-	/* get all the installed apps (no network I/O) */
-	xrefs = flatpak_installation_list_installed_refs (self->installation,
-							  cancellable,
-							  error);
+	/* get all the updatable apps and runtimes */
+	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
+								     cancellable,
+								     error);
 	if (xrefs == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
@@ -1203,22 +1194,12 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 				 flatpak_ref_get_name (FLATPAK_REF (xref)));
 			continue;
 		}
-		if (g_strcmp0 (commit, latest_commit) == 0) {
-			g_debug ("no downloaded update for %s",
-				 flatpak_ref_get_name (FLATPAK_REF (xref)));
-			continue;
-		}
 
-		/* we have an update to show */
-		g_debug ("%s has a downloaded update %s->%s",
-			 flatpak_ref_get_name (FLATPAK_REF (xref)),
-			 commit, latest_commit);
 		app = gs_flatpak_create_installed (self, xref, &error_local);
 		if (app == NULL) {
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
 		}
-
 		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
 		if (main_app == NULL) {
 			g_debug ("Couldn't get the main app for updatable app extension %s: "
@@ -1226,76 +1207,42 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 				 gs_app_get_unique_id (app), error_local->message);
 			main_app = g_object_ref (app);
 		}
-
-		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
-		gs_app_set_update_details (main_app, NULL);
-		gs_app_set_update_version (main_app, NULL);
-		gs_app_set_update_urgency (main_app, AS_URGENCY_KIND_UNKNOWN);
-		gs_app_set_size_download (main_app, 0);
-		gs_app_list_add (list, main_app);
-	}
-
-	/* success */
-	return TRUE;
-}
-
-gboolean
-gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
-				GCancellable *cancellable,
-				GError **error)
-{
-	g_autoptr(GPtrArray) xrefs = NULL;
-
-	/* get all the updatable apps and runtimes */
-	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
-								     cancellable,
-								     error);
-	if (xrefs == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	for (guint i = 0; i < xrefs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		guint64 download_size = 0;
-		g_autoptr(GsApp) app = NULL;
-		g_autoptr(GError) error_local = NULL;
-		g_autoptr(GsApp) main_app = NULL;
-
-		/* we have an update to show */
-		g_debug ("%s has update", flatpak_ref_get_name (FLATPAK_REF (xref)));
-		app = gs_flatpak_create_installed (self, xref, &error_local);
-		if (app == NULL) {
-			g_warning ("failed to add flatpak: %s", error_local->message);
-			continue;
-		}
-
-		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
-		if (main_app == NULL) {
-			g_debug ("Couldn't get the main app for updatable app extension %s: "
-				 "%s; adding the app itself to the pending updates list...",
-				 gs_app_get_unique_id (app), error_local->message);
-			main_app = g_object_ref (app);
-		}
-
 		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 
-		/* get the current download size */
-		if (gs_app_get_size_download (main_app) == 0) {
-			if (!flatpak_installation_fetch_remote_size_sync (self->installation,
-									  gs_app_get_origin (app),
-									  FLATPAK_REF (xref),
-									  &download_size,
-									  NULL,
-									  cancellable,
-									  &error_local)) {
-				g_warning ("failed to get download size: %s",
-					   error_local->message);
-				gs_app_set_size_download (main_app, GS_APP_SIZE_UNKNOWABLE);
-			} else {
-				gs_app_set_size_download (main_app, download_size);
+		/* already downloaded */
+		if (g_strcmp0 (commit, latest_commit) != 0) {
+			g_debug ("%s has a downloaded update %s->%s",
+				 flatpak_ref_get_name (FLATPAK_REF (xref)),
+				 commit, latest_commit);
+			gs_app_set_update_details (main_app, NULL);
+			gs_app_set_update_version (main_app, NULL);
+			gs_app_set_update_urgency (main_app, AS_URGENCY_KIND_UNKNOWN);
+			gs_app_set_size_download (main_app, 0);
+			gs_app_list_add (list, main_app);
+
+		/* needs download */
+		} else {
+			guint64 download_size = 0;
+			g_debug ("%s needs update",
+				 flatpak_ref_get_name (FLATPAK_REF (xref)));
+
+			/* get the current download size */
+			if (gs_app_get_size_download (main_app) == 0) {
+				if (!flatpak_installation_fetch_remote_size_sync (self->installation,
+										  gs_app_get_origin (app),
+										  FLATPAK_REF (xref),
+										  &download_size,
+										  NULL,
+										  cancellable,
+										  &error_local)) {
+					g_warning ("failed to get download size: %s",
+						   error_local->message);
+					gs_app_set_size_download (main_app, GS_APP_SIZE_UNKNOWABLE);
+				} else {
+					gs_app_set_size_download (main_app, download_size);
+				}
 			}
 		}
-
 		gs_app_list_add (list, main_app);
 	}
 
@@ -1306,12 +1253,9 @@ gs_flatpak_add_updates_pending (GsFlatpak *self, GsAppList *list,
 gboolean
 gs_flatpak_refresh (GsFlatpak *self,
 		    guint cache_age,
-		    GsPluginRefreshFlags flags,
 		    GCancellable *cancellable,
 		    GError **error)
 {
-	g_autoptr(GPtrArray) xrefs = NULL;
-
 	/* give all the repos a second chance */
 	g_hash_table_remove_all (self->broken_remotes);
 
@@ -1324,60 +1268,7 @@ gs_flatpak_refresh (GsFlatpak *self,
 	}
 
 	/* update AppStream metadata */
-	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
-		if (!gs_flatpak_refresh_appstream (self, cache_age, flags,
-						   cancellable, error))
-			return FALSE;
-	}
-
-	/* no longer interesting */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) == 0)
-		return TRUE;
-
-	/* get all the updates available from all remotes */
-	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
-								     cancellable,
-								     error);
-	if (xrefs == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	for (guint i = 0; i < xrefs->len; i++) {
-		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		g_autoptr(FlatpakInstalledRef) xref2 = NULL;
-		g_autoptr(GsApp) app_dl = NULL;
-		g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
-		g_autoptr(GError) error_local = NULL;
-
-		/* try to create a GsApp so we can do progress reporting */
-		app_dl = gs_flatpak_create_installed (self, xref, NULL);
-
-		/* fetch but do not deploy */
-		g_debug ("pulling update for %s",
-			 flatpak_ref_get_name (FLATPAK_REF (xref)));
-		phelper = gs_flatpak_progress_helper_new (self->plugin, app_dl);
-		xref2 = flatpak_installation_update (self->installation,
-						     FLATPAK_UPDATE_FLAGS_NO_DEPLOY,
-						     flatpak_ref_get_kind (FLATPAK_REF (xref)),
-						     flatpak_ref_get_name (FLATPAK_REF (xref)),
-						     flatpak_ref_get_arch (FLATPAK_REF (xref)),
-						     flatpak_ref_get_branch (FLATPAK_REF (xref)),
-						     gs_flatpak_progress_cb, phelper,
-						     cancellable, &error_local);
-		if (xref2 == NULL) {
-			if (g_error_matches (error_local,
-					     FLATPAK_ERROR,
-					     FLATPAK_ERROR_ALREADY_INSTALLED)) {
-				g_debug ("ignoring: %s", error_local->message);
-				continue;
-			}
-			g_propagate_error (error, g_steal_pointer (&error_local));
-			gs_flatpak_error_convert (error);
-			return FALSE;
-		}
-	}
-
-	return TRUE;
+	return gs_flatpak_refresh_appstream (self, cache_age, cancellable, error);
 }
 
 static gboolean

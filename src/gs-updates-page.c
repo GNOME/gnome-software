@@ -1297,7 +1297,6 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 static void
 gs_updates_page_get_new_updates (GsUpdatesPage *self)
 {
-	GsPluginRefreshFlags refresh_flags = GS_PLUGIN_REFRESH_FLAGS_NONE;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* force a check for updates and download */
@@ -1309,13 +1308,8 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 	}
 	self->cancellable_refresh = g_cancellable_new ();
 
-	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE;
-	refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_METADATA;
-	if (g_settings_get_boolean (self->settings, "download-updates"))
-		refresh_flags |= GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "failure-flags", GS_PLUGIN_FAILURE_FLAGS_USE_EVENTS,
-					 "refresh-flags", refresh_flags,
+					 "interactive", TRUE,
 					 "age", (guint64) GS_REFRESH_MIN_AGE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -185,28 +185,6 @@ typedef enum {
 typedef guint64 GsPluginRefineFlags;
 
 /**
- * GsPluginRefreshFlags:
- * @GS_PLUGIN_REFRESH_FLAGS_NONE:	Generate new metadata if possible
- * @GS_PLUGIN_REFRESH_FLAGS_METADATA:	Download new metadata
- * @GS_PLUGIN_REFRESH_FLAGS_PAYLOAD:	Download any pending payload
- * @GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE: Running by user request
- *
- * The flags used for refresh. Regeneration and downloading is only
- * done if the cache is older than the %cache_age.
- *
- * The %GS_PLUGIN_REFRESH_FLAGS_METADATA can be used to make sure
- * there's enough metadata to start the application.
- * The %GS_PLUGIN_REFRESH_FLAGS_PAYLOAD flag should only be used when
- * the session is idle and bandwidth is unmetered as the amount of data
- * and IO may be large.
- **/
-#define GS_PLUGIN_REFRESH_FLAGS_NONE			((guint64) 0)
-#define GS_PLUGIN_REFRESH_FLAGS_METADATA		((guint64) 1 << 0)
-#define GS_PLUGIN_REFRESH_FLAGS_PAYLOAD			((guint64) 1 << 1)
-#define GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE		((guint64) 1 << 2)
-typedef guint64 GsPluginRefreshFlags;
-
-/**
  * GsPluginRule:
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another
@@ -269,6 +247,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_INITIALIZE:		Initialize the plugin
  * @GS_PLUGIN_ACTION_DESTROY:			Destroy the plugin
  * @GS_PLUGIN_ACTION_PURCHASE:			Purchase an app
+ * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  *
  * The plugin action.
  **/
@@ -316,6 +295,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_INITIALIZE,
 	GS_PLUGIN_ACTION_DESTROY,
 	GS_PLUGIN_ACTION_PURCHASE,
+	GS_PLUGIN_ACTION_DOWNLOAD,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;

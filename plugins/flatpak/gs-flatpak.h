@@ -63,13 +63,8 @@ gboolean	gs_flatpak_add_updates		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
-gboolean	gs_flatpak_add_updates_pending	(GsFlatpak		*self,
-						 GsAppList		*list,
-						 GCancellable		*cancellable,
-						 GError			**error);
 gboolean	gs_flatpak_refresh		(GsFlatpak		*self,
-						 guint			cache_age,
-						 GsPluginRefreshFlags	flags,
+						 guint			 cache_age,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
