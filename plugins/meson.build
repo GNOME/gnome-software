@@ -19,9 +19,6 @@ endif
 if get_option('enable-fwupd')
   subdir('fwupd')
 endif
-if get_option('enable-limba')
-   subdir('limba')
-endif
 if get_option('enable-gudev')
   subdir('modalias')
 endif
