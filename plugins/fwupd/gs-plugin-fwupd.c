@@ -354,11 +354,8 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	return g_steal_pointer (&app);
 }
 
-static gboolean
-gs_plugin_add_update_app (GsPlugin *plugin,
-			  GsAppList *list,
-			  FwupdDevice *dev,
-			  GError **error)
+static GsApp *
+gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 {
 	FwupdRelease *rel = fwupd_device_get_release_default (dev);
 	GPtrArray *checksums;
@@ -376,21 +373,30 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "%s [%s] cannot be updated",
 			     gs_app_get_name (app), gs_app_get_id (app));
-		return FALSE;
+		return NULL;
 	}
 
 	/* some missing */
 	if (gs_app_get_id (app) == NULL) {
-		g_warning ("fwupd: No id for firmware");
-		return TRUE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "fwupd: No id for firmware");
+		return NULL;
 	}
 	if (gs_app_get_version (app) == NULL) {
-		g_warning ("fwupd: No version! for %s!", gs_app_get_id (app));
-		return TRUE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "fwupd: No version! for %s!", gs_app_get_id (app));
+		return NULL;
 	}
 	if (gs_app_get_update_version (app) == NULL) {
-		g_warning ("fwupd: No update-version! for %s!", gs_app_get_id (app));
-		return TRUE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "fwupd: No update-version! for %s!", gs_app_get_id (app));
+		return NULL;
 	}
 	checksums = fwupd_release_get_checksums (rel);
 	if (checksums->len == 0) {
@@ -401,7 +407,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			     gs_app_get_name (app),
 			     gs_app_get_id (app),
 			     gs_app_get_update_version (app));
-		return FALSE;
+		return NULL;
 	}
 	update_uri = fwupd_release_get_uri (rel);
 	if (update_uri == NULL) {
@@ -410,7 +416,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_INVALID_FORMAT,
 			     "no location available for %s [%s]",
 			     gs_app_get_name (app), gs_app_get_id (app));
-		return FALSE;
+		return NULL;
 	}
 
 	/* does the firmware already exist in the cache? */
@@ -420,7 +426,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 						      GS_UTILS_CACHE_FLAG_NONE,
 						      error);
 	if (filename_cache == NULL)
-		return FALSE;
+		return NULL;
 
 	/* delete the file if the checksum does not match */
 	if (g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
@@ -442,7 +448,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 							      G_CHECKSUM_SHA1,
 							      error);
 		if (checksum == NULL)
-			return FALSE;
+			return NULL;
 		if (g_strcmp0 (checksum_tmp, checksum) != 0) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
@@ -450,7 +456,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 				     "%s does not match checksum, expected %s got %s",
 				     filename_cache, checksum_tmp, checksum);
 			g_unlink (filename_cache);
-			return FALSE;
+			return NULL;
 		}
 	}
 
@@ -461,8 +467,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	/* actually add the application */
 	file = g_file_new_for_path (filename_cache);
 	gs_app_set_local_file (app, file);
-	gs_app_list_add (list, app);
-	return TRUE;
+	return g_steal_pointer (&app);
 }
 
 gboolean
@@ -538,10 +543,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		FwupdRelease *rel_newest;
 		g_autoptr(GError) error_local2 = NULL;
 		g_autoptr(GPtrArray) rels = NULL;
+		g_autoptr(GsApp) app = NULL;
 
 		/* locked device that needs unlocking */
 		if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_LOCKED)) {
-			g_autoptr(GsApp) app = NULL;
 			app = gs_plugin_fwupd_new_app_from_device_raw (plugin, dev);
 			gs_fwupd_app_set_is_locked (app, TRUE);
 			gs_app_list_add (list, app);
@@ -571,10 +576,36 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* normal device update */
 		rel_newest = g_ptr_array_index (rels, 0);
 		fwupd_device_add_release (dev, rel_newest);
-		if (!gs_plugin_add_update_app (plugin, list, dev, &error_local2)) {
+		app = gs_plugin_fwupd_new_app (plugin, dev, &error_local2);
+		if (app == NULL) {
 			g_debug ("%s", error_local2->message);
 			continue;
 		}
+
+		/* add update descriptions for all releases inbetween */
+		if (rels->len > 1) {
+			g_autoptr(GString) update_desc = g_string_new (NULL);
+			for (guint j = 0; j < rels->len; j++) {
+				FwupdRelease *rel = g_ptr_array_index (rels, j);
+				g_autofree gchar *desc = NULL;
+				if (fwupd_release_get_description (rel) == NULL)
+					continue;
+				desc = as_markup_convert (fwupd_release_get_description (rel),
+							  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
+							  NULL);
+				if (desc == NULL)
+					continue;
+				g_string_append_printf (update_desc,
+							"Version %s:\n%s\n\n",
+							fwupd_release_get_version (rel),
+							desc);
+			}
+			if (update_desc->len > 2) {
+				g_string_truncate (update_desc, update_desc->len - 2);
+				gs_app_set_update_details (app, update_desc->str);
+			}
+		}
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }
