@@ -823,9 +823,11 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* add information specific to installed snaps */
 	if (local_snap != NULL) {
 		SnapdApp *snap_app;
+		GDateTime *install_date;
 
+		install_date = snapd_snap_get_install_date (local_snap);
 		gs_app_set_size_installed (app, snapd_snap_get_installed_size (local_snap));
-		gs_app_set_install_date (app, g_date_time_to_unix (snapd_snap_get_install_date (local_snap)));
+		gs_app_set_install_date (app, install_date != NULL ? g_date_time_to_unix (install_date) : GS_APP_INSTALL_DATE_UNKNOWN);
 
 		snap_app = get_primary_app (local_snap);
 		if (snap_app != NULL) {
