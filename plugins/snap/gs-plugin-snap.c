@@ -547,7 +547,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	if (client == NULL)
 		return FALSE;
 
-	snaps = snapd_client_list_sync (client, cancellable, error);
+	snaps = snapd_client_get_snaps_sync (client, SNAPD_GET_SNAPS_FLAGS_NONE, NULL, cancellable, error);
 	if (snaps == NULL) {
 		snapd_error_convert (error);
 		return FALSE;
@@ -556,9 +556,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	for (i = 0; i < snaps->len; i++) {
 		SnapdSnap *snap = g_ptr_array_index (snaps, i);
 		g_autoptr(GsApp) app = NULL;
-
-		if (snapd_snap_get_status (snap) != SNAPD_SNAP_STATUS_ACTIVE)
-			continue;
 
 		app = snap_to_app (plugin, snap);
 		gs_app_list_add (list, app);
@@ -793,7 +790,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return FALSE;
 
 	/* get information from local snaps and store */
-	local_snap = snapd_client_list_one_sync (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, NULL);
+	local_snap = snapd_client_get_snap_sync (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, NULL);
 	if (local_snap == NULL || (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) != 0)
 		store_snap = get_store_snap (plugin, gs_app_get_metadata_item (app, "snap::name"), cancellable, NULL);
 	if (local_snap == NULL && store_snap == NULL)
@@ -815,7 +812,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (description != NULL)
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (snap));
-	gs_app_set_developer_name (app, snapd_snap_get_developer (snap));
+	gs_app_set_developer_name (app, snapd_snap_get_publisher_username (snap));
 
 	snap = local_snap != NULL ? local_snap : store_snap;
 	gs_app_set_version (app, snapd_snap_get_version (snap));

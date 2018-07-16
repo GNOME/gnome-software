@@ -124,8 +124,9 @@ make_snap (const gchar *name, SnapdSnapStatus status)
 }
 
 GPtrArray *
-snapd_client_list_sync (SnapdClient *client,
-			GCancellable *cancellable, GError **error)
+snapd_client_get_snaps_sync (SnapdClient *client,
+			     SnapdGetSnapsFlags flags, gchar **names,
+			     GCancellable *cancellable, GError **error)
 {
 	GPtrArray *snaps;
 
@@ -137,7 +138,7 @@ snapd_client_list_sync (SnapdClient *client,
 }
 
 SnapdSnap *
-snapd_client_list_one_sync (SnapdClient *client,
+snapd_client_get_snap_sync (SnapdClient *client,
 			    const gchar *name,
 			    GCancellable *cancellable, GError **error)
 {
