@@ -41,6 +41,13 @@ typedef struct
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 
+GsShell *
+gs_page_get_shell (GsPage *page)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	return priv->shell;
+}
+
 typedef struct {
 	GsApp		*app;
 	GsPage		*page;
