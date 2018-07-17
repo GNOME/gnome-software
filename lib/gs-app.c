@@ -560,7 +560,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	if (priv->size_installed != 0)
 		gs_app_kv_size (str, "size-installed", priv->size_installed);
 	if (priv->size_download != 0)
-		gs_app_kv_size (str, "size-download", priv->size_download);
+		gs_app_kv_size (str, "size-download", gs_app_get_size_download (app));
 	if (priv->price != NULL)
 		gs_app_kv_printf (str, "price", "%s %.2f",
 				  gs_price_get_currency (priv->price),
