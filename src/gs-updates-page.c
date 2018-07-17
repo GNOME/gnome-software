@@ -1168,6 +1168,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 	gs_container_remove_all (GTK_CONTAINER (self->updates_box));
 
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
