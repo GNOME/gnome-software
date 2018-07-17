@@ -35,6 +35,7 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GObject)
 
 GsUpdateMonitor	*gs_update_monitor_new			(GsApplication	*app);
+void		 gs_update_monitor_get_updates		(GsUpdateMonitor *monitor);
 void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
 							 GsShell	*shell);
 

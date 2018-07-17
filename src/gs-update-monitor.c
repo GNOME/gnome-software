@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2018 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  *
@@ -480,8 +480,8 @@ get_upgrades_finished_cb (GObject *object,
 	g_application_send_notification (monitor->application, "upgrades-available", n);
 }
 
-static void
-get_updates (GsUpdateMonitor *monitor)
+void
+gs_update_monitor_get_updates (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -568,7 +568,7 @@ refresh_cache_finished_cb (GObject *object,
 	g_settings_set (monitor->settings, "check-timestamp", "x",
 	                g_date_time_to_unix (now));
 
-	get_updates (monitor);
+	gs_update_monitor_get_updates (monitor);
 }
 
 typedef enum {
@@ -753,7 +753,7 @@ updates_changed_cb (GsPluginLoader *plugin_loader, GsUpdateMonitor *monitor)
 {
 	/* when the list of downloaded-and-ready-to-go updates changes get the
 	 * new list and perhaps show/hide the notification */
-	get_updates (monitor);
+	gs_update_monitor_get_updates (monitor);
 }
 
 static void
