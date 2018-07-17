@@ -64,6 +64,7 @@ gnome_software_sources = [
   'gs-update-list.c',
   'gs-update-monitor.c',
   'gs-updates-page.c',
+  'gs-updates-section.c',
   'gs-upgrade-banner.c',
   'gs-vendor.c'
 ]
