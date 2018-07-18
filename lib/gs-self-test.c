@@ -683,6 +683,57 @@ gs_auth_secret_func (void)
 	g_assert_cmpstr (gs_auth_get_metadata_item (auth2, "day"), ==, "monday");
 }
 
+static void
+gs_app_list_func (void)
+{
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GsApp) app1 = gs_app_new ("app1");
+	g_autoptr(GsApp) app2 = gs_app_new ("app2");
+
+	/* turn on */
+	gs_app_list_add_flag (list, GS_APP_LIST_FLAG_WATCH_APPS);
+
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 0);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_UNKNOWN);
+	gs_app_list_add (list, app1);
+	gs_app_set_progress (app1, 75);
+	gs_app_set_state (app1, AS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app1, AS_APP_STATE_INSTALLING);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 75);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_INSTALLING);
+
+	gs_app_list_add (list, app2);
+	gs_app_set_progress (app2, 25);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 50);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_INSTALLING);
+
+	gs_app_list_remove (list, app1);
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 25);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_UNKNOWN);
+}
+
+static void
+gs_app_list_related_func (void)
+{
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GsApp) app = gs_app_new ("app");
+	g_autoptr(GsApp) related = gs_app_new ("related");
+
+	/* turn on */
+	gs_app_list_add_flag (list,
+			      GS_APP_LIST_FLAG_WATCH_APPS |
+			      GS_APP_LIST_FLAG_WATCH_APPS_RELATED);
+	gs_app_add_related (app, related);
+	gs_app_list_add (list, app);
+
+	gs_app_set_progress (app, 75);
+	gs_app_set_progress (related, 25);
+	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_list_get_progress (list), ==, 50);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -704,6 +755,8 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app{addons}", gs_app_addons_func);
 	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
+	g_test_add_func ("/gnome-software/lib/app{list}", gs_app_list_func);
+	g_test_add_func ("/gnome-software/lib/app{list-related}", gs_app_list_related_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/lib/plugin{download-rewrite}", gs_plugin_download_rewrite_func);
 	g_test_add_func ("/gnome-software/lib/auth{secret}", gs_auth_secret_func);
