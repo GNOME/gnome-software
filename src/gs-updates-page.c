@@ -1639,7 +1639,7 @@ static void
 gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
                                     GsUpdatesPage *self)
 {
-	GPtrArray *removals;
+	GsAppList *removals;
 	GsApp *upgrade;
 	GtkWidget *dialog;
 	guint cnt = 0;
@@ -1653,8 +1653,8 @@ gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 
 	/* count the removals */
 	removals = gs_app_get_related (upgrade);
-	for (i = 0; i < removals->len; i++) {
-		GsApp *app = g_ptr_array_index (removals, i);
+	for (i = 0; i < gs_app_list_length (removals); i++) {
+		GsApp *app = gs_app_list_index (removals, i);
 		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
 			continue;
 		cnt++;

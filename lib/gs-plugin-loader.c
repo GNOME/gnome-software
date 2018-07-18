@@ -27,6 +27,7 @@
 #include <appstream-glib.h>
 #include <math.h>
 
+#include "gs-app-collation.h"
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
 #include "gs-category-private.h"
@@ -925,9 +926,9 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 		addons_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
-			GPtrArray *addons = gs_app_get_addons (app);
-			for (guint j = 0; j < addons->len; j++) {
-				GsApp *addon = g_ptr_array_index (addons, j);
+			GsAppList *addons = gs_app_get_addons (app);
+			for (guint j = 0; j < gs_app_list_length (addons); j++) {
+				GsApp *addon = gs_app_list_index (addons, j);
 				g_debug ("refining app %s addon %s",
 					 gs_app_get_id (app),
 					 gs_app_get_id (addon));
@@ -974,9 +975,9 @@ gs_plugin_loader_run_refine_internal (GsPluginLoaderHelper *helper,
 		related_list = gs_app_list_new ();
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);
-			GPtrArray *related = gs_app_get_related (app);
-			for (guint j = 0; j < related->len; j++) {
-				GsApp *app2 = g_ptr_array_index (related, j);
+			GsAppList *related = gs_app_get_related (app);
+			for (guint j = 0; j < gs_app_list_length (related); j++) {
+				GsApp *app2 = gs_app_list_index (related, j);
 				g_debug ("refining related: %s[%s]",
 					 gs_app_get_id (app2),
 					 gs_app_get_source_default (app2));
@@ -1063,14 +1064,14 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		g_autoptr(GPtrArray) to_remove = g_ptr_array_new ();
 		GsApp *app = gs_app_list_index (list, i);
-		GPtrArray *addons = gs_app_get_addons (app);
+		GsAppList *addons = gs_app_get_addons (app);
 
 		/* find any apps with the same source */
 		const gchar *pkgname_parent = gs_app_get_source_default (app);
 		if (pkgname_parent == NULL)
 			continue;
-		for (guint j = 0; j < addons->len; j++) {
-			GsApp *addon = g_ptr_array_index (addons, j);
+		for (guint j = 0; j < gs_app_list_length (addons); j++) {
+			GsApp *addon = gs_app_list_index (addons, j);
 			if (g_strcmp0 (gs_app_get_source_default (addon),
 				       pkgname_parent) == 0) {
 				g_debug ("%s has the same pkgname of %s as %s",
@@ -1883,7 +1884,7 @@ static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GPtrArray *addons;
+	GsAppList *addons;
 	guint i;
 	guint id;
 
@@ -1899,8 +1900,8 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 
 	/* recursively queue any addons */
 	addons = gs_app_get_addons (app);
-	for (i = 0; i < addons->len; i++) {
-		GsApp *addon = g_ptr_array_index (addons, i);
+	for (i = 0; i < gs_app_list_length (addons); i++) {
+		GsApp *addon = gs_app_list_index (addons, i);
 		if (gs_app_get_to_be_installed (addon))
 			add_app_to_install_queue (plugin_loader, addon);
 	}
@@ -1910,7 +1911,7 @@ static gboolean
 remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GPtrArray *addons;
+	GsAppList *addons;
 	gboolean ret;
 	guint i;
 	guint id;
@@ -1927,8 +1928,8 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 
 		/* recursively remove any queued addons */
 		addons = gs_app_get_addons (app);
-		for (i = 0; i < addons->len; i++) {
-			GsApp *addon = g_ptr_array_index (addons, i);
+		for (i = 0; i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
 			remove_app_from_install_queue (plugin_loader, addon);
 		}
 	}
@@ -3259,10 +3260,10 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* unstage addons */
 	if (add_to_pending_array) {
-		GPtrArray *addons;
+		GsAppList *addons;
 		addons = gs_app_get_addons (gs_plugin_job_get_app (helper->plugin_job));
-		for (guint i = 0; i < addons->len; i++) {
-			GsApp *addon = g_ptr_array_index (addons, i);
+		for (guint i = 0; i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_to_be_installed (addon, FALSE);
 		}

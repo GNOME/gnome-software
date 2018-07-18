@@ -551,7 +551,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update description */
 	if (kind == AS_APP_KIND_OS_UPDATE) {
-		GPtrArray *related;
+		GsAppList *related;
 		GsApp *app_related;
 		GsUpdateDialogSection section;
 		GtkWidget *row;
@@ -568,8 +568,8 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 		/* add new apps */
 		related = gs_app_get_related (app);
-		for (guint i = 0; i < related->len; i++) {
-			app_related = g_ptr_array_index (related, i);
+		for (guint i = 0; i < gs_app_list_length (related); i++) {
+			app_related = gs_app_list_index (related, i);
 
 			section = get_app_section (app_related);
 			if (dialog->list_boxes[section] == NULL)

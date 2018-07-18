@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2017-2018 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,22 +19,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GNOME_SOFTWARE_H__
-#define __GNOME_SOFTWARE_H__
+#ifndef __GS_APP_COLLATION_H
+#define __GS_APP_COLLATION_H
 
-#ifndef I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
-#error You have to define I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
-#endif
+#include <glib-object.h>
 
-#include <gs-app.h>
-#include <gs-app-list.h>
-#include <gs-app-collation.h>
-#include <gs-auth.h>
-#include <gs-category.h>
-#include <gs-os-release.h>
-#include <gs-plugin.h>
-#include <gs-plugin-vfuncs.h>
-#include <gs-utils.h>
+#include "gs-app-list.h"
 
-#endif /* __GNOME_SOFTWARE_H__ */
+G_BEGIN_DECLS
 
+GsAppList	*gs_app_get_related		(GsApp		*app);
+GsAppList	*gs_app_get_addons		(GsApp		*app);
+GsAppList	*gs_app_get_history		(GsApp		*app);
+
+G_END_DECLS
+
+#endif /* __GS_APP_COLLATION_H */
+
+/* vim: set noexpandtab: */

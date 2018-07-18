@@ -655,15 +655,15 @@ gs_plugin_update_app (GsPlugin *plugin,
                       GCancellable *cancellable,
                       GError **error)
 {
-	GPtrArray *related = gs_app_get_related (app);
+	GsAppList *related = gs_app_get_related (app);
 
 	/* we don't currently don't put all updates in the OsUpdate proxy app */
 	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
 		return trigger_rpmostree_update (plugin, app, cancellable, error);
 
 	/* try to trigger each related app */
-	for (guint i = 0; i < related->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (related, i);
+	for (guint i = 0; i < gs_app_list_length (related); i++) {
+		GsApp *app_tmp = gs_app_list_index (related, i);
 		if (!trigger_rpmostree_update (plugin, app_tmp, cancellable, error))
 			return FALSE;
 	}

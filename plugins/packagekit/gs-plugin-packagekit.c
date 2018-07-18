@@ -257,7 +257,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GPtrArray *addons;
+	GsAppList *addons;
 	GPtrArray *source_ids;
 	ProgressData data = { 0 };
 	const gchar *package_id;
@@ -353,8 +353,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 
 		addons = gs_app_get_addons (app);
-		for (i = 0; i < addons->len; i++) {
-			GsApp *addon = g_ptr_array_index (addons, i);
+		for (i = 0; i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
 
 			if (!gs_app_get_to_be_installed (addon))
 				continue;
@@ -378,8 +378,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		addons = gs_app_get_addons (app);
-		for (i = 0; i < addons->len; i++) {
-			GsApp *addon = g_ptr_array_index (addons, i);
+		for (i = 0; i < gs_app_list_length (addons); i++) {
+			GsApp *addon = gs_app_list_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_state (addon, AS_APP_STATE_INSTALLING);
 		}
