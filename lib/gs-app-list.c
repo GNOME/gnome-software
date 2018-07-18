@@ -36,6 +36,7 @@
 
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
+#include "gs-app-collation.h"
 
 struct _GsAppList
 {
@@ -45,9 +46,179 @@ struct _GsAppList
 	GMutex			 mutex;
 	guint			 size_peak;
 	GsAppListFlags		 flags;
+	AsAppState		 state;
+	guint			 progress;
 };
 
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
+
+enum {
+	PROP_0,
+	PROP_STATE,
+	PROP_PROGRESS,
+	PROP_LAST
+};
+
+/**
+ * gs_app_list_get_state:
+ * @list: A #GsAppList
+ *
+ * Gets the state of the list.
+ *
+ * This method will only return a valid result if gs_app_list_add_flag() has
+ * been called with %GS_APP_LIST_FLAG_WATCH_APPS.
+ *
+ * Returns: the #AsAppState, e.g. %AS_APP_STATE_INSTALLED
+ *
+ * Since: 3.30
+ **/
+AsAppState
+gs_app_list_get_state (GsAppList *list)
+{
+	g_return_val_if_fail (GS_IS_APP_LIST (list), AS_APP_STATE_UNKNOWN);
+	return list->state;
+}
+
+/**
+ * gs_app_list_get_progress:
+ * @list: A #GsAppList
+ *
+ * Gets the average percentage completion of all apps in the list.
+ *
+ * This method will only return a valid result if gs_app_list_add_flag() has
+ * been called with %GS_APP_LIST_FLAG_WATCH_APPS.
+ *
+ * Returns: the percentage completion, or 0 for unknown
+ *
+ * Since: 3.30
+ **/
+guint
+gs_app_list_get_progress (GsAppList *list)
+{
+	g_return_val_if_fail (GS_IS_APP_LIST (list), 0);
+	return list->progress;
+}
+
+static void
+gs_app_list_add_watched_for_app (GsAppList *list, GPtrArray *apps, GsApp *app)
+{
+	if (list->flags & GS_APP_LIST_FLAG_WATCH_APPS)
+		g_ptr_array_add (apps, app);
+	if (list->flags & GS_APP_LIST_FLAG_WATCH_APPS_ADDONS) {
+		GsAppList *list2 = gs_app_get_addons (app);
+		for (guint i = 0; i < gs_app_list_length (list2); i++) {
+			GsApp *app2 = gs_app_list_index (list2, i);
+			g_ptr_array_add (apps, app2);
+		}
+	}
+	if (list->flags & GS_APP_LIST_FLAG_WATCH_APPS_RELATED) {
+		GsAppList *list2 = gs_app_get_related (app);
+		for (guint i = 0; i < gs_app_list_length (list2); i++) {
+			GsApp *app2 = gs_app_list_index (list2, i);
+			g_ptr_array_add (apps, app2);
+		}
+	}
+}
+
+static GPtrArray *
+gs_app_list_get_watched_for_app (GsAppList *list, GsApp *app)
+{
+	GPtrArray *apps = g_ptr_array_new ();
+	gs_app_list_add_watched_for_app (list, apps, app);
+	return apps;
+}
+
+static GPtrArray *
+gs_app_list_get_watched (GsAppList *list)
+{
+	GPtrArray *apps = g_ptr_array_new ();
+	for (guint i = 0; i < list->array->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (list->array, i);
+		gs_app_list_add_watched_for_app (list, apps, app_tmp);
+	}
+	return apps;
+}
+
+static void
+gs_app_list_invalidate_progress (GsAppList *self)
+{
+	guint progress = 0;
+	g_autoptr(GPtrArray) apps = gs_app_list_get_watched (self);
+
+	/* find the average percentage complete of the list */
+	if (apps->len > 0) {
+		guint64 pc_cnt = 0;
+		for (guint i = 0; i < apps->len; i++) {
+			GsApp *app_tmp = g_ptr_array_index (apps, i);
+			pc_cnt += gs_app_get_progress (app_tmp);
+		}
+		progress = pc_cnt / apps->len;
+	}
+	if (self->progress != progress) {
+		self->progress = progress;
+		g_object_notify (G_OBJECT (self), "progress");
+	}
+}
+
+static void
+gs_app_list_invalidate_state (GsAppList *self)
+{
+	AsAppState state = AS_APP_STATE_UNKNOWN;
+	g_autoptr(GPtrArray) apps = gs_app_list_get_watched (self);
+
+	/* find any action state of the list */
+	for (guint i = 0; i < apps->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (apps, i);
+		AsAppState state_tmp = gs_app_get_state (app_tmp);
+		if (state_tmp == AS_APP_STATE_INSTALLING ||
+		    state_tmp == AS_APP_STATE_REMOVING ||
+		    state_tmp == AS_APP_STATE_PURCHASING) {
+			state = state_tmp;
+			break;
+		}
+	}
+	if (self->state != state) {
+		self->state = state;
+		g_object_notify (G_OBJECT (self), "state");
+	}
+}
+
+static void
+gs_app_list_progress_notify_cb (GsApp *app, GParamSpec *pspec, GsAppList *self)
+{
+	gs_app_list_invalidate_progress (self);
+}
+
+static void
+gs_app_list_state_notify_cb (GsApp *app, GParamSpec *pspec, GsAppList *self)
+{
+	gs_app_list_invalidate_state (self);
+}
+
+static void
+gs_app_list_maybe_watch_app (GsAppList *list, GsApp *app)
+{
+	g_autoptr(GPtrArray) apps = gs_app_list_get_watched_for_app (list, app);
+	for (guint i = 0; i < apps->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (apps, i);
+		g_signal_connect_object (app_tmp, "notify::progress",
+					 G_CALLBACK (gs_app_list_progress_notify_cb),
+					 list, 0);
+		g_signal_connect_object (app_tmp, "notify::state",
+					 G_CALLBACK (gs_app_list_state_notify_cb),
+					 list, 0);
+	}
+}
+
+static void
+gs_app_list_maybe_unwatch_app (GsAppList *list, GsApp *app)
+{
+	g_autoptr(GPtrArray) apps = gs_app_list_get_watched_for_app (list, app);
+	for (guint i = 0; i < apps->len; i++) {
+		GsApp *app_tmp = g_ptr_array_index (apps, i);
+		g_signal_handlers_disconnect_by_data (app_tmp, list);
+	}
+}
 
 /**
  * gs_app_list_get_size_peak:
@@ -101,6 +272,31 @@ gs_app_list_has_flag (GsAppList *list, GsAppListFlags flag)
 	return (list->flags & flag) > 0;
 }
 
+/**
+ * gs_app_list_add_flag:
+ * @list: A #GsAppList
+ * @flag: A flag to test, e.g. %GS_APP_LIST_FLAG_IS_TRUNCATED
+ *
+ * Gets if a specific flag is set.
+ *
+ * Returns: %TRUE if the flag is set
+ *
+ * Since: 3.30
+ **/
+void
+gs_app_list_add_flag (GsAppList *list, GsAppListFlags flag)
+{
+	if (list->flags & flag)
+		return;
+	list->flags |= flag;
+
+	/* turn this on for existing apps */
+	for (guint i = 0; i < list->array->len; i++) {
+		GsApp *app = g_ptr_array_index (list->array, i);
+		gs_app_list_maybe_watch_app (list, app);
+	}
+}
+
 static gboolean
 gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 {
@@ -141,6 +337,7 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 	/* if we're lazy-loading the ID then we can't filter for duplicates */
 	id = gs_app_get_unique_id (app);
 	if (id == NULL) {
+		gs_app_list_maybe_watch_app (list, app);
 		g_ptr_array_add (list->array, g_object_ref (app));
 		return;
 	}
@@ -150,6 +347,7 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 		return;
 
 	/* just use the ref */
+	gs_app_list_maybe_watch_app (list, app);
 	g_ptr_array_add (list->array, g_object_ref (app));
 	g_hash_table_insert (list->hash_by_id, g_strdup (id), g_object_ref (app));
 
@@ -181,6 +379,10 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&list->mutex);
 	gs_app_list_add_safe (list, app);
+
+	/* recalculate global state */
+	gs_app_list_invalidate_state (list);
+	gs_app_list_invalidate_progress (list);
 }
 
 /**
@@ -213,9 +415,15 @@ gs_app_list_remove (GsAppList *list, GsApp *app)
 			return;
 		g_hash_table_remove (list->hash_by_id, unique_id);
 		g_ptr_array_remove (list->array, app_tmp);
+		gs_app_list_maybe_unwatch_app (list, app_tmp);
 	} else {
 		g_ptr_array_remove (list->array, app);
+		gs_app_list_maybe_unwatch_app (list, app);
 	}
+
+	/* recalculate global state */
+	gs_app_list_invalidate_state (list);
+	gs_app_list_invalidate_progress (list);
 }
 
 /**
@@ -244,6 +452,10 @@ gs_app_list_add_list (GsAppList *list, GsAppList *donor)
 		GsApp *app = gs_app_list_index (donor, i);
 		gs_app_list_add_safe (list, app);
 	}
+
+	/* recalculate global state */
+	gs_app_list_invalidate_state (list);
+	gs_app_list_invalidate_progress (list);
 }
 
 /**
@@ -283,8 +495,14 @@ gs_app_list_length (GsAppList *list)
 static void
 gs_app_list_remove_all_safe (GsAppList *list)
 {
+	for (guint i = 0; i < list->array->len; i++) {
+		GsApp *app = g_ptr_array_index (list->array, i);
+		gs_app_list_maybe_unwatch_app (list, app);
+	}
 	g_ptr_array_set_size (list->array, 0);
 	g_hash_table_remove_all (list->hash_by_id);
+	gs_app_list_invalidate_state (list);
+	gs_app_list_invalidate_progress (list);
 }
 
 /**
@@ -610,6 +828,33 @@ gs_app_list_copy (GsAppList *list)
 }
 
 static void
+gs_app_list_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsAppList *self = GS_APP_LIST (object);
+	switch (prop_id) {
+	case PROP_STATE:
+		g_value_set_uint (value, self->state);
+		break;
+	case PROP_PROGRESS:
+		g_value_set_uint (value, self->progress);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_app_list_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	switch (prop_id) {
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_app_list_finalize (GObject *object)
 {
 	GsAppList *list = GS_APP_LIST (object);
@@ -622,8 +867,28 @@ gs_app_list_finalize (GObject *object)
 static void
 gs_app_list_class_init (GsAppListClass *klass)
 {
+	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->get_property = gs_app_list_get_property;
+	object_class->set_property = gs_app_list_set_property;
 	object_class->finalize = gs_app_list_finalize;
+
+	/**
+	 * GsAppList:state:
+	 */
+	pspec = g_param_spec_uint ("state", NULL, NULL,
+				   AS_APP_STATE_UNKNOWN,
+				   AS_APP_STATE_LAST,
+				   AS_APP_STATE_UNKNOWN,
+				   G_PARAM_READABLE);
+	g_object_class_install_property (object_class, PROP_STATE, pspec);
+
+	/**
+	 * GsAppList:progress:
+	 */
+	pspec = g_param_spec_uint ("progress", NULL, NULL, 0, 100, 0,
+				   G_PARAM_READABLE);
+	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
 }
 
 static void
