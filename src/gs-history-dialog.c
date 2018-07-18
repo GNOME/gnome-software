@@ -42,10 +42,10 @@ struct _GsHistoryDialog
 G_DEFINE_TYPE (GsHistoryDialog, gs_history_dialog, GTK_TYPE_DIALOG)
 
 static gint
-history_sort_cb (gconstpointer a, gconstpointer b)
+history_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
-	guint64 timestamp_a = gs_app_get_install_date (*(GsApp **) a);
-	guint64 timestamp_b = gs_app_get_install_date (*(GsApp **) b);
+	guint64 timestamp_a = gs_app_get_install_date (app1);
+	guint64 timestamp_b = gs_app_get_install_date (app2);
 	if (timestamp_a < timestamp_b)
 		return 1;
 	if (timestamp_a > timestamp_b)
@@ -57,7 +57,7 @@ void
 gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 {
 	const gchar *tmp;
-	GPtrArray *history;
+	GsAppList *history;
 	GtkBox *box;
 	GtkWidget *row;
 	GtkWidget *widget;
@@ -67,11 +67,11 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 	/* add each history package to the dialog */
 	gs_container_remove_all (GTK_CONTAINER (dialog->list_box));
 	history = gs_app_get_history (app);
-	g_ptr_array_sort (history, history_sort_cb);
-	for (i = 0; i < history->len; i++) {
+	gs_app_list_sort (history, history_sort_cb, NULL);
+	for (i = 0; i < gs_app_list_length (history); i++) {
 		g_autoptr(GDateTime) datetime = NULL;
 		g_autofree gchar *date_str = NULL;
-		app = g_ptr_array_index (history, i);
+		app = gs_app_list_index (history, i);
 		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
 		/* add the action */

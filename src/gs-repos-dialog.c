@@ -75,15 +75,15 @@ static void reload_third_party_repo (GsReposDialog *dialog);
 static gchar *
 get_repo_installed_text (GsApp *repo)
 {
-	GPtrArray *related;
+	GsAppList *related;
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
 	g_autofree gchar *addons_text = NULL;
 	g_autofree gchar *apps_text = NULL;
 
 	related = gs_app_get_related (repo);
-	for (guint i = 0; i < related->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (related, i);
+	for (guint i = 0; i < gs_app_list_length (related); i++) {
+		GsApp *app_tmp = gs_app_list_index (related, i);
 		switch (gs_app_get_kind (app_tmp)) {
 		case AS_APP_KIND_WEB_APP:
 		case AS_APP_KIND_DESKTOP:

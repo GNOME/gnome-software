@@ -51,6 +51,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
+#include "gs-app-collation.h"
 #include "gs-app-private.h"
 #include "gs-plugin.h"
 #include "gs-utils.h"
@@ -113,11 +114,9 @@ typedef struct
 	guint			 progress;
 	gboolean		 allow_cancel;
 	GHashTable		*metadata;
-	GPtrArray		*addons; /* of GsApp */
-	GHashTable		*addons_hash; /* of "id" */
-	GPtrArray		*related; /* of GsApp */
-	GHashTable		*related_hash; /* of "id-source" */
-	GPtrArray		*history; /* of GsApp */
+	GsAppList		*addons;
+	GsAppList		*related;
+	GsAppList		*history;
 	guint64			 install_date;
 	guint64			 kudos;
 	gboolean		 to_be_installed;
@@ -567,15 +566,15 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_printf (str, "price", "%s %.2f",
 				  gs_price_get_currency (priv->price),
 				  gs_price_get_amount (priv->price));
-	for (i = 0; i < priv->related->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (priv->related, i);
+	for (i = 0; i < gs_app_list_length (priv->related); i++) {
+		GsApp *app_tmp = gs_app_list_index (priv->related, i);
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
 			id = gs_app_get_source_default (app_tmp);
 		gs_app_kv_lpad (str, "related", id);
 	}
-	for (i = 0; i < priv->history->len; i++) {
-		GsApp *app_tmp = g_ptr_array_index (priv->history, i);
+	for (i = 0; i < gs_app_list_length (priv->history); i++) {
+		GsApp *app_tmp = gs_app_list_index (priv->history, i);
 		gs_app_kv_lpad (str, "history", gs_app_get_unique_id (app_tmp));
 	}
 	for (i = 0; i < priv->categories->len; i++) {
@@ -3087,8 +3086,8 @@ gs_app_get_size_download (GsApp *app)
 	}
 
 	/* add related apps */
-	for (guint i = 0; i < priv->related->len; i++) {
-		GsApp *app_related = g_ptr_array_index (priv->related, i);
+	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
+		GsApp *app_related = gs_app_list_index (priv->related, i);
 		sz += gs_app_get_size_download (app_related);
 	}
 
@@ -3138,8 +3137,8 @@ gs_app_get_size_installed (GsApp *app)
 	sz = priv->size_installed;
 
 	/* add related apps */
-	for (guint i = 0; i < priv->related->len; i++) {
-		GsApp *app_related = g_ptr_array_index (priv->related, i);
+	for (guint i = 0; i < gs_app_list_length (priv->related); i++) {
+		GsApp *app_related = gs_app_list_index (priv->related, i);
 		sz += gs_app_get_size_installed (app_related);
 	}
 
@@ -3290,11 +3289,11 @@ gs_app_set_metadata_variant (GsApp *app, const gchar *key, GVariant *value)
  *
  * Gets the list of addons for the application.
  *
- * Returns: (element-type GsApp) (transfer none): a list of addons
+ * Returns: (transfer none): a list of addons
  *
  * Since: 3.22
  **/
-GPtrArray *
+GsAppList *
 gs_app_get_addons (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
@@ -3315,22 +3314,13 @@ void
 gs_app_add_addon (GsApp *app, GsApp *addon)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	gpointer found;
-	const gchar *id;
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (addon));
 
 	locker = g_mutex_locker_new (&priv->mutex);
-
-	id = gs_app_get_id (addon);
-	found = g_hash_table_lookup (priv->addons_hash, id);
-	if (found != NULL)
-		return;
-	g_hash_table_insert (priv->addons_hash, g_strdup (id), GINT_TO_POINTER (1));
-
-	g_ptr_array_add (priv->addons, g_object_ref (addon));
+	gs_app_list_add (priv->addons, addon);
 }
 
 /**
@@ -3350,8 +3340,7 @@ gs_app_remove_addon (GsApp *app, GsApp *addon)
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (addon));
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_hash_table_remove (priv->addons_hash, gs_app_get_id (addon));
-	g_ptr_array_remove (priv->addons, addon);
+	gs_app_list_remove (priv->addons, addon);
 }
 
 /**
@@ -3360,11 +3349,11 @@ gs_app_remove_addon (GsApp *app, GsApp *addon)
  *
  * Gets any related applications.
  *
- * Returns: (element-type GsApp) (transfer none): a list of applications
+ * Returns: (transfer none): a list of applications
  *
  * Since: 3.22
  **/
-GPtrArray *
+GsAppList *
 gs_app_get_related (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
@@ -3386,8 +3375,6 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	GsAppPrivate *priv2 = gs_app_get_instance_private (app2);
-	gchar *key;
-	gpointer found;
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
@@ -3398,21 +3385,10 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	/* if the app is updatable-live and any related app is not then
 	 * degrade to the offline state */
 	if (priv->state == AS_APP_STATE_UPDATABLE_LIVE &&
-	    priv2->state == AS_APP_STATE_UPDATABLE) {
+	    priv2->state == AS_APP_STATE_UPDATABLE)
 		priv->state = priv2->state;
-	}
 
-	key = g_strdup_printf ("%s-%s",
-			       gs_app_get_id (app2),
-			       gs_app_get_source_default (app2));
-	found = g_hash_table_lookup (priv->related_hash, key);
-	if (found != NULL) {
-		g_debug ("Already added %s as a related item", key);
-		g_free (key);
-		return;
-	}
-	g_hash_table_insert (priv->related_hash, key, GINT_TO_POINTER (1));
-	g_ptr_array_add (priv->related, g_object_ref (app2));
+	gs_app_list_add (priv->related, app2);
 }
 
 /**
@@ -3421,11 +3397,11 @@ gs_app_add_related (GsApp *app, GsApp *app2)
  *
  * Gets the history of this application.
  *
- * Returns: (element-type GsApp) (transfer none): a list
+ * Returns: (transfer none): a list
  *
  * Since: 3.22
  **/
-GPtrArray *
+GsAppList *
 gs_app_get_history (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
@@ -3450,7 +3426,7 @@ gs_app_add_history (GsApp *app, GsApp *app2)
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (app2));
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_ptr_array_add (priv->history, g_object_ref (app2));
+	gs_app_list_add (priv->history, app2);
 }
 
 /**
@@ -4233,9 +4209,9 @@ gs_app_dispose (GObject *object)
 	g_clear_object (&priv->runtime);
 	g_clear_object (&priv->update_runtime);
 
-	g_clear_pointer (&priv->addons, g_ptr_array_unref);
-	g_clear_pointer (&priv->history, g_ptr_array_unref);
-	g_clear_pointer (&priv->related, g_ptr_array_unref);
+	g_clear_pointer (&priv->addons, g_object_unref);
+	g_clear_pointer (&priv->history, g_object_unref);
+	g_clear_pointer (&priv->related, g_object_unref);
 	g_clear_pointer (&priv->screenshots, g_ptr_array_unref);
 	g_clear_pointer (&priv->review_ratings, g_array_unref);
 	g_clear_pointer (&priv->reviews, g_ptr_array_unref);
@@ -4278,8 +4254,6 @@ gs_app_finalize (GObject *object)
 	g_free (priv->update_details);
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
-	g_hash_table_unref (priv->addons_hash);
-	g_hash_table_unref (priv->related_hash);
 	g_ptr_array_unref (priv->categories);
 	g_ptr_array_unref (priv->key_colors);
 	g_clear_object (&priv->cancellable);
@@ -4423,9 +4397,9 @@ gs_app_init (GsApp *app)
 	priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	priv->categories = g_ptr_array_new_with_free_func (g_free);
 	priv->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
-	priv->addons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	priv->addons = gs_app_list_new ();
+	priv->related = gs_app_list_new ();
+	priv->history = gs_app_list_new ();
 	priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->provides = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -4434,14 +4408,6 @@ gs_app_init (GsApp *app)
 	                                        g_str_equal,
 	                                        g_free,
 	                                        (GDestroyNotify) g_variant_unref);
-	priv->addons_hash = g_hash_table_new_full (g_str_hash,
-	                                           g_str_equal,
-	                                           g_free,
-	                                           NULL);
-	priv->related_hash = g_hash_table_new_full (g_str_hash,
-	                                            g_str_equal,
-	                                            g_free,
-	                                            NULL);
 	priv->urls = g_hash_table_new_full (g_str_hash,
 	                                    g_str_equal,
 	                                    g_free,

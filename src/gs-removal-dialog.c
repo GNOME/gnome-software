@@ -115,8 +115,7 @@ void
 gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
                                          GsApp *upgrade)
 {
-	GPtrArray *removals;
-	guint i;
+	GsAppList *removals;
 	g_autofree gchar *name_version = NULL;
 
 	name_version = g_strdup_printf ("%s %s",
@@ -130,8 +129,8 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 	                                          name_version);
 
 	removals = gs_app_get_related (upgrade);
-	for (i = 0; i < removals->len; i++) {
-		GsApp *app = g_ptr_array_index (removals, i);
+	for (guint i = 0; i < gs_app_list_length (removals); i++) {
+		GsApp *app = gs_app_list_index (removals, i);
 		g_autofree gchar *tmp = NULL;
 
 		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)

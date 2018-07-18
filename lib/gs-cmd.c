@@ -39,21 +39,14 @@ typedef struct {
 static void
 gs_cmd_show_results_apps (GsAppList *list)
 {
-	GPtrArray *related;
-	GsApp *app;
-	GsApp *app_rel;
-	guint i;
-	guint j;
-
-	for (j = 0; j < gs_app_list_length (list); j++) {
-		g_autofree gchar *tmp = NULL;
-		app = gs_app_list_index (list, j);
-		tmp = gs_app_to_string (app);
+	for (guint j = 0; j < gs_app_list_length (list); j++) {
+		GsApp *app = gs_app_list_index (list, j);
+		GsAppList *related = gs_app_get_related (app);
+		g_autofree gchar *tmp = gs_app_to_string (app);
 		g_print ("%s\n", tmp);
-		related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
+		for (guint i = 0; i < gs_app_list_length (related); i++) {
 			g_autofree gchar *tmp_rel = NULL;
-			app_rel = GS_APP (g_ptr_array_index (related, i));
+			GsApp *app_rel = GS_APP (gs_app_list_index (related, i));
 			tmp_rel = gs_app_to_string (app_rel);
 			g_print ("\t%s\n", tmp_rel);
 		}
@@ -75,15 +68,10 @@ gs_cmd_pad_spaces (const gchar *text, guint length)
 static void
 gs_cmd_show_results_categories (GPtrArray *list)
 {
-	GPtrArray *subcats;
-	GsCategory *cat;
-	GsCategory *parent;
-	guint i;
-
-	for (i = 0; i < list->len; i++) {
+	for (guint i = 0; i < list->len; i++) {
+		GsCategory *cat = GS_CATEGORY (g_ptr_array_index (list, i));
+		GsCategory *parent = gs_category_get_parent (cat);
 		g_autofree gchar *tmp = NULL;
-		cat = GS_CATEGORY (g_ptr_array_index (list, i));
-		parent = gs_category_get_parent (cat);
 		if (parent != NULL){
 			g_autofree gchar *id = NULL;
 			id = g_strdup_printf ("%s/%s [%u]",
@@ -94,10 +82,10 @@ gs_cmd_show_results_categories (GPtrArray *list)
 			g_print ("%s : %s\n",
 				 tmp, gs_category_get_name (cat));
 		} else {
+			GPtrArray *subcats = gs_category_get_children (cat);
 			tmp = gs_cmd_pad_spaces (gs_category_get_id (cat), 32);
 			g_print ("%s : %s\n",
 				 tmp, gs_category_get_name (cat));
-			subcats = gs_category_get_children (cat);
 			gs_cmd_show_results_categories (subcats);
 		}
 	}

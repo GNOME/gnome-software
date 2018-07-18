@@ -878,7 +878,7 @@ gs_details_page_refresh_size (GsDetailsPage *self)
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
-	GPtrArray *history;
+	GsAppList *history;
 	GdkPixbuf *pixbuf = NULL;
 	GList *addons;
 	GtkWidget *widget;
@@ -998,7 +998,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 		history = gs_app_get_history (self->app);
 
-		if (history->len == 0) {
+		if (gs_app_list_length (history) == 0) {
 			gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), updated_str);
 		} else {
 			GString *url;
@@ -1175,17 +1175,17 @@ static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *p
 static void
 gs_details_page_refresh_addons (GsDetailsPage *self)
 {
-	GPtrArray *addons;
+	GsAppList *addons;
 	guint i;
 
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_addons));
 
 	addons = gs_app_get_addons (self->app);
-	for (i = 0; i < addons->len; i++) {
+	for (i = 0; i < gs_app_list_length (addons); i++) {
 		GsApp *addon;
 		GtkWidget *row;
 
-		addon = g_ptr_array_index (addons, i);
+		addon = gs_app_list_index (addons, i);
 		if (gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
 			continue;
 

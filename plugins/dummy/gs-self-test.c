@@ -295,14 +295,14 @@ gs_plugins_dummy_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
-	g_assert_cmpint (gs_app_get_related(app)->len, ==, 2);
+	g_assert_cmpint (gs_app_list_length (gs_app_get_related (app)), ==, 2);
 
 	/* get the virtual non-apps OS update */
 	app = gs_app_list_index (list, 1);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "proxy.desktop");
 	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY));
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE_LIVE);
-	g_assert_cmpint (gs_app_get_related(app)->len, ==, 2);
+	g_assert_cmpint (gs_app_list_length (gs_app_get_related (app)), ==, 2);
 }
 
 static void
@@ -359,7 +359,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
 	GsApp *addon;
-	GPtrArray *addons;
+	GsAppList *addons;
 	guint64 kudos;
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
@@ -409,8 +409,8 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 
 	/* check addon */
 	addons = gs_app_get_addons (app);
-	g_assert_cmpint (addons->len, ==, 1);
-	addon = g_ptr_array_index (addons, 0);
+	g_assert_cmpint (gs_app_list_length (addons), ==, 1);
+	addon = gs_app_list_index (addons, 0);
 	g_assert_cmpstr (gs_app_get_id (addon), ==, "zeus-spell.addon");
 	g_assert_cmpint (gs_app_get_kind (addon), ==, AS_APP_KIND_ADDON);
 	g_assert_cmpint (gs_app_get_state (addon), ==, AS_APP_STATE_AVAILABLE);
