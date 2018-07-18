@@ -41,6 +41,8 @@ gboolean
 gs_fwupd_app_get_is_locked (GsApp *app)
 {
 	GVariant *tmp = gs_app_get_metadata_variant (app, "fwupd::IsLocked");
+	if (tmp == NULL)
+		return FALSE;
 	return g_variant_get_boolean (tmp);
 }
 
