@@ -192,7 +192,7 @@ shared_module(
   dependencies : plugin_libs
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(

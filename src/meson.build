@@ -80,7 +80,7 @@ gnome_software_dependencies = [
   libsoup
 ]
 
-if get_option('enable-packagekit')
+if get_option('packagekit')
   gnome_software_sources += [
     'gs-dbus-helper.c',
   ]
@@ -99,11 +99,11 @@ if get_option('enable-packagekit')
   gnome_software_dependencies += [packagekit]
 endif
 
-if get_option('enable-gnome-desktop')
+if get_option('gnome_desktop')
   gnome_software_dependencies += [gnome_desktop]
 endif
 
-if get_option('enable-gspell')
+if get_option('gspell')
   gnome_software_dependencies += [gspell]
 endif
 
@@ -226,7 +226,7 @@ i18n.merge_file(
 install_data('org.gnome.Software-search-provider.ini',
              install_dir : 'share/gnome-shell/search-providers')
 
-if get_option('enable-man')
+if get_option('man')
   xsltproc = find_program('xsltproc')
   custom_target('manfile-gnome-software',
     input: 'gnome-software.xml',
@@ -266,7 +266,7 @@ if get_option('enable-man')
   )
 endif
 
-if get_option('enable-packagekit')
+if get_option('packagekit')
   # replace @bindir@
   configure_file(
     input : 'org.freedesktop.PackageKit.service.in',
@@ -277,7 +277,7 @@ if get_option('enable-packagekit')
   )
 endif
 
-if get_option('enable-tests')
+if get_option('tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', 'data') + '"']
   e = executable(
     'gs-self-test-src',

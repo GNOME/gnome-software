@@ -14,7 +14,7 @@ sources : 'gs-plugin-shell-extensions.c',
   dependencies : plugin_libs
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   e = executable(
     'gs-self-test-shell-extensions',
     compiled_schemas,

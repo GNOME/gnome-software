@@ -13,40 +13,40 @@ subdir('dummy')
 subdir('epiphany')
 subdir('fedora-pkgdb-collections')
 
-if get_option('enable-flatpak')
+if get_option('flatpak')
   subdir('flatpak')
 endif
-if get_option('enable-fwupd')
+if get_option('fwupd')
   subdir('fwupd')
 endif
-if get_option('enable-gudev')
+if get_option('gudev')
   subdir('modalias')
 endif
-if get_option('enable-odrs')
+if get_option('odrs')
   subdir('odrs')
 endif
-if get_option('enable-packagekit')
+if get_option('packagekit')
   subdir('packagekit')
 endif
 subdir('repos')
-if get_option('enable-rpm-ostree')
+if get_option('rpm_ostree')
   subdir('rpm-ostree')
 endif
-if get_option('enable-shell-extensions')
+if get_option('shell_extensions')
   subdir('shell-extensions')
 endif
-if get_option('enable-snap')
+if get_option('snap')
   subdir('snap')
 endif
-if get_option('enable-steam')
+if get_option('steam')
   subdir('steam')
 endif
-if get_option('enable-ubuntuone')
+if get_option('ubuntuone')
   subdir('ubuntuone')
 endif
-if get_option('enable-ubuntu-reviews')
+if get_option('ubuntu_reviews')
   subdir('ubuntu-reviews')
 endif
-if get_option('enable-external-appstream')
+if get_option('external_appstream')
   subdir('external-appstream')
 endif

@@ -176,7 +176,7 @@ shared_module(
   dependencies : [ plugin_libs, packagekit ]
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), 'tests') + '"']
   e = executable(
     'gs-self-test-packagekit',

@@ -104,14 +104,14 @@ Adds support for Snap packages from the Snap store.
 
 %build
 %meson \
-    -Denable-snap=false \
-    -Denable-gudev=true \
-    -Denable-packagekit=true \
-    -Denable-external-appstream=false \
-    -Denable-rpm-ostree=true \
-    -Denable-tests=false \
-    -Denable-ubuntuone=false \
-    -Denable-ubuntu-reviews=false
+    -Dsnap=false \
+    -Dgudev=true \
+    -Dpackagekit=true \
+    -Dexternal_appstream=false \
+    -Drpm_ostree=true \
+    -Dtests=false \
+    -Dubuntuone=false \
+    -Dubuntu_reviews=false
 %meson_build
 
 %install
