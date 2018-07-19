@@ -104,7 +104,7 @@ Adds support for Snap packages from the Snap store.
 
 %build
 %meson \
-    -Denable-snap=true \
+    -Denable-snap=false \
     -Denable-gudev=true \
     -Denable-packagekit=true \
     -Denable-external-appstream=false \
@@ -200,8 +200,8 @@ DESTDIR=%{buildroot} appstream-util check-root
 %{_libexecdir}/gnome-software-restarter
 
 %files snap
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
-%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
+#%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
+#%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
 
 %files devel
 %{_libdir}/pkgconfig/gnome-software.pc
