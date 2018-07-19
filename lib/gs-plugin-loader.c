@@ -382,8 +382,6 @@ gs_plugin_job_to_failed_event (GsPluginJob *plugin_job, const GError *error)
 static gboolean
 gs_plugin_loader_is_error_fatal (const GError *err)
 {
-	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
-		return TRUE;
 	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_TIMED_OUT))
 		return TRUE;
 	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED))
@@ -412,6 +410,12 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 		g_critical ("%s did not set error for %s",
 			    gs_plugin_get_name (plugin),
 			    helper->function_name);
+		return TRUE;
+	}
+
+	/* this is only ever informational */
+	if (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("ignoring error cancelled: %s", error_local->message);
 		return TRUE;
 	}
 
