@@ -1220,12 +1220,6 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 		break;
 	}
 
-	/* ignore this crazy application */
-	if (g_strcmp0 (gs_app_get_id (app), "gnome-system-monitor-kde.desktop") == 0) {
-		g_debug ("Ignoring KDE version of %s", gs_app_get_id (app));
-		return FALSE;
-	}
-
 	/* sanity check */
 	if (!gs_app_is_installed (app)) {
 		g_autofree gchar *tmp = gs_app_to_string (app);
@@ -1316,6 +1310,12 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	    gs_app_get_pixbuf (app) == NULL) {
 		g_debug ("app invalid as no pixbuf %s",
 			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
+	/* ignore this crazy application */
+	if (g_strcmp0 (gs_app_get_id (app), "gnome-system-monitor-kde.desktop") == 0) {
+		g_debug ("Ignoring KDE version of %s", gs_app_get_id (app));
 		return FALSE;
 	}
 	return TRUE;
