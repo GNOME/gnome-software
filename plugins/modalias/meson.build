@@ -16,7 +16,7 @@ sources : 'gs-plugin-modalias.c',
   dependencies : [ plugin_libs, gudev ]
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   e = executable(
     'gs-self-test-modalias',
     compiled_schemas,

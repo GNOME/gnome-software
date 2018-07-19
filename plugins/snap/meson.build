@@ -25,7 +25,7 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   e = executable(

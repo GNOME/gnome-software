@@ -15,7 +15,7 @@ shared_module(
   dependencies : [appstream_glib, gio_unix, gtk, libsoup]
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   e = executable(
     'gs-self-test-dummy',
     compiled_schemas,

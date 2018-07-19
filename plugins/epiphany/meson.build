@@ -25,7 +25,7 @@ i18n.merge_file(
   install_dir: join_paths(get_option('datadir'), 'metainfo')
 )
 
-if get_option('enable-tests')
+if get_option('tests')
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_source_dir(), '..', '..', 'data') + '"']
   e = executable(
     'gs-self-test-epiphany',
