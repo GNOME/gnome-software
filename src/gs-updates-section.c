@@ -242,10 +242,10 @@ _update_buttons (GsUpdatesSection *self)
 
 	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
 	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
-		/* TRANSLATORS: This is the button for upgrading all
-		 * offline updates */
 		gtk_stack_set_visible_child_name (self->button_stack, "update");
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
+		/* TRANSLATORS: This is the button for upgrading all
+		 * offline updates */
 		gtk_button_set_label (GTK_BUTTON (self->button), _("Restart & Update"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
 		gtk_stack_set_visible_child_name (self->button_stack, "update");
