@@ -1102,6 +1102,9 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
+		/* non-interactive generic */
+		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+			return FALSE;
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to get list of updates"));
 		break;
@@ -1594,6 +1597,9 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
+		/* non-interactive generic */
+		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+			return FALSE;
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s"), str_app);
@@ -1656,6 +1662,9 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
+		/* non-interactive generic */
+		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		break;
@@ -1707,6 +1716,9 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
+		/* non-interactive generic */
+		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		break;
@@ -1748,6 +1760,9 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
+		/* non-interactive generic */
+		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		break;
@@ -1815,6 +1830,9 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
+		/* non-interactive generic */
+		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
 		break;
