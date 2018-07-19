@@ -166,7 +166,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	} else {
 		/* TRANSLATORS: apps were auto-updated */
 		g_string_append_printf (title, ngettext("%u Application Updated",
-							"%u Application Updated",
+							"%u Applications Updated",
 							gs_app_list_length (list)),
 						gs_app_list_length (list));
 	}
