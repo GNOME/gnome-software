@@ -424,6 +424,12 @@ save_back_entry (GsShell *shell)
 	BackEntry *entry;
 	GsPage *page;
 
+	/* never go back to a details page */
+	if (priv->mode == GS_SHELL_MODE_DETAILS) {
+		g_debug ("ignoring back entry for details");
+		return;
+	}
+
 	entry = g_new0 (BackEntry, 1);
 	entry->mode = priv->mode;
 
@@ -440,14 +446,6 @@ save_back_entry (GsShell *shell)
 		g_debug ("pushing back entry for %s with %s",
 			 page_name[entry->mode],
 			 gs_category_get_id (entry->category));
-		break;
-	case GS_SHELL_MODE_DETAILS:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "details"));
-		entry->app = gs_details_page_get_app (GS_DETAILS_PAGE (page));
-		g_object_ref (entry->app);
-		g_debug ("pushing back entry for %s with %s",
-			 page_name[entry->mode],
-			 gs_app_get_id (entry->app));
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
