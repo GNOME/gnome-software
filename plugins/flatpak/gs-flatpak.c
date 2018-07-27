@@ -15,6 +15,7 @@
 
 #include <config.h>
 
+#include <sys/signal.h>
 #include <glib/gi18n.h>
 #include <xmlb.h>
 
@@ -2244,6 +2245,218 @@ gs_flatpak_create_app_from_repo_dir (GsFlatpak *self,
 	}
 
 	return g_steal_pointer (&app);
+}
+
+gboolean
+gs_flatpak_app_get_copyable (GsFlatpak *self,
+			     GsApp *app,
+			     gboolean *copyable,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GsApp *runtime;
+	g_autoptr(FlatpakRemote) app_remote = NULL;
+	g_autoptr(FlatpakRemote) runtime_remote = NULL;
+	g_autofree char *app_collection_id = NULL;
+	g_autofree char *runtime_collection_id = NULL;
+	gboolean is_extra_data;
+
+	g_assert (copyable != NULL);
+
+	/* Check if the app's remote has a collection ID set */
+	app_remote = flatpak_installation_get_remote_by_name (self->installation,
+							      gs_app_get_origin (app),
+							      cancellable, NULL);
+	if (app_remote != NULL)
+		app_collection_id = flatpak_remote_get_collection_id (app_remote);
+
+	/* Check if the runtime's remote has a collection ID set */
+	runtime = gs_app_get_runtime (app);
+	if (runtime != NULL) {
+		runtime_remote = flatpak_installation_get_remote_by_name (self->installation,
+									  gs_app_get_origin (runtime),
+									  cancellable, NULL);
+		if (runtime_remote != NULL)
+			runtime_collection_id = flatpak_remote_get_collection_id (runtime_remote);
+	}
+
+	/* Check if it's an extra-data app (which is not supported for P2P distribution) */
+	is_extra_data = gs_flatpak_app_get_extra_data (app);
+
+	*copyable = (app_collection_id != NULL &&
+		     runtime_collection_id != NULL &&
+		     !is_extra_data);
+
+	return TRUE;
+}
+
+typedef struct {
+	GsFlatpak *self;
+	GsApp *app;
+	GCancellable *cancellable;
+	gulong cancelled_id;
+	gboolean finished;
+	GError *error;
+} GsFlatpakCopyProcessHelper;
+
+static void
+gs_flatpak_copy_process_helper_free (GsFlatpakCopyProcessHelper *helper)
+{
+	g_clear_object (&helper->app);
+	g_clear_object (&helper->cancellable);
+	g_clear_error (&helper->error);
+	g_free (helper);
+}
+
+static GsFlatpakCopyProcessHelper *
+gs_flatpak_copy_process_helper_new (GsFlatpak *self,
+				    GsApp *app,
+				    GCancellable *cancellable,
+				    gulong cancelled_id)
+{
+	GsFlatpakCopyProcessHelper *helper = g_new0 (GsFlatpakCopyProcessHelper,
+						     1);
+	helper->self = self;
+	helper->app = g_object_ref (app);
+	helper->cancellable = g_object_ref (cancellable);
+	helper->cancelled_id = cancelled_id;
+	helper->finished = FALSE;
+	helper->error = NULL;
+	return helper;
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsFlatpakCopyProcessHelper, gs_flatpak_copy_process_helper_free)
+
+static void
+copy_process_watch_cb (GPid pid, gint status, gpointer user_data)
+{
+	GsFlatpakCopyProcessHelper *helper = user_data;
+	g_autoptr(GError) error = NULL;
+
+	if (!g_cancellable_is_cancelled (helper->cancellable) && status != 0)
+		g_set_error (&helper->error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to copy flatpak app to removable "
+			     "media: `flatpak create-usb` failed with "
+			     "status %d", status);
+
+	g_cancellable_disconnect (helper->cancellable, helper->cancelled_id);
+	g_spawn_close_pid (pid);
+
+	/* once the copy terminates (successfully or not), set plugin status to
+	 * update UI accordingly */
+	gs_plugin_status_update (helper->self->plugin, helper->app,
+				 GS_PLUGIN_STATUS_FINISHED);
+
+	/* update metadata to ensure the USB category includes this new app and
+	 * we can immediately download an app, copy to USB, delete from
+	 * computer, and install from USB without leaving the app page */
+	gs_flatpak_refresh (helper->self, 0, NULL, &error);
+	if (error != NULL) {
+		g_warning ("failed to refresh flatpak metadata after copying "
+			   "app to USB: %s", error->message);
+		g_clear_error (&error);
+	}
+
+	helper->finished = TRUE;
+}
+
+static void
+app_copy_cancelled_cb (GCancellable *cancellable,
+		       gpointer user_data)
+{
+	GPid pid = GPOINTER_TO_INT (user_data);
+
+	/* terminate the process which is copying the app */
+	kill (pid, SIGTERM);
+}
+
+gboolean
+gs_flatpak_app_copy (GsFlatpak *self,
+		     GsApp *app,
+		     GFile *copy_dest,
+		     GCancellable *cancellable,
+		     GError **error)
+{
+	/* this is used in an async function but we block here until that
+	 * returns so we won't auto-free while other threads depend on this */
+	g_autoptr (GsFlatpakCopyProcessHelper) helper = NULL;
+	const gchar *app_id = gs_flatpak_app_get_ref_name (app);
+	const gchar *app_arch = gs_flatpak_app_get_ref_arch (app);
+	const gchar *app_branch = gs_flatpak_app_get_ref_branch (app);
+	g_autofree gchar* app_ref = g_strdup_printf ("%s/%s/%s", app_id,
+						     app_arch, app_branch);
+	const gchar *app_collection_id = gs_flatpak_app_get_ref_collection_id (app);
+	g_autofree gchar* installation_arg = NULL;
+	gboolean spawn_retval;
+	const gchar *argv[] = {"flatpak",
+			       NULL, /* installation arg */
+			       "create-usb",
+			       g_file_peek_path (copy_dest),
+			       app_ref,
+			       NULL
+			      };
+	GPid child_pid;
+	gulong cancelled_id;
+	g_autofree gchar *argv_str = NULL;
+	g_autoptr(GSource) child_watch_source = NULL;
+
+	if (flatpak_installation_get_is_user (self->installation))
+		installation_arg = g_strdup ("--user");
+	else
+		installation_arg = g_strdup_printf ("--installation=%s", flatpak_installation_get_id (self->installation));
+
+	argv[1] = installation_arg;
+
+	argv_str = g_strjoinv (" ", (gchar **) argv);
+	g_debug ("Copying app ‘%s’ with collection ID ‘%s’ with command `%s`",
+		 app_ref, app_collection_id, argv_str);
+
+	gs_plugin_status_update (self->plugin, app, GS_PLUGIN_STATUS_COPYING);
+
+	spawn_retval = g_spawn_async (".",
+				      (gchar **) argv,
+				      NULL,
+				      G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD,
+				      NULL,
+				      NULL,
+				      &child_pid,
+				      error);
+
+	if (!spawn_retval)
+		return FALSE;
+
+	cancelled_id = g_cancellable_connect (cancellable,
+					      G_CALLBACK (app_copy_cancelled_cb),
+					      GINT_TO_POINTER (child_pid),
+					      NULL);
+
+	helper = gs_flatpak_copy_process_helper_new (self, app,
+						     cancellable,
+						     cancelled_id);
+	child_watch_source = g_child_watch_source_new (child_pid);
+	g_source_set_callback (child_watch_source,
+			       G_SOURCE_FUNC (copy_process_watch_cb),
+			       helper, NULL);
+	g_source_attach (child_watch_source, g_main_context_get_thread_default ());
+
+	/* Iterate the main loop until either the copy process completes or the
+	 * user cancels the copy. Without this, it is impossible to cancel the
+	 * copy because we reach the end of this function, its parent GTask
+	 * returns and we disconnect the handler that would kill the copy
+	 * process. */
+	while (!helper->finished)
+		g_main_context_iteration (NULL, FALSE);
+
+	g_source_destroy (child_watch_source);
+
+	if (helper->error) {
+		g_propagate_error (error, g_steal_pointer (&helper->error));
+		return FALSE;
+	}
+
+	return TRUE;
 }
 
 static void
