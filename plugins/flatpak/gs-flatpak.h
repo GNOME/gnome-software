@@ -127,5 +127,15 @@ GsApp *		gs_flatpak_create_app_from_repo_dir (GsFlatpak		*self,
 						     GFile		*file,
 						     GCancellable	*cancellable,
 						     GError		**error);
+gboolean	gs_flatpak_app_get_copyable	(GsFlatpak		*self,
+						 GsApp			*app,
+						 gboolean		*copyable,
+						 GCancellable		*cancellable,
+						 GError			**error);
+gboolean	gs_flatpak_app_copy		(GsFlatpak		*self,
+						 GsApp			*app,
+						 GFile			*copy_dest,
+						 GCancellable		*cancellable,
+						 GError			**error);
 
 G_END_DECLS
