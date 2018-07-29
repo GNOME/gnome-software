@@ -3725,7 +3725,6 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 
 	/* use the plugin loader to convert a wildcard app*/
 	app = gs_app_new (NULL);
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 	gs_app_set_from_unique_id (app, unique_id);
 	gs_app_list_add (list, app);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
