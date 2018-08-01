@@ -779,6 +779,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	g_autoptr(SnapdSnap) local_snap = NULL;
 	g_autoptr(SnapdSnap) store_snap = NULL;
 	SnapdSnap *snap;
+	const gchar *developer_name;
 	g_autofree gchar *description = NULL;
 
 	/* not us */
@@ -812,7 +813,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (description != NULL)
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (snap));
-	gs_app_set_developer_name (app, snapd_snap_get_publisher_username (snap));
+	developer_name = snapd_snap_get_publisher_display_name (snap);
+	if (developer_name == NULL)
+		developer_name = snapd_snap_get_publisher_username (snap);
+	gs_app_set_developer_name (app, developer_name);
 
 	snap = local_snap != NULL ? local_snap : store_snap;
 	gs_app_set_version (app, snapd_snap_get_version (snap));
