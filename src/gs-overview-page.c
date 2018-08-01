@@ -479,6 +479,8 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 
 	gtk_widget_hide (priv->featured_heading);
 	gs_container_remove_all (GTK_CONTAINER (priv->stack_featured));
+	gtk_widget_hide (priv->box_featured_switcher);
+	gs_container_remove_all (GTK_CONTAINER (priv->box_featured_switcher));
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s",
 			   error->message);
@@ -495,7 +497,6 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		gs_app_list_filter (list, filter_category, priv->category_of_day);
 		gs_app_list_randomize (list);
 	}
-
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GtkWidget *event_box;
