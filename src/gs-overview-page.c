@@ -35,7 +35,7 @@
 #include "gs-common.h"
 
 #define N_TILES					9
-#define FEATURED_ROTATE_TIME			30 /* seconds */
+#define FEATURED_ROTATE_TIME			0 /* seconds */
 #define FEATURED_SWITCHER_ACTIVE_TEXT		"●"
 #define FEATURED_SWITCHER_INACTIVE_TEXT		"○"
 
@@ -424,9 +424,10 @@ featured_reset_rotate_timer (GsOverviewPage *self)
 
 	if (priv->featured_rotate_timer_id != 0)
 		g_source_remove (priv->featured_rotate_timer_id);
-	priv->featured_rotate_timer_id = g_timeout_add_seconds (FEATURED_ROTATE_TIME,
-								gs_overview_page_featured_rotate_cb,
-								self);
+	if (FEATURED_ROTATE_TIME > 0)
+		priv->featured_rotate_timer_id = g_timeout_add_seconds (FEATURED_ROTATE_TIME,
+									gs_overview_page_featured_rotate_cb,
+									self);
 }
 
 static void
