@@ -155,6 +155,9 @@ snapd_error_convert (GError **perror)
 		case SNAPD_ERROR_PAYMENT_DECLINED:
 			error->code = GS_PLUGIN_ERROR_PURCHASE_DECLINED;
 			break;
+		case SNAPD_ERROR_AUTH_CANCELLED:
+			error->code = GS_PLUGIN_ERROR_CANCELLED;
+			break;
 		case SNAPD_ERROR_CONNECTION_FAILED:
 		case SNAPD_ERROR_WRITE_FAILED:
 		case SNAPD_ERROR_READ_FAILED:
