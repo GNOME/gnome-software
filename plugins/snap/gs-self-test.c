@@ -74,15 +74,18 @@ snapd_client_set_user_agent (SnapdClient *client, const gchar *user_agent)
 SnapdSystemInformation *
 snapd_client_get_system_information_sync (SnapdClient *client, GCancellable *cancellable, GError **error)
 {
+	g_autoptr(GHashTable) sandbox_features = g_hash_table_new (g_str_hash, g_str_equal);
 	return g_object_new (SNAPD_TYPE_SYSTEM_INFORMATION,
 			     "version", "2.31",
 			     "confinement", SNAPD_SYSTEM_CONFINEMENT_STRICT,
+			     "sandbox-features", sandbox_features,
 			     NULL);
 }
 
 static SnapdSnap *
 make_snap (const gchar *name, SnapdSnapStatus status)
 {
+	gchar *common_ids[] = { NULL };
 	g_autoptr(GDateTime) install_date = NULL;
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autoptr(GPtrArray) screenshots = NULL;
@@ -108,6 +111,7 @@ make_snap (const gchar *name, SnapdSnapStatus status)
 
 	return g_object_new (SNAPD_TYPE_SNAP,
 			     "apps", status == SNAPD_SNAP_STATUS_INSTALLED ? apps : NULL,
+			     "common-ids", common_ids,
 			     "description", "DESCRIPTION",
 			     "download-size", status == SNAPD_SNAP_STATUS_AVAILABLE ? 500 : 0,
 			     "icon", "/icon",
