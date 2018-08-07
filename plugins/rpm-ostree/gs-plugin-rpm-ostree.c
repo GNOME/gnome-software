@@ -203,6 +203,7 @@ static void
 transaction_progress_free (TransactionProgress *self)
 {
 	g_main_loop_unref (self->loop);
+	g_clear_error (&self->error);
 	g_slice_free (TransactionProgress, self);
 }
 
@@ -300,7 +301,7 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 
 	if (!g_cancellable_set_error_if_cancelled (cancellable, error)) {
 		if (tp->error) {
-			g_propagate_error (error, tp->error);
+			g_propagate_error (error, g_steal_pointer (&tp->error));
 		} else {
 			success = TRUE;
 		}
