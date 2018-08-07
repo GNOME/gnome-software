@@ -569,6 +569,9 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
+	/* In Ubuntu we're using Update Manager for this, for now */
+	return TRUE;
+
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_get_updates (PK_CLIENT (priv->task),

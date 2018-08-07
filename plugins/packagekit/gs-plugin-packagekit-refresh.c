@@ -112,6 +112,9 @@ gs_plugin_download (GsPlugin *plugin,
                     GCancellable *cancellable,
                     GError **error)
 {
+	/* In Ubuntu we're using Update Manager for this, for now (LP: #1775226) */
+	return TRUE;
+
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
 	/* add any packages */

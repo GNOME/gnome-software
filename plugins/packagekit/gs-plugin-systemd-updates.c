@@ -279,6 +279,9 @@ gs_plugin_update (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	/* In Ubuntu we're using Update Manager for this, for now. */
+	return TRUE;
+
 	/* any are us? */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
