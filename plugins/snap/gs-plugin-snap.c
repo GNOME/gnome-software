@@ -381,7 +381,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, NULL, path, cancellable, NULL);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME, NULL, path, cancellable, NULL);
 	if (snaps == NULL || snaps->len < 1)
 		return TRUE;
 
@@ -447,7 +447,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	g_autoptr(GString) background_css = NULL;
 	g_autofree gchar *css = NULL;
 
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, "featured", NULL, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL, cancellable, error);
 
 	if (snaps == NULL)
 		return FALSE;
@@ -516,7 +516,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	g_autoptr(GPtrArray) snaps = NULL;
 	guint i;
 
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, "featured", NULL, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE, "featured", NULL, cancellable, error);
 	if (snaps == NULL)
 		return FALSE;
 
@@ -574,7 +574,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			g_autoptr(GPtrArray) snaps = NULL;
 			guint j;
 
-			snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, tokens[i], NULL, cancellable, error);
+			snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE, tokens[i], NULL, cancellable, error);
 			if (snaps == NULL)
 				return FALSE;
 			for (j = 0; j < snaps->len; j++) {
@@ -629,7 +629,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	guint i;
 
 	query = g_strjoinv (" ", values);
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_NONE, NULL, query, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE, NULL, query, cancellable, error);
 	if (snaps == NULL)
 		return FALSE;
 
@@ -653,7 +653,7 @@ get_store_snap (GsPlugin *plugin, const gchar *name, gboolean need_details, GCan
 	if (snap != NULL)
 		return g_object_ref (snap);
 
-	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_MATCH_NAME, NULL, name, cancellable, error);
+	snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_NAME, NULL, name, cancellable, error);
 	if (snaps == NULL || snaps->len < 1)
 		return NULL;
 
