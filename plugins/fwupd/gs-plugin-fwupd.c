@@ -567,6 +567,12 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				g_debug ("no updates for %s", fwupd_device_get_id (dev));
 				continue;
 			}
+			if (g_error_matches (error_local2,
+					     FWUPD_ERROR,
+					     FWUPD_ERROR_NOT_SUPPORTED)) {
+				g_debug ("not supported for %s", fwupd_device_get_id (dev));
+				continue;
+			}
 			g_propagate_error (error, g_steal_pointer (&error_local2));
 			gs_plugin_fwupd_error_convert (error);
 			return FALSE;
