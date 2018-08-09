@@ -574,9 +574,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				g_debug ("not supported for %s", fwupd_device_get_id (dev));
 				continue;
 			}
-			g_propagate_error (error, g_steal_pointer (&error_local2));
-			gs_plugin_fwupd_error_convert (error);
-			return FALSE;
+			g_warning ("failed to get upgrades for %s: %s]",
+				   fwupd_device_get_id (dev),
+				   error_local2->message);
+			continue;
 		}
 
 		/* normal device update */
