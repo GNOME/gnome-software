@@ -67,6 +67,7 @@ typedef struct
 	guint			 scale;
 
 	guint			 updates_changed_id;
+	guint			 updates_changed_cnt;
 	guint			 reload_id;
 	GHashTable		*disallow_updates;	/* GsPlugin : const char *name */
 
@@ -2076,14 +2077,21 @@ gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 	g_debug ("updates-changed");
 	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
 	priv->updates_changed_id = 0;
+	priv->updates_changed_cnt = 0;
 
 	g_object_unref (plugin_loader);
 	return FALSE;
 }
 
 static void
-gs_plugin_loader_job_actions_changed_cb (GsPlugin *plugin,
-				     GsPluginLoader *plugin_loader)
+gs_plugin_loader_job_actions_changed_cb (GsPlugin *plugin, GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	priv->updates_changed_cnt++;
+}
+
+static void
+gs_plugin_loader_updates_changed (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	if (priv->updates_changed_id != 0)
@@ -3105,6 +3113,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginRefineFlags filter_flags;
 	GsPluginRefineFlags refine_flags;
 	gboolean add_to_pending_array = FALSE;
@@ -3409,6 +3418,10 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 
 	/* sort these again as the refine may have added useful metadata */
 	gs_plugin_loader_job_sorted_truncation_again (helper);
+
+	/* if the plugin used updates-changed actually schedule it now */
+	if (priv->updates_changed_cnt > 0)
+		gs_plugin_loader_updates_changed (plugin_loader);
 
 	/* show elapsed time */
 	gs_plugin_loader_job_debug (helper);
