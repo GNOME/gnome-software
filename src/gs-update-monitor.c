@@ -151,64 +151,110 @@ no_updates_for_a_week (GsUpdateMonitor *monitor)
 	return FALSE;
 }
 
+static gboolean
+_filter_by_app_kind (GsApp *app, gpointer user_data)
+{
+	AsAppKind kind = GPOINTER_TO_UINT (user_data);
+	return gs_app_get_kind (app) == kind;
+}
+
+static gboolean
+_sort_by_rating_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	if (gs_app_get_rating (app1) < gs_app_get_rating (app2))
+		return -1;
+	if (gs_app_get_rating (app1) > gs_app_get_rating (app2))
+		return 1;
+	return 0;
+}
+
 static GNotification *
 _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 {
 	guint need_restart_cnt = 0;
+	g_autoptr(GsAppList) list_apps = NULL;
 	g_autoptr(GNotification) n = NULL;
 	g_autoptr(GString) body = g_string_new (NULL);
 	g_autoptr(GString) title = g_string_new (NULL);
 
-	/* title */
-	if (gs_app_list_length (list) == 0) {
-		/* TRANSLATORS: apps were updated, but we don't know which */
-		g_string_append (title, _("Applications Updated"));
-	} else {
+	/* filter out apps */
+	list_apps = gs_app_list_copy (list);
+	gs_app_list_filter (list_apps,
+			    _filter_by_app_kind,
+			    GUINT_TO_POINTER(AS_APP_KIND_DESKTOP));
+	gs_app_list_sort (list_apps, _sort_by_rating_cb, NULL);
+	/* FIXME: add the applications that are currently active that use one
+	 * of the updated runtimes */
+	if (gs_app_list_length (list_apps) == 0) {
+		g_debug ("no desktop apps in updated list, ignoring");
+		return NULL;
+	}
+
+	/* how many apps needs updating */
+	for (guint i = 0; i < gs_app_list_length (list_apps); i++) {
+		GsApp *app = gs_app_list_index (list_apps, i);
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
+			need_restart_cnt++;
+	}
+
+	/* >1 app updated */
+	if (gs_app_list_length (list_apps) > 0) {
 		/* TRANSLATORS: apps were auto-updated */
 		g_string_append_printf (title, ngettext("%u Application Updated",
 							"%u Applications Updated",
 							gs_app_list_length (list)),
 						gs_app_list_length (list));
+		if (need_restart_cnt > 0) {
+			/* TRANSLATORS: the app needs restarting */
+			g_string_append_printf (title, ": %s", _("Restart Required"));
+		}
 	}
 
-	/* message */
-	if (gs_app_list_length (list) > 0 && gs_app_list_length (list) <= 3) {
-		for (guint i = 0; i < gs_app_list_length (list); i++) {
-			GsApp *app = gs_app_list_index (list, i);
-			g_string_append (body, gs_app_get_name (app));
-			/* TRANSLATORS: this is used to join app names */
-			g_string_append (body, i < 2 ? ", " : _(" and "));
+	/* 1 app updated */
+	if (gs_app_list_length (list_apps) == 1) {
+		GsApp *app = gs_app_list_index (list_apps, 0);
+		/* TRANSLATORS: %1 is an application name, e.g. Firefox */
+		g_string_append_printf (body, _("%s has been updated."), gs_app_get_name (app));
+		if (need_restart_cnt > 0) {
+			/* TRANSLATORS: the app needs restarting */
+			g_string_append_printf (body, " %s", _("Please restart the application."));
 		}
-		/* TRANSLATORS: this is appended to the list of app names */
-		g_string_append (body, _("have been updated."));
-	} else if (gs_app_list_length (list) > 0) {
-		/* TRANSLATORS: here follows a list of app names */
-		g_string_append (body, _("Includes: ."));
-		for (guint i = 0; i < 3; i++) {
-			GsApp *app = gs_app_list_index (list, i);
-			g_string_append (body, gs_app_get_name (app));
-			/* TRANSLATORS: this is used to join app names */
-			g_string_append (body, i < 2 ? ", " : _(" and "));
-		}
-		g_string_append (body, ".");
-	}
 
-	/* are any of the apps currently active */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
-			need_restart_cnt++;
-	}
-	if (need_restart_cnt > 0) {
-		if (body->len > 0)
+	/* 2 apps updated */
+	} else if (gs_app_list_length (list_apps) == 2) {
+		GsApp *app1 = gs_app_list_index (list_apps, 0);
+		GsApp *app2 = gs_app_list_index (list_apps, 1);
+		/* TRANSLATORS: %1 and %2 are both application names, e.g. Firefox */
+		g_string_append_printf (body, _("%s and %s have been updated."),
+					gs_app_get_name (app1),
+					gs_app_get_name (app2));
+		if (need_restart_cnt > 0) {
 			g_string_append (body, " ");
-		/* TRANSLATORS: the app was updated and needs closing and re-opening */
-		g_string_append_printf (body, ngettext("%u application require a restart.",
-						       "%u applications require a restart.",
-						       need_restart_cnt),
+			/* TRANSLATORS: at least one application needs restarting */
+			g_string_append_printf (body, ngettext ("%u application requires a restart.",
+								"%u applications require a restart.",
+								need_restart_cnt),
 						need_restart_cnt);
-		/* TRANSLATORS: for the notification title */
-		g_string_append_printf (title, "– %s", _("Restart Required"));
+		}
+
+	/* 3+ apps */
+	} else if (gs_app_list_length (list_apps) >= 3) {
+		GsApp *app1 = gs_app_list_index (list_apps, 0);
+		GsApp *app2 = gs_app_list_index (list_apps, 1);
+		GsApp *app3 = gs_app_list_index (list_apps, 2);
+		/* TRANSLATORS: %1 and %2 are both application names, e.g. Firefox */
+		g_string_append_printf (body, _("Includes %s, %s and %s."),
+					gs_app_get_name (app1),
+					gs_app_get_name (app2),
+					gs_app_get_name (app3));
+		if (need_restart_cnt > 0) {
+			g_string_append (body, " ");
+			/* TRANSLATORS: at least one application needs restarting */
+			g_string_append_printf (body, ngettext ("%u application requires a restart.",
+								"%u applications require a restart.",
+								need_restart_cnt),
+						need_restart_cnt);
+		}
 	}
 
 	/* create the notification */
