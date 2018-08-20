@@ -98,6 +98,7 @@ gboolean	 gs_utils_parse_evr		(const gchar	 *evr,
 						 gchar		**out_epoch,
 						 gchar		**out_version,
 						 gchar		**out_release);
+void		 gs_utils_update_install_timestamp (GSettings *settings);
 
 G_END_DECLS
 
