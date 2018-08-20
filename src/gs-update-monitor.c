@@ -140,14 +140,14 @@ has_important_updates (GsAppList *apps)
 }
 
 static gboolean
-no_updates_for_a_week (GsUpdateMonitor *monitor)
+check_if_timestamp_more_than_a_week_ago (GsUpdateMonitor *monitor, const gchar *timestamp)
 {
 	GTimeSpan d;
 	gint64 tmp;
 	g_autoptr(GDateTime) last_update = NULL;
 	g_autoptr(GDateTime) now = NULL;
 
-	g_settings_get (monitor->settings, "install-timestamp", "x", &tmp);
+	g_settings_get (monitor->settings, timestamp, "x", &tmp);
 	if (tmp == 0)
 		return TRUE;
 
@@ -160,6 +160,16 @@ no_updates_for_a_week (GsUpdateMonitor *monitor)
 	now = g_date_time_new_now_local ();
 	d = g_date_time_difference (now, last_update);
 	if (d >= 7 * G_TIME_SPAN_DAY)
+		return TRUE;
+
+	return FALSE;
+}
+
+static gboolean
+no_updates_for_a_week (GsUpdateMonitor *monitor)
+{
+	if (check_if_timestamp_more_than_a_week_ago (monitor, "install-timestamp") ||
+	    check_if_timestamp_more_than_a_week_ago (monitor, "online-updates-timestamp"))
 		return TRUE;
 
 	return FALSE;

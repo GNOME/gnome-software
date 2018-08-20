@@ -2971,6 +2971,8 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 		helper->anything_ran = TRUE;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
+
+	gs_utils_set_online_updates_timestamp (priv->settings);
 	return TRUE;
 }
 
@@ -3036,6 +3038,9 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			return;
 		}
 	}
+
+	if (action == GS_PLUGIN_ACTION_UPGRADE_TRIGGER)
+		gs_utils_set_online_updates_timestamp (priv->settings);
 
 	/* remove from pending list */
 	if (add_to_pending_array)
