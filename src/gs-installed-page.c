@@ -354,9 +354,10 @@ gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
  * Get a sort key to achive this:
  *
  * 1. state:installing applications
- * 2. state:removing applications
- * 3. kind:normal applications
- * 4. kind:system applications
+ * 2. state: applications queued for installing
+ * 3. state:removing applications
+ * 4. kind:normal applications
+ * 5. kind:system applications
  *
  * Within each of these groups, they are sorted by the install date and then
  * by name.
@@ -372,14 +373,16 @@ gs_installed_page_get_app_sort_key (GsApp *app)
 	/* sort installed, removing, other */
 	switch (gs_app_get_state (app)) {
 	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		g_string_append (key, "1:");
 		break;
-	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		g_string_append (key, "2:");
 		break;
-	default:
+	case AS_APP_STATE_REMOVING:
 		g_string_append (key, "3:");
+		break;
+	default:
+		g_string_append (key, "4:");
 		break;
 	}
 
