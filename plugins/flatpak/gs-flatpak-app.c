@@ -199,3 +199,22 @@ gs_flatpak_app_get_main_app_ref_name (GsApp *app)
 {
 	return gs_app_get_metadata_item (app, "flatpak::mainApp");
 }
+
+/* Set whether the app is a flatpak ‘extra data’ app, which is essentially a
+ * wrapper around a separately-downloaded binary blob — apps like Spotify or
+ * Skype are packaged this way. */
+void
+gs_flatpak_app_set_extra_data (GsApp *app, gboolean extra_data)
+{
+	g_autoptr(GVariant) tmp = g_variant_new_boolean (extra_data);
+	gs_app_set_metadata_variant (app, "flatpak::ExtraData", tmp);
+}
+
+gboolean
+gs_flatpak_app_get_extra_data (GsApp *app)
+{
+	GVariant *tmp = gs_app_get_metadata_variant (app, "flatpak::ExtraData");
+	if (tmp == NULL)
+		return FALSE;
+	return g_variant_get_boolean (tmp);
+}

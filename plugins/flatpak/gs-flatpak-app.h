@@ -63,5 +63,8 @@ void			 gs_flatpak_app_set_runtime_url		(GsApp		*app,
 void			 gs_flatpak_app_set_main_app_ref_name	(GsApp		*app,
 								 const gchar	*main_app_ref);
 const gchar		*gs_flatpak_app_get_main_app_ref_name	(GsApp		*app);
+void			 gs_flatpak_app_set_extra_data		(GsApp		*app,
+								 gboolean	extra_data);
+gboolean		 gs_flatpak_app_get_extra_data		(GsApp		*app);
 
 G_END_DECLS
