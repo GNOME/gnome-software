@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-08-06 10:38+0000\n"
-"PO-Revision-Date: 2018-08-12 16:40+0800\n"
-"Last-Translator: pan93412 <pan93412@gmail.com>\n"
+"POT-Creation-Date: 2018-08-22 08:55+0000\n"
+"PO-Revision-Date: 2018-08-23 00:56+0800\n"
+"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.4\n"
+"X-Generator: Poedit 2.1.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -37,12 +37,12 @@ msgstr ""
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
-"found either through browsing the list of categories or by searching. It also "
-"allows you to update your system using an offline update."
+"found either through browsing the list of categories or by searching. It "
+"also allows you to update your system using an offline update."
 msgstr ""
 "GNOME《軟體》陳列各種具有特色，以及廣受歡迎的應用程式，並附上有用的描述與多張"
-"螢幕擷圖。除了瀏覽類別清單之外，您還可以透過搜尋的方式來找出想要的應用程式。此"
-"外，它也可讓您採用離線更新的方式更新系統。"
+"螢幕擷圖。除了瀏覽類別清單之外，您還可以透過搜尋的方式來找出想要的應用程式。"
+"此外，它也可讓您採用離線更新的方式更新系統。"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
@@ -95,8 +95,8 @@ msgid ""
 "If disabled, GNOME Software will hide the updates panel, not perform any "
 "automatic updates actions or prompt for upgrades."
 msgstr ""
-"若停用，則 GNOME《軟體》會隱藏更新面板，且不會執行任何自動更新動作，或提示可以"
-"升級。"
+"若停用，則 GNOME《軟體》會隱藏更新面板，且不會執行任何自動更新動作，或提示可"
+"以升級。"
 
 #: data/org.gnome.software.gschema.xml:15
 msgid "Automatically download and install updates"
@@ -107,8 +107,8 @@ msgid ""
 "If enabled, GNOME Software automatically downloads software updates in the "
 "background, also installing ones that do not require a reboot."
 msgstr ""
-"如果啟用此功能，則《GNOME 軟體》將會在背景下載軟體更新，亦安裝不需要重新開機的"
-"更新。"
+"如果啟用此功能，則《GNOME 軟體》將會在背景下載軟體更新，亦安裝不需要重新開機"
+"的更新。"
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
@@ -130,8 +130,8 @@ msgid ""
 "when using a metered connection (eventually downloading some metadata, "
 "checking for updates, etc., which may incur in costs for the user)."
 msgstr ""
-"若啟用，則 GNOME《軟體》即使在使用計價連線時仍會自動在背景重新整理（甚至下載一"
-"些中介資料、檢查是否有更新…等，這代表使用者可能必須負擔更多費用）。"
+"若啟用，則 GNOME《軟體》即使在使用計價連線時仍會自動在背景重新整理（甚至下載"
+"一些中介資料、檢查是否有更新…等，這代表使用者可能必須負擔更多費用）。"
 
 #: data/org.gnome.software.gschema.xml:30
 msgid "Whether it’s the very first run of GNOME Software"
@@ -190,9 +190,9 @@ msgid ""
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr ""
-"若採取較大的數值則代表較少從遠端伺服器來回，但是螢幕快照的後續更新可能要花上較"
-"長時間才會顯示給使用者觀看。數值為 0 表示若快取中已有影像存在，則永不檢查伺服"
-"器。"
+"若採取較大的數值則代表較少從遠端伺服器來回，但是螢幕快照的後續更新可能要花上"
+"較長時間才會顯示給使用者觀看。數值為 0 表示若快取中已有影像存在，則永不檢查伺"
+"服器。"
 
 #: data/org.gnome.software.gschema.xml:78
 msgid "The server to use for application reviews"
@@ -395,8 +395,8 @@ msgstr "加入到應用程式資料夾中"
 #: src/gs-application.c:124
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"初始啟動模式：可以是「updates」(更新)、「updated」(已更新)、「installed」(已安"
-"裝) 或「overview」(概覽)"
+"初始啟動模式：可以是「updates」(更新)、「updated」(已更新)、「installed」(已"
+"安裝) 或「overview」(概覽)"
 
 #: src/gs-application.c:124
 msgid "MODE"
@@ -440,10 +440,11 @@ msgstr "FILENAME"
 
 #: src/gs-application.c:136
 msgid ""
-"The kind of interaction expected for this action: either ‘none’, ‘notify’, or "
-"‘full’"
+"The kind of interaction expected for this action: either ‘none’, ‘notify’, "
+"or ‘full’"
 msgstr ""
-"這個動作預期的互動種類：可以是「none」(沒有)、「notify」(通知)或「full」(完整)"
+"這個動作預期的互動種類：可以是「none」(沒有)、「notify」(通知)或「full」(完"
+"整)"
 
 #: src/gs-application.c:139
 msgid "Show verbose debugging information"
@@ -1381,7 +1382,8 @@ msgstr "更新待決…"
 #. TRANSLATORS: this is the warning box
 #: src/gs-details-page.c:808
 msgid ""
-"This application can only be used when there is an active internet connection."
+"This application can only be used when there is an active internet "
+"connection."
 msgstr "此類應用程式僅可在有網際網路連線時可以使用。"
 
 #. TRANSLATORS: this is where the version is not known
@@ -1623,8 +1625,8 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
-"這代表該軟體著作屬於特定人士或公司所有。他們通常會限制您的使用方式，而且一般來"
-"說無法存取其軟體源始碼。"
+"這代表該軟體著作屬於特定人士或公司所有。他們通常會限制您的使用方式，而且一般"
+"來說無法存取其軟體源始碼。"
 
 #: src/gs-details-page.ui:1530
 msgid "Unknown Software License"
@@ -1881,8 +1883,8 @@ msgstr "沒有可用的 %s 格式附加編解碼器。"
 #: src/gs-extras-page.c:398
 #, c-format
 msgid ""
-"Information about %s, as well as options for how to get a codec that can play "
-"this format might be found %s."
+"Information about %s, as well as options for how to get a codec that can "
+"play this format might be found %s."
 msgstr ""
 "%s 的相關資訊，以及該如何取得可播放這個格式的編解碼器的選項可在 %s 找到。"
 
@@ -2203,8 +2205,8 @@ msgstr "您確定要移除 %s 資源？"
 #: src/gs-page.c:727
 #, c-format
 msgid ""
-"All applications from %s will be removed, and you will have to re-install the "
-"source to use them again."
+"All applications from %s will be removed, and you will have to re-install "
+"the source to use them again."
 msgstr "所有來自 %s 的應用程式都將被移除，若未來您想再次使用時則須重新安裝。"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
@@ -2223,9 +2225,10 @@ msgstr "%s 將被移除，將來若您想使用時則須再次安裝。"
 #: lib/gs-plugin-loader.c:1447
 #, c-format
 msgid ""
-"Information about %s, as well as options for how to get a codec that can play "
-"this format can be found on the website."
-msgstr "%s 的相關資訊，以及網站上提供的該如何取得可播放此格式的編解碼器之選項。"
+"Information about %s, as well as options for how to get a codec that can "
+"play this format can be found on the website."
+msgstr ""
+"%s 的相關資訊，以及網站上提供的該如何取得可播放此格式的編解碼器之選項。"
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
 #: src/gs-popular-tile.c:69 src/gs-summary-tile.c:75
@@ -2319,8 +2322,8 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
-"目前安裝的軟體有些和 %s 並不相容。若您希望繼續，則下列軟體在升級過程中會自動移"
-"除："
+"目前安裝的軟體有些和 %s 並不相容。若您希望繼續，則下列軟體在升級過程中會自動"
+"移除："
 
 #: src/gs-removal-dialog.ui:27
 msgid "Incompatible Software"
@@ -2913,7 +2916,7 @@ msgstr "無法更新 %s，因為下載失敗"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1380
 msgid "Unable to update: internet access was required but wasn’t available"
-msgstr "無法更新：必須要有網際網路存取但卻無法使用。"
+msgstr "無法更新：必須要有網際網路存取但卻無法使用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3351,17 +3354,18 @@ msgstr "這次更新中有安全性問題。請詢問您的軟體供應商以了
 
 #. TRANSLATORS: we ran out of disk space
 #: src/gs-update-monitor.c:904
-msgid "There wasn’t enough disk space. Please free up some space and try again."
+msgid ""
+"There wasn’t enough disk space. Please free up some space and try again."
 msgstr "沒有足夠的磁碟空間。請空出部分空間後再試一次。"
 
 #. TRANSLATORS: We didn't handle the error type
 #: src/gs-update-monitor.c:909
 msgid ""
-"We’re sorry: the update failed to install. Please wait for another update and "
-"try again. If the problem persists, contact your software provider."
+"We’re sorry: the update failed to install. Please wait for another update "
+"and try again. If the problem persists, contact your software provider."
 msgstr ""
-"我們很抱歉：更新無法安裝。請等待下一次更新時再試一次。如果問題持續出現，請連絡"
-"您的軟體供應商。"
+"我們很抱歉：更新無法安裝。請等待下一次更新時再試一次。如果問題持續出現，請連"
+"絡您的軟體供應商。"
 
 #. TRANSLATORS: Time in 24h format
 #: src/gs-updates-page.c:241
@@ -3371,7 +3375,7 @@ msgstr "%R"
 #. TRANSLATORS: Time in 12h format
 #: src/gs-updates-page.c:244
 msgid "%l:%M %p"
-msgstr "%p %l:%M"
+msgstr "%p%l:%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
@@ -3383,7 +3387,7 @@ msgstr "昨日 %R"
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
 #: src/gs-updates-page.c:254
 msgid "Yesterday, %l:%M %p"
-msgstr "昨日%p %l:%M"
+msgstr "昨日 %p%l:%M"
 
 #: src/gs-updates-page.c:257
 msgid "Two days ago"
@@ -3417,7 +3421,7 @@ msgstr "兩週前"
 #. i.e. "25 May 2012"
 #: src/gs-updates-page.c:273
 msgid "%e %B %Y"
-msgstr "%Y年%m月%e日"
+msgstr "%Y年%b%e日"
 
 #. TRANSLATORS: the updates are being downloaded
 #: src/gs-updates-page.c:286
@@ -3621,7 +3625,8 @@ msgid "_Learn More"
 msgstr "了解更多(_L)"
 
 #: src/gs-upgrade-banner.ui:98
-msgid "It is recommended that you back up your data and files before upgrading."
+msgid ""
+"It is recommended that you back up your data and files before upgrading."
 msgstr "建議您在升級前先備份您的資料與檔案。"
 
 #: src/gs-upgrade-banner.ui:116
@@ -4131,12 +4136,12 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "取得 %s 的 flatpak 中介資料…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:666
+#: plugins/fwupd/gs-plugin-fwupd.c:673
 msgid "Downloading firmware update signature…"
 msgstr "下載韌體更新簽章中…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:714
 msgid "Downloading firmware update metadata…"
 msgstr "下載韌體更新中介資料中…"
 
@@ -4254,12 +4259,13 @@ msgstr "Valve 提供的終極娛樂平臺"
 #~ msgstr "專有軟體來源"
 
 #~ msgid ""
-#~ "Software sources can be downloaded from the internet. They give you access "
-#~ "to additional software that is not provided by %s."
+#~ "Software sources can be downloaded from the internet. They give you "
+#~ "access to additional software that is not provided by %s."
 #~ msgstr "軟體來源可以從網際網路下載。它們讓您存取更多 %s 沒有提供的軟體。"
 
 #~ msgid ""
-#~ "Removing a source will also remove any software you have installed from it."
+#~ "Removing a source will also remove any software you have installed from "
+#~ "it."
 #~ msgstr "移除來源也會移除您先前從該來源安裝過的任何軟體。"
 
 #~ msgid "No software installed from this source"
