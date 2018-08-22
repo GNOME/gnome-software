@@ -1,5 +1,5 @@
 # French translation for gnome-software.
-# Copyright (C) 2014 gnome-software's COPYRIGHT HOLDER
+# Copyright (C) 2014-2018 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # Alain Lojewski <allomervan@gmail.com>, 2014-2018.
 # Guillaume Bernard <associations@guillaume-bernard.fr>, 2017-2018
@@ -9,16 +9,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-07-26 15:42+0000\n"
-"PO-Revision-Date: 2018-03-26 20:29+0200\n"
-"Last-Translator: Guillaume Bernard <associations@guillaume-bernard.fr>\n"
+"POT-Creation-Date: 2018-08-18 06:57+0000\n"
+"PO-Revision-Date: 2018-08-18 19:05+0200\n"
+"Last-Translator: Claude Paroz <claude@2xlibre.net>\n"
 "Language-Team: français <gnomefr@traduc.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.0.6\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -109,33 +108,29 @@ msgstr ""
 "n’effectue aucune mise à jour automatique et ne demande aucune mise à niveau."
 
 #: data/org.gnome.software.gschema.xml:15
-#, fuzzy
-#| msgid "Whether to automatically download updates"
 msgid "Automatically download and install updates"
-msgstr "Indique s’il faut télécharger automatiquement les mises à jour"
+msgstr "Télécharger et installer automatiquement les mises à jour"
 
 #: data/org.gnome.software.gschema.xml:16
-#, fuzzy
-#| msgid ""
-#| "If enabled, GNOME Software automatically downloads updates in the "
-#| "background and prompts the user to install them when ready."
 msgid ""
 "If enabled, GNOME Software automatically downloads software updates in the "
 "background, also installing ones that do not require a reboot."
 msgstr ""
-"Si activé, Logiciels de GNOME télécharge automatiquement les mises à jour en "
-"arrière-plan et propose à l’utilisateur de les installer une fois celles-ci "
-"téléchargées."
+"Si activé, Logiciels de GNOME télécharge automatiquement les mises à jour "
+"logicielles en arrière-plan, puis installe celles qui ne nécessitent pas de "
+"redémarrage."
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
-msgstr ""
+msgstr "Signaler à l’utilisateur les mises à jour de logiciels en arrière-plan"
 
 #: data/org.gnome.software.gschema.xml:21
 msgid ""
 "If enabled, GNOME Software notifies the user about updates that happened "
 "whilst the user was idle."
 msgstr ""
+"Si activé, Logiciels de GNOME signale à l’utilisateur les mises à jour qui "
+"se sont faites pendant qu’il était inactif."
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
@@ -341,69 +336,57 @@ msgstr "Tout sélectionner"
 msgid "Select None"
 msgstr "Ne rien sélectionner"
 
-#: src/gnome-software.ui:37
-msgid "_Software Repositories"
-msgstr "_Dépôts de logiciels"
-
-#: src/gnome-software.ui:42
-msgid "_Update Preferences"
-msgstr ""
-
-#: src/gnome-software.ui:48
-msgid "_About"
-msgstr "À _propos"
-
-#: src/gnome-software.ui:57 src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:36 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Logiciels"
 
-#: src/gnome-software.ui:76 src/gs-update-dialog.ui:21
+#: src/gnome-software.ui:55 src/gs-update-dialog.ui:21
 msgid "Go back"
 msgstr "Retourner en arrière"
 
 #. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:110
+#: src/gnome-software.ui:89
 msgid "_All"
 msgstr "_Tout"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:137
+#: src/gnome-software.ui:116
 msgid "_Installed"
 msgstr "_Installées"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:188
+#: src/gnome-software.ui:167
 msgid "_Updates"
 msgstr "Mi_ses à jour"
 
-#: src/gnome-software.ui:284
+#: src/gnome-software.ui:263
 msgid "Search"
 msgstr "Rechercher"
 
 #. button in the info bar
-#: src/gnome-software.ui:422 src/gs-repos-dialog.ui:6 src/gs-repos-dialog.ui:20
+#: src/gnome-software.ui:381 src/gs-repos-dialog.ui:6 src/gs-repos-dialog.ui:20
 msgid "Software Repositories"
 msgstr "Dépôts de logiciels"
 
 #. button in the info bar
-#: src/gnome-software.ui:433
+#: src/gnome-software.ui:392
 msgid "Examine Disk"
 msgstr "Examiner le disque"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:444 src/gs-updates-page.c:934
+#: src/gnome-software.ui:403 src/gs-updates-page.c:934
 msgid "Network Settings"
 msgstr "Paramètres réseau"
 
 #. button in the info bar
-#: src/gnome-software.ui:455
+#: src/gnome-software.ui:414
 msgid "Restart Now"
 msgstr "Redémarrer maintenant"
 
 #. button in the info bar
-#: src/gnome-software.ui:466
+#: src/gnome-software.ui:425
 msgid "More Information"
 msgstr "Davantage d’informations"
 
@@ -518,11 +501,11 @@ msgstr "Afficher les informations de profilage du service"
 
 #: src/gs-application.c:143
 msgid "Installs any pending updates in the background"
-msgstr ""
+msgstr "Installer les mises à jour en attente en arrière-plan"
 
 #: src/gs-application.c:145
 msgid "Show update preferences"
-msgstr ""
+msgstr "Afficher les préférences de mise à jour"
 
 #: src/gs-application.c:147
 msgid "Quit the running instance"
@@ -2177,6 +2160,22 @@ msgstr "Chargement de la page"
 msgid "Starting up…"
 msgstr "Démarrage…"
 
+#: src/gs-menus.ui:7
+msgid "_Software Repositories"
+msgstr "_Dépôts de logiciels"
+
+#: src/gs-menus.ui:12
+msgid "_Update Preferences"
+msgstr "Préférences de _mise à jour"
+
+#: src/gs-menus.ui:18
+msgid "_About"
+msgstr "À _propos"
+
+#: src/gs-menus.ui:22
+msgid "_Quit"
+msgstr "_Quitter"
+
 #: src/gs-moderate-page.ui:7
 msgid "Moderate page"
 msgstr "Page des modérations"
@@ -2249,8 +2248,8 @@ msgid "Enable Third Party Software Repositories?"
 msgstr "Activer les dépôts logiciels tiers ?"
 
 #: src/gs-overview-page.ui:117
-msgid "Featured Application"
-msgstr "Application mise en avant"
+msgid "Featured Applications"
+msgstr "Applications mises en avant"
 
 #: src/gs-overview-page.ui:166
 msgid "Categories"
@@ -2350,26 +2349,27 @@ msgstr "Source : %s"
 
 #: src/gs-prefs-dialog.ui:6 src/gs-prefs-dialog.ui:18
 msgid "Update Preferences"
-msgstr ""
+msgstr "Préférences de mise à jour"
 
 #: src/gs-prefs-dialog.ui:44
 msgid "Automatic Updates"
 msgstr "Mises à jour automatiques"
 
 #: src/gs-prefs-dialog.ui:72
-#, fuzzy
-#| msgid "Whether to automatically refresh when on a metered connection"
 msgid "Automatic updates are disabled when on mobile or metered connections."
 msgstr ""
-"Indique s’il faut réactualiser automatiquement sur les connexions payantes"
+"Les mises à jour automatiques sont désactivées sur les connexions mobiles ou "
+"payantes."
 
 #: src/gs-prefs-dialog.ui:90
 msgid "Automatic Update Notifications"
-msgstr ""
+msgstr "Notifications de mise à jour automatique"
 
 #: src/gs-prefs-dialog.ui:105
 msgid "Show notifications when updates have been automatically installed."
 msgstr ""
+"Afficher des notifications lorsque des mises à jour ont été installées "
+"automatiquement."
 
 #: lib/gs-price.c:111
 #, c-format
@@ -2800,17 +2800,17 @@ msgstr "Aucune application trouvée"
 #: src/gs-shell.c:724
 #, c-format
 msgid "Sign out from %s"
-msgstr ""
+msgstr "Se déconnecter de %s"
 
 #: src/gs-shell.c:727
 #, c-format
 msgid "Signed in into %s as %s"
-msgstr ""
+msgstr "Connecté à %s en tant que %s"
 
 #: src/gs-shell.c:731
 #, c-format
 msgid "Sign in to %s…"
-msgstr ""
+msgstr "Se connecter à %s…"
 
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is the truncated hostname, e.g.
@@ -3227,10 +3227,8 @@ msgstr "Désolé, quelque chose n’a pas marché"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1704
-#, fuzzy
-#| msgid "Unable to install %s as not supported"
 msgid "Failed to install file: not supported"
-msgstr "Impossible d’installer %s : il n’est pas pris en charge"
+msgstr "Impossible d’installer le fichier : il n’est pas pris en charge"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1708
@@ -3239,17 +3237,13 @@ msgstr "Impossible d’installer le fichier : l’authentification a échoué"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1748
-#, fuzzy
-#| msgid "Unable to install %s as not supported"
 msgid "Failed to install: not supported"
-msgstr "Impossible d’installer %s : il n’est pas pris en charge"
+msgstr "Impossible d’installer : non pris en charge"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1752
-#, fuzzy
-#| msgid "Failed to install file: authentication failed"
 msgid "Failed to install: authentication failed"
-msgstr "Impossible d’installer le fichier : l’authentification a échoué"
+msgstr "Impossible d’installer : l’authentification a échoué"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
@@ -3379,39 +3373,34 @@ msgstr "Applications mises à jour"
 
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:168
-#, fuzzy, c-format
-#| msgid "Application Updates"
+#, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
-msgstr[0] "Mises à jour de l’application"
-msgstr[1] "Mises à jour de l’application"
+msgstr[0] "%u application mise à jour"
+msgstr[1] "%u applications mises à jour"
 
 #. TRANSLATORS: this is appended to the list of app names
 #: src/gs-update-monitor.c:183
 msgid "have been updated."
-msgstr ""
+msgstr "ont été mises à jour."
 
 #. TRANSLATORS: here follows a list of app names
 #: src/gs-update-monitor.c:186
 msgid "Includes: ."
-msgstr ""
+msgstr "Cela inclut : ."
 
 #. TRANSLATORS: the app was updated and needs closing and re-opening
 #: src/gs-update-monitor.c:206
-#, fuzzy, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
+#, c-format
 msgid "%u application require a restart."
 msgid_plural "%u applications require a restart."
-msgstr[0] "%u application installée"
-msgstr[1] "%u applications installées"
+msgstr[0] "%u application nécessite un redémarrage."
+msgstr[1] "%u applications nécessitent un redémarrage."
 
 #. TRANSLATORS: for the notification title
 #: src/gs-update-monitor.c:211
-#, fuzzy
-#| msgid "Restart"
 msgid "Restart Required"
-msgstr "Redémarrer"
+msgstr "Redémarrage nécessaire"
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
 #: src/gs-update-monitor.c:415 src/gs-updates-page.ui:46
@@ -3680,10 +3669,8 @@ msgstr "L’accès à Internet est nécessaire pour rechercher des mises à jour
 
 #. This label indicates that the update check is in progress
 #: src/gs-updates-page.c:1354
-#, fuzzy
-#| msgid "Removing…"
 msgid "Checking…"
-msgstr "Suppression en cours…"
+msgstr "Vérification…"
 
 #: src/gs-updates-page.c:1363
 msgid "Check for updates"
@@ -4325,12 +4312,12 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Téléchargement des métadonnées de Flatpak pour %s…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:666
+#: plugins/fwupd/gs-plugin-fwupd.c:673
 msgid "Downloading firmware update signature…"
 msgstr "Téléchargement de la signature de la mise à jour du micrologiciel…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:714
 msgid "Downloading firmware update metadata…"
 msgstr "Téléchargement des métadonnées de mise à jour du micrologiciel…"
 
@@ -4391,4 +4378,3 @@ msgstr "Prise en charge de Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "La dernière plate-forme de divertissement de Valve"
-
