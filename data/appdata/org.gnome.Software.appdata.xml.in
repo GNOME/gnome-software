@@ -46,6 +46,31 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-08-28" version="3.29.92">
+      <description>
+        <p>
+          This is an unstable release in the 3.27 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Do not go 'back' to a previous application details panel</li>
+          <li>Don't crash if when getting the fwupd locked status</li>
+          <li>Download updates automatically when required</li>
+          <li>Fix dark theme support</li>
+          <li>Hide screenshot and support widgets when no screenshots</li>
+          <li>Ignore non-interactive generic errors</li>
+          <li>Implement distro upgrade downloading when using rpm-ostree</li>
+          <li>Only update the update check timestamp when it succeeds</li>
+          <li>Open the WiFi panel when clicking the Network Settings button</li>
+          <li>Rotate featured apps on the overview page</li>
+          <li>Simplify the updates panel</li>
+          <li>Use FlatpakTransaction to install, remove and update</li>
+          <li>Use new display name for the Snap publisher</li>
+          <li>Use the full name for the ESRB ratings descripion</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-03-05" version="3.29.1">
       <description>
         <p>
