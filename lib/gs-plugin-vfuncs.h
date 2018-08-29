@@ -268,7 +268,7 @@ gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
 /**
  * gs_plugin_add_categories:
  * @plugin: a #GsPlugin
- * @list (element-type GsCategory): a #GPtrArray
+ * @list: (element-type GsCategory): a #GPtrArray
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -286,7 +286,8 @@ gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
 /**
  * gs_plugin_add_category_apps:
  * @plugin: a #GsPlugin
- * @category: a #GsCategory * @list: a #GsAppList
+ * @category: a #GsCategory
+ * @list: a #GsAppList
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
@@ -305,6 +306,7 @@ gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
 /**
  * gs_plugin_add_recent:
  * @plugin: a #GsPlugin
+ * @list: a #GsAppList
  * @age: a number of seconds
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
