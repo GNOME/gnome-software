@@ -376,8 +376,9 @@ gs_plugin_action_stop (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_symbol (skip):
+ * gs_plugin_get_symbol: (skip)
  * @plugin: a #GsPlugin
+ * @function_name: a symbol name
  *
  * Gets the symbol from the module that backs the plugin. If the plugin is not
  * enabled then no symbol is returned.
@@ -499,7 +500,7 @@ gs_plugin_get_appstream_id (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_appstream_id:
+ * gs_plugin_set_appstream_id:
  * @plugin: a #GsPlugin
  * @appstream_id: an appstream ID, e.g. `org.gnome.Software.Plugin.Epiphany`
  *
@@ -815,7 +816,7 @@ gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
 /**
  * gs_plugin_set_network_monitor:
  * @plugin: a #GsPlugin
- * @network_monitor: a #GNetworkMonitor
+ * @monitor: a #GNetworkMonitor
  *
  * Sets the network monitor so that plugins can check the state of the network.
  *
@@ -1028,12 +1029,16 @@ void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
 	GsPluginStatusHelper *helper;
+	g_autoptr(GSource) idle_source = NULL;
+
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->status = status;
 	if (app != NULL)
 		helper->app = g_object_ref (app);
-	g_idle_add (gs_plugin_status_update_cb, helper);
+	idle_source = g_idle_source_new ();
+	g_source_set_callback (idle_source, gs_plugin_status_update_cb, helper, NULL);
+	g_source_attach (idle_source, NULL);
 }
 
 static gboolean
@@ -1424,6 +1429,7 @@ gs_plugin_download_rewrite_resource_uri (GsPlugin *plugin,
 /**
  * gs_plugin_download_rewrite_resource:
  * @plugin: a #GsPlugin
+ * @app: a #GsApp, or %NULL
  * @resource: the CSS resource
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
@@ -2003,7 +2009,7 @@ gs_plugin_action_from_string (const gchar *action)
 
 /**
  * gs_plugin_refine_flags_to_string:
- * @action: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE
+ * @refine_flags: some #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE
  *
  * Converts the flags to a string.
  *

@@ -562,7 +562,6 @@ gs_category_init (GsCategory *category)
 /**
  * gs_category_new:
  * @id: an ID, e.g. "all"
- * @name: a localised name
  *
  * Creates a new category object.
  *
