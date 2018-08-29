@@ -1481,6 +1481,9 @@ gs_plugin_loader_convert_unavailable (GsAppList *list, const gchar *search)
 
 /**
  * gs_plugin_loader_job_process_finish:
+ * @plugin_loader: A #GsPluginLoader
+ * @res: a #GAsyncResult
+ * @error: A #GError, or %NULL
  *
  * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
@@ -1500,6 +1503,9 @@ gs_plugin_loader_job_process_finish (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_job_action_finish:
+ * @plugin_loader: A #GsPluginLoader
+ * @res: a #GAsyncResult
+ * @error: A #GError, or %NULL
  *
  * Return value: success
  **/
@@ -1613,6 +1619,11 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 
 /**
  * gs_plugin_loader_job_get_categories_async:
+ * @plugin_loader: A #GsPluginLoader
+ * @plugin_job: job to process
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: function to call when complete
+ * @user_data: user data to pass to @callback
  *
  * This method calls all plugins that implement the gs_plugin_add_categories()
  * function. The plugins return #GsCategory objects.
@@ -1643,6 +1654,9 @@ gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_job_get_categories_finish:
+ * @plugin_loader: A #GsPluginLoader
+ * @res: a #GAsyncResult
+ * @error: A #GError, or %NULL
  *
  * Return value: (element-type GsCategory) (transfer full): A list of applications
  **/
@@ -3484,6 +3498,11 @@ gs_plugin_loader_schedule_task (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_job_process_async:
+ * @plugin_loader: A #GsPluginLoader
+ * @plugin_job: job to process
+ * @cancellable: a #GCancellable, or %NULL
+ * @callback: function to call when complete
+ * @user_data: user data to pass to @callback
  *
  * This method calls all plugins.
  **/
@@ -3702,6 +3721,8 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_plugin_supported:
+ * @plugin_loader: A #GsPluginLoader
+ * @function_name: a function name
  *
  * This function returns TRUE if the symbol is found in any enabled plugin.
  */

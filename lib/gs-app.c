@@ -1050,7 +1050,7 @@ gs_app_set_progress (GsApp *app, guint percentage)
 /**
  * gs_app_set_allow_cancel:
  * @app: a #GsApp
- * @boolean: if the installation or upgrade can be cancelled or not
+ * @allow_cancel: if the installation or upgrade can be cancelled or not
  *
  * This sets a flag indicating whether the operation can be cancelled or not.
  * This is used by the UI to set the "Cancel" button insensitive as
