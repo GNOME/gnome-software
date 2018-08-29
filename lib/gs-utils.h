@@ -34,6 +34,8 @@ G_BEGIN_DECLS
  * GsUtilsCacheFlags:
  * @GS_UTILS_CACHE_FLAG_NONE:		No flags set
  * @GS_UTILS_CACHE_FLAG_WRITEABLE:	A writable directory is required
+ * @GS_UTILS_CACHE_FLAG_USE_HASH:	Prefix a hash to the filename
+ * @GS_UTILS_CACHE_FLAG_ENSURE_EMPTY:	Clear existing cached items
  *
  * The cache flags.
  **/

@@ -606,7 +606,6 @@ gs_utils_error_add_unique_id (GError **error, GsApp *app)
 /**
  * gs_utils_error_strip_unique_id:
  * @error: a #GError
- * @app: a #GsApp
  *
  * Removes a possible unique ID prefix from the error.
  *
@@ -1029,6 +1028,7 @@ gs_utils_append_key_value (GString *str, gsize align_len,
 
 /**
  * gs_utils_is_low_resolution:
+ * @toplevel: widget on monitor to check
  *
  * Retrieves whether the primary monitor has a low resolution.
  *
@@ -1067,6 +1067,7 @@ gs_utils_get_memory_total (void)
 
 /**
  * gs_utils_parse_evr:
+ * @evr: an EVR version string
  * @out_epoch: (out): return location for the epoch string
  * @out_version: (out): return location for the version string
  * @out_release: (out): return location for the release string

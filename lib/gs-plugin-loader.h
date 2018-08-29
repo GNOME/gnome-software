@@ -90,7 +90,7 @@ gboolean	 gs_plugin_loader_get_allow_updates	(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_network_available	(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_network_metered	(GsPluginLoader *plugin_loader);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
-							 const gchar	*plugin_func);
+							 const gchar	*function_name);
 
 GPtrArray	*gs_plugin_loader_get_events		(GsPluginLoader	*plugin_loader);
 GsPluginEvent	*gs_plugin_loader_get_event_default	(GsPluginLoader	*plugin_loader);
@@ -107,7 +107,7 @@ void		 gs_plugin_loader_clear_caches		(GsPluginLoader	*plugin_loader);
 GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
 void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_loader,
-                                                        guint           num_ops);
+                                                        guint           max_ops);
 
 
 G_END_DECLS
