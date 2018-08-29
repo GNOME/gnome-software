@@ -268,7 +268,6 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	GStrv common_ids;
 	g_autofree gchar *appstream_id = NULL;
 	g_autofree gchar *unique_id = NULL;
-	GsApp *cached_app;
 	g_autoptr(GsApp) app = NULL;
 	SnapdConfinement confinement;
 
@@ -294,15 +293,13 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 		break;
 	}
 
-	cached_app = gs_plugin_cache_lookup (plugin, unique_id);
-	if (cached_app == NULL) {
+	app = gs_plugin_cache_lookup (plugin, unique_id);
+	if (app == NULL) {
 		app = gs_app_new (NULL);
 		gs_app_set_from_unique_id (app, unique_id);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));
 		gs_plugin_cache_add (plugin, unique_id, app);
 	}
-	else
-		app = g_object_ref (cached_app);
 
 	gs_app_set_management_plugin (app, "snap");
 	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
