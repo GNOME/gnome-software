@@ -224,7 +224,13 @@ store_snap_cache_lookup (GsPlugin *plugin, const gchar *name)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->store_snaps_lock);
-	return g_hash_table_lookup (priv->store_snaps, name);
+	SnapdSnap *snap;
+
+	snap = g_hash_table_lookup (priv->store_snaps, name);
+	if (snap == NULL)
+		return NULL;
+
+	return g_object_ref (snap);
 }
 
 static void
