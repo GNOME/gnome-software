@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-08-06 10:38+0000\n"
-"PO-Revision-Date: 2018-08-17 12:34+0300\n"
+"POT-Creation-Date: 2018-08-18 06:57+0000\n"
+"PO-Revision-Date: 2018-09-01 01:08+0300\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -2746,20 +2746,20 @@ msgid "No Application Found"
 msgstr "Sovellusta ei löytynyt"
 
 #: src/gs-shell.c:724
-#, fuzzy, c-format
+#, c-format
 #| msgid "Unable to update %s from %s"
 msgid "Sign out from %s"
-msgstr "Sovelluksen %s päivitys lähteestä %s epäonnistui"
+msgstr "Kirjaudu ulos palvelusta %s"
 
 #: src/gs-shell.c:727
 #, c-format
 msgid "Signed in into %s as %s"
-msgstr ""
+msgstr "Kirjauduttu palveluun %s käyttäjänä %s"
 
 #: src/gs-shell.c:731
 #, c-format
 msgid "Sign in to %s…"
-msgstr ""
+msgstr "Kirjaudu palveluun %s…"
 
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is the truncated hostname, e.g.
@@ -3325,7 +3325,6 @@ msgstr "Sovellukset päivitetty"
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:168
 #, c-format
-#| msgid "Application Updates"
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "%u sovellus päivitetty"
@@ -3344,8 +3343,6 @@ msgstr "Sisältäen: ."
 #. TRANSLATORS: the app was updated and needs closing and re-opening
 #: src/gs-update-monitor.c:206
 #, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "%u application require a restart."
 msgid_plural "%u applications require a restart."
 msgstr[0] "%u sovellus vaatii uudelleenkäynnistyksen."
@@ -4262,12 +4259,12 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Noudetaan flatpak-metatietoja kohteelle %s…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:666
+#: plugins/fwupd/gs-plugin-fwupd.c:673
 msgid "Downloading firmware update signature…"
 msgstr "Ladataan laiteohjelmiston päivitysallekirjoituksia…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:714
 msgid "Downloading firmware update metadata…"
 msgstr "Ladataan laiteohjelmiston päivityksen metatietoja…"
 
