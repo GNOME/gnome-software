@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-08-06 10:38+0000\n"
-"PO-Revision-Date: 2018-08-08 10:09+0300\n"
+"POT-Creation-Date: 2018-08-31 22:10+0000\n"
+"PO-Revision-Date: 2018-09-01 15:17+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -76,7 +76,7 @@ msgstr "Güncellemeler bölmesi"
 msgid "The update details"
 msgstr "Güncelleme ayrıntıları"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1103
+#: data/appdata/org.gnome.Software.appdata.xml.in:1128
 msgid "The GNOME Project"
 msgstr "GNOME Projesi"
 
@@ -114,14 +114,10 @@ msgstr ""
 "yükseltmeler için harekete geçilmeyecek."
 
 #: data/org.gnome.software.gschema.xml:15
-#| msgid "Whether to automatically download updates"
 msgid "Automatically download and install updates"
 msgstr "Güncellemeleri kendiliğinden indir ve kur"
 
 #: data/org.gnome.software.gschema.xml:16
-#| msgid ""
-#| "If enabled, GNOME Software automatically downloads updates in the "
-#| "background and prompts the user to install them when ready."
 msgid ""
 "If enabled, GNOME Software automatically downloads software updates in the "
 "background, also installing ones that do not require a reboot."
@@ -1645,7 +1641,7 @@ msgstr "Eklentiler"
 
 #: src/gs-details-page.ui:1185
 msgid "Selected add-ons will be installed with the application."
-msgstr "Seçilen eklentiler, uygulama ile birlikte kurulacak."
+msgstr "Seçilen eklentiler uygulama ile birlikte kurulacak."
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: src/gs-details-page.ui:1228
@@ -1680,7 +1676,7 @@ msgid ""
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr ""
-"Bu, yazılımın bir kişi ya da bir şirket tarafından sahiplenildiği anlamına "
+"Bu, yazılımın bir kişi veya bir şirket tarafından sahiplenildiği anlamına "
 "gelir. Yazılımın kullanımında genellikle kısıtlamalar vardır ve kaynak koda "
 "çoğunlukla erişilemez."
 
@@ -1694,7 +1690,7 @@ msgstr "Bu yazılımın lisans koşulları bilinmiyor."
 
 #: src/gs-details-page.ui:1574
 msgid "The application was rated this way because it features:"
-msgstr "Uygulama bu şekilde derelendirdi çünkü şu özellikleri taşıyor: "
+msgstr "Uygulama böyle derecelendirildi çünkü şu özellikleri taşıyor: "
 
 #: src/gs-details-page.ui:1600
 msgid "No details were available for this rating."
@@ -2091,7 +2087,7 @@ msgstr "Sistem Uygulamaları"
 
 #: src/gs-installed-page.c:617
 msgid "Click on items to select them"
-msgstr "Öğeleri seçmek için tıklayın"
+msgstr "Ögeleri seçmek için tıklayın"
 
 #: src/gs-installed-page.c:819
 msgid "Select"
@@ -2219,7 +2215,6 @@ msgid "Enable Third Party Software Repositories?"
 msgstr "Üçüncü Taraf Yazılım Depoları Etkinleştirilsin mi?"
 
 #: src/gs-overview-page.ui:117
-#| msgid "Featured Application"
 msgid "Featured Applications"
 msgstr "Öne Çıkan Uygulamalar"
 
@@ -2322,12 +2317,10 @@ msgid "Update Preferences"
 msgstr "Güncelleme Seçenekleri"
 
 #: src/gs-prefs-dialog.ui:44
-#| msgid "Application Updates"
 msgid "Automatic Updates"
 msgstr "Kendiliğinden Güncellemeler"
 
 #: src/gs-prefs-dialog.ui:72
-#| msgid "Whether to automatically refresh when on a metered connection"
 msgid "Automatic updates are disabled when on mobile or metered connections."
 msgstr ""
 "Mobil veya ölçülen bağlantılarda kendiliğinden güncelleme devre dışıdır."
@@ -2762,7 +2755,6 @@ msgstr "Uygulama Bulunamadı"
 
 #: src/gs-shell.c:724
 #, c-format
-#| msgid "Unable to update %s from %s"
 msgid "Sign out from %s"
 msgstr "%s’den çıkış yap"
 
@@ -3314,14 +3306,12 @@ msgstr "Görüntüle"
 
 #. TRANSLATORS: apps were updated, but we don't know which
 #: src/gs-update-monitor.c:165
-#| msgid "Application Updates"
 msgid "Applications Updated"
 msgstr "Uygulamalar Güncellendi"
 
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:168
 #, c-format
-#| msgid "Application Updates"
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "%u Uygulama Güncellendi"
@@ -3339,15 +3329,12 @@ msgstr "Şunlar: ."
 #. TRANSLATORS: the app was updated and needs closing and re-opening
 #: src/gs-update-monitor.c:206
 #, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "%u application require a restart."
 msgid_plural "%u applications require a restart."
 msgstr[0] "%u uygulama yeniden başlatma gerektiriyor."
 
 #. TRANSLATORS: for the notification title
 #: src/gs-update-monitor.c:211
-#| msgid "Restart"
 msgid "Restart Required"
 msgstr "Yeniden Başlatma Gerekiyor"
 
@@ -3612,7 +3599,6 @@ msgstr "Güncellemeleri denetlemek için İnternet erişimi gerekir."
 
 #. This label indicates that the update check is in progress
 #: src/gs-updates-page.c:1354
-#| msgid "Checking for updates…"
 msgid "Checking…"
 msgstr "Denetleniyor…"
 
@@ -4247,12 +4233,12 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "%s için flatpak üst verisi alınıyor…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:666
+#: plugins/fwupd/gs-plugin-fwupd.c:673
 msgid "Downloading firmware update signature…"
 msgstr "Donanım yazılımı güncellemesi imzası indiriliyor…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:714
 msgid "Downloading firmware update metadata…"
 msgstr "Donanım yazılımı güncellemesi üst verisi indiriliyor…"
 
