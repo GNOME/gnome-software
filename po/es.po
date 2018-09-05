@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-07-19 15:24+0000\n"
-"PO-Revision-Date: 2018-07-23 12:25+0200\n"
+"POT-Creation-Date: 2018-08-18 06:57+0000\n"
+"PO-Revision-Date: 2018-09-05 11:12+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: es <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -107,14 +107,10 @@ msgstr ""
 "nuevas."
 
 #: data/org.gnome.software.gschema.xml:15
-#| msgid "Whether to automatically download updates"
 msgid "Automatically download and install updates"
 msgstr "Descargar e instalar las actualizaciones automáticamente"
 
 #: data/org.gnome.software.gschema.xml:16
-#| msgid ""
-#| "If enabled, GNOME Software automatically downloads updates in the "
-#| "background and prompts the user to install them when ready."
 msgid ""
 "If enabled, GNOME Software automatically downloads software updates in the "
 "background, also installing ones that do not require a reboot."
@@ -332,70 +328,57 @@ msgstr "Seleccionar todo"
 msgid "Select None"
 msgstr "Seleccionar ninguno"
 
-#: src/gnome-software.ui:37
-msgid "_Software Repositories"
-msgstr "Repositorios de _software"
-
-#: src/gnome-software.ui:42
-msgid "_Update Preferences"
-msgstr "_Actualizar preferencias"
-
-#: src/gnome-software.ui:48
-msgid "_About"
-msgstr "_Acerca de"
-
-#: src/gnome-software.ui:57 src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:36 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Software"
 
-#: src/gnome-software.ui:76 src/gs-update-dialog.ui:21
+#: src/gnome-software.ui:55 src/gs-update-dialog.ui:21
 msgid "Go back"
 msgstr "Retroceder"
 
 #. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:110
+#: src/gnome-software.ui:89
 msgid "_All"
 msgstr "_Todo"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:137
+#: src/gnome-software.ui:116
 msgid "_Installed"
 msgstr "_Instalado"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:188
+#: src/gnome-software.ui:167
 msgid "_Updates"
 msgstr "_Actualizaciones"
 
-#: src/gnome-software.ui:284
+#: src/gnome-software.ui:263
 msgid "Search"
 msgstr "Buscar"
 
 #. button in the info bar
-#: src/gnome-software.ui:422 src/gs-repos-dialog.ui:6
-#: src/gs-repos-dialog.ui:20
+#: src/gnome-software.ui:381 src/gs-repos-dialog.ui:6 src/gs-repos-dialog.ui:20
 msgid "Software Repositories"
 msgstr "Repositorios de software"
 
 #. button in the info bar
-#: src/gnome-software.ui:433
+#: src/gnome-software.ui:392
 msgid "Examine Disk"
 msgstr "Examinar disco"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:444 src/gs-updates-page.c:934
+#: src/gnome-software.ui:403 src/gs-updates-page.c:934
 msgid "Network Settings"
 msgstr "Configuración de la red"
 
 #. button in the info bar
-#: src/gnome-software.ui:455
+#: src/gnome-software.ui:414
 msgid "Restart Now"
 msgstr "Reiniciar ahora"
 
 #. button in the info bar
-#: src/gnome-software.ui:466
+#: src/gnome-software.ui:425
 msgid "More Information"
 msgstr "Más información"
 
@@ -2162,6 +2145,22 @@ msgstr "Cargando página"
 msgid "Starting up…"
 msgstr "Iniciando…"
 
+#: src/gs-menus.ui:7
+msgid "_Software Repositories"
+msgstr "Repositorios de _software"
+
+#: src/gs-menus.ui:12
+msgid "_Update Preferences"
+msgstr "_Actualizar preferencias"
+
+#: src/gs-menus.ui:18
+msgid "_About"
+msgstr "_Acerca de"
+
+#: src/gs-menus.ui:22
+msgid "_Quit"
+msgstr "_Salir"
+
 #: src/gs-moderate-page.ui:7
 msgid "Moderate page"
 msgstr "Moderar página"
@@ -2234,8 +2233,9 @@ msgid "Enable Third Party Software Repositories?"
 msgstr "¿Activar el repositorio de software de terceros?"
 
 #: src/gs-overview-page.ui:117
-msgid "Featured Application"
-msgstr "Aplicación destacada"
+#| msgid "Featured Application"
+msgid "Featured Applications"
+msgstr "Aplicaciones destacadas"
 
 #: src/gs-overview-page.ui:166
 msgid "Categories"
@@ -2332,17 +2332,14 @@ msgid "Source: %s"
 msgstr "Fuente: %s"
 
 #: src/gs-prefs-dialog.ui:6 src/gs-prefs-dialog.ui:18
-#| msgid "No Update Source Detected"
 msgid "Update Preferences"
 msgstr "Preferencias de las actualizaciones"
 
 #: src/gs-prefs-dialog.ui:44
-#| msgid "Application Updates"
 msgid "Automatic Updates"
 msgstr "Actualizaciones automáticas"
 
 #: src/gs-prefs-dialog.ui:72
-#| msgid "Whether to automatically refresh when on a metered connection"
 msgid "Automatic updates are disabled when on mobile or metered connections."
 msgstr ""
 "Las actualizaciones automáticas están desactivadas en conexiones móviles o "
@@ -3350,14 +3347,12 @@ msgstr "Ver"
 
 #. TRANSLATORS: apps were updated, but we don't know which
 #: src/gs-update-monitor.c:165
-#| msgid "Application Updates"
 msgid "Applications Updated"
 msgstr "Aplicaciones actualizadas"
 
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:168
 #, c-format
-#| msgid "Application Updates"
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "%u aplicación actualizada"
@@ -3376,8 +3371,6 @@ msgstr "Incluye: ."
 #. TRANSLATORS: the app was updated and needs closing and re-opening
 #: src/gs-update-monitor.c:206
 #, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
 msgid "%u application require a restart."
 msgid_plural "%u applications require a restart."
 msgstr[0] "%u aplicación necesita reiniciar."
@@ -3385,7 +3378,6 @@ msgstr[1] "%u aplicaciones necesitan reiniciar."
 
 #. TRANSLATORS: for the notification title
 #: src/gs-update-monitor.c:211
-#| msgid "Restart"
 msgid "Restart Required"
 msgstr "Se necesita reiniciar"
 
@@ -3652,7 +3644,6 @@ msgstr "Se necesita acceso a Internet para comprobar si hay actualizaciones."
 
 #. This label indicates that the update check is in progress
 #: src/gs-updates-page.c:1354
-#| msgid "Checking for updates…"
 msgid "Checking…"
 msgstr "Comprobando…"
 
@@ -4288,12 +4279,12 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Obteniendo metadatos flatpak para %s…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:666
+#: plugins/fwupd/gs-plugin-fwupd.c:673
 msgid "Downloading firmware update signature…"
 msgstr "Descargando firmas de actualizaciones de «firmware»…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:714
 msgid "Downloading firmware update metadata…"
 msgstr "Descargando metadatos de actualizaciones de «firmware»…"
 
@@ -4353,9 +4344,6 @@ msgstr "Soporte de Steam"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "La última plataforma de entretenimiento de Valve"
-
-#~ msgid "_Quit"
-#~ msgstr "_Salir"
 
 #~ msgid "_Restart & Update"
 #~ msgstr "_Reiniciar y actualizar"
