@@ -467,6 +467,12 @@ gs_shell_plugin_events_sources_cb (GtkWidget *widget, GsShell *shell)
 	gs_shell_show_sources (shell);
 }
 
+static gboolean
+gs_shell_plugin_events_no_space_cb_available (void)
+{
+	return (g_find_program_in_path ("baobab") != NULL);
+}
+
 static void
 gs_shell_plugin_events_no_space_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -938,7 +944,8 @@ gs_shell_show_event_app_notify (GsShell *shell,
 
 	/* no-space button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_no_space"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0);
+	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0 &&
+					gs_shell_plugin_events_no_space_cb_available());
 
 	/* network settings button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_events_network_settings"));
