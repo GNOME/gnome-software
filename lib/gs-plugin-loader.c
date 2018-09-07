@@ -31,6 +31,7 @@
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
 #include "gs-category-private.h"
+#include "gs-ioprio.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 #include "gs-plugin-event.h"
@@ -3452,6 +3453,8 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 	gpointer source_object = g_task_get_source_object (task);
 	gpointer task_data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
+
+	gs_ioprio_init ();
 
 	gs_plugin_loader_process_thread_cb (task, source_object, task_data, cancellable);
 	g_object_unref (task);
