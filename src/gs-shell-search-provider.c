@@ -45,6 +45,8 @@ struct _GsShellSearchProvider {
 	GsPluginLoader *plugin_loader;
 	GCancellable *cancellable;
 
+	PendingSearch *current_search;
+
 	GHashTable *metas_cache;
 	GsAppList *search_results;
 };
@@ -58,6 +60,17 @@ pending_search_free (PendingSearch *search)
 	g_slice_free (PendingSearch, search);
 }
 
+static void
+cancel_current_search (GsShellSearchProvider *self)
+{
+	g_debug ("*** Cancel current search");
+
+	if (self->cancellable != NULL) {
+		g_cancellable_cancel (self->cancellable);
+		g_clear_object (&self->cancellable);
+	}
+}
+
 static gint
 search_sort_by_kudo_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
@@ -69,6 +82,23 @@ search_sort_by_kudo_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 	else if (pa > pb)
 		return -1;
 	return 0;
+}
+
+static void
+pending_search_finish (PendingSearch         *search,
+		       GDBusMethodInvocation *invocation,
+		       GVariant              *result)
+{
+	GsShellSearchProvider *self = search->provider;
+
+	g_dbus_method_invocation_return_value (invocation, result);
+
+	if (search == self->current_search) {
+		self->current_search = NULL;
+	}
+
+	pending_search_free (search);
+	g_application_release (g_application_get_default ());
 }
 
 static void
@@ -87,10 +117,9 @@ search_done_cb (GObject *source,
 
 	list = gs_plugin_loader_job_process_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
-		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
-		pending_search_free (search);
-		g_application_release (g_application_get_default ());
-		return;	
+		pending_search_finish (search, search->invocation,
+				       g_variant_new ("(as)", NULL));
+		return;
 	}
 
 	/* sort by kudos, as there is no ratings data by default */
@@ -106,10 +135,8 @@ search_done_cb (GObject *source,
 		/* cache this in case we need the app in GetResultMetas */
 		gs_app_list_add (self->search_results, app);
 	}
-	g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", &builder));
 
-	pending_search_free (search);
-	g_application_release (g_application_get_default ());
+	pending_search_finish (search, search->invocation, g_variant_new ("(as)", &builder));
 }
 
 static gchar *
@@ -167,10 +194,7 @@ execute_search (GsShellSearchProvider  *self,
 
 	value = g_strjoinv (" ", terms);
 
-	if (self->cancellable != NULL) {
-		g_cancellable_cancel (self->cancellable);
-		g_clear_object (&self->cancellable);
-	}
+	cancel_current_search (self);
 
 	/* don't attempt searches for a single character */
 	if (g_strv_length (terms) == 1 &&
@@ -183,6 +207,7 @@ execute_search (GsShellSearchProvider  *self,
 	pending_search->provider = self;
 	pending_search->invocation = g_object_ref (invocation);
 
+	self->current_search = pending_search;
 	g_application_hold (g_application_get_default ());
 	self->cancellable = g_cancellable_new ();
 
@@ -334,6 +359,26 @@ handle_launch_search (GsShellSearchProvider2 	   *skeleton,
 	return TRUE;
 }
 
+static gboolean
+handle_xubuntu_cancel (GsShellSearchProvider2 *skeleton,
+		       GDBusMethodInvocation  *invocation,
+		       gpointer                user_data)
+{
+	GsShellSearchProvider *self = GS_SHELL_SEARCH_PROVIDER (user_data);
+
+	g_debug ("*** XUbuntuCancel called");
+
+	if (self->current_search != NULL &&
+	    g_strcmp0 (g_dbus_method_invocation_get_sender (self->current_search->invocation),
+		       g_dbus_method_invocation_get_sender (invocation)) == 0) {
+		cancel_current_search (self);
+	}
+
+	gs_shell_search_provider2_complete_xubuntu_cancel (skeleton, invocation);
+
+	return TRUE;
+}
+
 gboolean
 gs_shell_search_provider_register (GsShellSearchProvider *self,
                                    GDBusConnection       *connection,
@@ -355,10 +400,7 @@ search_provider_dispose (GObject *obj)
 {
 	GsShellSearchProvider *self = GS_SHELL_SEARCH_PROVIDER (obj);
 
-	if (self->cancellable != NULL) {
-		g_cancellable_cancel (self->cancellable);
-		g_clear_object (&self->cancellable);
-	}
+	cancel_current_search (self);
 
 	if (self->metas_cache != NULL) {
 		g_hash_table_destroy (self->metas_cache);
@@ -393,6 +435,8 @@ gs_shell_search_provider_init (GsShellSearchProvider *self)
 			G_CALLBACK (handle_activate_result), self);
 	g_signal_connect (self->skeleton, "handle-launch-search",
 			G_CALLBACK (handle_launch_search), self);
+	g_signal_connect (self->skeleton, "handle-xubuntu-cancel",
+			G_CALLBACK (handle_xubuntu_cancel), self);
 }
 
 static void
