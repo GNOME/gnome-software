@@ -77,6 +77,8 @@ libgnomesoftware = static_library(
     'gs-auth.c',
     'gs-category.c',
     'gs-debug.c',
+    'gs-ioprio.c',
+    'gs-ioprio.h',
     'gs-os-release.c',
     'gs-plugin.c',
     'gs-plugin-event.c',
