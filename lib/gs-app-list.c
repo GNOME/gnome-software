@@ -306,6 +306,16 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 
 	/* does not exist */
 	id = gs_app_get_unique_id (app);
+	if (id == NULL) {
+		for (guint i = 0; i < list->array->len; i++) {
+			GsApp *app_tmp = g_ptr_array_index (list->array, i);
+			if (app_tmp == app)
+				return FALSE;
+		}
+		/* not much else we can do... */
+		return TRUE;
+	}
+
 	app_old = g_hash_table_lookup (list->hash_by_id, id);
 	if (app_old == NULL)
 		return TRUE;
@@ -334,17 +344,17 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app)
 {
 	const gchar *id;
 
-	/* if we're lazy-loading the ID then we can't filter for duplicates */
+	/* check for duplicate */
+	if (!gs_app_list_check_for_duplicate (list, app))
+		return;
+
+	/* if we're lazy-loading the ID then we can't use the ID hash */
 	id = gs_app_get_unique_id (app);
 	if (id == NULL) {
 		gs_app_list_maybe_watch_app (list, app);
 		g_ptr_array_add (list->array, g_object_ref (app));
 		return;
 	}
-
-	/* check for duplicate */
-	if (!gs_app_list_check_for_duplicate (list, app))
-		return;
 
 	/* just use the ref */
 	gs_app_list_maybe_watch_app (list, app);
