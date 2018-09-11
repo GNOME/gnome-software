@@ -768,7 +768,7 @@ gs_overview_page_load (GsOverviewPage *self)
 		priv->loading_featured = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
 						 "max-results", 5,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
 						    plugin_job,
