@@ -119,8 +119,14 @@ _transaction_ready (FlatpakTransaction *transaction)
 		FlatpakTransactionOperation *op = l->data;
 		const gchar *ref = flatpak_transaction_operation_get_ref (op);
 		g_autoptr(GsApp) app = _ref_to_app (self, ref);
-		if (app != NULL)
+		if (app != NULL) {
 			_transaction_operation_set_app (op, app);
+			/* if we're updating a component, then mark all the apps
+			 * involved to ensure updating the button state */
+			if (flatpak_transaction_operation_get_operation_type (op) ==
+					FLATPAK_TRANSACTION_OPERATION_UPDATE)
+				gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		}
 	}
 	return TRUE;
 }
