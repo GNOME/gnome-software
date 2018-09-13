@@ -302,6 +302,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 		/* TRANSLATORS: button text */
 		g_notification_add_button_with_target (n, _("Restart"), "app.reboot", NULL);
 		g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+		g_notification_set_priority (n, G_NOTIFICATION_PRIORITY_URGENT);
 		g_application_send_notification (g_application_get_default (), "restart-required", n);
 	}
 	g_clear_object (&self->cancellable);
