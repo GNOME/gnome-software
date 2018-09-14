@@ -201,8 +201,8 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	if (gs_app_list_length (list_apps) > 0) {
 		if (need_restart_cnt > 0) {
 			/* TRANSLATORS: apps were auto-updated and restart is required */
-			title = g_strdup_printf (ngettext ("%u Application Updated – Restart Required",
-			                                   "%u Applications Updated – Restart Required",
+			title = g_strdup_printf (ngettext ("%u Application Updated — Restart Required",
+			                                   "%u Applications Updated — Restart Required",
 			                                   gs_app_list_length (list)),
 			                         gs_app_list_length (list));
 		} else {
