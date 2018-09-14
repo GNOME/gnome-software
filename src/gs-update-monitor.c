@@ -242,7 +242,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 		GsApp *app1 = gs_app_list_index (list_apps, 0);
 		GsApp *app2 = gs_app_list_index (list_apps, 1);
 		GsApp *app3 = gs_app_list_index (list_apps, 2);
-		/* TRANSLATORS: %1 and %2 are both application names, e.g. Firefox */
+		/* TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox */
 		g_string_append_printf (body, _("Includes %s, %s and %s."),
 					gs_app_get_name (app1),
 					gs_app_get_name (app2),
