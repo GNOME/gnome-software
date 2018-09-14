@@ -175,7 +175,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	g_autoptr(GsAppList) list_apps = NULL;
 	g_autoptr(GNotification) n = NULL;
 	g_autoptr(GString) body = g_string_new (NULL);
-	g_autoptr(GString) title = g_string_new (NULL);
+	g_autofree gchar *title = NULL;
 
 	/* filter out apps */
 	list_apps = gs_app_list_copy (list);
@@ -199,14 +199,18 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 
 	/* >1 app updated */
 	if (gs_app_list_length (list_apps) > 0) {
-		/* TRANSLATORS: apps were auto-updated */
-		g_string_append_printf (title, ngettext("%u Application Updated",
-							"%u Applications Updated",
-							gs_app_list_length (list)),
-						gs_app_list_length (list));
 		if (need_restart_cnt > 0) {
-			/* TRANSLATORS: the app needs restarting */
-			g_string_append_printf (title, ": %s", _("Restart Required"));
+			/* TRANSLATORS: apps were auto-updated and restart is required */
+			title = g_strdup_printf (ngettext ("%u Application Updated: Restart Required",
+			                                   "%u Applications Updated: Restart Required",
+			                                   gs_app_list_length (list)),
+			                         gs_app_list_length (list));
+		} else {
+			/* TRANSLATORS: apps were auto-updated */
+			title = g_strdup_printf (ngettext ("%u Application Updated",
+			                                   "%u Applications Updated",
+			                                   gs_app_list_length (list)),
+			                         gs_app_list_length (list));
 		}
 	}
 
@@ -258,7 +262,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	}
 
 	/* create the notification */
-	n = g_notification_new (title->str);
+	n = g_notification_new (title);
 	if (body->len > 0)
 		g_notification_set_body (n, body->str);
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updated");
