@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-08-06 10:38+0000\n"
-"PO-Revision-Date: 2018-09-01 16:46+0200\n"
+"POT-Creation-Date: 2018-09-14 16:49+0000\n"
+"PO-Revision-Date: 2018-09-16 11:39+0200\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -65,7 +65,7 @@ msgstr "Atjauninājumu rūts"
 msgid "The update details"
 msgstr "Atjauninājumu informācija"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1103
+#: data/appdata/org.gnome.Software.appdata.xml.in:1135
 msgid "The GNOME Project"
 msgstr "GNOME projekts"
 
@@ -102,20 +102,16 @@ msgstr ""
 "nekādas automātiskās atjaunināšanas darbības un neprasīs atjaunināt."
 
 #: data/org.gnome.software.gschema.xml:15
-#| msgid "Whether to automatically download updates"
 msgid "Automatically download and install updates"
 msgstr "Automātiski lejupielādēt un instalēt atjauninājumus"
 
 #: data/org.gnome.software.gschema.xml:16
-#| msgid ""
-#| "If enabled, GNOME Software automatically downloads updates in the "
-#| "background and prompts the user to install them when ready."
 msgid ""
 "If enabled, GNOME Software automatically downloads software updates in the "
 "background, also installing ones that do not require a reboot."
 msgstr ""
-"Ja ieslēgts, “GNOME programmatūra” fonā automātiski lejupielādēs"
-" atjauninājumus un instalēs tos, kuriem nav nepieciešama pārstartēšana."
+"Ja ieslēgts, “GNOME programmatūra” fonā automātiski lejupielādēs "
+"atjauninājumus un instalēs tos, kuriem nav nepieciešama pārstartēšana."
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
@@ -126,8 +122,8 @@ msgid ""
 "If enabled, GNOME Software notifies the user about updates that happened "
 "whilst the user was idle."
 msgstr ""
-"Ja ieslēgts, “GNOME programmatūra” lietotājam ziņos par atjauninājumiem,"
-" kamēr lietotājs nav aktīvs."
+"Ja ieslēgts, “GNOME programmatūra” lietotājam ziņos par atjauninājumiem, "
+"kamēr lietotājs nav aktīvs."
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
@@ -527,7 +523,7 @@ msgstr "Instalēt…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:182 src/gs-updates-section.c:410
+#: src/gs-app-row.c:182 src/gs-updates-section.c:411
 msgid "Cancel"
 msgstr "Atcelt"
 
@@ -1809,9 +1805,7 @@ msgid "OS Upgrade"
 msgstr "OS uzlabojumi"
 
 #. TRANSLATORS: separator for a list of items
-#. TRANSLATORS: this is used to join app names
-#: src/gs-extras-page.c:147 src/gs-update-monitor.c:180
-#: src/gs-update-monitor.c:191
+#: src/gs-extras-page.c:147
 msgid " and "
 msgstr " un "
 
@@ -1918,7 +1912,7 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1444
+#: src/gs-extras-page.c:394 lib/gs-plugin-loader.c:1445
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s formātam nav pieejamu papildinājuma kodeku."
@@ -2150,35 +2144,35 @@ msgstr "Vairāk…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:611
+#: src/gs-overview-page.c:613
 msgid "Recommended Audio & Video Applications"
 msgstr "Ieteiktās audio un video lietotnes"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:616
+#: src/gs-overview-page.c:618
 msgid "Recommended Games"
 msgstr "Ieteiktās spēles"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:621
+#: src/gs-overview-page.c:623
 msgid "Recommended Graphics Applications"
 msgstr "Ieteiktās grafikas lietotnes"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:626
+#: src/gs-overview-page.c:628
 msgid "Recommended Productivity Applications"
 msgstr "Ieteiktās produktivitātes lietotnes"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:998 src/gs-repos-dialog.c:838
+#: src/gs-overview-page.c:1000 src/gs-repos-dialog.c:838
 msgid "Access additional software from selected third party sources."
 msgstr "Piekļūstiet papildu programmatūrai no izvēlētajām trešo pušu krātuvēm."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:1002 src/gs-repos-dialog.c:842
+#: src/gs-overview-page.c:1004 src/gs-repos-dialog.c:842
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2188,13 +2182,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:1007 src/gs-repos-dialog.c:847
+#: src/gs-overview-page.c:1009 src/gs-repos-dialog.c:847
 msgid "Find out more…"
 msgstr "Uzzināt vairāk…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:1015 src/gs-repos-dialog.c:252
+#: src/gs-overview-page.c:1017 src/gs-repos-dialog.c:252
 msgid "Enable"
 msgstr "Ieslēgt"
 
@@ -2207,7 +2201,6 @@ msgid "Enable Third Party Software Repositories?"
 msgstr "Ieslēgt trešās puses programmatūras krātuves?"
 
 #: src/gs-overview-page.ui:117
-#| msgid "Featured Application"
 msgid "Featured Applications"
 msgstr "Izceltās lietotnes"
 
@@ -2284,7 +2277,7 @@ msgstr "Vai tiešām vēlaties izņemt %s?"
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s tiks izņemta. Lai to lietotu atkal, tā būs jāuzinstalē."
 
-#: lib/gs-plugin-loader.c:1447
+#: lib/gs-plugin-loader.c:1448
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2310,16 +2303,14 @@ msgid "Update Preferences"
 msgstr "Atjaunināšanas iestatījumi"
 
 #: src/gs-prefs-dialog.ui:44
-#| msgid "Application Updates"
 msgid "Automatic Updates"
 msgstr "Automātiska atjaunināšana"
 
 #: src/gs-prefs-dialog.ui:72
-#| msgid "Whether to automatically refresh when on a metered connection"
 msgid "Automatic updates are disabled when on mobile or metered connections."
 msgstr ""
-"Automātiskā atjaunināšana ir izslēgta, kad izmanto mobilo vai mērītu"
-" savienojumu."
+"Automātiskā atjaunināšana ir izslēgta, kad izmanto mobilo vai mērītu "
+"savienojumu."
 
 #: src/gs-prefs-dialog.ui:90
 msgid "Automatic Update Notifications"
@@ -2759,7 +2750,6 @@ msgstr "Nav atrastu lietotņu"
 
 #: src/gs-shell.c:724
 #, c-format
-#| msgid "Unable to update %s from %s"
 msgid "Sign out from %s"
 msgstr "Izrakstīties no %s"
 
@@ -2781,32 +2771,33 @@ msgstr "Ierakstīties %s…"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:973 src/gs-shell.c:978 src/gs-shell.c:993 src/gs-shell.c:997
+#: src/gs-shell.c:981 src/gs-shell.c:986 src/gs-shell.c:1001
+#: src/gs-shell.c:1005
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1049
+#: src/gs-shell.c:1057
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nevar lejupielādēt aparātprogrammatūras atjauninājumus no %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1055
+#: src/gs-shell.c:1063
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nevar lejupielādēt atjauninājumus no %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1062
+#: src/gs-shell.c:1070
 msgid "Unable to download updates"
 msgstr "Nevar lejupielādēt atjauninājumus"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1067
+#: src/gs-shell.c:1075
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2815,69 +2806,69 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1076
+#: src/gs-shell.c:1084
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Nevar lejupielādēt atjauninājumus no %s: nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1081
+#: src/gs-shell.c:1089
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nevar lejupielādēt atjauninājumus: nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1089
+#: src/gs-shell.c:1097
 msgid "Unable to download updates: authentication was required"
 msgstr "Nevar lejupielādēt atjauninājumus: bija vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1094
+#: src/gs-shell.c:1102
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nevar lejupielādēt atjauninājumus: autentifikācija bija nederīga"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1099
+#: src/gs-shell.c:1107
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
 "Nevar lejupielādēt atjauninājumus: jums nav atļaujas instalēt programmatūru"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1109
+#: src/gs-shell.c:1117
 msgid "Unable to get list of updates"
 msgstr "Nevar iegūt atjauninājumu sarakstu"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1148
+#: src/gs-shell.c:1156
 #, c-format
 msgid "Unable to purchase %s: authentication was required"
 msgstr "Nevar iegādāties %s: bija vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1155
+#: src/gs-shell.c:1163
 #, c-format
 msgid "Unable to purchase %s: authentication was invalid"
 msgstr "Nevar iegādāties %s: autentifikācija bija nederīga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1162
+#: src/gs-shell.c:1170
 #, c-format
 msgid "Unable to purchase %s: no payment method setup"
 msgstr "Nevar iegādāties %s: nav iestatīta maksājumu metode"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1169
+#: src/gs-shell.c:1177
 #, c-format
 msgid "Unable to purchase %s: payment was declined"
 msgstr "Nevar iegādāties %s: maksājums tika noraidīts"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1176
+#: src/gs-shell.c:1184
 #, c-format
 msgid "Unable to purchase %s"
 msgstr "Nevar iegādāties %s"
@@ -2885,14 +2876,14 @@ msgstr "Nevar iegādāties %s"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1212
+#: src/gs-shell.c:1220
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nevar instalēt %s, jo neizdevās lejupielādēt no %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1218
+#: src/gs-shell.c:1226
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nevar instalēt %s, jo neizdevās lejupielādēt"
@@ -2901,52 +2892,52 @@ msgstr "Nevar instalēt %s, jo neizdevās lejupielādēt"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1230
+#: src/gs-shell.c:1238
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Nevar instalēt %s, jo izpildlaiks %s nav pieejams"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1236
+#: src/gs-shell.c:1244
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nevar instalēt %s, jo nav atbalstīta"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243
+#: src/gs-shell.c:1251
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Nevar instalēt: bija nepieciešama pieeja internetam, bet tā nebija pieejama"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1249
+#: src/gs-shell.c:1257
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nevar instalēt: lietotnei ir nederīgs formāts"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1254
+#: src/gs-shell.c:1262
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nevar instalēt %s: nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1262
+#: src/gs-shell.c:1270
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nevar instalēt %s: bija vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1269
+#: src/gs-shell.c:1277
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nevar instalēt %s: autentifikācija bija nederīga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1276
+#: src/gs-shell.c:1284
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nevar instalēt %s: jums nav atļaujas instalēt programmatūru"
@@ -2954,34 +2945,34 @@ msgstr "Nevar instalēt %s: jums nav atļaujas instalēt programmatūru"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the name of the authentication service,
 #. * e.g. "Ubuntu One"
-#: src/gs-shell.c:1289
+#: src/gs-shell.c:1297
 #, c-format
 msgid "Your %s account has been suspended."
 msgstr "Jūsu %s konts ir aizturēts."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1293
+#: src/gs-shell.c:1301
 msgid "It is not possible to install software until this has been resolved."
 msgstr "Nav iespējams instalēt programmatūru līdz šis tiks atrisināts."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the clickable link (e.g.
 #. * "http://example.com/what-did-i-do-wrong/")
-#: src/gs-shell.c:1304
+#: src/gs-shell.c:1312
 #, c-format
 msgid "For more information, visit %s."
 msgstr "Lai iegūtu vairāk informācijas, apmeklējiet %s."
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1313
+#: src/gs-shell.c:1321
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Nevar instalēt %s: ir vajadzīgs maiņstrāvas pieslēgums"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1322
+#: src/gs-shell.c:1330
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nevar instalēt %s"
@@ -2990,62 +2981,62 @@ msgstr "Nevar instalēt %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1368
+#: src/gs-shell.c:1376
 #, c-format
 msgid "Unable to update %s from %s"
 msgstr "Nevar atjaunināt %s no %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1382
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nevar atjaunināt %s, jo lejupielāde neizdevās"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1380
+#: src/gs-shell.c:1388
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nevar atjaunināt: bija nepieciešama pieeja internetam, bet tā nebija pieejama"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1388
+#: src/gs-shell.c:1396
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nevar atjaunināt %s: nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1397
+#: src/gs-shell.c:1405
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nevar atjaunināt %s: bija vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1404
+#: src/gs-shell.c:1412
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nevar atjaunināt %s: autentifikācija bija nederīga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1411
+#: src/gs-shell.c:1419
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "Nevar atjaunināt %s: jums nav atļaujas atjaunināt programmatūru"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1419
+#: src/gs-shell.c:1427
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Nevar atjaunināt %s: ir vajadzīgs maiņstrāvas pieslēgums"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1428
+#: src/gs-shell.c:1436
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nevar atjaunināt %s"
@@ -3053,97 +3044,97 @@ msgstr "Nevar atjaunināt %s"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1473
+#: src/gs-shell.c:1481
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nevar uzlabot uz %s no %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1478
+#: src/gs-shell.c:1486
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nevar uzlabot uz %s, jo neizdevās lejupielādēt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1485
+#: src/gs-shell.c:1493
 msgid "Unable to upgrade: internet access was required but wasn’t available"
 msgstr ""
 "Nevar uzlabot: bija nepieciešama pieeja internetam, bet tā nebija pieejama"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1493
+#: src/gs-shell.c:1501
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nevar uzlabot uz %s: nepietiek diska vietas"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1502
+#: src/gs-shell.c:1510
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nevar uzlabot uz %s: bija vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1509
+#: src/gs-shell.c:1517
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nevar uzlabot uz %s: autentifikācija bija nederīga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1516
+#: src/gs-shell.c:1524
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nevar uzlabot uz %s: jums nav atļaujas uzlabot"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1523
+#: src/gs-shell.c:1531
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Nevar uzlabot uz %s: ir vajadzīgs maiņstrāvas pieslēgums"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1532
+#: src/gs-shell.c:1540
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nevar uzlabot uz %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1574
+#: src/gs-shell.c:1582
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nevar noņemt %s: bija vajadzīga autentifikācija"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1580
+#: src/gs-shell.c:1588
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nevar noņemt %s: autentifikācija bija nederīga"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1586
+#: src/gs-shell.c:1594
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nevar noņemt %s: jums nav atļaujas noņemt programmatūru"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1593
+#: src/gs-shell.c:1601
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Nevar noņemt %s: ir vajadzīgs maiņstrāvas pieslēgums"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1605
+#: src/gs-shell.c:1613
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nevar noņemt %s"
@@ -3152,69 +3143,66 @@ msgstr "Nevar noņemt %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1651
+#: src/gs-shell.c:1659
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nevar palaist %s: %s nav instalēts"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1658 src/gs-shell.c:1712 src/gs-shell.c:1756
-#: src/gs-shell.c:1807
+#: src/gs-shell.c:1666 src/gs-shell.c:1720 src/gs-shell.c:1764
+#: src/gs-shell.c:1815
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Nepietika diska vietas — atbrīvojiet kādu vietu un mēģiniet vēlreiz"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1669 src/gs-shell.c:1723 src/gs-shell.c:1767
-#: src/gs-shell.c:1837
+#: src/gs-shell.c:1677 src/gs-shell.c:1731 src/gs-shell.c:1775
+#: src/gs-shell.c:1845
 msgid "Sorry, something went wrong"
 msgstr "Diemžēl kaut kas nogāja greizi"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1704
-#| msgid "Unable to install %s as not supported"
+#: src/gs-shell.c:1712
 msgid "Failed to install file: not supported"
 msgstr "Neizdevās instalēt datni: nav atbalstīta"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1708
+#: src/gs-shell.c:1716
 msgid "Failed to install file: authentication failed"
 msgstr "Neizdevās instalēt datni: autentifikācija neizdevās"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1748
-#| msgid "Unable to install %s as not supported"
+#: src/gs-shell.c:1756
 msgid "Failed to install: not supported"
 msgstr "Neizdevās instalēt: nav atbalstīts"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1752
-#| msgid "Failed to install file: authentication failed"
+#: src/gs-shell.c:1760
 msgid "Failed to install: authentication failed"
 msgstr "Neizdevās instalēt: autentifikācija neizdevās"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1801
+#: src/gs-shell.c:1809
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nevar sazināties ar %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1816
+#: src/gs-shell.c:1824
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Vajag pārstartēt %s, lai lietotu jaunos spraudņus."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1821
+#: src/gs-shell.c:1829
 msgid "This application needs to be restarted to use new plugins."
 msgstr ""
 "Šai lietotnei vajadzīgs tikt pārstartētai, lai lietotu jaunos spraudņus."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1828
+#: src/gs-shell.c:1836
 msgid "AC power is required"
 msgstr "Ir vajadzīgs maiņstrāvas pieslēgums"
 
@@ -3312,101 +3300,115 @@ msgstr "Ne tagad"
 msgid "View"
 msgstr "Skatīt"
 
-#. TRANSLATORS: apps were updated, but we don't know which
-#: src/gs-update-monitor.c:165
-#| msgid "Application Updates"
-msgid "Applications Updated"
-msgstr "Lietotnes ir atjauninātas"
+#. TRANSLATORS: apps were auto-updated and restart is required
+#: src/gs-update-monitor.c:204
+#, c-format
+#| msgid "%u Application Updated"
+#| msgid_plural "%u Applications Updated"
+msgid "%u Application Updated — Restart Required"
+msgid_plural "%u Applications Updated — Restart Required"
+msgstr[0] "%u lietotne ir atjaunināta — Nepieciešama pārstartēšana"
+msgstr[1] "%u lietotnes ir atjauninātas — Nepieciešama pārstartēšana"
+msgstr[2] "%u lietotnes ir atjauninātas — Nepieciešama pārstartēšana"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:168
+#: src/gs-update-monitor.c:210
 #, c-format
-#| msgid "Application Updates"
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
 msgstr[0] "%u lietotne ir atjaunināta"
 msgstr[1] "%u lietotnes ir atjauninātas"
 msgstr[2] "%u lietotnes ir atjauninātas"
 
-#. TRANSLATORS: this is appended to the list of app names
-#: src/gs-update-monitor.c:183
-msgid "have been updated."
-msgstr "tika atjauninātas."
-
-#. TRANSLATORS: here follows a list of app names
-#: src/gs-update-monitor.c:186
-msgid "Includes: ."
-msgstr "Tajā skaitā: ."
-
-#. TRANSLATORS: the app was updated and needs closing and re-opening
-#: src/gs-update-monitor.c:206
+#. TRANSLATORS: %1 is an application name, e.g. Firefox
+#: src/gs-update-monitor.c:221
 #, c-format
-#| msgid "%u application installed"
-#| msgid_plural "%u applications installed"
-msgid "%u application require a restart."
+#| msgid "have been updated."
+msgid "%s has been updated."
+msgstr "%s tika atjaunināts."
+
+#. TRANSLATORS: the app needs restarting
+#: src/gs-update-monitor.c:224
+#| msgid "Selected add-ons will be installed with the application."
+msgid "Please restart the application."
+msgstr "Lūdzu, pārstartējiet lietotni."
+
+#. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
+#: src/gs-update-monitor.c:232
+#, c-format
+#| msgid "have been updated."
+msgid "%s and %s have been updated."
+msgstr "%s un %s tika atjaunināti."
+
+#. TRANSLATORS: at least one application needs restarting
+#: src/gs-update-monitor.c:238 src/gs-update-monitor.c:257
+#, c-format
+#| msgid "%u application require a restart."
+#| msgid_plural "%u applications require a restart."
+msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
 msgstr[0] "%u lietotne pieprasa pārstartēšanu."
 msgstr[1] "%u lietotnes pieprasa pārstartēšanu."
 msgstr[2] "%u lietotņu pieprasa pārstartēšanu."
 
-#. TRANSLATORS: for the notification title
-#: src/gs-update-monitor.c:211
-#| msgid "Restart"
-msgid "Restart Required"
-msgstr "Nepieciešama pārstartēšana"
+#. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
+#: src/gs-update-monitor.c:250
+#, c-format
+msgid "Includes %s, %s and %s."
+msgstr "Iekļauj %s, %s un %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:415 src/gs-updates-page.ui:46
+#: src/gs-update-monitor.c:465 src/gs-updates-page.ui:46
 msgid "Operating System Updates Unavailable"
 msgstr "Operētājsistēmai atjauninājumi nav pieejami"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:417
+#: src/gs-update-monitor.c:467
 msgid "Upgrade to continue receiving security updates."
 msgstr ""
 "Pārejiet uz jaunāku OS versiju, lai turpinātu saņemt drošības atjauninājumus."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:471
+#: src/gs-update-monitor.c:521
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Jauna %s versija ir pieejama instalēšanai"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:475
+#: src/gs-update-monitor.c:525
 msgid "Software Upgrade Available"
 msgstr "Pieejami programmatūras atjauninājumi"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:775
+#: src/gs-update-monitor.c:825
 msgid "Software Updates Failed"
 msgstr "Neizdevās atjaunināt programmatūru"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:777
+#: src/gs-update-monitor.c:827
 msgid "An important OS update failed to be installed."
 msgstr "Neizdevās uzinstalēt svarīgus OS atjauninājumus."
 
-#: src/gs-update-monitor.c:778
+#: src/gs-update-monitor.c:828
 msgid "Show Details"
 msgstr "Rādīt sīkāku informāciju"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:801
+#: src/gs-update-monitor.c:851
 msgid "System Upgrade Complete"
 msgstr "Sistēmas uzlabošana ir pabeigta"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:806
+#: src/gs-update-monitor.c:856
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Laipni lūdzam sistēmā %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:812
+#: src/gs-update-monitor.c:862
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Programmatūras atjauninājums uzinstalēts"
@@ -3414,7 +3416,7 @@ msgstr[1] "Programmatūras atjauninājumi uzinstalēti"
 msgstr[2] "Programmatūras atjauninājumi uzinstalēti"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:816
+#: src/gs-update-monitor.c:866
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tika uzinstalēts svarīgs OS atjauninājums."
@@ -3426,30 +3428,30 @@ msgstr[2] "Tika uzinstalēti svarīgi OS atjauninājumi."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:827
+#: src/gs-update-monitor.c:877
 msgctxt "updates"
 msgid "Review"
 msgstr "Pārskats"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:875
+#: src/gs-update-monitor.c:925
 msgid "Failed To Update"
 msgstr "Neizdevās atjaunināt"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:881
+#: src/gs-update-monitor.c:931
 msgid "The system was already up to date."
 msgstr "Sistēma jau ir aktuāla."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:886
+#: src/gs-update-monitor.c:936
 msgid "The update was cancelled."
 msgstr "Atjaunināšana tika atcelta."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:892
+#: src/gs-update-monitor.c:942
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3458,7 +3460,7 @@ msgstr ""
 "Pārliecinieties, ka jums ir pieeja internetam un mēģiniet vēlreiz."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:898
+#: src/gs-update-monitor.c:948
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3467,13 +3469,13 @@ msgstr ""
 "programmatūras nodrošinātāju, lai uzzinātu vairāk."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:904
+#: src/gs-update-monitor.c:954
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Nepietika diska vietas. Lūdzu, atbrīvojiet vietu un mēģiniet vēlreiz."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:909
+#: src/gs-update-monitor.c:959
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3620,7 +3622,6 @@ msgstr "Lai pārbaudītu atjauninājumus, nepieciešama piekļuve internetam."
 
 #. This label indicates that the update check is in progress
 #: src/gs-updates-page.c:1354
-#| msgid "Removing…"
 msgid "Checking…"
 msgstr "Pārbauda…"
 
@@ -3689,25 +3690,25 @@ msgstr "Pārstartēt"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:360
+#: src/gs-updates-section.c:361
 msgid "Integrated Firmware"
 msgstr "Integrētā aparātprogrammatūra"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:364
+#: src/gs-updates-section.c:365
 msgid "Requires Restart"
 msgstr "Pieprasa pārstartēšanu"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:368
+#: src/gs-updates-section.c:369
 msgid "Application Updates"
 msgstr "Lietotņu atjauninājumi"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:372
+#: src/gs-updates-section.c:373
 msgid "Device Firmware"
 msgstr "Ierīces aparātprogrammatūra"
 
@@ -4255,12 +4256,12 @@ msgid "Getting flatpak metadata for %s…"
 msgstr "Saņem %s flatpak metadatus…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:666
+#: plugins/fwupd/gs-plugin-fwupd.c:672
 msgid "Downloading firmware update signature…"
 msgstr "Lejupielādē aparātprogrammatūras atjauninājumu parakstu…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:707
+#: plugins/fwupd/gs-plugin-fwupd.c:713
 msgid "Downloading firmware update metadata…"
 msgstr "Lejupielādē aparātprogrammatūras atjauninājumu metadatus…"
 
@@ -4319,6 +4320,17 @@ msgstr "Steam atbalsts"
 #: plugins/steam/org.gnome.Software.Plugin.Steam.metainfo.xml.in:7
 msgid "The ultimate entertainment platform from Valve"
 msgstr "Valve izklaides platforma"
+
+#~| msgid "Application Updates"
+#~ msgid "Applications Updated"
+#~ msgstr "Lietotnes ir atjauninātas"
+
+#~ msgid "Includes: ."
+#~ msgstr "Tajā skaitā: ."
+
+#~| msgid "Restart"
+#~ msgid "Restart Required"
+#~ msgstr "Nepieciešama pārstartēšana"
 
 #~ msgid "_Restart & Update"
 #~ msgstr "Pā_rstartēt un atjaunināt"
