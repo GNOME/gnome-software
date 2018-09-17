@@ -328,10 +328,8 @@ gs_category_page_reload (GsPage *page)
 	if (self->subcategory == NULL)
 		return;
 
-	if (self->cancellable != NULL) {
-		g_cancellable_cancel (self->cancellable);
-		g_object_unref (self->cancellable);
-	}
+	g_cancellable_cancel (self->cancellable);
+	g_clear_object (&self->cancellable);
 	self->cancellable = g_cancellable_new ();
 
 	g_debug ("search using %s/%s",
@@ -546,10 +544,8 @@ gs_category_page_dispose (GObject *object)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (object);
 
-	if (self->cancellable != NULL) {
-		g_cancellable_cancel (self->cancellable);
-		g_clear_object (&self->cancellable);
-	}
+	g_cancellable_cancel (self->cancellable);
+	g_clear_object (&self->cancellable);
 
 	g_clear_object (&self->builder);
 	g_clear_object (&self->category);

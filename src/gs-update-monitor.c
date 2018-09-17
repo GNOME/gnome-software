@@ -1057,14 +1057,10 @@ gs_update_monitor_dispose (GObject *object)
 		monitor->network_changed_handler = 0;
 	}
 
-	if (monitor->cancellable != NULL) {
-		g_cancellable_cancel (monitor->cancellable);
-		g_clear_object (&monitor->cancellable);
-	}
-	if (monitor->network_cancellable != NULL) {
-		g_cancellable_cancel (monitor->network_cancellable);
-		g_clear_object (&monitor->network_cancellable);
-	}
+	g_cancellable_cancel (monitor->cancellable);
+	g_clear_object (&monitor->cancellable);
+	g_cancellable_cancel (monitor->network_cancellable);
+	g_clear_object (&monitor->network_cancellable);
 
 	stop_updates_check (monitor);
 	stop_upgrades_check (monitor);

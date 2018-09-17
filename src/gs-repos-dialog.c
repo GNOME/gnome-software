@@ -777,10 +777,8 @@ gs_repos_dialog_dispose (GObject *object)
 		g_clear_object (&dialog->plugin_loader);
 	}
 
-	if (dialog->cancellable != NULL) {
-		g_cancellable_cancel (dialog->cancellable);
-		g_clear_object (&dialog->cancellable);
-	}
+	g_cancellable_cancel (dialog->cancellable);
+	g_clear_object (&dialog->cancellable);
 	g_clear_object (&dialog->settings);
 	g_clear_object (&dialog->third_party_repo);
 

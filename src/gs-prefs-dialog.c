@@ -48,10 +48,8 @@ gs_prefs_dialog_dispose (GObject *object)
 {
 	GsPrefsDialog *dialog = GS_PREFS_DIALOG (object);
 	g_clear_object (&dialog->plugin_loader);
-	if (dialog->cancellable != NULL) {
-		g_cancellable_cancel (dialog->cancellable);
-		g_clear_object (&dialog->cancellable);
-	}
+	g_cancellable_cancel (dialog->cancellable);
+	g_clear_object (&dialog->cancellable);
 	g_clear_object (&dialog->settings);
 
 	G_OBJECT_CLASS (gs_prefs_dialog_parent_class)->dispose (object);

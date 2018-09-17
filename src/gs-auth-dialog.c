@@ -254,10 +254,8 @@ gs_auth_dialog_dispose (GObject *object)
 	g_clear_object (&dialog->app);
 	g_clear_object (&dialog->auth);
 
-	if (dialog->cancellable != NULL) {
-		g_cancellable_cancel (dialog->cancellable);
-		g_clear_object (&dialog->cancellable);
-	}
+	g_cancellable_cancel (dialog->cancellable);
+	g_clear_object (&dialog->cancellable);
 
 	G_OBJECT_CLASS (gs_auth_dialog_parent_class)->dispose (object);
 }

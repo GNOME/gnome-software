@@ -804,10 +804,8 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 	/* force a check for updates and download */
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_REFRESH);
 
-	if (self->cancellable_refresh != NULL) {
-		g_cancellable_cancel (self->cancellable_refresh);
-		g_object_unref (self->cancellable_refresh);
-	}
+	g_cancellable_cancel (self->cancellable_refresh);
+	g_clear_object (&self->cancellable_refresh);
 	self->cancellable_refresh = g_cancellable_new ();
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
@@ -1391,14 +1389,10 @@ gs_updates_page_dispose (GObject *object)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (object);
 
-	if (self->cancellable_refresh != NULL) {
-		g_cancellable_cancel (self->cancellable_refresh);
-		g_clear_object (&self->cancellable_refresh);
-	}
-	if (self->cancellable_upgrade_download != NULL) {
-		g_cancellable_cancel (self->cancellable_upgrade_download);
-		g_clear_object (&self->cancellable_upgrade_download);
-	}
+	g_cancellable_cancel (self->cancellable_refresh);
+	g_clear_object (&self->cancellable_refresh);
+	g_cancellable_cancel (self->cancellable_upgrade_download);
+	g_clear_object (&self->cancellable_upgrade_download);
 
 	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
 		if (self->sections[i] != NULL) {

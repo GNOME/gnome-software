@@ -666,10 +666,8 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 	guint i;
 
 	/* cancel any pending searches */
-	if (self->search_cancellable != NULL) {
-		g_cancellable_cancel (self->search_cancellable);
-		g_object_unref (self->search_cancellable);
-	}
+	g_cancellable_cancel (self->search_cancellable);
+	g_clear_object (&self->search_cancellable);
 	self->search_cancellable = g_cancellable_new ();
 
 	if (array_search_data != NULL) {
@@ -1162,10 +1160,8 @@ gs_extras_page_dispose (GObject *object)
 {
 	GsExtrasPage *self = GS_EXTRAS_PAGE (object);
 
-	if (self->search_cancellable != NULL) {
-		g_cancellable_cancel (self->search_cancellable);
-		g_clear_object (&self->search_cancellable);
-	}
+	g_cancellable_cancel (self->search_cancellable);
+	g_clear_object (&self->search_cancellable);
 
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);

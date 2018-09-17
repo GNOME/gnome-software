@@ -255,10 +255,8 @@ gs_search_page_load (GsSearchPage *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* cancel any pending searches */
-	if (self->search_cancellable != NULL) {
-		g_cancellable_cancel (self->search_cancellable);
-		g_object_unref (self->search_cancellable);
-	}
+	g_cancellable_cancel (self->search_cancellable);
+	g_clear_object (&self->search_cancellable);
 	self->search_cancellable = g_cancellable_new ();
 
 	/* search for apps */
@@ -402,8 +400,7 @@ static void
 gs_search_page_cancel_cb (GCancellable *cancellable,
                           GsSearchPage *self)
 {
-	if (self->search_cancellable != NULL)
-		g_cancellable_cancel (self->search_cancellable);
+	g_cancellable_cancel (self->search_cancellable);
 }
 
 static void

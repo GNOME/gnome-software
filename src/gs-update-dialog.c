@@ -682,10 +682,8 @@ gs_update_dialog_dispose (GObject *object)
 		dialog->back_entry_stack = NULL;
 	}
 
-	if (dialog->cancellable != NULL) {
-		g_cancellable_cancel (dialog->cancellable);
-		g_clear_object (&dialog->cancellable);
-	}
+	g_cancellable_cancel (dialog->cancellable);
+	g_clear_object (&dialog->cancellable);
 
 	g_clear_object (&dialog->plugin_loader);
 

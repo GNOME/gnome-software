@@ -167,10 +167,8 @@ execute_search (GsShellSearchProvider  *self,
 
 	value = g_strjoinv (" ", terms);
 
-	if (self->cancellable != NULL) {
-		g_cancellable_cancel (self->cancellable);
-		g_clear_object (&self->cancellable);
-	}
+	g_cancellable_cancel (self->cancellable);
+	g_clear_object (&self->cancellable);
 
 	/* don't attempt searches for a single character */
 	if (g_strv_length (terms) == 1 &&
@@ -355,10 +353,8 @@ search_provider_dispose (GObject *obj)
 {
 	GsShellSearchProvider *self = GS_SHELL_SEARCH_PROVIDER (obj);
 
-	if (self->cancellable != NULL) {
-		g_cancellable_cancel (self->cancellable);
-		g_clear_object (&self->cancellable);
-	}
+	g_cancellable_cancel (self->cancellable);
+	g_clear_object (&self->cancellable);
 
 	if (self->metas_cache != NULL) {
 		g_hash_table_destroy (self->metas_cache);
