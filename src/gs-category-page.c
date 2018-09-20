@@ -434,6 +434,14 @@ gs_category_page_create_filter (GsCategoryPage *self,
 			g_debug ("not showing %s/%s as no apps",
 				 gs_category_get_id (category),
 				 gs_category_get_id (s));
+
+			/* re-filter USB category with no apps so the
+			 * placeholder app tiles get cleared out, then set
+			 * "empty state" message for an empty USB disk
+			 */
+			if (g_strcmp0 (gs_category_get_id (category), "usb") == 0)
+				gs_category_page_populate_filtered (self, s);
+
 			continue;
 		}
 
