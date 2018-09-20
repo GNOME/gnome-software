@@ -571,8 +571,21 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 
 	/* add categories to the correct flowboxes, the second being hidden */
 	for (i = 0; i < list->len; i++) {
+		gboolean usb_category_inserted = FALSE;
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
-		if (gs_category_get_size (cat) == 0)
+
+		if (g_strcmp0 (gs_category_get_id (cat), "usb") == 0) {
+			g_autoptr(GPtrArray) copy_dests = gs_plugin_loader_dup_copy_dests (plugin_loader);
+
+			if (copy_dests != NULL && copy_dests->len > 0)
+				usb_category_inserted = TRUE;
+		}
+
+		/* allow empty categories for USB since there are usable actions
+		 * (such as copy OS to USB) in the USB category even when it has
+		 * no apps available
+		 */
+		if (gs_category_get_size (cat) == 0 && !usb_category_inserted)
 			continue;
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
