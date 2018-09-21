@@ -45,6 +45,35 @@
             <property name="orientation">vertical</property>
             <property name="spacing">9</property>
             <child>
+              <object class="GtkBox" id="no_apps_box">
+                <property name="can_focus">False</property>
+                <property name="visible">False</property>
+                <property name="hexpand">True</property>
+                <style>
+                  <class name="application-details-title"/>
+                </style>
+
+                <child>
+                  <object class="GtkLabel" id="no_apps_label">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="label" translatable="yes">No apps available on USB</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+
+            <child>
               <object class="GtkScrolledWindow" id="scrolledwindow_category">
                 <property name="visible">True</property>
                 <property name="shadow_type">none</property>
@@ -276,6 +305,11 @@
                   </object>
                 </child>
               </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
             </child>
           </object>
         </child>
