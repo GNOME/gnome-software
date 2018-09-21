@@ -53,6 +53,7 @@ struct _GsCategoryPage
 	GtkWidget	*featured_grid;
 	GtkWidget	*featured_heading;
 	GtkWidget	*header_filter_box;
+	GtkWidget	*no_apps_box;
 };
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
@@ -431,6 +432,8 @@ gs_category_page_create_filter (GsCategoryPage *self,
 			continue;
 		}
 		if (gs_category_get_size (s) < 1) {
+			gboolean category_is_usb = FALSE;
+
 			g_debug ("not showing %s/%s as no apps",
 				 gs_category_get_id (category),
 				 gs_category_get_id (s));
@@ -439,8 +442,13 @@ gs_category_page_create_filter (GsCategoryPage *self,
 			 * placeholder app tiles get cleared out, then set
 			 * "empty state" message for an empty USB disk
 			 */
-			if (g_strcmp0 (gs_category_get_id (category), "usb") == 0)
+			if (g_strcmp0 (gs_category_get_id (category), "usb") == 0) {
 				gs_category_page_populate_filtered (self, s);
+				category_is_usb = TRUE;
+			}
+
+			gtk_widget_set_visible (self->no_apps_box, category_is_usb);
+			gtk_widget_set_visible (self->scrolledwindow_category, !category_is_usb);
 
 			continue;
 		}
@@ -614,6 +622,7 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_grid);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, featured_heading);
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, header_filter_box);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryPage, no_apps_box);
 }
 
 GsCategoryPage *
