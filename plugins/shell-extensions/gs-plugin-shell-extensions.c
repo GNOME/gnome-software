@@ -251,7 +251,7 @@ gs_plugin_shell_extensions_changed_cb (GDBusProxy *proxy,
 		/* find it in the cache; do we care? */
 		app = gs_plugin_cache_lookup (plugin, uuid);
 		if (app == NULL) {
-			g_warning ("no app for changed %s", uuid);
+			g_debug ("no app for changed %s", uuid);
 			return;
 		}
 
