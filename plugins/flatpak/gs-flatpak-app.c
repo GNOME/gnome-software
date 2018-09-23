@@ -105,11 +105,21 @@ gs_flatpak_app_get_repo_url (GsApp *app)
 gchar *
 gs_flatpak_app_get_ref_display (GsApp *app)
 {
+	const gchar *ref_kind_as_str = gs_flatpak_app_get_ref_kind_as_str (app);
+	const gchar *ref_name = gs_flatpak_app_get_ref_name (app);
+	const gchar *ref_arch = gs_flatpak_app_get_ref_arch (app);
+	const gchar *ref_branch = gs_flatpak_app_get_ref_branch (app);
+
+	g_assert (ref_kind_as_str != NULL);
+	g_assert (ref_name != NULL);
+	g_assert (ref_arch != NULL);
+	g_assert (ref_branch != NULL);
+
 	return g_strdup_printf ("%s/%s/%s/%s",
-				gs_flatpak_app_get_ref_kind_as_str (app),
-				gs_flatpak_app_get_ref_name (app),
-				gs_flatpak_app_get_ref_arch (app),
-				gs_flatpak_app_get_ref_branch (app));
+	                        ref_kind_as_str,
+	                        ref_name,
+	                        ref_arch,
+	                        ref_branch);
 }
 
 void
