@@ -455,13 +455,14 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 {
 	GsFlatpak *flatpak = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
 	/* not supported */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
 		if (flatpak != NULL)
-			break;
+			gs_app_list_add (list_tmp, app);
 	}
 	if (flatpak == NULL)
 		return TRUE;
@@ -473,8 +474,8 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		return FALSE;
 	}
 	flatpak_transaction_set_no_deploy (transaction, TRUE);
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+		GsApp *app = gs_app_list_index (list_tmp, i);
 		g_autofree gchar *ref = NULL;
 
 		ref = gs_flatpak_app_get_ref_display (app);
