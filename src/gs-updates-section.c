@@ -109,6 +109,14 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 		GtkWidget *w = GTK_WIDGET (l->data);
 		gtk_container_remove (GTK_CONTAINER (self), w);
 	}
+
+	/* the following are set in _build_section_header(); clear these so
+	 * that they don't become dangling pointers once all items are removed
+	 * from self->list */
+	self->button = NULL;
+	self->button_cancel = NULL;
+	self->button_stack = NULL;
+
 	gs_app_list_remove_all (self->list);
 	gtk_widget_hide (GTK_WIDGET (self));
 }
@@ -503,6 +511,9 @@ gs_updates_section_progress_notify_cb (GsAppList *list,
 				       GParamSpec *pspec,
 				       GsUpdatesSection *self)
 {
+	if (self->button_cancel == NULL)
+		return;
+
 	gs_progress_button_set_progress (GS_PROGRESS_BUTTON (self->button_cancel),
 					 gs_app_list_get_progress (list));
 }
