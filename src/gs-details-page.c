@@ -86,6 +86,9 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_remove_shortcut;
 	GtkWidget		*button_details_website;
 	GtkWidget		*button_donate;
+	GtkWidget		*infobar_donate;
+	GtkWidget		*label_donate_title;
+	GtkWidget		*label_donate_description;
 	GtkWidget		*button_install;
 	GtkWidget		*button_remove;
 	GtkWidget		*button_cancel;
@@ -761,6 +764,15 @@ gs_details_page_website_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
+gs_details_page_donate_response_cb (GtkInfoBar *infobar, gint response_id, GsDetailsPage *self)
+{
+	if (response_id == GTK_RESPONSE_CLOSE) {
+		gtk_widget_hide (self->infobar_donate);
+		return;
+	}
+}
+
+static void
 gs_details_page_donate_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_DONATION));
@@ -889,7 +901,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 kudos;
 	guint64 updated;
 	guint64 user_integration_bf;
-	gboolean show_support_box = FALSE;
 	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
@@ -927,18 +938,26 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_widget_set_visible (self->button_details_website, TRUE);
-		show_support_box = TRUE;
+		gtk_widget_set_visible (self->box_details_support, TRUE);
 	} else {
 		gtk_widget_set_visible (self->button_details_website, FALSE);
+		gtk_widget_set_visible (self->box_details_support, FALSE);
 	}
+
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_DONATION);
 	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_widget_set_visible (self->button_donate, TRUE);
-		show_support_box = TRUE;
+		/* TRANSLATORS: This is the title for donations infobar. %s gets replaced by the name of the app. */
+		g_autofree gchar *title = g_strdup_printf (_("%s needs your help!"),
+		                                           gs_app_get_name (self->app));
+		/* TRANSLATORS: This is the description for donations infobar. %s gets replaced by the name of the app. */
+		g_autofree gchar *desc = g_strdup_printf (_("%s relies on donations to continue development. Please consider giving today."),
+		                                          gs_app_get_name (self->app));
+		gtk_label_set_label (GTK_LABEL (self->label_donate_title), title);
+		gtk_label_set_label (GTK_LABEL (self->label_donate_description), desc);
+		gtk_widget_set_visible (self->infobar_donate, TRUE);
 	} else {
-		gtk_widget_set_visible (self->button_donate, FALSE);
+		gtk_widget_set_visible (self->infobar_donate, FALSE);
 	}
-	gtk_widget_set_visible (self->box_details_support, show_support_box);
 
 	/* set the developer name, falling back to the project group */
 	tmp = gs_app_get_developer_name (self->app);
@@ -2352,6 +2371,9 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_donate, "clicked",
 			  G_CALLBACK (gs_details_page_donate_cb),
 			  self);
+	g_signal_connect (self->infobar_donate, "response",
+	                  G_CALLBACK (gs_details_page_donate_response_cb),
+	                  self);
 	g_signal_connect (self->button_details_license_free, "clicked",
 			  G_CALLBACK (gs_details_page_license_free_cb),
 			  self);
@@ -2425,6 +2447,9 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_website);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_donate);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_donate);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_donate_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_donate_description);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
