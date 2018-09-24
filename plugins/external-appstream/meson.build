@@ -9,7 +9,10 @@ executable(
   include_directories : [
     include_directories('../..'),
   ],
-  dependencies : [gio_unix, appstream_glib],
+  dependencies : [
+    gio_unix,
+    libxmlb,
+  ],
   c_args : cargs,
   install : true,
   install_dir : get_option('libexecdir')

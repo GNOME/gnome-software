@@ -804,6 +804,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	app = gs_app_new ("org.fedoraproject.release-rawhide.upgrade");
 	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
