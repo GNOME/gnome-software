@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <glib/gstdio.h>
+
 #include "gnome-software-private.h"
 
 #include "gs-test.h"
@@ -104,6 +106,7 @@ gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* update, which should cause an error to be emitted */
@@ -424,7 +427,7 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", "spell",
+					 "search", "zeus",
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
@@ -478,6 +481,7 @@ gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* get search result based on addon keyword */
@@ -734,6 +738,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsDummyTestHelper) helper3 = gs_dummy_test_helper_new ();
 
 	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* get the updates list */
@@ -825,6 +830,7 @@ gs_plugins_dummy_limit_parallel_ops_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
+	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
@@ -845,6 +851,7 @@ main (int argc, char **argv)
 
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);
 
 	/* set all the things required as a dummy test harness */
 	g_setenv ("GS_SELF_TEST_LOCALE", "en_GB", TRUE);
@@ -853,6 +860,7 @@ main (int argc, char **argv)
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_URL", "https://www.debian.org/", TRUE);
 	g_setenv ("GNOME_SOFTWARE_POPULAR", "", TRUE);
+	g_setenv ("GS_SELF_TEST_CORE_DATADIR", tmp_root, TRUE);
 
 	xml = g_strdup ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"

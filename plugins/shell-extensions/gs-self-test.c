@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <glib/gstdio.h>
+#include <xmlb.h>
 
 #include "gnome-software-private.h"
 
@@ -77,12 +78,13 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 static void
 gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 {
-	const gchar *xml_fn = "/var/tmp/self-test/extensions-web.xml";
+	const gchar *xml_fn = "/var/tmp/self-test/extensions-web.xmlb";
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(AsStore) store = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* no shell-extensions, abort */
 	if (!gs_plugin_loader_get_enabled (plugin_loader, "shell-extensions")) {
@@ -103,12 +105,17 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 
 	/* ensure file was populated */
-	store = as_store_new ();
+	silo = xb_silo_new ();
 	file = g_file_new_for_path (xml_fn);
-	ret = as_store_from_file (store, file, NULL, NULL, &error);
+	ret = xb_silo_load_from_file (silo, file,
+				      XB_SILO_LOAD_FLAG_NONE,
+				      NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_assert_cmpint (as_store_get_size (store), >, 20);
+	components = xb_silo_query (silo, "components/component", 0, &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (components);
+	g_assert_cmpint (components->len, >, 20);
 }
 
 int
