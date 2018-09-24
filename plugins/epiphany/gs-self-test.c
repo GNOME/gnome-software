@@ -70,6 +70,7 @@ main (int argc, char **argv)
 
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);
 
 	fn = gs_test_get_filename (TESTDATADIR, "icons/hicolor/scalable/org.gnome.Software.svg");
 	g_assert (fn != NULL);
@@ -78,6 +79,7 @@ main (int argc, char **argv)
 		"  <component type=\"webapp\">\n"
 		"    <id>arachne.desktop</id>\n"
 		"    <name>test</name>\n"
+		"    <pkgname>test</pkgname>\n"
 		"    <icon type=\"remote\">file://%s</icon>\n"
 		"  </component>\n"
 		"</components>\n", fn);
