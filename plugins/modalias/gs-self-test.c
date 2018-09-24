@@ -56,6 +56,7 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
+	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
@@ -77,12 +78,14 @@ main (int argc, char **argv)
 		"    <id>com.hughski.ColorHug2.driver</id>\n"
 		"    <name>ColorHug2</name>\n"
 		"    <summary>ColorHug2 Colorimeter Driver</summary>\n"
+		"    <pkgname>colorhug-client</pkgname>\n"
 		"    <provides>\n"
 		"      <modalias>pci:*</modalias>\n"
 		"    </provides>\n"
 		"  </component>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);

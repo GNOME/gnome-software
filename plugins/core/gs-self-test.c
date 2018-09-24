@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <glib/gstdio.h>
+
 #include "gnome-software-private.h"
 
 #include "gs-appstream.h"
@@ -37,6 +39,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* force this app to be installed */
@@ -70,6 +73,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 
 	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* refine system application */
@@ -120,6 +124,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list_wildcard = NULL;
 
 	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* create a list with generic apps */
@@ -204,7 +209,7 @@ main (int argc, char **argv)
 
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
-	g_setenv ("GS_SELF_TEST_CORE_DATADIR", tmp_root, TRUE);
+	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
 
 	os_release_filename = gs_test_get_filename (TESTDATADIR, "os-release");
 	g_assert (os_release_filename != NULL);
@@ -235,10 +240,10 @@ main (int argc, char **argv)
 		"  <component type=\"os-upgrade\">\n"
 		"    <id>org.fedoraproject.Fedora-25</id>\n"
 		"    <summary>Fedora Workstation</summary>\n"
+		"    <pkgname>fedora-release</pkgname>\n"
 		"  </component>\n"
 		"</components>\n";
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
-	g_setenv ("GS_SELF_TEST_ALL_ORIGIN_KEYWORDS", "1", TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);

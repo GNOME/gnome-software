@@ -11,7 +11,10 @@ sources : 'gs-plugin-shell-extensions.c',
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : plugin_libs
+  dependencies : [
+    plugin_libs,
+    libxmlb,
+  ],
 )
 
 if get_option('tests')
@@ -27,6 +30,7 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
+      libxmlb,
     ],
     link_with : [
       libgnomesoftware
