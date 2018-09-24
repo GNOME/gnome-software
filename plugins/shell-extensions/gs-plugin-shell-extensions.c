@@ -26,6 +26,7 @@
 #include <glib/gi18n.h>
 #include <glib/gstdio.h>
 #include <json-glib/json-glib.h>
+#include <xmlb.h>
 
 #include <gnome-software.h>
 
@@ -437,7 +438,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 static gboolean
 gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
-					  AsApp *app,
+					  const gchar *component_id,
+					  XbBuilderNode *app,
 					  JsonObject *ver_map,
 					  GError **error)
 {
@@ -445,7 +447,7 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	JsonObject *json_ver = NULL;
 	gint64 version;
 	g_autofree gchar *shell_version = NULL;
-	g_autoptr(AsRelease) release = NULL;
+	g_autoptr(XbBuilderNode) release = NULL;
 
 	/* look for version, major.minor.micro */
 	if (json_object_has_member (ver_map, priv->shell_version)) {
@@ -468,7 +470,7 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	/* FIXME: mark as incompatible? */
 	if (json_ver == NULL) {
 		g_debug ("no version_map for %s: %s",
-			 as_app_get_id (app),
+			 component_id,
 			 priv->shell_version);
 		return TRUE;
 	}
@@ -485,108 +487,106 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	shell_version = g_strdup_printf ("%" G_GINT64_FORMAT, version);
 
 	/* add a dummy release */
-	release = as_release_new ();
-	as_release_set_version (release, shell_version);
-	as_app_add_release (app, release);
+	xb_builder_node_insert_text (app, "release", NULL,
+				     "version", shell_version,
+				     NULL);
 	return TRUE;
 }
 
-static AsApp *
+
+
+static XbBuilderNode *
 gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 				      JsonObject *json_app,
 				      GError **error)
 {
-	g_autoptr(AsApp) app = NULL;
 	JsonObject *json_ver_map;
 	const gchar *tmp;
+	g_autofree gchar *component_id = NULL;
+	g_autoptr(XbBuilderNode) app = NULL;
+	g_autoptr(XbBuilderNode) metadata = NULL;
 
-	app = as_app_new ();
-	as_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
-	as_app_set_project_license (app, "GPL-2.0+");
+	app = xb_builder_node_new ("component");
+	xb_builder_node_set_attr (app, "kind", "shell-extension");
+	xb_builder_node_insert_text (app, "project_license", "GPL-2.0+", NULL);
+	metadata = xb_builder_node_insert (app, "metadata", NULL);
 
 	tmp = json_object_get_string_member (json_app, "description");
 	if (tmp != NULL) {
-		g_autofree gchar *desc = NULL;
-		desc = as_markup_import (tmp, AS_MARKUP_CONVERT_FORMAT_SIMPLE, error);
-		if (desc == NULL) {
-			gs_utils_error_convert_appstream (error);
-			return NULL;
-		}
-		as_app_set_description (app, NULL, desc);
+		g_auto(GStrv) paras = g_strsplit (tmp, "\n", -1);
+		g_autoptr(XbBuilderNode) desc = xb_builder_node_insert (app, "description", NULL);
+		for (guint i = 0; paras[i] != NULL; i++)
+			xb_builder_node_insert_text (desc, "p", paras[i], NULL);
 	}
 	tmp = json_object_get_string_member (json_app, "screenshot");
 	if (tmp != NULL) {
-		g_autoptr(AsScreenshot) ss = NULL;
-		g_autoptr(AsImage) im = NULL;
+		g_autoptr(XbBuilderNode) screenshots = NULL;
+		g_autoptr(XbBuilderNode) screenshot = NULL;
 		g_autofree gchar *uri = NULL;
+		screenshots = xb_builder_node_insert (app, "screenshots", NULL);
+		screenshot = xb_builder_node_insert (screenshots, "screenshot",
+						     "kind", "default",
+						     NULL);
 		uri = g_build_path ("/", SHELL_EXTENSIONS_API_URI, tmp, NULL);
-		im = as_image_new ();
-		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
-		as_image_set_url (im, uri);
-		ss = as_screenshot_new ();
-		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
-		as_screenshot_add_image (ss, im);
-		as_app_add_screenshot (app, ss);
+		xb_builder_node_insert_text (screenshot, "image", uri,
+					     "kind", "source",
+					     NULL);
 	}
 	tmp = json_object_get_string_member (json_app, "name");
 	if (tmp != NULL)
-		as_app_set_name (app, NULL, tmp);
+		xb_builder_node_insert_text (app, "name", tmp, NULL);
 	tmp = json_object_get_string_member (json_app, "uuid");
 	if (tmp != NULL) {
-		g_autofree gchar *id = NULL;
-		id = as_utils_appstream_id_build (tmp);
-		as_app_set_id (app, id);
-		as_app_add_metadata (app, "shell-extensions::uuid", tmp);
+		component_id = as_utils_appstream_id_build (tmp);
+		xb_builder_node_insert_text (app, "id", component_id, NULL);
+		xb_builder_node_insert_text (metadata, "value", tmp,
+					     "key", "shell-extensions::uuid",
+					     NULL);
 	}
 	tmp = json_object_get_string_member (json_app, "link");
 	if (tmp != NULL) {
 		g_autofree gchar *uri = NULL;
 		uri = g_build_filename (SHELL_EXTENSIONS_API_URI, tmp, NULL);
-		as_app_add_url (app, AS_URL_KIND_HOMEPAGE, uri);
+		xb_builder_node_insert_text (app, "url", uri,
+					     "type", "homepage",
+					     NULL);
 	}
 	tmp = json_object_get_string_member (json_app, "icon");
 	if (tmp != NULL) {
-		g_autoptr(AsIcon) ic = NULL;
 		/* just use a stock icon as the remote icons are
 		 * sometimes missing, poor quality and low resolution */
-		ic = as_icon_new ();
-		as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-		as_icon_set_name (ic, "application-x-addon-symbolic");
-		as_app_add_icon (app, ic);
+		xb_builder_node_insert_text (app, "icon",
+					     "application-x-addon-symbolic",
+					     "type", "stock",
+					     NULL);
 	}
 
 	/* try to get version */
 	json_ver_map = json_object_get_object_member (json_app, "shell_version_map");
 	if (json_ver_map != NULL) {
 		if (!gs_plugin_shell_extensions_parse_version (plugin,
+							       component_id,
 							       app,
 							       json_ver_map,
 							       error))
 			return NULL;
 	}
 
-	/* we have no data :/ */
-	as_app_add_metadata (app, "GnomeSoftware::Plugin",
-			     gs_plugin_get_name (plugin));
-	as_app_add_metadata (app, "GnomeSoftware::OriginHostnameUrl",
-			     SHELL_EXTENSIONS_API_URI);
-
 	return g_steal_pointer (&app);
 }
 
-static GPtrArray *
+static XbBuilderNode *
 gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 				       const gchar *data,
 				       gssize data_len,
 				       GError **error)
 {
-	GPtrArray *apps;
 	JsonArray *json_extensions_array;
 	JsonNode *json_extensions;
 	JsonNode *json_root;
 	JsonObject *json_item;
-	guint i;
 	g_autoptr(JsonParser) json_parser = NULL;
+	g_autoptr(XbBuilderNode) apps = NULL;
 
 	/* nothing */
 	if (data == NULL) {
@@ -628,7 +628,7 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	}
 
 	/* load extensions */
-	apps = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	apps = xb_builder_node_new ("components");
 	json_extensions = json_object_get_member (json_item, "extensions");
 	if (json_extensions == NULL) {
 		g_set_error_literal (error,
@@ -647,36 +647,36 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	}
 
 	/* parse each app */
-	for (i = 0; i < json_array_get_length (json_extensions_array); i++) {
-		AsApp *app;
+	for (guint i = 0; i < json_array_get_length (json_extensions_array); i++) {
+		XbBuilderNode *component;
 		JsonNode *json_extension;
 		JsonObject *json_extension_obj;
 		json_extension = json_array_get_element (json_extensions_array, i);
 		json_extension_obj = json_node_get_object (json_extension);
-		app = gs_plugin_shell_extensions_parse_app (plugin,
+		component = gs_plugin_shell_extensions_parse_app (plugin,
 							    json_extension_obj,
 							    error);
-		if (app == NULL)
+		if (component == NULL)
 			return NULL;
-		g_ptr_array_add (apps, app);
+		xb_builder_node_add_child (apps, component);
 	}
 
-	return apps;
+	return g_steal_pointer (&apps);
 }
 
-static GPtrArray *
+static XbBuilderNode *
 gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 				     guint cache_age,
 				     GCancellable *cancellable,
 				     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GPtrArray *apps;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *uri = NULL;
-	g_autoptr(GFile) cachefn_file = NULL;
 	g_autoptr(GBytes) data = NULL;
+	g_autoptr(GFile) cachefn_file = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(XbBuilderNode) apps = NULL;
 
 	/* look in the cache */
 	cachefn = gs_utils_get_cache_filename ("shell-extensions",
@@ -730,7 +730,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 				  error))
 		return NULL;
 
-	return apps;
+	return g_steal_pointer (&apps);
 }
 
 static gboolean
@@ -740,25 +740,26 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 				    GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	AsApp *app;
 	gboolean repo_enabled;
 	const gchar *fn_test;
-	guint i;
 	g_autofree gchar *fn = NULL;
-	g_autoptr(GPtrArray) apps = NULL;
-	g_autoptr(AsStore) store = NULL;
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilderNode) apps = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* check age */
 	fn_test = g_getenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN");
 	if (fn_test != NULL) {
 		fn = g_strdup (fn_test);
 	} else {
-		fn = g_build_filename (g_get_user_data_dir (),
-				       "app-info",
-				       "xmls",
-				       "extensions-web.xml",
-				       NULL);
+		fn = gs_utils_get_cache_filename ("shell-extensions",
+						  "extensions-web.xmlb",
+						  GS_UTILS_CACHE_FLAG_WRITEABLE,
+						  error);
+		if (fn == NULL)
+			return FALSE;
 	}
 
 	/* remove old appstream data if the repo is disabled */
@@ -785,25 +786,22 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 	if (apps == NULL)
 		return FALSE;
 
-	/* add to local store */
-	store = as_store_new ();
-	as_store_set_origin (store, "extensions-web");
-	for (i = 0; i < apps->len; i++) {
-		app = g_ptr_array_index (apps, i);
-		g_debug ("adding to local store %s", as_app_get_id (app));
-		as_store_add_app (store, app);
-	}
+	/* add to builder */
+	xb_builder_import_node (builder, apps);
 
 	/* save to disk */
-	if (!gs_mkdir_parent (fn, error))
+	silo = xb_builder_ensure (builder, file,
+				  XB_BUILDER_COMPILE_FLAG_NONE,
+				  cancellable, &error_local);
+	if (silo == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to compile %s",
+			     error_local->message);
 		return FALSE;
-	g_debug ("saving to %s", fn);
-	return as_store_to_file (store, file,
-				 AS_NODE_TO_XML_FLAG_ADD_HEADER |
-				 AS_NODE_TO_XML_FLAG_FORMAT_INDENT |
-				 AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE,
-				 cancellable,
-				 error);
+	}
+	return TRUE;
 }
 
 gboolean
