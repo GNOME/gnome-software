@@ -62,6 +62,9 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
+  link_with : [
+    libxmlbstatic,
+  ],
   dependencies : plugin_libs
 )
 
@@ -88,10 +91,14 @@ shared_module(
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
+    include_directories('../../libxmlb/src'),
   ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
+  link_with : [
+    libxmlbstatic,
+  ],
   dependencies : plugin_libs
 )
 
@@ -205,11 +212,13 @@ if get_option('tests')
     include_directories : [
       include_directories('../..'),
       include_directories('../../lib'),
+      include_directories('../../libxmlb/src'),
     ],
     dependencies : [
       plugin_libs,
     ],
     link_with : [
+      libxmlbstatic,
       libgnomesoftware
     ],
     c_args : cargs,

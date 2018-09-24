@@ -30,6 +30,7 @@
 #include <config.h>
 
 #include <glib/gi18n.h>
+#include <xmlb.h>
 
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
@@ -44,7 +45,7 @@ struct _GsFlatpak {
 	GFileMonitor		*monitor;
 	AsAppScope		 scope;
 	GsPlugin		*plugin;
-	AsStore			*store;
+	XbSilo			*silo;
 	gchar			*id;
 	guint			 changed_id;
 };
@@ -216,8 +217,9 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	}
 }
 
+#if 0
 static void
-gs_flatpak_remove_prefixed_names (AsApp *app)
+gs_flatpak_remove_prefixed_names (XbNode *component)
 {
 	GHashTable *names;
 	g_autoptr(GList) keys = NULL;
@@ -234,6 +236,7 @@ gs_flatpak_remove_prefixed_names (AsApp *app)
 		as_app_set_name (app, locale, value + 10);
 	}
 }
+#endif
 
 static gboolean
 gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
@@ -246,7 +249,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autofree gchar *appstream_fn = NULL;
 	g_autofree gchar *default_branch = NULL;
 	g_autofree gchar *only_app_id = NULL;
-	g_autoptr(AsStore) store = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GSettings) settings = NULL;
@@ -260,7 +263,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		return TRUE;
 	}
 
-	/* load the file into a temp store */
+	/* load the file into a temp silo */
 	appstream_dir_fn = g_file_get_path (appstream_dir);
 	appstream_fn = g_build_filename (appstream_dir_fn,
 					 "appstream.xml.gz", NULL);
@@ -271,11 +274,12 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		return TRUE;
 	}
 	file = g_file_new_for_path (appstream_fn);
-	store = as_store_new ();
-	as_store_set_add_flags (store,
+	silo = xb_silo_new ();
+#if 0
+	as_store_set_add_flags (silo,
 				AS_STORE_ADD_FLAG_USE_UNIQUE_ID |
 				AS_STORE_ADD_FLAG_ONLY_NATIVE_LANGS);
-	as_store_set_search_match (store,
+	as_store_set_search_match (silo,
 				   AS_APP_SEARCH_MATCH_MIMETYPE |
 				   AS_APP_SEARCH_MATCH_PKGNAME |
 				   AS_APP_SEARCH_MATCH_COMMENT |
@@ -283,17 +287,20 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				   AS_APP_SEARCH_MATCH_KEYWORD |
 				   AS_APP_SEARCH_MATCH_ORIGIN |
 				   AS_APP_SEARCH_MATCH_ID);
-	if (!as_store_from_file (store, file, NULL, cancellable, error)) {
+	if (!xb_silo_load_from_file (silo, file, NULL, cancellable, error)) {
 		gs_utils_error_convert_appstream (error);
 		return FALSE;
 	}
+#endif
 
+#if 0
 	/* override the *AppStream* origin */
-	apps = as_store_get_apps (store);
+	apps = xb_silo_query (silo, "XPATHXPATHXPATHXPATHXPATHXPATH", &error_local);
 	for (guint i = 0; i < apps->len; i++) {
-		AsApp *app = g_ptr_array_index (apps, i);
+		XbNode *component = g_ptr_array_index (apps, i);
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));
 	}
+#endif
 
 	/* only add the specific app for noenumerate=true */
 	if (flatpak_remote_get_noenumerate (xremote)) {
@@ -308,10 +315,11 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	if (g_settings_get_boolean (settings, "filter-default-branch"))
 		default_branch = flatpak_remote_get_default_branch (xremote);
 
+#if 0
 	/* get all the apps and fix them up */
 	app_filtered = g_ptr_array_new ();
 	for (guint i = 0; i < apps->len; i++) {
-		AsApp *app = g_ptr_array_index (apps, i);
+		XbNode *component = g_ptr_array_index (apps, i);
 
 		/* filter to app */
 		if (only_app_id != NULL &&
@@ -339,11 +347,12 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		g_ptr_array_add (app_filtered, app);
 	}
 
-	/* add them to the main store */
-	as_store_add_apps (self->store, app_filtered);
+	/* add them to the main silo */
+	as_store_add_apps (self->silo, app_filtered);
 
 	/* ensure the token cache for all apps */
-	as_store_load_search_cache (store);
+	as_store_load_search_cache (silo);
+#endif
 
 	return TRUE;
 }
@@ -366,6 +375,7 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+#if 0
 	GPtrArray *icons;
 	const gchar *fn;
 	g_autoptr(GFile) path = NULL;
@@ -385,7 +395,7 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		g_autofree gchar *fn_desktop = NULL;
 		g_autoptr(GError) error_local = NULL;
-		g_autoptr(AsApp) app = NULL;
+		g_autoptr(XbNode) app = NULL;
 		g_autoptr(AsFormat) format = as_format_new ();
 		g_autoptr(FlatpakInstalledRef) app_ref = NULL;
 		g_autofree gchar *app_id = NULL;
@@ -406,7 +416,7 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		/* fix up icons */
 		icons = as_app_get_icons (app);
 		for (guint i = 0; i < icons->len; i++) {
-			AsIcon *ic = g_ptr_array_index (icons, i);
+			XbNode *ic = g_ptr_array_index (icons, i);
 			if (as_icon_get_kind (ic) == AS_ICON_KIND_UNKNOWN) {
 				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 				as_icon_set_prefix (ic, path_exports);
@@ -437,8 +447,9 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		as_app_set_branch (app, flatpak_ref_get_branch (FLATPAK_REF (app_ref)));
 		as_app_set_icon_path (app, path_exports);
 		as_app_add_keyword (app, NULL, "flatpak");
-		as_store_add_app (self->store, app);
+		as_store_add_app (self->silo, app);
 	}
+#endif
 }
 
 static gboolean
@@ -449,7 +460,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_autoptr(GPtrArray) xremotes = NULL;
 
 	/* remove all components */
-	as_store_remove_all (self->store);
+	as_store_remove_all (self->silo);
 
 	/* go through each remote adding metadata */
 	xremotes = flatpak_installation_list_remotes (self->installation,
@@ -677,7 +688,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			continue;
 		}
 
-		/* add the new AppStream repo to the shared store */
+		/* add the new AppStream repo to the shared silo */
 		file = flatpak_remote_get_appstream_dir (xremote, NULL);
 		appstream_fn = g_file_get_path (file);
 		g_debug ("using AppStream metadata found at: %s", appstream_fn);
@@ -686,12 +697,14 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		something_changed = TRUE;
 	}
 
-	/* ensure the AppStream store is up to date */
+#if 0
+	/* ensure the AppStream silo is up to date */
 	if (something_changed ||
-	    as_store_get_size (self->store) == 0) {
+	    as_store_get_size (self->silo) == 0) {
 		if (!gs_flatpak_rescan_appstream_store (self, cancellable, error))
 			return FALSE;
 	}
+#endif
 
 	return TRUE;
 }
@@ -1818,10 +1831,11 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	return TRUE;
 }
 
+#if 0
 static void
-gs_flatpak_refine_appstream_release (AsApp *item, GsApp *app)
+gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 {
-	AsRelease *rel = as_app_get_release_default (item);
+	AsRelease *rel = as_app_get_release_default (component);
 	if (rel == NULL)
 		return;
 	if (as_release_get_version (rel) == NULL)
@@ -1834,40 +1848,43 @@ gs_flatpak_refine_appstream_release (AsApp *item, GsApp *app)
 		break;
 	default:
 		g_debug ("%s is not installed, so ignoring version of %s",
-			 as_app_get_id (item), as_release_get_version (rel));
+			 xb_node_query_first (component, "id", NULL), as_release_get_version (rel));
 		break;
 	}
 }
+#endif
 
 static gboolean
 gs_flatpak_refine_appstream (GsFlatpak *self, GsApp *app, GError **error)
 {
-	AsApp *item;
+	XbNode *component;
 	const gchar *unique_id = gs_app_get_unique_id (app);
 
 	if (unique_id == NULL)
 		return TRUE;
-	item = as_store_get_app_by_unique_id (self->store,
+#if 0
+	component = as_store_get_app_by_unique_id (self->silo,
 					      unique_id,
 					      AS_STORE_SEARCH_FLAG_USE_WILDCARDS);
-	if (item == NULL) {
+	if (component == NULL) {
 		g_autoptr(GPtrArray) apps = NULL;
-		apps = as_store_get_apps_by_id (self->store, gs_app_get_id (app));
+		apps = as_store_get_apps_by_id (self->silo, gs_app_get_id (app));
 		if (apps->len > 0) {
 			g_debug ("potential matches for %s:", unique_id);
 			for (guint i = 0; i < apps->len; i++) {
-				AsApp *app_tmp = g_ptr_array_index (apps, i);
+				XbNode *app_tmp = g_ptr_array_index (apps, i);
 				g_debug ("- %s", as_app_get_unique_id (app_tmp));
 			}
 		}
 		return TRUE;
 	}
 
-	if (!gs_appstream_refine_app (self->plugin, app, item, error))
+	if (!gs_appstream_refine_app (self->plugin, app, priv->silo, component, flags, error))
 		return FALSE;
 
 	/* use the default release as the version number */
-	gs_flatpak_refine_appstream_release (item, app);
+	gs_flatpak_refine_appstream_release (component, app);
+#endif
 
 	return TRUE;
 }
@@ -1952,6 +1969,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			    GsAppList *list, GsPluginRefineFlags flags,
 			    GCancellable *cancellable, GError **error)
 {
+#if 0
 	const gchar *id;
 	guint i;
 	g_autoptr(GPtrArray) items = NULL;
@@ -1962,29 +1980,29 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		return TRUE;
 
 	/* find all apps when matching any prefixes */
-	items = as_store_get_apps_by_id (self->store, id);
+	items = as_store_get_apps_by_id (self->silo, id);
 	for (i = 0; i < items->len; i++) {
-		AsApp *item = g_ptr_array_index (items, i);
+		XbNode *component = g_ptr_array_index (items, i);
 		g_autoptr(GsApp) new = NULL;
 
 		/* is compatible */
 		if (!as_utils_unique_id_equal (gs_app_get_unique_id (app),
-					       as_app_get_unique_id (item))) {
+					       as_app_get_unique_id (component))) {
 			g_debug ("does not match unique ID constraints");
 			continue;
 		}
 
 		/* does the app have an installation method */
-		if (as_app_get_bundle_default (item) == NULL) {
+		if (as_app_get_bundle_default (component) == NULL) {
 			g_debug ("not using %s for wildcard as no bundle",
-				 as_app_get_id (item));
+				 xb_node_query_first (component, "id", NULL));
 			continue;
 		}
 
 		/* new app */
 		g_debug ("found %s for wildcard %s",
-			 as_app_get_unique_id (item), id);
-		new = gs_appstream_create_app (self->plugin, item, NULL);
+			 as_app_get_unique_id (component), id);
+		new = gs_appstream_create_app (self->plugin, component, NULL);
 		if (new == NULL)
 			return FALSE;
 		gs_flatpak_claim_app (self, new);
@@ -1992,6 +2010,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 			return FALSE;
 		gs_app_list_add (list, new);
 	}
+#endif
 	return TRUE;
 }
 
@@ -2115,9 +2134,9 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		g_autoptr(GInputStream) stream_gz = NULL;
 		g_autoptr(GInputStream) stream_data = NULL;
 		g_autoptr(GBytes) appstream = NULL;
-		g_autoptr(AsStore) store = NULL;
+		g_autoptr(XbSilo) silo = NULL;
 		g_autofree gchar *id = NULL;
-		AsApp *item;
+		XbNode *component;
 
 		/* decompress data */
 		decompressor = g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP);
@@ -2135,23 +2154,24 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			gs_flatpak_error_convert (error);
 			return NULL;
 		}
-		store = as_store_new ();
-		if (!as_store_from_bytes (store, appstream, cancellable, error)) {
+		silo = xb_silo_new ();
+		if (!as_store_from_bytes (silo, appstream, cancellable, error)) {
 			gs_flatpak_error_convert (error);
 			return NULL;
 		}
+#if 0
 
 		/* allow peeking into this for debugging */
 		if (g_getenv ("GS_FLATPAK_DEBUG_APPSTREAM") != NULL) {
 			g_autoptr(GString) str = NULL;
-			str = as_store_to_xml (store,
+			str = as_store_to_xml (silo,
 					       AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE |
 					       AS_NODE_TO_XML_FLAG_FORMAT_INDENT);
 			g_debug ("showing AppStream data: %s", str->str);
 		}
 
 		/* check for sanity */
-		if (as_store_get_size (store) == 0) {
+		if (as_store_get_size (silo) == 0) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -2159,12 +2179,12 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			return NULL;
 		}
 		g_debug ("%u applications found in AppStream data",
-			 as_store_get_size (store));
+			 as_store_get_size (silo));
 
 		/* find app */
 		id = g_strdup_printf ("%s.desktop", gs_flatpak_app_get_ref_name (app));
-		item = as_store_get_app_by_id (store, id);
-		if (item == NULL) {
+		component = as_store_get_app_by_id (silo, id);
+		if (component == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_INVALID_FORMAT,
@@ -2172,9 +2192,12 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 				     id);
 			return NULL;
 		}
+#endif
 
 		/* copy details from AppStream to app */
-		if (!gs_appstream_refine_app (self->plugin, app, item, error))
+		if (!gs_appstream_refine_app (self->plugin, app, self->silo, component,
+					      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					      error))
 			return NULL;
 	} else {
 		g_warning ("no appstream metadata in file");
@@ -2386,7 +2409,7 @@ gs_flatpak_search (GsFlatpak *self,
 		   GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	if (!gs_appstream_store_search (self->plugin, self->store, values, list_tmp,
+	if (!gs_appstream_silo_search (self->plugin, self->silo, values, list_tmp,
 					cancellable, error))
 		return FALSE;
 	gs_flatpak_claim_app_list (self, list_tmp);
@@ -2402,7 +2425,7 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	if (!gs_appstream_store_add_category_apps (self->plugin, self->store,
+	if (!gs_appstream_silo_add_category_apps (self->plugin, self->silo,
 						   category, list_tmp,
 						   cancellable, error))
 		return FALSE;
@@ -2417,7 +2440,7 @@ gs_flatpak_add_categories (GsFlatpak *self,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	return gs_appstream_store_add_categories (self->plugin, self->store,
+	return gs_appstream_silo_add_categories (self->plugin, self->silo,
 						  list, cancellable, error);
 }
 
@@ -2428,7 +2451,7 @@ gs_flatpak_add_popular (GsFlatpak *self,
 			GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	if (!gs_appstream_add_popular (self->plugin, self->store, list_tmp,
+	if (!gs_appstream_add_popular (self->plugin, self->silo, list_tmp,
 				       cancellable, error))
 		return FALSE;
 	gs_flatpak_claim_app_list (self, list_tmp);
@@ -2443,7 +2466,7 @@ gs_flatpak_add_featured (GsFlatpak *self,
 			 GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	if (!gs_appstream_add_featured (self->plugin, self->store, list_tmp,
+	if (!gs_appstream_add_featured (self->plugin, self->silo, list_tmp,
 					cancellable, error))
 		return FALSE;
 	gs_flatpak_claim_app_list (self, list_tmp);
@@ -2458,12 +2481,14 @@ gs_flatpak_add_alternates (GsFlatpak *self,
 			   GCancellable *cancellable,
 			   GError **error)
 {
+#if 0
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	if (!gs_appstream_add_alternates (self->plugin, self->store, app, list_tmp,
+	if (!gs_appstream_add_alternates (self->plugin, self->silo, app, list_tmp,
 					  cancellable, error))
 		return FALSE;
 	gs_flatpak_claim_app_list (self, list_tmp);
 	gs_app_list_add_list (list, list_tmp);
+#endif
 	return TRUE;
 }
 
@@ -2475,7 +2500,7 @@ gs_flatpak_add_recent (GsFlatpak *self,
 		       GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
-	if (!gs_appstream_add_recent (self->plugin, self->store, list_tmp, age,
+	if (!gs_appstream_add_recent (self->plugin, self->silo, list_tmp, age,
 				      cancellable, error))
 		return FALSE;
 	gs_flatpak_claim_app_list (self, list_tmp);
@@ -2483,18 +2508,20 @@ gs_flatpak_add_recent (GsFlatpak *self,
 	return TRUE;
 }
 
+#if 0
 static void
-gs_flatpak_store_app_added_cb (AsStore *store, AsApp *app, GsFlatpak *self)
+gs_flatpak_store_app_added_cb (XbSilo *silo, XbNode *component, GsFlatpak *self)
 {
 	gs_appstream_add_extra_info (self->plugin, app);
 }
 
 static void
-gs_flatpak_store_app_removed_cb (AsStore *store, AsApp *app, GsFlatpak *self)
+gs_flatpak_store_app_removed_cb (XbSilo *silo, XbNode *component, GsFlatpak *self)
 {
 	g_debug ("AppStream app was removed, doing delete from global cache");
 	gs_plugin_cache_remove (self->plugin, as_app_get_unique_id (app));
 }
+#endif
 
 const gchar *
 gs_flatpak_get_id (GsFlatpak *self)
@@ -2541,7 +2568,7 @@ gs_flatpak_finalize (GObject *object)
 	g_free (self->id);
 	g_object_unref (self->installation);
 	g_object_unref (self->plugin);
-	g_object_unref (self->store);
+	g_object_unref (self->silo);
 	g_hash_table_unref (self->broken_remotes);
 
 	G_OBJECT_CLASS (gs_flatpak_parent_class)->finalize (object);
@@ -2559,22 +2586,22 @@ gs_flatpak_init (GsFlatpak *self)
 {
 	self->broken_remotes = g_hash_table_new_full (g_str_hash, g_str_equal,
 						      g_free, NULL);
-	self->store = as_store_new ();
-	g_signal_connect (self->store, "app-added",
-			  G_CALLBACK (gs_flatpak_store_app_added_cb),
-			  self);
-	g_signal_connect (self->store, "app-removed",
-			  G_CALLBACK (gs_flatpak_store_app_removed_cb),
-			  self);
-	as_store_set_add_flags (self->store, AS_STORE_ADD_FLAG_USE_UNIQUE_ID);
-	as_store_set_watch_flags (self->store, AS_STORE_WATCH_FLAG_REMOVED);
-	as_store_set_search_match (self->store,
-				   AS_APP_SEARCH_MATCH_MIMETYPE |
-				   AS_APP_SEARCH_MATCH_PKGNAME |
-				   AS_APP_SEARCH_MATCH_COMMENT |
-				   AS_APP_SEARCH_MATCH_NAME |
-				   AS_APP_SEARCH_MATCH_KEYWORD |
-				   AS_APP_SEARCH_MATCH_ID);
+	self->silo = xb_silo_new ();
+//	g_signal_connect (self->silo, "app-added",
+//			  G_CALLBACK (gs_flatpak_store_app_added_cb),
+//			  self);
+//	g_signal_connect (self->silo, "app-removed",
+//			  G_CALLBACK (gs_flatpak_store_app_removed_cb),
+//			  self);
+//	as_store_set_add_flags (self->silo, AS_STORE_ADD_FLAG_USE_UNIQUE_ID);
+//	as_store_set_watch_flags (self->silo, AS_STORE_WATCH_FLAG_REMOVED);
+//	as_store_set_search_match (self->silo,
+//				   AS_APP_SEARCH_MATCH_MIMETYPE |
+//				   AS_APP_SEARCH_MATCH_PKGNAME |
+//				   AS_APP_SEARCH_MATCH_COMMENT |
+//				   AS_APP_SEARCH_MATCH_NAME |
+//				   AS_APP_SEARCH_MATCH_KEYWORD |
+//				   AS_APP_SEARCH_MATCH_ID);
 }
 
 GsFlatpak *

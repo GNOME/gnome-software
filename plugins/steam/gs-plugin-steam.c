@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 #include <gnome-software.h>
 #include <string.h>
+#include <xmlb.h>
 
 #define GS_PLUGIN_STEAM_SCREENSHOT_URI	"http://cdn.akamai.steamstatic.com/steam/apps"
 
@@ -281,7 +282,7 @@ gs_plugin_steam_capture (const gchar *html,
 }
 
 static gboolean
-gs_plugin_steam_update_screenshots (AsApp *app, const gchar *html, GError **error)
+gs_plugin_steam_update_screenshots (XbNode *app, const gchar *html, GError **error)
 {
 	const gchar *gameid_str;
 	gchar *tmp1;
@@ -289,7 +290,7 @@ gs_plugin_steam_update_screenshots (AsApp *app, const gchar *html, GError **erro
 	guint idx = 0;
 
 	/* find all the screenshots */
-	gameid_str = as_app_get_metadata_item (app, "X-Steam-GameID");
+//	gameid_str = as_app_get_metadata_item (app, "X-Steam-GameID");
 	while ((tmp1 = gs_plugin_steam_capture (html, "data-screenshotid=\"", "\"", &i))) {
 		g_autoptr(AsImage) im = NULL;
 		g_autoptr(AsScreenshot) ss = NULL;
@@ -318,7 +319,7 @@ gs_plugin_steam_update_screenshots (AsApp *app, const gchar *html, GError **erro
 }
 
 static gboolean
-gs_plugin_steam_update_description (AsApp *app,
+gs_plugin_steam_update_description (XbNode *app,
 				    const gchar *html,
 				    GError **error)
 {
@@ -363,7 +364,7 @@ gs_plugin_steam_update_description (AsApp *app,
 
 static gboolean
 gs_plugin_steam_download_icon (GsPlugin *plugin,
-			       AsApp *app,
+			       XbNode *app,
 			       const gchar *uri,
 			       GError **error)
 {
@@ -440,10 +441,11 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 
 static gboolean
 gs_plugin_steam_update_store_app (GsPlugin *plugin,
-				  AsStore *store,
+				  XbSilo *silo,
 				  GHashTable *app,
 				  GError **error)
 {
+#if 0
 	const gchar *name;
 	GVariant *tmp;
 	guint32 gameid;
@@ -453,7 +455,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	g_autofree gchar *gameid_str = NULL;
 	g_autofree gchar *html = NULL;
 	g_autofree gchar *uri = NULL;
-	g_autoptr(AsApp) item = NULL;
+	g_autoptr(XbNode) item = NULL;
 
 	/* this is the key */
 	tmp = g_hash_table_lookup (app, "gameid");
@@ -469,7 +471,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	app_id = g_strdup_printf ("%s.desktop", name);
 
 	/* already exists */
-	if (as_store_get_app_by_id (store, app_id) != NULL) {
+	if (as_store_get_app_by_id (silo, app_id) != NULL) {
 		g_debug ("already exists %" G_GUINT32_FORMAT ", skipping", gameid);
 		return TRUE;
 	}
@@ -584,7 +586,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 		}
 	}
 
-	/* download page from the store */
+	/* download page from the silo */
 	cache_basename = g_strdup_printf ("%s.html", gameid_str);
 	cache_fn = gs_utils_get_cache_filename ("steam",
 						cache_basename,
@@ -594,7 +596,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 		return FALSE;
 	if (!g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
 		g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-		uri = g_strdup_printf ("http://store.steampowered.com/app/%s/", gameid_str);
+		uri = g_strdup_printf ("http://silo.steampowered.com/app/%s/", gameid_str);
 		gs_app_set_summary_missing (app_dl,
 					    /* TRANSLATORS: status text when downloading */
 					    _("Downloading application page…"));
@@ -618,12 +620,13 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 		return FALSE;
 
 	/* add */
-	as_store_add_app (store, item);
+	as_store_add_app (silo, item);
+#endif
 	return TRUE;
 }
 
 static gboolean
-gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps, GError **error)
+gs_plugin_steam_update_store (GsPlugin *plugin, XbSilo *silo, GPtrArray *apps, GError **error)
 {
 	guint i;
 	gdouble pc;
@@ -632,7 +635,7 @@ gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps,
 
 	for (i = 0; i < apps->len; i++) {
 		app = g_ptr_array_index (apps, i);
-		if (!gs_plugin_steam_update_store_app (plugin, store, app, error))
+		if (!gs_plugin_steam_update_store_app (plugin, silo, app, error))
 			return FALSE;
 
 		/* update progress */
@@ -649,7 +652,7 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	g_autoptr(AsStore) store = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autofree gchar *fn = NULL;
@@ -665,7 +668,7 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 
 	/* test cache age */
 	fn_xml = g_build_filename (g_get_user_data_dir (),
-				   "app-info", "xmls", "steam.xml.gz", NULL);
+				   "app-info", "xmls", "steam.xmlb", NULL);
 	file = g_file_new_for_path (fn_xml);
 	if (cache_age > 0) {
 		guint tmp;
@@ -687,22 +690,21 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 		gs_plugin_steam_dump_apps (apps);
 
 	/* load existing AppStream XML */
-	store = as_store_new ();
-	as_store_set_origin (store, "steam");
+	silo = xb_silo_new ();
+//	as_store_set_origin (silo, "steam");
 	if (g_file_query_exists (file, cancellable)) {
-		if (!as_store_from_file (store, file, NULL, cancellable, error))
+		if (!xb_silo_load_from_file (silo, file,
+					     XB_SILO_LOAD_FLAG_NONE,
+					     cancellable, error))
 			return FALSE;
 	}
 
 	/* update any new applications */
-	if (!gs_plugin_steam_update_store (plugin, store, apps, error))
+	if (!gs_plugin_steam_update_store (plugin, silo, apps, error))
 		return FALSE;
 
 	/* save new file */
-	if (!as_store_to_file (store, file,
-			       AS_NODE_TO_XML_FLAG_FORMAT_INDENT |
-			       AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE,
-			       NULL, error)) {
+	if (!xb_silo_save_to_file (silo, file, cancellable, error)) {
 		gs_utils_error_convert_appstream (error);
 		return FALSE;
 	}

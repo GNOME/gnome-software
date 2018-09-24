@@ -5,6 +5,8 @@ project('gnome-software', 'c',
   meson_version : '>=0.40.0'
 )
 
+configinc = include_directories('.')
+
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('PACKAGE_NAME', meson.project_name())
@@ -50,7 +52,6 @@ test_args = [
   '-Wno-unused-parameter',
   '-Wold-style-definition',
   '-Woverride-init',
-  '-Wpacked',
   '-Wpointer-arith',
   '-Wredundant-decls',
   '-Wreturn-type',
@@ -96,8 +97,10 @@ add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
 conf.set('HAVE_LINUX_UNISTD_H', cc.has_header('linux/unistd.h'))
 
-appstream_glib = dependency('appstream-glib', version : '>= 0.7.11')
+appstream_glib = dependency('appstream-glib', version : '>= 0.7.14')
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
+gio = dependency('gio-2.0')
+uuid = dependency('uuid')
 gio_unix = dependency('gio-unix-2.0')
 gmodule = dependency('gmodule-2.0')
 gtk = dependency('gtk+-3.0', version : '>= 3.22.4')
@@ -216,6 +219,7 @@ test_env = [
 ]
 
 subdir('data')
+subdir('libxmlb/src')
 subdir('lib')
 subdir('plugins')
 subdir('src')

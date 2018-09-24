@@ -15,10 +15,14 @@ shared_module(
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
+    include_directories('../../libxmlb/src'),
   ],
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
+  link_with : [
+    libxmlbstatic,
+  ],
   dependencies : [ plugin_libs, flatpak ]
 )
 metainfo = 'org.gnome.Software.Plugin.Flatpak.metainfo.xml'
