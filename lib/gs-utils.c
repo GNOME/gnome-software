@@ -165,10 +165,16 @@ gs_utils_get_cache_filename (const gchar *kind,
 			     GsUtilsCacheFlags flags,
 			     GError **error)
 {
+	const gchar *tmp;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *cachedir = NULL;
 	g_autoptr(GFile) cachedir_file = NULL;
 	g_autoptr(GPtrArray) candidates = g_ptr_array_new_with_free_func (g_free);
+
+	/* in the self tests */
+	tmp = g_getenv ("GS_SELF_TEST_CORE_DATADIR");
+	if (tmp != NULL)
+		return g_build_filename (tmp, kind, resource, NULL);
 
 	/* get basename */
 	if (flags & GS_UTILS_CACHE_FLAG_USE_HASH) {

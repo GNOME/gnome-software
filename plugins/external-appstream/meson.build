@@ -8,8 +8,13 @@ executable(
   ],
   include_directories : [
     include_directories('../..'),
+    include_directories('../../libxmlb/src'),
   ],
-  dependencies : [gio_unix, appstream_glib],
+  dependencies : [
+    gio_unix,
+    appstream_glib
+    libxmlb,
+  ],
   c_args : cargs,
   install : true,
   install_dir : get_option('libexecdir')

@@ -292,6 +292,12 @@ gs_plugin_flatpak_refine_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsFlatpak *flatpak = NULL;
 
+	/* not us */
+	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_FLATPAK) {
+		g_debug ("%s not a package, ignoring", gs_app_get_unique_id (app));
+		return TRUE;
+	}
+
 	/* we have to look for the app in all GsFlatpak stores */
 	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN) {
 		for (guint i = 0; i < priv->flatpaks->len; i++) {

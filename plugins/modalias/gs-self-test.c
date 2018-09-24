@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <glib/gstdio.h>
+
 #include "gnome-software-private.h"
 
 #include "gs-test.h"
@@ -33,6 +35,9 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* drop all caches */
+//	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
 
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
@@ -56,6 +61,7 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
+	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
@@ -83,6 +89,7 @@ main (int argc, char **argv)
 		"  </component>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_SELF_TEST_CORE_DATADIR", tmp_root, TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);

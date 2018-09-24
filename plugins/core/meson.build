@@ -92,7 +92,10 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : plugin_libs
+  dependencies : [
+    plugin_libs,
+    libxmlb,
+  ],
 )
 
 shared_module(
@@ -208,6 +211,7 @@ if get_option('tests')
     ],
     dependencies : [
       plugin_libs,
+      libxmlb,
     ],
     link_with : [
       libgnomesoftware

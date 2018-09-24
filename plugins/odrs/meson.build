@@ -6,6 +6,7 @@ shared_module(
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
+    include_directories('../../libxmlb/src'),
   ],
   install : true,
   install_dir: plugin_dir,
