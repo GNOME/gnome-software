@@ -440,6 +440,36 @@ gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugins_dummy_search_alternate_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app_tmp;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* get search result based on addon keyword */
+	app = gs_app_new ("zeus.desktop");
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	gs_test_flush_main_context ();
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is the original app, and the alternate */
+	g_assert_cmpint (gs_app_list_length (list), ==, 2);
+	app_tmp = gs_app_list_index (list, 0);
+	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "zeus.desktop");
+	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_APP_KIND_DESKTOP);
+	app_tmp = gs_app_list_index (list, 1);
+	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "chiron.desktop");
+	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_APP_KIND_DESKTOP);
+}
+
+static void
 gs_plugins_dummy_hang_func (GsPluginLoader *plugin_loader)
 {
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
@@ -908,6 +938,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/dummy/search",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_search_func);
+	g_test_add_data_func ("/gnome-software/plugins/dummy/search-alternate",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_dummy_search_alternate_func);
 	g_test_add_data_func ("/gnome-software/plugins/dummy/hang",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_dummy_hang_func);

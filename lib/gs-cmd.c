@@ -434,6 +434,23 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 3 && g_strcmp0 (argv[1], "get-alternates") == 0) {
+		app = gs_app_new (argv[2]);
+		for (i = 0; i < repeat; i++) {
+			g_autoptr(GsPluginJob) plugin_job = NULL;
+			if (list != NULL)
+				g_object_unref (list);
+			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
+							 "app", app,
+							 "refine-flags", self->refine_flags,
+							 "max-results", self->max_results,
+							 NULL);
+			list = gs_plugin_loader_job_process (self->plugin_loader, plugin_job, NULL, &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 4 && g_strcmp0 (argv[1], "action") == 0) {
 		GsPluginAction action = gs_plugin_action_from_string (argv[2]);
 		if (action == GS_PLUGIN_ACTION_UNKNOWN) {
@@ -674,7 +691,7 @@ main (int argc, char **argv)
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Did not recognise option, use 'installed', "
 				     "'updates', 'popular', 'get-categories', "
-				     "'get-category-apps', 'filename-to-app', "
+				     "'get-category-apps', 'get-alternates', 'filename-to-app', "
 				     "'action install', 'action remove', "
 				     "'sources', 'refresh', 'launch' or 'search'");
 	}

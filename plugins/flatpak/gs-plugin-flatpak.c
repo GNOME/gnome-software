@@ -994,6 +994,22 @@ gs_plugin_add_popular (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_add_alternates (GsPlugin *plugin,
+			  GsApp *app,
+			  GsAppList *list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
+		if (!gs_flatpak_add_alternates (flatpak, app, list, cancellable, error))
+			return FALSE;
+	}
+	return TRUE;
+}
+
+gboolean
 gs_plugin_add_featured (GsPlugin *plugin,
 			GsAppList *list,
 			GCancellable *cancellable,
