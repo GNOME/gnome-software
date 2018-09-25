@@ -1800,6 +1800,8 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_destroy";
 	if (action == GS_PLUGIN_ACTION_PURCHASE)
 		return "gs_plugin_app_purchase";
+	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
+		return "gs_plugin_add_alternates";
 	return NULL;
 }
 

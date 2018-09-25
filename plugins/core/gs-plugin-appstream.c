@@ -672,6 +672,17 @@ gs_plugin_add_recent (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_add_alternates (GsPlugin *plugin,
+			  GsApp *app,
+			  GsAppList *list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	return gs_appstream_add_alternates (plugin, priv->store, app, list, cancellable, error);
+}
+
+gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
 		   GCancellable *cancellable,

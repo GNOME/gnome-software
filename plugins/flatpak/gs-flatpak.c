@@ -2538,6 +2538,22 @@ gs_flatpak_add_featured (GsFlatpak *self,
 }
 
 gboolean
+gs_flatpak_add_alternates (GsFlatpak *self,
+			   GsApp *app,
+			   GsAppList *list,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!gs_appstream_add_alternates (self->plugin, self->store, app, list_tmp,
+					  cancellable, error))
+		return FALSE;
+	gs_flatpak_claim_app_list (self, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
+}
+
+gboolean
 gs_flatpak_add_recent (GsFlatpak *self,
 		       GsAppList *list,
 		       guint64 age,

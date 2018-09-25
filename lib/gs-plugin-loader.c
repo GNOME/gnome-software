@@ -109,6 +109,11 @@ typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginAlternatesFunc)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginCategoryFunc)	(GsPlugin	*plugin,
 							 GsCategory	*category,
 							 GsAppList	*list,
@@ -685,6 +690,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			GsPluginSearchFunc plugin_func = func;
 			gchar *search[2] = { gs_plugin_job_get_search (helper->plugin_job), NULL };
 			ret = plugin_func (plugin, search, list,
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_ALTERNATES:
+		{
+			GsPluginAlternatesFunc plugin_func = func;
+			ret = plugin_func (plugin, app, list,
 					   cancellable, &error_local);
 		}
 		break;
@@ -3304,6 +3316,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_plugin_loader_convert_unavailable (list, gs_plugin_job_get_search (helper->plugin_job));
 		break;
 	default:
@@ -3353,6 +3366,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
+	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
@@ -3595,6 +3609,13 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 	}
 
+	/* always add the original app to the list so it can be sorted */
+	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES) {
+		GsApp *app = gs_plugin_job_get_app (plugin_job);
+		GsAppList *list = gs_plugin_job_get_list (plugin_job);
+		gs_app_list_add (list, app);
+	}
+
 	/* check required args */
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 	switch (action) {
@@ -3685,6 +3706,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	/* set up a hang handler */
 	switch (action) {
+	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 	case GS_PLUGIN_ACTION_GET_INSTALLED:

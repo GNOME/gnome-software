@@ -60,6 +60,12 @@ gboolean	 gs_appstream_add_featured		(GsPlugin	*plugin,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_appstream_add_alternates		(GsPlugin	*plugin,
+							 AsStore	*store,
+							 GsApp		*app,
+							 GsAppList	*list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_appstream_add_recent		(GsPlugin	*plugin,
 							 AsStore	*store,
 							 GsAppList	*list,
