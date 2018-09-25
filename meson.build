@@ -91,6 +91,8 @@ add_global_link_arguments(
 
 # Needed for PATH_MAX and symlink()
 add_project_arguments('-D_XOPEN_SOURCE=700', language : 'c')
+# Needed for syscall()
+add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
 conf.set('HAVE_LINUX_UNISTD_H', cc.has_header('linux/unistd.h'))
 
