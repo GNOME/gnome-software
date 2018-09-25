@@ -281,6 +281,20 @@ gs_plugin_dummy_timeout_add (guint timeout_ms, GCancellable *cancellable)
 }
 
 gboolean
+gs_plugin_add_alternates (GsPlugin *plugin,
+			  GsApp *app,
+			  GsAppList *list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	if (g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
+		g_autoptr(GsApp) app2 = gs_app_new ("chiron.desktop");
+		gs_app_list_add (list, app2);
+	}
+	return TRUE;
+}
+
+gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
 		      GsAppList *list,
