@@ -358,6 +358,8 @@ gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
+	gtk_widget_show (widget);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "search_bar"));
 	gtk_widget_show (widget);

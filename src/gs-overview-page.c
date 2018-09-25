@@ -902,6 +902,8 @@ gs_overview_page_switch_to (GsPage *page, gboolean scroll_up)
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "menu_button"));
+	gtk_widget_show (widget);
 
 	/* hide the expander */
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 0);

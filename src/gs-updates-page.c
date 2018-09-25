@@ -737,6 +737,8 @@ gs_updates_page_switch_to (GsPage *page,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
+	gtk_widget_show (widget);
 
 	gtk_widget_set_visible (self->button_refresh, TRUE);
 

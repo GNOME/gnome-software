@@ -329,6 +329,8 @@ gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
 	set_selection_mode (self, FALSE);
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
+	gtk_widget_show (widget);
 
 	gs_shell_update_button_select_visibility (self);
 
@@ -614,6 +616,8 @@ set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 		gtk_widget_show (self->button_select);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
+		gtk_widget_hide (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "header_selection_menu_button"));
 		gtk_widget_show (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "header_selection_label"));
@@ -625,6 +629,8 @@ set_selection_mode (GsInstalledPage *self, gboolean selection_mode)
 		gtk_button_set_label (GTK_BUTTON (self->button_select), NULL);
 		gtk_widget_show (self->button_select);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
 		gtk_widget_show (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "header_selection_menu_button"));
 		gtk_widget_hide (widget);
