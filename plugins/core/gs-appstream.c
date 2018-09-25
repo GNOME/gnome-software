@@ -1097,6 +1097,47 @@ gs_appstream_add_recent (GsPlugin *plugin,
 }
 
 gboolean
+gs_appstream_add_alternates (GsPlugin *plugin,
+			     AsStore *store,
+			     GsApp *app,
+			     GsAppList *list,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GPtrArray *apps = as_store_get_apps (store);
+
+	/* find apps that provide the new name */
+	for (guint i = 0; i < apps->len; i++) {
+		AsApp *item = g_ptr_array_index (apps, i);
+		GPtrArray *provides = as_app_get_provides (item);
+		if (g_strcmp0 (as_app_get_id (item), gs_app_get_id (app)) == 0) {
+			for (guint j = 0; j < provides->len; j++) {
+				AsProvide *tmp = g_ptr_array_index (provides, j);
+				if (as_provide_get_kind (tmp) == AS_PROVIDE_KIND_ID) {
+					g_autoptr(GsApp) app2 = NULL;
+					app2 = gs_app_new (as_app_get_id (item));
+					gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+					gs_app_list_add (list, app2);
+				}
+			}
+		} else if (as_app_get_id (item) != NULL) {
+			for (guint j = 0; j < provides->len; j++) {
+				AsProvide *tmp = g_ptr_array_index (provides, j);
+				if (as_provide_get_kind (tmp) == AS_PROVIDE_KIND_ID &&
+				    g_strcmp0 (as_provide_get_value (tmp), gs_app_get_id (app)) == 0) {
+					g_autoptr(GsApp) app2 = NULL;
+					app2 = gs_app_new (as_app_get_id (item));
+					gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+					gs_app_list_add (list, app2);
+				}
+			}
+		}
+	}
+
+	return TRUE;
+}
+
+gboolean
 gs_appstream_add_featured (GsPlugin *plugin,
 			   AsStore *store,
 			   GsAppList *list,

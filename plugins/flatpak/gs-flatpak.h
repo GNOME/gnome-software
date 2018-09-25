@@ -128,6 +128,11 @@ gboolean	gs_flatpak_add_featured		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
+gboolean	gs_flatpak_add_alternates	(GsFlatpak		*self,
+						 GsApp			*app,
+						 GsAppList		*list,
+						 GCancellable		*cancellable,
+						 GError			**error);
 gboolean	gs_flatpak_add_recent		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 guint64		 age,
