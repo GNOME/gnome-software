@@ -264,6 +264,8 @@ gs_shell_change_mode (GsShell *shell,
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
 	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "origin_box"));
+	gtk_widget_hide (widget);
 
 	priv->in_mode_change = TRUE;
 	/* only show the search button in overview and search pages */
