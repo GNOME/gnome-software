@@ -184,9 +184,6 @@ gs_search_page_get_search_cb (GObject *source_object,
 		gs_shell_show_app (self->shell, a);
 		g_clear_pointer (&self->appid_to_show, g_free);
 	}
-
-	/* seems a good place */
-	gs_shell_profile_dump (self->shell);
 }
 
 static gboolean

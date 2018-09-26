@@ -183,9 +183,6 @@ gs_category_page_get_apps_cb (GObject *source_object,
 						       "clicked",
 						       G_CALLBACK (sort_button_clicked),
 						       self);
-
-	/* seems a good place */
-	gs_shell_profile_dump (self->shell);
 }
 
 static gboolean

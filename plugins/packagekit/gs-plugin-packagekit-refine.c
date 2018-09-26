@@ -390,12 +390,8 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	const gchar *package_id;
 	PkBitfield filter;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
-
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "packagekit-refine[update-urgency]");
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
@@ -477,18 +473,12 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	guint i;
-	GsApp *app;
 	gboolean ret = TRUE;
 	g_autoptr(GsAppList) list_tmp = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "packagekit-refine[source->license]");
-	g_assert (ptask != NULL);
 	list_tmp = gs_app_list_new ();
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
 			continue;
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
@@ -632,12 +622,7 @@ gs_plugin_packagekit_refine_name_to_id (GsPlugin *plugin,
 					GCancellable *cancellable,
 					GError **error)
 {
-	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GsAppList) resolve_all = NULL;
-
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "packagekit-refine[name->id]");
-	resolve_all = gs_app_list_new ();
+	g_autoptr(GsAppList) resolve_all = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GPtrArray *sources;
 		GsApp *app = gs_app_list_index (list, i);
@@ -679,14 +664,10 @@ gs_plugin_packagekit_refine_filename_to_id (GsPlugin *plugin,
 					    GCancellable *cancellable,
 					    GError **error)
 {
-	g_autoptr(AsProfileTask) ptask = NULL;
-
 	/* not now */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 		return TRUE;
 
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "packagekit-refine[installed-filename->id]");
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		g_autofree gchar *fn = NULL;
 		GsApp *app = gs_app_list_index (list, i);
@@ -738,12 +719,7 @@ gs_plugin_packagekit_refine_update_details (GsPlugin *plugin,
 					    GCancellable *cancellable,
 					    GError **error)
 {
-	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GsAppList) updatedetails_all = NULL;
-
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "packagekit-refine[id->update-details]");
-	updatedetails_all = gs_app_list_new ();
+	g_autoptr(GsAppList) updatedetails_all = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		const gchar *tmp;
@@ -823,8 +799,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	g_autoptr(AsProfileTask) ptask = NULL;
-
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;

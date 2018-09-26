@@ -30,7 +30,6 @@ struct _GsPackagekitHelper {
 	GObject			 parent_instance;
 	GHashTable		*apps;
 	GsPlugin		*plugin;
-	AsProfileTask		*ptask;
 };
 
 G_DEFINE_TYPE (GsPackagekitHelper, gs_packagekit_helper, G_TYPE_OBJECT)
@@ -48,18 +47,8 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 		app = gs_packagekit_helper_get_app_by_id (self, package_id);
 
 	if (type == PK_PROGRESS_TYPE_STATUS) {
-		GsPluginStatus plugin_status;
 		PkStatusEnum status = pk_progress_get_status (progress);
-
-		/* profile */
-		if (status == PK_STATUS_ENUM_SETUP) {
-			self->ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-						"packagekit-refine::transaction");
-		} else if (status == PK_STATUS_ENUM_FINISHED) {
-			g_clear_pointer (&self->ptask, as_profile_task_free);
-		}
-
-		plugin_status = packagekit_status_enum_to_plugin_status (status);
+		GsPluginStatus plugin_status = packagekit_status_enum_to_plugin_status (status);
 		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
 			gs_plugin_status_update (plugin, app, plugin_status);
 	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {

@@ -104,10 +104,6 @@ gs_plugin_refine (GsPlugin *plugin,
                   GCancellable *cancellable,
                   GError **error)
 {
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-	                                  "packagekit-refine-repos[repo-filename->id]");
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		const gchar *fn;

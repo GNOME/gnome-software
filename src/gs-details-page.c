@@ -1451,9 +1451,6 @@ gs_details_page_app_refine2_cb (GObject *source,
 	}
 	gs_details_page_refresh_size (self);
 	gs_details_page_refresh_reviews (self);
-
-	/* seems a good place */
-	gs_shell_profile_dump (self->shell);
 }
 
 static void

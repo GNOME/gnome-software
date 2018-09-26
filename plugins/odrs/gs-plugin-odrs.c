@@ -490,14 +490,8 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 	gint rating;
 	guint32 ratings_raw[6] = { 0, 0, 0, 0, 0, 0 };
 	guint cnt = 0;
-	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GArray) review_ratings = NULL;
 	g_autoptr(GPtrArray) reviewable_ids = NULL;
-
-	/* profile */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "odrs::refine-ratings");
-	g_assert (ptask != NULL);
 
 	/* get ratings for each reviewable ID */
 	reviewable_ids = _gs_app_get_reviewable_ids (app);
@@ -672,20 +666,13 @@ gs_plugin_odrs_refine_reviews (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsReview *review;
-	guint i;
-	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
-
-	/* profile */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "odrs::refine-reviews");
-	g_assert (ptask != NULL);
 
 	/* get from server */
 	reviews = gs_plugin_odrs_fetch_for_app (plugin, app, error);
 	if (reviews == NULL)
 		return FALSE;
-	for (i = 0; i < reviews->len; i++) {
+	for (guint i = 0; i < reviews->len; i++) {
 		review = g_ptr_array_index (reviews, i);
 
 		/* save this on the application object so we can use it for

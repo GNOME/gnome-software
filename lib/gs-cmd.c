@@ -284,17 +284,14 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsCmdSelf, gs_cmd_self_free)
 int
 main (int argc, char **argv)
 {
-	AsProfile *profile = NULL;
-	GOptionContext *context;
+	g_autoptr(GOptionContext) context = NULL;
 	gboolean prefer_local = FALSE;
-	gboolean profile_enable = FALSE;
 	gboolean ret;
 	gboolean show_results = FALSE;
 	gboolean verbose = FALSE;
 	gint i;
 	guint cache_age = 0;
 	gint repeat = 1;
-	int status = 0;
 	g_auto(GStrv) plugin_blacklist = NULL;
 	g_auto(GStrv) plugin_whitelist = NULL;
 	g_autoptr(GError) error = NULL;
@@ -307,7 +304,6 @@ main (int argc, char **argv)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsCmdSelf) self = g_new0 (GsCmdSelf, 1);
-	g_autoptr(AsProfileTask) ptask = NULL;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
 		  "Show the results for the action", NULL },
@@ -327,8 +323,6 @@ main (int argc, char **argv)
 		  "Only load specific plugins", NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  "Show verbose debugging information", NULL },
-		{ "profile", '\0', 0, G_OPTION_ARG_NONE, &profile_enable,
-		  "Show profiling information", NULL },
 		{ NULL}
 	};
 
@@ -348,7 +342,7 @@ main (int argc, char **argv)
 	ret = g_option_context_parse (context, &argc, &argv, &error);
 	if (!ret) {
 		g_print ("Failed to parse options: %s\n", error->message);
-		goto out;
+		return EXIT_FAILURE;
 	}
 	if (verbose)
 		g_setenv ("GS_DEBUG", "1", TRUE);
@@ -361,14 +355,11 @@ main (int argc, char **argv)
 	self->refine_flags = gs_cmd_parse_refine_flags (refine_flags_str, &error);
 	if (self->refine_flags == G_MAXUINT64) {
 		g_print ("Flag unknown: %s\n", error->message);
-		goto out;
+		return EXIT_FAILURE;
 	}
 
 	/* load plugins */
 	self->plugin_loader = gs_plugin_loader_new ();
-	profile = gs_plugin_loader_get_profile (self->plugin_loader);
-	ptask = as_profile_start_literal (profile, "GsCmd");
-	g_assert (ptask != NULL);
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
 		gs_plugin_loader_add_location (self->plugin_loader, LOCALPLUGINDIR);
 	if (plugin_whitelist_str != NULL)
@@ -382,7 +373,7 @@ main (int argc, char **argv)
 				      &error);
 	if (!ret) {
 		g_print ("Failed to setup plugins: %s\n", error->message);
-		goto out;
+		return EXIT_FAILURE;
 	}
 	gs_plugin_loader_dump_state (self->plugin_loader);
 
@@ -397,7 +388,7 @@ main (int argc, char **argv)
 						    NULL, &error);
 		if (!ret) {
 			g_print ("Failed to refresh plugins: %s\n", error->message);
-			goto out;
+			return EXIT_FAILURE;
 		}
 	}
 
@@ -680,7 +671,7 @@ main (int argc, char **argv)
 	}
 	if (!ret) {
 		g_print ("Failed: %s\n", error->message);
-		goto out;
+		return EXIT_FAILURE;
 	}
 
 	if (show_results) {
@@ -689,11 +680,7 @@ main (int argc, char **argv)
 		if (categories != NULL)
 			gs_cmd_show_results_categories (categories);
 	}
-out:
-	if (profile_enable)
-		as_profile_dump (profile);
-	g_option_context_free (context);
-	return status;
+	return EXIT_SUCCESS;
 }
 
 /* vim: set noexpandtab: */

@@ -72,16 +72,10 @@ gs_plugin_modalias_ensure_devices (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GList) list = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* already set */
 	if (priv->devices->len > 0)
 		return;
-
-	/* profile */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "modalias::ensure{%s}");
-	g_assert (ptask != NULL);
 
 	/* get the devices, and assume ownership of each */
 	list = g_udev_client_query_by_subsystem (priv->client, NULL);
@@ -100,16 +94,9 @@ static gboolean
 gs_plugin_modalias_matches (GsPlugin *plugin, const gchar *modalias)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	guint i;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* profile */
-	ptask = as_profile_start (gs_plugin_get_profile (plugin),
-				  "modalias::matches{%s}", modalias);
-	g_assert (ptask != NULL);
 
 	gs_plugin_modalias_ensure_devices (plugin);
-	for (i = 0; i < priv->devices->len; i++) {
+	for (guint i = 0; i < priv->devices->len; i++) {
 		GUdevDevice *device = g_ptr_array_index (priv->devices, i);
 		const gchar *modalias_tmp;
 

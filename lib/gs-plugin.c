@@ -61,7 +61,6 @@
 
 typedef struct
 {
-	AsProfile		*profile;
 	GPtrArray		*auth_array;
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
@@ -226,7 +225,6 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->locale);
 	g_free (priv->language);
 	g_rw_lock_clear (&priv->rwlock);
-	g_object_unref (priv->profile);
 	if (priv->auth_array != NULL)
 		g_ptr_array_unref (priv->auth_array);
 	if (priv->soup_session != NULL)
@@ -743,41 +741,6 @@ gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
 			return auth;
 	}
 	return NULL;
-}
-
-/**
- * gs_plugin_get_profile:
- * @plugin: a #GsPlugin
- *
- * Gets the profile object to be used for the plugin.
- * This can be used to make plugin actions appear in the global profile
- * output.
- *
- * Returns: the #AsProfile
- *
- * Since: 3.22
- **/
-AsProfile *
-gs_plugin_get_profile (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->profile;
-}
-
-/**
- * gs_plugin_set_profile:
- * @plugin: a #GsPlugin
- * @profile: a #AsProfile
- *
- * Sets the profile object to be used for the plugin.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_set_profile (GsPlugin *plugin, AsProfile *profile)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_set_object (&priv->profile, profile);
 }
 
 /**
@@ -2170,7 +2133,6 @@ gs_plugin_init (GsPlugin *plugin)
 
 	priv->enabled = TRUE;
 	priv->scale = 1;
-	priv->profile = as_profile_new ();
 	priv->cache = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
 					     (GEqualFunc) as_utils_unique_id_equal,
 					     g_free,

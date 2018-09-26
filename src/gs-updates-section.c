@@ -274,9 +274,6 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 	g_autoptr(GsUpdatesSectionUpdateHelper) helper = (GsUpdatesSectionUpdateHelper *) user_data;
 	GsUpdatesSection *self = helper->self;
 
-	/* a good place */
-	gs_shell_profile_dump (gs_page_get_shell (self->page));
-
 	/* get the results */
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to perform update: %s", error->message);
