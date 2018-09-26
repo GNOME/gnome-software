@@ -26,6 +26,8 @@
 
 #include <gnome-software.h>
 
+#include "packagekit-common.h"
+
 #define GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT	5000 /* ms */
 
 /*
@@ -207,6 +209,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 				g_autoptr(GsApp) app_dummy = NULL;
 				app_dummy = gs_app_new (gs_app_get_id (app));
+				gs_plugin_packagekit_set_packaging_format (plugin, app);
 				gs_app_set_metadata (app_dummy, "GnomeSoftware::Creator",
 						     gs_plugin_get_name (plugin));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);

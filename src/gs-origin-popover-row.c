@@ -44,7 +44,7 @@ refresh_ui (GsOriginPopoverRow *row)
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 	const gchar *origin_ui = NULL;
 	const gchar *url;
-	AsBundleKind bundle_kind;
+	const gchar *packaging_format;
 	g_autoptr(GsOsRelease) os_release = NULL;
 
 	g_assert (GS_IS_ORIGIN_POPOVER_ROW (row));
@@ -76,9 +76,16 @@ refresh_ui (GsOriginPopoverRow *row)
 		gtk_widget_hide (priv->url_box);
 	}
 
-	bundle_kind = gs_app_get_bundle_kind (priv->app);
-	if (bundle_kind != AS_BUNDLE_KIND_UNKNOWN) {
-		gtk_label_set_text (GTK_LABEL (priv->format_label), as_bundle_kind_to_string (bundle_kind));
+	packaging_format = gs_app_get_metadata_item (priv->app, "GnomeSoftware::PackagingFormat");
+	if (packaging_format == NULL) {
+		AsBundleKind bundle_kind;
+		bundle_kind = gs_app_get_bundle_kind (priv->app);
+		if (bundle_kind != AS_BUNDLE_KIND_UNKNOWN)
+			packaging_format = as_bundle_kind_to_string (bundle_kind);
+	}
+
+	if (packaging_format != NULL) {
+		gtk_label_set_text (GTK_LABEL (priv->format_label), packaging_format);
 		gtk_widget_show (priv->format_box);
 	} else {
 		gtk_widget_hide (priv->format_box);
