@@ -191,6 +191,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* create application */
 	item = g_ptr_array_index (array, 0);
 	app = gs_app_new (NULL);
+	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	package_id = pk_details_get_package_id (item);

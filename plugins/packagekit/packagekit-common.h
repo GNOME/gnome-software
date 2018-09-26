@@ -47,6 +47,8 @@ void		gs_plugin_packagekit_set_metadata_from_package	(GsPlugin *plugin,
 void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
 								 GPtrArray *array,
 								 GsApp *app);
+void		gs_plugin_packagekit_set_packaging_format	(GsPlugin *plugin,
+								 GsApp *app);
 
 G_END_DECLS
 
