@@ -407,6 +407,7 @@
             <property name="visible">True</property>
             <property name="halign">fill</property>
             <property name="valign">fill</property>
+            <property name="vexpand">True</property>
             <child type="overlay">
               <object class="GtkRevealer" id="notification_event">
                 <property name="visible">True</property>
@@ -447,9 +448,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="button_events_no_space">
@@ -457,9 +455,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="button_events_network_settings">
@@ -467,9 +462,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="button_events_restart_required">
@@ -477,9 +469,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkButton" id="button_events_more_info">
@@ -487,9 +476,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -599,7 +585,6 @@
           </object>
 
           <packing>
-            <property name="expand">True</property>
             <property name="position">2</property>
           </packing>
         </child>

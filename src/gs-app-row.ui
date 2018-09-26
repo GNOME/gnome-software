@@ -99,12 +99,14 @@
             <property name="margin_top">3</property>
             <property name="orientation">vertical</property>
             <property name="spacing">3</property>
+            <property name="hexpand">True</property>
             <property name="valign">center</property>
             <child>
               <object class="GtkLabel" id="description_label">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="valign">start</property>
+                <property name="vexpand">True</property>
                 <property name="margin_start">24</property>
                 <property name="margin_end">24</property>
                 <property name="wrap">True</property>
@@ -114,7 +116,6 @@
                 <property name="xalign">0</property>
               </object>
               <packing>
-                <property name="expand">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -145,27 +146,27 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">horizontal</property>
+                    <property name="vexpand">True</property>
                     <child>
                       <object class="GtkLabel" id="label_origin">
                         <property name="visible">True</property>
                         <property name="xalign">0.0</property>
                         <property name="yalign">1.0</property>
                         <property name="halign">start</property>
+                        <property name="hexpand">True</property>
                         <property name="ellipsize">end</property>
                         <style>
                           <class name="app-row-origin-text"/>
                           <class name="dim-label"/>
                         </style>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                      </packing>
                     </child>
 		    <child>
 		      <object class="GtkBox" id="label_installed">
 			<property name="orientation">horizontal</property>
 			<property name="no_show_all">True</property>
 			<property name="halign">end</property>
+                        <property name="hexpand">True</property>
 			<property name="valign">end</property>
 			<property name="spacing">6</property>
 			<property name="margin-right">24</property>
@@ -199,14 +200,8 @@
 			  </packing>
 			</child>
 		      </object>
-		      <packing>
-                        <property name="expand">True</property>
-                      </packing>
 		    </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                  </packing>
                 </child>
               </object>
               <packing>
@@ -214,9 +209,6 @@
               </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="vertical_box">
@@ -275,6 +267,7 @@
                 <property name="visible">True</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
+		<property name="vexpand">True</property>
 		<property name="label">150 MB</property>
 		<property name="margin-top">6</property>
                 <style>
@@ -284,7 +277,6 @@
               </object>
 	      <packing>
 		<property name="pack_type">end</property>
-		<property name="expand">True</property>
               </packing>
 	    </child>
 	  </object>
