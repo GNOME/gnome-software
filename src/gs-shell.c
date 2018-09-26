@@ -2311,9 +2311,9 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);
 	g_clear_object (&priv->page_last);
-	g_clear_pointer (&priv->pages, (GDestroyNotify) g_hash_table_unref);
-	g_clear_pointer (&priv->events_info_uri, (GDestroyNotify) g_free);
-	g_clear_pointer (&priv->modal_dialogs, (GDestroyNotify) g_ptr_array_unref);
+	g_clear_pointer (&priv->pages, g_hash_table_unref);
+	g_clear_pointer (&priv->events_info_uri, g_free);
+	g_clear_pointer (&priv->modal_dialogs, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
