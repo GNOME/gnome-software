@@ -2043,11 +2043,17 @@ gs_details_page_app_removed (GsPage *page, GsApp *app)
 }
 
 static void
+show_all_cb (GtkWidget *widget, gpointer user_data)
+{
+	gtk_widget_show (widget);
+}
+
+static void
 gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	self->show_all_reviews = TRUE;
 	gtk_container_foreach (GTK_CONTAINER (self->list_box_reviews),
-			       (GtkCallback) gtk_widget_show, NULL);
+	                       show_all_cb, NULL);
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
