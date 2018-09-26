@@ -499,9 +499,6 @@ gs_updates_page_decrement_refresh_count (GsUpdatesPage *self)
 
 	/* all done */
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_IDLE);
-
-	/* seems a good place */
-	gs_shell_profile_dump (self->shell);
 }
 
 static void

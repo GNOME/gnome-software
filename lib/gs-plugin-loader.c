@@ -48,7 +48,6 @@ typedef struct
 	GPtrArray		*locations;
 	gchar			*locale;
 	gchar			*language;
-	AsProfile		*profile;
 	SoupSession		*soup_session;
 	GPtrArray		*auth_array;
 	GPtrArray		*file_monitors;
@@ -521,29 +520,11 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	gpointer func = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load the possible symbol */
 	func = gs_plugin_get_symbol (plugin, helper->function_name);
 	if (func == NULL)
 		return TRUE;
-
-	/* profile */
-	if (g_strcmp0 (helper->function_name, "gs_plugin_refine_app") != 0) {
-		if (helper->function_name_parent == NULL) {
-			ptask = as_profile_start (priv->profile,
-						  "GsPlugin::%s(%s)",
-						  gs_plugin_get_name (plugin),
-						  helper->function_name);
-		} else {
-			ptask = as_profile_start (priv->profile,
-						  "GsPlugin::%s(%s;%s)",
-						  gs_plugin_get_name (plugin),
-						  helper->function_name_parent,
-						  helper->function_name);
-		}
-		g_assert (ptask != NULL);
-	}
 
 	/* fallback if unset */
 	if (app == NULL)
@@ -820,7 +801,6 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 
 	/* run each plugin */
 	for (guint i = 0; i < priv->plugins->len; i++) {
-		g_autoptr(AsProfileTask) ptask = NULL;
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		g_autoptr(GsAppList) app_list = NULL;
 
@@ -1129,12 +1109,6 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* profile */
-	ptask = as_profile_start (priv->profile, "GsPlugin::*(%s)",
-				  helper->function_name);
-	g_assert (ptask != NULL);
 
 	/* run each plugin */
 	for (guint i = 0; i < priv->plugins->len; i++) {
@@ -2176,7 +2150,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
 	gs_plugin_set_auth_array (plugin, priv->auth_array);
-	gs_plugin_set_profile (plugin, priv->profile);
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_language (plugin, priv->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
@@ -2394,7 +2367,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint dep_loop_check = 0;
 	guint i;
 	guint j;
-	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -2421,8 +2393,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	}
 
 	/* search for plugins */
-	ptask = as_profile_start_literal (priv->profile, "GsPlugin::setup");
-	g_assert (ptask != NULL);
 	for (i = 0; i < priv->locations->len; i++) {
 		const gchar *location = g_ptr_array_index (priv->locations, i);
 		g_autoptr(GPtrArray) fns = NULL;
@@ -2727,7 +2697,6 @@ gs_plugin_loader_dispose (GObject *object)
 	}
 	g_clear_object (&priv->network_monitor);
 	g_clear_object (&priv->soup_session);
-	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
 	g_clear_pointer (&priv->auth_array, g_ptr_array_unref);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
@@ -2856,7 +2825,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->file_monitors = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->locations = g_ptr_array_new_with_free_func (g_free);
-	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (priv->settings, "changed",
 			  G_CALLBACK (gs_plugin_loader_settings_changed_cb), plugin_loader);
@@ -3076,7 +3044,6 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 			GCancellable *app_cancellable;
 			GsApp *app = gs_app_list_index (list, j);
 			gboolean ret;
-			g_autoptr(AsProfileTask) ptask = NULL;
 			g_autoptr(GError) error_local = NULL;
 
 			/* if the whole operation should be cancelled */
@@ -3091,12 +3058,6 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 								   g_object_unref);
 
 			gs_plugin_job_set_app (helper->plugin_job, app);
-			ptask = as_profile_start (priv->profile,
-						  "GsPlugin::%s(%s){%s}",
-						  gs_plugin_get_name (plugin),
-						  helper->function_name,
-						  gs_app_get_id (app));
-			g_assert (ptask != NULL);
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			ret = plugin_app_func (plugin, app, app_cancellable, &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
@@ -3796,13 +3757,6 @@ GsApp *
 gs_plugin_loader_get_system_app (GsPluginLoader *plugin_loader)
 {
 	return gs_plugin_loader_app_create (plugin_loader, "*/*/*/*/system/*");
-}
-
-AsProfile *
-gs_plugin_loader_get_profile (GsPluginLoader *plugin_loader)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	return priv->profile;
 }
 
 /**

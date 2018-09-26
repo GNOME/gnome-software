@@ -141,17 +141,10 @@ gs_appstream_refine_add_addons (GsPlugin *plugin,
 				GError **error)
 {
 	GPtrArray *addons;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* we only care about addons to desktop apps */
 	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
 		return TRUE;
-
-	/* search categories for the search term */
-	ptask = as_profile_start (gs_plugin_get_profile (plugin),
-				  "appstream::refine-addons{%s}",
-				  gs_app_get_unique_id (app));
-	g_assert (ptask != NULL);
 
 	addons = as_app_get_addons (item);
 	if (addons == NULL)
@@ -488,13 +481,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	GPtrArray *kudos;
 	const gchar *current_desktop;
 	const gchar *tmp;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* search categories for the search term */
-	ptask = as_profile_start (gs_plugin_get_profile (plugin),
-				  "appstream::refine-app{%s}",
-				  gs_app_get_unique_id (app));
-	g_assert (ptask != NULL);
 
 	/* set the kind to be more precise */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
@@ -873,12 +859,7 @@ gs_appstream_store_search (GsPlugin *plugin,
 {
 	GPtrArray *array;
 	gboolean ret = TRUE;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
-	/* search categories for the search term */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::search");
-	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
 	for (guint i = 0; i < array->len; i++) {
 		AsApp *item = g_ptr_array_index (array, i);
@@ -950,12 +931,8 @@ gs_appstream_store_add_category_apps (GsPlugin *plugin,
 {
 	GPtrArray *array;
 	GPtrArray *desktop_groups;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* just look at each app in turn */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::add-category-apps");
-	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
 	desktop_groups = gs_category_get_desktop_groups (category);
 	if (desktop_groups->len == 0) {
@@ -998,12 +975,8 @@ gs_appstream_store_add_categories (GsPlugin *plugin,
 				   GError **error)
 {
 	GPtrArray *array;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::add-categories");
-	g_assert (ptask != NULL);
 	array = as_store_get_apps (store);
 	for (guint i = 0; i < array->len; i++) {
 		AsApp *app = g_ptr_array_index (array, i);
@@ -1026,14 +999,7 @@ gs_appstream_add_popular (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	GPtrArray *array;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::add-popular");
-	g_assert (ptask != NULL);
-	array = as_store_get_apps (store);
+	GPtrArray *array = as_store_get_apps (store);
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		AsApp *item = g_ptr_array_index (array, i);
@@ -1073,14 +1039,7 @@ gs_appstream_add_recent (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GPtrArray *array;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::add-recent");
-	g_assert (ptask != NULL);
-	array = as_store_get_apps (store);
+	GPtrArray *array = as_store_get_apps (store);
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		AsApp *item = g_ptr_array_index (array, i);
@@ -1103,14 +1062,7 @@ gs_appstream_add_featured (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	GPtrArray *array;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::add-featured");
-	g_assert (ptask != NULL);
-	array = as_store_get_apps (store);
+	GPtrArray *array = as_store_get_apps (store);
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		AsApp *item = g_ptr_array_index (array, i);

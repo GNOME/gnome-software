@@ -365,13 +365,6 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *unique_id;
 	AsApp *item;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* search categories for the search term */
-	ptask = as_profile_start (gs_plugin_get_profile (plugin),
-				  "appstream::refine-from-id{%s}",
-				  gs_app_get_unique_id (app));
-	g_assert (ptask != NULL);
 
 	/* unfound */
 	*found = FALSE;
@@ -424,21 +417,12 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item = NULL;
 	GPtrArray *sources;
-	const gchar *pkgname;
-	guint i;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* search categories for the search term */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::refine-from-pkgname");
-	g_assert (ptask != NULL);
 
 	/* find anything that matches the ID */
 	sources = gs_app_get_sources (app);
-	for (i = 0; i < sources->len && item == NULL; i++) {
-		pkgname = g_ptr_array_index (sources, i);
-		item = as_store_get_app_by_pkgname (priv->store,
-						    pkgname);
+	for (guint i = 0; i < sources->len && item == NULL; i++) {
+		const gchar *pkgname = g_ptr_array_index (sources, i);
+		item = as_store_get_app_by_pkgname (priv->store, pkgname);
 		if (item == NULL)
 			g_debug ("no AppStream match for {pkgname} %s", pkgname);
 	}
@@ -611,18 +595,12 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	AsApp *item;
 	GPtrArray *array;
-	guint i;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* search categories for the search term */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "appstream::add_installed");
-	g_assert (ptask != NULL);
 	array = as_store_get_apps (priv->store);
-	for (i = 0; i < array->len; i++) {
-		item = g_ptr_array_index (array, i);
+	for (guint i = 0; i < array->len; i++) {
+		AsApp *item = g_ptr_array_index (array, i);
 		if (as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
 			g_autoptr(GsApp) app = NULL;
 			app = gs_appstream_create_app (plugin, item, error);
