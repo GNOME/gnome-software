@@ -11,9 +11,10 @@ if get_option('external_appstream')
   conf_data = configuration_data()
   conf_data.set('libexecdir', join_paths(get_option('prefix'),
                                          get_option('libexecdir')))
-  configure_file(
+  i18n.merge_file(
     input : 'org.gnome.software.external-appstream.policy.in',
     output : 'org.gnome.software.external-appstream.policy',
+    po_dir: join_paths(meson.source_root(), 'po'),
     install: true,
     install_dir: join_paths(get_option('datadir'), 'polkit-1', 'actions'),
     configuration : conf_data
