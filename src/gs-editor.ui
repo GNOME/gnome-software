@@ -117,6 +117,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
+                    <property name="hexpand">True</property>
                     <child>
                       <object class="GtkBox" id="box_featured">
                         <property name="visible">True</property>
@@ -149,6 +150,7 @@
                               <object class="GtkBox">
                                 <property name="can_focus">False</property>
                                 <property name="spacing">16</property>
+                                <property name="hexpand">True</property>
                                 <child>
                                   <object class="GtkLabel" id="label_infobar_css">
                                     <property name="visible">True</property>
@@ -158,13 +160,11 @@
                                     <property name="label" translatable="yes">Error message here</property>
                                   </object>
                                   <packing>
-                                    <property name="expand">True</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -182,6 +182,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="shadow_type">in</property>
+                            <property name="vexpand">True</property>
                             <child>
                               <object class="GtkTextView" id="textview_css">
                                 <property name="width_request">400</property>
@@ -196,7 +197,6 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
                             <property name="pack_type">end</property>
                             <property name="position">1</property>
                           </packing>
@@ -211,7 +211,6 @@
                     </style>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -430,9 +429,9 @@
                         <property name="label" translatable="yes" comments="button in the info bar">Undo</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="hexpand">True</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>

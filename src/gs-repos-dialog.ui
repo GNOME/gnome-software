@@ -34,6 +34,7 @@
         <child>
           <object class="GtkStack" id="stack">
             <property name="visible">True</property>
+            <property name="vexpand">True</property>
             <child>
               <object class="GtkSpinner" id="spinner">
                 <property name="visible">True</property>
@@ -163,6 +164,7 @@
                         <property name="shadow_type">in</property>
                         <property name="halign">fill</property>
                         <property name="valign">start</property>
+                        <property name="vexpand">True</property>
                         <property name="margin_top">9</property>
                         <child>
                           <object class="GtkListBox" id="listbox">
@@ -172,9 +174,6 @@
                           </object>
                         </child>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                      </packing>
                     </child>
                   </object>
                 </child>
@@ -185,7 +184,6 @@
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
             <property name="position">1</property>
           </packing>
         </child>
