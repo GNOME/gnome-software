@@ -154,9 +154,6 @@ gs_overview_page_decrement_action_cnt (GsOverviewPage *self)
 	priv->loading_popular = FALSE;
 	priv->loading_recent = FALSE;
 	priv->loading_popular_rotating = FALSE;
-
-	/* seems a good place */
-	gs_shell_profile_dump (priv->shell);
 }
 
 static void

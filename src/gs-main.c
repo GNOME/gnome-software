@@ -39,19 +39,12 @@ main (int argc, char **argv)
 	g_autoptr(GDesktopAppInfo) appinfo = NULL;
 	g_autoptr(GsApplication) application = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new ();
-	g_autoptr(AsProfile) profile = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	setlocale (LC_ALL, "");
 
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
-
-	profile = as_profile_new ();
-	as_profile_set_duration_min (profile, 1);
-	ptask = as_profile_start_literal (profile, "GsMain");
-	g_assert (ptask != NULL);
 
 	/* redirect logs */
 	application = gs_application_new ();

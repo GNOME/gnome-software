@@ -52,7 +52,6 @@
 
 struct _GsApplication {
 	GtkApplication	 parent;
-	gboolean	 enable_profile_mode;
 	GCancellable	*cancellable;
 	GtkCssProvider	*provider;
 	GsPluginLoader	*plugin_loader;
@@ -137,8 +136,6 @@ gs_application_init (GsApplication *application)
 		    "‘none’, ‘notify’, or ‘full’"), NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show verbose debugging information"), NULL },
-		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
-		  _("Show profiling information for the service"), NULL },
 		{ "autoupdate", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Installs any pending updates in the background"), NULL },
 		{ "prefs", 0, 0, G_OPTION_ARG_NONE, NULL,
@@ -278,10 +275,6 @@ gs_application_initialize_ui (GsApplication *app)
 
 	/* setup UI */
 	app->shell = gs_shell_new ();
-
-	/* this lets gs_shell_profile_dump() work from shells */
-	gs_shell_set_profile_mode (app->shell, app->enable_profile_mode);
-
 	app->cancellable = g_cancellable_new ();
 
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
@@ -369,21 +362,6 @@ about_activated (GSimpleAction *action,
 	/* just destroy */
 	g_signal_connect_swapped (dialog, "response",
 				  G_CALLBACK (gtk_widget_destroy), dialog);
-}
-
-static void
-profile_activated (GSimpleAction *action,
-		   GVariant      *parameter,
-		   gpointer       data)
-{
-	GsApplication *app = GS_APPLICATION (data);
-	app->enable_profile_mode = TRUE;
-
-	/* dump right now as well */
-	if (app->plugin_loader != NULL) {
-		AsProfile *profile = gs_plugin_loader_get_profile (app->plugin_loader);
-		as_profile_dump (profile);
-	}
 }
 
 static void
@@ -821,7 +799,6 @@ install_resources_activated (GSimpleAction *action,
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
-	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "reboot", reboot_activated, NULL, NULL, NULL },
 	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
@@ -1036,11 +1013,6 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		return 1;
 	}
 
-	if (g_variant_dict_contains (options, "profile")) {
-		g_action_group_activate_action (G_ACTION_GROUP (app),
-						"profile",
-						NULL);
-	}
 	if (g_variant_dict_contains (options, "autoupdate")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"autoupdate",

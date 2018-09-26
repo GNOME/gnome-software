@@ -511,9 +511,6 @@ show_search_results (GsExtrasPage *self)
 		g_debug ("extras: got %u search results, showing", n_children);
 		gs_extras_page_set_state (self, GS_EXTRAS_PAGE_STATE_READY);
 	}
-
-	/* seems a good place */
-	gs_shell_profile_dump (self->shell);
 }
 
 static void

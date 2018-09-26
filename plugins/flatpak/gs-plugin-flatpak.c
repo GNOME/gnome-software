@@ -109,12 +109,7 @@ gs_plugin_flatpak_add_installation (GsPlugin *plugin,
 				    GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GsFlatpak) flatpak = NULL;
-
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
-					  "flatpak::add-installation");
-	g_assert (ptask != NULL);
 
 	/* create and set up */
 	flatpak = gs_flatpak_new (plugin, installation, GS_FLATPAK_FLAG_NONE);
