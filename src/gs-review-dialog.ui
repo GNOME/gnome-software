@@ -71,6 +71,7 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <property name="spacing">20</property>
+            <property name="vexpand">True</property>
             <child>
               <object class="GtkBox" id="box4">
                 <property name="visible">True</property>
@@ -175,6 +176,7 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
+                <property name="vexpand">True</property>
                 <child>
                   <object class="GtkLabel" id="label3">
                     <property name="visible">True</property>
@@ -211,6 +213,7 @@
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
+                    <property name="vexpand">True</property>
                     <child>
                       <object class="GtkTextView" id="text_view">
                         <property name="visible">True</property>
@@ -224,19 +227,16 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
                 <property name="position">2</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
             <property name="position">1</property>
           </packing>
         </child>
