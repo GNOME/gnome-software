@@ -1055,6 +1055,64 @@ gs_appstream_add_recent (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void
+_g_ptr_array_add_str_uniq (GPtrArray *array, const gchar *str)
+{
+	if (str == NULL)
+		return;
+	for (guint i = 0; i < array->len; i++) {
+		const gchar *str_tmp = g_ptr_array_index (array, i);
+		if (g_strcmp0 (str, str_tmp) == 0)
+			return;
+	}
+	g_ptr_array_add (array, g_strdup (str));
+}
+
+/* add the component ID for any matching <provide><id/></provide> value */
+static void
+gs_appstream_add_alternates_new_id (GPtrArray *array, AsApp *item, const gchar *id)
+{
+	GPtrArray *provides = as_app_get_provides (item);
+	for (guint i = 0; i < provides->len; i++) {
+		AsProvide *provide = g_ptr_array_index (provides, i);
+		if (as_provide_get_kind (provide) == AS_PROVIDE_KIND_ID &&
+		    g_strcmp0 (as_provide_get_value (provide), id) == 0) {
+			_g_ptr_array_add_str_uniq (array, as_app_get_id (item));
+			break;
+		}
+	}
+
+}
+
+/* add all <provide><id/></provide> values for a matching component ID */
+static void
+gs_appstream_add_alternates_old_id (GPtrArray *array, AsApp *item, const gchar *id)
+{
+	GPtrArray *provides;
+	if (g_strcmp0 (as_app_get_id (item), id) != 0)
+		return;
+	provides = as_app_get_provides (item);
+	for (guint i = 0; i < provides->len; i++) {
+		AsProvide *provide = g_ptr_array_index (provides, i);
+		if (as_provide_get_kind (provide) == AS_PROVIDE_KIND_ID)
+			_g_ptr_array_add_str_uniq (array, as_provide_get_value (provide));
+	}
+}
+
+/* find any matching package names */
+static void
+gs_appstream_add_alternates_source (GPtrArray *array, AsApp *item, const gchar *source)
+{
+	GPtrArray *item_pkgnames = as_app_get_pkgnames (item);
+	for (guint i = 0; i < item_pkgnames->len; i++) {
+		const gchar *pkgname = g_ptr_array_index (item_pkgnames, i);
+		if (g_strcmp0 (pkgname, source) == 0) {
+			_g_ptr_array_add_str_uniq (array, as_app_get_id (item));
+			break;
+		}
+	}
+}
+
 gboolean
 gs_appstream_add_alternates (GsPlugin *plugin,
 			     AsStore *store,
@@ -1064,35 +1122,33 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 			     GError **error)
 {
 	GPtrArray *apps = as_store_get_apps (store);
+	GPtrArray *ids = g_ptr_array_new_with_free_func (g_free);
 
 	/* find apps that provide the new name */
 	for (guint i = 0; i < apps->len; i++) {
 		AsApp *item = g_ptr_array_index (apps, i);
-		GPtrArray *provides = as_app_get_provides (item);
-		if (g_strcmp0 (as_app_get_id (item), gs_app_get_id (app)) == 0) {
-			for (guint j = 0; j < provides->len; j++) {
-				AsProvide *tmp = g_ptr_array_index (provides, j);
-				if (as_provide_get_kind (tmp) == AS_PROVIDE_KIND_ID) {
-					g_autoptr(GsApp) app2 = NULL;
-					app2 = gs_app_new (as_app_get_id (item));
-					gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-					gs_app_list_add (list, app2);
-				}
-			}
-		} else if (as_app_get_id (item) != NULL) {
-			for (guint j = 0; j < provides->len; j++) {
-				AsProvide *tmp = g_ptr_array_index (provides, j);
-				if (as_provide_get_kind (tmp) == AS_PROVIDE_KIND_ID &&
-				    g_strcmp0 (as_provide_get_value (tmp), gs_app_get_id (app)) == 0) {
-					g_autoptr(GsApp) app2 = NULL;
-					app2 = gs_app_new (as_app_get_id (item));
-					gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-					gs_app_list_add (list, app2);
-				}
-			}
+		GPtrArray *sources = gs_app_get_sources (app);
+
+		/* new ID -> old ID */
+		gs_appstream_add_alternates_old_id (ids, item, gs_app_get_id (app));
+
+		/* old ID -> new ID */
+		gs_appstream_add_alternates_new_id (ids, item, gs_app_get_id (app));
+
+		/* find apps that use the same pkgname */
+		for (guint j = 0; j < sources->len; j++) {
+			const gchar *source = g_ptr_array_index (sources, j);
+			gs_appstream_add_alternates_source (ids, item, source);
 		}
 	}
 
+	/* add all results */
+	for (guint i = 0; i < ids->len; i++) {
+		const gchar *id = g_ptr_array_index (ids, i);
+		g_autoptr(GsApp) app2 = gs_app_new (id);
+		gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_list_add (list, app2);
+	}
 	return TRUE;
 }
 
