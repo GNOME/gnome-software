@@ -256,6 +256,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
 		if (app == NULL) {
 			app = gs_app_new (NULL);
+			gs_plugin_packagekit_set_packaging_format (plugin, app);
 			gs_app_add_source (app, pk_package_get_name (package));
 			gs_app_add_source_id (app, pk_package_get_id (package));
 			gs_plugin_cache_add (plugin, pk_package_get_id (package), app);
@@ -368,6 +369,7 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 {
 	const gchar *data;
 
+	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));
@@ -489,5 +491,17 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 			gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
 		if (size > 0 && gs_app_get_size_download (app) == 0)
 			gs_app_set_size_download (app, size);
+	}
+}
+
+void
+gs_plugin_packagekit_set_packaging_format (GsPlugin *plugin, GsApp *app)
+{
+	if (gs_plugin_check_distro_id (plugin, "fedora") ||
+	    gs_plugin_check_distro_id (plugin, "rhel")) {
+		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "RPM");
+	} else if (gs_plugin_check_distro_id (plugin, "debian") ||
+	           gs_plugin_check_distro_id (plugin, "ubuntu")) {
+		gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "deb");
 	}
 }

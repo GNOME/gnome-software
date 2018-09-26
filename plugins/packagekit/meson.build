@@ -106,7 +106,10 @@ shared_module(
 
 shared_module(
   'gs_plugin_packagekit-history',
-sources : 'gs-plugin-packagekit-history.c',
+  sources : [
+    'gs-plugin-packagekit-history.c',
+    'packagekit-common.c',
+  ],
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),

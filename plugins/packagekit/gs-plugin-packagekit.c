@@ -540,6 +540,7 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 	if (app != NULL)
 		return app;
 	app = gs_app_new (NULL);
+	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,

@@ -26,6 +26,8 @@
 
 #include <gnome-software.h>
 
+#include "packagekit-common.h"
+
 /*
  * SECTION:
  * This adds historical updates to the application history.
@@ -175,6 +177,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		app = gs_app_new (NULL);
 		package_id = pk_package_get_id (pkg);
 		split = g_strsplit (package_id, ";", 4);
+		gs_plugin_packagekit_set_packaging_format (plugin, app);
 		gs_app_add_source (app, split[0]);
 		gs_app_set_update_version (app, split[1]);
 		gs_app_set_management_plugin (app, "packagekit");
