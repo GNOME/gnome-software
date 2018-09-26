@@ -34,6 +34,7 @@
 #include "gs-app-addon-row.h"
 #include "gs-auth-dialog.h"
 #include "gs-history-dialog.h"
+#include "gs-origin-popover-row.h"
 #include "gs-screenshot-image.h"
 #include "gs-star-widget.h"
 #include "gs-review-histogram.h"
@@ -877,6 +878,105 @@ gs_details_page_refresh_size (GsDetailsPage *self)
 }
 
 static void
+gs_details_page_get_alternates_cb (GObject *source_object,
+                                   GAsyncResult *res,
+                                   gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+	GtkWidget *origin_box;
+	GtkWidget *origin_button_label;
+	GtkWidget *origin_popover_list_box;
+	const gchar *origin_ui = NULL;
+
+	origin_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_box"));
+	origin_button_label = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_button_label"));
+	origin_popover_list_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover_list_box"));
+
+	gs_container_remove_all (GTK_CONTAINER (origin_popover_list_box));
+
+	list = gs_plugin_loader_job_process_finish (plugin_loader,
+						    res,
+						    &error);
+	if (list == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to get alternates: %s", error->message);
+		gtk_widget_hide (origin_box);
+		return;
+	}
+
+	/* no alternates to show */
+	if (gs_app_list_length (list) < 2) {
+		gtk_widget_hide (origin_box);
+		return;
+	}
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GtkWidget *row = gs_origin_popover_row_new (app);
+		gtk_widget_show (row);
+		if (app == self->app)
+			gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (row), TRUE);
+		gtk_container_add (GTK_CONTAINER (origin_popover_list_box), row);
+	}
+
+	/* use the distro name for official packages */
+	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
+		os_release = gs_os_release_new (NULL);
+		if (os_release != NULL)
+			origin_ui = gs_os_release_get_name (os_release);
+	}
+
+	/* fall back to origin */
+	if (origin_ui == NULL)
+		origin_ui = gs_app_get_origin (self->app);
+
+	if (origin_ui != NULL)
+		gtk_label_set_text (GTK_LABEL (origin_button_label), origin_ui);
+	else
+		gtk_label_set_text (GTK_LABEL (origin_button_label), "");
+
+	gtk_widget_show (origin_box);
+}
+
+static void
+origin_popover_row_activated_cb (GtkListBox *list_box,
+                                 GtkListBoxRow *row,
+                                 gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	GsApp *app;
+	GtkWidget *popover;
+
+	popover = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover"));
+	gtk_popover_popdown (GTK_POPOVER (popover));
+
+	app = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (row));
+	if (app != self->app)
+		gs_details_page_set_app (self, app);
+}
+
+static void
+gs_details_page_set_alternates (GsDetailsPage *self)
+{
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
+					 "interactive", TRUE,
+					 "app", self->app,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader,
+					    plugin_job,
+					    self->cancellable,
+					    gs_details_page_get_alternates_cb,
+					    self);
+}
+
+
+static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GsAppList *history;
@@ -910,6 +1010,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	} else {
 		gtk_widget_set_visible (self->application_details_summary, FALSE);
 	}
+
+	/* set the alternates shown in the header bar */
+	gs_details_page_set_alternates (self);
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);
@@ -2299,6 +2402,7 @@ gs_details_page_setup (GsPage *page,
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
+	GtkWidget *origin_popover_list_box;
 
 	g_return_val_if_fail (GS_IS_DETAILS_PAGE (self), TRUE);
 
@@ -2367,6 +2471,10 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->label_license_nonfree_details, "activate-link",
 			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
+	origin_popover_list_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover_list_box"));
+	g_signal_connect (origin_popover_list_box, "row-activated",
+	                  G_CALLBACK (origin_popover_row_activated_cb),
+	                  self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->box_details), adj);

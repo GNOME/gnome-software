@@ -340,6 +340,60 @@
                 <property name="position">1</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkBox" id="origin_box">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="halign">fill</property>
+                <property name="spacing">6</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Source</property>
+                    <property name="valign">GTK_ALIGN_CENTER</property>
+                    <property name="vexpand">1</property>
+                    <property name="visible">1</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkMenuButton" id="origin_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="sensitive">True</property>
+                    <property name="popover">origin_popover</property>
+                    <child>
+                      <object class="GtkGrid">
+                        <property name="column-spacing">12</property>
+                        <property name="visible">1</property>
+                        <child>
+                          <object class="GtkLabel" id="origin_button_label">
+                            <property name="label">Fedora</property>
+                            <property name="valign">GTK_ALIGN_CENTER</property>
+                            <property name="vexpand">1</property>
+                            <property name="visible">1</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkImage">
+                            <property name="icon-name">pan-down-symbolic</property>
+                            <property name="pixel-size">16</property>
+                            <property name="valign">GTK_ALIGN_CENTER</property>
+                            <property name="vexpand">1</property>
+                            <property name="visible">1</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="pack-type">end</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -585,6 +639,29 @@
             <property name="fill">True</property>
             <property name="position">2</property>
           </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="origin_popover">
+    <child>
+      <object class="GtkBox" id="origin_popover_box">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="propagate-natural-height">true</property>
+            <property name="propagate-natural-width">true</property>
+            <property name="max-content-height">600</property>
+            <property name="visible">true</property>
+            <child>
+              <object class="GtkListBox" id="origin_popover_list_box">
+                <property name="selection-mode">none</property>
+                <property name="visible">true</property>
+              </object>
+            </child>
+          </object>
         </child>
       </object>
     </child>
