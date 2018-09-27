@@ -967,7 +967,8 @@ gs_details_page_set_alternates (GsDetailsPage *self)
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
 					 "interactive", TRUE,
 					 "app", self->app,
-	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN,
+	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN ||
+					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader,
 					    plugin_job,
