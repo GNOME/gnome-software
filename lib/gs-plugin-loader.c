@@ -3574,6 +3574,13 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		GsApp *app = gs_plugin_job_get_app (plugin_job);
 		GsAppList *list = gs_plugin_job_get_list (plugin_job);
 		gs_app_list_add (list, app);
+
+		/* also add the wildcard match */
+		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+			g_autoptr(GsApp) app2 = gs_app_new (gs_app_get_id (app));
+			gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+			gs_app_list_add (list, app2);
+		}
 	}
 
 	/* check required args */
