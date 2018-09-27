@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013-2018 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2014-2015 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -325,6 +325,8 @@ void		 gs_app_remove_quirk		(GsApp		*app,
 						 AsAppQuirk	 quirk);
 gboolean	 gs_app_is_installed		(GsApp		*app);
 gboolean	 gs_app_is_updatable		(GsApp		*app);
+gchar		*gs_app_get_origin_ui		(GsApp		*app);
+gchar		*gs_app_get_packaging_format	(GsApp		*app);
 G_END_DECLS
 
 #endif /* __GS_APP_H */

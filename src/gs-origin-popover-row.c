@@ -43,28 +43,14 @@ static void
 refresh_ui (GsOriginPopoverRow *row)
 {
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
-	const gchar *origin_ui = NULL;
-	const gchar *packaging_format;
+	g_autofree gchar *origin_ui = NULL;
+	g_autofree gchar *packaging_format = NULL;
 	g_autofree gchar *url = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
 
 	g_assert (GS_IS_ORIGIN_POPOVER_ROW (row));
 	g_assert (GS_IS_APP (priv->app));
 
-	/* use the distro name for official packages */
-	if (gs_app_has_quirk (priv->app, AS_APP_QUIRK_PROVENANCE)) {
-		os_release = gs_os_release_new (NULL);
-		if (os_release != NULL)
-			origin_ui = gs_os_release_get_name (os_release);
-	} else if (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
-		/* TRANSLATORS: this is a locally downloaded package */
-		origin_ui = _("Local file");
-	}
-
-	/* fall back to origin */
-	if (origin_ui == NULL)
-		origin_ui = gs_app_get_origin (priv->app);
-
+	origin_ui = gs_app_get_origin_ui (priv->app);
 	if (origin_ui != NULL) {
 		gtk_label_set_text (GTK_LABEL (priv->name_label), origin_ui);
 	}
@@ -85,14 +71,7 @@ refresh_ui (GsOriginPopoverRow *row)
 		gtk_widget_hide (priv->url_box);
 	}
 
-	packaging_format = gs_app_get_metadata_item (priv->app, "GnomeSoftware::PackagingFormat");
-	if (packaging_format == NULL) {
-		AsBundleKind bundle_kind;
-		bundle_kind = gs_app_get_bundle_kind (priv->app);
-		if (bundle_kind != AS_BUNDLE_KIND_UNKNOWN)
-			packaging_format = as_bundle_kind_to_string (bundle_kind);
-	}
-
+	packaging_format = gs_app_get_packaging_format (priv->app);
 	if (packaging_format != NULL) {
 		gtk_label_set_text (GTK_LABEL (priv->format_label), packaging_format);
 		gtk_widget_show (priv->format_box);
