@@ -33,6 +33,7 @@ typedef struct
 	GtkWidget	*url_title;
 	GtkWidget	*url_label;
 	GtkWidget	*format_box;
+	GtkWidget	*format_title;
 	GtkWidget	*format_label;
 	GtkWidget	*selected_image;
 } GsOriginPopoverRowPrivate;
@@ -106,6 +107,15 @@ gs_origin_popover_row_set_selected (GsOriginPopoverRow *row, gboolean selected)
 	gtk_widget_set_visible (priv->selected_image, selected);
 }
 
+void
+gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *size_group)
+{
+	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
+
+	gtk_size_group_add_widget (size_group, priv->url_title);
+	gtk_size_group_add_widget (size_group, priv->format_title);
+}
+
 static void
 gs_origin_popover_row_destroy (GtkWidget *object)
 {
@@ -137,6 +147,7 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, selected_image);
 }

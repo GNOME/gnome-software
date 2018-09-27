@@ -66,6 +66,7 @@ struct _GsDetailsPage
 	gboolean		 enable_reviews;
 	gboolean		 show_all_reviews;
 	GSettings		*settings;
+	GtkSizeGroup		*size_group_origin_popover;
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -919,6 +920,8 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gtk_widget_show (row);
 		if (app == self->app)
 			gs_origin_popover_row_set_selected (GS_ORIGIN_POPOVER_ROW (row), TRUE);
+		gs_origin_popover_row_set_size_group (GS_ORIGIN_POPOVER_ROW (row),
+		                                      self->size_group_origin_popover);
 		gtk_container_add (GTK_CONTAINER (origin_popover_list_box), row);
 	}
 
@@ -2487,6 +2490,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->app_cancellable);
 	g_clear_object (&self->session);
+	g_clear_object (&self->size_group_origin_popover);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
 }
@@ -2600,6 +2604,7 @@ gs_details_page_init (GsDetailsPage *self)
 	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                               NULL);
 	self->settings = g_settings_new ("org.gnome.software");
+	self->size_group_origin_popover = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_addons),
 				      list_header_func,
