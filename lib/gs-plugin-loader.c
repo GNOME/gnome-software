@@ -1293,12 +1293,6 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
-	    gs_app_get_pixbuf (app) == NULL) {
-		g_debug ("app invalid as no pixbuf %s",
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-	}
 
 	/* ignore this crazy application */
 	if (g_strcmp0 (gs_app_get_id (app), "gnome-system-monitor-kde.desktop") == 0) {
