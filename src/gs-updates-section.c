@@ -382,7 +382,8 @@ _build_section_header (GsUpdatesSection *self)
 	gtk_style_context_add_class (context, "app-listbox-header");
 
 	/* put label into the header */
-	gtk_box_pack_start (GTK_BOX (header), label, TRUE, TRUE, 0);
+	gtk_widget_set_hexpand (label, TRUE);
+	gtk_container_add (GTK_CONTAINER (header), label);
 	gtk_widget_set_visible (label, TRUE);
 	gtk_widget_set_margin_start (label, 6);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
@@ -392,7 +393,8 @@ _build_section_header (GsUpdatesSection *self)
 	/* use a stack so we can switch which buttons are showing without the
 	 * sizegroup resizing */
 	self->button_stack = GTK_STACK (gtk_stack_new ());
-	gtk_box_pack_end (GTK_BOX (header), GTK_WIDGET (self->button_stack), FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (header), GTK_WIDGET (self->button_stack));
+	gtk_container_child_set (GTK_CONTAINER (header), GTK_WIDGET (self->button_stack), "pack-type", GTK_PACK_END, NULL);
 	gtk_size_group_add_widget (self->sizegroup_button, GTK_WIDGET (self->button_stack));
 
 	/* add button, which may be hidden */

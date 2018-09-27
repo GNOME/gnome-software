@@ -612,7 +612,8 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	gtk_widget_set_margin_start (ssimg, 24);
 	gtk_widget_set_margin_end (ssimg, 24);
 	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-	gtk_box_pack_end (GTK_BOX (content_area), ssimg, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (content_area), ssimg);
+	gtk_container_child_set (GTK_CONTAINER (content_area), ssimg, "pack-type", GTK_PACK_END, NULL);
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",

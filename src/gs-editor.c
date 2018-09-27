@@ -1003,8 +1003,8 @@ gs_editor_startup_cb (GtkApplication *application, GsEditor *self)
 	self->featured_tile1 = gs_feature_tile_new (NULL);
 	self->upgrade_banner = gs_upgrade_banner_new ();
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "box_featured"));
-	gtk_box_pack_start (GTK_BOX (widget), self->featured_tile1, FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (widget), self->upgrade_banner, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (widget), self->featured_tile1);
+	gtk_container_add (GTK_CONTAINER (widget), self->upgrade_banner);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "textview_css"));
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (widget));
