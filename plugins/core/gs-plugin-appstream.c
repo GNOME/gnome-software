@@ -356,6 +356,48 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+static void
+gs_plugin_appstream_set_compulsory_quirk (GsApp *app, AsApp *item)
+{
+	GPtrArray *array;
+	const gchar *current_desktop;
+
+	/*
+	 * Set the core applications for the current desktop that cannot be
+	 * removed.
+	 *
+	 * If XDG_CURRENT_DESKTOP contains ":", indicating that it is made up
+	 * of multiple components per the Desktop Entry Specification, an app
+	 * is compulsory if any of the components in XDG_CURRENT_DESKTOP match
+	 * any value in <compulsory_for_desktops />. In that way,
+	 * "GNOME-Classic:GNOME" shares compulsory apps with GNOME.
+	 *
+	 * As a special case, if the <compulsory_for_desktop /> value contains
+	 * a ":", we match the entire XDG_CURRENT_DESKTOP. This lets people set
+	 * compulsory apps for such compound desktops if they want.
+	 *
+	 */
+	array = as_app_get_compulsory_for_desktops (item);
+	current_desktop = g_getenv ("XDG_CURRENT_DESKTOP");
+	if (current_desktop != NULL) {
+		g_auto(GStrv) xdg_current_desktops = g_strsplit (current_desktop, ":", 0);
+		for (guint i = 0; i < array->len; i++) {
+			const gchar *tmp = g_ptr_array_index (array, i);
+			/* if the value has a :, check the whole string */
+			if (g_strstr_len (tmp, -1, ":")) {
+				if (g_strcmp0 (current_desktop, tmp) == 0) {
+					gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+					break;
+				}
+			/* otherwise check if any element matches this one */
+			} else if (g_strv_contains ((const gchar * const *) xdg_current_desktops, tmp)) {
+				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+				break;
+			}
+		}
+	}
+}
+
 static gboolean
 gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GsApp *app,
@@ -396,6 +438,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 				item = g_ptr_array_index (apps, i);
 				if (!gs_appstream_refine_app (plugin, app, item, error))
 					return FALSE;
+				gs_plugin_appstream_set_compulsory_quirk (app, item);
 			}
 		}
 		return TRUE;

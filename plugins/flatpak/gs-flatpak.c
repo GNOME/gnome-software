@@ -1885,9 +1885,6 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	if (!gs_flatpak_refine_appstream (self, app, error))
 		return FALSE;
 
-	/* flatpak apps can always be removed */
-	gs_app_remove_quirk (app, AS_APP_QUIRK_COMPULSORY);
-
 	/* AppStream sets the source to appname/arch/branch */
 	if (!gs_refine_item_metadata (self, app, cancellable, error)) {
 		g_prefix_error (error, "failed to get metadata: ");
