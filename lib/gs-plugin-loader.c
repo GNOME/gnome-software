@@ -1399,6 +1399,23 @@ gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer use
 	return 0;
 }
 
+static gint
+gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	/* prefer prio */
+	if (gs_app_get_priority (app1) > gs_app_get_priority (app2))
+		return -1;
+	if (gs_app_get_priority (app1) < gs_app_get_priority (app2))
+		return 1;
+
+	/* fall back to bundle kind */
+	if (gs_app_get_bundle_kind (app1) < gs_app_get_bundle_kind (app2))
+		return -1;
+	if (gs_app_get_bundle_kind (app1) > gs_app_get_bundle_kind (app2))
+		return 1;
+	return 0;
+}
+
 /******************************************************************************/
 
 static gboolean
@@ -3628,6 +3645,12 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_name_cb);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_ALTERNATES:
+		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+			gs_plugin_job_set_sort_func (plugin_job,
+						     gs_plugin_loader_app_sort_prio_cb);
 		}
 		break;
 	default:
