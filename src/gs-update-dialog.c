@@ -324,8 +324,9 @@ create_app_row (GsApp *app)
 	              "ellipsize", PANGO_ELLIPSIZE_END,
 	              NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
+	gtk_widget_set_hexpand (label, TRUE);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (row), label);
 	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE ||
 	    gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE) {
 		g_autofree gchar *verstr = format_version_update (app);
@@ -343,7 +344,7 @@ create_app_row (GsApp *app)
 	              NULL);
 	gtk_widget_set_halign (label, GTK_ALIGN_END);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (row), label);
 	gtk_widget_show_all (row);
 
 	return row;
@@ -471,7 +472,8 @@ get_section_header (GsUpdateDialog *dialog, GsUpdateDialogSection section)
 	gtk_style_context_add_class (context, "app-listbox-header");
 
 	/* put label into the header */
-	gtk_box_pack_start (GTK_BOX (header), label, TRUE, TRUE, 0);
+	gtk_widget_set_hexpand (label, TRUE);
+	gtk_container_add (GTK_CONTAINER (header), label);
 	gtk_widget_set_visible (label, TRUE);
 	gtk_widget_set_margin_start (label, 6);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
@@ -516,9 +518,8 @@ create_section (GsUpdateDialog *dialog, GsUpdateDialogSection section)
 	g_signal_connect (GTK_LIST_BOX (dialog->list_boxes[section]), "row-activated",
 			  G_CALLBACK (row_activated_cb), dialog);
 	gtk_widget_set_visible (dialog->list_boxes[section], TRUE);
-	gtk_box_pack_start (GTK_BOX (dialog->os_update_box),
-			    dialog->list_boxes[section],
-			    TRUE, TRUE, 0);
+	gtk_widget_set_vexpand (dialog->list_boxes[section], TRUE);
+	gtk_container_add (GTK_CONTAINER (dialog->os_update_box), dialog->list_boxes[section]);
 	gtk_widget_set_margin_top (dialog->list_boxes[section], 24);
 
 	/* reorder the children */

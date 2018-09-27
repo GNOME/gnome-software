@@ -733,8 +733,8 @@ add_buttons_for_auth (GsShell *shell, GsAuth *auth)
 
 	gtk_widget_show (signin_button);
 	gtk_widget_show (signout_button);
-	gtk_box_pack_start (GTK_BOX (account_box), signin_button, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (account_box), signout_button, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (account_box), signin_button);
+	gtk_container_add (GTK_CONTAINER (account_box), signout_button);
 }
 
 static void
@@ -760,11 +760,11 @@ account_button_clicked_cb (GtkButton *button, GsShell *shell)
 		GsAuth *auth = g_ptr_array_index (auth_array, i);
 		add_buttons_for_auth (shell, auth);
 
-		/* Add sepeartor between each block */
+		/* Add separator between each block */
 		if (i < auth_array->len - 1) {
-			GtkWidget *seprator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-			gtk_widget_show (seprator);
-			gtk_box_pack_start (GTK_BOX (account_box), seprator, TRUE, TRUE, 0);
+			GtkWidget *separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+			gtk_widget_show (separator);
+			gtk_container_add (GTK_CONTAINER (account_box), separator);
 		}
 	}
 

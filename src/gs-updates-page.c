@@ -1303,9 +1303,8 @@ gs_updates_page_setup (GsPage *page,
 						    self->sizegroup_desc,
 						    self->sizegroup_button,
 						    self->sizegroup_header);
-		gtk_box_pack_start (GTK_BOX (self->updates_box),
-				    GTK_WIDGET (self->sections[i]),
-				    TRUE, TRUE, 0);
+		gtk_widget_set_vexpand (GTK_WIDGET (self->sections[i]), TRUE);
+		gtk_container_add (GTK_CONTAINER (self->updates_box), GTK_WIDGET (self->sections[i]));
 	}
 
 	self->shell = shell;
@@ -1349,16 +1348,20 @@ gs_updates_page_setup (GsPage *page,
 
 	/* This label indicates that the update check is in progress */
 	self->header_checking_label = gtk_label_new (_("Checking…"));
-	gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_checking_label, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->header_checking_label);
+	gtk_container_child_set(GTK_CONTAINER (self->header_start_box), self->header_checking_label,
+				"pack-type", GTK_PACK_END, NULL);
 	self->header_spinner_start = gtk_spinner_new ();
-	gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_spinner_start, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->header_spinner_start);
+	gtk_container_child_set (GTK_CONTAINER (self->header_start_box), self->header_spinner_start,
+				 "pack-type", GTK_PACK_END, NULL);
 
 	/* setup update details window */
 	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 	accessible = gtk_widget_get_accessible (self->button_refresh);
 	if (accessible != NULL)
 		atk_object_set_name (accessible, _("Check for updates"));
-	gtk_box_pack_start (GTK_BOX (self->header_start_box), self->button_refresh, FALSE, FALSE, 0);
+	gtk_container_add (GTK_CONTAINER (self->header_start_box), self->button_refresh);
 	g_signal_connect (self->button_refresh, "clicked",
 			  G_CALLBACK (gs_updates_page_button_refresh_cb),
 			  self);

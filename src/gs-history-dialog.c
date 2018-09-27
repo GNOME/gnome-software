@@ -108,9 +108,10 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "margin-top", 6,
 			      "margin-bottom", 6,
 			      "xalign", 0.0,
+			      "hexpand", TRUE,
 			      NULL);
 		gtk_size_group_add_widget (dialog->sizegroup_state, widget);
-		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (box), widget);
 
 		/* add the timestamp */
 		timestamp = gs_app_get_install_date (app);
@@ -127,9 +128,10 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "margin-top", 6,
 			      "margin-bottom", 6,
 			      "xalign", 0.0,
+			      "hexpand", TRUE,
 			      NULL);
 		gtk_size_group_add_widget (dialog->sizegroup_timestamp, widget);
-		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (box), widget);
 
 		/* add the version */
 		widget = gtk_label_new (gs_app_get_version (app));
@@ -141,9 +143,10 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "xalign", 1.0,
 			      "ellipsize", PANGO_ELLIPSIZE_END,
 			      "width-chars", 10,
+			      "hexpand", TRUE,
 			      NULL);
 		gtk_size_group_add_widget (dialog->sizegroup_version, widget);
-		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (box), widget);
 
 		gtk_widget_show_all (GTK_WIDGET (box));
 		gtk_list_box_insert (GTK_LIST_BOX (dialog->list_box), GTK_WIDGET (box), -1);
