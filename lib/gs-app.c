@@ -4498,6 +4498,11 @@ gs_app_get_origin_ui (GsApp *app)
 		return g_strdup (_("Local file"));
 	}
 
+	/* capitalize "Flathub" */
+	if (g_strcmp0 (gs_app_get_origin (app), "flathub") == 0) {
+		return g_strdup ("Flathub");
+	}
+
 	/* fall back to origin */
 	return g_strdup (gs_app_get_origin (app));
 }
