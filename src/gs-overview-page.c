@@ -510,7 +510,7 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 		gtk_widget_show (event_box);
 		g_signal_connect (event_box, "button_release_event",
 			  G_CALLBACK (featured_switcher_clicked), self);
-		gtk_box_pack_start (GTK_BOX (priv->box_featured_switcher), event_box, FALSE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (priv->box_featured_switcher), event_box);
 
 		label = gtk_label_new (i == 0 ? FEATURED_SWITCHER_ACTIVE_TEXT : FEATURED_SWITCHER_INACTIVE_TEXT);
 		gtk_style_context_add_class (gtk_widget_get_style_context (label),

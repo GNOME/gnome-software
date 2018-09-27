@@ -176,7 +176,8 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 		      NULL);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
+	gtk_widget_set_hexpand (label, TRUE);
+	gtk_container_add (GTK_CONTAINER (box), label);
 	image = gtk_image_new_from_icon_name ("object-select-symbolic", GTK_ICON_SIZE_MENU);
 	gtk_widget_set_no_show_all (image, TRUE);
 	gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
