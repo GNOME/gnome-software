@@ -53,6 +53,7 @@
 
 #include "gs-app-collation.h"
 #include "gs-app-private.h"
+#include "gs-os-release.h"
 #include "gs-plugin.h"
 #include "gs-utils.h"
 
@@ -4469,6 +4470,88 @@ gs_app_new_from_unique_id (const gchar *unique_id)
 	app = gs_app_new (NULL);
 	gs_app_set_from_unique_id (app, unique_id);
 	return app;
+}
+
+/**
+ * gs_app_get_origin_ui:
+ * @app: a #GsApp
+ *
+ * Gets the package origin that's suitable for UI use.
+ *
+ * Returns: The package origin for UI use
+ *
+ * Since: 3.32
+ **/
+gchar *
+gs_app_get_origin_ui (GsApp *app)
+{
+	/* use the distro name for official packages */
+	if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE)) {
+		g_autoptr(GsOsRelease) os_release = gs_os_release_new (NULL);
+		if (os_release != NULL)
+			return g_strdup (gs_os_release_get_name (os_release));
+	}
+
+	/* use "Local file" rather than the filename for local files */
+	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+		/* TRANSLATORS: this is a locally downloaded package */
+		return g_strdup (_("Local file"));
+	}
+
+	/* fall back to origin */
+	return g_strdup (gs_app_get_origin (app));
+}
+
+/**
+ * gs_app_get_packaging_format:
+ * @app: a #GsApp
+ *
+ * Gets the packaging format, e.g. 'RPM' or 'Flatpak'.
+ *
+ * Returns: The packaging format
+ *
+ * Since: 3.32
+ **/
+gchar *
+gs_app_get_packaging_format (GsApp *app)
+{
+	AsBundleKind bundle_kind;
+	const gchar *bundle_kind_ui;
+	const gchar *packaging_format;
+
+	/* does the app have packaging format set? */
+	packaging_format = gs_app_get_metadata_item (app, "GnomeSoftware::PackagingFormat");
+	if (packaging_format != NULL)
+		return g_strdup (packaging_format);
+
+	/* fall back to bundle kind */
+	bundle_kind = gs_app_get_bundle_kind (app);
+	switch (bundle_kind) {
+	case AS_BUNDLE_KIND_LIMBA:
+		bundle_kind_ui = "Limba";
+		break;
+	case AS_BUNDLE_KIND_FLATPAK:
+		bundle_kind_ui = "Flatpak";
+		break;
+	case AS_BUNDLE_KIND_SNAP:
+		bundle_kind_ui = "Snap";
+		break;
+	case AS_BUNDLE_KIND_PACKAGE:
+		bundle_kind_ui = _("Package");
+		break;
+	case AS_BUNDLE_KIND_CABINET:
+		bundle_kind_ui = "Cabinet";
+		break;
+	case AS_BUNDLE_KIND_APPIMAGE:
+		bundle_kind_ui = "AppImage";
+		break;
+	default:
+		g_warning ("unhandled bundle kind %s", as_bundle_kind_to_string (bundle_kind));
+		bundle_kind_ui = as_bundle_kind_to_string (bundle_kind);
+	}
+
+	g_assert (bundle_kind_ui != NULL);
+	return g_strdup (bundle_kind_ui);
 }
 
 /* vim: set noexpandtab: */

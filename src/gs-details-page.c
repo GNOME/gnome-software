@@ -886,11 +886,10 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GsOsRelease) os_release = NULL;
 	GtkWidget *origin_box;
 	GtkWidget *origin_button_label;
 	GtkWidget *origin_popover_list_box;
-	const gchar *origin_ui = NULL;
+	g_autofree gchar *origin_ui = NULL;
 
 	origin_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_box"));
 	origin_button_label = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_button_label"));
@@ -923,20 +922,7 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gtk_container_add (GTK_CONTAINER (origin_popover_list_box), row);
 	}
 
-	/* use the distro name for official packages */
-	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
-		os_release = gs_os_release_new (NULL);
-		if (os_release != NULL)
-			origin_ui = gs_os_release_get_name (os_release);
-	} else if (gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
-		/* TRANSLATORS: this is a locally downloaded package */
-		origin_ui = _("Local file");
-	}
-
-	/* fall back to origin */
-	if (origin_ui == NULL)
-		origin_ui = gs_app_get_origin (self->app);
-
+	origin_ui = gs_app_get_origin_ui (self->app);
 	if (origin_ui != NULL)
 		gtk_label_set_text (GTK_LABEL (origin_button_label), origin_ui);
 	else
