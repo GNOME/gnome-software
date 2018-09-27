@@ -3882,6 +3882,10 @@ gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
 
+	/* same */
+	if ((priv->quirk & quirk) > 0)
+		return;
+
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->quirk |= quirk;
 	gs_app_queue_notify (app, "quirk");
@@ -3902,6 +3906,10 @@ gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* same */
+	if ((priv->quirk & quirk) == 0)
+		return;
 
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->quirk &= ~quirk;
