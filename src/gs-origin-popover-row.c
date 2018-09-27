@@ -30,6 +30,7 @@ typedef struct
 	GsApp		*app;
 	GtkWidget	*name_label;
 	GtkWidget	*url_box;
+	GtkWidget	*url_title;
 	GtkWidget	*url_label;
 	GtkWidget	*format_box;
 	GtkWidget	*format_label;
@@ -43,8 +44,8 @@ refresh_ui (GsOriginPopoverRow *row)
 {
 	GsOriginPopoverRowPrivate *priv = gs_origin_popover_row_get_instance_private (row);
 	const gchar *origin_ui = NULL;
-	const gchar *url;
 	const gchar *packaging_format;
+	g_autofree gchar *url = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
 
 	g_assert (GS_IS_ORIGIN_POPOVER_ROW (row));
@@ -55,6 +56,9 @@ refresh_ui (GsOriginPopoverRow *row)
 		os_release = gs_os_release_new (NULL);
 		if (os_release != NULL)
 			origin_ui = gs_os_release_get_name (os_release);
+	} else if (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+		/* TRANSLATORS: this is a locally downloaded package */
+		origin_ui = _("Local file");
 	}
 
 	/* fall back to origin */
@@ -65,7 +69,15 @@ refresh_ui (GsOriginPopoverRow *row)
 		gtk_label_set_text (GTK_LABEL (priv->name_label), origin_ui);
 	}
 
-	url = gs_app_get_origin_hostname (priv->app);
+	if (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+		GFile *local_file = gs_app_get_local_file (priv->app);
+		url = g_file_get_basename (local_file);
+		/* TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm" */
+		gtk_label_set_text (GTK_LABEL (priv->url_title), _("Name"));
+	} else {
+		url = g_strdup (gs_app_get_origin_hostname (priv->app));
+	}
+
 	if (url != NULL) {
 		gtk_label_set_text (GTK_LABEL (priv->url_label), url);
 		gtk_widget_show (priv->url_box);
@@ -143,6 +155,7 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, name_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, url_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_label);

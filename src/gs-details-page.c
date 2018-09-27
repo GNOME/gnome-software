@@ -928,6 +928,9 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		os_release = gs_os_release_new (NULL);
 		if (os_release != NULL)
 			origin_ui = gs_os_release_get_name (os_release);
+	} else if (gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+		/* TRANSLATORS: this is a locally downloaded package */
+		origin_ui = _("Local file");
 	}
 
 	/* fall back to origin */
