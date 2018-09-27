@@ -969,7 +969,6 @@ gs_details_page_set_alternates (GsDetailsPage *self)
 					    self);
 }
 
-
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
@@ -2466,6 +2465,9 @@ gs_details_page_setup (GsPage *page,
 			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
 	origin_popover_list_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover_list_box"));
+	gtk_list_box_set_header_func (GTK_LIST_BOX (origin_popover_list_box),
+	                              list_header_func,
+	                              NULL, NULL);
 	g_signal_connect (origin_popover_list_box, "row-activated",
 	                  G_CALLBACK (origin_popover_row_activated_cb),
 	                  self);
