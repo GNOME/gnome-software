@@ -349,21 +349,28 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_label_set_label (GTK_LABEL (priv->version_current_label),
 			                     version_current);
 			gtk_widget_show (priv->version_current_label);
+		} else {
+			gtk_widget_hide (priv->version_current_label);
 		}
 
 		/* update version */
 		tmp = gs_app_get_update_version_ui (priv->app);
-		if (tmp != NULL && tmp[0] != '\0') {
+		if (tmp != NULL && tmp[0] != '\0' &&
+		    g_strcmp0 (tmp, version_current) != 0) {
 			version_update = tmp;
 			gtk_label_set_label (GTK_LABEL (priv->version_update_label),
 			                     version_update);
 			gtk_widget_show (priv->version_update_label);
+		} else {
+			gtk_widget_hide (priv->version_update_label);
 		}
 
 		/* have both: show arrow */
 		if (version_current != NULL && version_update != NULL &&
 		    g_strcmp0 (version_current, version_update) != 0) {
 			gtk_widget_show (priv->version_arrow_label);
+		} else {
+			gtk_widget_hide (priv->version_arrow_label);
 		}
 
 		/* show the box if we have either of the versions */
@@ -371,6 +378,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_widget_show (priv->version_box);
 		else
 			gtk_widget_hide (priv->version_box);
+
 		gtk_widget_hide (priv->star);
 	} else {
 		gtk_widget_hide (priv->version_box);
