@@ -742,6 +742,55 @@ gs_app_list_filter_app_is_better (GsApp *app, GsApp *found, GsAppListFilterFlags
 	return FALSE;
 }
 
+static GPtrArray *
+gs_app_list_filter_app_get_keys (GsApp *app, GsAppListFilterFlags flags)
+{
+	GPtrArray *keys = g_ptr_array_new_with_free_func (g_free);
+	g_autoptr(GString) key = NULL;
+
+	/* just use the unique ID */
+	if (flags == GS_APP_LIST_FILTER_FLAG_NONE) {
+		if (gs_app_get_unique_id (app) != NULL)
+			g_ptr_array_add (keys, g_strdup (gs_app_get_unique_id (app)));
+		return keys;
+	}
+
+	/* use the ID and any provides */
+	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES) {
+		GPtrArray *provides = gs_app_get_provides (app);
+		g_ptr_array_add (keys, g_strdup (gs_app_get_id (app)));
+		for (guint i = 0; i < provides->len; i++) {
+			AsProvide *prov = g_ptr_array_index (provides, i);
+			if (as_provide_get_kind (prov) != AS_PROVIDE_KIND_ID)
+				continue;
+			g_ptr_array_add (keys, g_strdup (as_provide_get_value (prov)));
+		}
+		return keys;
+	}
+
+	/* specific compound type */
+	key = g_string_new (NULL);
+	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_ID) {
+		const gchar *tmp = gs_app_get_id (app);
+		if (tmp != NULL)
+			g_string_append (key, gs_app_get_id (app));
+	}
+	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_SOURCE) {
+		const gchar *tmp = gs_app_get_source_default (app);
+		if (tmp != NULL)
+			g_string_append_printf (key, ":%s", tmp);
+	}
+	if (flags & GS_APP_LIST_FILTER_FLAG_KEY_VERSION) {
+		const gchar *tmp = gs_app_get_version (app);
+		if (tmp != NULL)
+			g_string_append_printf (key, ":%s", tmp);
+	}
+	if (key->len == 0)
+		return keys;
+	g_ptr_array_add (keys, g_string_free (g_steal_pointer (&key), FALSE));
+	return keys;
+}
+
 /**
  * gs_app_list_filter_duplicates:
  * @list: A #GsAppList
@@ -769,43 +818,25 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 	kept_apps = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	for (guint i = 0; i < list->array->len; i++) {
-		GsApp *app;
-		GsApp *found;
-		g_autoptr(GString) key = NULL;
+		GsApp *app = gs_app_list_index (list, i);
+		GsApp *found = NULL;
+		g_autoptr(GPtrArray) keys = NULL;
 
-		app = gs_app_list_index (list, i);
-		if (flags == GS_APP_LIST_FILTER_FLAG_NONE) {
-			key = g_string_new (gs_app_get_unique_id (app));
-		} else {
-			key = g_string_new (NULL);
-			if (flags & GS_APP_LIST_FILTER_FLAG_KEY_ID) {
-				const gchar *tmp = gs_app_get_id (app);
-				if (tmp != NULL)
-					g_string_append (key, gs_app_get_id (app));
-			}
-			if (flags & GS_APP_LIST_FILTER_FLAG_KEY_SOURCE) {
-				const gchar *tmp = gs_app_get_source_default (app);
-				if (tmp != NULL)
-					g_string_append_printf (key, ":%s", tmp);
-			}
-			if (flags & GS_APP_LIST_FILTER_FLAG_KEY_VERSION) {
-				const gchar *tmp = gs_app_get_version (app);
-				if (tmp != NULL)
-					g_string_append_printf (key, ":%s", tmp);
-			}
+		/* get all the keys used to identify this app */
+		keys = gs_app_list_filter_app_get_keys (app, flags);
+		for (guint j = 0; j < keys->len; j++) {
+			const gchar *key = g_ptr_array_index (keys, j);
+			found = g_hash_table_lookup (hash, key);
+			if (found != NULL)
+				break;
 		}
-		if (key->len == 0) {
-			g_autofree gchar *str = gs_app_to_string (app);
-			g_debug ("adding without deduplication as no app key: %s", str);
-			g_hash_table_add (kept_apps, app);
-			continue;
-		}
-		found = g_hash_table_lookup (hash, key->str);
+
+		/* new app */
 		if (found == NULL) {
-			g_debug ("found new %s", key->str);
-			g_hash_table_insert (hash,
-					     g_strdup (key->str),
-					     app);
+			for (guint j = 0; j < keys->len; j++) {
+				const gchar *key = g_ptr_array_index (keys, j);
+				g_hash_table_insert (hash, g_strdup (key), app);
+			}
 			g_hash_table_add (kept_apps, app);
 			continue;
 		}
@@ -813,24 +844,22 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 		/* better? */
 		if (flags != GS_APP_LIST_FILTER_FLAG_NONE) {
 			if (gs_app_list_filter_app_is_better (app, found, flags)) {
-				g_debug ("using better %s (priority %u > %u)",
-					 key->str,
+				g_debug ("using better (priority %u > %u)",
 					 gs_app_get_priority (app),
 					 gs_app_get_priority (found));
-				g_hash_table_insert (hash,
-						     g_strdup (key->str),
-						     app);
+				for (guint j = 0; j < keys->len; j++) {
+					const gchar *key = g_ptr_array_index (keys, j);
+					g_hash_table_insert (hash, g_strdup (key), app);
+				}
 				g_hash_table_remove (kept_apps, found);
 				g_hash_table_add (kept_apps, app);
 				continue;
 			}
-			g_debug ("ignoring worse duplicate %s (priority %u > %u)",
-				 key->str,
+			g_debug ("ignoring worse duplicate (priority %u > %u)",
 				 gs_app_get_priority (app),
 				 gs_app_get_priority (found));
 			continue;
 		}
-		g_debug ("ignoring duplicate %s", key->str);
 		continue;
 	}
 

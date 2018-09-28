@@ -271,6 +271,7 @@ gs_plugin_func (void)
 	GsAppList *list_dup;
 	GsAppList *list_remove;
 	GsApp *app;
+	g_autoptr(AsProvide) prov = as_provide_new ();
 
 	/* check enums converted */
 	for (guint i = 0; i < GS_PLUGIN_ACTION_LAST; i++) {
@@ -436,10 +437,31 @@ gs_plugin_func (void)
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 	gs_app_list_filter_duplicates (list,
-				       GS_APP_LIST_FILTER_FLAG_KEY_ID|
+				       GS_APP_LIST_FILTER_FLAG_KEY_ID |
 				       GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/foo/*/*/e/*");
+	g_object_unref (list);
+
+	/* use the provides ID to dedupe */
+	list = gs_app_list_new ();
+	app = gs_app_new ("gimp.desktop");
+	gs_app_set_unique_id (app, "user/fedora/*/*/gimp.desktop/*");
+	gs_app_set_priority (app, 0);
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	app = gs_app_new ("org.gimp.GIMP");
+	as_provide_set_kind (prov, AS_PROVIDE_KIND_ID);
+	as_provide_set_value (prov, "gimp.desktop");
+	gs_app_add_provide (app, prov);
+	gs_app_set_unique_id (app, "user/flathub/*/*/org.gimp.GIMP/*");
+	gs_app_set_priority (app, 100);
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==,
+			 "user/flathub/*/*/org.gimp.GIMP/*");
 	g_object_unref (list);
 
 	/* use globs when adding */
