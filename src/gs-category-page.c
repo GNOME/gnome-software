@@ -164,9 +164,6 @@ gs_category_page_get_apps_cb (GObject *source_object,
 			tile = make_addon_tile_for_category (app, self->subcategory);
 		} else {
 			tile = gs_popular_tile_new (app);
-			if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
-			    gs_utils_list_has_app_fuzzy (list, app))
-				gs_popular_tile_show_source (GS_POPULAR_TILE (tile), TRUE);
 		}
 
 		g_signal_connect (tile, "clicked",
@@ -384,9 +381,7 @@ gs_category_page_reload (GsPage *page)
 					 "category", self->subcategory,
 					 "filter-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					 NULL);

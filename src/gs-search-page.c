@@ -132,9 +132,6 @@ gs_search_page_get_search_cb (GObject *source_object,
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		app_row = gs_app_row_new (app);
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
-		    gs_utils_list_has_app_fuzzy (list, app))
-			gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_search_page_app_row_clicked_cb),
 				  self);
@@ -265,14 +262,12 @@ gs_search_page_load (GsSearchPage *self)
 					 "timeout", 10,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
 							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,

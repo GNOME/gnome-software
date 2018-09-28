@@ -294,9 +294,6 @@ gs_extras_page_add_app (GsExtrasPage *self, GsApp *app, GsAppList *list, SearchD
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_colorful (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
-	    gs_utils_list_has_app_fuzzy (list, app))
-		gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 
 	g_object_set_data_full (G_OBJECT (app_row), "missing-title", g_strdup (search_data->title), g_free);
 
@@ -722,7 +719,6 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 							 "search", search_data->search,
 							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
