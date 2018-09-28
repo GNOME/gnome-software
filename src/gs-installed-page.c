@@ -188,8 +188,7 @@ gs_installed_page_add_app (GsInstalledPage *self, GsAppList *list, GsApp *app)
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_folders (GS_APP_ROW (app_row), TRUE);
 	gs_app_row_set_show_buttons (GS_APP_ROW (app_row), TRUE);
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE) ||
-	    gs_utils_list_has_app_fuzzy (list, app))
+	if (gs_utils_list_has_app_fuzzy (list, app))
 		gs_app_row_set_show_source (GS_APP_ROW (app_row), TRUE);
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (gs_installed_page_app_remove_cb), self);
