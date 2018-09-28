@@ -723,6 +723,25 @@ gs_app_list_randomize (GsAppList *list)
 	g_rand_free (rand);
 }
 
+static gboolean
+gs_app_list_filter_app_is_better (GsApp *app, GsApp *found, GsAppListFilterFlags flags)
+{
+	/* optional 1st layer sort */
+	if ((flags & GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED) > 0) {
+		if (gs_app_is_installed (app) && !gs_app_is_installed (found))
+			return TRUE;
+		if (!gs_app_is_installed (app) && gs_app_is_installed (found))
+			return FALSE;
+	}
+
+	/* 2nd layer, priority and bundle kind */
+	if (gs_app_compare_priority (app, found) < 0)
+		return TRUE;
+
+	/* assume is worse */
+	return FALSE;
+}
+
 /**
  * gs_app_list_filter_duplicates:
  * @list: A #GsAppList
@@ -793,8 +812,7 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 
 		/* better? */
 		if (flags != GS_APP_LIST_FILTER_FLAG_NONE) {
-			if (gs_app_get_priority (app) >
-			    gs_app_get_priority (found)) {
+			if (gs_app_list_filter_app_is_better (app, found, flags)) {
 				g_debug ("using better %s (priority %u > %u)",
 					 key->str,
 					 gs_app_get_priority (app),

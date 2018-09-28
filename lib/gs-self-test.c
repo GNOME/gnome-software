@@ -421,6 +421,27 @@ gs_plugin_func (void)
 	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/foo/repo-security/*/*/*");
 	g_object_unref (list);
 
+	/* prefer installed applications */
+	list = gs_app_list_new ();
+	app = gs_app_new ("e");
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_unique_id (app, "user/foo/*/*/e/*");
+	gs_app_set_priority (app, 0);
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	app = gs_app_new ("e");
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_unique_id (app, "user/bar/*/*/e/*");
+	gs_app_set_priority (app, 100);
+	gs_app_list_add (list, app);
+	g_object_unref (app);
+	gs_app_list_filter_duplicates (list,
+				       GS_APP_LIST_FILTER_FLAG_KEY_ID|
+				       GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	g_assert_cmpstr (gs_app_get_unique_id (gs_app_list_index (list, 0)), ==, "user/foo/*/*/e/*");
+	g_object_unref (list);
+
 	/* use globs when adding */
 	list = gs_app_list_new ();
 	app = gs_app_new ("b");
