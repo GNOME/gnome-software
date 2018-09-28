@@ -277,6 +277,39 @@ gs_app_get_unique_id_unlocked (GsApp *app)
 }
 
 /**
+ * gs_app_compare_priority:
+ * @app1: a #GsApp
+ * @app2: a #GsApp
+ *
+ * Compares two applications using thier priority.
+ *
+ * Use `gs_plugin_add_rule(plugin,GS_PLUGIN_RULE_BETTER_THAN,"plugin-name")`
+ * to set the application priority values.
+ *
+ * Returns: a negative value if @app1 is less than @app2, a positive value if
+ *          @app1 is greater than @app2, and zero if @app1 is equal to @app2
+ **/
+gint
+gs_app_compare_priority (GsApp *app1, GsApp *app2)
+{
+	GsAppPrivate *priv1 = gs_app_get_instance_private (app1);
+	GsAppPrivate *priv2 = gs_app_get_instance_private (app2);
+
+	/* prefer prio */
+	if (priv1->priority > priv2->priority)
+		return -1;
+	if (priv1->priority < priv2->priority)
+		return 1;
+
+	/* fall back to bundle kind */
+	if (priv1->bundle_kind < priv2->bundle_kind)
+		return -1;
+	if (priv1->bundle_kind > priv2->bundle_kind)
+		return 1;
+	return 0;
+}
+
+/**
  * _as_app_quirk_to_string:
  * @quirk: a #AsAppQuirk
  *
