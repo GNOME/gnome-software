@@ -767,6 +767,8 @@ gs_overview_page_load (GsOverviewPage *self)
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_FEATURED,
 						 "max-results", 5,
 						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
 						    plugin_job,
@@ -782,8 +784,10 @@ gs_overview_page_load (GsOverviewPage *self)
 		priv->loading_popular = TRUE;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_POPULAR,
 						 "max-results", 20,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
 						    plugin_job,
@@ -800,8 +804,10 @@ gs_overview_page_load (GsOverviewPage *self)
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_RECENT,
 						 "age", (guint64) (60 * 60 * 24 * 60),
 						 "max-results", 20,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 								 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 						 NULL);
 		gs_plugin_loader_job_process_async (priv->plugin_loader,
 						    plugin_job,
@@ -843,8 +849,10 @@ gs_overview_page_load (GsOverviewPage *self)
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORY_APPS,
 							 "max-results", 20,
 							 "category", featured_category,
-									 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+							 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+									 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 							 NULL);
 			gs_plugin_loader_job_process_async (priv->plugin_loader,
 							    plugin_job,
@@ -859,8 +867,7 @@ gs_overview_page_load (GsOverviewPage *self)
 	if (!priv->loading_categories) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		priv->loading_categories = TRUE;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES,
-							 NULL);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_CATEGORIES, NULL);
 		gs_plugin_loader_job_get_categories_async (priv->plugin_loader, plugin_job,
 							  priv->cancellable,
 							  gs_overview_page_get_categories_cb,

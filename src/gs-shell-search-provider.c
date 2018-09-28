@@ -189,6 +189,8 @@ execute_search (GsShellSearchProvider  *self,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
 					 "max-results", GS_SHELL_SEARCH_PROVIDER_MAX_RESULTS,
+					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+							 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
 					 NULL);
 	gs_plugin_job_set_sort_func (plugin_job, gs_shell_search_provider_sort_cb);
 	gs_plugin_job_set_sort_func_data (plugin_job, self);

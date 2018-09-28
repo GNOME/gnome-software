@@ -677,6 +677,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 	self->action_cnt++;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
 					 "refine-flags", refine_flags,
+					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
@@ -701,7 +702,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 		g_object_unref (plugin_job);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
 						 "refine-flags", refine_flags,
-							 NULL);
+						 NULL);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
 						    plugin_job,
 						    self->cancellable,
