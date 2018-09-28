@@ -257,11 +257,7 @@ static void
 gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	AsAppState state;
 	GtkWidget *widget;
-	GsPrice *price;
-	g_autofree gchar *text = NULL;
-	GtkStyleContext *sc;
 	GtkAdjustment *adj;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_DETAILS) {
@@ -277,147 +273,6 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	/* not set, perhaps file-to-app */
 	if (self->app == NULL)
 		return;
-
-	state = gs_app_get_state (self->app);
-
-	/* install button */
-	switch (state) {
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
-		/* TRANSLATORS: button text in the header when an application
-		 * can be installed */
-		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
-		break;
-	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (self->button_install, FALSE);
-		break;
-	case AS_APP_STATE_PURCHASABLE:
-		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
-		price = gs_app_get_price (self->app);
-		text = gs_price_to_string (price);
-		gtk_button_set_label (GTK_BUTTON (self->button_install), text);
-		break;
-	case AS_APP_STATE_PURCHASING:
-		gtk_widget_set_visible (self->button_install, FALSE);
-		break;
-	case AS_APP_STATE_UNKNOWN:
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (self->button_install, FALSE);
-		break;
-	case AS_APP_STATE_UPDATABLE_LIVE:
-		gtk_widget_set_visible (self->button_install, TRUE);
-		sc = gtk_widget_get_style_context (self->button_install);
-		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
-			/* TRANSLATORS: button text in the header when firmware
-			 * can be live-installed */
-			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
-			gtk_style_context_add_class (sc, "suggested-action");
-		} else {
-			/* TRANSLATORS: button text in the header when an application
-			 * can be live-updated */
-			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Update"));
-			gtk_style_context_remove_class (sc, "suggested-action");
-		}
-		break;
-	case AS_APP_STATE_UNAVAILABLE:
-		if (gs_app_get_url (self->app, AS_URL_KIND_MISSING) != NULL) {
-			gtk_widget_set_visible (self->button_install, FALSE);
-		} else {
-			gtk_widget_set_visible (self->button_install, TRUE);
-			/* TRANSLATORS: this is a button that allows the apps to
-			 * be installed.
-			 * The ellipsis indicates that further steps are required,
-			 * e.g. enabling software repositories or the like */
-			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install…"));
-		}
-		break;
-	default:
-		g_warning ("App unexpectedly in state %s",
-			   as_app_state_to_string (state));
-		g_assert_not_reached ();
-	}
-
-	/* launch button */
-	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
-		if (!gs_app_has_quirk (self->app, AS_APP_QUIRK_NOT_LAUNCHABLE)) {
-			gtk_widget_set_visible (self->button_details_launch, TRUE);
-		} else {
-			gtk_widget_set_visible (self->button_details_launch, FALSE);
-		}
-		break;
-	default:
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
-		break;
-	}
-
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION) {
-		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
-		                      /* TRANSLATORS: A label for a button to show the settings for
-		                         the selected shell extension. */
-		                      _("Extension Settings"));
-	} else {
-		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
-		                      /* TRANSLATORS: A label for a button to execute the selected
-		                         application. */
-		                      _("_Launch"));
-	}
-
-	/* don't show the launch and shortcut buttons if the app doesn't have a desktop ID */
-	if (gs_app_get_id (self->app) == NULL) {
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
-	}
-
-	/* remove button */
-	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY) ||
-	    gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
-		gtk_widget_set_visible (self->button_remove, FALSE);
-	} else {
-		switch (state) {
-		case AS_APP_STATE_INSTALLED:
-		case AS_APP_STATE_UPDATABLE:
-		case AS_APP_STATE_UPDATABLE_LIVE:
-			gtk_widget_set_visible (self->button_remove, TRUE);
-			gtk_widget_set_sensitive (self->button_remove, TRUE);
-			/* Mark the button as destructive only if Launch is not visible */
-			if (gtk_widget_get_visible (self->button_details_launch))
-				gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			else
-				gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
-			/* TRANSLATORS: button text in the header when an application can be erased */
-			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Remove"));
-			break;
-		case AS_APP_STATE_AVAILABLE_LOCAL:
-		case AS_APP_STATE_AVAILABLE:
-		case AS_APP_STATE_INSTALLING:
-		case AS_APP_STATE_REMOVING:
-		case AS_APP_STATE_UNAVAILABLE:
-		case AS_APP_STATE_UNKNOWN:
-		case AS_APP_STATE_PURCHASABLE:
-		case AS_APP_STATE_PURCHASING:
-		case AS_APP_STATE_QUEUED_FOR_INSTALL:
-			gtk_widget_set_visible (self->button_remove, FALSE);
-			break;
-		default:
-			g_warning ("App unexpectedly in state %s",
-				   as_app_state_to_string (state));
-			g_assert_not_reached ();
-		}
-	}
-
-	if (app_has_pending_action (self->app)) {
-		gtk_widget_set_visible (self->button_install, FALSE);
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
-		gtk_widget_set_visible (self->button_remove, FALSE);
-	}
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
@@ -969,6 +824,156 @@ gs_details_page_set_alternates (GsDetailsPage *self)
 }
 
 static void
+gs_details_page_refresh_buttons (GsDetailsPage *self)
+{
+	AsAppState state;
+	GsPrice *price;
+	GtkStyleContext *sc;
+	g_autofree gchar *text = NULL;
+
+	state = gs_app_get_state (self->app);
+
+	/* install button */
+	switch (state) {
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+		gtk_widget_set_visible (self->button_install, TRUE);
+		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
+		/* TRANSLATORS: button text in the header when an application
+		 * can be installed */
+		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
+		break;
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (self->button_install, FALSE);
+		break;
+	case AS_APP_STATE_PURCHASABLE:
+		gtk_widget_set_visible (self->button_install, TRUE);
+		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
+		price = gs_app_get_price (self->app);
+		text = gs_price_to_string (price);
+		gtk_button_set_label (GTK_BUTTON (self->button_install), text);
+		break;
+	case AS_APP_STATE_PURCHASING:
+		gtk_widget_set_visible (self->button_install, FALSE);
+		break;
+	case AS_APP_STATE_UNKNOWN:
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+		gtk_widget_set_visible (self->button_install, FALSE);
+		break;
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		gtk_widget_set_visible (self->button_install, TRUE);
+		sc = gtk_widget_get_style_context (self->button_install);
+		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+			/* TRANSLATORS: button text in the header when firmware
+			 * can be live-installed */
+			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
+			gtk_style_context_add_class (sc, "suggested-action");
+		} else {
+			/* TRANSLATORS: button text in the header when an application
+			 * can be live-updated */
+			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Update"));
+			gtk_style_context_remove_class (sc, "suggested-action");
+		}
+		break;
+	case AS_APP_STATE_UNAVAILABLE:
+		if (gs_app_get_url (self->app, AS_URL_KIND_MISSING) != NULL) {
+			gtk_widget_set_visible (self->button_install, FALSE);
+		} else {
+			gtk_widget_set_visible (self->button_install, TRUE);
+			/* TRANSLATORS: this is a button that allows the apps to
+			 * be installed.
+			 * The ellipsis indicates that further steps are required,
+			 * e.g. enabling software repositories or the like */
+			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install…"));
+		}
+		break;
+	default:
+		g_warning ("App unexpectedly in state %s",
+			   as_app_state_to_string (state));
+		g_assert_not_reached ();
+	}
+
+	/* launch button */
+	switch (gs_app_get_state (self->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		if (!gs_app_has_quirk (self->app, AS_APP_QUIRK_NOT_LAUNCHABLE)) {
+			gtk_widget_set_visible (self->button_details_launch, TRUE);
+		} else {
+			gtk_widget_set_visible (self->button_details_launch, FALSE);
+		}
+		break;
+	default:
+		gtk_widget_set_visible (self->button_details_launch, FALSE);
+		break;
+	}
+
+	if (gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION) {
+		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
+		                      /* TRANSLATORS: A label for a button to show the settings for
+		                         the selected shell extension. */
+		                      _("Extension Settings"));
+	} else {
+		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
+		                      /* TRANSLATORS: A label for a button to execute the selected
+		                         application. */
+		                      _("_Launch"));
+	}
+
+	/* don't show the launch and shortcut buttons if the app doesn't have a desktop ID */
+	if (gs_app_get_id (self->app) == NULL) {
+		gtk_widget_set_visible (self->button_details_launch, FALSE);
+	}
+
+	/* remove button */
+	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY) ||
+	    gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+		gtk_widget_set_visible (self->button_remove, FALSE);
+	} else {
+		switch (state) {
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
+			gtk_widget_set_visible (self->button_remove, TRUE);
+			gtk_widget_set_sensitive (self->button_remove, TRUE);
+			/* Mark the button as destructive only if Launch is not visible */
+			if (gtk_widget_get_visible (self->button_details_launch))
+				gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
+			else
+				gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
+			/* TRANSLATORS: button text in the header when an application can be erased */
+			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Remove"));
+			break;
+		case AS_APP_STATE_AVAILABLE_LOCAL:
+		case AS_APP_STATE_AVAILABLE:
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_REMOVING:
+		case AS_APP_STATE_UNAVAILABLE:
+		case AS_APP_STATE_UNKNOWN:
+		case AS_APP_STATE_PURCHASABLE:
+		case AS_APP_STATE_PURCHASING:
+		case AS_APP_STATE_QUEUED_FOR_INSTALL:
+			gtk_widget_set_visible (self->button_remove, FALSE);
+			break;
+		default:
+			g_warning ("App unexpectedly in state %s",
+				   as_app_state_to_string (state));
+			g_assert_not_reached ();
+		}
+	}
+
+	if (app_has_pending_action (self->app)) {
+		gtk_widget_set_visible (self->button_install, FALSE);
+		gtk_widget_set_visible (self->button_details_launch, FALSE);
+		gtk_widget_set_visible (self->button_remove, FALSE);
+	}
+}
+
+static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GsAppList *history;
@@ -1005,6 +1010,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* set the alternates shown in the header bar */
 	gs_details_page_set_alternates (self);
+
+	/* refresh buttons */
+	gs_details_page_refresh_buttons (self);
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);
