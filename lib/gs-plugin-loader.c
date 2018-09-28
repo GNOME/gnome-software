@@ -3097,6 +3097,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 {
 	GError *error = NULL;
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
+	GsAppListFilterFlags dedupe_flags;
 	GsAppList *list = gs_plugin_job_get_list (helper->plugin_job);
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -3400,10 +3401,9 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* filter duplicates with priority, taking into account the source name
 	 * & version, so we combine available updates with the installed app */
 	gs_app_list_filter (list, gs_plugin_loader_app_set_prio, plugin_loader);
-	gs_app_list_filter_duplicates (list,
-				       GS_APP_LIST_FILTER_FLAG_KEY_ID |
-				       GS_APP_LIST_FILTER_FLAG_KEY_SOURCE |
-				       GS_APP_LIST_FILTER_FLAG_KEY_VERSION);
+	dedupe_flags = gs_plugin_job_get_dedupe_flags (helper->plugin_job);
+	if (dedupe_flags != GS_APP_LIST_FILTER_FLAG_NONE)
+		gs_app_list_filter_duplicates (list, dedupe_flags);
 
 	/* sort these again as the refine may have added useful metadata */
 	gs_plugin_loader_job_sorted_truncation_again (helper);
