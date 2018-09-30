@@ -75,9 +75,6 @@
                                 <property name="valign">start</property>
                                 <property name="pixel_size">96</property>
                               </object>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkBox" id="box_details_header2">
@@ -102,9 +99,6 @@
                                       <class name="application-details-title"/>
                                     </style>
                                   </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="application_details_summary">
@@ -121,14 +115,8 @@
                                       <class name="application-details-summary"/>
                                     </style>
                                   </object>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
                             </child>
 
                             <child>
@@ -141,9 +129,6 @@
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
                                   </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="label_review_count">
@@ -155,20 +140,11 @@
                                       <class name="dim-label"/>
                                     </style>
                                   </object>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">2</property>
-                              </packing>
                             </child>
 
                           </object>
-                          <packing>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
 
                         <child>
@@ -190,9 +166,6 @@
                                   <class name="suggested-action"/>
                                 </style>
                               </object>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkButton" id="button_details_launch">
@@ -203,9 +176,6 @@
                                   <class name="suggested-action"/>
                                 </style>
                               </object>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkButton" id="button_remove">
@@ -218,17 +188,11 @@
                                 <property name="halign">start</property>
                                 <property name="valign">start</property>
                               </object>
-                              <packing>
-                                <property name="position">2</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkSpinner" id="spinner_remove">
                                 <property name="visible">False</property>
                               </object>
-                              <packing>
-                                <property name="position">3</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkBox" id="box_progress">
@@ -254,9 +218,6 @@
                                       </object>
                                     </child>
                                   </object>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <object class="GtkProgressBar" id="progressbar_top">
@@ -269,14 +230,8 @@
                                       <class name="upgrade-progressbar"/>
                                     </style>
                                   </object>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">4</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkButton" id="button_cancel">
@@ -287,9 +242,6 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                               </object>
-                              <packing>
-                                <property name="position">5</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkLinkButton" id="button_details_add_shortcut">
@@ -299,7 +251,6 @@
                                 <property name="label" translatable="yes" comments="Translators: A label for a button to add a shortcut to the selected application.">_Add shortcut</property>
                               </object>
                               <packing>
-                                <property name="position">6</property>
                                 <property name="pack-type">end</property>
                               </packing>
                             </child>
@@ -311,14 +262,10 @@
                                 <property name="label" translatable="yes" comments="Translators: A label for a button to remove a shortcut to the selected application.">Re_move shortcut</property>
                               </object>
                               <packing>
-                                <property name="position">7</property>
                                 <property name="pack-type">end</property>
                               </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
 
                         <child>
@@ -336,9 +283,6 @@
                                   <placeholder/>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkScrolledWindow">
@@ -358,14 +302,8 @@
                                   </object>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">2</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="box_details_screenshot_fallback">
@@ -399,9 +337,6 @@
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">3</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="box_details_description">
@@ -413,9 +348,6 @@
                               <placeholder/>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">4</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_repo">
@@ -424,9 +356,6 @@
                             <property name="title" translatable="yes">Software Repository Included</property>
                             <property name="body" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
                           </object>
-                          <packing>
-                            <property name="position">5</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_norepo">
@@ -435,9 +364,6 @@
                             <property name="title" translatable="yes">No Software Repository Included</property>
                             <property name="body" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
                           </object>
-                          <packing>
-                            <property name="position">6</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_package_baseos">
@@ -446,9 +372,6 @@
                             <property name="margin_top">20</property>
                             <property name="title" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
                           </object>
-                          <packing>
-                            <property name="position">7</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_repo">
@@ -458,9 +381,6 @@
                             <property name="body" translatable="yes">Adding this software repository will give you access to additional software and upgrades.</property>
                             <property name="warning" translatable="yes">Only use software repositories that you trust.</property>
                           </object>
-                          <packing>
-                            <property name="position">8</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="box_details_support">
@@ -475,9 +395,6 @@
                                 <property name="can_focus">True</property>
                                 <property name="use_underline">True</property>
                               </object>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkButton" id="button_donate">
@@ -487,14 +404,8 @@
                                 <property name="can_focus">True</property>
                                 <property name="use_underline">True</property>
                               </object>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">9</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="application_details_details_title">
@@ -508,9 +419,6 @@
                               <class name="application-details-title"/>
                             </style>
                           </object>
-                          <packing>
-                            <property name="position">10</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="box_details_details">
@@ -653,9 +561,6 @@
                                   </packing>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                             <child>
                               <object class="GtkGrid" id="grid_details_details">
@@ -977,9 +882,6 @@
                                           <class name="details-license-free"/>
                                         </style>
                                       </object>
-                                      <packing>
-                                        <property name="position">0</property>
-                                      </packing>
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="button_details_license_nonfree">
@@ -992,9 +894,6 @@
                                           <class name="details-license-nonfree"/>
                                         </style>
                                       </object>
-                                      <packing>
-                                        <property name="position">1</property>
-                                      </packing>
                                     </child>
                                     <child>
                                       <object class="GtkButton" id="button_details_license_unknown">
@@ -1007,9 +906,6 @@
                                           <class name="details-license-unknown"/>
                                         </style>
                                       </object>
-                                      <packing>
-                                        <property name="position">2</property>
-                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
@@ -1018,14 +914,8 @@
                                   </packing>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">11</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="box_addons">
@@ -1082,9 +972,6 @@
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">12</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkBox" id="box_reviews">
@@ -1145,9 +1032,6 @@
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">13</property>
-                          </packing>
                         </child>
                       </object>
                     </child>
@@ -1261,9 +1145,6 @@
               <attribute name="weight" value="bold"/>
             </attributes>
           </object>
-          <packing>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel">
@@ -1274,9 +1155,6 @@
             <property name="wrap">True</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="label_licenses_intro">
@@ -1286,9 +1164,6 @@
             <property name="wrap">True</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">2</property>
-          </packing>
         </child>
         <child>
           <object class="GtkBox" id="box_details_license_list">
@@ -1299,9 +1174,6 @@
               <placeholder/>
             </child>
           </object>
-          <packing>
-            <property name="position">3</property>
-          </packing>
         </child>
       </object>
     </child>
@@ -1324,9 +1196,6 @@
               <attribute name="weight" value="bold"/>
             </attributes>
           </object>
-          <packing>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel">
@@ -1337,9 +1206,6 @@
             <property name="wrap">True</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="label_license_nonfree_details">
@@ -1350,9 +1216,6 @@
             <property name="wrap">True</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
     </child>
@@ -1376,9 +1239,6 @@
               <attribute name="weight" value="bold"/>
             </attributes>
           </object>
-          <packing>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel">
@@ -1389,9 +1249,6 @@
             <property name="wrap">True</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
     </child>
@@ -1411,9 +1268,6 @@
             <property name="label" translatable="yes">The application was rated this way because it features:</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">0</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="label_content_rating_message">
@@ -1421,18 +1275,12 @@
             <property name="label">• Use of alcoholic beverages</property>
             <property name="xalign">0</property>
           </object>
-          <packing>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <object class="GtkLabel" id="label_content_rating_none">
             <property name="visible">True</property>
             <property name="label" translatable="yes">No details were available for this rating.</property>
           </object>
-          <packing>
-            <property name="position">2</property>
-          </packing>
         </child>
       </object>
     </child>
