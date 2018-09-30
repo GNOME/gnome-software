@@ -13,18 +13,15 @@
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
 
             <child>
               <object class="GtkInfoBar" id="infobar_third_party">
                 <property name="visible">True</property>
                 <property name="app_paintable">True</property>
-                <property name="can_focus">False</property>
                 <property name="show_close_button">True</property>
                 <child internal-child="action_area">
                   <object class="GtkButtonBox">
-                    <property name="can_focus">False</property>
                     <property name="spacing">6</property>
                     <property name="layout_style">end</property>
                     <child/>
@@ -35,14 +32,12 @@
                 </child>
                 <child internal-child="content_area">
                   <object class="GtkBox">
-                    <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <property name="border_width">12</property>
                     <child>
                       <object class="GtkLabel" id="label_third_party_title">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label" translatable="yes">Enable Third Party Software Repositories?</property>
                         <attributes>
@@ -56,7 +51,6 @@
                     <child>
                       <object class="GtkLabel" id="label_third_party">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label">Provides access to additional software.</property>
                         <property name="wrap">True</property>
@@ -88,13 +82,11 @@
                 <child>
                   <object class="GtkViewport" id="viewport_overview">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <child>
                       <object class="GtkBox" id="box_overview">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="halign">center</property>
                         <property name="hexpand">False</property>
                         <property name="border_width">12</property>
@@ -102,7 +94,6 @@
                         <child>
                           <object class="GtkLabel" id="featured_heading">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="xalign">0</property>
                             <property name="label" translatable="yes">Featured Applications</property>
                             <property name="margin-top">6</property>
@@ -132,7 +123,6 @@
                           <object class="GtkBox" id="box_featured_switcher">
                             <property name="visible">False</property>
                             <property name="halign">center</property>
-                            <property name="can_focus">False</property>
                             <property name="homogeneous">True</property>
                             <property name="orientation">horizontal</property>
                             <property name="spacing">18</property>
@@ -146,7 +136,6 @@
                         <child>
                           <object class="GtkLabel" id="category_heading">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="xalign">0</property>
                             <property name="label" translatable="yes">Categories</property>
                             <property name="margin-top">24</property>
@@ -165,7 +154,6 @@
                         <child>
                           <object class="GtkFlowBox" id="flowbox_categories">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="margin-bottom">14</property>
                             <property name="row_spacing">14</property>
                             <property name="column_spacing">14</property>
@@ -187,7 +175,6 @@
                             <child>
                               <object class="GtkFlowBox" id="flowbox_categories2">
                                 <property name="visible">True</property>
-                                <property name="can_focus">False</property>
                                 <property name="margin-bottom">24</property>
                                 <property name="row_spacing">14</property>
                                 <property name="column_spacing">14</property>
@@ -207,7 +194,6 @@
                         <child>
                           <object class="GtkBox" id="categories_expander_box">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="vexpand">False</property>
                             <property name="orientation">horizontal</property>
                             <property name="margin_start">24</property>
@@ -228,7 +214,6 @@
                               <object class="GtkButton" id="categories_expander_button_down">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
                                 <property name="margin-start">9</property>
                                 <property name="margin-end">9</property>
                                 <property name="valign">center</property>
@@ -239,7 +224,6 @@
                                 <child>
                                   <object class="GtkImage" id="categories_expander_image_down">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="icon_name">pan-down-symbolic</property>
                                     <property name="icon_size">1</property>
                                   </object>
@@ -253,7 +237,6 @@
                               <object class="GtkButton" id="categories_expander_button_up">
                                 <property name="visible">False</property>
                                 <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
                                 <property name="margin-start">9</property>
                                 <property name="margin-end">9</property>
                                 <property name="valign">center</property>
@@ -264,7 +247,6 @@
                                 <child>
                                   <object class="GtkImage" id="categories_expander_image_up">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="icon_name">pan-up-symbolic</property>
                                     <property name="icon_size">1</property>
                                   </object>
@@ -294,7 +276,6 @@
                         <child>
                           <object class="GtkLabel" id="popular_heading">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="xalign">0</property>
                             <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Picks</property>
                             <property name="margin-top">0</property>
@@ -313,7 +294,6 @@
                         <child>
                           <object class="GsHidingBox" id="box_popular">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="spacing">14</property>
                             <property name="valign">start</property>
                             <accessibility>
@@ -328,7 +308,6 @@
                         <child>
                           <object class="GtkLabel" id="recent_heading">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="xalign">0</property>
                             <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been recently released upstream.">Recent Releases</property>
                             <property name="margin-top">21</property>
@@ -347,7 +326,6 @@
                         <child>
                           <object class="GsHidingBox" id="box_recent">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="spacing">14</property>
                             <property name="valign">start</property>
                             <accessibility>
@@ -362,7 +340,6 @@
                         <child>
                           <object class="GtkBox" id="box_popular_rotating">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="orientation">vertical</property>
                             <property name="valign">start</property>
                           </object>

@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsPrefsDialog" parent="GtkDialog">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Update Preferences</property>
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
@@ -14,7 +13,6 @@
       <object class="GtkHeaderBar">
         <child type="title">
           <object class="GtkLabel" id="label_header">
-            <property name="can_focus">False</property>
             <property name="visible">True</property>
             <property name="label" translatable="yes">Update Preferences</property>
             <property name="selectable">False</property>
@@ -28,12 +26,10 @@
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
       <object class="GtkGrid">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="margin_top">24</property>
         <property name="margin_bottom">24</property>
         <property name="margin_start">33</property>
@@ -43,7 +39,6 @@
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="halign">start</property>
             <property name="label" translatable="yes">Automatic Updates</property>
             <attributes>
@@ -70,7 +65,6 @@
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="halign">start</property>
             <property name="margin_bottom">15</property>
             <property name="label" translatable="yes">Automatic updates are disabled when on mobile or metered connections.</property>
@@ -90,7 +84,6 @@
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="halign">start</property>
             <property name="label" translatable="yes">Automatic Update Notifications</property>
             <attributes>
@@ -105,7 +98,6 @@
         <child>
           <object class="GtkLabel">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="halign">start</property>
             <property name="label" translatable="yes">Show notifications when updates have been automatically installed.</property>
             <property name="wrap">True</property>

@@ -14,7 +14,6 @@
         <child>
           <object class="GtkBox" id="box_end_of_life">
             <property name="visible">False</property>
-            <property name="can_focus">False</property>
             <property name="border_width">0</property>
             <property name="orientation">horizontal</property>
             <property name="spacing">18</property>
@@ -24,7 +23,6 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="pixel_size">16</property>
                 <property name="icon_name">dialog-warning-symbolic</property>
                 <property name="margin_top">18</property>
@@ -34,14 +32,12 @@
             </child>
             <child>
               <object class="GtkBox">
-                <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="margin_right">18</property>
                     <property name="margin_top">18</property>
                     <property name="label" translatable="yes">Operating System Updates Unavailable</property>
@@ -57,7 +53,6 @@
                 <child>
                   <object class="GtkLabel" id="label_end_of_life">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="margin_right">18</property>
                     <property name="margin_bottom">18</property>
                     <property name="label">Your OS is no longer supported. This means that it does not receive security updates. It is recommended that you upgrade to a more recent version.</property>
@@ -102,7 +97,6 @@
                 <child>
                   <object class="GtkLabel" id="label_updates_spinner">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label"/>
                     <property name="justify">center</property>
                     <attributes>
@@ -179,7 +173,6 @@
                     <child>
                       <object class="GtkImage" id="image_updates">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="pixel_size">128</property>
                         <property name="icon_name">object-select-symbolic</property>
                       </object>
@@ -187,7 +180,6 @@
                     <child>
                       <object class="GtkLabel" id="label10">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Software is up to date</property>
                         <attributes>
                           <attribute name="scale" value="1.4"/>
@@ -199,7 +191,6 @@
                 <child>
                   <object class="GtkLabel" id="label_updates_last_checked">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="margin_bottom">32</property>
                     <property name="label">Last checked: HH:MM</property>
                     <style>
@@ -230,7 +221,6 @@
                 <child>
                   <object class="GtkImage" id="image_updates_mobile">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="pixel_size">128</property>
                     <property name="icon_name">dialog-warning-symbolic</property>
                   </object>
@@ -238,7 +228,6 @@
                 <child>
                   <object class="GtkLabel" id="label_updates_mobile">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Checking for updates when using mobile broadband could cause you to incur charges</property>
                     <property name="wrap">True</property>
                     <property name="halign">center</property>
@@ -255,7 +244,6 @@
                     <property name="width_request">150</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="hexpand">False</property>
                     <property name="halign">center</property>
@@ -281,7 +269,6 @@
                 <child>
                   <object class="GtkImage" id="image_updates_offline">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="pixel_size">128</property>
                     <property name="icon_name">network-offline-symbolic</property>
                   </object>
@@ -289,7 +276,6 @@
                 <child>
                   <object class="GtkLabel" id="label_updates_offline">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Go online to check for updates</property>
                     <property name="wrap">True</property>
                     <property name="halign">center</property>
@@ -305,7 +291,6 @@
                     <property name="width_request">150</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
                     <property name="hexpand">False</property>
                     <property name="halign">center</property>
@@ -331,7 +316,6 @@
                 <child>
                   <object class="GtkImage" id="image_updates_failed">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="pixel_size">128</property>
                     <property name="icon_name">action-unavailable-symbolic</property>
                   </object>
@@ -339,7 +323,6 @@
                 <child>
                   <object class="GtkLabel" id="label_updates_failed">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="wrap">True</property>
                     <property name="max-width-chars">60</property>
                     <property name="label" translatable="No">Failed to get updates</property>
@@ -368,7 +351,6 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="pixel_size">128</property>
                     <property name="icon_name">action-unavailable-symbolic</property>
                   </object>
@@ -376,7 +358,6 @@
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="wrap">True</property>
                     <property name="max-width-chars">60</property>
                     <property name="label" translatable="yes">Updates are automatically managed</property>

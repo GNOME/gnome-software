@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <template class="GsReposDialog" parent="GtkDialog">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Software Repositories</property>
     <property name="modal">True</property>
     <property name="default_width">600</property>
@@ -15,7 +14,6 @@
       <object class="GtkHeaderBar">
         <child type="title">
           <object class="GtkLabel" id="label_header">
-            <property name="can_focus">False</property>
             <property name="visible">True</property>
             <property name="label" translatable="yes">Software Repositories</property>
             <property name="selectable">False</property>
@@ -29,7 +27,6 @@
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkStack" id="stack">
@@ -52,7 +49,6 @@
             <child>
               <object class="GtkBox" id="box_empty">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <property name="hexpand">True</property>
@@ -75,7 +71,6 @@
                 <child>
                   <object class="GtkLabel" id="label_empty_title">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="justify">center</property>
                     <property name="wrap">True</property>
                     <property name="label" translatable="yes">No Additional Repositories</property>
@@ -90,7 +85,6 @@
                 <child>
                   <object class="GtkLabel" id="label_empty">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="justify">center</property>
                     <property name="wrap">True</property>
                     <property name="max_width_chars">40</property>
@@ -116,7 +110,6 @@
                 <child>
                   <object class="GtkBox" id="box1">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="margin_start">52</property>
                     <property name="margin_end">52</property>
                     <property name="margin_top">24</property>
@@ -126,7 +119,6 @@
                     <child>
                       <object class="GtkLabel" id="label_description">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="wrap">True</property>
                         <property name="max_width_chars">30</property>
@@ -146,7 +138,6 @@
                         <child>
                           <object class="GtkListBox" id="listbox_third_party">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="selection_mode">none</property>
                             <child>
                               <object class="GsThirdPartyRepoRow" id="row_third_party">
@@ -169,7 +160,6 @@
                         <child>
                           <object class="GtkListBox" id="listbox">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="selection_mode">none</property>
                           </object>
                         </child>

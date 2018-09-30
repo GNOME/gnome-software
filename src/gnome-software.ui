@@ -47,7 +47,6 @@
   </menu>
   <object class="GtkApplicationWindow" id="window_software">
     <property name="visible">False</property>
-    <property name="can_focus">False</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
     <property name="title" translatable="yes">Software</property>
@@ -55,18 +54,15 @@
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkHeaderBar" id="header">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="show_close_button">True</property>
             <child>
               <object class="GtkButton" id="button_back">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="button_back_accessible">
                     <property name="accessible-name" translatable="yes">Go back</property>
@@ -78,7 +74,6 @@
                 <child>
                   <object class="GtkImage" id="back_image">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="icon_name">go-previous-symbolic</property>
                     <property name="icon_size">1</property>
                   </object>
@@ -88,11 +83,9 @@
             <child type="title">
               <object class="GtkBox" id="title_box">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <child>
                   <object class="GtkButtonBox" id="buttonbox_main">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="layout_style">center</property>
                     <style>
                       <class name="linked"/>
@@ -206,7 +199,6 @@
                 <child>
                   <object class="GtkLabel" id="application_details_header">
                     <property name="visible">False</property>
-                    <property name="can_focus">False</property>
                     <property name="selectable">False</property>
                     <property name="ellipsize">end</property>
                     <style>
@@ -252,7 +244,6 @@
               <object class="GtkToggleButton" id="search_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
                 <child internal-child="accessible">
                   <object class="AtkObject" id="search_button_accessible">
                     <property name="accessible-name" translatable="yes">Search</property>
@@ -264,7 +255,6 @@
                 <child>
                   <object class="GtkImage" id="search_image">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="icon_name">edit-find-symbolic</property>
                     <property name="icon_size">1</property>
                   </object>
@@ -284,7 +274,6 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="icon_name">open-menu-symbolic</property>
                     <property name="icon_size">1</property>
                   </object>
@@ -401,7 +390,6 @@
                     <child>
                       <object class="GtkLabel" id="label_events">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="label">Some Title</property>
                         <property name="wrap">True</property>
@@ -416,7 +404,6 @@
                     </child>
                     <child>
                       <object class="GtkButtonBox">
-                        <property name="can_focus">False</property>
                         <property name="layout_style">end</property>
                         <property name="visible">True</property>
                         <child>

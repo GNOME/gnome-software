@@ -21,22 +21,18 @@
   </object>
   <object class="GtkApplicationWindow" id="window_main">
     <property name="visible">False</property>
-    <property name="can_focus">False</property>
     <property name="default_width">1400</property>
     <property name="default_height">700</property>
     <property name="icon_name">org.gnome.Software</property>
     <child>
       <object class="GtkOverlay">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <child>
           <object class="GtkStack" id="stack_main">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="halign">center</property>
                 <property name="valign">center</property>
                 <property name="orientation">vertical</property>
@@ -44,7 +40,6 @@
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="pixel_size">128</property>
                     <property name="icon_name">input-tablet-symbolic.symbolic</property>
                     <style>
@@ -58,7 +53,6 @@
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="label" translatable="yes">No Designs</property>
                     <style>
                       <class name="dim-label"/>
@@ -83,12 +77,10 @@
                 <child>
                   <object class="GtkViewport">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="shadow_type">none</property>
                     <child>
                       <object class="GtkFlowBox" id="flowbox_main">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="valign">start</property>
                         <property name="homogeneous">True</property>
@@ -110,19 +102,16 @@
             <child>
               <object class="GtkBox" id="box_component">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="hexpand">True</property>
                 <property name="vexpand">True</property>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <property name="hexpand">True</property>
                     <child>
                       <object class="GtkBox" id="box_featured">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="vexpand">True</property>
                         <property name="border_width">12</property>
                         <property name="orientation">vertical</property>
@@ -130,11 +119,9 @@
                         <child>
                           <object class="GtkInfoBar" id="infobar_css">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="message_type">other</property>
                             <child internal-child="action_area">
                               <object class="GtkButtonBox">
-                                <property name="can_focus">False</property>
                                 <property name="spacing">6</property>
                                 <property name="layout_style">end</property>
                                 <child>
@@ -148,13 +135,11 @@
                             </child>
                             <child internal-child="content_area">
                               <object class="GtkBox">
-                                <property name="can_focus">False</property>
                                 <property name="spacing">16</property>
                                 <property name="hexpand">True</property>
                                 <child>
                                   <object class="GtkLabel" id="label_infobar_css">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
                                     <property name="halign">start</property>
                                     <property name="hexpand">True</property>
                                     <property name="label" translatable="yes">Error message here</property>
@@ -217,20 +202,17 @@
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="border_width">12</property>
                     <property name="orientation">vertical</property>
                     <property name="spacing">12</property>
                     <child>
                       <object class="GtkBox" id="box_desktop_id">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">3</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="halign">start</property>
                             <property name="valign">center</property>
                             <property name="label" translatable="yes">App ID</property>
@@ -264,13 +246,11 @@
                     <child>
                       <object class="GtkBox" id="box_name">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">3</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="halign">start</property>
                             <property name="valign">center</property>
                             <property name="label" translatable="yes">Name</property>
@@ -303,13 +283,11 @@
                     <child>
                       <object class="GtkBox" id="box_summary">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">3</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="halign">start</property>
                             <property name="valign">center</property>
                             <property name="label" translatable="yes">Summary</property>
@@ -342,7 +320,6 @@
                     <child>
                       <object class="GtkBox" id="box_kudos">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <property name="spacing">3</property>
                         <child>
@@ -350,7 +327,6 @@
                             <property name="label" translatable="yes">Editor’s Pick</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
                             <property name="halign">start</property>
                             <property name="draw_indicator">True</property>
                           </object>
@@ -363,7 +339,6 @@
                             <property name="label" translatable="yes" comments="This check button controls whether the application’s banner appears in the “Featured” category">Category Featured</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
                             <property name="halign">start</property>
                             <property name="draw_indicator">True</property>
                           </object>
@@ -395,18 +370,15 @@
         <child type="overlay">
           <object class="GtkRevealer" id="revealer_notification">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="halign">center</property>
             <property name="valign">start</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="spacing">6</property>
                 <child>
                   <object class="GtkLabel" id="label_notification">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <property name="margin_start">9</property>
                     <property name="margin_end">9</property>
@@ -422,7 +394,6 @@
                 <child>
                   <object class="GtkButtonBox">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="layout_style">end</property>
                     <child>
                       <object class="GtkButton" id="button_notification_undo_remove">
@@ -444,13 +415,10 @@
                 <child>
                   <object class="GtkButton" id="button_notification_dismiss">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="receives_default">False</property>
                     <property name="valign">center</property>
                     <child>
                       <object class="GtkImage">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
                         <property name="icon_name">window-close-symbolic</property>
                       </object>
                     </child>
@@ -474,7 +442,6 @@
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar_main">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="title" translatable="yes">Banner Designer</property>
         <property name="subtitle">fedora.xml</property>
         <property name="show_close_button">True</property>
@@ -482,11 +449,9 @@
           <object class="GtkButton" id="button_back">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
             <child>
               <object class="GtkImage" id="back_image">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="icon_name">go-previous-symbolic</property>
                 <property name="icon_size">1</property>
               </object>
@@ -517,7 +482,6 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="halign">center</property>
                 <property name="icon_name">system-search-symbolic</property>
               </object>
@@ -536,7 +500,6 @@
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="halign">center</property>
                 <property name="icon_name">open-menu-symbolic</property>
               </object>
@@ -552,13 +515,11 @@
   </object>
   <object class="GtkPopover" id="popover_menu">
     <property name="visible">False</property>
-    <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="relative_to">button_menu</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">3</property>
         <child>
@@ -602,13 +563,11 @@
   </object>
   <object class="GtkPopover" id="popover_new">
     <property name="visible">False</property>
-    <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="relative_to">button_new</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">3</property>
         <child>
