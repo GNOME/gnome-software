@@ -244,21 +244,6 @@
                                 <property name="orientation">vertical</property>
                                 <property name="hexpand">True</property>
                                 <child>
-                                  <object class="GtkProgressBar" id="progressbar_top">
-                                    <property name="visible">True</property>
-                                    <property name="fraction">0.5</property>
-                                    <property name="valign">center</property>
-                                    <property name="vexpand">True</property>
-                                    <property name="width_request">624</property>
-                                    <style>
-                                      <class name="upgrade-progressbar"/>
-                                    </style>
-                                  </object>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkBox" id="box_progress2">
                                     <property name="visible">True</property>
                                     <property name="spacing">3</property>
@@ -280,6 +265,21 @@
                                   </object>
                                   <packing>
                                     <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkProgressBar" id="progressbar_top">
+                                    <property name="visible">True</property>
+                                    <property name="fraction">0.5</property>
+                                    <property name="valign">center</property>
+                                    <property name="vexpand">True</property>
+                                    <property name="width_request">624</property>
+                                    <style>
+                                      <class name="upgrade-progressbar"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>
@@ -443,7 +443,7 @@
                             <property name="body" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
                           </object>
                           <packing>
-                            <property name="position">6</property>
+                            <property name="position">5</property>
                           </packing>
                         </child>
                         <child>
@@ -455,7 +455,7 @@
                             <property name="body" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
                           </object>
                           <packing>
-                            <property name="position">7</property>
+                            <property name="position">6</property>
                           </packing>
                         </child>
                         <child>
@@ -467,7 +467,7 @@
                             <property name="title" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
                           </object>
                           <packing>
-                            <property name="position">8</property>
+                            <property name="position">7</property>
                           </packing>
                         </child>
                         <child>
@@ -480,7 +480,7 @@
                             <property name="warning" translatable="yes">Only use software repositories that you trust.</property>
                           </object>
                           <packing>
-                            <property name="position">9</property>
+                            <property name="position">8</property>
                           </packing>
                         </child>
                         <child>
@@ -517,7 +517,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="position">10</property>
+                            <property name="position">9</property>
                           </packing>
                         </child>
                         <child>
@@ -534,7 +534,7 @@
                             </style>
                           </object>
                           <packing>
-                            <property name="position">11</property>
+                            <property name="position">10</property>
                           </packing>
                         </child>
                         <child>
@@ -1077,7 +1077,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="position">12</property>
+                            <property name="position">11</property>
                           </packing>
                         </child>
                         <child>
@@ -1138,7 +1138,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="position">13</property>
+                            <property name="position">12</property>
                           </packing>
                         </child>
                         <child>
@@ -1201,7 +1201,7 @@
                             </child>
                           </object>
                           <packing>
-                            <property name="position">14</property>
+                            <property name="position">13</property>
                           </packing>
                         </child>
                       </object>

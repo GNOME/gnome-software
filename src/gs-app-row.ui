@@ -139,21 +139,6 @@
                 <property name="margin_left">24</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel" id="label_warning">
-                    <property name="can_focus">False</property>
-                    <property name="label">warning-text</property>
-                    <property name="halign">start</property>
-                    <property name="ellipsize">middle</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="foreground" value="#cccc00000000"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkBox" id="box_desc">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -208,6 +193,21 @@
 		      </object>
 		    </child>
                   </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label_warning">
+                    <property name="can_focus">False</property>
+                    <property name="label">warning-text</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">middle</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="foreground" value="#cccc00000000"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </object>
               <packing>
