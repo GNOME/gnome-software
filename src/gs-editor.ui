@@ -20,6 +20,7 @@
     <property name="inline_completion">True</property>
   </object>
   <object class="GtkApplicationWindow" id="window_main">
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <property name="default_width">1400</property>
     <property name="default_height">700</property>
@@ -425,6 +426,7 @@
                     <property name="layout_style">end</property>
                     <child>
                       <object class="GtkButton" id="button_notification_undo_remove">
+                        <property name="visible">False</property>
                         <property name="label" translatable="yes" comments="button in the info bar">Undo</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
@@ -549,6 +551,7 @@
     </child>
   </object>
   <object class="GtkPopover" id="popover_menu">
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="relative_to">button_menu</property>
@@ -598,6 +601,7 @@
     </child>
   </object>
   <object class="GtkPopover" id="popover_new">
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <property name="border_width">6</property>
     <property name="relative_to">button_new</property>

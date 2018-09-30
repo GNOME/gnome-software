@@ -14,6 +14,7 @@
         <property name="orientation">horizontal</property>
         <child>
           <object class="GtkCheckButton" id="checkbox">
+            <property name="visible">False</property>
             <property name="margin-start">12</property>
             <property name="valign">center</property>
           </object>
@@ -140,6 +141,7 @@
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel" id="label_warning">
+                    <property name="visible">False</property>
                     <property name="can_focus">False</property>
                     <property name="label">warning-text</property>
                     <property name="halign">start</property>
@@ -175,6 +177,7 @@
                     </child>
 		    <child>
 		      <object class="GtkBox" id="label_installed">
+                        <property name="visible">False</property>
 			<property name="orientation">horizontal</property>
 			<property name="no_show_all">True</property>
 			<property name="halign">end</property>
@@ -231,6 +234,7 @@
 		<property name="valign">center</property>
 		<child>
 		  <object class="GsProgressButton" id="button">
+                    <property name="visible">False</property>
                     <property name="width_request">100</property>
                     <property name="margin-right">6</property>
                     <property name="halign">end</property>
@@ -241,6 +245,7 @@
 		</child>
 		<child>
 		  <object class="GtkSpinner" id="spinner">
+                    <property name="visible">False</property>
                     <property name="margin_start">12</property>
                     <property name="margin_end">12</property>
                     <property name="halign">end</property>
@@ -251,6 +256,7 @@
 		</child>
 		<child>
 		  <object class="GtkLabel" id="label">
+                    <property name="visible">False</property>
                     <property name="margin_start">12</property>
                     <property name="margin_end">12</property>
                     <property name="halign">end</property>
