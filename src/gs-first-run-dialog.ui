@@ -3,7 +3,6 @@
 <interface>
   <requires lib="gtk+" version="3.12"/>
   <template class="GsFirstRunDialog" parent="GtkDialog">
-    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Welcome</property>
     <property name="modal">True</property>
     <property name="resizable">False</property>
@@ -19,7 +18,6 @@
     </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
-        <property name="can_focus">False</property>
         <property name="margin_start">55</property>
         <property name="margin_end">55</property>
         <property name="margin_top">44</property>
@@ -27,13 +25,11 @@
         <child>
           <object class="GtkBox" id="box_empty">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <property name="spacing">16</property>
             <child>
               <object class="GtkImage" id="image1">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="pixel_size">128</property>
                 <property name="icon_name">org.gnome.Software</property>
               </object>
@@ -44,7 +40,6 @@
             <child>
               <object class="GtkLabel" id="label1">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Welcome to Software</property>
                 <attributes>
                   <attribute name="weight" value="bold"/>
@@ -58,7 +53,6 @@
             <child>
               <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Software lets you install all the software you need, all from one place. See our recommendations, browse the categories, or search for the applications you want.</property>
                 <property name="wrap">True</property>
                 <property name="max_width_chars">48</property>
