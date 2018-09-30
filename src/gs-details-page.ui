@@ -186,6 +186,7 @@
                             <property name="spacing">9</property>
                             <child>
                               <object class="GtkButton" id="button_install">
+                                <property name="visible">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="label" translatable="yes">_Install</property>
                                 <property name="width_request">105</property>
@@ -217,6 +218,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="button_remove">
+                                <property name="visible">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="label" translatable="yes">_Remove</property>
                                 <property name="width_request">105</property>
@@ -231,6 +233,7 @@
                             </child>
                             <child>
                               <object class="GtkSpinner" id="spinner_remove">
+                                <property name="visible">False</property>
                                 <property name="can_focus">False</property>
                               </object>
                               <packing>
@@ -289,6 +292,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="button_cancel">
+                                <property name="visible">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="label" translatable="yes">_Cancel</property>
                                 <property name="width_request">116</property>
@@ -757,6 +761,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="button_details_rating_value">
+                                    <property name="visible">False</property>
                                     <property name="use_underline">True</property>
                                     <property name="label">18</property>
                                     <property name="can_focus">True</property>
@@ -1143,6 +1148,7 @@
                         </child>
                         <child>
                           <object class="GtkBox" id="box_reviews">
+                            <property name="visible">False</property>
                             <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkLabel" id="application_details_reviews_title">
@@ -1161,6 +1167,7 @@
                             </child>
                             <child>
                               <object class="GsReviewHistogram" id="histogram">
+                                <property name="visible">False</property>
                                 <property name="halign">start</property>
                                 <property name="valign">center</property>
                                 <property name="margin_bottom">32</property>
@@ -1168,6 +1175,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="button_review">
+                                <property name="visible">False</property>
                                 <property name="use_underline">True</property>
                                 <property name="label" translatable="yes" comments="Translators: Button opening a dialog where the users can write and publish their opinions about the apps.">_Write a Review</property>
                                 <property name="can_focus">True</property>
@@ -1301,6 +1309,7 @@
     </widgets>
   </object>
   <object class="GtkPopover" id="popover_license_free">
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <property name="border_width">21</property>
     <property name="relative_to">button_details_license_free</property>
@@ -1369,6 +1378,7 @@
     </child>
   </object>
   <object class="GtkPopover" id="popover_license_nonfree">
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <property name="border_width">21</property>
     <property name="relative_to">button_details_license_nonfree</property>
@@ -1424,6 +1434,7 @@
     </child>
   </object>
   <object class="GtkPopover" id="popover_license_unknown">
+    <property name="visible">False</property>
     <property name="name">popover_license_unknown</property>
     <property name="can_focus">False</property>
     <property name="border_width">21</property>
@@ -1467,6 +1478,7 @@
   </object>
 
   <object class="GtkPopover" id="popover_content_rating">
+    <property name="visible">False</property>
     <property name="can_focus">False</property>
     <child>
       <object class="GtkBox" id="box_content_rating">

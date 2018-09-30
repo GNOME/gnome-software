@@ -2,6 +2,7 @@
 <interface>
   <requires lib="gtk+" version="3.10"/>
   <object class="GtkPopover" id="categories_popover">
+    <property name="visible">False</property>
     <property name="position">bottom</property>
     <child>
       <object class="GtkBox" id="popover_filter_box">
@@ -12,6 +13,7 @@
     </child>
   </object>
   <object class="GtkPopover" id="sorting_popover">
+    <property name="visible">False</property>
     <property name="position">bottom</property>
     <child>
       <object class="GtkBox" id="sorting_popover_box">
