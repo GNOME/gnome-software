@@ -25,7 +25,6 @@ test_args = [
   '-Warray-bounds',
   '-Wcast-align',
   '-Wclobbered',
-  '-Wdeclaration-after-statement',
   '-Wempty-body',
   '-Wextra',
   '-Wformat=2',
