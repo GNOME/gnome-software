@@ -105,7 +105,6 @@ json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsecret = dependency('libsecret-1')
 libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
-sqlite3 = dependency('sqlite3')
 
 if get_option('valgrind')
   message(meson.version())
@@ -164,6 +163,7 @@ endif
 
 if get_option('ubuntu_reviews')
   oauth = dependency('oauth')
+  sqlite3 = dependency('sqlite3')
 endif
 
 if get_option('gudev')
