@@ -195,7 +195,7 @@ gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
  * Get the list of updates.
  *
  * NOTE: Actually downloading the updates can be done in gs_plugin_download_app()
- * or in gs_plugin_update_app().
+ * or in gs_plugin_download().
  *
  * Plugins are expected to add new apps using gs_app_list_add().
  *
