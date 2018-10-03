@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2018 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -242,17 +243,31 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 	}
 }
 
-
 static gboolean
 _transaction_operation_error (FlatpakTransaction *transaction,
 			      FlatpakTransactionOperation *operation,
 			      const GError *error,
 			      FlatpakTransactionErrorDetails detail)
 {
-	/* invalidate */
-	GsApp *app = _transaction_operation_get_app (operation);
-	if (app != NULL)
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	g_autolist(GObject) ops = NULL;
+
+	/* whole transaction failed; restore the state for all the apps */
+	ops = flatpak_transaction_get_operations (transaction);
+	for (GList *l = ops; l != NULL; l = l->next) {
+		FlatpakTransactionOperation *op = l->data;
+		const gchar *ref = flatpak_transaction_operation_get_ref (op);
+		g_autoptr(GsApp) app = _ref_to_app (self, ref);
+
+		if (app == NULL) {
+			g_warning ("failed to find app for %s",
+				   flatpak_transaction_operation_get_ref (operation));
+			continue;
+		}
+
 		gs_app_set_state_recover (app);
+	}
+
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
 		g_printerr ("%s", error->message);
 		return TRUE;
