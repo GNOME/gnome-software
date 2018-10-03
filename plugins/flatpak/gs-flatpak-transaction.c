@@ -194,7 +194,7 @@ _transaction_new_operation (FlatpakTransaction *transaction,
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UPDATE:
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UNINSTALL:
