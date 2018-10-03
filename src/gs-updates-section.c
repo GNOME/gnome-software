@@ -278,7 +278,7 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
 			g_warning ("failed to perform update: %s", error->message);
-		return;
+		goto out;
 	}
 
 	/* trigger reboot if any application was not updatable live */
@@ -311,6 +311,8 @@ _perform_update_cb (GsPluginLoader *plugin_loader, GAsyncResult *res, gpointer u
 		g_notification_set_priority (n, G_NOTIFICATION_PRIORITY_URGENT);
 		g_application_send_notification (g_application_get_default (), "restart-required", n);
 	}
+
+out:
 	g_clear_object (&self->cancellable);
 	_update_buttons (self);
 }
