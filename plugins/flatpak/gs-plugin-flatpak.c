@@ -678,17 +678,22 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_update_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GCancellable *cancellable,
-		      GError **error)
+gs_plugin_update (GsPlugin *plugin,
+                  GsAppList *list,
+                  GCancellable *cancellable,
+                  GError **error)
 {
 	GsFlatpak *flatpak;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
-	g_autofree gchar *ref = NULL;
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
 	/* not supported */
-	flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+		if (flatpak != NULL)
+			gs_app_list_add (list_tmp, app);
+	}
 	if (flatpak == NULL)
 		return TRUE;
 
@@ -698,14 +703,20 @@ gs_plugin_update_app (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	ref = gs_flatpak_app_get_ref_display (app);
-	if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
-		g_prefix_error (error, "failed to add update ref %s: ", ref);
-		gs_flatpak_error_convert (error);
-		return FALSE;
+
+	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+		GsApp *app = gs_app_list_index (list_tmp, i);
+		g_autofree gchar *ref = NULL;
+
+		ref = gs_flatpak_app_get_ref_display (app);
+		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+			g_prefix_error (error, "failed to add update ref %s: ", ref);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
 	}
+
 	if (!flatpak_transaction_run (transaction, cancellable, error)) {
-		g_prefix_error (error, "failed to run transaction for %s: ", ref);
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
@@ -716,12 +727,18 @@ gs_plugin_update_app (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	if (!gs_flatpak_refine_app (flatpak, app,
-				    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
-				    cancellable, error)) {
-		g_prefix_error (error, "failed to run refine for %s: ", ref);
-		gs_flatpak_error_convert (error);
-		return FALSE;
+	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+		GsApp *app = gs_app_list_index (list_tmp, i);
+		g_autofree gchar *ref = NULL;
+
+		ref = gs_flatpak_app_get_ref_display (app);
+		if (!gs_flatpak_refine_app (flatpak, app,
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					    cancellable, error)) {
+			g_prefix_error (error, "failed to run refine for %s: ", ref);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
 	}
 	return TRUE;
 }
