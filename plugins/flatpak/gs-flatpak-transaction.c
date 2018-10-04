@@ -288,8 +288,22 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 			      FlatpakTransactionErrorDetails detail)
 {
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	FlatpakTransactionOperationType operation_type = flatpak_transaction_operation_get_operation_type (operation);
+	const gchar *ref = flatpak_transaction_operation_get_ref (operation);
 
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
+		g_debug ("skipped to %s %s: %s",
+		         _flatpak_transaction_operation_type_to_string (operation_type),
+		         ref,
+		         error->message);
+		return TRUE; /* continue */
+	}
+
+	if (detail & FLATPAK_TRANSACTION_ERROR_DETAILS_NON_FATAL) {
+		g_warning ("failed to %s %s (non fatal): %s",
+		           _flatpak_transaction_operation_type_to_string (operation_type),
+		           ref,
+		           error->message);
 		return TRUE; /* continue */
 	}
 
