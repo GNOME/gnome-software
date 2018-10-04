@@ -1930,6 +1930,24 @@ gs_shell_setup_pages (GsShell *shell)
 	}
 }
 
+static void
+gs_shell_add_about_menu_item (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GMenu *primary_menu;
+	g_autoptr(GMenuItem) menu_item = NULL;
+	g_autofree gchar *label = NULL;
+
+	primary_menu = G_MENU (gtk_builder_get_object (priv->builder, "primary_menu"));
+
+	/* TRANSLATORS: this is the menu item that opens the about window, e.g.
+	 * 'About Software' or 'About Application Installer' where the %s is
+	 * the application name chosen by the distro */
+	label = g_strdup_printf (_("About %s"), g_get_application_name ());
+	menu_item = g_menu_item_new (label, "app.about");
+	g_menu_append_item (primary_menu, menu_item);
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -2080,6 +2098,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
+
+	/* primary menu */
+	gs_shell_add_about_menu_item (shell);
 
 	/* auth menu */
 	priv->auth_actions = g_simple_action_group_new ();
