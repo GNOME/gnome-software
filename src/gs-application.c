@@ -759,7 +759,7 @@ autoupdate_activated (GSimpleAction *action, GVariant *parameter, gpointer data)
 {
 	GsApplication *app = GS_APPLICATION (data);
 	gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
-	gs_update_monitor_get_updates (app->update_monitor);
+	gs_update_monitor_autoupdate (app->update_monitor);
 }
 
 static void
