@@ -299,9 +299,6 @@ void		 gs_app_add_category		(GsApp		*app,
 						 const gchar	*category);
 gboolean	 gs_app_remove_category		(GsApp		*app,
 						 const gchar	*category);
-GPtrArray	*gs_app_get_keywords		(GsApp		*app);
-void		 gs_app_set_keywords		(GsApp		*app,
-						 GPtrArray	*keywords);
 void		 gs_app_add_kudo		(GsApp		*app,
 						 GsAppKudo	 kudo);
 void		 gs_app_remove_kudo		(GsApp		*app,
