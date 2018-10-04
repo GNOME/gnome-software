@@ -3671,44 +3671,6 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 }
 
 /**
- * gs_app_get_keywords:
- * @app: a #GsApp
- *
- * Gets the list of application keywords in the users locale.
- *
- * Returns: (element-type utf8) (transfer none): a list
- *
- * Since: 3.22
- **/
-GPtrArray *
-gs_app_get_keywords (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->keywords;
-}
-
-/**
- * gs_app_set_keywords:
- * @app: a #GsApp
- * @keywords: (element-type utf8): a set of keywords
- *
- * Sets the list of application keywords in the users locale.
- *
- * Since: 3.22
- **/
-void
-gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (keywords != NULL);
-	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_ptr_array (&priv->keywords, keywords);
-}
-
-/**
  * gs_app_add_kudo:
  * @app: a #GsApp
  * @kudo: a #GsAppKudo, e.g. %GS_APP_KUDO_MY_LANGUAGE
