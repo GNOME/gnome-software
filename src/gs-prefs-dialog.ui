@@ -7,6 +7,7 @@
     <property name="modal">True</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
+    <property name="resizable">False</property>
     <property name="skip_taskbar_hint">True</property>
     <property name="use_header_bar">1</property>
     <child internal-child="headerbar">
@@ -33,8 +34,11 @@
       <object class="GtkGrid">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="border_width">27</property>
-        <property name="row_spacing">15</property>
+        <property name="margin_top">24</property>
+        <property name="margin_bottom">24</property>
+        <property name="margin_start">33</property>
+        <property name="margin_end">33</property>
+        <property name="row_spacing">6</property>
         <property name="column_spacing">27</property>
         <child>
           <object class="GtkLabel">
@@ -68,9 +72,11 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="halign">start</property>
-            <property name="margin_bottom">12</property>
+            <property name="margin_bottom">15</property>
             <property name="label" translatable="yes">Automatic updates are disabled when on mobile or metered connections.</property>
             <property name="wrap">True</property>
+            <property name="width_chars">28</property>
+            <property name="max_width_chars">28</property>
             <property name="xalign">0</property>
             <style>
               <class name="dim-label"/>
@@ -79,7 +85,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">1</property>
-            <property name="width">2</property>
           </packing>
         </child>
         <child>
@@ -104,6 +109,8 @@
             <property name="halign">start</property>
             <property name="label" translatable="yes">Show notifications when updates have been automatically installed.</property>
             <property name="wrap">True</property>
+            <property name="width_chars">28</property>
+            <property name="max_width_chars">28</property>
             <property name="xalign">0</property>
             <style>
               <class name="dim-label"/>
@@ -112,7 +119,6 @@
           <packing>
             <property name="left_attach">0</property>
             <property name="top_attach">3</property>
-            <property name="width">2</property>
           </packing>
         </child>
         <child>
