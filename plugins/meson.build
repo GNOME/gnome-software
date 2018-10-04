@@ -38,9 +38,6 @@ endif
 if get_option('snap')
   subdir('snap')
 endif
-if get_option('steam')
-  subdir('steam')
-endif
 if get_option('ubuntuone')
   subdir('ubuntuone')
 endif

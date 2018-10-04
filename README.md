@@ -9,7 +9,6 @@ Plugins are provided for:
  - Next generation packages: [Flatpak](https://flatpak.org/) and [Snap](https://snapcraft.io/).
  - Firmware updates.
  - Ratings and reviews ([ODRS](https://odrs.gnome.org/) and Ubuntu reviews).
- - [Steam](http://store.steampowered.com/) games.
 
 Software supports showing metadata that closely matches the [AppStream](https://www.freedesktop.org/wiki/Distributions/AppStream/) format.
 
