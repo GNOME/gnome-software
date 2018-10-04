@@ -894,7 +894,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		"application/vnd.flatpak.ref",
 		NULL };
 
-	/* does this match any of the mimetypes_bundle we support */
+	/* does this match any of the mimetypes we support */
 	content_type = gs_utils_get_content_type (file, cancellable, error);
 	if (content_type == NULL)
 		return FALSE;
