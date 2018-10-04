@@ -119,6 +119,19 @@ gs_flatpak_transaction_run (FlatpakTransaction *transaction,
 	g_autoptr(GError) error_local = NULL;
 
 	if (!flatpak_transaction_run (transaction, cancellable, &error_local)) {
+		/* whole transaction failed; restore the state for all the apps involved */
+		g_autolist(GObject) ops = flatpak_transaction_get_operations (transaction);
+		for (GList *l = ops; l != NULL; l = l->next) {
+			FlatpakTransactionOperation *op = l->data;
+			const gchar *ref = flatpak_transaction_operation_get_ref (op);
+			g_autoptr(GsApp) app = _ref_to_app (self, ref);
+			if (app == NULL) {
+				g_warning ("failed to find app for %s", ref);
+				continue;
+			}
+			gs_app_set_state_recover (app);
+		}
+
 		if (self->first_operation_error != NULL) {
 			g_propagate_error (error, g_steal_pointer (&self->first_operation_error));
 			return FALSE;
@@ -275,23 +288,6 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 			      FlatpakTransactionErrorDetails detail)
 {
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
-	g_autolist(GObject) ops = NULL;
-
-	/* whole transaction failed; restore the state for all the apps */
-	ops = flatpak_transaction_get_operations (transaction);
-	for (GList *l = ops; l != NULL; l = l->next) {
-		FlatpakTransactionOperation *op = l->data;
-		const gchar *ref = flatpak_transaction_operation_get_ref (op);
-		g_autoptr(GsApp) app = _ref_to_app (self, ref);
-
-		if (app == NULL) {
-			g_warning ("failed to find app for %s",
-				   flatpak_transaction_operation_get_ref (operation));
-			continue;
-		}
-
-		gs_app_set_state_recover (app);
-	}
 
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
 		return TRUE; /* continue */
