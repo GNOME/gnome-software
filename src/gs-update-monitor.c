@@ -53,9 +53,15 @@ struct _GsUpdateMonitor {
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
+typedef enum {
+	GS_UPDATE_MONITOR_MODE_NONE		= 0,
+	GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES	= 1 << 0,
+	GS_UPDATE_MONITOR_MODE_LAST
+} GsUpdateMonitorMode;
+
 typedef struct {
-	GsUpdateMonitor	*monitor;
-	gboolean	 autoupdate;
+	GsUpdateMonitor		*monitor;
+	GsUpdateMonitorMode	 mode;
 } DownloadUpdatesData;
 
 static void
@@ -402,7 +408,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
 	/* download any updates if auto-updates are turned on */
-	if (download_updates_data->autoupdate &&
+	if (download_updates_data->mode == GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES &&
 	    g_settings_get_boolean (monitor->settings, "download-updates")) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
@@ -544,7 +550,7 @@ get_upgrades_finished_cb (GObject *object,
 }
 
 static void
-get_updates (GsUpdateMonitor *monitor, gboolean autoupdate)
+get_updates (GsUpdateMonitor *monitor, GsUpdateMonitorMode mode)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(DownloadUpdatesData) download_updates_data = NULL;
@@ -557,7 +563,7 @@ get_updates (GsUpdateMonitor *monitor, gboolean autoupdate)
 
 	download_updates_data = g_slice_new0 (DownloadUpdatesData);
 	download_updates_data->monitor = g_object_ref (monitor);
-	download_updates_data->autoupdate = autoupdate;
+	download_updates_data->mode = mode;
 
 	/* NOTE: this doesn't actually do any network access */
 	g_debug ("Getting updates");
@@ -575,7 +581,7 @@ get_updates (GsUpdateMonitor *monitor, gboolean autoupdate)
 void
 gs_update_monitor_autoupdate (GsUpdateMonitor *monitor)
 {
-	get_updates (monitor, TRUE /* autoupdate */);
+	get_updates (monitor, GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES);
 }
 
 static void
@@ -639,7 +645,7 @@ refresh_cache_finished_cb (GObject *object,
 	g_settings_set (monitor->settings, "check-timestamp", "x",
 	                g_date_time_to_unix (now));
 
-	get_updates (monitor, TRUE /* autoupdate */);
+	get_updates (monitor, GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES);
 }
 
 typedef enum {
@@ -823,7 +829,7 @@ updates_changed_cb (GsPluginLoader *plugin_loader, GsUpdateMonitor *monitor)
 {
 	/* when the list of downloaded-and-ready-to-go updates changes get the
 	 * new list and perhaps show/hide the notification */
-	get_updates (monitor, FALSE /* autoupdate */);
+	get_updates (monitor, GS_UPDATE_MONITOR_MODE_NONE);
 }
 
 static void
