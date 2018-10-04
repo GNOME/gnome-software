@@ -29,6 +29,7 @@ struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	FlatpakInstallation	*installation;
 	GHashTable		*refhash;	/* ref:GsApp */
+	GError			*first_operation_error;
 };
 
 enum {
@@ -56,6 +57,8 @@ gs_flatpak_transaction_finalize (GObject *object)
 
 	g_assert (self != NULL);
 	g_hash_table_unref (self->refhash);
+	if (self->first_operation_error != NULL)
+		g_error_free (self->first_operation_error);
 
 	G_OBJECT_CLASS (gs_flatpak_transaction_parent_class)->finalize (object);
 }
@@ -104,6 +107,28 @@ static GsApp *
 _transaction_operation_get_app (FlatpakTransactionOperation *op)
 {
 	return g_object_get_data (G_OBJECT (op), "GsApp");
+}
+
+gboolean
+gs_flatpak_transaction_run (FlatpakTransaction *transaction,
+                            GCancellable *cancellable,
+                            GError **error)
+
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	g_autoptr(GError) error_local = NULL;
+
+	if (!flatpak_transaction_run (transaction, cancellable, &error_local)) {
+		if (self->first_operation_error != NULL) {
+			g_propagate_error (error, g_steal_pointer (&self->first_operation_error));
+			return FALSE;
+		} else {
+			g_propagate_error (error, g_steal_pointer (&error_local));
+			return FALSE;
+		}
+	}
+
+	return TRUE;
 }
 
 static gboolean
@@ -269,9 +294,14 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 	}
 
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
-		return TRUE;
+		return TRUE; /* continue */
 	}
-	return FALSE;
+
+	if (self->first_operation_error == NULL) {
+		g_propagate_error (&self->first_operation_error,
+		                   g_error_copy (error));
+	}
+	return FALSE; /* stop */
 }
 
 static int

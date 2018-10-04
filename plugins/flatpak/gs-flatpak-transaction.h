@@ -39,6 +39,9 @@ GsApp			*gs_flatpak_transaction_get_app_by_ref	(FlatpakTransaction	*transaction,
 								 const gchar		*ref);
 void			 gs_flatpak_transaction_add_app		(FlatpakTransaction	*transaction,
 								 GsApp			*app);
+gboolean		 gs_flatpak_transaction_run		(FlatpakTransaction	*transaction,
+								 GCancellable		*cancellable,
+								 GError			**error);
 
 G_END_DECLS
 
