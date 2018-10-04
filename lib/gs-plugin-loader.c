@@ -1410,30 +1410,16 @@ gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 static gboolean
 gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 {
-	GPtrArray *keywords;
-	const gchar *keyword;
-	guint i;
 	g_autoptr(GString) tmp = NULL;
-
-	/* is the search string one of the codec keywords */
-	keywords = gs_app_get_keywords (app);
-	for (i = 0; i < keywords->len; i++) {
-		keyword = g_ptr_array_index (keywords, i);
-		if (g_ascii_strcasecmp (search, keyword) == 0) {
-			search = keyword;
-			break;
-		}
-	}
 
 	tmp = g_string_new ("");
 	/* TRANSLATORS: this is when we know about an application or
 	 * addon, but it can't be listed for some reason */
-	g_string_append_printf (tmp, _("No addon codecs are available "
-				"for the %s format."), search);
+	g_string_append (tmp, _("No addon codecs are available "
+				"for this format."));
 	g_string_append (tmp, "\n");
-	g_string_append_printf (tmp, _("Information about %s, as well as options "
-				"for how to get a codec that can play this format "
-				"can be found on the website."), search);
+	g_string_append (tmp, _("Options for how to get a codec that can play this format "
+				"can be found on the website."));
 	gs_app_set_summary_missing (app, tmp->str);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
