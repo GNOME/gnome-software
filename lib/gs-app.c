@@ -84,7 +84,6 @@ typedef struct
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GPtrArray		*key_colors;
-	GPtrArray		*keywords;
 	GHashTable		*urls;
 	GHashTable		*launchables;
 	gchar			*license;
@@ -622,12 +621,6 @@ gs_app_to_string_append (GsApp *app, GString *str)
 				  color->red * 255.f,
 				  color->green * 255.f,
 				  color->blue * 255.f);
-	}
-	if (priv->keywords != NULL) {
-		for (i = 0; i < priv->keywords->len; i++) {
-			tmp = g_ptr_array_index (priv->keywords, i);
-			gs_app_kv_lpad (str, "keyword", tmp);
-		}
 	}
 	keys = g_hash_table_get_keys (priv->metadata);
 	for (GList *l = keys; l != NULL; l = l->next) {
@@ -3671,44 +3664,6 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 }
 
 /**
- * gs_app_get_keywords:
- * @app: a #GsApp
- *
- * Gets the list of application keywords in the users locale.
- *
- * Returns: (element-type utf8) (transfer none): a list
- *
- * Since: 3.22
- **/
-GPtrArray *
-gs_app_get_keywords (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->keywords;
-}
-
-/**
- * gs_app_set_keywords:
- * @app: a #GsApp
- * @keywords: (element-type utf8): a set of keywords
- *
- * Sets the list of application keywords in the users locale.
- *
- * Since: 3.22
- **/
-void
-gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (keywords != NULL);
-	locker = g_mutex_locker_new (&priv->mutex);
-	_g_set_ptr_array (&priv->keywords, keywords);
-}
-
-/**
  * gs_app_add_kudo:
  * @app: a #GsApp
  * @kudo: a #GsAppKudo, e.g. %GS_APP_KUDO_MY_LANGUAGE
@@ -4248,8 +4203,6 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->categories);
 	g_ptr_array_unref (priv->key_colors);
 	g_clear_object (&priv->cancellable);
-	if (priv->keywords != NULL)
-		g_ptr_array_unref (priv->keywords);
 	if (priv->local_file != NULL)
 		g_object_unref (priv->local_file);
 	if (priv->content_rating != NULL)
