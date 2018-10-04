@@ -632,11 +632,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				    as_app_get_project_license (item));
 
 	/* set keywords */
-	if (as_app_get_keywords (item, NULL) != NULL &&
-	    gs_app_get_keywords (app) == NULL) {
-		gs_app_set_keywords (app, as_app_get_keywords (item, NULL));
+	if (as_app_get_keywords (item, NULL) != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
-	}
 
 	/* set origin */
 	if (as_app_get_origin (item) != NULL &&
