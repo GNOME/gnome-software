@@ -1407,50 +1407,6 @@ gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 
 /******************************************************************************/
 
-static gboolean
-gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
-{
-	g_autoptr(GString) tmp = NULL;
-
-	tmp = g_string_new ("");
-	/* TRANSLATORS: this is when we know about an application or
-	 * addon, but it can't be listed for some reason */
-	g_string_append (tmp, _("No addon codecs are available "
-				"for this format."));
-	g_string_append (tmp, "\n");
-	g_string_append (tmp, _("Options for how to get a codec that can play this format "
-				"can be found on the website."));
-	gs_app_set_summary_missing (app, tmp->str);
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-	gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-	gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
-	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
-	return TRUE;
-}
-
-static void
-gs_plugin_loader_convert_unavailable (GsAppList *list, const gchar *search)
-{
-	guint i;
-	GsApp *app;
-
-	for (i = 0; i < gs_app_list_length (list); i++) {
-		app = gs_app_list_index (list, i);
-		if (gs_app_get_kind (app) != AS_APP_KIND_GENERIC)
-			continue;
-		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
-			continue;
-		if (gs_app_get_kind (app) != AS_APP_KIND_CODEC)
-			continue;
-		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL)
-			continue;
-
-		/* only convert the first unavailable codec */
-		if (gs_plugin_loader_convert_unavailable_app (app, search))
-			break;
-	}
-}
-
 /**
  * gs_plugin_loader_job_process_finish:
  * @plugin_loader: A #GsPluginLoader
@@ -3256,18 +3212,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 	} else {
 		g_debug ("no refine flags set for transaction");
-	}
-
-	/* convert any unavailable codecs */
-	switch (action) {
-	case GS_PLUGIN_ACTION_SEARCH:
-	case GS_PLUGIN_ACTION_SEARCH_FILES:
-	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
-	case GS_PLUGIN_ACTION_GET_ALTERNATES:
-		gs_plugin_loader_convert_unavailable (list, gs_plugin_job_get_search (helper->plugin_job));
-		break;
-	default:
-		break;
 	}
 
 	/* check the local files have an icon set */
