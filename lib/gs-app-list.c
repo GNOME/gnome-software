@@ -356,12 +356,12 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 }
 
 static void
-gs_app_list_add_safe (GsAppList *list, GsApp *app)
+gs_app_list_add_safe (GsAppList *list, GsApp *app, gboolean check_for_dupes)
 {
 	const gchar *id;
 
 	/* check for duplicate */
-	if (!gs_app_list_check_for_duplicate (list, app))
+	if (check_for_dupes && !gs_app_list_check_for_duplicate (list, app))
 		return;
 
 	/* if we're lazy-loading the ID then we can't use the ID hash */
@@ -404,7 +404,7 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&list->mutex);
-	gs_app_list_add_safe (list, app);
+	gs_app_list_add_safe (list, app, TRUE);
 
 	/* recalculate global state */
 	gs_app_list_invalidate_state (list);
@@ -476,7 +476,7 @@ gs_app_list_add_list (GsAppList *list, GsAppList *donor)
 	/* add each app */
 	for (i = 0; i < donor->array->len; i++) {
 		GsApp *app = gs_app_list_index (donor, i);
-		gs_app_list_add_safe (list, app);
+		gs_app_list_add_safe (list, app, TRUE);
 	}
 
 	/* recalculate global state */
@@ -579,7 +579,7 @@ gs_app_list_filter (GsAppList *list, GsAppListFilterFunc func, gpointer user_dat
 	for (i = 0; i < old->array->len; i++) {
 		app = gs_app_list_index (old, i);
 		if (func (app, user_data))
-			gs_app_list_add_safe (list, app);
+			gs_app_list_add_safe (list, app, FALSE);
 	}
 }
 
@@ -871,7 +871,7 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 	for (guint i = 0; i < old->array->len; i++) {
 		GsApp *app = gs_app_list_index (old, i);
 		if (g_hash_table_contains (kept_apps, app))
-			gs_app_list_add_safe (list, app);
+			gs_app_list_add_safe (list, app, FALSE);
 	}
 }
 
@@ -896,7 +896,7 @@ gs_app_list_copy (GsAppList *list)
 	new = gs_app_list_new ();
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		gs_app_list_add_safe (new, app);
+		gs_app_list_add_safe (new, app, FALSE);
 	}
 	return new;
 }
