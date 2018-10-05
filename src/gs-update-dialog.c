@@ -539,8 +539,11 @@ void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
 	AsAppKind kind;
+	g_autofree gchar *str = NULL;
 
-	kind = gs_app_get_kind (app);
+	/* debug */
+	str = gs_app_to_string (app);
+	g_debug ("%s", str);
 
 	/* set update header */
 	set_updates_description_ui (dialog, app);
@@ -550,6 +553,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	unset_focus (GTK_WIDGET (dialog));
 
 	/* set update description */
+	kind = gs_app_get_kind (app);
 	if (kind == AS_APP_KIND_OS_UPDATE) {
 		GsAppList *related;
 		GsApp *app_related;
