@@ -425,58 +425,6 @@ make_rpmostree_options_variant (gboolean reboot,
 	return g_variant_ref_sink (g_variant_dict_end (&dict));
 }
 
-static gboolean
-_download_only (GsPlugin *plugin, GCancellable *cancellable, GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *transaction_address = NULL;
-	g_autoptr(GVariant) options = NULL;
-
-	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-						  FALSE,  /* allow-downgrade */
-						  FALSE,  /* cache-only */
-						  TRUE,   /* download-only */
-						  FALSE,  /* skip-purge */
-						  FALSE,  /* no-pull-base */
-						  FALSE,  /* dry-run */
-						  FALSE); /* no-overrides */
-	if (!gs_rpmostree_os_call_upgrade_sync (priv->os_proxy,
-						options,
-						NULL /* fd list */,
-						&transaction_address,
-						NULL /* fd list out */,
-						cancellable,
-						error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
-	}
-
-	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
-							 transaction_address,
-							 cancellable,
-							 error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-gboolean
-gs_plugin_download (GsPlugin *plugin,
-		    GsAppList *list,
-		    GCancellable *cancellable,
-		    GError **error)
-{
-	/* any are us? */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "rpm-ostree") == 0)
-			return _download_only (plugin, cancellable, error);
-	}
-	return TRUE;
-}
-
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
                    guint cache_age,
@@ -484,30 +432,68 @@ gs_plugin_refresh (GsPlugin *plugin,
                    GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GVariantDict dict;
-	g_autofree gchar *transaction_address = NULL;
-	g_autoptr(GVariant) options = NULL;
 
-	g_variant_dict_init (&dict, NULL);
-	g_variant_dict_insert (&dict, "mode", "s", "check");
-	options = g_variant_ref_sink (g_variant_dict_end (&dict));
+	if (cache_age == G_MAXUINT)
+		return TRUE;
 
-	if (!gs_rpmostree_os_call_automatic_update_trigger_sync (priv->os_proxy,
-								 options,
-								 NULL,
-								 &transaction_address,
-								 cancellable,
-								 error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+	{
+		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GVariant) options = NULL;
+
+		options = make_rpmostree_options_variant (FALSE,  /* reboot */
+		                                          FALSE,  /* allow-downgrade */
+		                                          FALSE,  /* cache-only */
+		                                          TRUE,   /* download-only */
+		                                          FALSE,  /* skip-purge */
+		                                          FALSE,  /* no-pull-base */
+		                                          FALSE,  /* dry-run */
+		                                          FALSE); /* no-overrides */
+		if (!gs_rpmostree_os_call_upgrade_sync (priv->os_proxy,
+		                                        options,
+		                                        NULL /* fd list */,
+		                                        &transaction_address,
+		                                        NULL /* fd list out */,
+		                                        cancellable,
+		                                        error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+
+		if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+		                                                 transaction_address,
+		                                                 cancellable,
+		                                                 error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
 	}
 
-	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
-							 transaction_address,
-							 cancellable,
-							 error)) {
-		gs_utils_error_convert_gio (error);
-		return FALSE;
+	{
+		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GVariant) options = NULL;
+		GVariantDict dict;
+
+		g_variant_dict_init (&dict, NULL);
+		g_variant_dict_insert (&dict, "mode", "s", "check");
+		options = g_variant_ref_sink (g_variant_dict_end (&dict));
+
+		if (!gs_rpmostree_os_call_automatic_update_trigger_sync (priv->os_proxy,
+		                                                         options,
+		                                                         NULL,
+		                                                         &transaction_address,
+		                                                         cancellable,
+		                                                         error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+
+		if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+		                                                 transaction_address,
+		                                                 cancellable,
+		                                                 error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
 	}
 
 	/* update UI */
