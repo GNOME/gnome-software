@@ -318,14 +318,22 @@ out:
 }
 
 static GsApp *
-app_from_modified_pkg_variant (GVariant *variant)
+app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 {
 	g_autoptr(GsApp) app = NULL;
 	const char *name;
 	const char *old_evr, *old_arch;
 	const char *new_evr, *new_arch;
+	g_autofree char *old_nevra = NULL;
+	g_autofree char *new_nevra = NULL;
 
 	g_variant_get (variant, "(us(ss)(ss))", NULL /* type*/, &name, &old_evr, &old_arch, &new_evr, &new_arch);
+	old_nevra = g_strdup_printf ("%s-%s-%s", name, old_evr, old_arch);
+	new_nevra = g_strdup_printf ("%s-%s-%s", name, new_evr, new_arch);
+
+	app = gs_plugin_cache_lookup (plugin, old_nevra);
+	if (app != NULL)
+		return g_steal_pointer (&app);
 
 	/* create new app */
 	app = gs_app_new (NULL);
@@ -342,21 +350,28 @@ app_from_modified_pkg_variant (GVariant *variant)
 	gs_app_set_update_version (app, new_evr);
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 
-	g_debug ("!%s-%s-%s\n", name, old_evr, old_arch);
-	g_debug ("=%s-%s-%s\n", name, new_evr, new_arch);
+	g_debug ("!%s\n", old_nevra);
+	g_debug ("=%s\n", new_nevra);
 
+	gs_plugin_cache_add (plugin, old_nevra, app);
 	return g_steal_pointer (&app);
 }
 
 static GsApp *
-app_from_single_pkg_variant (GVariant *variant, gboolean addition)
+app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addition)
 {
 	g_autoptr(GsApp) app = NULL;
 	const char *name;
 	const char *evr;
 	const char *arch;
+	g_autofree char *nevra = NULL;
 
 	g_variant_get (variant, "(usss)", NULL /* type*/, &name, &evr, &arch);
+	nevra = g_strdup_printf ("%s-%s-%s", name, evr, arch);
+
+	app = gs_plugin_cache_lookup (plugin, nevra);
+	if (app != NULL)
+		return g_steal_pointer (&app);
 
 	/* create new app */
 	app = gs_app_new (NULL);
@@ -373,16 +388,17 @@ app_from_single_pkg_variant (GVariant *variant, gboolean addition)
 		gs_app_set_version (app, evr);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
-		g_debug ("+%s-%s-%s\n", name, evr, arch);
+		g_debug ("+%s\n", nevra);
 	} else {
 		/* removal */
 		gs_app_add_source (app, name);
 		gs_app_set_version (app, evr);
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 
-		g_debug ("-%s-%s-%s\n", name, evr, arch);
+		g_debug ("-%s\n", nevra);
 	}
 
+	gs_plugin_cache_add (plugin, nevra, app);
 	return g_steal_pointer (&app);
 }
 
@@ -573,7 +589,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all upgraded packages and add them */
 		g_variant_iter_init (&iter, upgraded);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_modified_pkg_variant (child);
+			g_autoptr(GsApp) app = app_from_modified_pkg_variant (plugin, child);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
@@ -582,7 +598,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all downgraded packages and add them */
 		g_variant_iter_init (&iter, downgraded);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_modified_pkg_variant (child);
+			g_autoptr(GsApp) app = app_from_modified_pkg_variant (plugin, child);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
@@ -591,7 +607,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all removed packages and add them */
 		g_variant_iter_init (&iter, removed);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_single_pkg_variant (child, FALSE);
+			g_autoptr(GsApp) app = app_from_single_pkg_variant (plugin, child, FALSE);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
@@ -600,7 +616,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		/* iterate over all added packages and add them */
 		g_variant_iter_init (&iter, added);
 		while ((child = g_variant_iter_next_value (&iter)) != NULL) {
-			g_autoptr(GsApp) app = app_from_single_pkg_variant (child, TRUE);
+			g_autoptr(GsApp) app = app_from_single_pkg_variant (plugin, child, TRUE);
 			if (app != NULL)
 				gs_app_list_add (list, app);
 			g_variant_unref (child);
