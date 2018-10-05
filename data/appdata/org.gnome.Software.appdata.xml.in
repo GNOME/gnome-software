@@ -46,6 +46,27 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-10-05" version="3.30.2">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Localize the polkit policy file</li>
+          <li>Display ongoing app-installation at top of the list</li>
+          <li>Update apps in display order</li>
+          <li>Fix autoupdates triggering in a feedback loop</li>
+          <li>Tweak the prefs dialog layout</li>
+          <li>Various fixes to the flatpak plugin, making its state keeping more robust</li>
+          <li>Fix flatpak errors to show up instead of a generic "Aborted" error</li>
+          <li>Avoid triggering reboots for online updatable apps (flatpak)</li>
+          <li>Make rpm-ostree updates work again</li>
+          <li>Fix an issue that caused duplicate lines in 'OS Updates' on rpm-ostree based systems</li>
+          <li>Compiler warning fixes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-09-25" version="3.30.1">
       <description>
         <p>
