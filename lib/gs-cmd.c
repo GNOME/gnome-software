@@ -140,6 +140,14 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_UI;
 	if (g_strcmp0 (flag, "runtime") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
+	if (g_strcmp0 (flag, "categories") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES;
+	if (g_strcmp0 (flag, "project-group") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP;
+	if (g_strcmp0 (flag, "developer-name") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME;
+	if (g_strcmp0 (flag, "kudos") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS;
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_NOT_SUPPORTED,

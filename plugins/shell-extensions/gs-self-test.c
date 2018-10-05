@@ -42,7 +42,9 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* get installed packages */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED, NULL);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_INSTALLED,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES,
+					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
