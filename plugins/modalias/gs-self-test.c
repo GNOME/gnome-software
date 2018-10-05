@@ -37,7 +37,7 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "colorhug2",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
