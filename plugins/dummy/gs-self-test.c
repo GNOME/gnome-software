@@ -365,6 +365,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
