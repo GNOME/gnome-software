@@ -839,7 +839,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 		return TRUE;
 
 	/* construct new refspec based on the distro version we're upgrading to */
-	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/workstation",
+	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
 	                               gs_app_get_version (app));
 
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
