@@ -975,7 +975,6 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	gboolean has_match_any_prefix = FALSE;
 	gboolean ret;
 	g_autoptr(GsAppList) freeze_list = NULL;
 	g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
@@ -1003,23 +1002,8 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 	if (!ret)
 		goto out;
 
-	/* second pass for any unadopted apps */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
-			has_match_any_prefix = TRUE;
-			break;
-		}
-	}
-	if (has_match_any_prefix) {
-		g_debug ("2nd resolve pass for unadopted wildcards");
-		if (!gs_plugin_loader_run_refine_internal (helper2, list,
-							   cancellable,
-							   error))
-			goto out;
-		/* filter any MATCH_ANY_PREFIX apps left in the list */
-		gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
-	}
+	/* filter any MATCH_ANY_PREFIX apps left in the list */
+	gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
 
 	/* remove any addons that have the same source as the parent app */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
