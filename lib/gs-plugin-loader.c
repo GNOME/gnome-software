@@ -1405,6 +1405,13 @@ gs_plugin_loader_app_sort_prio_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 	return gs_app_compare_priority (app1, app2);
 }
 
+static gint
+gs_plugin_loader_app_sort_version_cb (GsApp *app1, GsApp *app2, gpointer user_data)
+{
+	return as_utils_vercmp (gs_app_get_version (app1),
+	                        gs_app_get_version (app2));
+}
+
 /******************************************************************************/
 
 /**
@@ -3575,6 +3582,12 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
 			gs_plugin_job_set_sort_func (plugin_job,
 						     gs_plugin_loader_app_sort_prio_cb);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_DISTRO_UPDATES:
+		if (gs_plugin_job_get_sort_func (plugin_job) == NULL) {
+			gs_plugin_job_set_sort_func (plugin_job,
+						     gs_plugin_loader_app_sort_version_cb);
 		}
 		break;
 	default:
