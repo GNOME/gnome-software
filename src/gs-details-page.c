@@ -806,24 +806,6 @@ origin_popover_row_activated_cb (GtkListBox *list_box,
 }
 
 static void
-gs_details_page_set_alternates (GsDetailsPage *self)
-{
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
-					 "interactive", TRUE,
-					 "app", self->app,
-	                                 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
-					                 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader,
-					    plugin_job,
-					    self->cancellable,
-					    gs_details_page_get_alternates_cb,
-					    self);
-}
-
-static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
 	AsAppState state;
@@ -1536,7 +1518,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 }
 
 static void
-gs_details_page_app_refine2_cb (GObject *source,
+gs_details_page_app_refine_cb (GObject *source,
 				GAsyncResult *res,
 				gpointer user_data)
 {
@@ -1551,26 +1533,6 @@ gs_details_page_app_refine2_cb (GObject *source,
 	}
 	gs_details_page_refresh_size (self);
 	gs_details_page_refresh_reviews (self);
-}
-
-static void
-gs_details_page_app_refine2 (GsDetailsPage *self)
-{
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	/* if these tasks fail (e.g. because we have no networking) then it's
-	 * of no huge importance if we don't get the required data */
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", self->app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
-					 NULL);
-	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
-					    self->cancellable,
-					    gs_details_page_app_refine2_cb,
-					    self);
 }
 
 static void
@@ -1636,57 +1598,8 @@ gs_details_page_refresh_content_rating (GsDetailsPage *self)
 }
 
 static void
-gs_details_page_app_refine_cb (GObject *source,
-                               GAsyncResult *res,
-                               gpointer user_data)
+_set_app (GsDetailsPage *self, GsApp *app)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	gboolean ret;
-	g_autoptr(GError) error = NULL;
-	g_autofree gchar *app_dump = NULL;
-
-	ret = gs_plugin_loader_job_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
-		g_warning ("failed to refine %s: %s",
-			   gs_app_get_id (self->app),
-			   error->message);
-	}
-
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
-	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
-		g_autofree gchar *str = NULL;
-		const gchar *id;
-
-		id = gs_app_get_id (self->app);
-		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
-		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
-		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
-		return;
-	}
-
-	/* show some debugging */
-	app_dump = gs_app_to_string (self->app);
-	g_debug ("%s", app_dump);
-
-	gs_details_page_refresh_screenshots (self);
-	gs_details_page_refresh_addons (self);
-	gs_details_page_refresh_reviews (self);
-	gs_details_page_refresh_all (self);
-	gs_details_page_refresh_content_rating (self);
-	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
-
-	/* do 2nd stage refine */
-	gs_details_page_app_refine2 (self);
-}
-
-static void
-set_app (GsDetailsPage *self, GsApp *app)
-{
-	g_autofree gchar *tmp = NULL;
-
 	/* do not show all the reviews by default */
 	self->show_all_reviews = FALSE;
 
@@ -1705,7 +1618,7 @@ set_app (GsDetailsPage *self, GsApp *app)
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 		return;
 	}
-
+	g_set_object (&self->app_cancellable, gs_app_get_cancellable (app));
 	g_signal_connect_object (self->app, "notify::state",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
@@ -1724,24 +1637,79 @@ set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::pending-action",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
+}
+
+/* show the UI and do operations that should not block page load */
+static void
+gs_details_page_load_stage2 (GsDetailsPage *self)
+{
+	g_autofree gchar *tmp = NULL;
+	g_autoptr(GsPluginJob) plugin_job1 = NULL;
+	g_autoptr(GsPluginJob) plugin_job2 = NULL;
 
 	/* print what we've got */
 	tmp = gs_app_to_string (self->app);
 	g_debug ("%s", tmp);
 
-	/* change widgets */
-	gs_page_switch_to (GS_PAGE (self), TRUE);
+	/* update UI */
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
 	gs_details_page_refresh_screenshots (self);
 	gs_details_page_refresh_addons (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
 	gs_details_page_refresh_content_rating (self);
-	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
 
-	g_set_object (&self->app_cancellable, gs_app_get_cancellable (app));
+	/* if these tasks fail (e.g. because we have no networking) then it's
+	 * of no huge importance if we don't get the required data */
+	plugin_job1 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					  "app", self->app,
+					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
+					  NULL);
+	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_ALTERNATES,
+					  "interactive", TRUE,
+					  "app", self->app,
+					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+					  NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job1,
+					    self->cancellable,
+					    gs_details_page_app_refine_cb,
+					    self);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job2,
+					    self->cancellable,
+					    gs_details_page_get_alternates_cb,
+					    self);
+}
+
+static void
+gs_details_page_load_stage1_cb (GObject *source,
+				GAsyncResult *res,
+				gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to refine %s: %s",
+			   gs_app_get_id (self->app),
+			   error->message);
+	}
+	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
+	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
+		g_autofree gchar *str = NULL;
+		const gchar *id = gs_app_get_id (self->app);
+		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
+		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
+		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
+		return;
+	}
 
 	/* do 2nd stage refine */
-	gs_details_page_app_refine2 (self);
+	gs_details_page_load_stage2 (self);
 }
 
 static void
@@ -1762,8 +1730,8 @@ gs_details_page_file_to_app_cb (GObject *source,
 		/* go back to the overview */
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 	} else {
-		GsApp *app = gs_app_list_index (list, 0);
-		set_app (self, app);
+		_set_app (self, GS_APP (gs_app_list_index (list, 0)));
+		gs_details_page_load_stage2 (self);
 	}
 }
 
@@ -1785,8 +1753,8 @@ gs_details_page_url_to_app_cb (GObject *source,
 		/* go back to the overview */
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 	} else {
-		GsApp *app = gs_app_list_index (list, 0);
-		set_app (self, app);
+		_set_app (self, GS_APP (gs_app_list_index (list, 0)));
+		gs_details_page_load_stage2 (self);
 	}
 }
 
@@ -1853,10 +1821,17 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 					    self);
 }
 
+/* refines a GsApp */
 static void
-gs_details_page_load (GsDetailsPage *self)
+gs_details_page_load_stage1 (GsDetailsPage *self)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	/* update UI */
+	gs_page_switch_to (GS_PAGE (self), TRUE);
+	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+
+	/* get extra details about the app */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -1879,8 +1854,11 @@ gs_details_page_load (GsDetailsPage *self)
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable,
-					    gs_details_page_app_refine_cb,
+					    gs_details_page_load_stage1_cb,
 					    self);
+
+	/* update UI with loading page */
+	gs_details_page_refresh_all (self);
 }
 
 static void
@@ -1888,7 +1866,7 @@ gs_details_page_reload (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	if (self->app != NULL)
-		gs_details_page_load (self);
+		gs_details_page_load_stage1 (self);
 }
 
 static void
@@ -1901,59 +1879,16 @@ settings_changed_cb (GsDetailsPage *self, const gchar *key, gpointer data)
 	}
 }
 
+/* this is being called from GsShell */
 void
 gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 {
 	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
 	g_return_if_fail (GS_IS_APP (app));
 
-	/* get extra details about the app */
-	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
-
-	/* disconnect the old handlers */
-	if (self->app != NULL) {
-		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
-		g_signal_handlers_disconnect_by_func (self->settings,
-						      settings_changed_cb,
-						      self);
-		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_allow_cancel_changed_cb,
-						      self);
-	}
-	/* save app */
-	g_set_object (&self->app, app);
-
-	g_signal_connect_object (self->app, "notify::state",
-				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::size",
-				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::license",
-				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::quirk",
-				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::progress",
-				 G_CALLBACK (gs_details_page_progress_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::allow-cancel",
-				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
-				 self, 0);
-	g_signal_connect_object (self->app, "notify::pending-action",
-				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
-				 self, 0);
-
-	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
-
-	gs_details_page_load (self);
-
-	/* set the alternates shown in the header bar */
-	gs_details_page_set_alternates (self);
-
-	/* change widgets */
-	gs_details_page_refresh_all (self);
+	/* save GsApp */
+	_set_app (self, app);
+	gs_details_page_load_stage1 (self);
 }
 
 GsApp *
