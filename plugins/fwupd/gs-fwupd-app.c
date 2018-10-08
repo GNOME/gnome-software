@@ -98,7 +98,8 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 	}
 	if (fwupd_device_get_name (dev) != NULL) {
 		g_autofree gchar *vendor_name = NULL;
-		if (g_str_has_prefix (fwupd_device_get_name (dev),
+		if (fwupd_device_get_vendor (dev) == NULL ||
+		    g_str_has_prefix (fwupd_device_get_name (dev),
 				      fwupd_device_get_vendor (dev))) {
 			vendor_name = g_strdup (fwupd_device_get_name (dev));
 		} else {
