@@ -1898,7 +1898,8 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	}
 
 	/* scope is fast, do unconditionally */
-	gs_plugin_refine_item_scope (self, app);
+	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE_LOCAL)
+		gs_plugin_refine_item_scope (self, app);
 
 	/* if the state was changed, perhaps set the version from the release */
 	if (old_state != gs_app_get_state (app)) {
