@@ -3511,17 +3511,11 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 						GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION);
 	}
 
-	/* always add the original app to the list so it can be sorted */
+	/* get alternates is unusual in that it needs an app input and a list
+	 * output -- so undo the helpful app add in gs_plugin_job_set_app() */
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES) {
-		GsApp *app = gs_plugin_job_get_app (plugin_job);
 		GsAppList *list = gs_plugin_job_get_list (plugin_job);
-
-		/* also add the wildcard match */
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
-			g_autoptr(GsApp) app2 = gs_app_new (gs_app_get_id (app));
-			gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-			gs_app_list_add (list, app2);
-		}
+		gs_app_list_remove_all (list);
 	}
 
 	/* check required args */
