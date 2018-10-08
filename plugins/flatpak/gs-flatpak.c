@@ -2462,7 +2462,6 @@ gs_flatpak_add_alternates (GsFlatpak *self,
 	if (!gs_appstream_add_alternates (self->plugin, self->store, app, list_tmp,
 					  cancellable, error))
 		return FALSE;
-	gs_flatpak_claim_app_list (self, list_tmp);
 	gs_app_list_add_list (list, list_tmp);
 	return TRUE;
 }
