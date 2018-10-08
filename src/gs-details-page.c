@@ -1895,10 +1895,10 @@ gs_details_page_reload (GsPage *page)
 }
 
 static void
-settings_changed_cb (GsDetailsPage *self,
-		     const gchar *key,
-		     gpointer data)
+settings_changed_cb (GsDetailsPage *self, const gchar *key, gpointer data)
 {
+	if (self->app == NULL)
+		return;
 	if (g_strcmp0 (key, "show-nonfree-ui") == 0) {
 		gs_details_page_refresh_all (self);
 	}
@@ -1957,10 +1957,6 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 
 	/* change widgets */
 	gs_details_page_refresh_all (self);
-
-	g_signal_connect_swapped (self->settings, "changed",
-				  G_CALLBACK (settings_changed_cb),
-				  self);
 }
 
 GsApp *
@@ -2625,6 +2621,9 @@ gs_details_page_init (GsDetailsPage *self)
 	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                               NULL);
 	self->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect_swapped (self->settings, "changed",
+				  G_CALLBACK (settings_changed_cb),
+				  self);
 	self->size_group_origin_popover = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_addons),
