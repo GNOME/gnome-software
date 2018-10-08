@@ -3515,7 +3515,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES) {
 		GsApp *app = gs_plugin_job_get_app (plugin_job);
 		GsAppList *list = gs_plugin_job_get_list (plugin_job);
-		gs_app_list_add (list, app);
 
 		/* also add the wildcard match */
 		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
