@@ -1008,9 +1008,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->application_details_summary, FALSE);
 	}
 
-	/* set the alternates shown in the header bar */
-	gs_details_page_set_alternates (self);
-
 	/* refresh buttons */
 	gs_details_page_refresh_buttons (self);
 
@@ -1954,6 +1951,9 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
 
 	gs_details_page_load (self);
+
+	/* set the alternates shown in the header bar */
+	gs_details_page_set_alternates (self);
 
 	/* change widgets */
 	gs_details_page_refresh_all (self);
