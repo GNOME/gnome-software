@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2016-2017 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016-2018 Kalev Lember <klember@redhat.com>
  * Copyright (C) 2017 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -275,6 +275,7 @@ static GsApp *
 _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 {
 	GsApp *app;
+	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *app_version = NULL;
 	g_autofree gchar *background = NULL;
 	g_autofree gchar *cache_key = NULL;
@@ -288,7 +289,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	if (app != NULL)
 		return app;
 
-	/* create app */
+	app_id = g_strdup_printf ("org.fedoraproject.Fedora-%u", item->version);
 	app_version = g_strdup_printf ("%u", item->version);
 
 	/* icon from disk */
@@ -297,7 +298,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
 
 	/* create */
-	app = gs_app_new ("org.fedoraproject.Fedora");
+	app = gs_app_new (app_id);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, item->name);
