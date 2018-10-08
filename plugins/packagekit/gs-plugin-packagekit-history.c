@@ -69,6 +69,7 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	/* create new history item with same ID as parent */
 	history = gs_app_new (gs_app_get_id (app));
 	gs_app_set_kind (history, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_name (history, GS_APP_QUALITY_NORMAL, gs_app_get_name (app));
 
 	/* get the installed state */

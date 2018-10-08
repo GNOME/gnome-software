@@ -91,6 +91,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, path);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 
 	package_ids = g_new0 (gchar *, 2);
 	package_ids[0] = g_strdup (path);

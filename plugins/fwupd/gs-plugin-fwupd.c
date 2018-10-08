@@ -282,6 +282,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 
 	/* default stuff */
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_CABINET);
 	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_add_category (app, "System");
