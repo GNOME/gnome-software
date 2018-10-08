@@ -462,10 +462,10 @@ gs_plugins_dummy_search_alternate_func (GsPluginLoader *plugin_loader)
 	/* make sure there is the original app, and the alternate */
 	g_assert_cmpint (gs_app_list_length (list), ==, 2);
 	app_tmp = gs_app_list_index (list, 0);
-	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "zeus.desktop");
+	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "chiron.desktop");
 	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_APP_KIND_DESKTOP);
 	app_tmp = gs_app_list_index (list, 1);
-	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "chiron.desktop");
+	g_assert_cmpstr (gs_app_get_id (app_tmp), ==, "zeus.desktop");
 	g_assert_cmpint (gs_app_get_kind (app_tmp), ==, AS_APP_KIND_DESKTOP);
 }
 

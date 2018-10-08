@@ -1047,6 +1047,10 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 		AsApp *item = g_ptr_array_index (apps, i);
 		GPtrArray *sources = gs_app_get_sources (app);
 
+		/* actual ID */
+		if (g_strcmp0 (as_app_get_id (item), gs_app_get_id (app)) == 0)
+			_g_ptr_array_add_str_uniq (ids, as_app_get_id (item));
+
 		/* new ID -> old ID */
 		gs_appstream_add_alternates_old_id (ids, item, gs_app_get_id (app));
 
