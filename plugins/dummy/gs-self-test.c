@@ -352,7 +352,6 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	GsApp *app;
 	GsApp *addon;
 	GsAppList *addons;
-	guint64 kudos;
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -363,6 +362,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES |
@@ -389,8 +389,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert (gs_app_get_license_is_free (app));
 
 	/* check kudos */
-	kudos = gs_app_get_kudos (app);
-	g_assert (kudos & GS_APP_KUDO_MY_LANGUAGE);
+	g_assert_true (gs_app_has_kudo (app, GS_APP_KUDO_MY_LANGUAGE));
 
 	/* check categories */
 	g_assert (gs_app_has_category (app, "Player"));
