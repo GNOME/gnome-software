@@ -534,8 +534,9 @@ get_upgrades_finished_cb (GObject *object,
 	g_settings_set (monitor->settings, "upgrade-notification-timestamp", "x",
 	                g_date_time_to_unix (now));
 
-	/* just get the first result : FIXME, do we sort these by date? */
-	app = gs_app_list_index (apps, 0);
+	/* rely on the app list already being sorted with the
+	 * chronologically newest release last */
+	app = gs_app_list_index (apps, gs_app_list_length (apps) - 1);
 
 	/* TRANSLATORS: this is a distro upgrade, the replacement would be the
 	 * distro name, e.g. 'Fedora' */
