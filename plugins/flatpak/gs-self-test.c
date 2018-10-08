@@ -93,7 +93,7 @@ gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (app != NULL);
-	g_assert_cmpstr (gs_app_get_unique_id (app), ==, "user/*/*/source/example__1____/master");
+	g_assert_cmpstr (gs_app_get_unique_id (app), ==, "*/*/*/source/example__1____/master");
 }
 
 static void
@@ -801,7 +801,7 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app_src), ==, AS_APP_KIND_SOURCE);
 	g_assert_cmpint (gs_app_get_state (app_src), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app_src), ==, "test");
-	g_assert_cmpstr (gs_app_get_unique_id (app_src), ==, "user/*/*/source/test/master");
+	g_assert_cmpstr (gs_app_get_unique_id (app_src), ==, "*/*/*/source/test/master");
 	g_assert (gs_app_get_local_file (app_src) != NULL);
 
 	/* install the source manually */
