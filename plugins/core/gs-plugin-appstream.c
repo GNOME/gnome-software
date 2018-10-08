@@ -517,6 +517,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	gboolean found = FALSE;
 
+	/* not us */
+	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE &&
+	    gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_UNKNOWN) {
+		g_debug ("not a package, ignoring");
+		return TRUE;
+	}
+
 	/* find by ID then package name */
 	if (!gs_plugin_refine_from_id (plugin, app, &found, error))
 		return FALSE;
