@@ -250,7 +250,7 @@ app_has_pending_action (GsApp *app)
 	    gs_app_get_state (app) != AS_APP_STATE_QUEUED_FOR_INSTALL)
 		return FALSE;
 
-	return (gs_app_get_pending_action (app) != GS_PLUGIN_ACTION_UNKNOWN) ||
+	return (gs_app_get_pending_action (app) != GS_PLUGIN_ACTION_UNKNOWN) &&
 	       (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL);
 }
 
