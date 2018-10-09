@@ -61,6 +61,7 @@ struct _GsDetailsPage
 	GCancellable		*cancellable;
 	GCancellable		*app_cancellable;
 	GsApp			*app;
+	GsApp			*app_local_file;
 	GsShell			*shell;
 	SoupSession		*session;
 	gboolean		 enable_reviews;
@@ -762,6 +763,11 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		return;
 	}
 
+	/* add the local file to the list so that we can carry it over when
+	 * switching between alternates */
+	if (self->app_local_file != NULL)
+		gs_app_list_add (list, self->app_local_file);
+
 	/* no alternates to show */
 	if (gs_app_list_length (list) < 2) {
 		gtk_widget_hide (origin_box);
@@ -786,23 +792,6 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 		gtk_label_set_text (GTK_LABEL (origin_button_label), "");
 
 	gtk_widget_show (origin_box);
-}
-
-static void
-origin_popover_row_activated_cb (GtkListBox *list_box,
-                                 GtkListBoxRow *row,
-                                 gpointer user_data)
-{
-	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
-	GsApp *app;
-	GtkWidget *popover;
-
-	popover = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover"));
-	gtk_popover_popdown (GTK_POPOVER (popover));
-
-	app = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (row));
-	if (app != self->app)
-		gs_details_page_set_app (self, app);
 }
 
 static void
@@ -1730,7 +1719,9 @@ gs_details_page_file_to_app_cb (GObject *source,
 		/* go back to the overview */
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 	} else {
-		_set_app (self, GS_APP (gs_app_list_index (list, 0)));
+		GsApp *app = gs_app_list_index (list, 0);
+		g_set_object (&self->app_local_file, app);
+		_set_app (self, app);
 		gs_details_page_load_stage2 (self);
 	}
 }
@@ -1753,7 +1744,8 @@ gs_details_page_url_to_app_cb (GObject *source,
 		/* go back to the overview */
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
 	} else {
-		_set_app (self, GS_APP (gs_app_list_index (list, 0)));
+		GsApp *app = gs_app_list_index (list, 0);
+		_set_app (self, app);
 		gs_details_page_load_stage2 (self);
 	}
 }
@@ -1763,6 +1755,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+	g_clear_object (&self->app_local_file);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -1794,6 +1787,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+	g_clear_object (&self->app_local_file);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -1870,6 +1864,25 @@ gs_details_page_reload (GsPage *page)
 }
 
 static void
+origin_popover_row_activated_cb (GtkListBox *list_box,
+                                 GtkListBoxRow *row,
+                                 gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	GsApp *app;
+	GtkWidget *popover;
+
+	popover = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover"));
+	gtk_popover_popdown (GTK_POPOVER (popover));
+
+	app = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (row));
+	if (app != self->app) {
+		_set_app (self, app);
+		gs_details_page_load_stage1 (self);
+	}
+}
+
+static void
 settings_changed_cb (GsDetailsPage *self, const gchar *key, gpointer data)
 {
 	if (self->app == NULL)
@@ -1885,6 +1898,9 @@ gs_details_page_set_app (GsDetailsPage *self, GsApp *app)
 {
 	g_return_if_fail (GS_IS_DETAILS_PAGE (self));
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* clear old state */
+	g_clear_object (&self->app_local_file);
 
 	/* save GsApp */
 	_set_app (self, app);
@@ -2434,6 +2450,7 @@ gs_details_page_dispose (GObject *object)
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
 		g_clear_object (&self->app);
 	}
+	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
