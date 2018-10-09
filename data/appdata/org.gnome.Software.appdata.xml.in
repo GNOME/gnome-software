@@ -46,6 +46,30 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-10-09" version="3.31.1">
+      <description>
+        <p>
+          This is an unstable release in the 3.31 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Icon redesign</li>
+          <li>Switch to using window menus instead of app menu</li>
+          <li>Add a source selection drop down to details pages</li>
+          <li>Move the search button to the left side in the header bar</li>
+          <li>Various other minor UI tweaks</li>
+          <li>GtkBuilder UI file changes to pave the way for an eventual GTK4 port (please file issues for any UI layout regressions if you notice any!)</li>
+          <li>Various internal plugin loader fixes and cleanups</li>
+          <li>Remove the steam plugin</li>
+          <li>Simplify the details page loading</li>
+          <li>Fix an issue that caused icons to not get loaded for locally installed flatpaks</li>
+          <li>Update Fedora distro upgrades text</li>
+          <li>Avoid a critical warning in the fwupd plugin when the device vendor is not set</li>
+          <li>Show verified developers for snaps</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-10-05" version="3.30.2">
       <description>
         <p>
