@@ -157,6 +157,7 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP:	Require project group
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME:	Require developer name
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS:		Require kudos
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING:	Require content rating
  *
  * The refine flags.
  **/
@@ -192,6 +193,7 @@ typedef enum {
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROJECT_GROUP	((guint64) 1 << 28)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME	((guint64) 1 << 29)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS		((guint64) 1 << 30)
+#define GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING	((guint64) 1 << 31)
 typedef guint64 GsPluginRefineFlags;
 
 /**
