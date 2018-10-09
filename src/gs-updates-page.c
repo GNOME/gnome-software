@@ -1304,7 +1304,7 @@ gs_updates_page_setup (GsPage *page,
 						    self->sizegroup_desc,
 						    self->sizegroup_button,
 						    self->sizegroup_header);
-		gtk_widget_set_vexpand (GTK_WIDGET (self->sections[i]), TRUE);
+		gtk_widget_set_vexpand (GTK_WIDGET (self->sections[i]), FALSE);
 		gtk_container_add (GTK_CONTAINER (self->updates_box), GTK_WIDGET (self->sections[i]));
 	}
 
