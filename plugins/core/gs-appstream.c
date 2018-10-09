@@ -243,44 +243,6 @@ gs_appstream_is_recent_release (AsApp *app)
 	return secs / (60 * 60 * 24) < 365;
 }
 
-static gboolean
-gs_appstream_are_screenshots_perfect (AsApp *app)
-{
-	AsImage *image;
-	AsScreenshot *screenshot;
-	GPtrArray *screenshots;
-	guint height;
-	guint width;
-
-	screenshots = as_app_get_screenshots (app);
-	if (screenshots->len == 0)
-		return FALSE;
-	for (guint i = 0; i < screenshots->len; i++) {
-
-		/* get the source image as the thumbs will be resized & padded */
-		screenshot = g_ptr_array_index (screenshots, i);
-		image = as_screenshot_get_source (screenshot);
-		if (image == NULL)
-			return FALSE;
-
-		width = as_image_get_width (image);
-		height = as_image_get_height (image);
-
-		/* too small */
-		if (width < AS_IMAGE_LARGE_WIDTH || height < AS_IMAGE_LARGE_HEIGHT)
-			return FALSE;
-
-		/* too large */
-		if (width > AS_IMAGE_LARGE_WIDTH * 2 || height > AS_IMAGE_LARGE_HEIGHT * 2)
-			return FALSE;
-
-		/* not 16:9 */
-		if ((width / 16) * 9 != height)
-			return FALSE;
-	}
-	return TRUE;
-}
-
 static void
 gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 {
@@ -707,10 +669,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set provides */
 	gs_appstream_refine_add_provides (app, item);
-
-	/* are the screenshots perfect */
-	if (gs_appstream_are_screenshots_perfect (item))
-		gs_app_add_kudo (app, GS_APP_KUDO_PERFECT_SCREENSHOTS);
 
 	/* was this application released recently */
 	if (gs_appstream_is_recent_release (item))
