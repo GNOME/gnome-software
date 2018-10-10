@@ -552,6 +552,10 @@ initial_overview_load_done (GsOverviewPage *overview_page, gpointer data)
 	gs_page_reload (page);
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
+
+	/* go to OVERVIEW, unless the "loading" callbacks changed mode already */
+	if (priv->mode == GS_SHELL_MODE_LOADING)
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 }
 
 static gboolean

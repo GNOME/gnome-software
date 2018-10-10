@@ -247,7 +247,7 @@ theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
 static void
 gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
 {
-	gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
+	g_signal_handler_disconnect (app->shell, app->shell_loaded_handler_id);
 	app->shell_loaded_handler_id = 0;
 }
 
