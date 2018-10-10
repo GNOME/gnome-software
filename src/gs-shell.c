@@ -80,7 +80,7 @@ typedef struct
 	gulong			 search_changed_id;
 	gchar			*events_info_uri;
 	gboolean		 in_mode_change;
-	GsPage			*page_last;
+	GsPage			*page;
 	GSimpleActionGroup	*auth_actions;
 } GsShellPrivate;
 
@@ -351,9 +351,9 @@ gs_shell_change_mode (GsShell *shell,
 
 	priv->in_mode_change = TRUE;
 
-	if (priv->page_last)
-		gs_page_switch_from (priv->page_last);
-	g_set_object (&priv->page_last, page);
+	if (priv->page != NULL)
+		gs_page_switch_from (priv->page);
+	g_set_object (&priv->page, page);
 	gs_page_switch_to (page, scroll_up);
 	priv->in_mode_change = FALSE;
 
@@ -647,7 +647,7 @@ signin_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
 	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, provider_id);
 	g_return_if_fail (auth != NULL);
 
-	gs_page_authenticate (priv->page_last, NULL,
+	gs_page_authenticate (priv->page, NULL,
 			      gs_auth_get_provider_id (auth),
 			      priv->cancellable,
 			      NULL, NULL);
@@ -2344,7 +2344,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);
-	g_clear_object (&priv->page_last);
+	g_clear_object (&priv->page);
 	g_clear_pointer (&priv->pages, g_hash_table_unref);
 	g_clear_pointer (&priv->events_info_uri, g_free);
 	g_clear_pointer (&priv->modal_dialogs, g_ptr_array_unref);
