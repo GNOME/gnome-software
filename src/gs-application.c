@@ -868,9 +868,6 @@ wrapper_action_activated_cb (GSimpleAction *action,
 								       G_SIMPLE_ACTION (real_action),
 								       g_variant_ref (parameter));
 
-		g_signal_handler_disconnect (app->shell, app->shell_loaded_handler_id);
-		app->shell_loaded_handler_id = 0;
-
 		g_signal_connect_swapped (app->shell, "loaded",
 					  G_CALLBACK (activate_on_shell_loaded_cb), helper);
 		return;
