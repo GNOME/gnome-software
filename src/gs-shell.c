@@ -2163,19 +2163,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	guint matched;
-
-	/* if we're loading a different mode at startup then don't wait for
-	 * the overview page to load before showing content */
-	if (mode != GS_SHELL_MODE_OVERVIEW) {
-		GsPage *page = g_hash_table_lookup (priv->pages, "overview");
-		matched = g_signal_handlers_disconnect_by_func (page,
-								initial_overview_load_done,
-								shell);
-		if (matched > 0)
-			g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
-	}
 	gs_shell_change_mode (shell, mode, NULL, TRUE);
 }
 
