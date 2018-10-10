@@ -521,9 +521,13 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	/* run transaction */
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		g_prefix_error (error, "failed to run transaction for %s: ", ref);
 		gs_flatpak_error_convert (error);
+		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 
@@ -657,10 +661,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* run transaction */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		g_prefix_error (error, "failed to run transaction for %s: ",
 				gs_app_get_unique_id (app));
 		gs_flatpak_error_convert (error);
+		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 
@@ -707,9 +713,13 @@ gs_plugin_update_app (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	/* run transaction */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		g_prefix_error (error, "failed to run transaction for %s: ", ref);
 		gs_flatpak_error_convert (error);
+		gs_app_set_state_recover (app);
 		return FALSE;
 	}
 	gs_plugin_updates_changed (plugin);
