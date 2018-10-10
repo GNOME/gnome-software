@@ -779,9 +779,6 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 	g_application_withdraw_notification (g_application_get_default (),
 					     "install-resources");
 
-	/* When the window is closed, reset the initial mode to overview */
-	priv->mode = GS_SHELL_MODE_OVERVIEW;
-
 	gs_shell_clean_back_entry_stack (shell);
 	gtk_widget_hide (dialog);
 	return TRUE;
