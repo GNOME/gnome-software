@@ -2162,6 +2162,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 		signout_item = g_menu_item_new (signout_label, signout_target);
 		g_menu_append_item (auth_menu, signout_item);
 	}
+
+	/* show loading page, which triggers the initial refresh */
+	gs_shell_change_mode (shell, GS_SHELL_MODE_LOADING, NULL, TRUE);
 }
 
 void
