@@ -2134,6 +2134,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
+
+	/* show loading page, which triggers the initial refresh */
+	gs_shell_change_mode (shell, GS_SHELL_MODE_LOADING, NULL, TRUE);
 }
 
 void
