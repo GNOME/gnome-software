@@ -546,13 +546,13 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
-initial_overview_load_done (GsOverviewPage *overview_page, gpointer data)
+initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 {
 	GsPage *page;
 	GsShell *shell = data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
-	g_signal_handlers_disconnect_by_func (overview_page, initial_overview_load_done, data);
+	g_signal_handlers_disconnect_by_func (loading_page, initial_refresh_done, data);
 
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "updates_page"));
 	gs_page_reload (page);
@@ -2130,7 +2130,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* load content */
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "loading_page"));
 	g_signal_connect (page, "refreshed",
-			  G_CALLBACK (initial_overview_load_done), shell);
+			  G_CALLBACK (initial_refresh_done), shell);
 
 	/* coldplug */
 	gs_shell_rescan_events (shell);
