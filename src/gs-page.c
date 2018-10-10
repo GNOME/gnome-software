@@ -720,14 +720,14 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_SOURCE:
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
-		 * source name, e.g. 'GNOME Nightly' */
+		 * repository name, e.g. 'GNOME Nightly' */
 		title = g_strdup_printf (_("Are you sure you want to remove "
-					   "the %s source?"),
+					   "the %s repository?"),
 					 gs_app_get_name (app));
 		/* TRANSLATORS: longer dialog text */
 		message = g_strdup_printf (_("All applications from %s will be "
 					     "removed, and you will have to "
-					     "re-install the source to use them again."),
+					     "re-install the repository to use them again."),
 					   gs_app_get_name (app));
 		break;
 	default:
