@@ -147,11 +147,6 @@ void
 gs_shell_activate (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-
-	/* reload the page if we don't have anything currently loaded */
-	if (priv->page == NULL)
-		gs_shell_set_mode (shell, priv->mode);
-
 	gtk_window_present (priv->main_window);
 }
 
@@ -785,7 +780,6 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 					     "install-resources");
 
 	/* When the window is closed, reset the initial mode to overview */
-	g_clear_object (&priv->page);
 	priv->mode = GS_SHELL_MODE_OVERVIEW;
 
 	gs_shell_clean_back_entry_stack (shell);
