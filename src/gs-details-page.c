@@ -1137,7 +1137,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* any of the various integration kudos */
 	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
 			      GS_APP_KUDO_USES_NOTIFICATIONS |
-			      GS_APP_KUDO_USES_APP_MENU |
 			      GS_APP_KUDO_HIGH_CONTRAST;
 	ret = (kudos & user_integration_bf) > 0;
 	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);

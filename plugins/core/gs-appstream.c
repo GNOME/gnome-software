@@ -697,9 +697,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		case AS_KUDO_KIND_USER_DOCS:
 			gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
 			break;
-		case AS_KUDO_KIND_APP_MENU:
-			gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
-			break;
 		case AS_KUDO_KIND_MODERN_TOOLKIT:
 			gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
 			break;
