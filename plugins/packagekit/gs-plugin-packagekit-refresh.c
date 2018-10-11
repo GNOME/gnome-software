@@ -104,11 +104,11 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_packagekit_download (GsPlugin *plugin,
-			       GsAppList *list,
-			       GCancellable *cancellable,
-			       GError **error)
+gboolean
+gs_plugin_download (GsPlugin *plugin,
+                    GsAppList *list,
+                    GCancellable *cancellable,
+                    GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
@@ -126,24 +126,6 @@ gs_plugin_packagekit_download (GsPlugin *plugin,
 		return _download_only (plugin, list_tmp, cancellable, error);
 
 	return TRUE;
-}
-
-gboolean
-gs_plugin_download (GsPlugin *plugin,
-		    GsAppList *list,
-		    GCancellable *cancellable,
-		    GError **error)
-{
-	return gs_plugin_packagekit_download (plugin, list, cancellable, error);
-}
-
-gboolean
-gs_plugin_update (GsPlugin *plugin,
-		  GsAppList *list,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	return gs_plugin_packagekit_download (plugin, list, cancellable, error);
 }
 
 gboolean
