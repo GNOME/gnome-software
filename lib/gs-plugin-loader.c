@@ -3056,6 +3056,10 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 			if (g_cancellable_set_error_if_cancelled (cancellable, error))
 				return FALSE;
 
+			/* already installed? */
+			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
+				continue;
+
 			/* make sure that the app update is cancelled when the whole op is cancelled */
 			app_cancellable = gs_app_get_cancellable (app);
 			cancel_handler_id = g_cancellable_connect (cancellable,
