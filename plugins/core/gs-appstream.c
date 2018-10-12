@@ -1037,7 +1037,7 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 			     GError **error)
 {
 	GPtrArray *apps = as_store_get_apps (store);
-	GPtrArray *ids = g_ptr_array_new_with_free_func (g_free);
+	g_autoptr(GPtrArray) ids = g_ptr_array_new_with_free_func (g_free);
 
 	/* find apps that provide the new name */
 	for (guint i = 0; i < apps->len; i++) {
