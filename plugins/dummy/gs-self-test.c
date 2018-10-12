@@ -190,6 +190,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "true");
 
+	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
@@ -204,6 +205,7 @@ gs_plugins_dummy_metadata_quirks (GsPluginLoader *plugin_loader)
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", NULL);
 	gs_app_set_metadata (app, "GnomeSoftware::quirks::not-launchable", "false");
 
+	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
