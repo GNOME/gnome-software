@@ -161,7 +161,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
                                        GError **error)
 {
 	PkBitfield filter;
-	GsAppList *resolve2_list;
+	g_autoptr(GsAppList) resolve2_list = NULL;
 
 	/* first, try to resolve packages with ARCH filter */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
