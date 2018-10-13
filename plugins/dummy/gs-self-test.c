@@ -906,6 +906,7 @@ main (int argc, char **argv)
 		"  <component type=\"os-upgrade\">\n"
 		"    <id>org.fedoraproject.release-rawhide.upgrade</id>\n"
 		"    <summary>Release specific tagline</summary>\n"
+		"    <pkgname>fedora-release</pkgname>\n"
 		"  </component>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);

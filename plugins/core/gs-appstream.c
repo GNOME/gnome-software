@@ -190,7 +190,7 @@ gs_appstream_get_icon_by_kind_and_size (XbNode *component, AsIconKind icon_kind,
 }
 
 static void
-gs_refine_item_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
+gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 {
 	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(XbNode) n = NULL;
@@ -776,7 +776,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* set icon */
 	if ((refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) > 0 &&
 	    gs_app_get_icons(app)->len == 0)
-		gs_refine_item_icon (plugin, app, component);
+		gs_appstream_refine_icon (plugin, app, component);
 
 	/* set categories */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CATEGORIES) {

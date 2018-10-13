@@ -83,6 +83,7 @@ main (int argc, char **argv)
 		"    <id>com.hughski.ColorHug2.driver</id>\n"
 		"    <name>ColorHug2</name>\n"
 		"    <summary>ColorHug2 Colorimeter Driver</summary>\n"
+		"    <pkgname>colorhug-client</pkgname>\n"
 		"    <provides>\n"
 		"      <modalias>pci:*</modalias>\n"
 		"    </provides>\n"

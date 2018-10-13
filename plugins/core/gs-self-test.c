@@ -240,6 +240,7 @@ main (int argc, char **argv)
 		"  <component type=\"os-upgrade\">\n"
 		"    <id>org.fedoraproject.Fedora-25</id>\n"
 		"    <summary>Fedora Workstation</summary>\n"
+		"    <pkgname>fedora-release</pkgname>\n"
 		"  </component>\n"
 		"</components>\n";
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);

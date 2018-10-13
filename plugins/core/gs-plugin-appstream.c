@@ -611,9 +611,9 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	g_debug ("searching appstream for %s", id);
 
 	/* look in AppStream then fall back to AppData */
-	g_string_append_printf (xpath, "components/component/id[text()='%s']/..", id);
+	g_string_append_printf (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
 	g_string_append (xpath, "|");
-	g_string_append_printf (xpath, "component/id[text()='%s']/..", id);
+	g_string_append_printf (xpath, "component/id[text()='%s']/../pkgname/..", id);
 	components = xb_silo_query (priv->silo, xpath->str, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
@@ -729,7 +729,7 @@ gboolean
 gs_plugin_refine_wildcard (GsPlugin *plugin,
 			   GsApp *app,
 			   GsAppList *list,
-			   GsPluginRefineFlags flags,
+			   GsPluginRefineFlags refine_flags,
 			   GCancellable *cancellable,
 			   GError **error)
 {
@@ -748,8 +748,8 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 	if (id == NULL)
 		return TRUE;
 
-	/* find all apps when matching any prefixes */
-	xpath = g_strdup_printf ("components/component/id[text()='%s']/..", id);
+	/* find all app with package names when matching any prefixes */
+	xpath = g_strdup_printf ("components/component/id[text()='%s']/../pkgname/..", id);
 	components = xb_silo_query (priv->silo, xpath, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
@@ -763,17 +763,13 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		XbNode *component = g_ptr_array_index (components, i);
 		g_autoptr(GsApp) new = NULL;
 
-		/* does the app have an installation method */
-		if (xb_node_query_text (component, "pkgname", NULL) == NULL) {
-			g_debug ("not using %s for wildcard as no pkgname",
-				 xb_node_query_text (component, "id", NULL));
-			continue;
-		}
-
 		/* new app */
 		g_debug ("found component for wildcard %s", id);
 		new = gs_appstream_create_app (plugin, priv->silo, component, error);
 		if (new == NULL)
+			return FALSE;
+		if (!gs_appstream_refine_app (plugin, new, priv->silo, component,
+					      refine_flags, error))
 			return FALSE;
 		gs_app_list_add (list, new);
 	}

@@ -482,7 +482,7 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_clear_object (&self->silo);
 
 	/* verbose profiling */
-	if (g_getenv ("GS_DEBUG") != NULL) {
+	if (g_getenv ("GS_XMLB_VERBOSE") != NULL) {
 		xb_builder_set_profile_flags (builder,
 					      XB_SILO_PROFILE_FLAG_XPATH |
 					      XB_SILO_PROFILE_FLAG_DEBUG);
@@ -2025,7 +2025,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 
 gboolean
 gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
-			    GsAppList *list, GsPluginRefineFlags flags,
+			    GsAppList *list, GsPluginRefineFlags refine_flags,
 			    GCancellable *cancellable, GError **error)
 {
 	const gchar *id;
@@ -2061,7 +2061,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		if (new == NULL)
 			return FALSE;
 		gs_flatpak_claim_app (self, new);
-		if (!gs_flatpak_refine_app (self, new, flags, cancellable, error))
+		if (!gs_flatpak_refine_app (self, new, refine_flags, cancellable, error))
 			return FALSE;
 		gs_app_list_add (list, new);
 	}
