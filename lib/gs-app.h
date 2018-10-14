@@ -356,6 +356,9 @@ gboolean	 gs_app_is_installed		(GsApp		*app);
 gboolean	 gs_app_is_updatable		(GsApp		*app);
 gchar		*gs_app_get_origin_ui		(GsApp		*app);
 gchar		*gs_app_get_packaging_format	(GsApp		*app);
+void		 gs_app_subsume_metadata	(GsApp		*app,
+						 GsApp		*donor);
+
 G_END_DECLS
 
 #endif /* __GS_APP_H */
