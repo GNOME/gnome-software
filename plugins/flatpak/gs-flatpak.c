@@ -1991,6 +1991,7 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 		gs_flatpak_claim_app (self, new);
 		if (!gs_flatpak_refine_app (self, new, flags, cancellable, error))
 			return FALSE;
+		gs_app_subsume_metadata (new, app);
 		gs_app_list_add (list, new);
 	}
 	return TRUE;

@@ -591,6 +591,7 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		new = gs_appstream_create_app (plugin, item, error);
 		if (new == NULL)
 			return FALSE;
+		gs_app_subsume_metadata (new, app);
 		gs_app_list_add (list, new);
 	}
 

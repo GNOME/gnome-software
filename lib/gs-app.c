@@ -4537,4 +4537,25 @@ gs_app_get_packaging_format (GsApp *app)
 	return g_strdup (bundle_kind_ui);
 }
 
+/**
+ * gs_app_subsume_metadata:
+ * @app: a #GsApp
+ * @donor: another #GsApp
+ *
+ * Copies any metadata from @donor to @app.
+ *
+ * Since: 3.32
+ **/
+void
+gs_app_subsume_metadata (GsApp *app, GsApp *donor)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (donor);
+	g_autoptr(GList) keys = g_hash_table_get_keys (priv->metadata);
+	for (GList *l = keys; l != NULL; l = l->next) {
+		const gchar *key = l->data;
+		const gchar *value = gs_app_get_metadata_item (donor, key);
+		gs_app_set_metadata (app, key, value);
+	}
+}
+
 /* vim: set noexpandtab: */

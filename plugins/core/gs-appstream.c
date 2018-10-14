@@ -1088,6 +1088,7 @@ gs_appstream_add_featured (GsPlugin *plugin,
 			continue;
 		app = gs_app_new (as_app_get_id (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_appstream_copy_metadata (app, item);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
