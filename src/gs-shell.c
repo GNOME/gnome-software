@@ -823,7 +823,6 @@ static gboolean
 main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 {
 	GsShell *shell = user_data;
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
 	/* hide any notifications */
 	g_application_withdraw_notification (g_application_get_default (),
