@@ -119,8 +119,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		const gchar *id = gs_app_get_unique_id (app_tmp);
 		if (id == NULL)
 			id = gs_app_get_source_default (app_tmp);
-		g_debug ("moving %s to parent %s",
-			 id, gs_app_get_unique_id (app));
 		gs_app_add_related (app, app_tmp);
 		gs_app_list_remove (list, app_tmp);
 	}

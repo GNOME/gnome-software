@@ -61,7 +61,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			if (css_new == NULL)
 				return FALSE;
 			if (g_strcmp0 (css, css_new) != 0) {
-				g_debug ("replacing %s with %s", css, css_new);
 				gs_app_set_metadata (app, keys[i], NULL);
 				gs_app_set_metadata (app, keys[i], css_new);
 			}

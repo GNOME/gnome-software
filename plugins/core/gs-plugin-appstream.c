@@ -698,7 +698,6 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 		g_autofree gchar *xpath = NULL;
 		g_autoptr(GPtrArray) components = NULL;
 
-		g_debug ("searching appstream for pkg %s", pkgname);
 		xpath = g_strdup_printf ("components/component/pkgname[text()='%s']/..",
 					 pkgname);
 		components = xb_silo_query (priv->silo, xpath, 0, &error_local);
@@ -792,7 +791,6 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		g_autoptr(GsApp) new = NULL;
 
 		/* new app */
-		g_debug ("found component for wildcard %s", id);
 		new = gs_appstream_create_app (plugin, priv->silo, component, error);
 		if (new == NULL)
 			return FALSE;
