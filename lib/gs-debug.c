@@ -66,6 +66,11 @@ gs_log_writer_console (GLogLevelFlags log_level,
 		}
 	}
 
+	/* this is really verbose */
+	if (g_strcmp0 (log_domain, "dconf") == 0 &&
+	    log_level == G_LOG_LEVEL_DEBUG)
+		return G_LOG_WRITER_HANDLED;
+
 	/* make threadsafe */
 	locker = g_mutex_locker_new (&debug->mutex);
 	g_assert (locker != NULL);

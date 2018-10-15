@@ -350,8 +350,6 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
 	GtkStyleContext *context;
 	g_autoptr(GtkCssProvider) provider = NULL;
 
-	g_debug ("using custom CSS %s", css);
-
 	/* set the custom CSS class */
 	context = gtk_widget_get_style_context (widget);
 	gtk_style_context_add_class (context, class_name);

@@ -498,12 +498,9 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 	for (guint i = 0; i < reviewable_ids->len; i++) {
 		const gchar *id = g_ptr_array_index (reviewable_ids, i);
 		GArray *ratings_tmp = g_hash_table_lookup (priv->ratings, id);
-		if (ratings_tmp == NULL) {
-			g_debug ("no ratings results for %s", id);
+		if (ratings_tmp == NULL)
 			continue;
-		}
 		/* copy into accumulator array */
-		g_debug ("using ratings results for %s", id);
 		for (guint j = 0; j < 6; j++)
 			ratings_raw[j] += g_array_index (ratings_tmp, guint32, j);
 		cnt++;
@@ -645,7 +642,6 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 						error);
 	if (reviews == NULL)
 		return NULL;
-	g_debug ("odrs returned: %s", msg->response_body->data);
 
 	/* save to the cache */
 	if (!g_file_set_contents (cachefn,

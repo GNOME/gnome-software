@@ -265,11 +265,8 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	if (object_id != NULL) {
 		for (guint i = 0; i < priv->flatpaks->len; i++) {
 			GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
-			if (g_strcmp0 (gs_flatpak_get_id (flatpak), object_id) == 0) {
-				g_debug ("chose %s using ID",
-					 gs_flatpak_get_id (flatpak));
+			if (g_strcmp0 (gs_flatpak_get_id (flatpak), object_id) == 0)
 				return flatpak;
-			}
 		}
 	}
 
@@ -277,10 +274,8 @@ gs_plugin_flatpak_get_handler (GsPlugin *plugin, GsApp *app)
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, i);
 		if (_as_app_scope_is_compatible (gs_flatpak_get_scope (flatpak),
-						 gs_app_get_scope (app))) {
-			g_debug ("chose %s using scope", gs_flatpak_get_id (flatpak));
+						 gs_app_get_scope (app)))
 			return flatpak;
-		}
 	}
 	return NULL;
 }

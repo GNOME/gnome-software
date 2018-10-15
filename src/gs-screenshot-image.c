@@ -506,10 +506,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		age_max = g_settings_get_uint (ssimg->settings,
 					       "screenshot-cache-age-maximum");
 		file = g_file_new_for_path (ssimg->filename);
-		if (age_max > 0 && gs_utils_get_file_age (file) < age_max) {
-			g_debug ("image new enough, not re-requesting from server");
+		/* image new enough, not re-requesting from server */
+		if (age_max > 0 && gs_utils_get_file_age (file) < age_max)
 			return;
-		}
 	}
 
 	/* if we're not showing a full-size image, we try loading a blurred
