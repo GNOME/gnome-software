@@ -96,7 +96,7 @@ add_project_arguments('-D_GNU_SOURCE', language : 'c')
 
 conf.set('HAVE_LINUX_UNISTD_H', cc.has_header('linux/unistd.h'))
 
-appstream_glib = dependency('appstream-glib', version : '>= 0.7.11')
+appstream_glib = dependency('appstream-glib', version : '>= 0.7.14')
 gdk_pixbuf = dependency('gdk-pixbuf-2.0', version : '>= 2.32.0')
 gio_unix = dependency('gio-unix-2.0')
 gmodule = dependency('gmodule-2.0')
