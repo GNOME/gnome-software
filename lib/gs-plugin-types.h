@@ -55,19 +55,11 @@ typedef enum {
 /**
  * GsPluginFlags:
  * @GS_PLUGIN_FLAGS_NONE:		No flags set
- * @GS_PLUGIN_FLAGS_RUNNING_SELF:	The plugin is running
- * @GS_PLUGIN_FLAGS_RUNNING_OTHER:	Another plugin is running
- * @GS_PLUGIN_FLAGS_EXCLUSIVE:		An exclusive action is running
- * @GS_PLUGIN_FLAGS_RECENT:		This plugin recently ran
  * @GS_PLUGIN_FLAGS_INTERACTIVE:	User initiated the job
  *
  * The flags for the plugin at this point in time.
  **/
 #define GS_PLUGIN_FLAGS_NONE		(0u)
-#define GS_PLUGIN_FLAGS_RUNNING_SELF	(1u << 0)
-#define GS_PLUGIN_FLAGS_RUNNING_OTHER	(1u << 1)
-#define GS_PLUGIN_FLAGS_EXCLUSIVE	(1u << 2)
-#define GS_PLUGIN_FLAGS_RECENT		(1u << 3)
 #define GS_PLUGIN_FLAGS_INTERACTIVE	(1u << 4)
 typedef guint64 GsPluginFlags;
 
