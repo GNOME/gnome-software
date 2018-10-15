@@ -287,42 +287,6 @@ gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 	return NULL;
 }
 
-static void
-gs_plugin_loader_action_start (GsPluginLoader *plugin_loader,
-			       GsPlugin *plugin,
-			       gboolean exclusive)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	guint i;
-
-	/* set plugin as SELF and all plugins as OTHER */
-	gs_plugin_action_start (plugin, exclusive);
-	for (i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin_tmp;
-		plugin_tmp = g_ptr_array_index (priv->plugins, i);
-		if (!gs_plugin_get_enabled (plugin_tmp))
-			continue;
-		gs_plugin_set_running_other (plugin_tmp, TRUE);
-	}
-}
-
-static void
-gs_plugin_loader_action_stop (GsPluginLoader *plugin_loader, GsPlugin *plugin)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	guint i;
-
-	/* clear plugin as SELF and all plugins as OTHER */
-	gs_plugin_action_stop (plugin);
-	for (i = 0; i < priv->plugins->len; i++) {
-		GsPlugin *plugin_tmp;
-		plugin_tmp = g_ptr_array_index (priv->plugins, i);
-		if (!gs_plugin_get_enabled (plugin_tmp))
-			continue;
-		gs_plugin_set_running_other (plugin_tmp, FALSE);
-	}
-}
-
 static gboolean
 gs_plugin_loader_notify_idle_cb (gpointer user_data)
 {
@@ -478,9 +442,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 				continue;
 			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
-			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			adopt_app_func (plugin, app);
-			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (gs_app_get_management_plugin (app) != NULL) {
 				g_debug ("%s adopted %s",
 					 gs_plugin_get_name (plugin),
@@ -542,7 +504,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	gs_plugin_job_set_plugin (helper->plugin_job, plugin);
 
 	/* run the correct vfunc */
-	gs_plugin_loader_action_start (helper->plugin_loader, plugin, FALSE);
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_inc (plugin);
 	switch (action) {
@@ -735,7 +696,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		g_critical ("no handler for %s", helper->function_name);
 		break;
 	}
-	gs_plugin_loader_action_stop (helper->plugin_loader, plugin);
 	if (gs_plugin_job_get_interactive (helper->plugin_job))
 		gs_plugin_interactive_dec (plugin);
 
@@ -3006,9 +2966,7 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 								   g_object_unref);
 
 			gs_plugin_job_set_app (helper->plugin_job, app);
-			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			ret = plugin_app_func (plugin, app, app_cancellable, &error_local);
-			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			g_cancellable_disconnect (cancellable, cancel_handler_id);
 
 			if (!ret) {
