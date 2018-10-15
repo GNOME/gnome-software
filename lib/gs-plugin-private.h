@@ -40,9 +40,6 @@ GsPluginAction	 gs_plugin_action_from_string		(const gchar	*action);
 const gchar	*gs_plugin_action_to_function_name	(GsPluginAction	 action);
 
 void		 gs_plugin_clear_data			(GsPlugin	*plugin);
-void		 gs_plugin_action_start			(GsPlugin	*plugin,
-							 gboolean	 exclusive);
-void		 gs_plugin_action_stop			(GsPlugin	*plugin);
 void		 gs_plugin_set_scale			(GsPlugin	*plugin,
 							 guint		 scale);
 guint		 gs_plugin_get_order			(GsPlugin	*plugin);
@@ -59,8 +56,6 @@ void		 gs_plugin_set_language			(GsPlugin	*plugin,
 							 const gchar	*language);
 void		 gs_plugin_set_auth_array		(GsPlugin	*plugin,
 							 GPtrArray	*auth_array);
-void		 gs_plugin_set_running_other		(GsPlugin	*plugin,
-							 gboolean	 running_other);
 GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 							 GsPluginRule	 rule);
 gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
