@@ -386,12 +386,12 @@ gs_plugin_appstream_set_compulsory_quirk (GsApp *app, AsApp *item)
 			/* if the value has a :, check the whole string */
 			if (g_strstr_len (tmp, -1, ":")) {
 				if (g_strcmp0 (current_desktop, tmp) == 0) {
-					gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+					gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 					break;
 				}
 			/* otherwise check if any element matches this one */
 			} else if (g_strv_contains ((const gchar * const *) xdg_current_desktops, tmp)) {
-				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+				gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 				break;
 			}
 		}

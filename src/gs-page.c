@@ -565,7 +565,7 @@ gs_page_notify_quirk_cb (GsApp *app, GParamSpec *pspec, GsPageHelper *helper)
 {
 	gtk_widget_set_sensitive (helper->button_install,
 				  !gs_app_has_quirk (helper->app,
-						     AS_APP_QUIRK_NEEDS_USER_ACTION));
+						     GS_APP_QUIRK_NEEDS_USER_ACTION));
 }
 
 static void
@@ -637,7 +637,7 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 
 	/* tell the user what they have to do */
 	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE &&
-	    gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION)) {
+	    gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
 		GPtrArray *screenshots = gs_app_get_screenshots (app);
 		if (screenshots->len > 0) {
 			AsScreenshot *ss = g_ptr_array_index (screenshots, 0);

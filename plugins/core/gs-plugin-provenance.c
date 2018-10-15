@@ -96,7 +96,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0)
 		return TRUE;
-	if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE))
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE))
 		return TRUE;
 
 	/* nothing to search */
@@ -107,7 +107,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* simple case */
 	origin = gs_app_get_origin (app);
 	if (origin != NULL && gs_utils_strv_fnmatch (sources, origin)) {
-		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 		return TRUE;
 	}
 
@@ -121,7 +121,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (g_str_has_prefix (origin + 1, "installed:"))
 		origin += 10;
 	if (gs_utils_strv_fnmatch (sources, origin + 1)) {
-		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 		return TRUE;
 	}
 	return TRUE;

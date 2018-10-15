@@ -313,9 +313,9 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 
 	gs_app_set_management_plugin (app, "snap");
 	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
-		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 
 	confinement = snapd_snap_get_confinement (snap);
 	if (confinement != SNAPD_CONFINEMENT_UNKNOWN) {
@@ -825,7 +825,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		developer_name = snapd_snap_get_publisher_username (snap);
 	gs_app_set_developer_name (app, developer_name);
 	if (snapd_snap_get_publisher_validation (snap) == SNAPD_PUBLISHER_VALIDATION_VERIFIED)
-		gs_app_add_quirk (app, AS_APP_QUIRK_DEVELOPER_VERIFIED);
+		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
 
 	snap = local_snap != NULL ? local_snap : store_snap;
 	gs_app_set_version (app, snapd_snap_get_version (snap));
@@ -844,7 +844,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			gs_app_set_metadata (app, "snap::launch-name", snapd_app_get_name (snap_app));
 			gs_app_set_metadata (app, "snap::launch-desktop", snapd_app_get_desktop_file (snap_app));
 		} else {
-			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		}
 	}
 

@@ -437,7 +437,7 @@ main (int argc, char **argv)
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-alternates") == 0) {
 		app = gs_app_new (argv[2]);
-		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		for (i = 0; i < repeat; i++) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			if (list != NULL)

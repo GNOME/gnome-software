@@ -67,7 +67,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 		/* create new */
 		app = gs_app_new (apps[i]);
-		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
 		gs_app_list_add (list, app);

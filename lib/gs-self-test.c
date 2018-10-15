@@ -493,7 +493,7 @@ gs_plugin_func (void)
 	/* allow duplicating a wildcard */
 	list = gs_app_list_new ();
 	app = gs_app_new ("gimp.desktop");
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 	app = gs_app_new ("gimp.desktop");
@@ -506,11 +506,11 @@ gs_plugin_func (void)
 	/* allow duplicating a wildcard */
 	list = gs_app_list_new ();
 	app = gs_app_new ("gimp.desktop");
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 	app = gs_app_new ("gimp.desktop");
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);

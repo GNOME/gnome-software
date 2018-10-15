@@ -82,6 +82,42 @@ typedef enum {
 	GS_APP_KUDO_LAST
 } GsAppKudo;
 
+/**
+ * GsAppQuirk:
+ * @GS_APP_QUIRK_NONE:			No special attributes
+ * @GS_APP_QUIRK_PROVENANCE:		Installed by OS vendor
+ * @GS_APP_QUIRK_COMPULSORY:		Cannot be removed
+ * @GS_APP_QUIRK_HAS_SOURCE:		Has a source to allow staying up-to-date
+ * @GS_APP_QUIRK_IS_WILDCARD:		Matches applications from any plugin
+ * @GS_APP_QUIRK_NEEDS_REBOOT:		A reboot is required after the action
+ * @GS_APP_QUIRK_NOT_REVIEWABLE:	The app is not reviewable
+ * @GS_APP_QUIRK_HAS_SHORTCUT:		The app has a shortcut in the system
+ * @GS_APP_QUIRK_NOT_LAUNCHABLE:	The app is not launchable (run-able)
+ * @GS_APP_QUIRK_NEEDS_USER_ACTION:	The component requires some kind of user action
+ * @GS_APP_QUIRK_IS_PROXY:		Is a proxy app that operates on other applications
+ * @GS_APP_QUIRK_REMOVABLE_HARDWARE:	The device is unusable whilst the action is performed
+ * @GS_APP_QUIRK_DEVELOPER_VERIFIED:	The app developer has been verified
+ *
+ * The application attributes.
+ **/
+typedef enum {
+	GS_APP_QUIRK_NONE		= 0,		/* Since: 3.32 */
+	GS_APP_QUIRK_PROVENANCE		= 1 << 0,	/* Since: 3.32 */
+	GS_APP_QUIRK_COMPULSORY		= 1 << 1,	/* Since: 3.32 */
+	GS_APP_QUIRK_HAS_SOURCE		= 1 << 2,	/* Since: 3.32 */
+	GS_APP_QUIRK_IS_WILDCARD	= 1 << 3,	/* Since: 3.32 */
+	GS_APP_QUIRK_NEEDS_REBOOT	= 1 << 4,	/* Since: 3.32 */
+	GS_APP_QUIRK_NOT_REVIEWABLE	= 1 << 5,	/* Since: 3.32 */
+	GS_APP_QUIRK_HAS_SHORTCUT	= 1 << 6,	/* Since: 3.32 */
+	GS_APP_QUIRK_NOT_LAUNCHABLE	= 1 << 7,	/* Since: 3.32 */
+	GS_APP_QUIRK_NEEDS_USER_ACTION	= 1 << 8,	/* Since: 3.32 */
+	GS_APP_QUIRK_IS_PROXY 		= 1 << 9,	/* Since: 3.32 */
+	GS_APP_QUIRK_REMOVABLE_HARDWARE	= 1 << 10,	/* Since: 3.32 */
+	GS_APP_QUIRK_DEVELOPER_VERIFIED	= 1 << 11,	/* Since: 3.32 */
+	/*< private >*/
+	GS_APP_QUIRK_LAST
+} GsAppQuirk;
+
 #define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 #define	GS_APP_SIZE_UNKNOWABLE			G_MAXUINT64
@@ -311,11 +347,11 @@ void		 gs_app_set_match_value		(GsApp		*app,
 guint		 gs_app_get_match_value		(GsApp		*app);
 
 gboolean	 gs_app_has_quirk		(GsApp		*app,
-						 AsAppQuirk	 quirk);
+						 GsAppQuirk	 quirk);
 void		 gs_app_add_quirk		(GsApp		*app,
-						 AsAppQuirk	 quirk);
+						 GsAppQuirk	 quirk);
 void		 gs_app_remove_quirk		(GsApp		*app,
-						 AsAppQuirk	 quirk);
+						 GsAppQuirk	 quirk);
 gboolean	 gs_app_is_installed		(GsApp		*app);
 gboolean	 gs_app_is_updatable		(GsApp		*app);
 gchar		*gs_app_get_origin_ui		(GsApp		*app);

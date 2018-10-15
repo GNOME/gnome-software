@@ -119,7 +119,7 @@ typedef struct
 	guint64			 install_date;
 	guint64			 kudos;
 	gboolean		 to_be_installed;
-	AsAppQuirk		 quirk;
+	GsAppQuirk		 quirk;
 	gboolean		 license_is_free;
 	GsApp			*runtime;
 	GFile			*local_file;
@@ -223,29 +223,29 @@ gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
 }
 
 static const gchar *
-_as_app_quirk_flag_to_string (AsAppQuirk quirk)
+_as_app_quirk_flag_to_string (GsAppQuirk quirk)
 {
-	if (quirk == AS_APP_QUIRK_PROVENANCE)
+	if (quirk == GS_APP_QUIRK_PROVENANCE)
 		return "provenance";
-	if (quirk == AS_APP_QUIRK_COMPULSORY)
+	if (quirk == GS_APP_QUIRK_COMPULSORY)
 		return "compulsory";
-	if (quirk == AS_APP_QUIRK_HAS_SOURCE)
+	if (quirk == GS_APP_QUIRK_HAS_SOURCE)
 		return "has-source";
-	if (quirk == AS_APP_QUIRK_MATCH_ANY_PREFIX)
-		return "match-any-prefix";
-	if (quirk == AS_APP_QUIRK_NEEDS_REBOOT)
+	if (quirk == GS_APP_QUIRK_IS_WILDCARD)
+		return "is-wildcard";
+	if (quirk == GS_APP_QUIRK_NEEDS_REBOOT)
 		return "needs-reboot";
-	if (quirk == AS_APP_QUIRK_NOT_REVIEWABLE)
+	if (quirk == GS_APP_QUIRK_NOT_REVIEWABLE)
 		return "not-reviewable";
-	if (quirk == AS_APP_QUIRK_HAS_SHORTCUT)
+	if (quirk == GS_APP_QUIRK_HAS_SHORTCUT)
 		return "has-shortcut";
-	if (quirk == AS_APP_QUIRK_NOT_LAUNCHABLE)
+	if (quirk == GS_APP_QUIRK_NOT_LAUNCHABLE)
 		return "not-launchable";
-	if (quirk == AS_APP_QUIRK_NEEDS_USER_ACTION)
+	if (quirk == GS_APP_QUIRK_NEEDS_USER_ACTION)
 		return "needs-user-action";
-	if (quirk == AS_APP_QUIRK_IS_PROXY)
+	if (quirk == GS_APP_QUIRK_IS_PROXY)
 		return "is-proxy";
-	if (quirk == AS_APP_QUIRK_REMOVABLE_HARDWARE)
+	if (quirk == GS_APP_QUIRK_REMOVABLE_HARDWARE)
 		return "removable-hardware";
 	return NULL;
 }
@@ -309,27 +309,27 @@ gs_app_compare_priority (GsApp *app1, GsApp *app2)
 }
 
 /**
- * _as_app_quirk_to_string:
- * @quirk: a #AsAppQuirk
+ * gs_app_quirk_to_string:
+ * @quirk: a #GsAppQuirk
  *
  * Returns the quirk bitfield as a string.
  *
  * Returns: (transfer full): a string
  **/
 static gchar *
-_as_app_quirk_to_string (AsAppQuirk quirk)
+gs_app_quirk_to_string (GsAppQuirk quirk)
 {
 	GString *str = g_string_new ("");
 	guint64 i;
 
 	/* nothing set */
-	if (quirk == AS_APP_QUIRK_NONE) {
+	if (quirk == GS_APP_QUIRK_NONE) {
 		g_string_append (str, "none");
 		return g_string_free (str, FALSE);
 	}
 
 	/* get flags */
-	for (i = 1; i < AS_APP_QUIRK_LAST; i *= 2) {
+	for (i = 1; i < GS_APP_QUIRK_LAST; i *= 2) {
 		if ((quirk & i) == 0)
 			continue;
 		g_string_append_printf (str, "%s,",
@@ -431,7 +431,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (priv->kind));
 	gs_app_kv_lpad (str, "state", as_app_state_to_string (priv->state));
 	if (priv->quirk > 0) {
-		g_autofree gchar *qstr = _as_app_quirk_to_string (priv->quirk);
+		g_autofree gchar *qstr = gs_app_quirk_to_string (priv->quirk);
 		gs_app_kv_lpad (str, "quirk", qstr);
 	}
 	if (priv->progress > 0)
@@ -2836,7 +2836,7 @@ gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* plugins cannot adopt wildcard packages */
-	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
 		g_warning ("plugins should not set the management plugin on "
 			   "%s to %s -- create a new GsApp in refine()!",
 			   gs_app_get_unique_id_unlocked (app),
@@ -3830,7 +3830,7 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 /**
  * gs_app_has_quirk:
  * @app: a #GsApp
- * @quirk: a #AsAppQuirk, e.g. %AS_APP_QUIRK_COMPULSORY
+ * @quirk: a #GsAppQuirk, e.g. %GS_APP_QUIRK_COMPULSORY
  *
  * Finds out if an application has a specific quirk.
  *
@@ -3839,7 +3839,7 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
  * Since: 3.22
  **/
 gboolean
-gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
+gs_app_has_quirk (GsApp *app, GsAppQuirk quirk)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
@@ -3850,14 +3850,14 @@ gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 /**
  * gs_app_add_quirk:
  * @app: a #GsApp
- * @quirk: a #AsAppQuirk, e.g. %AS_APP_QUIRK_COMPULSORY
+ * @quirk: a #GsAppQuirk, e.g. %GS_APP_QUIRK_COMPULSORY
  *
  * Adds a quirk to an application.
  *
  * Since: 3.22
  **/
 void
-gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
+gs_app_add_quirk (GsApp *app, GsAppQuirk quirk)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
@@ -3875,14 +3875,14 @@ gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 /**
  * gs_app_remove_quirk:
  * @app: a #GsApp
- * @quirk: a #AsAppQuirk, e.g. %AS_APP_QUIRK_COMPULSORY
+ * @quirk: a #GsAppQuirk, e.g. %GS_APP_QUIRK_COMPULSORY
  *
  * Removes a quirk from an application.
  *
  * Since: 3.22
  **/
 void
-gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
+gs_app_remove_quirk (GsApp *app, GsAppQuirk quirk)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
@@ -4464,7 +4464,7 @@ gchar *
 gs_app_get_origin_ui (GsApp *app)
 {
 	/* use the distro name for official packages */
-	if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE)) {
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
 		g_autoptr(GsOsRelease) os_release = gs_os_release_new (NULL);
 		if (os_release != NULL)
 			return g_strdup (gs_os_release_get_name (os_release));

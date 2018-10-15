@@ -2210,7 +2210,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	/* not quite true: this just means we can update this specific app */
 	if (flatpak_bundle_ref_get_origin (xref_bundle))
-		gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 
 	/* success */
 	return g_steal_pointer (&app);
@@ -2295,7 +2295,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 		return g_steal_pointer (&app);
 	}
-	gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));

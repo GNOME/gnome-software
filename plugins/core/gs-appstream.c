@@ -33,14 +33,14 @@ gs_appstream_create_app (GsPlugin *plugin, AsApp *item, GError **error)
 	const gchar *unique_id = as_app_get_unique_id (item);
 	GsApp *app = gs_plugin_cache_lookup (plugin, unique_id);
 
-	/* if the app we found has the "match-any-prefix" quirk and our item does
+	/* if the app we found has the "is-wildcard" quirk and our item does
 	 * not, then we create a new one because ours will be "complete", and
 	 * using the mentioned quirk will lead to a different behavior (e.g. it'll
 	 * be refined using refine_wildcard, it won't allow a management plugin to
 	 * be set, etc.)  */
-	if (app != NULL && gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX) &&
-	    !as_app_has_quirk (item, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
-		g_debug ("Looking for %s, got %s but has 'match-any-prefix' quirk "
+	if (app != NULL && gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
+	    !as_app_has_quirk (item, GS_APP_QUIRK_IS_WILDCARD)) {
+		g_debug ("Looking for %s, got %s but has 'is-wildcard' quirk "
 			 "so we create a new one instead.",
 			 unique_id, gs_app_get_unique_id (app));
 		g_clear_object (&app);
@@ -478,7 +478,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	case AS_APP_KIND_OS_UPGRADE:
 	case AS_APP_KIND_RUNTIME:
 	case AS_APP_KIND_SOURCE:
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		break;
 	default:
 		break;
@@ -488,9 +488,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	tmp = gs_app_get_metadata_item (app, "GnomeSoftware::quirks::not-launchable");
 	if (tmp != NULL) {
 		if (g_strcmp0 (tmp, "true") == 0)
-			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		else if (g_strcmp0 (tmp, "false") == 0)
-			gs_app_remove_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_remove_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	}
 
 	/* set management plugin automatically */
@@ -923,7 +923,7 @@ gs_appstream_add_popular (GsPlugin *plugin,
 		if (!as_app_has_kudo (item, "GnomeSoftware::popular"))
 			continue;
 		app = gs_app_new (as_app_get_id (item));
-		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
@@ -1065,7 +1065,7 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 	for (guint i = 0; i < ids->len; i++) {
 		const gchar *id = g_ptr_array_index (ids, i);
 		g_autoptr(GsApp) app2 = gs_app_new (id);
-		gs_app_add_quirk (app2, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_add_quirk (app2, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_list_add (list, app2);
 	}
 	return TRUE;
@@ -1087,7 +1087,7 @@ gs_appstream_add_featured (GsPlugin *plugin,
 		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
 			continue;
 		app = gs_app_new (as_app_get_id (item));
-		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;

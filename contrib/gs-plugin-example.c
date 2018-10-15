@@ -47,7 +47,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	for (i = 0; values[i] != NULL; i++) {
 		if (g_strcmp0 (values[i], "fotoshop") == 0) {
 			g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
-			gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+			gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 			gs_app_list_add (list, app);
 		}
 	}

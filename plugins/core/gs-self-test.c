@@ -156,7 +156,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	/* make sure the os update is valid */
 	g_assert_cmpstr (gs_app_get_id (os_update), ==, "org.gnome.Software.OsUpdate");
 	g_assert_cmpint (gs_app_get_kind (os_update), ==, AS_APP_KIND_OS_UPDATE);
-	g_assert (gs_app_has_quirk (os_update, AS_APP_QUIRK_IS_PROXY));
+	g_assert (gs_app_has_quirk (os_update, GS_APP_QUIRK_IS_PROXY));
 
 	/* must have two related apps, the ones we added earlier */
 	related = gs_app_get_related (os_update);
@@ -165,7 +165,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	/* another test to make sure that we don't get an OsUpdate item created for wildcard apps */
 	list_wildcard = gs_app_list_new ();
 	app_wildcard = gs_app_new ("nosuchapp.desktop");
-	gs_app_add_quirk (app_wildcard, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_add_quirk (app_wildcard, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_kind (app_wildcard, AS_APP_KIND_GENERIC);
 	gs_app_list_add (list_wildcard, app_wildcard);
 	plugin_job2 = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
@@ -181,7 +181,7 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	for (guint i = 0; i < gs_app_list_length (list_wildcard); i++) {
 		GsApp *app_tmp = gs_app_list_index (list_wildcard, i);
 		g_assert_cmpint (gs_app_get_kind (app_tmp), !=, AS_APP_KIND_OS_UPDATE);
-		g_assert (!gs_app_has_quirk (app_tmp, AS_APP_QUIRK_IS_PROXY));
+		g_assert (!gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_PROXY));
 	}
 }
 

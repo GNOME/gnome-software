@@ -184,12 +184,12 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 	}
 
 	/* toggle this to animate the hide/show the 3rd party banner */
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE)) {
+	if (!gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
 		g_debug ("about to make app distro-provided");
-		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	} else {
 		g_debug ("about to make app 3rd party");
-		gs_app_remove_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_remove_quirk (app, GS_APP_QUIRK_PROVENANCE);
 	}
 
 	/* continue polling */
@@ -431,7 +431,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_update_urgency (proxy, AS_URGENCY_KIND_HIGH);
 	gs_app_add_icon (proxy, ic);
 	gs_app_set_kind (proxy, AS_APP_KIND_DESKTOP);
-	gs_app_add_quirk (proxy, AS_APP_QUIRK_IS_PROXY);
+	gs_app_add_quirk (proxy, GS_APP_QUIRK_IS_PROXY);
 	gs_app_set_state (proxy, AS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_management_plugin (proxy, gs_plugin_get_name (plugin));
 	gs_app_list_add (list, proxy);
@@ -504,7 +504,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 	/* add wildcard */
 	app1 = gs_app_new ("zeus.desktop");
-	gs_app_add_quirk (app1, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_add_quirk (app1, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_metadata (app1, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app1);
@@ -810,9 +810,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			    "A major upgrade, with new features and added polish.");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 			"https://fedoraproject.org/wiki/Releases/24/Schedule");
-	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
-	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
+	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
 	gs_app_set_version (app, "25");
 	gs_app_set_size_installed (app, 256 * 1024 * 1024);
 	gs_app_set_size_download (app, 1024 * 1024 * 1024);

@@ -387,7 +387,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	else
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 	                 _("GNOME Shell Extensions Repository"));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,

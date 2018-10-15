@@ -310,9 +310,9 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
 	gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
-	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
-	gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
+	gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_REVIEWABLE);
 	gs_app_add_icon (app, ic);
 
 	/* show a Fedora magazine article for the release */

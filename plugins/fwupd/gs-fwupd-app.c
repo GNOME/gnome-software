@@ -81,11 +81,11 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 
 	/* reboot required to apply update */
 	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_NEEDS_REBOOT))
-		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 
 	/* is removable */
 	if (!fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_INTERNAL))
-		gs_app_add_quirk (app, AS_APP_QUIRK_REMOVABLE_HARDWARE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_REMOVABLE_HARDWARE);
 
 	guids = fwupd_device_get_guids (dev);
 	if (guids->len > 0) {
@@ -128,9 +128,9 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 
 	/* needs action */
 	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_NEEDS_BOOTLOADER))
-		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION);
 	else
-		gs_app_remove_quirk (app, AS_APP_QUIRK_NEEDS_USER_ACTION);
+		gs_app_remove_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION);
 }
 
 void

@@ -94,7 +94,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 		for (j = 0; fns[j] != NULL; j++) {
 			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
 			    g_str_has_suffix (fns[j], ".repo")) {
-				gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
+				gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 			}
 			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
 			    g_str_has_suffix (fns[j], ".desktop")) {
@@ -120,7 +120,7 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 		NULL };
 
 	if (g_strv_contains (packages_with_repos, package_name))
-		gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 }
 
 gboolean

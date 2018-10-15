@@ -141,7 +141,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 			as_icon_set_name (ic, "emblem-system-symbolic");
 			gs_app_add_icon (app, ic);
-			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 			break;
 		}
 	}

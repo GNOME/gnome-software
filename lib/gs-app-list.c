@@ -305,10 +305,10 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 	const gchar *id_old = NULL;
 
 	/* adding a wildcard */
-	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
 		for (guint i = 0; i < list->array->len; i++) {
 			GsApp *app_tmp = g_ptr_array_index (list->array, i);
-			if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
 			if (g_strcmp0 (gs_app_get_unique_id (app_tmp),
 				       gs_app_get_unique_id (app)) == 0) {
@@ -338,7 +338,7 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 
 	/* existing app is a wildcard */
 	id_old = gs_app_get_unique_id (app_old);
-	if (gs_app_has_quirk (app_old, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+	if (gs_app_has_quirk (app_old, GS_APP_QUIRK_IS_WILDCARD)) {
 		g_debug ("adding %s as %s is a wildcard", id, id_old);
 		return TRUE;
 	}

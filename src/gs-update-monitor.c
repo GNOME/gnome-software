@@ -213,7 +213,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	/* how many apps needs updating */
 	for (guint i = 0; i < gs_app_list_length (list_apps); i++) {
 		GsApp *app = gs_app_list_index (list_apps, i);
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT))
 			need_restart_cnt++;
 	}
 

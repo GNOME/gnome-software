@@ -124,7 +124,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* no provenance */
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE))
+	if (!gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE))
 		return TRUE;
 
 	/* nothing to search */

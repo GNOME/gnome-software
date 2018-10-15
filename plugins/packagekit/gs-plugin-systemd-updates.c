@@ -259,7 +259,7 @@ gs_plugin_update (GsPlugin *plugin,
 		GsAppList *related = gs_app_get_related (app);
 
 		/* not a proxy, which is somewhat odd... */
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY))
 			return _systemd_trigger_app (plugin, app, cancellable, error);
 
 		/* try to trigger each related app */

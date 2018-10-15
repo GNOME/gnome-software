@@ -476,7 +476,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 			GsApp *app = gs_app_list_index (list, j);
 			if (gs_app_get_management_plugin (app) != NULL)
 				continue;
-			if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			adopt_app_func (plugin, app);
@@ -492,7 +492,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 		GsApp *app = gs_app_list_index (list, j);
 		if (gs_app_get_management_plugin (app) != NULL)
 			continue;
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
 		g_debug ("nothing adopted %s", gs_app_get_unique_id (app));
 	}
@@ -829,7 +829,7 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		app_list = gs_app_list_copy (list);
 		for (guint j = 0; j < gs_app_list_length (app_list); j++) {
 			GsApp *app = gs_app_list_index (app_list, j);
-			if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
 				helper->function_name = "gs_plugin_refine_app";
 			} else {
 				helper->function_name = "gs_plugin_refine_wildcard";
@@ -847,7 +847,7 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 static gboolean
 gs_plugin_loader_app_is_non_wildcard (GsApp *app, gpointer user_data)
 {
-	return !gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	return !gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 }
 
 static gboolean
@@ -1328,7 +1328,7 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 static gboolean
 gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
 {
-	return !gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY);
+	return !gs_app_has_quirk (app, GS_APP_QUIRK_COMPULSORY);
 }
 
 static gboolean
@@ -3216,7 +3216,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 			    _gs_app_get_icon_by_kind (app, AS_ICON_KIND_CACHED) == NULL) {
 				g_autoptr(AsIcon) ic = as_icon_new ();
 				as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-				if (gs_app_has_quirk (app, AS_APP_QUIRK_HAS_SOURCE))
+				if (gs_app_has_quirk (app, GS_APP_QUIRK_HAS_SOURCE))
 					as_icon_set_name (ic, "x-package-repository");
 				else
 					as_icon_set_name (ic, "application-x-executable");
@@ -3454,7 +3454,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
 			for (guint i = 0; apps[i] != NULL; i++) {
 				g_autoptr(GsApp) app = gs_app_new (apps[i]);
-				gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+				gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 				gs_app_list_add (list, app);
 			}
 			gs_plugin_job_set_action (plugin_job, GS_PLUGIN_ACTION_REFINE);
@@ -3681,7 +3681,7 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 
 	/* use the plugin loader to convert a wildcard app*/
 	app = gs_app_new (NULL);
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_from_unique_id (app, unique_id);
 	gs_app_list_add (list, app);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE, NULL);
@@ -3694,7 +3694,7 @@ gs_plugin_loader_app_create (GsPluginLoader *plugin_loader, const gchar *unique_
 	/* return the first returned app that's not a wildcard */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app_tmp = gs_app_list_index (list, i);
-		if (!gs_app_has_quirk (app_tmp, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+		if (!gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_WILDCARD))
 			return g_object_ref (app_tmp);
 	}
 

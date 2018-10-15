@@ -154,7 +154,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		app = gs_app_new (NULL);
 		gs_app_set_from_unique_id (app, "*/*/*/*/system/*");
 		gs_app_set_management_plugin (app, "packagekit");
-		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);

@@ -337,7 +337,7 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 
 	/* create new app */
 	app = gs_app_new (NULL);
-	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_set_management_plugin (app, "rpm-ostree");
 	gs_app_set_size_download (app, 0);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
@@ -375,7 +375,7 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 
 	/* create new app */
 	app = gs_app_new (NULL);
-	gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_set_management_plugin (app, "rpm-ostree");
 	gs_app_set_size_download (app, 0);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
@@ -677,7 +677,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 	GsAppList *related = gs_app_get_related (app);
 
 	/* we don't currently don't put all updates in the OsUpdate proxy app */
-	if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+	if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY))
 		return trigger_rpmostree_update (plugin, app, cancellable, error);
 
 	/* try to trigger each related app */
@@ -764,7 +764,7 @@ resolve_packages_app (GsPlugin *plugin,
 			if (!g_strv_contains ((const gchar * const *) layered_packages,
 			                      rpm_ostree_package_get_name (pkg))) {
 				/* on rpm-ostree this package cannot be removed 'live' */
-				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+				gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 			}
 		}
 	}
@@ -803,7 +803,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GPtrArray *sources;
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;

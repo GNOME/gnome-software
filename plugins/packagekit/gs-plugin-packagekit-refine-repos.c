@@ -107,7 +107,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		const gchar *fn;
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
 		if (gs_app_get_kind (app) != AS_APP_KIND_SOURCE)
 			continue;
