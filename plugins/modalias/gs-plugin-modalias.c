@@ -109,7 +109,6 @@ gs_plugin_modalias_matches (GsPlugin *plugin, const gchar *modalias)
 			return TRUE;
 		}
 	}
-	g_debug ("no match for %s", modalias);
 	return FALSE;
 }
 

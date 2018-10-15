@@ -310,12 +310,10 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 			GsApp *app_tmp = g_ptr_array_index (list->array, i);
 			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
+			/* not adding exactly the same wildcard */
 			if (g_strcmp0 (gs_app_get_unique_id (app_tmp),
-				       gs_app_get_unique_id (app)) == 0) {
-				g_debug ("not adding exactly the same wildcard %s",
-					 gs_app_get_unique_id (app_tmp));
+				       gs_app_get_unique_id (app)) == 0)
 				return FALSE;
-			}
 		}
 		return TRUE;
 	}
@@ -338,10 +336,8 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 
 	/* existing app is a wildcard */
 	id_old = gs_app_get_unique_id (app_old);
-	if (gs_app_has_quirk (app_old, GS_APP_QUIRK_IS_WILDCARD)) {
-		g_debug ("adding %s as %s is a wildcard", id, id_old);
+	if (gs_app_has_quirk (app_old, GS_APP_QUIRK_IS_WILDCARD))
 		return TRUE;
-	}
 
 	/* do a sanity check */
 	if (!as_utils_unique_id_equal (id, id_old)) {
@@ -351,7 +347,6 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 	}
 
 	/* already exists */
-	g_debug ("not adding duplicate %s as %s already exists", id, id_old);
 	return FALSE;
 }
 
@@ -851,9 +846,6 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 		/* better? */
 		if (flags != GS_APP_LIST_FILTER_FLAG_NONE) {
 			if (gs_app_list_filter_app_is_better (app, found, flags)) {
-				g_debug ("using better (priority %u > %u)",
-					 gs_app_get_priority (app),
-					 gs_app_get_priority (found));
 				for (guint j = 0; j < keys->len; j++) {
 					const gchar *key = g_ptr_array_index (keys, j);
 					g_hash_table_insert (hash, g_strdup (key), app);
@@ -862,9 +854,6 @@ gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 				g_hash_table_add (kept_apps, app);
 				continue;
 			}
-			g_debug ("ignoring worse duplicate (priority %u > %u)",
-				 gs_app_get_priority (app),
-				 gs_app_get_priority (found));
 			continue;
 		}
 		continue;
