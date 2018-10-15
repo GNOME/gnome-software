@@ -109,17 +109,6 @@ _file_changed_cb (GFileMonitor *monitor,
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
-	/* only reload the update list if the plugin is NOT running itself
-	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
-	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF)) {
-		g_debug ("no notify as plugin %s active", gs_plugin_get_name (plugin));
-		return;
-	}
-	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RECENT)) {
-		g_debug ("no notify as plugin %s recently active", gs_plugin_get_name (plugin));
-		return;
-	}
-
 	g_debug ("cache file changed, so reloading upgrades list");
 	gs_plugin_updates_changed (plugin);
 	priv->is_valid = FALSE;

@@ -65,7 +65,6 @@ typedef struct
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
 	GModule			*module;
-	GRWLock			 rwlock;
 	GsPluginData		*data;			/* for gs-plugin-{name}.c */
 	GsPluginFlags		 flags;
 	SoupSession		*soup_session;
@@ -224,7 +223,6 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->data);
 	g_free (priv->locale);
 	g_free (priv->language);
-	g_rw_lock_clear (&priv->rwlock);
 	if (priv->auth_array != NULL)
 		g_ptr_array_unref (priv->auth_array);
 	if (priv->soup_session != NULL)
@@ -298,79 +296,6 @@ gs_plugin_clear_data (GsPlugin *plugin)
 	if (priv->data == NULL)
 		return;
 	g_clear_pointer (&priv->data, g_free);
-}
-
-/**
- * gs_plugin_action_start:
- * @plugin: a #GsPlugin
- * @exclusive: if the plugin action should be performed exclusively
- *
- * Starts a plugin action.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_action_start (GsPlugin *plugin, gboolean exclusive)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-
-	/* lock plugin */
-	if (exclusive) {
-		g_rw_lock_writer_lock (&priv->rwlock);
-		gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_EXCLUSIVE);
-	} else {
-		g_rw_lock_reader_lock (&priv->rwlock);
-	}
-
-	/* set plugin as SELF */
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF);
-}
-
-static gboolean
-gs_plugin_action_delay_cb (gpointer user_data)
-{
-	GsPlugin *plugin = GS_PLUGIN (user_data);
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
-
-	g_debug ("plugin no longer recently active: %s", priv->name);
-	gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_RECENT);
-	priv->timer_id = 0;
-	return FALSE;
-}
-
-/**
- * gs_plugin_action_stop:
- * @plugin: a #GsPlugin
- *
- * Stops an plugin action.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_action_stop (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
-
-	/* clear plugin as SELF */
-	gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF);
-
-	/* unlock plugin */
-	if (priv->flags & GS_PLUGIN_FLAGS_EXCLUSIVE) {
-		g_rw_lock_writer_unlock (&priv->rwlock);
-		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_EXCLUSIVE);
-	} else {
-		g_rw_lock_reader_unlock (&priv->rwlock);
-	}
-
-	/* unset this flag after 5 seconds */
-	gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_RECENT);
-	if (priv->timer_id > 0)
-		g_source_remove (priv->timer_id);
-	priv->timer_id = g_timeout_add (5000,
-					gs_plugin_action_delay_cb,
-					plugin);
 }
 
 /**
@@ -861,24 +786,6 @@ gs_plugin_remove_flags (GsPlugin *plugin, GsPluginFlags flags)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->flags &= ~flags;
-}
-
-/**
- * gs_plugin_set_running_other:
- * @plugin: a #GsPlugin
- * @running_other: %TRUE if another plugin is running
- *
- * Inform the plugin that another plugin is running in the loader.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_set_running_other (GsPlugin *plugin, gboolean running_other)
-{
-	if (running_other)
-		gs_plugin_add_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER);
-	else
-		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER);
 }
 
 /**
@@ -2159,7 +2066,6 @@ gs_plugin_init (GsPlugin *plugin)
 	g_mutex_init (&priv->interactive_mutex);
 	g_mutex_init (&priv->timer_mutex);
 	g_mutex_init (&priv->vfuncs_mutex);
-	g_rw_lock_init (&priv->rwlock);
 }
 
 /**
