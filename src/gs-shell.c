@@ -1878,7 +1878,6 @@ gs_shell_rescan_events (GsShell *shell)
 	}
 
 	/* nothing to show */
-	g_debug ("no events to show");
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
 	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 }

@@ -262,7 +262,6 @@ gs_app_get_unique_id_unlocked (GsApp *app)
 
 	/* hmm, do what we can */
 	if (priv->unique_id == NULL || !priv->unique_id_valid) {
-		g_debug ("autogenerating unique-id for %s", priv->id);
 		g_free (priv->unique_id);
 		priv->unique_id = as_utils_unique_id_build (priv->scope,
 							    priv->bundle_kind,
@@ -1029,12 +1028,8 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* transient, so ignore */
 		break;
 	default:
-		if (priv->state_recover != state) {
-			g_debug ("%s non-transient state now %s",
-				 gs_app_get_unique_id_unlocked (app),
-				 as_app_state_to_string (state));
+		if (priv->state_recover != state)
 			priv->state_recover = state;
-		}
 		break;
 	}
 
@@ -2352,8 +2347,6 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 		    g_strcmp0 (tokens[i], "|") == 0)
 			continue;
 		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
-			g_debug ("nonfree license from %s: '%s'",
-				 gs_app_get_id (app), tokens[i]);
 			priv->license_is_free = FALSE;
 			break;
 		}
@@ -4554,6 +4547,8 @@ gs_app_subsume_metadata (GsApp *app, GsApp *donor)
 	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		const gchar *value = gs_app_get_metadata_item (donor, key);
+		if (gs_app_get_metadata_item (app, key) != NULL)
+			continue;
 		gs_app_set_metadata (app, key, value);
 	}
 }

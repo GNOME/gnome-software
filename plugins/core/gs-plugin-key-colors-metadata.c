@@ -76,7 +76,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 		/* only replace if it's different */
 		if (g_strcmp0 (css, css_new->str) != 0) {
-			g_debug ("replacing %s with %s", css, css_new->str);
 			gs_app_set_metadata (app, keys[i], NULL);
 			gs_app_set_metadata (app, keys[i], css_new->str);
 		}

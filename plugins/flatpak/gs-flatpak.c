@@ -1628,7 +1628,6 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	g_debug ("runtime for %s is %s", name, runtime);
 
 	/* we always get this, but it's a low bar... */
 	gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
@@ -1721,10 +1720,8 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 		return TRUE;
 
 	/* already done */
-	if (gs_app_has_kudo (app, GS_APP_KUDO_SANDBOXED)) {
-		g_debug ("skipping reading metadata");
+	if (gs_app_has_kudo (app, GS_APP_KUDO_SANDBOXED))
 		return TRUE;
-	}
 
 	/* this is quicker than doing network IO */
 	installation_path = flatpak_installation_get_path (self->installation);

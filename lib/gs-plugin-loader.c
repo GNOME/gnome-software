@@ -2369,13 +2369,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (!gs_plugin_get_enabled (dep))
 					continue;
 				if (gs_plugin_get_order (plugin) <= gs_plugin_get_order (dep)) {
-					g_debug ("%s [%u] to be ordered after %s [%u] "
-						 "so promoting to [%u]",
-						 gs_plugin_get_name (plugin),
-						 gs_plugin_get_order (plugin),
-						 gs_plugin_get_name (dep),
-						 gs_plugin_get_order (dep),
-						 gs_plugin_get_order (dep) + 1);
 					gs_plugin_set_order (plugin, gs_plugin_get_order (dep) + 1);
 					changes = TRUE;
 				}
@@ -2398,13 +2391,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (!gs_plugin_get_enabled (dep))
 					continue;
 				if (gs_plugin_get_order (plugin) >= gs_plugin_get_order (dep)) {
-					g_debug ("%s [%u] to be ordered before %s [%u] "
-						 "so promoting to [%u]",
-						 gs_plugin_get_name (plugin),
-						 gs_plugin_get_order (plugin),
-						 gs_plugin_get_name (dep),
-						 gs_plugin_get_order (dep),
-						 gs_plugin_get_order (dep) + 1);
 					gs_plugin_set_order (dep, gs_plugin_get_order (plugin) + 1);
 					changes = TRUE;
 				}
@@ -2466,13 +2452,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (!gs_plugin_get_enabled (dep))
 					continue;
 				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
-					g_debug ("%s [%u] is better than %s [%u] "
-						 "so promoting to [%u]",
-						 gs_plugin_get_name (plugin),
-						 gs_plugin_get_priority (plugin),
-						 gs_plugin_get_name (dep),
-						 gs_plugin_get_priority (dep),
-						 gs_plugin_get_priority (dep) + 1);
 					gs_plugin_set_priority (plugin, gs_plugin_get_priority (dep) + 1);
 					changes = TRUE;
 				}
