@@ -206,6 +206,31 @@ gs_flatpak_add_flatpak_keyword_cb (XbBuilderSource *self,
 }
 
 static gboolean
+gs_flatpak_fix_id_desktop_suffix_cb (XbBuilderSource *self,
+				     XbBuilderNode *bn,
+				     gpointer user_data,
+				     GError **error)
+{
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0) {
+		g_auto(GStrv) split = NULL;
+		g_autoptr(XbBuilderNode) id = xb_builder_node_get_child (bn, "id", NULL);
+		g_autoptr(XbBuilderNode) bundle = xb_builder_node_get_child (bn, "bundle", NULL);
+		if (id == NULL || bundle == NULL)
+			return TRUE;
+		split = g_strsplit (xb_builder_node_get_text (bundle), "/", -1);
+		if (g_strv_length (split) != 4)
+			return TRUE;
+		if (g_strcmp0 (xb_builder_node_get_text (id), split[1]) != 0) {
+			g_debug ("fixing up <id>%s</id> to %s",
+				 xb_builder_node_get_text (id), split[1]);
+			gs_appstream_component_add_provide (bn, xb_builder_node_get_text (id));
+			xb_builder_node_set_text (id, split[1], -1);
+		}
+	}
+	return TRUE;
+}
+
+static gboolean
 gs_flatpak_set_origin_cb (XbBuilderSource *self,
 			  XbBuilderNode *bn,
 			  gpointer user_data,
@@ -313,6 +338,11 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	/* add the flatpak search keyword */
 	xb_builder_source_add_node_func (source, "AddKeywordFlatpak",
 					 gs_flatpak_add_flatpak_keyword_cb,
+					 self, NULL);
+
+	/* ensure the <id> matches the flatpak ref ID  */
+	xb_builder_source_add_node_func (source, "FixIdDesktopSuffix",
+					 gs_flatpak_fix_id_desktop_suffix_cb,
 					 self, NULL);
 
 	/* override the *AppStream* origin */

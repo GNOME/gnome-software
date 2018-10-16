@@ -84,6 +84,8 @@ void		 gs_appstream_component_add_category	(XbBuilderNode	*component,
 							 const gchar	*str);
 void		 gs_appstream_component_add_icon	(XbBuilderNode	*component,
 							 const gchar	*str);
+void		 gs_appstream_component_add_provide	(XbBuilderNode	*component,
+							 const gchar	*str);
 
 G_END_DECLS
 
