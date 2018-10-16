@@ -55,7 +55,7 @@ static const GsDesktopMap map_developertools[] = {
 					{ "Development::Featured",
 					  NULL} },
 	{ "debuggers",		NC_("Menu of Developer Tools", "Debuggers"),
-					{ "Development:Debugger",
+					{ "Development::Debugger",
 					  NULL} },
 	{ "ide",		NC_("Menu of Developer Tools", "IDEs"),
 					{ "Development::IDE",
