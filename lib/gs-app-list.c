@@ -28,7 +28,6 @@ struct _GsAppList
 {
 	GObject			 parent_instance;
 	GPtrArray		*array;
-	GHashTable		*hash_by_id;		/* app-id : app */
 	GMutex			 mutex;
 	guint			 size_peak;
 	GsAppListFlags		 flags;
@@ -221,6 +220,17 @@ gs_app_list_get_size_peak (GsAppList *list)
 	return list->size_peak;
 }
 
+static GsApp *
+gs_app_list_lookup_safe (GsAppList *list, const gchar *unique_id)
+{
+	for (guint i = 0; i < list->array->len; i++) {
+		GsApp *app = g_ptr_array_index (list->array, i);
+		if (as_utils_unique_id_equal (gs_app_get_unique_id (app), unique_id))
+			return app;
+	}
+	return NULL;
+}
+
 /**
  * gs_app_list_lookup:
  * @list: A #GsAppList
@@ -237,7 +247,7 @@ GsApp *
 gs_app_list_lookup (GsAppList *list, const gchar *unique_id)
 {
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&list->mutex);
-	return g_hash_table_lookup (list->hash_by_id, unique_id);
+	return gs_app_list_lookup_safe (list, unique_id);
 }
 
 /**
@@ -287,7 +297,6 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 {
 	GsApp *app_old;
 	const gchar *id;
-	const gchar *id_old = NULL;
 
 	/* adding a wildcard */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
@@ -315,21 +324,12 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 		return TRUE;
 	}
 
-	app_old = g_hash_table_lookup (list->hash_by_id, id);
+	/* existing app is a wildcard */
+	app_old = gs_app_list_lookup_safe (list, id);
 	if (app_old == NULL)
 		return TRUE;
-
-	/* existing app is a wildcard */
-	id_old = gs_app_get_unique_id (app_old);
 	if (gs_app_has_quirk (app_old, GS_APP_QUIRK_IS_WILDCARD))
 		return TRUE;
-
-	/* do a sanity check */
-	if (!as_utils_unique_id_equal (id, id_old)) {
-		g_debug ("unique-id non-equal %s as %s but hash matched!",
-			 id, id_old);
-		return TRUE;
-	}
 
 	/* already exists */
 	return FALSE;
@@ -362,7 +362,6 @@ gs_app_list_add_safe (GsAppList *list, GsApp *app, GsAppListAddFlag flag)
 	/* just use the ref */
 	gs_app_list_maybe_watch_app (list, app);
 	g_ptr_array_add (list->array, g_object_ref (app));
-	g_hash_table_insert (list->hash_by_id, g_strdup (id), g_object_ref (app));
 
 	/* update the historical max */
 	if (list->array->len > list->size_peak)
@@ -411,28 +410,14 @@ gs_app_list_add (GsAppList *list, GsApp *app)
 void
 gs_app_list_remove (GsAppList *list, GsApp *app)
 {
-	GsApp *app_tmp;
-	const gchar *unique_id;
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
 
 	locker = g_mutex_locker_new (&list->mutex);
-
-	/* remove, or ignore if not found */
-	unique_id = gs_app_get_unique_id (app);
-	if (unique_id != NULL) {
-		app_tmp = g_hash_table_lookup (list->hash_by_id, unique_id);
-		if (app_tmp == NULL)
-			return;
-		g_hash_table_remove (list->hash_by_id, unique_id);
-		g_ptr_array_remove (list->array, app_tmp);
-		gs_app_list_maybe_unwatch_app (list, app_tmp);
-	} else {
-		g_ptr_array_remove (list->array, app);
-		gs_app_list_maybe_unwatch_app (list, app);
-	}
+	g_ptr_array_remove (list->array, app);
+	gs_app_list_maybe_unwatch_app (list, app);
 
 	/* recalculate global state */
 	gs_app_list_invalidate_state (list);
@@ -513,7 +498,6 @@ gs_app_list_remove_all_safe (GsAppList *list)
 		gs_app_list_maybe_unwatch_app (list, app);
 	}
 	g_ptr_array_set_size (list->array, 0);
-	g_hash_table_remove_all (list->hash_by_id);
 	gs_app_list_invalidate_state (list);
 	gs_app_list_invalidate_progress (list);
 }
@@ -635,17 +619,6 @@ gs_app_list_truncate (GsAppList *list, guint length)
 
 	/* remove the apps in the positions larger than the length */
 	locker = g_mutex_locker_new (&list->mutex);
-	for (guint i = length; i < list->array->len; i++) {
-		GsApp *app = g_ptr_array_index (list->array, i);
-		const gchar *unique_id;
-		unique_id = gs_app_get_unique_id (app);
-		if (unique_id != NULL) {
-			GsApp *app_tmp = g_hash_table_lookup (list->hash_by_id, unique_id);
-			if (app_tmp != NULL)
-				g_hash_table_remove (list->hash_by_id, unique_id);
-		}
-
-	}
 	g_ptr_array_set_size (list->array, length);
 }
 
@@ -914,7 +887,6 @@ gs_app_list_finalize (GObject *object)
 {
 	GsAppList *list = GS_APP_LIST (object);
 	g_ptr_array_unref (list->array);
-	g_hash_table_unref (list->hash_by_id);
 	g_mutex_clear (&list->mutex);
 	G_OBJECT_CLASS (gs_app_list_parent_class)->finalize (object);
 }
@@ -951,10 +923,6 @@ gs_app_list_init (GsAppList *list)
 {
 	g_mutex_init (&list->mutex);
 	list->array = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	list->hash_by_id = g_hash_table_new_full ((GHashFunc) as_utils_unique_id_hash,
-						  (GEqualFunc) as_utils_unique_id_equal,
-						  g_free,
-						  (GDestroyNotify) g_object_unref);
 }
 
 /**
