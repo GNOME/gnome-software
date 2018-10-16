@@ -110,10 +110,10 @@ gs_flatpak_app_get_ref_display (GsApp *app)
 	const gchar *ref_arch = gs_flatpak_app_get_ref_arch (app);
 	const gchar *ref_branch = gs_flatpak_app_get_ref_branch (app);
 
-	g_assert (ref_kind_as_str != NULL);
-	g_assert (ref_name != NULL);
-	g_assert (ref_arch != NULL);
-	g_assert (ref_branch != NULL);
+	g_return_val_if_fail (ref_kind_as_str != NULL, NULL);
+	g_return_val_if_fail (ref_name != NULL, NULL);
+	g_return_val_if_fail (ref_arch != NULL, NULL);
+	g_return_val_if_fail (ref_branch != NULL, NULL);
 
 	return g_strdup_printf ("%s/%s/%s/%s",
 	                        ref_kind_as_str,
