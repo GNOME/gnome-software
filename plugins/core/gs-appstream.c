@@ -1375,6 +1375,25 @@ gs_appstream_component_add_keyword (XbBuilderNode *component, const gchar *str)
 }
 
 void
+gs_appstream_component_add_provide (XbBuilderNode *component, const gchar *str)
+{
+	g_autoptr(XbBuilderNode) provide = NULL;
+	g_autoptr(XbBuilderNode) provides = NULL;
+
+	/* create <provides> if it does not already exist */
+	provides = xb_builder_node_get_child (component, "provides", NULL);
+	if (provides == NULL)
+		provides = xb_builder_node_insert (component, "provides", NULL);
+
+	/* create <id>str</id> if it does not already exist */
+	provide = xb_builder_node_get_child (provides, "id", str);
+	if (provide == NULL) {
+		provide = xb_builder_node_insert (provides, "id", NULL);
+		xb_builder_node_set_text (provide, str, -1);
+	}
+}
+
+void
 gs_appstream_component_add_category (XbBuilderNode *component, const gchar *str)
 {
 	g_autoptr(XbBuilderNode) category = NULL;
