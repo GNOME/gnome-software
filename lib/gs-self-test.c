@@ -535,8 +535,6 @@ gs_plugin_func (void)
 	list = gs_app_list_new ();
 	app = gs_app_new ("a");
 	gs_app_list_add (list, app);
-	g_object_unref (app);
-	app = gs_app_new ("a");
 	gs_app_list_remove (list, app);
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 0);
