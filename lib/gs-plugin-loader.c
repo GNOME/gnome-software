@@ -3314,13 +3314,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		}
 		if (gs_app_list_length (list) > 1) {
 			g_autofree gchar *str = gs_plugin_job_to_string (helper->plugin_job);
-			g_task_return_new_error (task,
-						 GS_PLUGIN_ERROR,
-						 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-						 "more than one application was created for %s",
-						 str);
-			return;
-		}
+			g_debug ("more than one application was created for %s", str);
 	}
 
 	/* filter duplicates with priority, taking into account the source name
