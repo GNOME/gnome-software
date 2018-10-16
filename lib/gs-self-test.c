@@ -535,8 +535,6 @@ gs_plugin_func (void)
 	list = gs_app_list_new ();
 	app = gs_app_new ("a");
 	gs_app_list_add (list, app);
-	g_object_unref (app);
-	app = gs_app_new ("a");
 	gs_app_list_remove (list, app);
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list), ==, 0);
@@ -771,6 +769,28 @@ gs_app_list_func (void)
 }
 
 static void
+gs_app_list_performance_func (void)
+{
+	g_autoptr(GPtrArray) apps = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	g_autoptr(GsAppList) list = gs_app_list_new ();
+	g_autoptr(GTimer) timer = NULL;
+
+	/* create a few apps */
+	for (guint i = 0; i < 500; i++) {
+		g_autofree gchar *id = g_strdup_printf ("%03u.desktop", i);
+		g_ptr_array_add (apps, gs_app_new (id));
+	}
+
+	/* add them to the list */
+	timer = g_timer_new ();
+	for (guint i = 0; i < apps->len; i++) {
+		GsApp *app = g_ptr_array_index (apps, i);
+		gs_app_list_add (list, app);
+	}
+	g_print ("%.2fms ", g_timer_elapsed (timer, NULL) * 1000);
+}
+
+static void
 gs_app_list_related_func (void)
 {
 	g_autoptr(GsAppList) list = gs_app_list_new ();
@@ -812,6 +832,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
 	g_test_add_func ("/gnome-software/lib/app{list}", gs_app_list_func);
+	g_test_add_func ("/gnome-software/lib/app{list-performance}", gs_app_list_performance_func);
 	g_test_add_func ("/gnome-software/lib/app{list-related}", gs_app_list_related_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/lib/plugin{download-rewrite}", gs_plugin_download_rewrite_func);
