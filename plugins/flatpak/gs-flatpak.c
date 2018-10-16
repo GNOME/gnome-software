@@ -434,6 +434,15 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 			continue;
 		}
 
+		/* add the bundle info */
+		if (as_app_get_bundle_default (app) == NULL) {
+			g_autoptr(AsBundle) bundle = as_bundle_new ();
+			g_autofree gchar *ref = flatpak_ref_format_ref (FLATPAK_REF (app_ref));
+			as_bundle_set_kind (bundle, AS_BUNDLE_KIND_FLATPAK);
+			as_bundle_set_id (bundle, ref);
+			as_app_add_bundle (app, bundle);
+		}
+
 		as_app_set_branch (app, flatpak_ref_get_branch (FLATPAK_REF (app_ref)));
 		as_app_set_icon_path (app, path_exports);
 		as_app_add_keyword (app, NULL, "flatpak");
