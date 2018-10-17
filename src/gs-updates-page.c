@@ -1249,8 +1249,9 @@ gs_updates_page_status_changed_cb (GsPluginLoader *plugin_loader,
 	switch (status) {
 	case GS_PLUGIN_STATUS_INSTALLING:
 	case GS_PLUGIN_STATUS_REMOVING:
-		if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE &&
-		    gs_app_get_id (app) != NULL) {
+		if (app == NULL ||
+		    (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE &&
+		     gs_app_get_id (app) != NULL)) {
 			/* if we do a install or remove then make sure all new
 			 * packages are downloaded */
 			gs_updates_page_invalidate_downloaded_upgrade (self);
