@@ -39,6 +39,7 @@ struct _GsPopularTile
 	GtkWidget	*stack;
 	GtkWidget	*stars;
 	GtkWidget	*label_origin;
+	guint		 app_state_changed_id;
 };
 
 G_DEFINE_TYPE (GsPopularTile, gs_popular_tile, GS_TYPE_APP_TILE)
@@ -56,6 +57,8 @@ app_state_changed_idle (gpointer user_data)
 	AtkObject *accessible;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
+
+	tile->app_state_changed_id = 0;
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
@@ -84,14 +87,14 @@ app_state_changed_idle (gpointer user_data)
 		atk_object_set_description (accessible, gs_app_get_summary (tile->app));
 	}
 
-	g_object_unref (tile);
 	return G_SOURCE_REMOVE;
 }
 
 static void
 app_state_changed (GsApp *app, GParamSpec *pspec, GsPopularTile *tile)
 {
-	g_idle_add (app_state_changed_idle, g_object_ref (tile));
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
+	tile->app_state_changed_id = g_idle_add (app_state_changed_idle, tile);
 }
 
 static void
@@ -102,8 +105,9 @@ gs_popular_tile_set_app (GsAppTile *app_tile, GsApp *app)
 
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
-	if (tile->app)
+	if (tile->app != NULL)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
 
 	g_set_object (&tile->app, app);
 	if (!app)
@@ -146,9 +150,9 @@ gs_popular_tile_destroy (GtkWidget *widget)
 {
 	GsPopularTile *tile = GS_POPULAR_TILE (widget);
 
-	if (tile->app)
+	if (tile->app != NULL)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
-
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
 	g_clear_object (&tile->app);
 
 	GTK_WIDGET_CLASS (gs_popular_tile_parent_class)->destroy (widget);
