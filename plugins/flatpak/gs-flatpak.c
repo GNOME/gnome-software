@@ -98,21 +98,8 @@ gs_flatpak_claim_app_list (GsFlatpak *self, GsAppList *list)
 }
 
 static void
-gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
+gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 {
-	/* core */
-	gs_flatpak_claim_app (self, app);
-	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
-	gs_plugin_refine_item_scope (self, app);
-
-	/* flatpak specific */
-	gs_flatpak_app_set_ref_kind (app, flatpak_ref_get_kind (xref));
-	gs_flatpak_app_set_ref_name (app, flatpak_ref_get_name (xref));
-	gs_flatpak_app_set_ref_arch (app, flatpak_ref_get_arch (xref));
-	gs_flatpak_app_set_ref_branch (app, flatpak_ref_get_branch (xref));
-	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
-
-	/* map the flatpak kind to the gnome-software kind */
 	if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_APP) {
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	} else if (flatpak_ref_get_kind (xref) == FLATPAK_REF_KIND_RUNTIME) {
@@ -129,6 +116,28 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 		} else {
 			gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
 		}
+	}
+}
+
+static void
+gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
+{
+	/* core */
+	gs_flatpak_claim_app (self, app);
+	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
+	gs_plugin_refine_item_scope (self, app);
+
+	/* flatpak specific */
+	gs_flatpak_app_set_ref_kind (app, flatpak_ref_get_kind (xref));
+	gs_flatpak_app_set_ref_name (app, flatpak_ref_get_name (xref));
+	gs_flatpak_app_set_ref_arch (app, flatpak_ref_get_arch (xref));
+	gs_flatpak_app_set_ref_branch (app, flatpak_ref_get_branch (xref));
+	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
+
+	/* map the flatpak kind to the gnome-software kind */
+	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
+	    gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
+		gs_flatpak_set_kind_from_flatpak (app, xref);
 	}
 }
 
