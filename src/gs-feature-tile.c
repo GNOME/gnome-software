@@ -36,6 +36,7 @@ struct _GsFeatureTile
 	GtkWidget	*stack;
 	GtkWidget	*title;
 	GtkWidget	*subtitle;
+	guint		 app_state_changed_id;
 };
 
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
@@ -55,9 +56,7 @@ app_state_changed_idle (gpointer user_data)
 	g_autofree gchar *name = NULL;
 	g_autoptr(GsCss) css = NULL;
 
-	/* nothing set yet */
-	if (tile->app == NULL)
-		return G_SOURCE_REMOVE;
+	tile->app_state_changed_id = 0;
 
 	/* update text */
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (tile->app));
@@ -98,14 +97,14 @@ app_state_changed_idle (gpointer user_data)
 		atk_object_set_description (accessible, gs_app_get_summary (tile->app));
 	}
 
-	g_object_unref (tile);
 	return G_SOURCE_REMOVE;
 }
 
 static void
 app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
 {
-	g_idle_add (app_state_changed_idle, g_object_ref (tile));
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
+	tile->app_state_changed_id = g_idle_add (app_state_changed_idle, tile);
 }
 
 static void
@@ -118,6 +117,7 @@ gs_feature_tile_set_app (GsAppTile *app_tile, GsApp *app)
 
 	if (tile->app != NULL)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
 
 	g_set_object (&tile->app, app);
 	if (app == NULL)
@@ -139,9 +139,9 @@ gs_feature_tile_destroy (GtkWidget *widget)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
 
-	if (tile->app)
+	if (tile->app != NULL)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
-
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
 	g_clear_object (&tile->app);
 
 	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->destroy (widget);
