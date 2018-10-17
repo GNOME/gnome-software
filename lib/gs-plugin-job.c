@@ -454,7 +454,7 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		g_value_set_uint64 (value, self->filter_flags);
 		break;
 	case PROP_INTERACTIVE:
-		g_value_set_uint64 (value, self->interactive);
+		g_value_set_boolean (value, self->interactive);
 		break;
 	case PROP_SEARCH:
 		g_value_set_string (value, self->search);
@@ -511,7 +511,7 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 		gs_plugin_job_set_filter_flags (self, g_value_get_uint64 (value));
 		break;
 	case PROP_INTERACTIVE:
-		gs_plugin_job_set_interactive (self, g_value_get_uint64 (value));
+		gs_plugin_job_set_interactive (self, g_value_get_boolean (value));
 		break;
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
@@ -596,9 +596,10 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILTER_FLAGS, pspec);
 
-	pspec = g_param_spec_uint64 ("interactive", NULL, NULL,
-				     0, G_MAXUINT64, 0,
-				     G_PARAM_READWRITE);
+	pspec = g_param_spec_boolean ("interactive", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE);
+
 	g_object_class_install_property (object_class, PROP_INTERACTIVE, pspec);
 
 	pspec = g_param_spec_string ("search", NULL, NULL,
