@@ -312,7 +312,7 @@ gs_appstream_refine_add_images (GsApp *app, AsScreenshot *ss, XbNode *screenshot
 		as_image_set_width (im, xb_node_get_attr_as_uint (image, "width"));
 		as_image_set_kind (im, as_image_kind_from_string (xb_node_get_attr (image, "type")));
 		as_image_set_url (im, xb_node_get_text (image));
-		as_screenshot_add_image (ss, g_steal_pointer (&im));
+		as_screenshot_add_image (ss, im);
 	}
 
 	/* success */
@@ -340,7 +340,7 @@ gs_appstream_refine_add_screenshots (GsApp *app, XbNode *component, GError **err
 		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
 		if (!gs_appstream_refine_add_images (app, ss, screenshot, error))
 			return FALSE;
-		gs_app_add_screenshot (app, g_steal_pointer (&ss));
+		gs_app_add_screenshot (app, ss);
 	}
 
 	/* FIXME: move into no refine flags section? */
@@ -372,7 +372,7 @@ gs_appstream_refine_add_provides (GsApp *app, XbNode *component, GError **error)
 		g_autoptr(AsProvide) pr = as_provide_new ();
 		as_provide_set_kind (pr, as_provide_kind_from_string (xb_node_get_element (provide)));
 		as_provide_set_value (pr, xb_node_get_text (provide));
-		gs_app_add_provide (app, g_steal_pointer (&pr));
+		gs_app_add_provide (app, pr);
 	}
 
 	/* success */
