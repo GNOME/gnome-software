@@ -46,6 +46,23 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-10-18" version="3.30.3">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Fix a memory corruption issue on 32-bit arches that made gnome-software very crashy</li>
+          <li>Fix an issue with stuck back button on the details page after closing and reopening gnome-software</li>
+          <li>Make distro upgrades to Fedora N+2 release show up correctly</li>
+          <li>Various flatpak plugin fixes</li>
+          <li>Allow opening CAB files that include more than one update</li>
+          <li>Fix critical warnings when quickly switching between category pages</li>
+          <li>Small memory leak fixes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-10-05" version="3.30.2">
       <description>
         <p>
