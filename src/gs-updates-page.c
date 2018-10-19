@@ -878,7 +878,8 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 		gs_updates_page_get_new_updates (self);
 
 	/* expensive network connection */
-	} else if (gs_plugin_loader_get_network_metered (self->plugin_loader)) {
+	} else if (gs_plugin_loader_get_network_available (self->plugin_loader) &&
+	           gs_plugin_loader_get_network_metered (self->plugin_loader)) {
 		if (self->has_agreed_to_mobile_data) {
 			gs_updates_page_get_new_updates (self);
 			return;
