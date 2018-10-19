@@ -5,9 +5,8 @@ stages:
 
 before_script:
   # Update and use base build deps
-  - dnf update -y && dnf -y install dnf-plugins-core @buildsys-build
+  - dnf update -y && dnf -y install git dnf-plugins-core @buildsys-build
   - dnf install -y https://people.freedesktop.org/~hughsient/temp/libappstream-glib-0.7.14-0.641.20181015git.fc29.x86_64.rpm https://people.freedesktop.org/~hughsient/temp/libappstream-glib-devel-0.7.14-0.641.20181015git.fc29.x86_64.rpm
-  - dnf install -y https://people.freedesktop.org/~hughsient/temp/libxmlb-0.1.2-0.49.20181016git.fc29.x86_64.rpm https://people.freedesktop.org/~hughsient/temp/libxmlb-devel-0.1.2-0.49.20181016git.fc29.x86_64.rpm
   - dnf --enablerepo updates-testing -y builddep gnome-software
   # Some deps may not be sync'd
   - dnf -y install rpm-ostree-devel
