@@ -204,7 +204,7 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 }
 
 static gboolean
-gs_flatpak_add_flatpak_keyword_cb (XbBuilderSource *self,
+gs_flatpak_add_flatpak_keyword_cb (XbBuilderFixup *self,
 				   XbBuilderNode *bn,
 				   gpointer user_data,
 				   GError **error)
@@ -215,7 +215,7 @@ gs_flatpak_add_flatpak_keyword_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_flatpak_fix_id_desktop_suffix_cb (XbBuilderSource *self,
+gs_flatpak_fix_id_desktop_suffix_cb (XbBuilderFixup *self,
 				     XbBuilderNode *bn,
 				     gpointer user_data,
 				     GError **error)
@@ -240,7 +240,7 @@ gs_flatpak_fix_id_desktop_suffix_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_flatpak_set_origin_cb (XbBuilderSource *self,
+gs_flatpak_set_origin_cb (XbBuilderFixup *self,
 			  XbBuilderNode *bn,
 			  gpointer user_data,
 			  GError **error)
@@ -254,7 +254,7 @@ gs_flatpak_set_origin_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_flatpak_filter_default_branch_cb (XbBuilderSource *self,
+gs_flatpak_filter_default_branch_cb (XbBuilderFixup *self,
 				     XbBuilderNode *bn,
 				     gpointer user_data,
 				     GError **error)
@@ -280,7 +280,7 @@ gs_flatpak_filter_default_branch_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_flatpak_filter_noenumerate_cb (XbBuilderSource *self,
+gs_flatpak_filter_noenumerate_cb (XbBuilderFixup *self,
 				  XbBuilderNode *bn,
 				  gpointer user_data,
 				  GError **error)
@@ -314,6 +314,9 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file_xml = NULL;
 	g_autoptr(GSettings) settings = NULL;
+	g_autoptr(XbBuilderFixup) fixup1 = NULL;
+	g_autoptr(XbBuilderFixup) fixup2 = NULL;
+	g_autoptr(XbBuilderFixup) fixup3 = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
@@ -345,19 +348,25 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		return FALSE;
 
 	/* add the flatpak search keyword */
-	xb_builder_source_add_node_func (source, "AddKeywordFlatpak",
-					 gs_flatpak_add_flatpak_keyword_cb,
-					 self, NULL);
+	fixup1 = xb_builder_fixup_new ("AddKeywordFlatpak",
+				       gs_flatpak_add_flatpak_keyword_cb,
+				       self, NULL);
+	xb_builder_fixup_set_max_depth (fixup1, 2);
+	xb_builder_source_add_fixup (source, fixup1);
 
 	/* ensure the <id> matches the flatpak ref ID  */
-	xb_builder_source_add_node_func (source, "FixIdDesktopSuffix",
-					 gs_flatpak_fix_id_desktop_suffix_cb,
-					 self, NULL);
+	fixup2 = xb_builder_fixup_new ("FixIdDesktopSuffix",
+				       gs_flatpak_fix_id_desktop_suffix_cb,
+				       self, NULL);
+	xb_builder_fixup_set_max_depth (fixup2, 2);
+	xb_builder_source_add_fixup (source, fixup2);
 
 	/* override the *AppStream* origin */
-	xb_builder_source_add_node_func (source, "SetOrigin",
-					 gs_flatpak_set_origin_cb,
-					 xremote, NULL);
+	fixup3 = xb_builder_fixup_new ("SetOrigin",
+				       gs_flatpak_set_origin_cb,
+				       xremote, NULL);
+	xb_builder_fixup_set_max_depth (fixup3, 1);
+	xb_builder_source_add_fixup (source, fixup3);
 
 	/* add metadata */
 	icon_prefix = g_build_filename (appstream_dir_fn, "icons", NULL);
@@ -369,22 +378,28 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	/* only add the specific app for noenumerate=true */
 	if (flatpak_remote_get_noenumerate (xremote)) {
 		g_autofree gchar *tmp = NULL;
+		g_autoptr(XbBuilderFixup) fixup = NULL;
 		tmp = g_strdup (flatpak_remote_get_name (xremote));
 		g_strdelimit (tmp, "-", '\0');
-		xb_builder_source_add_node_func (source, "FilterNoEnumerate",
-						 gs_flatpak_filter_noenumerate_cb,
-						 g_strdup (tmp),
-						 g_free);
+		fixup = xb_builder_fixup_new ("FilterNoEnumerate",
+					      gs_flatpak_filter_noenumerate_cb,
+					      g_strdup (tmp),
+					      g_free);
+		xb_builder_fixup_set_max_depth (fixup, 2);
+		xb_builder_source_add_fixup (source, fixup);
 	}
 
 	/* do we want to filter to the default branch */
 	settings = g_settings_new ("org.gnome.software");
 	if (g_settings_get_boolean (settings, "filter-default-branch") &&
 	    flatpak_remote_get_default_branch (xremote) != NULL) {
-		xb_builder_source_add_node_func (source, "FilterDefaultbranch",
-						 gs_flatpak_filter_default_branch_cb,
-						 flatpak_remote_get_default_branch (xremote),
-						 g_free);
+		g_autoptr(XbBuilderFixup) fixup = NULL;
+		fixup = xb_builder_fixup_new ("FilterDefaultbranch",
+					      gs_flatpak_filter_default_branch_cb,
+					      flatpak_remote_get_default_branch (xremote),
+					      g_free);
+		xb_builder_fixup_set_max_depth (fixup, 2);
+		xb_builder_source_add_fixup (source, fixup);
 	}
 
 	/* success */
@@ -421,6 +436,7 @@ gs_flatpak_load_desktop_fn (GsFlatpak *self,
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
+	g_autoptr(XbBuilderFixup) fixup = NULL;
 
 	/* add support for desktop files */
 	xb_builder_source_add_converter (source,
@@ -429,9 +445,11 @@ gs_flatpak_load_desktop_fn (GsFlatpak *self,
 					 NULL, NULL);
 
 	/* add the flatpak search keyword */
-	xb_builder_source_add_node_func (source, "AddKeywordFlatpak",
-					 gs_flatpak_add_flatpak_keyword_cb,
-					 self, NULL);
+	fixup = xb_builder_fixup_new ("AddKeywordFlatpak",
+				      gs_flatpak_add_flatpak_keyword_cb,
+				      self, NULL);
+	xb_builder_fixup_set_max_depth (fixup, 2);
+	xb_builder_source_add_fixup (source, fixup);
 
 	/* set the component metadata */
 	info = xb_builder_node_insert (NULL, "info", NULL);

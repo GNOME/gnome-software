@@ -65,7 +65,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 static gboolean
-gs_plugin_appstream_upgrade_cb (XbBuilderSource *self,
+gs_plugin_appstream_upgrade_cb (XbBuilderFixup *self,
 				XbBuilderNode *bn,
 				gpointer user_data,
 				GError **error)
@@ -87,7 +87,7 @@ gs_plugin_appstream_upgrade_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_plugin_appstream_add_pkgname_cb (XbBuilderSource *self,
+gs_plugin_appstream_add_pkgname_cb (XbBuilderFixup *self,
 				    XbBuilderNode *bn,
 				    gpointer user_data,
 				    GError **error)
@@ -98,7 +98,7 @@ gs_plugin_appstream_add_pkgname_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_plugin_appstream_add_icons_cb (XbBuilderSource *self,
+gs_plugin_appstream_add_icons_cb (XbBuilderFixup *self,
 				  XbBuilderNode *bn,
 				  gpointer user_data,
 				  GError **error)
@@ -111,7 +111,7 @@ gs_plugin_appstream_add_icons_cb (XbBuilderSource *self,
 }
 
 static gboolean
-gs_plugin_appstream_add_origin_keyword_cb (XbBuilderSource *self,
+gs_plugin_appstream_add_origin_keyword_cb (XbBuilderFixup *self,
 					   XbBuilderNode *bn,
 					   gpointer user_data,
 					   GError **error)
@@ -140,6 +140,7 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 				     GError **error)
 {
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
+	g_autoptr(XbBuilderFixup) fixup = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add source */
@@ -151,9 +152,11 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 	}
 
 	/* fix up any legacy installed files */
-	xb_builder_source_add_node_func (source, "AppStreamUpgrade",
-					 gs_plugin_appstream_upgrade_cb,
-					 plugin, NULL);
+	fixup = xb_builder_fixup_new ("AppStreamUpgrade",
+				      gs_plugin_appstream_upgrade_cb,
+				      plugin, NULL);
+	xb_builder_fixup_set_max_depth (fixup, 3);
+	xb_builder_source_add_fixup (source, fixup);
 
 	/* success */
 	xb_builder_import_source (builder, source);
@@ -220,6 +223,7 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 				     GError **error)
 {
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
+	g_autoptr(XbBuilderFixup) fixup = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for desktop files */
@@ -229,9 +233,11 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 					 NULL, NULL);
 
 	/* add a dummy package name */
-	xb_builder_source_add_node_func (source, "AddDesktopPackageName",
-					 gs_plugin_appstream_add_pkgname_cb,
-					 plugin, NULL);
+	fixup = xb_builder_fixup_new ("AddDesktopPackageName",
+				      gs_plugin_appstream_add_pkgname_cb,
+				      plugin, NULL);
+	xb_builder_fixup_set_max_depth (fixup, 2);
+	xb_builder_source_add_fixup (source, fixup);
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file,
@@ -308,6 +314,9 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
 	g_autoptr(XbBuilderNode) info = NULL;
+	g_autoptr(XbBuilderFixup) fixup1 = NULL;
+	g_autoptr(XbBuilderFixup) fixup2 = NULL;
+	g_autoptr(XbBuilderFixup) fixup3 = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for DEP-11 files */
@@ -332,19 +341,25 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 	xb_builder_source_set_info (source, info);
 
 	/* add missing icons as required */
-	xb_builder_source_add_node_func (source, "AddIcons",
-					 gs_plugin_appstream_add_icons_cb,
-					 plugin, NULL);
+	fixup1 = xb_builder_fixup_new ("AddIcons",
+				       gs_plugin_appstream_add_icons_cb,
+				       plugin, NULL);
+	xb_builder_fixup_set_max_depth (fixup1, 2);
+	xb_builder_source_add_fixup (source, fixup1);
 
 	/* fix up any legacy installed files */
-	xb_builder_source_add_node_func (source, "AppStreamUpgrade",
-					 gs_plugin_appstream_upgrade_cb,
-					 plugin, NULL);
+	fixup2 = xb_builder_fixup_new ("AppStreamUpgrade",
+				       gs_plugin_appstream_upgrade_cb,
+				       plugin, NULL);
+	xb_builder_fixup_set_max_depth (fixup2, 3);
+	xb_builder_source_add_fixup (source, fixup2);
 
 	/* add the origin as a search keyword for small repos */
-	xb_builder_source_add_node_func (source, "AddOriginKeyword",
-					 gs_plugin_appstream_add_origin_keyword_cb,
-					 plugin, NULL);
+	fixup3 = xb_builder_fixup_new ("AddOriginKeyword",
+				       gs_plugin_appstream_add_origin_keyword_cb,
+				       plugin, NULL);
+	xb_builder_fixup_set_max_depth (fixup3, 1);
+	xb_builder_source_add_fixup (source, fixup3);
 
 	/* success */
 	xb_builder_import_source (builder, source);
@@ -431,17 +446,23 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	/* only when in self test */
 	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
 	if (test_xml != NULL) {
+		g_autoptr(XbBuilderFixup) fixup1 = NULL;
+		g_autoptr(XbBuilderFixup) fixup2 = NULL;
 		g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 		if (!xb_builder_source_load_xml (source, test_xml,
 						 XB_BUILDER_SOURCE_FLAG_NONE,
 						 error))
 			return FALSE;
-		xb_builder_source_add_node_func (source, "AddOriginKeywords",
-						 gs_plugin_appstream_add_origin_keyword_cb,
-						 plugin, NULL);
-		xb_builder_source_add_node_func (source, "AddIcons",
-						 gs_plugin_appstream_add_icons_cb,
-						 plugin, NULL);
+		fixup1 = xb_builder_fixup_new ("AddOriginKeywords",
+					       gs_plugin_appstream_add_origin_keyword_cb,
+					       plugin, NULL);
+		xb_builder_fixup_set_max_depth (fixup1, 1);
+		xb_builder_source_add_fixup (source, fixup1);
+		fixup2 = xb_builder_fixup_new ("AddIcons",
+					       gs_plugin_appstream_add_icons_cb,
+					       plugin, NULL);
+		xb_builder_fixup_set_max_depth (fixup2, 2);
+		xb_builder_source_add_fixup (source, fixup2);
 		xb_builder_import_source (builder, source);
 	} else {
 		/* add search paths */
