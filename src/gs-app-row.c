@@ -464,10 +464,18 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* show the right size */
-	if (priv->show_installed_size)
+	if (priv->show_installed_size) {
 		size = gs_app_get_size_installed (priv->app);
-	else if (priv->show_update)
-		size = gs_app_get_size_download (priv->app);
+	} else if (priv->show_update) {
+		switch (gs_app_get_state (priv->app)) {
+		case AS_APP_STATE_UPDATABLE_LIVE:
+		case AS_APP_STATE_INSTALLING:
+			size = gs_app_get_size_download (priv->app);
+			break;
+		default:
+			break;
+		}
+	}
 	if (size != GS_APP_SIZE_UNKNOWABLE && size != 0) {
 		g_autofree gchar *sizestr = NULL;
 		sizestr = g_format_size (size);
