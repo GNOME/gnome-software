@@ -260,6 +260,7 @@ _update_buttons (GsUpdatesSection *self)
 		gtk_widget_set_sensitive (self->button_cancel,
 					  !g_cancellable_is_cancelled (self->cancellable));
 		gtk_stack_set_visible_child_name (self->button_stack, "cancel");
+		gs_progress_button_set_progress (GS_PROGRESS_BUTTON (self->button_cancel), 0);
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		return;
 	}
