@@ -332,7 +332,7 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GsAppList) list2 = NULL;
+	g_autoptr(GsAppList) update_online = NULL;
 
 	/* get result */
 	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -343,18 +343,18 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	}
 
 	/* install any apps that can be installed LIVE */
-	list2 = gs_app_list_new ();
+	update_online = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		if (_should_auto_update (app)) {
 			g_debug ("auto-updating %s", gs_app_get_unique_id (app));
-			gs_app_list_add (list2, app);
+			gs_app_list_add (update_online, app);
 		}
 	}
-	if (gs_app_list_length (list2) > 0) {
+	if (gs_app_list_length (update_online) > 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-						 "list", list2,
+						 "list", update_online,
 						 NULL);
 		gs_plugin_loader_job_process_async (monitor->plugin_loader,
 						    plugin_job,
