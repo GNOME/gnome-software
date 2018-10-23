@@ -141,30 +141,50 @@ gs_plugin_systemd_trigger_changed_cb (GFileMonitor *monitor,
 	gs_plugin_systemd_updates_refresh_is_triggered (plugin, NULL);
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static void
+gs_plugin_systemd_refine_app (GsPlugin *plugin, GsApp *app)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 
-	/* not now */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0)
-		return TRUE;
-
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
-		return TRUE;
+		return;
 
 	/* the package is already downloaded */
 	package_id = gs_app_get_source_id_default (app);
 	if (package_id == NULL)
-		return TRUE;
+		return;
 	if (g_hash_table_lookup (priv->hash_prepared, package_id) != NULL)
 		gs_app_set_size_download (app, 0);
+}
+
+gboolean
+gs_plugin_refine (GsPlugin *plugin,
+                  GsAppList *list,
+                  GsPluginRefineFlags flags,
+                  GCancellable *cancellable,
+                  GError **error)
+{
+	/* not now */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0)
+		return TRUE;
+
+	/* re-read /var/lib/PackageKit/prepared-update */
+	if (!gs_plugin_systemd_update_cache (plugin, error))
+		return FALSE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsAppList *related = gs_app_get_related (app);
+		/* refine the app itself */
+		gs_plugin_systemd_refine_app (plugin, app);
+		/* and anything related for proxy apps */
+		for (guint j = 0; j < gs_app_list_length (related); j++) {
+			GsApp *app_related = gs_app_list_index (related, j);
+			gs_plugin_systemd_refine_app (plugin, app_related);
+		}
+	}
 
 	return TRUE;
 }
