@@ -948,70 +948,27 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 typedef struct {
 	AsAppSearchMatch	 match_value;
-	gchar			*xpath;
+	XbQuery			*query;
 } GsAppstreamSearchHelper;
 
 static void
 gs_appstream_search_helper_free (GsAppstreamSearchHelper *helper)
 {
-	g_free (helper->xpath);
+	g_object_unref (helper->query);
 	g_free (helper);
 }
 
 static guint16
-gs_appstream_silo_search_component2 (XbNode *component, const gchar *search)
+gs_appstream_silo_search_component2 (GPtrArray *array, XbNode *component, const gchar *search)
 {
-	GsAppstreamSearchHelper *helper;
 	guint16 match_value = 0;
-	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
-
-	/* mimetype */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_MIMETYPE;
-	helper->xpath = g_strdup_printf ("mimetypes/mimetype[type()~='%s']", search);
-	g_ptr_array_add (array, helper);
-
-	/* package name */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_PKGNAME;
-	helper->xpath = g_strdup_printf ("pkgname[text()~='%s']", search);
-	g_ptr_array_add (array, helper);
-
-	/* summary */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_COMMENT;
-	helper->xpath = g_strdup_printf ("summary[text()~='%s']", search);
-	g_ptr_array_add (array, helper);
-
-	/* name */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_NAME;
-	helper->xpath = g_strdup_printf ("name[text()~='%s']", search);
-	g_ptr_array_add (array, helper);
-
-	/* keywords */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_KEYWORD;
-	helper->xpath = g_strdup_printf ("keywords/keyword[text()~='%s']", search);
-	g_ptr_array_add (array, helper);
-
-	/* AppStream ID */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_ID;
-	helper->xpath = g_strdup_printf ("id[text()~='%s']", search);
-	g_ptr_array_add (array, helper);
-
-	/* origin */
-	helper = g_new0 (GsAppstreamSearchHelper, 1);
-	helper->match_value = AS_APP_SEARCH_MATCH_ORIGIN;
-	helper->xpath = g_strdup_printf ("../components[@origin~='%s']", search);
-	g_ptr_array_add (array, helper);
 
 	/* do searches */
 	for (guint i = 0; i < array->len; i++) {
-		g_autoptr(XbNode) n = NULL;
-		helper = g_ptr_array_index (array, i);
-		n = xb_node_query_first (component, helper->xpath, NULL);
+		g_autoptr(GPtrArray) n = NULL;
+		GsAppstreamSearchHelper *helper = g_ptr_array_index (array, i);
+		xb_query_bind_str (helper->query, 0, search, NULL);
+		n = xb_node_query_full (component, helper->query, NULL);
 		if (n != NULL)
 			match_value |= helper->match_value;
 	}
@@ -1019,13 +976,13 @@ gs_appstream_silo_search_component2 (XbNode *component, const gchar *search)
 }
 
 static guint16
-gs_appstream_silo_search_component (XbNode *component, gchar **search)
+gs_appstream_silo_search_component (GPtrArray *array, XbNode *component, gchar **search)
 {
 	guint16 matches_sum = 0;
 
 	/* do *all* search keywords match */
 	for (guint i = 0; search[i] != NULL; i++) {
-		guint tmp = gs_appstream_silo_search_component2 (component, search[i]);
+		guint tmp = gs_appstream_silo_search_component2 (array, component, search[i]);
 		if (tmp == 0)
 			return 0;
 		matches_sum |= tmp;
@@ -1042,8 +999,36 @@ gs_appstream_search (GsPlugin *plugin,
 		     GError **error)
 {
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
+	struct {
+		AsAppSearchMatch	 match_value;
+		const gchar		*xpath;
+	} queries[] = {
+		{ AS_APP_SEARCH_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=?]" },
+		{ AS_APP_SEARCH_MATCH_PKGNAME,	"pkgname[text()~=?]" },
+		{ AS_APP_SEARCH_MATCH_COMMENT,	"summary[text()~=?]" },
+		{ AS_APP_SEARCH_MATCH_NAME,	"name[text()~=?]" },
+		{ AS_APP_SEARCH_MATCH_KEYWORD,	"keywords/keyword[text()~=?]" },
+		{ AS_APP_SEARCH_MATCH_ID,	"id[text()~=?]" },
+		{ AS_APP_SEARCH_MATCH_ORIGIN,	"../components[@origin~=?]" },
+		{ AS_APP_SEARCH_MATCH_NONE,	NULL }
+	};
+
+	/* add some weighted queries */
+	for (guint i = 0; queries[i].xpath != NULL; i++) {
+		g_autoptr(GError) error_query = NULL;
+		g_autoptr(XbQuery) query = xb_query_new (silo, queries[i].xpath, &error_query);
+		if (query != NULL) {
+			GsAppstreamSearchHelper *helper = g_new0 (GsAppstreamSearchHelper, 1);
+			helper->match_value = queries[i].match_value;
+			helper->query = g_steal_pointer (&query);
+			g_ptr_array_add (array, helper);
+		} else {
+			g_debug ("ignoring: %s", error_query->message);
+		}
+	}
 
 	/* get all components */
 	components = xb_silo_query (silo, "components/component", 0, &error_local);
@@ -1057,7 +1042,7 @@ gs_appstream_search (GsPlugin *plugin,
 	}
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
-		guint16 match_value = gs_appstream_silo_search_component (component, values);
+		guint16 match_value = gs_appstream_silo_search_component (array, component, values);
 		if (match_value != 0) {
 			g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
 			if (app == NULL)
