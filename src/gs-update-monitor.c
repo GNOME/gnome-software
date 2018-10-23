@@ -333,6 +333,7 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) update_online = NULL;
+	g_autoptr(GsAppList) update_offline = NULL;
 
 	/* get result */
 	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -342,15 +343,19 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 	}
 
-	/* install any apps that can be installed LIVE */
 	update_online = gs_app_list_new ();
+	update_offline = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		if (_should_auto_update (app)) {
 			g_debug ("auto-updating %s", gs_app_get_unique_id (app));
 			gs_app_list_add (update_online, app);
+		} else {
+			gs_app_list_add (update_offline, app);
 		}
 	}
+
+	/* install any apps that can be installed LIVE */
 	if (gs_app_list_length (update_online) > 0) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
@@ -361,6 +366,14 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    monitor->cancellable,
 						    update_finished_cb,
 						    monitor);
+	}
+
+	/* show a notification for offline updates */
+	if (gs_app_list_length (update_offline) > 0) {
+		if (has_important_updates (update_offline) ||
+		    no_updates_for_a_week (monitor)) {
+			notify_offline_update_available (monitor);
+		}
 	}
 }
 
@@ -421,11 +434,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    download_finished_cb,
 						    monitor);
 		return;
-	}
-
-	if (has_important_updates (apps) ||
-	    no_updates_for_a_week (monitor)) {
-		notify_offline_update_available (monitor);
 	}
 }
 
