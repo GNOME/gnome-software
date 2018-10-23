@@ -68,9 +68,6 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
 
-	/* cache age of 0 is user-initiated */
-	pk_client_set_background (PK_CLIENT (priv->task), 0);
-
 	/* refresh the metadata */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_get_updates (PK_CLIENT (priv->task),
