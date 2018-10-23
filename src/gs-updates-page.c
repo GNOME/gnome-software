@@ -42,8 +42,6 @@
 
 #include <langinfo.h>
 
-#define GS_REFRESH_MIN_AGE 10 /* sec */
-
 typedef enum {
 	GS_UPDATES_PAGE_FLAG_NONE		= 0,
 	GS_UPDATES_PAGE_FLAG_HAS_UPDATES	= 1 << 0,
@@ -810,7 +808,7 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "interactive", TRUE,
-					 "age", (guint64) GS_REFRESH_MIN_AGE,
+					 "age", (guint64) 0,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_refresh,
