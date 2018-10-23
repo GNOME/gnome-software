@@ -45,7 +45,7 @@ struct _GsUpdatesSection
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GtkSizeGroup		*sizegroup_header;
-	GtkWidget		*button;
+	GtkWidget		*button_update;
 	GtkWidget		*button_cancel;
 	GtkStack		*button_stack;
 };
@@ -113,7 +113,7 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 	/* the following are set in _build_section_header(); clear these so
 	 * that they don't become dangling pointers once all items are removed
 	 * from self->list */
-	self->button = NULL;
+	self->button_update = NULL;
 	self->button_cancel = NULL;
 	self->button_stack = NULL;
 
@@ -254,13 +254,13 @@ _update_buttons (GsUpdatesSection *self)
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		/* TRANSLATORS: This is the button for upgrading all
 		 * offline updates */
-		gtk_button_set_label (GTK_BUTTON (self->button), _("Restart & Update"));
+		gtk_button_set_label (GTK_BUTTON (self->button_update), _("Restart & Update"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
 		gtk_stack_set_visible_child_name (self->button_stack, "update");
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
 		/* TRANSLATORS: This is the button for upgrading all
 		 * online-updatable applications */
-		gtk_button_set_label (GTK_BUTTON (self->button), _("Update All"));
+		gtk_button_set_label (GTK_BUTTON (self->button_update), _("Update All"));
 	} else {
 		gtk_widget_hide (GTK_WIDGET (self->button_stack));
 	}
@@ -424,15 +424,15 @@ _build_section_header (GsUpdatesSection *self)
 	gtk_size_group_add_widget (self->sizegroup_button, GTK_WIDGET (self->button_stack));
 
 	/* add button, which may be hidden */
-	self->button = gs_progress_button_new ();
-	context = gtk_widget_get_style_context (self->button);
+	self->button_update = gs_progress_button_new ();
+	context = gtk_widget_get_style_context (self->button_update);
 	gtk_style_context_add_class (context, GTK_STYLE_CLASS_SUGGESTED_ACTION);
-	g_signal_connect (self->button, "clicked",
+	g_signal_connect (self->button_update, "clicked",
 			  G_CALLBACK (_button_update_all_clicked_cb),
 			  self);
-	gtk_stack_add_named (self->button_stack, self->button, "update");
-	gtk_widget_set_visible (self->button, TRUE);
-	gtk_widget_set_margin_end (self->button, 6);
+	gtk_stack_add_named (self->button_stack, self->button_update, "update");
+	gtk_widget_set_visible (self->button_update, TRUE);
+	gtk_widget_set_margin_end (self->button_update, 6);
 
 	/* add cancel button */
 	self->button_cancel = gs_progress_button_new ();
