@@ -1025,6 +1025,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const GError *error = gs_plugin_event_get_error (event);
+	GsPluginAction action = gs_plugin_event_get_action (event);
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
@@ -1094,8 +1095,13 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		/* non-interactive generic */
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
 			return FALSE;
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to get list of updates"));
+		if (action == GS_PLUGIN_ACTION_DOWNLOAD) {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append (str, _("Unable to download updates"));
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append (str, _("Unable to get list of updates"));
+		}
 		break;
 	}
 	if (str->len == 0)
@@ -1870,11 +1876,11 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	action = gs_plugin_event_get_action (event);
 	switch (action) {
 	case GS_PLUGIN_ACTION_REFRESH:
+	case GS_PLUGIN_ACTION_DOWNLOAD:
 		return gs_shell_show_event_refresh (shell, event);
 	case GS_PLUGIN_ACTION_PURCHASE:
 		return gs_shell_show_event_purchase (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:
-	case GS_PLUGIN_ACTION_DOWNLOAD:
 		return gs_shell_show_event_install (shell, event);
 	case GS_PLUGIN_ACTION_UPDATE:
 		return gs_shell_show_event_update (shell, event);
