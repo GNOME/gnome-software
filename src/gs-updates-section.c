@@ -45,6 +45,7 @@ struct _GsUpdatesSection
 	GtkSizeGroup		*sizegroup_desc;
 	GtkSizeGroup		*sizegroup_button;
 	GtkSizeGroup		*sizegroup_header;
+	GtkWidget		*button_download;
 	GtkWidget		*button_update;
 	GtkWidget		*button_cancel;
 	GtkStack		*button_stack;
@@ -113,6 +114,7 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 	/* the following are set in _build_section_header(); clear these so
 	 * that they don't become dangling pointers once all items are removed
 	 * from self->list */
+	self->button_download = NULL;
 	self->button_update = NULL;
 	self->button_cancel = NULL;
 	self->button_stack = NULL;
@@ -236,6 +238,20 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 					    self);
 }
 
+static gboolean
+_all_offline_updates_downloaded (GsUpdatesSection *self)
+{
+	/* use the download size to figure out what is downloaded and what not */
+	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
+		GsApp *app = gs_app_list_index (self->list, i);
+		guint64 size = gs_app_get_size_download (app);
+		if (size != 0)
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
 static void
 _update_buttons (GsUpdatesSection *self)
 {
@@ -250,9 +266,13 @@ _update_buttons (GsUpdatesSection *self)
 
 	if (self->kind == GS_UPDATES_SECTION_KIND_OFFLINE_FIRMWARE ||
 	    self->kind == GS_UPDATES_SECTION_KIND_OFFLINE) {
-		gtk_stack_set_visible_child_name (self->button_stack, "update");
+		if (_all_offline_updates_downloaded (self))
+			gtk_stack_set_visible_child_name (self->button_stack, "update");
+		else
+			gtk_stack_set_visible_child_name (self->button_stack, "download");
+
 		gtk_widget_show (GTK_WIDGET (self->button_stack));
-		/* TRANSLATORS: This is the button for upgrading all
+		/* TRANSLATORS: This is the button for installing all
 		 * offline updates */
 		gtk_button_set_label (GTK_BUTTON (self->button_update), _("Restart & Update"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
@@ -321,6 +341,44 @@ static void
 _button_cancel_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 {
 	g_cancellable_cancel (self->cancellable);
+	_update_buttons (self);
+}
+
+static void
+_download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
+{
+	g_autoptr(GsUpdatesSection) self = (GsUpdatesSection *) user_data;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get result */
+	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
+	if (list == NULL) {
+		if (!g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
+			g_warning ("failed to download updates: %s", error->message);
+	}
+
+	g_clear_object (&self->cancellable);
+	_update_buttons (self);
+}
+
+static void
+_button_download_clicked_cb (GtkButton *button, GsUpdatesSection *self)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+
+	g_set_object (&self->cancellable, cancellable);
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
+					 "list", self->list,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE,
+					 "interactive", TRUE,
+					 NULL);
+	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
+					    self->cancellable,
+					    (GAsyncReadyCallback) _download_finished_cb,
+					    g_object_ref (self));
 	_update_buttons (self);
 }
 
@@ -425,7 +483,20 @@ _build_section_header (GsUpdatesSection *self)
 	gtk_container_child_set (GTK_CONTAINER (header), GTK_WIDGET (self->button_stack), "pack-type", GTK_PACK_END, NULL);
 	gtk_size_group_add_widget (self->sizegroup_button, GTK_WIDGET (self->button_stack));
 
-	/* add button, which may be hidden */
+	/* add download button */
+	self->button_download = gs_progress_button_new ();
+	gtk_button_set_use_underline (GTK_BUTTON (self->button_download), TRUE);
+	gtk_button_set_label (GTK_BUTTON (self->button_download), _("_Download"));
+	context = gtk_widget_get_style_context (self->button_download);
+	gtk_style_context_add_class (context, GTK_STYLE_CLASS_SUGGESTED_ACTION);
+	g_signal_connect (self->button_download, "clicked",
+			  G_CALLBACK (_button_download_clicked_cb),
+			  self);
+	gtk_stack_add_named (self->button_stack, self->button_download, "download");
+	gtk_widget_set_visible (self->button_download, TRUE);
+	gtk_widget_set_margin_end (self->button_download, 6);
+
+	/* add update button */
 	self->button_update = gs_progress_button_new ();
 	context = gtk_widget_get_style_context (self->button_update);
 	gtk_style_context_add_class (context, GTK_STYLE_CLASS_SUGGESTED_ACTION);
