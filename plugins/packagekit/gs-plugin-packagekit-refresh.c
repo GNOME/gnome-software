@@ -62,39 +62,45 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 		GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GPtrArray) array_package_ids = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(PkPackageSack) sack = NULL;
-	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
 
-	/* refresh the metadata */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_get_updates (PK_CLIENT (priv->task),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get updates for refresh: ");
-		return FALSE;
-	}
 
-	/* download all the packages themselves */
-	sack = pk_results_get_package_sack (results);
-	if (pk_package_sack_get_size (sack) == 0)
-		return TRUE;
-	package_ids = pk_package_sack_get_ids (sack);
+	/* prepare the list of package IDs to download */
+	array_package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
+		GPtrArray *source_ids = gs_app_get_source_ids (app);
+		if (source_ids->len == 0) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "installing not available");
+			return FALSE;
+		}
+		for (guint j = 0; j < source_ids->len; j++) {
+			const gchar *package_id = g_ptr_array_index (source_ids, j);
+			if (g_strstr_len (package_id, -1, ";installed") != NULL)
+				continue;
+			g_ptr_array_add (array_package_ids, g_strdup (package_id));
+		}
+
 		gs_packagekit_helper_add_app (helper, app);
 	}
-	results2 = pk_task_update_packages_sync (priv->task,
-						 package_ids,
-						 cancellable,
-						 gs_packagekit_helper_cb, helper,
-						 error);
-	if (results2 == NULL) {
+
+	if (array_package_ids->len == 0)
+		return TRUE;
+
+	/* download all the packages themselves */
+	g_ptr_array_add (array_package_ids, NULL);
+	results = pk_task_update_packages_sync (priv->task,
+	                                        (gchar **) array_package_ids->pdata,
+	                                        cancellable,
+	                                        gs_packagekit_helper_cb, helper,
+	                                        error);
+	if (results == NULL) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
 	}
@@ -113,6 +119,10 @@ gs_plugin_download (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GsAppList *related = gs_app_get_related (app);
+		/* add the app itself */
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") == 0)
+			gs_app_list_add (list_tmp, app);
+		/* and anything related for proxy apps */
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
 			if (g_strcmp0 (gs_app_get_management_plugin (app_tmp), "packagekit") == 0)
