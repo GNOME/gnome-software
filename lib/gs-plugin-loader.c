@@ -209,6 +209,24 @@ gs_plugin_loader_helper_new (GsPluginLoader *plugin_loader, GsPluginJob *plugin_
 }
 
 static void
+reset_app_progress (GsApp *app)
+{
+	GsAppList *addons = gs_app_get_addons (app);
+	GsAppList *related = gs_app_get_related (app);
+
+	gs_app_set_progress (app, 0);
+
+	for (guint i = 0; i < gs_app_list_length (addons); i++) {
+		GsApp *app_addons = gs_app_list_index (addons, i);
+		gs_app_set_progress (app_addons, 0);
+	}
+	for (guint i = 0; i < gs_app_list_length (related); i++) {
+		GsApp *app_related = gs_app_list_index (related, i);
+		gs_app_set_progress (app_related, 0);
+	}
+}
+
+static void
 gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 {
 	/* reset progress */
@@ -218,9 +236,18 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	case GS_PLUGIN_ACTION_UPDATE:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 		{
-			GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
+			GsApp *app;
+			GsAppList *list;
+
+			app = gs_plugin_job_get_app (helper->plugin_job);
 			if (app != NULL)
-				gs_app_set_progress (app, 0);
+				reset_app_progress (app);
+
+			list = gs_plugin_job_get_list (helper->plugin_job);
+			for (guint i = 0; i < gs_app_list_length (list); i++) {
+				GsApp *app_tmp = gs_app_list_index (list, i);
+				reset_app_progress (app_tmp);
+			}
 		}
 		break;
 	default:
