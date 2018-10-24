@@ -1,3 +1,17 @@
+Version 3.30.4
+~~~~~~~~~~~~~~
+Released: 2018-10-24
+
+This is a stable release with the following changes:
+ * Add a separate "Download" step for packagekit offline updates, so that
+   "Restart & Update" is instant
+ * Fix a version comparison issue that led to package updates sometimes showing
+   as downgrades in the OS Updates section (this needs latest appstream-glib)
+ * Show the refresh button when the updates page is in the failed state
+ * Notify about offline updates only after they are fully downloaded
+
+This release also updates translations.
+
 Version 3.30.3
 ~~~~~~~~~~~~~~
 Released: 2018-10-18

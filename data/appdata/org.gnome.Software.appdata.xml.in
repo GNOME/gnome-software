@@ -46,6 +46,20 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-10-24" version="3.30.4">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add a separate "Download" step for packagekit offline updates, so that "Restart &amp; Update" is instant</li>
+          <li>Fix a version comparison issue that led to package updates sometimes showing as downgrades in the OS Updates section (this needs latest appstream-glib)</li>
+          <li>Show the refresh button when the updates page is in the failed state</li>
+          <li>Notify about offline updates only after they are fully downloaded</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-10-18" version="3.30.3">
       <description>
         <p>
