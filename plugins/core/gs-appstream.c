@@ -665,7 +665,15 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				   "requires/id[@type='id']"
 				   "[text()='org.gnome.Software.desktop']", NULL);
 	if (req != NULL) {
-		if (as_utils_vercmp (xb_node_get_attr (req, "version"), PACKAGE_VERSION) > 0) {
+#if AS_CHECK_VERSION(0,7,14)
+		gint rc = as_utils_vercmp_full (xb_node_get_attr (req, "version"),
+		                                PACKAGE_VERSION,
+		                                AS_VERSION_COMPARE_FLAG_NONE);
+#else
+		gint rc = as_utils_vercmp (xb_node_get_attr (req, "version"),
+		                           PACKAGE_VERSION);
+#endif
+		if (rc > 0) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
