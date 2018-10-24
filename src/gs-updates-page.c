@@ -376,7 +376,7 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 	case GS_UPDATES_PAGE_STATE_MANAGED:
 		gtk_widget_hide (self->button_refresh);
 		break;
-	default:
+	case GS_UPDATES_PAGE_STATE_IDLE:
 		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 		if (self->result_flags != GS_UPDATES_PAGE_FLAG_NONE) {
@@ -387,6 +387,14 @@ gs_updates_page_update_ui_state (GsUpdatesPage *self)
 				allow_mobile_refresh = FALSE;
 			gtk_widget_set_visible (self->button_refresh, allow_mobile_refresh);
 		}
+		break;
+	case GS_UPDATES_PAGE_STATE_FAILED:
+		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
+					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
+		gtk_widget_show (self->button_refresh);
+		break;
+	default:
+		g_assert_not_reached ();
 		break;
 	}
 	gtk_widget_set_sensitive (self->button_refresh,
