@@ -665,7 +665,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 				   "requires/id[@type='id']"
 				   "[text()='org.gnome.Software.desktop']", NULL);
 	if (req != NULL) {
-#if AS_CHECK_VERSION(0,7,14)
+#if AS_CHECK_VERSION(0,7,15)
 		gint rc = as_utils_vercmp_full (xb_node_get_attr (req, "version"),
 		                                PACKAGE_VERSION,
 		                                AS_VERSION_COMPARE_FLAG_NONE);
