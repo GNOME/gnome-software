@@ -279,11 +279,6 @@ gs_updates_page_last_checked_time_string (GsUpdatesPage *self)
 static const gchar *
 gs_updates_page_get_state_string (GsPluginStatus status)
 {
-	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
-		/* TRANSLATORS: the updates are being downloaded */
-		return _("Downloading new updates…");
-	}
-
 	/* TRANSLATORS: the update panel is doing *something* vague */
 	return _("Looking for new updates…");
 }
