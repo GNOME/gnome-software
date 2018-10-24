@@ -374,12 +374,22 @@ is_downgrade (const gchar *evr1,
 	 * part of the semantic version */
 
 	/* check version */
+#if AS_CHECK_VERSION(0,7,14)
+	rc = as_utils_vercmp_full (version1, version2,
+	                           AS_VERSION_COMPARE_FLAG_NONE);
+#else
 	rc = as_utils_vercmp (version1, version2);
+#endif
 	if (rc != 0)
 		return rc > 0;
 
 	/* check release */
+#if AS_CHECK_VERSION(0,7,14)
+	rc = as_utils_vercmp_full (version1, version2,
+	                           AS_VERSION_COMPARE_FLAG_NONE);
+#else
 	rc = as_utils_vercmp (release1, release2);
+#endif
 	if (rc != 0)
 		return rc > 0;
 

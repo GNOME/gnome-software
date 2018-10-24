@@ -1423,8 +1423,14 @@ gs_plugin_loader_app_sort_match_value_cb (GsApp *app1, GsApp *app2, gpointer use
 static gint
 gs_plugin_loader_app_sort_version_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
+#if AS_CHECK_VERSION(0,7,14)
+	return as_utils_vercmp_full (gs_app_get_version (app1),
+	                             gs_app_get_version (app2),
+	                             AS_VERSION_COMPARE_FLAG_NONE);
+#else
 	return as_utils_vercmp (gs_app_get_version (app1),
 	                        gs_app_get_version (app2));
+#endif
 }
 
 /******************************************************************************/
