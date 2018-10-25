@@ -143,18 +143,18 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* cache age of 0 is user-initiated */
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 0);
+	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 
 	/* refresh the metadata */
-	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	gs_packagekit_helper_add_app (helper, app_dl);
-	results = pk_client_get_updates (PK_CLIENT (priv->task),
-					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
-					 cancellable,
-					 gs_packagekit_helper_cb, helper,
-					 error);
+	results = pk_client_refresh_cache (PK_CLIENT (priv->task),
+	                                   FALSE /* force */,
+	                                   cancellable,
+	                                   gs_packagekit_helper_cb, helper,
+	                                   error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get updates for refresh: ");
+		g_prefix_error (error, "failed to refresh cache: ");
 		return FALSE;
 	}
 
