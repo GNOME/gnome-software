@@ -811,7 +811,7 @@ gs_updates_page_get_new_updates (GsUpdatesPage *self)
 
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "interactive", TRUE,
-					 "age", (guint64) 0,
+					 "age", (guint64) 1,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 					    self->cancellable_refresh,
