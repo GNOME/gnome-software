@@ -62,30 +62,30 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 		GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	guint cache_age_save;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
 
-	/* refresh the metadata */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	cache_age_save = pk_client_get_cache_age (PK_CLIENT (priv->task));
+	/* never refresh the metadata here as this can surprise the frontend if
+	 * we end up downloading a different set of packages than what was
+	 * shown to the user */
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
+
+	/* get the list of packages to update */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_get_updates (PK_CLIENT (priv->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
 					 gs_packagekit_helper_cb, helper,
 					 error);
-	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age_save);
-
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to get updates for refresh: ");
 		return FALSE;
 	}
 
-	/* download all the packages themselves */
+	/* download all the packages */
 	sack = pk_results_get_package_sack (results);
 	if (pk_package_sack_get_size (sack) == 0)
 		return TRUE;
