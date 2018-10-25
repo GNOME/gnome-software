@@ -141,8 +141,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
 
-	/* cache age of 0 is user-initiated */
-	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 0);
+	/* cache age of 1 is user-initiated */
+	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 1);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 
 	/* refresh the metadata */
