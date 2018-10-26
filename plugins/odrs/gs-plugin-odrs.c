@@ -501,6 +501,48 @@ _gs_app_get_reviewable_ids (GsApp *app)
 	return ids;
 }
 
+static AsReview *
+get_self_review (GsPlugin *plugin, GsApp *app)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *cachefn_basename = NULL;
+	g_autofree gchar *cachefn = NULL;
+	g_autoptr(GFile) cachefn_file = NULL;
+	g_autofree gchar *json_data = NULL;
+	g_autoptr(GPtrArray) reviews = NULL;
+	g_autoptr(GError) error = NULL;
+
+	/* look in the cache */
+	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id (app));
+	cachefn = gs_utils_get_cache_filename ("odrs",
+					       cachefn_basename,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       &error);
+	if (cachefn == NULL)
+		return NULL;
+	cachefn_file = g_file_new_for_path (cachefn);
+	if (!g_file_get_contents (cachefn, &json_data, NULL, &error))
+		return NULL;
+
+	g_debug ("got review data for %s from %s",
+		 gs_app_get_id (app), cachefn);
+	reviews = gs_plugin_odrs_parse_reviews (plugin,
+						json_data, -1,
+						&error);
+	if (reviews == NULL) {
+		g_warning ("Failed to parse cached reviews for %s: %s", gs_app_get_id (app), error->message);
+		return NULL;
+	}
+
+	for (guint i = 0; i < reviews->len; i++) {
+		AsReview *review = g_ptr_array_index (reviews, i);
+		if (g_strcmp0 (priv->user_hash, as_review_get_reviewer_id (review)) == 0)
+			return g_object_ref (review);
+	}
+
+	return NULL;
+}
+
 static gboolean
 gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 			       GsApp *app,
@@ -527,8 +569,12 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 			ratings_raw[j] += g_array_index (ratings_tmp, guint32, j);
 		cnt++;
 	}
-	if (cnt == 0)
+	if (cnt == 0) {
+		AsReview *review = get_self_review (plugin, app);
+		if (review != NULL)
+			gs_app_set_rating (app, as_review_get_rating (review));
 		return TRUE;
+	}
 
 	/* merge to accumulator array back to one GArray blob */
 	review_ratings = g_array_sized_new (FALSE, TRUE, sizeof(guint32), 6);
