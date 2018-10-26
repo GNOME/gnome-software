@@ -22,7 +22,6 @@
 #include "config.h"
 
 #include "gs-app-tile.h"
-#include "gs-star-widget.h"
 #include "gs-common.h"
 
 G_DEFINE_ABSTRACT_TYPE (GsAppTile, gs_app_tile, GTK_TYPE_BUTTON)

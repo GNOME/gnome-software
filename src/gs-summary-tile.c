@@ -24,7 +24,6 @@
 #include <glib/gi18n.h>
 
 #include "gs-summary-tile.h"
-#include "gs-star-widget.h"
 #include "gs-common.h"
 
 struct _GsSummaryTile
