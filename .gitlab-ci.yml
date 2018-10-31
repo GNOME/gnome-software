@@ -1,14 +1,12 @@
-image: fedora:28
+image: fedora:29
 
 stages:
   - build
 
 before_script:
   # Update and use base build deps
-  - dnf update -y && dnf -y install dnf-plugins-core @buildsys-build
+  - dnf -y update && dnf -y install dnf-plugins-core redhat-rpm-config
   - dnf --enablerepo updates-testing -y builddep gnome-software
-  # Some deps may not be sync'd
-  - dnf -y install rpm-ostree-devel
 
 build-gnome-software:
   stage: build
