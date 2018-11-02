@@ -44,7 +44,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->task = pk_task_new ();
 	pk_task_set_only_download (priv->task, TRUE);
-	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
 
 	/* we can return better results than dpkg directly */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
@@ -67,6 +66,9 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
+
+	pk_client_set_background (PK_CLIENT (priv->task),
+	                          !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
@@ -141,8 +143,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
 
-	/* cache age of 1 is user-initiated */
-	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 1);
+	pk_client_set_background (PK_CLIENT (priv->task),
+	                          !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 
 	/* refresh the metadata */
