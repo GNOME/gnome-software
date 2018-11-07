@@ -2598,8 +2598,12 @@ void
 gs_app_add_screenshot (GsApp *app, AsScreenshot *screenshot)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (AS_IS_SCREENSHOT (screenshot));
+
+	locker = g_mutex_locker_new (&priv->mutex);
 	g_ptr_array_add (priv->screenshots, g_object_ref (screenshot));
 }
 
