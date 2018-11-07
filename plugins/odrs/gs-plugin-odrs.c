@@ -42,6 +42,7 @@ struct GsPluginData {
 	gchar			*user_hash;
 	gchar			*review_server;
 	GHashTable		*ratings;
+	GMutex			 ratings_mutex;
 	GsApp			*cached_origin;
 };
 
@@ -52,6 +53,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsOsRelease) os_release = NULL;
 
+	g_mutex_init (&priv->ratings_mutex);
 	priv->settings = g_settings_new ("org.gnome.software");
 	priv->review_server = g_settings_get_string (priv->settings,
 						     "review-server");
@@ -125,6 +127,7 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	JsonObject *json_item;
 	g_autoptr(GList) apps = NULL;
 	g_autoptr(JsonParser) json_parser = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->ratings_mutex);
 
 	/* remove all existing */
 	g_hash_table_remove_all (priv->ratings);
@@ -220,6 +223,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_hash_table_unref (priv->ratings);
 	g_object_unref (priv->settings);
 	g_object_unref (priv->cached_origin);
+	g_mutex_clear (&priv->ratings_mutex);
 }
 
 static AsReview *
@@ -497,6 +501,7 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 	reviewable_ids = _gs_app_get_reviewable_ids (app);
 	for (guint i = 0; i < reviewable_ids->len; i++) {
 		const gchar *id = g_ptr_array_index (reviewable_ids, i);
+		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->ratings_mutex);
 		GArray *ratings_tmp = g_hash_table_lookup (priv->ratings, id);
 		if (ratings_tmp == NULL) {
 			g_debug ("no ratings results for %s", id);
