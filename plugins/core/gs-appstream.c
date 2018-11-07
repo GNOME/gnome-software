@@ -1014,13 +1014,13 @@ gs_appstream_search (GsPlugin *plugin,
 		AsAppSearchMatch	 match_value;
 		const gchar		*xpath;
 	} queries[] = {
-		{ AS_APP_SEARCH_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=?]" },
-		{ AS_APP_SEARCH_MATCH_PKGNAME,	"pkgname[text()~=?]" },
-		{ AS_APP_SEARCH_MATCH_COMMENT,	"summary[text()~=?]" },
-		{ AS_APP_SEARCH_MATCH_NAME,	"name[text()~=?]" },
-		{ AS_APP_SEARCH_MATCH_KEYWORD,	"keywords/keyword[text()~=?]" },
-		{ AS_APP_SEARCH_MATCH_ID,	"id[text()~=?]" },
-		{ AS_APP_SEARCH_MATCH_ORIGIN,	"../components[@origin~=?]" },
+		{ AS_APP_SEARCH_MATCH_MIMETYPE,	"mimetypes/mimetype[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_PKGNAME,	"pkgname[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_COMMENT,	"summary[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_NAME,	"name[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_ID,	"id[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
 		{ AS_APP_SEARCH_MATCH_NONE,	NULL }
 	};
 
