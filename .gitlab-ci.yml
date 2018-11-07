@@ -10,6 +10,7 @@ before_script:
   - dnf --enablerepo updates-testing -y builddep gnome-software
   # Some deps may not be sync'd
   - dnf -y install rpm-ostree-devel
+  - dnf -y install libstemmer-devel
 
 build-gnome-software:
   stage: build
