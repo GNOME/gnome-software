@@ -12,6 +12,7 @@ subdir('dpkg')
 subdir('dummy')
 subdir('epiphany')
 subdir('fedora-pkgdb-collections')
+subdir('scientific-linux-repomd')
 
 if get_option('flatpak')
   subdir('flatpak')
