@@ -1696,6 +1696,22 @@ gs_details_page_load_stage1_cb (GObject *source,
 		return;
 	}
 
+	/* Hide the app if it’s not suitable for the user, but only if it’s not
+	 * already installed — a parent could have decided that a particular
+	 * app *is* actually suitable for their child, despite its age rating.
+	 *
+	 * Make it look like the app doesn’t exist, to not tantalise the
+	 * child. */
+	if (!gs_app_is_installed (self->app) &&
+	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_FILTER)) {
+		g_autofree gchar *str = NULL;
+		const gchar *id = gs_app_get_id (self->app);
+		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
+		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
+		gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_FAILED);
+		return;
+	}
+
 	/* do 2nd stage refine */
 	gs_details_page_load_stage2 (self);
 }
