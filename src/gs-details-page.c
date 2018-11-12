@@ -1687,7 +1687,8 @@ gs_details_page_load_stage1_cb (GObject *source,
 			   error->message);
 	}
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
-	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
+	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN ||
+	    gs_app_has_category (self->app, "Blacklisted")) {
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
