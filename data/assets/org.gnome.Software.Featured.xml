@@ -28,15 +28,14 @@ background:
       <kudo>GnomeSoftware::popular</kudo>
     </kudos>
     <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #783d03;
-text-shadow: 0 1px 1px rgba(0,0,0,0.5);
-color: #ffffff;
+      <value key="GnomeSoftware::FeatureTile-css">text-shadow: 0 -1px 1px #b63600, 0 1px 2px #fff;
+color: #fff;
 outline-offset: 0;
 outline-color: alpha(#ffffff, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
-background:
- url('file://@datadir@/gnome-software/featured-blender.png')
+box-shadow: none;
+background: url('file://@datadir@/gnome-software/featured-blender.png')
  10% 40% / 50% auto no-repeat, -gtk-gradient (radial,
  center bottom, 0, center center, 1,
  from(#fcbf83), to(#c06105));
@@ -53,9 +52,10 @@ outline-offset: 0;
 outline-color: alpha(#888a85, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
+box-shadow: none;
 background:
- url('file://@datadir@/gnome-software/featured-firefox.png')
- 10% center / 40% auto no-repeat,
+ url('file://@datadir@/gnome-software/featured-firefox.svg')
+ 40% 30% / 20% auto no-repeat,
  linear-gradient(to bottom, #d3d7cf, #eeeeec);
 </value>
     </metadata>
@@ -80,17 +80,18 @@ background:
   <component type="desktop" merge="append">
     <id>gnome-chess.desktop</id>
     <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #2e3436;
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #5e5c64;
 text-shadow: 0 1px 1px rgba(0,0,0,0.5);
 color: #ffffff;
 outline-offset: 0;
 outline-color: alpha(#ffffff, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
+box-shadow: none;
 background:
- url('file://@datadir@/gnome-software/featured-chess.png')
+ url('file://@datadir@/gnome-software/featured-chess.svg')
  10% center / 40% auto no-repeat,
- linear-gradient(to bottom, #555753, #888a85);
+ url('file://@datadir@/gnome-software/featured-chess-bg.svg') 50% 65% / 50% repeat;
 </value>
     </metadata>
   </component>
@@ -148,16 +149,17 @@ background:
   <component type="desktop" merge="append">
     <id>org.gnome.Maps.desktop</id>
     <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #ff0000;
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #deddda;
 text-shadow: 0 1px 1px rgba(255,255,255,0.5);
 color: #000000;
 outline-offset: 0;
 outline-color: alpha(#000000, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
-background:
- url('file://@datadir@/gnome-software/featured-maps.png')
- 20% -5px / 230px auto no-repeat,
+box-shadow: none;
+background: #f6f5f4,
+ url('file://@datadir@/gnome-software/featured-maps.svg')
+ 30% -5px / 230px auto no-repeat,
  url('file://@datadir@/gnome-software/featured-maps-bg.png')
  bottom center / contain no-repeat;
 </value>
@@ -182,36 +184,38 @@ background:
   <component type="desktop" merge="append">
     <id>org.gnome.Weather.Application.desktop</id>
     <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #d8e0ef;
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #1a5fb4;
 text-shadow: 0 1px 1px rgba(0,0,0,0.5);
 color: #ffffff;
 outline-offset: 0;
 outline-color: alpha(#ffffff, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
+box-shadow: none;
 background:
- url('file://@datadir@/gnome-software/featured-weather.png')
- left 80% / 50% auto no-repeat,
+url('file://@datadir@/gnome-software/featured-weather.svg')
+ 20% 60% / 35% auto no-repeat,
  url('file://@datadir@/gnome-software/featured-weather-bg.png'),
- linear-gradient(to bottom, #25486d, #6693ce);
-</value>
+ linear-gradient(to bottom, #1a5fb4, #62a0ea);
+      </value>
     </metadata>
   </component>
   <component type="desktop" merge="append">
     <id>transmission-gtk.desktop</id>
     <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #a40000;
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #d65100;
 text-shadow: 0 1px 1px rgba(0,0,0,0.5);
 color: #ffffff;
 outline-offset: 0;
 outline-color: alpha(#ffffff, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
+box-shadow: none;
 background:
- url('file://@datadir@/gnome-software/featured-transmission.png')
+ url('file://@datadir@/gnome-software/featured-transmission.svg')
  10% 20% / 427px auto no-repeat, -gtk-gradient (radial,
  center bottom, 0, center center, 0.8,
- from(#ffc124), to(#b75200));
+ from(#ffa348), to(#e66100));
 </value>
     </metadata>
   </component>
