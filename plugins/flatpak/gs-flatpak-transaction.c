@@ -292,6 +292,7 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 {
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
 	FlatpakTransactionOperationType operation_type = flatpak_transaction_operation_get_operation_type (operation);
+	GsApp *app = _transaction_operation_get_app (operation);
 	const gchar *ref = flatpak_transaction_operation_get_ref (operation);
 
 	if (g_error_matches (error, FLATPAK_ERROR, FLATPAK_ERROR_SKIPPED)) {
@@ -313,6 +314,8 @@ _transaction_operation_error (FlatpakTransaction *transaction,
 	if (self->first_operation_error == NULL) {
 		g_propagate_error (&self->first_operation_error,
 		                   g_error_copy (error));
+		if (app != NULL)
+			gs_utils_error_add_app_id (&self->first_operation_error, app);
 	}
 	return FALSE; /* stop */
 }
