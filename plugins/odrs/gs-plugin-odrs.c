@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016-2018 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -180,6 +180,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *uri = NULL;
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check cache age */
@@ -206,9 +207,20 @@ gs_plugin_refresh (GsPlugin *plugin,
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading application ratings…"));
-	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, error)) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
-		return FALSE;
+	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, &error_local)) {
+		g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+
+		gs_plugin_event_set_error (event, error_local);
+		gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_REFRESH);
+		gs_plugin_event_set_app (event, priv->cached_origin);
+		if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
+		else
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+		gs_plugin_report_event (plugin, event);
+
+		/* don't fail updates if the ratings server is unavailable */
+		return TRUE;
 	}
 	return gs_plugin_odrs_load_ratings (plugin, fn, error);
 }
