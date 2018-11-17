@@ -862,7 +862,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	ref = gs_flatpak_app_get_ref_display (app);
 	app_tmp = gs_plugin_flatpak_find_app_by_ref (plugin, ref, cancellable, NULL);
 	if (app_tmp != NULL)
-		return g_steal_pointer (&app);
+		return g_steal_pointer (&app_tmp);
 
 	/* force this to be 'any' scope for installation */
 	gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
