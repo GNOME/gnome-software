@@ -573,17 +573,12 @@ details_activated (GSimpleAction *action,
 	if (search != NULL && search[0] != '\0')
 		gs_shell_show_search_result (app->shell, id, search);
 	else {
-		if (as_utils_unique_id_valid (id)) {
-			g_autoptr (GsApp) a = NULL;
+		g_autoptr (GsApp) a = NULL;
+		if (as_utils_unique_id_valid (id))
 			a = gs_plugin_loader_app_create (app->plugin_loader, id);
-			gs_shell_show_app (app->shell, a);
-		} else {
-			g_autofree gchar *id_fn = g_strdup (id);
-			gchar *str = g_strrstr (id_fn, ".desktop");
-			if (str != NULL)
-				*str = '\0';
-			gs_shell_show_search (app->shell, id_fn);
-		}
+		else
+			a = gs_app_new (id);
+		gs_shell_show_app (app->shell, a);
 	}
 }
 
