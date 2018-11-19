@@ -30,6 +30,8 @@
 
 #include <gnome-software.h>
 
+#include "gs-appstream.h"
+
 #define SHELL_EXTENSIONS_API_URI 		"https://extensions.gnome.org/"
 
 /*
@@ -48,6 +50,7 @@ struct GsPluginData {
 	gchar		*shell_version;
 	GsApp		*cached_origin;
 	GSettings	*settings;
+	XbSilo		*silo;
 };
 
 typedef enum {
@@ -66,6 +69,8 @@ typedef enum {
 	GS_PLUGIN_SHELL_EXTENSION_KIND_PER_USER		= 2,
 	GS_PLUGIN_SHELL_EXTENSION_KIND_LAST
 } GsPluginShellExtensionKind;
+
+static gboolean _check_silo (GsPlugin *plugin, GCancellable *cancellable, GError **error);
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
@@ -93,6 +98,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (priv->shell_version);
 	if (priv->proxy != NULL)
 		g_object_unref (priv->proxy);
+	if (priv->silo != NULL)
+		g_object_unref (priv->silo);
 	g_object_unref (priv->cached_origin);
 	g_object_unref (priv->settings);
 }
@@ -405,7 +412,11 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *uuid;
+	g_autofree gchar *xpath = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(XbNode) component = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -433,7 +444,23 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (gs_app_get_size_download (app) == 0)
 		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 
-	return TRUE;
+
+	/* find the component using the UUID */
+	if (!_check_silo (plugin, cancellable, error))
+		return FALSE;
+	xpath = g_strdup_printf ("components/component/custom/"
+				 "value[@key='shell-extensions::uuid'][text()='%s']/../..",
+				 uuid);
+	component = xb_silo_query_first (priv->silo, xpath, &error_local);
+	if (component == NULL) {
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+			return TRUE;
+		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
+		return FALSE;
+	}
+	return gs_appstream_refine_app (plugin, app, priv->silo, component, flags, error);
 }
 
 static gboolean
@@ -468,12 +495,8 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	}
 
 	/* FIXME: mark as incompatible? */
-	if (json_ver == NULL) {
-		g_debug ("no version_map for %s: %s",
-			 component_id,
-			 priv->shell_version);
+	if (json_ver == NULL)
 		return TRUE;
-	}
 
 	/* parse the version */
 	version = json_object_get_int_member (json_ver, "version");
@@ -504,12 +527,16 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	const gchar *tmp;
 	g_autofree gchar *component_id = NULL;
 	g_autoptr(XbBuilderNode) app = NULL;
+	g_autoptr(XbBuilderNode) categories = NULL;
 	g_autoptr(XbBuilderNode) metadata = NULL;
 
 	app = xb_builder_node_new ("component");
 	xb_builder_node_set_attr (app, "kind", "shell-extension");
 	xb_builder_node_insert_text (app, "project_license", "GPL-2.0+", NULL);
-	metadata = xb_builder_node_insert (app, "metadata", NULL);
+	categories = xb_builder_node_insert (app, "categories", NULL);
+	xb_builder_node_insert_text (categories, "category", "Addon", NULL);
+	xb_builder_node_insert_text (categories, "category", "ShellExtension", NULL);
+	metadata = xb_builder_node_insert (app, "custom", NULL);
 
 	tmp = json_object_get_string_member (json_app, "description");
 	if (tmp != NULL) {
@@ -575,31 +602,27 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	return g_steal_pointer (&app);
 }
 
-static XbBuilderNode *
-gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
-				       const gchar *data,
-				       gssize data_len,
-				       GError **error)
+static GInputStream *
+gs_plugin_appstream_load_json_cb (XbBuilderSource *self,
+				  GFile *file,
+				  gpointer user_data,
+				  GCancellable *cancellable,
+				  GError **error)
 {
+	GsPlugin *plugin = GS_PLUGIN (user_data);
 	JsonArray *json_extensions_array;
 	JsonNode *json_extensions;
 	JsonNode *json_root;
 	JsonObject *json_item;
+	gchar *xml;
+	g_autofree gchar *fn = g_file_get_path (file);
+	g_autoptr(AsApp) app = as_app_new ();
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(XbBuilderNode) apps = NULL;
 
-	/* nothing */
-	if (data == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "server returned no data");
-		return NULL;
-	}
-
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
-	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
+	if (!json_parser_load_from_file (json_parser, fn, error)) {
 		gs_utils_error_convert_json_glib (error);
 		return NULL;
 	}
@@ -651,86 +674,24 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 		XbBuilderNode *component;
 		JsonNode *json_extension;
 		JsonObject *json_extension_obj;
+		g_autoptr(GError) error_local = NULL;
 		json_extension = json_array_get_element (json_extensions_array, i);
 		json_extension_obj = json_node_get_object (json_extension);
 		component = gs_plugin_shell_extensions_parse_app (plugin,
 							    json_extension_obj,
-							    error);
-		if (component == NULL)
-			return NULL;
+							    &error_local);
+		if (component == NULL) {
+			g_warning ("%s", error_local->message);
+			continue;
+		}
 		xb_builder_node_add_child (apps, component);
 	}
 
-	return g_steal_pointer (&apps);
-}
-
-static XbBuilderNode *
-gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
-				     guint cache_age,
-				     GCancellable *cancellable,
-				     GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *cachefn = NULL;
-	g_autofree gchar *uri = NULL;
-	g_autoptr(GBytes) data = NULL;
-	g_autoptr(GFile) cachefn_file = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
-	g_autoptr(XbBuilderNode) apps = NULL;
-
-	/* look in the cache */
-	cachefn = gs_utils_get_cache_filename ("shell-extensions",
-					       "gnome.json",
-					       GS_UTILS_CACHE_FLAG_WRITEABLE,
-					       error);
-	if (cachefn == NULL)
-		return NULL;
-	cachefn_file = g_file_new_for_path (cachefn);
-	if (gs_utils_get_file_age (cachefn_file) < cache_age) {
-		g_autofree gchar *json_data = NULL;
-		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
-			return NULL;
-		g_debug ("got cached extension data from %s", cachefn);
-		return gs_plugin_shell_extensions_parse_apps (plugin,
-							      json_data,
-							      -1, error);
-	}
-
-	/* create the GET data */
-	uri = g_strdup_printf ("%s/static/extensions.json",
-			       SHELL_EXTENSIONS_API_URI);
-	gs_app_set_summary_missing (app_dl,
-				    /* TRANSLATORS: status text when downloading */
-				    _("Downloading shell extension metadata…"));
-	data = gs_plugin_download_data (plugin, app_dl, uri, cancellable, error);
-	if (data == NULL) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
-		return NULL;
-	}
-	apps = gs_plugin_shell_extensions_parse_apps (plugin,
-						      g_bytes_get_data (data, NULL),
-						      (gssize) g_bytes_get_size (data),
-						      error);
-	if (apps == NULL) {
-		gsize len = g_bytes_get_size (data);
-		g_autofree gchar *tmp = NULL;
-
-		/* truncate the string if long */
-		if (len > 100)
-			len = 100;
-		tmp = g_strndup (g_bytes_get_data (data, NULL), len);
-		g_prefix_error (error, "Failed to parse '%s': ", tmp);
-		return NULL;
-	}
-
-	/* save to the cache */
-	if (!g_file_set_contents (cachefn,
-				  g_bytes_get_data (data, NULL),
-				  (guint) g_bytes_get_size (data),
-				  error))
-		return NULL;
-
-	return g_steal_pointer (&apps);
+	/* convert back to XML */
+	xml = xb_builder_node_export (apps, XB_NODE_EXPORT_FLAG_NONE, error);
+	if (xml == NULL)
+		return FALSE;
+	return g_memory_input_stream_new_from_data (xml, -1, g_free);
 }
 
 static gboolean
@@ -741,34 +702,27 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean repo_enabled;
-	const gchar *fn_test;
 	g_autofree gchar *fn = NULL;
-	g_autoptr(GError) error_local = NULL;
+	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) file = NULL;
-	g_autoptr(XbBuilder) builder = xb_builder_new ();
-	g_autoptr(XbBuilderNode) apps = NULL;
-	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
-	/* check age */
-	fn_test = g_getenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN");
-	if (fn_test != NULL) {
-		fn = g_strdup (fn_test);
-	} else {
-		fn = gs_utils_get_cache_filename ("shell-extensions",
-						  "extensions-web.xmlb",
-						  GS_UTILS_CACHE_FLAG_WRITEABLE,
-						  error);
-		if (fn == NULL)
-			return FALSE;
-	}
+	/* get cache filename */
+	fn = gs_utils_get_cache_filename ("shell-extensions",
+					  "gnome.json",
+					  GS_UTILS_CACHE_FLAG_WRITEABLE,
+					  error);
+	if (fn == NULL)
+		return FALSE;
 
 	/* remove old appstream data if the repo is disabled */
 	repo_enabled = g_settings_get_boolean (priv->settings, "enable-shell-extensions-repo");
 	if (!repo_enabled) {
-		g_unlink (fn);
+		g_unlink (fn); //FIXME: do we still need to do this?
 		return TRUE;
 	}
 
+	/* check age */
 	file = g_file_new_for_path (fn);
 	if (g_file_query_exists (file, NULL)) {
 		guint age = gs_utils_get_file_age (file);
@@ -778,22 +732,84 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 		}
 	}
 
-	/* get data */
-	apps = gs_plugin_shell_extensions_get_apps (plugin,
-						    cache_age,
-						    cancellable,
-						    error);
-	if (apps == NULL)
+	/* download the file */
+	uri = g_strdup_printf ("%s/static/extensions.json",
+			       SHELL_EXTENSIONS_API_URI);
+	gs_app_set_summary_missing (app_dl,
+				    /* TRANSLATORS: status text when downloading */
+				    _("Downloading shell extension metadata…"));
+	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, error)) {
+		gs_utils_error_add_unique_id (error, priv->cached_origin);
 		return FALSE;
+	}
 
-	/* add to builder */
-	xb_builder_import_node (builder, apps);
+	/* be explicit */
+	if (priv->silo != NULL)
+		xb_silo_invalidate (priv->silo);
+	return TRUE;
+}
 
-	/* save to disk */
-	silo = xb_builder_ensure (builder, file,
-				  XB_BUILDER_COMPILE_FLAG_NONE,
-				  cancellable, &error_local);
-	if (silo == NULL) {
+static gboolean
+_check_silo (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *blobfn = NULL;
+	g_autofree gchar *fn = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GFile) blobfile = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
+
+	/* everything is okay */
+	if (priv->silo != NULL && xb_silo_is_valid (priv->silo)) {
+		g_debug ("silo already valid");
+		return TRUE;
+	}
+
+	/* drat! silo needs regenerating */
+	g_clear_object (&priv->silo);
+
+	/* verbose profiling */
+	if (g_getenv ("GS_XMLB_VERBOSE") != NULL) {
+		xb_builder_set_profile_flags (builder,
+					      XB_SILO_PROFILE_FLAG_XPATH |
+					      XB_SILO_PROFILE_FLAG_DEBUG);
+	}
+
+	/* add support for JSON files */
+	fn = gs_utils_get_cache_filename ("shell-extensions",
+					  "gnome.json",
+					  GS_UTILS_CACHE_FLAG_WRITEABLE,
+					  error);
+	if (fn == NULL)
+		return FALSE;
+	xb_builder_source_add_converter (source,
+					 "application/json",
+					 gs_plugin_appstream_load_json_cb,
+					 plugin, NULL);
+	file = g_file_new_for_path (fn);
+	if (!xb_builder_source_load_file (source, file,
+					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
+					  cancellable,
+					  error)) {
+		return FALSE;
+	}
+	xb_builder_import_source (builder, source);
+
+	/* create binary cache */
+	blobfn = gs_utils_get_cache_filename ("shell-extensions",
+					      "extensions-web.xmlb",
+					      GS_UTILS_CACHE_FLAG_WRITEABLE,
+					      error);
+	if (blobfn == NULL)
+		return FALSE;
+	blobfile = g_file_new_for_path (blobfn);
+	g_debug ("ensuring %s", blobfn);
+	priv->silo = xb_builder_ensure (builder, blobfile,
+					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID,
+					NULL, &error_local);
+	if (priv->silo == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -801,6 +817,51 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 			     error_local->message);
 		return FALSE;
 	}
+
+	/* success */
+	return TRUE;
+}
+
+static void
+_claim_components (GsPlugin *plugin, GsAppList *list)
+{
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "GNOME Shell Shell Extension");
+	}
+}
+
+gboolean
+gs_plugin_add_search (GsPlugin *plugin, gchar **values, GsAppList *list,
+		      GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!_check_silo (plugin, cancellable, error))
+		return FALSE;
+	if (!gs_appstream_search (plugin, priv->silo, values, list_tmp,
+				  cancellable, error))
+		return FALSE;
+	_claim_components (plugin, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_category_apps (GsPlugin *plugin, GsCategory *category, GsAppList *list,
+			     GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	if (!_check_silo (plugin, cancellable, error))
+		return FALSE;
+	if (!gs_appstream_add_category_apps (plugin, priv->silo, category,
+					     list_tmp, cancellable, error))
+		return TRUE;
+	_claim_components (plugin, list_tmp);
+	gs_app_list_add_list (list, list_tmp);
 	return TRUE;
 }
 
@@ -810,10 +871,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	return gs_plugin_shell_extensions_refresh (plugin,
-						   cache_age,
-						   cancellable,
-						   error);
+	if (!gs_plugin_shell_extensions_refresh (plugin,
+						 cache_age,
+						 cancellable,
+						 error))
+		return FALSE;
+	return _check_silo (plugin, cancellable, error);
 }
 
 gboolean
