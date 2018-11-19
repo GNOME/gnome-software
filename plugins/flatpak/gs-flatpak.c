@@ -254,7 +254,11 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autofree gchar *appstream_dir_fn = NULL;
 	g_autofree gchar *appstream_fn = NULL;
 	g_autofree gchar *default_branch = NULL;
+#if FLATPAK_CHECK_VERSION(1,1,1)
+	g_autofree gchar *main_ref = NULL;
+#else
 	g_autofree gchar *only_app_id = NULL;
+#endif
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file = NULL;
@@ -304,6 +308,10 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));
 	}
 
+#if FLATPAK_CHECK_VERSION(1,1,1)
+	/* only add the specific ref for noenumerate=true */
+	main_ref = flatpak_remote_get_main_ref (xremote);
+#else
 	/* only add the specific app for noenumerate=true */
 	if (flatpak_remote_get_noenumerate (xremote)) {
 		g_autofree gchar *tmp = NULL;
@@ -311,6 +319,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		g_strdelimit (tmp, "-", '\0');
 		only_app_id = g_strdup_printf ("%s.desktop", tmp);
 	}
+#endif
 
 	/* do we want to filter to the default branch */
 	settings = g_settings_new ("org.gnome.software");
@@ -322,12 +331,23 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	for (guint i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 
+#if FLATPAK_CHECK_VERSION(1,1,1)
+		/* only add the specific ref for noenumerate=true */
+		if (flatpak_remote_get_noenumerate (xremote)) {
+			AsBundle *bundle = as_app_get_bundle_default (app);
+			if (bundle == NULL || main_ref == NULL)
+				continue;
+			if (g_strcmp0 (as_bundle_get_id (bundle), main_ref) != 0)
+				continue;
+		}
+#else
 		/* filter to app */
 		if (only_app_id != NULL &&
 		    g_strcmp0 (as_app_get_id (app), only_app_id) != 0) {
 			as_app_set_kind (app, AS_APP_KIND_UNKNOWN);
 			continue;
 		}
+#endif
 
 		/* filter by branch */
 		if (default_branch != NULL &&
