@@ -536,10 +536,11 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 
 		/* does the app have an installation method */
 		if (as_app_get_pkgname_default (item) == NULL &&
-		    as_app_get_bundle_default (item) == NULL) {
+		    as_app_get_bundle_default (item) == NULL &&
+		    as_app_get_metadata_item (item, "shell-extensions::uuid") == NULL) {
 			g_debug ("not using %s for wildcard as "
-				 "no bundle or pkgname",
-				 as_app_get_id (item));
+				 "no installation method",
+				 as_app_get_unique_id (item));
 			continue;
 		}
 
