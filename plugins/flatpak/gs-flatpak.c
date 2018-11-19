@@ -285,21 +285,52 @@ gs_flatpak_filter_noenumerate_cb (XbBuilderFixup *self,
 				  gpointer user_data,
 				  GError **error)
 {
-	const gchar *only_app_id = (const gchar *) user_data;
+	const gchar *main_ref = (const gchar *) user_data;
+
 	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0) {
-		g_autoptr(XbBuilderNode) bc = xb_builder_node_get_child (bn, "id", NULL);
+		g_autoptr(XbBuilderNode) bc = xb_builder_node_get_child (bn, "bundle", NULL);
 		if (bc == NULL) {
-			g_debug ("no ID for component");
+			g_debug ("no bundle for component");
 			return TRUE;
 		}
-		if (g_strcmp0 (xb_builder_node_get_text (bc), only_app_id) != 0) {
+		if (g_strcmp0 (xb_builder_node_get_text (bc), main_ref) != 0) {
 			g_debug ("not adding app %s as filtering to %s",
-				 xb_builder_node_get_text (bc), only_app_id);
+				 xb_builder_node_get_text (bc), main_ref);
 			xb_builder_node_add_flag (bn, XB_BUILDER_NODE_FLAG_IGNORE);
 		}
 	}
 	return TRUE;
 }
+
+#if !FLATPAK_CHECK_VERSION(1,1,1)
+static gchar *
+gs_flatpak_get_xremote_main_ref (GsFlatpak *self, FlatpakRemote *xremote, GError **error)
+{
+	g_autoptr(GFile) dir = NULL;
+	g_autofree gchar *dir_path = NULL;
+	g_autofree gchar *config_fn = NULL;
+	g_autofree gchar *group = NULL;
+	g_autofree gchar *main_ref = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+
+	/* figure out the path to the config keyfile */
+	dir = flatpak_installation_get_path (self->installation);
+	if (dir == NULL)
+		return NULL;
+	dir_path = g_file_get_path (dir);
+	if (dir_path == NULL)
+		return NULL;
+	config_fn = g_build_filename (dir_path, "repo", "config", NULL);
+
+	kf = g_key_file_new ();
+	if (!g_key_file_load_from_file (kf, config_fn, G_KEY_FILE_NONE, error))
+		return NULL;
+
+	group = g_strdup_printf ("remote \"%s\"", flatpak_remote_get_name (xremote));
+	main_ref = g_key_file_get_string (kf, group, "xa.main-ref", error);
+	return g_steal_pointer (&main_ref);
+}
+#endif
 
 static gboolean
 gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
@@ -377,16 +408,24 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 	/* only add the specific app for noenumerate=true */
 	if (flatpak_remote_get_noenumerate (xremote)) {
-		g_autofree gchar *tmp = NULL;
-		g_autoptr(XbBuilderFixup) fixup = NULL;
-		tmp = g_strdup (flatpak_remote_get_name (xremote));
-		g_strdelimit (tmp, "-", '\0');
-		fixup = xb_builder_fixup_new ("FilterNoEnumerate",
-					      gs_flatpak_filter_noenumerate_cb,
-					      g_strdup (tmp),
-					      g_free);
-		xb_builder_fixup_set_max_depth (fixup, 2);
-		xb_builder_source_add_fixup (source, fixup);
+		g_autofree gchar *main_ref = NULL;
+#if FLATPAK_CHECK_VERSION(1,1,1)
+		main_ref = flatpak_remote_get_main_ref (xremote);
+#else
+		g_autoptr(GError) error_local = NULL;
+		main_ref = gs_flatpak_get_xremote_main_ref (self, xremote, &error_local);
+		if (main_ref == NULL)
+			g_warning ("failed to get main ref: %s", error_local->message);
+#endif
+		if (main_ref != NULL) {
+			g_autoptr(XbBuilderFixup) fixup = NULL;
+			fixup = xb_builder_fixup_new ("FilterNoEnumerate",
+						      gs_flatpak_filter_noenumerate_cb,
+						      g_strdup (main_ref),
+						      g_free);
+			xb_builder_fixup_set_max_depth (fixup, 2);
+			xb_builder_source_add_fixup (source, fixup);
+		}
 	}
 
 	/* do we want to filter to the default branch */
