@@ -3,7 +3,10 @@ cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
 
 shared_module(
   'gs_plugin_shell-extensions',
-sources : 'gs-plugin-shell-extensions.c',
+  sources : [
+    'gs-appstream.c',
+    'gs-plugin-shell-extensions.c'
+  ],
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),

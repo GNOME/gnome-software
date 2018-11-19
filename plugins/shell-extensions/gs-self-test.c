@@ -78,8 +78,9 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 static void
 gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 {
-	const gchar *xml_fn = "/var/tmp/self-test/extensions-web.xmlb";
+	const gchar *cachedir = "/var/tmp/gs-self-test";
 	gboolean ret;
+	g_autofree gchar *fn = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GPtrArray) components = NULL;
@@ -93,10 +94,10 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* ensure files are removed */
-	g_unlink (xml_fn);
+	g_setenv ("GS_SELF_TEST_CACHEDIR", cachedir, TRUE);
+	gs_utils_rmtree (cachedir, NULL);
 
 	/* refresh the metadata */
-	g_setenv ("GS_SELF_TEST_SHELL_EXTENSIONS_XML_FN", xml_fn, TRUE);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
 					 "age", (guint64) G_MAXUINT,
 					 NULL);
@@ -106,7 +107,13 @@ gs_plugins_shell_extensions_remote_func (GsPluginLoader *plugin_loader)
 
 	/* ensure file was populated */
 	silo = xb_silo_new ();
-	file = g_file_new_for_path (xml_fn);
+	fn = gs_utils_get_cache_filename ("shell-extensions",
+					  "extensions-web.xmlb",
+					  GS_UTILS_CACHE_FLAG_WRITEABLE,
+					  &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (fn);
+	file = g_file_new_for_path (fn);
 	ret = xb_silo_load_from_file (silo, file,
 				      XB_SILO_LOAD_FLAG_NONE,
 				      NULL, &error);
