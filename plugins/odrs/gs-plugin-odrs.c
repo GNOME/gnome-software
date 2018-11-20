@@ -467,6 +467,11 @@ gs_plugin_odrs_json_post (SoupSession *session,
 	if (status_code != SOUP_STATUS_OK) {
 		g_warning ("Failed to set rating on odrs: %s",
 			   soup_status_get_phrase (status_code));
+		g_set_error (error,
+                             GS_PLUGIN_ERROR,
+                             GS_PLUGIN_ERROR_FAILED,
+                             "Failed to set submit review to ODRS: %s", soup_status_get_phrase (status_code));
+		return FALSE;
 	}
 
 	/* process returned JSON */
