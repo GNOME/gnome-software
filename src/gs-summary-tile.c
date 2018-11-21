@@ -158,7 +158,8 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_SHELL_EXTENSION:
 		text = g_strdup (gs_app_get_description (app));
-		g_strdelimit (text, "\n\t", ' ');
+		if (text != NULL)
+			g_strdelimit (text, "\n\t", ' ');
 		break;
 	default:
 		text = g_strdup (gs_app_get_summary (app));
