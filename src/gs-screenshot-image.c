@@ -288,7 +288,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	g_autoptr(GsScreenshotImage) ssimg = GS_SCREENSHOT_IMAGE (user_data);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(AsImage) im = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GInputStream) stream = NULL;
 
