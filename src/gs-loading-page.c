@@ -111,7 +111,6 @@ gs_loading_page_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer 
 	/* not sure how to handle this */
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to load metadata: %s", error->message);
-		return;
 	}
 
 	/* no more pulsing */
