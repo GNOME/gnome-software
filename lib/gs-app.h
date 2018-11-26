@@ -98,6 +98,7 @@ typedef enum {
  * @GS_APP_QUIRK_REMOVABLE_HARDWARE:	The device is unusable whilst the action is performed
  * @GS_APP_QUIRK_DEVELOPER_VERIFIED:	The app developer has been verified
  * @GS_APP_QUIRK_PARENTAL_FILTER:	The app has been filtered by parental controls, and should be hidden
+ * @GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE:	The app cannot be run by the current user due to parental controls, and should not be launchable
  *
  * The application attributes.
  **/
@@ -116,6 +117,7 @@ typedef enum {
 	GS_APP_QUIRK_REMOVABLE_HARDWARE	= 1 << 10,	/* Since: 3.32 */
 	GS_APP_QUIRK_DEVELOPER_VERIFIED	= 1 << 11,	/* Since: 3.32 */
 	GS_APP_QUIRK_PARENTAL_FILTER	= 1 << 12,	/* Since: 3.32 */
+	GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE	= 1 << 13,	/* Since: 3.32 */
 	/*< private >*/
 	GS_APP_QUIRK_LAST
 } GsAppQuirk;
