@@ -538,6 +538,17 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 }
 
 static void
+gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	g_autoptr(GList) keys = g_hash_table_get_keys (priv->pages);
+	for (GList *l = keys; l != NULL; l = l->next) {
+		GsPage *page = GS_PAGE (g_hash_table_lookup (priv->pages, l->data));
+		gs_page_reload (page);
+	}
+}
+
+static void
 initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 {
 	GsPage *page;
@@ -556,6 +567,10 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 	/* go to OVERVIEW, unless the "loading" callbacks changed mode already */
 	if (priv->mode == GS_SHELL_MODE_LOADING)
 		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+
+	/* now that we're finished with the loading page, connect the reload signal handler */
+	g_signal_connect (priv->plugin_loader, "reload",
+	                  G_CALLBACK (gs_shell_reload_cb), shell);
 }
 
 static gboolean
@@ -785,17 +800,6 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 	gs_shell_clean_back_entry_stack (shell);
 	gtk_widget_hide (dialog);
 	return TRUE;
-}
-
-static void
-gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	g_autoptr(GList) keys = g_hash_table_get_keys (priv->pages);
-	for (GList *l = keys; l != NULL; l = l->next) {
-		GsPage *page = GS_PAGE (g_hash_table_lookup (priv->pages, l->data));
-		gs_page_reload (page);
-	}
 }
 
 static void
@@ -1965,8 +1969,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_return_if_fail (GS_IS_SHELL (shell));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
-	g_signal_connect (priv->plugin_loader, "reload",
-			  G_CALLBACK (gs_shell_reload_cb), shell);
 	g_signal_connect_object (priv->plugin_loader, "notify::events",
 				 G_CALLBACK (gs_shell_events_notify_cb),
 				 shell, 0);
