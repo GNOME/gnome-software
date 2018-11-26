@@ -83,12 +83,13 @@ static void
 gs_editor_refine_app_pixbuf (GsApp *app)
 {
 	GPtrArray *icons;
-	if (gs_app_get_pixbuf (app) != NULL)
+	if (gs_app_get_icon (app) != NULL)
 		return;
 	icons = gs_app_get_icons (app);
 	for (guint i = 0; i < icons->len; i++) {
 		AsIcon *ic = g_ptr_array_index (icons, i);
 		g_autoptr(GError) error = NULL;
+		g_autoptr(cairo_surface_t) surface = NULL;
 		if (as_icon_get_kind (ic) == AS_ICON_KIND_STOCK) {
 
 			g_autoptr(GdkPixbuf) pb = NULL;
@@ -101,13 +102,15 @@ gs_editor_refine_app_pixbuf (GsApp *app)
 				g_warning ("failed to load icon: %s", error->message);
 				continue;
 			}
-			gs_app_set_pixbuf (app, pb);
+			surface = gdk_cairo_surface_create_from_pixbuf (pb, 1, NULL);
+			gs_app_set_icon (app, surface);
 		} else {
 			if (!as_icon_load (ic, AS_ICON_LOAD_FLAG_SEARCH_SIZE, &error)) {
 				g_warning ("failed to load icon: %s", error->message);
 				continue;
 			}
-			gs_app_set_pixbuf (app, as_icon_get_pixbuf (ic));
+			surface = gdk_cairo_surface_create_from_pixbuf (as_icon_get_pixbuf (ic), 1, NULL);
+			gs_app_set_icon (app, surface);
 		}
 		break;
 	}

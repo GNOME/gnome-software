@@ -411,9 +411,9 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* pixbuf */
-	if (gs_app_get_pixbuf (priv->app) != NULL)
-		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
-					  gs_app_get_pixbuf (priv->app));
+	if (gs_app_get_icon (priv->app) != NULL)
+		gtk_image_set_from_surface (GTK_IMAGE (priv->image),
+					  gs_app_get_icon (priv->app));
 
 	context = gtk_widget_get_style_context (priv->image);
 	if (missing_search_result)

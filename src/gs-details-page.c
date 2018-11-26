@@ -948,7 +948,7 @@ static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
 	GsAppList *history;
-	GdkPixbuf *pixbuf = NULL;
+	cairo_surface_t *icon = NULL;
 	GList *addons;
 	GtkWidget *widget;
 	const gchar *tmp;
@@ -987,9 +987,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	gs_details_page_set_description (self, tmp);
 
 	/* set the icon */
-	pixbuf = gs_app_get_pixbuf (self->app);
-	if (pixbuf != NULL) {
-		gs_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
+	icon = gs_app_get_icon (self->app);
+	if (icon != NULL) {
+		gtk_image_set_from_surface (GTK_IMAGE (self->application_details_icon), icon);
 		gtk_widget_set_visible (self->application_details_icon, TRUE);
 	} else {
 		gtk_widget_set_visible (self->application_details_icon, FALSE);

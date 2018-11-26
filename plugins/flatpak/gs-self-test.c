@@ -151,7 +151,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "Longer multiline comment that does into detail.");
 	g_assert (gs_app_get_local_file (app) != NULL);
-	g_assert (gs_app_get_pixbuf (app) != NULL);
+	g_assert (gs_app_get_icon (app) != NULL);
 
 	/* now install the remote */
 	g_object_unref (plugin_job);
@@ -1723,6 +1723,7 @@ main (int argc, char **argv)
 		NULL
 	};
 
+	gtk_init (&argc, &argv);
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);

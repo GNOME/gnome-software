@@ -25,7 +25,6 @@
 
 #include <glib-object.h>
 #include <gdk/gdk.h>
-#include <gdk-pixbuf/gdk-pixbuf.h>
 #include <appstream-glib.h>
 
 #include "gs-price.h"
@@ -261,9 +260,9 @@ void		 gs_app_set_update_urgency	(GsApp		*app,
 const gchar	*gs_app_get_management_plugin	(GsApp		*app);
 void		 gs_app_set_management_plugin	(GsApp		*app,
 						 const gchar	*management_plugin);
-GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
-void		 gs_app_set_pixbuf		(GsApp		*app,
-						 GdkPixbuf	*pixbuf);
+cairo_surface_t	*gs_app_get_icon		(GsApp		*app);
+void		 gs_app_set_icon		(GsApp		*app,
+						 cairo_surface_t *icon);
 GsPrice		*gs_app_get_price		(GsApp		*app);
 void		 gs_app_set_price		(GsApp		*app,
 						 gdouble	 amount,

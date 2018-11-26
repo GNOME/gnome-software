@@ -236,7 +236,6 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 	GsShellSearchProvider *self = user_data;
 	GVariantBuilder meta;
 	GVariant *meta_variant;
-	GdkPixbuf *pixbuf;
 	gint i;
 	GVariantBuilder builder;
 
@@ -244,6 +243,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 
 	for (i = 0; results[i]; i++) {
 		GsApp *app;
+		cairo_surface_t *icon;
 		g_autofree gchar *description = NULL;
 
 		/* already built */
@@ -260,9 +260,15 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		g_variant_builder_init (&meta, G_VARIANT_TYPE ("a{sv}"));
 		g_variant_builder_add (&meta, "{sv}", "id", g_variant_new_string (gs_app_get_unique_id (app)));
 		g_variant_builder_add (&meta, "{sv}", "name", g_variant_new_string (gs_app_get_name (app)));
-		pixbuf = gs_app_get_pixbuf (app);
-		if (pixbuf != NULL)
+		icon = gs_app_get_icon (app);
+		if (icon != NULL) {
+			g_autoptr(GdkPixbuf) pixbuf = NULL;
+			pixbuf = gdk_pixbuf_get_from_surface (icon,
+							      0, 0,
+							      cairo_image_surface_get_width (icon),
+							      cairo_image_surface_get_height (icon));
 			g_variant_builder_add (&meta, "{sv}", "icon", g_icon_serialize (G_ICON (pixbuf)));
+		}
 
 		if (gs_utils_list_has_app_fuzzy (self->search_results, app) &&
 		    gs_app_get_origin_hostname (app) != NULL) {

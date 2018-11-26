@@ -238,7 +238,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	GPtrArray *screenshots, *images;
 	AsScreenshot *screenshot;
 	AsImage *image;
-	GdkPixbuf *pixbuf;
+	cairo_surface_t *icon;
 	g_autoptr(GError) error = NULL;
 
 	/* no snap, abort */
@@ -277,9 +277,9 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (as_image_get_url (image), ==, "http://example.com/screenshot2.jpg");
 	g_assert_cmpint (as_image_get_width (image), ==, 1024);
 	g_assert_cmpint (as_image_get_height (image), ==, 768);
-	pixbuf = gs_app_get_pixbuf (app);
-	g_assert_cmpint (gdk_pixbuf_get_width (pixbuf), ==, 1);
-	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 1);
+	icon = gs_app_get_icon (app);
+	g_assert_cmpint (cairo_image_surface_get_width (icon), ==, 1);
+	g_assert_cmpint (cairo_image_surface_get_height (icon), ==, 1);
 	g_assert_cmpint (gs_app_get_size_installed (app), ==, 0);
 	g_assert_cmpint (gs_app_get_size_download (app), ==, 500);
 	g_assert_cmpint (gs_app_get_install_date (app), ==, 0);

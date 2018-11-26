@@ -50,7 +50,7 @@ gs_plugins_epiphany_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
-	g_assert (gs_app_get_pixbuf (app) != NULL);
+	g_assert (gs_app_get_icon (app) != NULL);
 }
 
 int
@@ -68,6 +68,7 @@ main (int argc, char **argv)
 		NULL
 	};
 
+	gtk_init (&argc, &argv);
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);

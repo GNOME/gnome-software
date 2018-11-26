@@ -100,7 +100,7 @@ static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
 	AsAppKind kind;
-	const GdkPixbuf *pixbuf;
+	cairo_surface_t *icon;
 	const gchar *update_details;
 
 	/* set window title */
@@ -134,9 +134,9 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 
-	pixbuf = gs_app_get_pixbuf (app);
-	if (pixbuf != NULL)
-		gs_image_set_from_pixbuf (GTK_IMAGE (dialog->image_icon), pixbuf);
+	icon = gs_app_get_icon (app);
+	if (icon != NULL)
+		gtk_image_set_from_surface (GTK_IMAGE (dialog->image_icon), icon);
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));

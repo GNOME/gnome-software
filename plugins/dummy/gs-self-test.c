@@ -386,7 +386,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Zeus");
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "zeus");
-	g_assert (gs_app_get_pixbuf (app) != NULL);
+	g_assert (gs_app_get_icon (app) != NULL);
 
 	/* check various bitfields */
 	g_assert (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE));
@@ -415,7 +415,7 @@ gs_plugins_dummy_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
 			 "LicenseRef-free=https://www.debian.org/");
-	g_assert (gs_app_get_pixbuf (addon) == NULL);
+	g_assert (gs_app_get_icon (addon) == NULL);
 }
 
 static void
@@ -851,6 +851,7 @@ main (int argc, char **argv)
 		NULL
 	};
 
+	gtk_init (&argc, &argv);
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);

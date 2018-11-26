@@ -621,6 +621,7 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 	g_autoptr(GInputStream) input_stream = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(cairo_surface_t) surface = NULL;
 
 	icon_url = snapd_snap_get_icon (snap);
 	if (icon_url == NULL || strcmp (icon_url, "") == 0)
@@ -638,8 +639,10 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 		g_warning ("Failed to decode snap icon %s: %s", icon_url, error->message);
 		return FALSE;
 	}
-	gs_app_set_pixbuf (app, pixbuf);
-
+	surface = gdk_cairo_surface_create_from_pixbuf (pixbuf,
+							gs_plugin_get_scale (plugin),
+							NULL);
+	gs_app_set_icon (app, surface);
 	return TRUE;
 }
 
@@ -885,7 +888,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	}
 
 	/* load icon if requested */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_pixbuf (app) == NULL)
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_icon (app) == NULL)
 		load_icon (plugin, client, app, gs_app_get_metadata_item (app, "snap::name"), local_snap, store_snap, cancellable);
 
 	return TRUE;

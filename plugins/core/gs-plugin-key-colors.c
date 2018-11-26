@@ -69,29 +69,25 @@ _convert_from_rgb8 (guchar val)
 }
 
 static void
-gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
+gs_plugin_key_colors_set_for_pixbuf (GsApp *app, cairo_surface_t *pb, guint number)
 {
 	gint rowstride, n_channels;
-	gint x, y;
-	guchar *pixels, *p;
-	guint bin_size = 200;
-	guint i;
-	guint number_of_bins;
-	g_autoptr(AsImage) im = NULL;
+	guchar *pixels;
 
 	/* go through each pixel */
-	n_channels = gdk_pixbuf_get_n_channels (pb);
-	rowstride = gdk_pixbuf_get_rowstride (pb);
-	pixels = gdk_pixbuf_get_pixels (pb);
-	for (bin_size = 250; bin_size > 0; bin_size -= 2) {
+	n_channels = 1; //FIXME?
+	rowstride = cairo_image_surface_get_stride (pb);
+	pixels = cairo_image_surface_get_data (pb);
+	for (guint bin_size = 250; bin_size > 0; bin_size -= 2) {
 		g_autoptr(GHashTable) hash = NULL;
 		hash = g_hash_table_new_full (g_direct_hash,  g_direct_equal,
 					      NULL, g_free);
-		for (y = 0; y < gdk_pixbuf_get_height (pb); y++) {
-			for (x = 0; x < gdk_pixbuf_get_width (pb); x++) {
+		for (gint y = 0; y < cairo_image_surface_get_height (pb); y++) {
+			for (gint x = 0; x < cairo_image_surface_get_width (pb); x++) {
 				CdColorRGB8 tmp;
 				GsColorBin *s;
 				gpointer key;
+				guchar *p;
 
 				/* disregard any with alpha */
 				p = pixels + y * rowstride + x * n_channels;
@@ -122,10 +118,7 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 				g_hash_table_insert (hash, key, s);
 			}
 		}
-
-		number_of_bins = g_hash_table_size (hash);
-//		g_debug ("number of colors: %i", number_of_bins);
-		if (number_of_bins >= number) {
+		if (g_hash_table_size (hash) >= number) {
 			g_autoptr(GList) values = NULL;
 
 			/* order by most popular */
@@ -144,7 +137,7 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 	}
 
 	/* the algorithm failed, so just return a monochrome ramp */
-	for (i = 0; i < 3; i++) {
+	for (guint i = 0; i < 3; i++) {
 		g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
 		color->red = (gdouble) i / 3.f;
 		color->green = color->red;
@@ -161,8 +154,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GdkPixbuf *pb;
-	g_autoptr(GdkPixbuf) pb_small = NULL;
+	cairo_surface_t *icon;
 
 	/* add a rating */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS) == 0)
@@ -173,14 +165,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* no pixbuf */
-	pb = gs_app_get_pixbuf (app);
-	if (pb == NULL) {
-		g_debug ("no pixbuf, so no key colors");
+	icon = gs_app_get_icon (app);
+	if (icon == NULL) {
+		g_debug ("no icon, so no key colors");
 		return TRUE;
 	}
 
 	/* get a list of key colors */
-	pb_small = gdk_pixbuf_scale_simple (pb, 32, 32, GDK_INTERP_BILINEAR);
-	gs_plugin_key_colors_set_for_pixbuf (app, pb_small, 10);
+	gs_plugin_key_colors_set_for_pixbuf (app, icon, 10);
 	return TRUE;
 }

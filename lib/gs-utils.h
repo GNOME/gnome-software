@@ -30,6 +30,9 @@
 
 G_BEGIN_DECLS
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(cairo_surface_t, cairo_surface_destroy)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(cairo_t, cairo_destroy)
+
 /**
  * GsUtilsCacheFlags:
  * @GS_UTILS_CACHE_FLAG_NONE:		No flags set

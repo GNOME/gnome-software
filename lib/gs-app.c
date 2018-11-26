@@ -124,7 +124,7 @@ typedef struct
 	GsApp			*runtime;
 	GFile			*local_file;
 	AsContentRating		*content_rating;
-	GdkPixbuf		*pixbuf;
+	cairo_surface_t		*icon;
 	GsPrice			*price;
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
@@ -454,8 +454,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 			  gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
 		gs_app_kv_lpad (str, "name", priv->name);
-	if (priv->pixbuf != NULL)
-		gs_app_kv_printf (str, "pixbuf", "%p", priv->pixbuf);
+	if (priv->icon != NULL)
+		gs_app_kv_printf (str, "icon", "%p", priv->icon);
 	for (i = 0; i < priv->icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (priv->icons, i);
 		gs_app_kv_lpad (str, "icon-kind",
@@ -1643,21 +1643,21 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
 }
 
 /**
- * gs_app_get_pixbuf:
+ * gs_app_get_icon:
  * @app: a #GsApp
  *
- * Gets a pixbuf to represent the application.
+ * Gets an icon to represent the application.
  *
  * Returns: (transfer none): a #GdkPixbuf, or %NULL
  *
  * Since: 3.22
  **/
-GdkPixbuf *
-gs_app_get_pixbuf (GsApp *app)
+cairo_surface_t *
+gs_app_get_icon (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->pixbuf;
+	return priv->icon;
 }
 
 /**
@@ -1855,22 +1855,25 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 }
 
 /**
- * gs_app_set_pixbuf:
+ * gs_app_set_icon:
  * @app: a #GsApp
  * @pixbuf: a #GdkPixbuf, or %NULL
  *
- * Sets a pixbuf used to represent the application.
+ * Sets a icon used to represent the application.
  *
  * Since: 3.22
  **/
 void
-gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
+gs_app_set_icon (GsApp *app, cairo_surface_t *icon)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (icon != NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
-	g_set_object (&priv->pixbuf, pixbuf);
+	if (priv->icon != NULL)
+		cairo_surface_destroy (priv->icon);
+	priv->icon = cairo_surface_reference (icon);
 }
 
 /**
@@ -4196,8 +4199,8 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->local_file);
 	if (priv->content_rating != NULL)
 		g_object_unref (priv->content_rating);
-	if (priv->pixbuf != NULL)
-		g_object_unref (priv->pixbuf);
+	if (priv->icon != NULL)
+		cairo_surface_destroy (priv->icon);
 	if (priv->price != NULL)
 		g_object_unref (priv->price);
 

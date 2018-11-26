@@ -2326,13 +2326,17 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	if (icon_data != NULL) {
 		g_autoptr(GInputStream) stream_icon = NULL;
 		g_autoptr(GdkPixbuf) pixbuf = NULL;
+		g_autoptr(cairo_surface_t) surface = NULL;
 		stream_icon = g_memory_input_stream_new_from_bytes (icon_data);
 		pixbuf = gdk_pixbuf_new_from_stream (stream_icon, cancellable, error);
 		if (pixbuf == NULL) {
 			gs_utils_error_convert_gdk_pixbuf (error);
 			return NULL;
 		}
-		gs_app_set_pixbuf (app, pixbuf);
+		surface = gdk_cairo_surface_create_from_pixbuf (pixbuf,
+								gs_plugin_get_scale (self->plugin),
+								NULL);
+		gs_app_set_icon (app, surface);
 	} else {
 		g_autoptr(AsIcon) icon = NULL;
 		icon = as_icon_new ();

@@ -120,10 +120,10 @@ gs_plugin_icons_download (GsPlugin *plugin,
 	return TRUE;
 }
 
-static GdkPixbuf *
+static cairo_surface_t *
 gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
-	GdkPixbuf *pixbuf;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	gint size;
 	if (as_icon_get_filename (icon) == NULL) {
 		g_set_error_literal (error,
@@ -139,7 +139,9 @@ gs_plugin_icons_load_local (GsPlugin *plugin, AsIcon *icon, GError **error)
 		gs_utils_error_convert_gdk_pixbuf (error);
 		return NULL;
 	}
-	return pixbuf;
+	return gdk_cairo_surface_create_from_pixbuf (pixbuf,
+						     gs_plugin_get_scale (plugin),
+						     NULL);
 }
 
 static gchar *
@@ -154,7 +156,7 @@ gs_plugin_icons_get_cache_fn (AsIcon *icon)
 	return g_strdup_printf ("%s-%s", checksum, basename);
 }
 
-static GdkPixbuf *
+static cairo_surface_t *
 gs_plugin_icons_load_remote (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
 	const gchar *fn;
@@ -223,13 +225,13 @@ gs_plugin_icons_add_theme_path (GsPlugin *plugin, const gchar *path)
 	}
 }
 
-static GdkPixbuf *
+static cairo_surface_t *
 gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GdkPixbuf *pixbuf;
 	gint size;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->icon_theme_lock);
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 
 	/* required */
 	if (as_icon_get_name (icon) == NULL) {
@@ -251,10 +253,12 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, AsIcon *icon, GError **error)
 		gs_utils_error_convert_gdk_pixbuf (error);
 		return NULL;
 	}
-	return pixbuf;
+	return gdk_cairo_surface_create_from_pixbuf (pixbuf,
+						     gs_plugin_get_scale (plugin),
+						     NULL);
 }
 
-static GdkPixbuf *
+static cairo_surface_t *
 gs_plugin_icons_load_cached (GsPlugin *plugin, AsIcon *icon, GError **error)
 {
 	if (!as_icon_load (icon, AS_ICON_LOAD_FLAG_SEARCH_SIZE, error)) {
@@ -262,7 +266,9 @@ gs_plugin_icons_load_cached (GsPlugin *plugin, AsIcon *icon, GError **error)
 		gs_utils_error_convert_appstream (error);
 		return NULL;
 	}
-	return g_object_ref (as_icon_get_pixbuf (icon));
+	return gdk_cairo_surface_create_from_pixbuf (as_icon_get_pixbuf (icon),
+						     gs_plugin_get_scale (plugin),
+						     NULL);
 }
 
 gboolean
@@ -280,29 +286,29 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* invalid */
-	if (gs_app_get_pixbuf (app) != NULL)
+	if (gs_app_get_icon (app) != NULL)
 		return TRUE;
 
 	/* process all icons */
 	icons = gs_app_get_icons (app);
 	for (i = 0; i < icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (icons, i);
-		g_autoptr(GdkPixbuf) pixbuf = NULL;
+		g_autoptr(cairo_surface_t) surface = NULL;
 		g_autoptr(GError) error_local = NULL;
 
 		/* handle different icon types */
 		switch (as_icon_get_kind (icon)) {
 		case AS_ICON_KIND_LOCAL:
-			pixbuf = gs_plugin_icons_load_local (plugin, icon, &error_local);
+			surface = gs_plugin_icons_load_local (plugin, icon, &error_local);
 			break;
 		case AS_ICON_KIND_STOCK:
-			pixbuf = gs_plugin_icons_load_stock (plugin, icon, &error_local);
+			surface = gs_plugin_icons_load_stock (plugin, icon, &error_local);
 			break;
 		case AS_ICON_KIND_REMOTE:
-			pixbuf = gs_plugin_icons_load_remote (plugin, icon, &error_local);
+			surface = gs_plugin_icons_load_remote (plugin, icon, &error_local);
 			break;
 		case AS_ICON_KIND_CACHED:
-			pixbuf = gs_plugin_icons_load_cached (plugin, icon, &error_local);
+			surface = gs_plugin_icons_load_cached (plugin, icon, &error_local);
 			break;
 		default:
 			g_set_error (&error_local,
@@ -312,8 +318,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 				     as_icon_kind_to_string (as_icon_get_kind (icon)));
 			break;
 		}
-		if (pixbuf != NULL) {
-			gs_app_set_pixbuf (app, pixbuf);
+		if (surface != NULL) {
+			gs_app_set_icon (app, surface);
 			break;
 		}
 

@@ -111,7 +111,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsSummaryTile *tile)
 static void
 gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
-	const GdkPixbuf *pixbuf;
+	cairo_surface_t *icon;
 	GsSummaryTile *tile = GS_SUMMARY_TILE (app_tile);
 	const gchar *css;
 	g_autofree gchar *text = NULL;
@@ -139,9 +139,9 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 			  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (tile->app, NULL, tile);
 
-	pixbuf = gs_app_get_pixbuf (app);
-	if (pixbuf != NULL) {
-		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
+	icon = gs_app_get_icon (app);
+	if (icon != NULL) {
+		gtk_image_set_from_surface (GTK_IMAGE (tile->image), icon);
 	} else {
 		gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
 					      "application-x-executable",

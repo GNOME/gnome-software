@@ -207,6 +207,7 @@ main (int argc, char **argv)
 		NULL
 	};
 
+	gtk_init (&argc, &argv);
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
