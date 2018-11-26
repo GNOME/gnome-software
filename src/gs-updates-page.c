@@ -710,6 +710,12 @@ static void
 gs_updates_page_reload (GsPage *page)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
+
+	if (self->state == GS_UPDATES_PAGE_STATE_ACTION_REFRESH) {
+		g_debug ("ignoring reload as refresh is already in progress");
+		return;
+	}
+
 	gs_updates_page_invalidate (self);
 	gs_updates_page_load (self);
 }
