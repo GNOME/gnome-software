@@ -876,7 +876,8 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
-		if (!gs_app_has_quirk (self->app, GS_APP_QUIRK_NOT_LAUNCHABLE)) {
+		if (!gs_app_has_quirk (self->app, GS_APP_QUIRK_NOT_LAUNCHABLE) &&
+		    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE)) {
 			gtk_widget_set_visible (self->button_details_launch, TRUE);
 		} else {
 			gtk_widget_set_visible (self->button_details_launch, FALSE);
