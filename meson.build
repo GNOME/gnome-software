@@ -162,11 +162,6 @@ if get_option('rpm_ostree')
   rpm_ostree = dependency('rpm-ostree-1', version : '>= 2018.4')
 endif
 
-if get_option('ubuntu_reviews')
-  oauth = dependency('oauth')
-  sqlite3 = dependency('sqlite3')
-endif
-
 if get_option('gudev')
   gudev = dependency('gudev-1.0')
 endif

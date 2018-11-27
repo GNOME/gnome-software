@@ -140,8 +140,8 @@ gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
         <title>Distribution Specific Functionality</title>
         <para>
           Some plugins should only run on specific distributions, for instance
-          the <code>ubuntu-reviews</code> plugin should only be used on Ubuntu
-          systems.
+          the <code>fedora-pkgdb-collections</code> plugin should only be used on
+          Fedora systems.
           This can be achieved with a simple runtime check using the helper
           <code>gs_plugin_check_distro_id()</code> method or the <code>GsOsRelease</code>
           object where more complicated rules are required.
