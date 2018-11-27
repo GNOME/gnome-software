@@ -248,29 +248,29 @@ gs_flatpak_remove_prefixed_names (AsApp *app)
 static gchar *
 gs_flatpak_get_xremote_main_ref (GsFlatpak *self, FlatpakRemote *xremote, GError **error)
 {
-		g_autoptr(GFile) dir = NULL;
-		g_autofree gchar *dir_path = NULL;
-		g_autofree gchar *config_fn = NULL;
-		g_autofree gchar *group = NULL;
-		g_autofree gchar *main_ref = NULL;
-		g_autoptr(GKeyFile) kf = NULL;
+	g_autoptr(GFile) dir = NULL;
+	g_autofree gchar *dir_path = NULL;
+	g_autofree gchar *config_fn = NULL;
+	g_autofree gchar *group = NULL;
+	g_autofree gchar *main_ref = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
 
-		/* figure out the path to the config keyfile */
-		dir = flatpak_installation_get_path (self->installation);
-		if (dir == NULL)
-			return NULL;
-		dir_path = g_file_get_path (dir);
-		if (dir_path == NULL)
-			return NULL;
-		config_fn = g_build_filename (dir_path, "repo", "config", NULL);
+	/* figure out the path to the config keyfile */
+	dir = flatpak_installation_get_path (self->installation);
+	if (dir == NULL)
+		return NULL;
+	dir_path = g_file_get_path (dir);
+	if (dir_path == NULL)
+		return NULL;
+	config_fn = g_build_filename (dir_path, "repo", "config", NULL);
 
-		kf = g_key_file_new ();
-		if (!g_key_file_load_from_file (kf, config_fn, G_KEY_FILE_NONE, error))
-			return NULL;
+	kf = g_key_file_new ();
+	if (!g_key_file_load_from_file (kf, config_fn, G_KEY_FILE_NONE, error))
+		return NULL;
 
-		group = g_strdup_printf ("remote \"%s\"", flatpak_remote_get_name (xremote));
-		main_ref = g_key_file_get_string (kf, group, "xa.main-ref", error);
-		return g_steal_pointer (&main_ref);
+	group = g_strdup_printf ("remote \"%s\"", flatpak_remote_get_name (xremote));
+	main_ref = g_key_file_get_string (kf, group, "xa.main-ref", error);
+	return g_steal_pointer (&main_ref);
 }
 #endif
 
@@ -342,7 +342,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 		g_autoptr(GError) error_local = NULL;
 		main_ref = gs_flatpak_get_xremote_main_ref (self, xremote, &error_local);
 		if (main_ref == NULL)
-			g_warning ("failed to main ref: %s", error_local->message);
+			g_warning ("failed to get main ref: %s", error_local->message);
 #endif
 	}
 
