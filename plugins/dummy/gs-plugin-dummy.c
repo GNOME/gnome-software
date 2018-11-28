@@ -588,7 +588,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     "no network connection is available");
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return FALSE;
 	}
 

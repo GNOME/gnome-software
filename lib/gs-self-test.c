@@ -144,22 +144,38 @@ gs_utils_cache_func (void)
 static void
 gs_utils_error_func (void)
 {
-	guint i;
+	g_autofree gchar *app_id = NULL;
+	g_autofree gchar *origin_id = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
+	g_autoptr(GsApp) origin = gs_app_new ("gimp-repo");
 
-	for (i = 0; i < GS_PLUGIN_ERROR_LAST; i++)
+	for (guint i = 0; i < GS_PLUGIN_ERROR_LAST; i++)
 		g_assert (gs_plugin_error_to_string (i) != NULL);
 
-	gs_utils_error_add_unique_id (&error, app);
+	/* noop */
+	gs_utils_error_add_app_id (&error, app);
+	gs_utils_error_add_origin_id (&error, origin);
+
 	g_set_error (&error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 		     "failed");
 	g_assert_cmpstr (error->message, ==, "failed");
-	gs_utils_error_add_unique_id (&error, app);
-	g_assert_cmpstr (error->message, ==, "[*/*/*/*/gimp.desktop/*] failed");
-	gs_utils_error_strip_unique_id (error);
+	gs_utils_error_add_app_id (&error, app);
+	gs_utils_error_add_origin_id (&error, origin);
+	g_assert_cmpstr (error->message, ==, "[*/*/*/*/gimp-repo/*] {*/*/*/*/gimp.desktop/*} failed");
+
+	/* find and strip any unique IDs from the error message */
+	for (guint i = 0; i < 2; i++) {
+		if (app_id == NULL)
+			app_id = gs_utils_error_strip_app_id (error);
+		if (origin_id == NULL)
+			origin_id = gs_utils_error_strip_origin_id (error);
+	}
+
+	g_assert_cmpstr (app_id, ==, "*/*/*/*/gimp.desktop/*");
+	g_assert_cmpstr (origin_id, ==, "*/*/*/*/gimp-repo/*");
 	g_assert_cmpstr (error->message, ==, "failed");
 }
 

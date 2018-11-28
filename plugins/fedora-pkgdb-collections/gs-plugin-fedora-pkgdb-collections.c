@@ -220,7 +220,7 @@ _refresh_cache (GsPlugin *plugin,
 				      priv->cachefn,
 				      cancellable,
 				      error)) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return FALSE;
 	}
 

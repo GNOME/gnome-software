@@ -586,47 +586,113 @@ gs_utils_get_wilson_rating (guint64 star1,
 }
 
 /**
- * gs_utils_error_add_unique_id:
+ * gs_utils_error_add_app_id:
  * @error: a #GError
  * @app: a #GsApp
  *
- * Adds a unique ID prefix to the error.
+ * Adds app unique ID prefix to the error.
  *
- * Since: 3.22
+ * Since: 3.30
  **/
 void
-gs_utils_error_add_unique_id (GError **error, GsApp *app)
+gs_utils_error_add_app_id (GError **error, GsApp *app)
 {
 	g_return_if_fail (GS_APP (app));
 	if (error == NULL || *error == NULL)
 		return;
-	g_prefix_error (error, "[%s] ", gs_app_get_unique_id (app));
+	g_prefix_error (error, "{%s} ", gs_app_get_unique_id (app));
 }
 
 /**
- * gs_utils_error_strip_unique_id:
+ * gs_utils_error_add_origin_id:
  * @error: a #GError
+ * @origin: a #GsApp
  *
- * Removes a possible unique ID prefix from the error.
+ * Adds origin unique ID prefix to the error.
  *
- * Since: 3.22
+ * Since: 3.30
  **/
 void
-gs_utils_error_strip_unique_id (GError *error)
+gs_utils_error_add_origin_id (GError **error, GsApp *origin)
 {
-	gchar *str;
-	if (error == NULL)
+	g_return_if_fail (GS_APP (origin));
+	if (error == NULL || *error == NULL)
 		return;
-	if (!g_str_has_prefix (error->message, "["))
-		return;
-	str = g_strstr_len (error->message, -1, " ");
-	if (str == NULL)
-		return;
+	g_prefix_error (error, "[%s] ", gs_app_get_unique_id (origin));
+}
 
-	/* gahh, my eyes are bleeding */
-	str = g_strdup (str + 1);
-	g_free (error->message);
-	error->message = str;
+/**
+ * gs_utils_error_strip_app_id:
+ * @error: a #GError
+ *
+ * Removes a possible app ID prefix from the error, and returns the removed
+ * app ID.
+ *
+ * Returns: A newly allocated string with the app ID
+ *
+ * Since: 3.30
+ **/
+gchar *
+gs_utils_error_strip_app_id (GError *error)
+{
+	g_autofree gchar *app_id = NULL;
+	g_autofree gchar *msg = NULL;
+
+	if (error == NULL || error->message == NULL)
+		return FALSE;
+
+	if (g_str_has_prefix (error->message, "{")) {
+		const gchar *endp = strstr (error->message + 1, "} ");
+		if (endp != NULL) {
+			app_id = g_strndup (error->message + 1,
+			                    endp - (error->message + 1));
+			msg = g_strdup (endp + 2);
+		}
+	}
+
+	if (msg != NULL) {
+		g_free (error->message);
+		error->message = g_steal_pointer (&msg);
+	}
+
+	return g_steal_pointer (&app_id);
+}
+
+/**
+ * gs_utils_error_strip_origin_id:
+ * @error: a #GError
+ *
+ * Removes a possible origin ID prefix from the error, and returns the removed
+ * origin ID.
+ *
+ * Returns: A newly allocated string with the origin ID
+ *
+ * Since: 3.30
+ **/
+gchar *
+gs_utils_error_strip_origin_id (GError *error)
+{
+	g_autofree gchar *origin_id = NULL;
+	g_autofree gchar *msg = NULL;
+
+	if (error == NULL || error->message == NULL)
+		return FALSE;
+
+	if (g_str_has_prefix (error->message, "[")) {
+		const gchar *endp = strstr (error->message + 1, "] ");
+		if (endp != NULL) {
+			origin_id = g_strndup (error->message + 1,
+			                       endp - (error->message + 1));
+			msg = g_strdup (endp + 2);
+		}
+	}
+
+	if (msg != NULL) {
+		g_free (error->message);
+		error->message = g_steal_pointer (&msg);
+	}
+
+	return g_steal_pointer (&origin_id);
 }
 
 /**

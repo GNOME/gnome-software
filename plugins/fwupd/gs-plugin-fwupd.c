@@ -672,7 +672,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 				    _("Downloading firmware update signature…"));
 	data = gs_plugin_download_data (plugin, app_dl, url_sig, cancellable, error);
 	if (data == NULL) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return FALSE;
 	}
 
@@ -714,7 +714,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	url = fwupd_remote_get_metadata_uri (remote);
 	if (!gs_plugin_download_file (plugin, app_dl, url, filename,
 				      cancellable, error)) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return FALSE;
 	}
 

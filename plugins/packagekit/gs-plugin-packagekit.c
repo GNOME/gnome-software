@@ -196,7 +196,7 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	                                 gs_packagekit_helper_cb, helper,
 	                                 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_utils_error_add_unique_id (error, app);
+		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
 
@@ -229,7 +229,7 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
-		gs_utils_error_add_unique_id (error, app);
+		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
 
@@ -452,7 +452,7 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
-		gs_utils_error_add_unique_id (error, app);
+		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
 

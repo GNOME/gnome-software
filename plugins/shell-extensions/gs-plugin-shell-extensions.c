@@ -710,7 +710,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 				    _("Downloading shell extension metadata…"));
 	data = gs_plugin_download_data (plugin, app_dl, uri, cancellable, error);
 	if (data == NULL) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return NULL;
 	}
 	apps = gs_plugin_shell_extensions_parse_apps (plugin,
