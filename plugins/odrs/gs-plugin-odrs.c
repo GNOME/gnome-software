@@ -650,7 +650,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     "status code invalid");
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return NULL;
 	}
 	reviews = gs_plugin_odrs_parse_reviews (plugin,
@@ -1027,7 +1027,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_DOWNLOAD_FAILED,
 				     "status code invalid");
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return FALSE;
 	}
 	g_debug ("odrs returned: %s", msg->response_body->data);

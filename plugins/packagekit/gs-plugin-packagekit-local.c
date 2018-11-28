@@ -75,7 +75,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					     gs_packagekit_helper_cb, helper,
 					     error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_utils_error_add_unique_id (error, app);
+		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
 	array = pk_results_get_files_array (results);

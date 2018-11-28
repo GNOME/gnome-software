@@ -398,8 +398,8 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 				const GError *error_local,
 				GError **error)
 {
-	g_auto(GStrv) split = NULL;
-	g_autoptr(GsApp) origin = NULL;
+	g_autofree gchar *app_id = NULL;
+	g_autofree gchar *origin_id = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
 
 	/* badly behaved plugin */
@@ -416,6 +416,14 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 		return TRUE;
 	}
 
+	/* find and strip any unique IDs from the error message */
+	for (guint i = 0; i < 2; i++) {
+		if (app_id == NULL)
+			app_id = gs_utils_error_strip_app_id (error_local);
+		if (origin_id == NULL)
+			origin_id = gs_utils_error_strip_origin_id (error_local);
+	}
+
 	/* fatal error */
 	if (gs_plugin_job_get_action (helper->plugin_job) == GS_PLUGIN_ACTION_SETUP ||
 	    gs_plugin_loader_is_error_fatal (error_local) ||
@@ -428,19 +436,23 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	/* create event which is handled by the GsShell */
 	event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local);
 
-	/* can we find a unique ID */
-	split = g_strsplit_set (error_local->message, "[]: ", -1);
-	for (guint i = 0; split[i] != NULL; i++) {
-		if (as_utils_unique_id_valid (split[i])) {
-			origin = gs_plugin_cache_lookup (plugin, split[i]);
-			if (origin != NULL) {
-				g_debug ("found origin %s in error",
-					 gs_app_get_unique_id (origin));
-				gs_plugin_event_set_origin (event, origin);
-				break;
-			} else {
-				g_debug ("no unique ID found for %s", split[i]);
-			}
+	/* set the app and origin IDs if we managed to scrape them from the error above */
+	if (as_utils_unique_id_valid (app_id)) {
+		g_autoptr(GsApp) app = gs_plugin_cache_lookup (plugin, app_id);
+		if (app != NULL) {
+			g_debug ("found app %s in error", origin_id);
+			gs_plugin_event_set_app (event, app);
+		} else {
+			g_debug ("no unique ID found for app %s", app_id);
+		}
+	}
+	if (as_utils_unique_id_valid (origin_id)) {
+		g_autoptr(GsApp) origin = gs_plugin_cache_lookup (plugin, origin_id);
+		if (origin != NULL) {
+			g_debug ("found origin %s in error", origin_id);
+			gs_plugin_event_set_origin (event, origin);
+		} else {
+			g_debug ("no unique ID found for origin %s", origin_id);
 		}
 	}
 

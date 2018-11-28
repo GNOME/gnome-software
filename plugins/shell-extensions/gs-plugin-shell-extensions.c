@@ -792,7 +792,7 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading shell extension metadata…"));
 	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, error)) {
-		gs_utils_error_add_unique_id (error, priv->cached_origin);
+		gs_utils_error_add_origin_id (error, priv->cached_origin);
 		return FALSE;
 	}
 

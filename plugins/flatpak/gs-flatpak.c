@@ -2172,7 +2172,7 @@ gs_flatpak_launch (GsFlatpak *self,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					     "runtime is not installed");
-			gs_utils_error_add_unique_id (error, runtime);
+			gs_utils_error_add_origin_id (error, runtime);
 			gs_plugin_cache_add (self->plugin, NULL, runtime);
 			return FALSE;
 		}
