@@ -393,19 +393,6 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	return TRUE;
 }
 
-static gchar *
-gs_flatpak_discard_desktop_suffix (const gchar *app_id)
-{
-	const gchar *desktop_suffix = ".desktop";
-	guint app_prefix_len;
-
-	if (!g_str_has_suffix (app_id, desktop_suffix))
-		return g_strdup (app_id);
-
-	app_prefix_len = strlen (app_id) - strlen (desktop_suffix);
-	return g_strndup (app_id, app_prefix_len);
-}
-
 static void
 gs_flatpak_rescan_installed (GsFlatpak *self,
 			     GCancellable *cancellable,
@@ -445,13 +432,6 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 			g_warning ("failed to parse %s: %s",
 				   fn_desktop, error_local->message);
 			continue;
-		}
-
-		/* fall back to guessing app ID */
-		if (as_app_get_id (app) == NULL) {
-			g_autofree gchar *app_id = gs_flatpak_discard_desktop_suffix (fn);
-			g_debug ("failed to get app ID from X-Flatpak; falling back to %s", app_id);
-			as_app_set_id (app, app_id);
 		}
 
 		/* fix up icons */
