@@ -433,7 +433,6 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		g_autoptr(AsApp) app = NULL;
 		g_autoptr(AsFormat) format = as_format_new ();
 		g_autoptr(FlatpakInstalledRef) app_ref = NULL;
-		g_autofree gchar *app_id = NULL;
 
 		/* ignore */
 		if (g_strcmp0 (fn, "mimeinfo.cache") == 0)
@@ -446,6 +445,13 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 			g_warning ("failed to parse %s: %s",
 				   fn_desktop, error_local->message);
 			continue;
+		}
+
+		/* fall back to guessing app ID */
+		if (as_app_get_id (app) == NULL) {
+			g_autofree gchar *app_id = gs_flatpak_discard_desktop_suffix (fn);
+			g_debug ("failed to get app ID from X-Flatpak; falling back to %s", app_id);
+			as_app_set_id (app, app_id);
 		}
 
 		/* fix up icons */
@@ -468,14 +474,13 @@ gs_flatpak_rescan_installed (GsFlatpak *self,
 		as_format_set_filename (format, fn_desktop);
 		as_app_add_format (app, format);
 
-		app_id = gs_flatpak_discard_desktop_suffix (fn);
 		app_ref = flatpak_installation_get_current_installed_app (self->installation,
-									  app_id,
+									  as_app_get_id (app),
 									  cancellable,
 									  &error_local);
 		if (app_ref == NULL) {
 			g_warning ("Could not get app (from ID '%s') for installed desktop "
-				   "file %s: %s", app_id, fn_desktop, error_local->message);
+				   "file %s: %s", as_app_get_id (app), fn_desktop, error_local->message);
 			continue;
 		}
 
