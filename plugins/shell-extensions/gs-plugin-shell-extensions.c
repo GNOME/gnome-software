@@ -166,6 +166,12 @@ gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
 					 g_variant_get_string (val, NULL));
 			continue;
 		}
+		if (g_strcmp0 (str, "version") == 0) {
+			guint val_int = (guint) g_variant_get_double (val);
+			g_autofree gchar *version = g_strdup_printf ("%u", val_int);
+			gs_app_set_version (app, version);
+			continue;
+		}
 		if (g_strcmp0 (str, "url") == 0) {
 			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 					g_variant_get_string (val, NULL));
