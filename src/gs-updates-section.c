@@ -69,11 +69,30 @@ _app_row_button_clicked_cb (GsAppRow *app_row, GsUpdatesSection *self)
 }
 
 static void
+_row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
+{
+	GtkWidget *list;
+
+	list = gtk_widget_get_parent (GTK_WIDGET (row));
+	if (list == NULL)
+		return;
+	gtk_container_remove (GTK_CONTAINER (list), GTK_WIDGET (row));
+}
+
+static void
+_unreveal_row (GsAppRow *app_row)
+{
+	gs_app_row_unreveal (app_row);
+	g_signal_connect (app_row, "unrevealed",
+	                  G_CALLBACK (_row_unrevealed_cb), NULL);
+}
+
+static void
 _app_state_notify_cb (GsApp *app, GParamSpec *pspec, gpointer user_data)
 {
 	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 		GsAppRow *app_row = GS_APP_ROW (user_data);
-		gs_app_row_unreveal (app_row);
+		_unreveal_row (app_row);
 	}
 }
 
