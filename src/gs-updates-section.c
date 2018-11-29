@@ -401,21 +401,6 @@ _button_download_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 	_update_buttons (self);
 }
 
-static GsAppList *
-_get_listbox_apps (GsUpdatesSection *self)
-{
-	g_autoptr(GsAppList) apps = gs_app_list_new ();
-	g_autoptr(GList) listbox_children = NULL;
-
-	listbox_children = gtk_container_get_children (GTK_CONTAINER (self));
-	for (GList *l = listbox_children; l; l = l->next) {
-		GsAppRow *app_row = GS_APP_ROW (l->data);
-		gs_app_list_add (apps, gs_app_row_get_app (app_row));
-	}
-
-	return g_steal_pointer (&apps);
-}
-
 static void
 _button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 {
@@ -423,17 +408,12 @@ _button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsUpdatesSectionUpdateHelper *helper = g_new0 (GsUpdatesSectionUpdateHelper, 1);
-	g_autoptr(GsAppList) sorted_list = NULL;
-
-	/* instead of using self->list, get the already-sorted apps back from
-	 * the listbox to be able to update them in display order */
-	sorted_list = _get_listbox_apps (self);
 
 	helper->self = g_object_ref (self);
 
 	/* look at each app in turn */
-	for (guint i = 0; i < gs_app_list_length (sorted_list); i++) {
-		GsApp *app = gs_app_list_index (sorted_list, i);
+	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
+		GsApp *app = gs_app_list_index (self->list, i);
 		if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE)
 			helper->do_reboot = TRUE;
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT))
@@ -442,7 +422,7 @@ _button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 
 	g_set_object (&self->cancellable, cancellable);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
-					 "list", sorted_list,
+					 "list", self->list,
 					 "interactive", TRUE,
 					 NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
