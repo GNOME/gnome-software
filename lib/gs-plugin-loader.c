@@ -1996,7 +1996,7 @@ gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
  * Gets an active plugin event where active means that it was not been
  * already dismissed by the user.
  *
- * Returns: a #GsPluginEvent, or %NULL for none
+ * Returns: (transfer full): a #GsPluginEvent, or %NULL for none
  **/
 GsPluginEvent *
 gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
@@ -2015,7 +2015,7 @@ gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 			continue;
 		}
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID))
-			return event;
+			return g_object_ref (event);
 	}
 	return NULL;
 }

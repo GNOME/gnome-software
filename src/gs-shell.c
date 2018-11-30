@@ -1909,9 +1909,9 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 static void
 gs_shell_rescan_events (GsShell *shell)
 {
-	GsPluginEvent *event;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
+	g_autoptr(GsPluginEvent) event = NULL;
 
 	/* find the first active event and show it */
 	event = gs_plugin_loader_get_event_default (priv->plugin_loader);

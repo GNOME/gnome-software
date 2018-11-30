@@ -95,12 +95,12 @@ gs_plugins_dummy_install_func (GsPluginLoader *plugin_loader)
 static void
 gs_plugins_dummy_error_func (GsPluginLoader *plugin_loader)
 {
-	GsPluginEvent *event;
 	const GError *app_error;
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) events = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginEvent) event = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
