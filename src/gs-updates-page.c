@@ -543,12 +543,6 @@ gs_updates_page_get_updates_cb (GsPluginLoader *plugin_loader,
 		gs_updates_section_add_app (GS_UPDATES_SECTION (self->sections[section]), app);
 	}
 
-	/* invalidate the headers */
-	for (guint i = 0; i < GS_UPDATES_SECTION_KIND_LAST; i++) {
-		if (self->sections[i] != NULL)
-			gtk_list_box_invalidate_headers (self->sections[i]);
-	}
-
 	/* update the counter in headerbar */
 	refresh_headerbar_updates_counter (self);
 

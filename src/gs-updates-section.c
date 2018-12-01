@@ -49,6 +49,7 @@ struct _GsUpdatesSection
 	GtkWidget		*button_update;
 	GtkWidget		*button_cancel;
 	GtkStack		*button_stack;
+	GtkWidget		*section_header;
 };
 
 G_DEFINE_TYPE (GsUpdatesSection, gs_updates_section, GTK_TYPE_LIST_BOX)
@@ -129,15 +130,6 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 		GtkWidget *w = GTK_WIDGET (l->data);
 		gtk_container_remove (GTK_CONTAINER (self), w);
 	}
-
-	/* the following are set in _build_section_header(); clear these so
-	 * that they don't become dangling pointers once all items are removed
-	 * from self->list */
-	self->button_download = NULL;
-	self->button_update = NULL;
-	self->button_cancel = NULL;
-	self->button_stack = NULL;
-
 	gs_app_list_remove_all (self->list);
 	gtk_widget_hide (GTK_WIDGET (self));
 }
@@ -462,7 +454,6 @@ _build_section_header (GsUpdatesSection *self)
 
 	/* create header */
 	header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
-	gtk_size_group_add_widget (self->sizegroup_header, header);
 	context = gtk_widget_get_style_context (header);
 	gtk_style_context_add_class (context, "app-listbox-header");
 
@@ -478,7 +469,6 @@ _build_section_header (GsUpdatesSection *self)
 	 * sizegroup resizing */
 	self->button_stack = GTK_STACK (gtk_stack_new ());
 	gtk_box_pack_end (GTK_BOX (header), GTK_WIDGET (self->button_stack), FALSE, FALSE, 0);
-	gtk_size_group_add_widget (self->sizegroup_button, GTK_WIDGET (self->button_stack));
 
 	/* add download button */
 	self->button_download = gs_progress_button_new ();
@@ -514,8 +504,6 @@ _build_section_header (GsUpdatesSection *self)
 	gtk_stack_add_named (self->button_stack, self->button_cancel, "cancel");
 	gtk_widget_set_visible (self->button_cancel, TRUE);
 
-	_update_buttons (self);
-
 	/* success */
 	return header;
 }
@@ -528,7 +516,10 @@ _list_header_func (GtkListBoxRow *row, GtkListBoxRow *before, gpointer user_data
 
 	/* section changed */
 	if (before == NULL) {
-		header = _build_section_header (self);
+		GtkWidget *parent;
+		if ((parent = gtk_widget_get_parent (GTK_WIDGET (self->section_header))) != NULL)
+			gtk_container_remove (GTK_CONTAINER (parent), GTK_WIDGET (self->section_header));
+		header = self->section_header;
 	} else {
 		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	}
@@ -556,6 +547,14 @@ _app_row_activated_cb (GtkListBox *list_box, GtkListBoxRow *row, GsUpdatesSectio
 }
 
 static void
+gs_updates_section_show (GtkWidget *widget)
+{
+	_update_buttons (GS_UPDATES_SECTION (widget));
+
+	GTK_WIDGET_CLASS (gs_updates_section_parent_class)->show (widget);
+}
+
+static void
 gs_updates_section_dispose (GObject *object)
 {
 	GsUpdatesSection *self = GS_UPDATES_SECTION (object);
@@ -564,12 +563,16 @@ gs_updates_section_dispose (GObject *object)
 	g_clear_object (&self->list);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->page);
-
 	g_clear_object (&self->sizegroup_image);
 	g_clear_object (&self->sizegroup_name);
 	g_clear_object (&self->sizegroup_desc);
 	g_clear_object (&self->sizegroup_button);
 	g_clear_object (&self->sizegroup_header);
+	self->button_download = NULL;
+	self->button_update = NULL;
+	self->button_cancel = NULL;
+	self->button_stack = NULL;
+	g_clear_object (&self->section_header);
 
 	G_OBJECT_CLASS (gs_updates_section_parent_class)->dispose (object);
 }
@@ -578,7 +581,10 @@ static void
 gs_updates_section_class_init (GsUpdatesSectionClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
 	object_class->dispose = gs_updates_section_dispose;
+	widget_class->show = gs_updates_section_show;
 }
 
 void
@@ -594,6 +600,9 @@ gs_updates_section_set_size_groups (GsUpdatesSection *self,
 	g_set_object (&self->sizegroup_desc, desc);
 	g_set_object (&self->sizegroup_button, button);
 	g_set_object (&self->sizegroup_header, header);
+
+	gtk_size_group_add_widget (self->sizegroup_button, GTK_WIDGET (self->button_stack));
+	gtk_size_group_add_widget (self->sizegroup_header, self->section_header);
 }
 
 static void
@@ -648,6 +657,7 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self->kind = kind;
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->page = g_object_ref (page);
+	self->section_header = g_object_ref_sink (_build_section_header (self));
 	return GTK_LIST_BOX (self);
 }
 
