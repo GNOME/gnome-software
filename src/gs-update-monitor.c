@@ -223,14 +223,14 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 			/* TRANSLATORS: apps were auto-updated and restart is required */
 			title = g_strdup_printf (ngettext ("%u Application Updated — Restart Required",
 			                                   "%u Applications Updated — Restart Required",
-			                                   gs_app_list_length (list)),
-			                         gs_app_list_length (list));
+			                                   gs_app_list_length (list_apps)),
+			                         gs_app_list_length (list_apps));
 		} else {
 			/* TRANSLATORS: apps were auto-updated */
 			title = g_strdup_printf (ngettext ("%u Application Updated",
 			                                   "%u Applications Updated",
-			                                   gs_app_list_length (list)),
-			                         gs_app_list_length (list));
+			                                   gs_app_list_length (list_apps)),
+			                         gs_app_list_length (list_apps));
 		}
 	}
 
