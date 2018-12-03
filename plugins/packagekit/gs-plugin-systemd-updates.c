@@ -39,6 +39,7 @@ struct GsPluginData {
 	GPermission		*permission;
 	gboolean		 is_triggered;
 	GHashTable		*hash_prepared;
+	GMutex			 hash_prepared_mutex;
 };
 
 void
@@ -48,6 +49,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refresh");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "generic-updates");
+	g_mutex_init (&priv->hash_prepared_mutex);
 	priv->hash_prepared = g_hash_table_new_full (g_str_hash, g_str_equal,
 						     g_free, NULL);
 }
@@ -57,6 +59,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_hash_table_unref (priv->hash_prepared);
+	g_mutex_clear (&priv->hash_prepared_mutex);
 	if (priv->monitor != NULL)
 		g_object_unref (priv->monitor);
 	if (priv->monitor_trigger != NULL)
@@ -80,6 +83,7 @@ gs_plugin_systemd_update_cache (GsPlugin *plugin, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->hash_prepared_mutex);
 
 	/* invalidate */
 	g_hash_table_remove_all (priv->hash_prepared);
@@ -146,6 +150,7 @@ gs_plugin_systemd_refine_app (GsPlugin *plugin, GsApp *app)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
@@ -155,6 +160,7 @@ gs_plugin_systemd_refine_app (GsPlugin *plugin, GsApp *app)
 	package_id = gs_app_get_source_id_default (app);
 	if (package_id == NULL)
 		return;
+	locker = g_mutex_locker_new (&priv->hash_prepared_mutex);
 	if (g_hash_table_lookup (priv->hash_prepared, package_id) != NULL)
 		gs_app_set_size_download (app, 0);
 }
