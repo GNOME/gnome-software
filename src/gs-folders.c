@@ -542,6 +542,8 @@ gs_folders_revert (GsFolders *folders)
 /* Ensure we have the default folders for Utilities and Sundry.
  * We can't do this as default values, since the schemas have
  * no fixed path.
+ *
+ * The app lists come from gnome-menus: layout/gnome-applications.menu
  */
 void
 gs_folders_convert (void)
@@ -563,22 +565,20 @@ gs_folders_convert (void)
 			NULL
 		};
 		const gchar * const utilities_apps[] = {
-			"org.gnome.baobab.desktop",
-			"deja-dup-preferences.desktop",
 			"eog.desktop",
-			"evince.desktop",
-			"org.gnome.FileRoller.desktop",
-			"gnome-calculator.desktop",
-			"gnome-dictionary.desktop",
-			"org.gnome.Characters.desktop",
-			"org.gnome.DiskUtility.desktop",
-			"org.gnome.font-viewer.desktop",
-			"org.gnome.Terminal.desktop",
-			"org.gnome.Screenshot.desktop",
 			"gnome-system-log.desktop",
 			"gnome-system-monitor.desktop",
-			"gnome-tweak-tool.desktop",
 			"gucharmap.desktop",
+			"org.gnome.Calculator.desktop",
+			"org.gnome.DejaDup.desktop",
+			"org.gnome.Dictionary.desktop",
+			"org.gnome.DiskUtility.desktop",
+			"org.gnome.Evince.desktop",
+			"org.gnome.FileRoller.desktop",
+			"org.gnome.font-viewer.desktop",
+			"org.gnome.Screenshot.desktop",
+			"org.gnome.Terminal.desktop",
+			"org.gnome.tweaks.desktop",
 			"seahorse.desktop",
 			"vinagre.desktop",
 			"yelp.desktop",
@@ -597,7 +597,6 @@ gs_folders_convert (void)
 			"flash-player-properties.desktop",
 			"gconf-editor.desktop",
 			"gnome-abrt.desktop",
-			"gnome-power-statistics.desktop",
 			"ibus-setup-anthy.desktop",
 			"ibus-setup.desktop",
 			"ibus-setup-hangul.desktop",
@@ -614,7 +613,7 @@ gs_folders_convert (void)
 			"log4j-chainsaw.desktop",
 			"log4j-logfactor5.desktop",
 			"nm-connection-editor.desktop",
-			"orca.desktop",
+			"org.gnome.PowerStats.desktop",
 			"setroubleshoot.desktop",
 			"system-config-date.desktop",
 			"system-config-firewall.desktop",
