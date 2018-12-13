@@ -280,7 +280,6 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				  GCancellable *cancellable,
 				  GError **error)
 {
-	GPtrArray *apps;
 	g_autofree gchar *appstream_dir_fn = NULL;
 	g_autofree gchar *appstream_fn = NULL;
 	g_autofree gchar *default_branch = NULL;
@@ -290,6 +289,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GSettings) settings = NULL;
 	g_autoptr(GPtrArray) app_filtered = NULL;
+	g_autoptr(GPtrArray) apps = NULL;
 
 	/* get the AppStream data location */
 	appstream_dir = flatpak_remote_get_appstream_dir (xremote, NULL);
@@ -328,7 +328,11 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	}
 
 	/* override the *AppStream* origin */
-	apps = as_store_get_apps (store);
+#if AS_CHECK_VERSION(0,7,15)
+	apps = as_store_dup_apps (store);
+#else
+	apps = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (guint i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 		as_app_set_origin (app, flatpak_remote_get_name (xremote));

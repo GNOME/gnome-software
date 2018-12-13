@@ -857,10 +857,14 @@ gs_appstream_store_search (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	GPtrArray *array;
 	gboolean ret = TRUE;
+	g_autoptr(GPtrArray) array = NULL;
 
-	array = as_store_get_apps (store);
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (guint i = 0; i < array->len; i++) {
 		AsApp *item = g_ptr_array_index (array, i);
 		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
@@ -929,11 +933,15 @@ gs_appstream_store_add_category_apps (GsPlugin *plugin,
 				      GCancellable *cancellable,
 				      GError **error)
 {
-	GPtrArray *array;
 	GPtrArray *desktop_groups;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* just look at each app in turn */
-	array = as_store_get_apps (store);
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	desktop_groups = gs_category_get_desktop_groups (category);
 	if (desktop_groups->len == 0) {
 		g_warning ("no desktop_groups for %s", gs_category_get_id (category));
@@ -974,10 +982,14 @@ gs_appstream_store_add_categories (GsPlugin *plugin,
 				   GCancellable *cancellable,
 				   GError **error)
 {
-	GPtrArray *array;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* find out how many packages are in each category */
-	array = as_store_get_apps (store);
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (guint i = 0; i < array->len; i++) {
 		AsApp *app = g_ptr_array_index (array, i);
 		if (as_app_get_id (app) == NULL)
@@ -999,7 +1011,13 @@ gs_appstream_add_popular (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	GPtrArray *array = as_store_get_apps (store);
+	g_autoptr(GPtrArray) array = NULL;
+
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		AsApp *item = g_ptr_array_index (array, i);
@@ -1039,7 +1057,13 @@ gs_appstream_add_recent (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GPtrArray *array = as_store_get_apps (store);
+	g_autoptr(GPtrArray) array = NULL;
+
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		AsApp *item = g_ptr_array_index (array, i);
@@ -1062,7 +1086,13 @@ gs_appstream_add_featured (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	GPtrArray *array = as_store_get_apps (store);
+	g_autoptr(GPtrArray) array = NULL;
+
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		AsApp *item = g_ptr_array_index (array, i);

@@ -51,12 +51,16 @@ static GHashTable *
 gs_plugin_appstream_create_app_hash (AsStore *store)
 {
 	GHashTable *hash;
-	GPtrArray *apps;
 	guint i;
+	g_autoptr(GPtrArray) apps = NULL;
 
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 				      g_free, (GDestroyNotify) g_object_unref);
-	apps = as_store_get_apps (store);
+#if AS_CHECK_VERSION(0,7,15)
+	apps = as_store_dup_apps (store);
+#else
+	apps = g_ptr_array_ref (as_store_get_apps (store));
+#endif
 	for (i = 0; i < apps->len; i++) {
 		AsApp *app = g_ptr_array_index (apps, i);
 		gchar *key = g_strdup (as_app_get_id (app));
@@ -247,7 +251,6 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GPtrArray *items;
 	gboolean ret;
 	const gchar *tmp;
 	const gchar *test_xml;
@@ -256,6 +259,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
+	g_autoptr(GPtrArray) items = NULL;
 
 	/* Parse the XML */
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
@@ -286,7 +290,11 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 		}
 	}
-	items = as_store_get_apps (priv->store);
+#if AS_CHECK_VERSION(0,7,15)
+	items = as_store_dup_apps (priv->store);
+#else
+	items = g_ptr_array_ref (as_store_get_apps (priv->store));
+#endif
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
 		g_set_error (error,
@@ -379,8 +387,15 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	item = as_store_get_app_by_unique_id (priv->store, unique_id,
 					      AS_STORE_SEARCH_FLAG_USE_WILDCARDS);
 	if (item == NULL) {
-		GPtrArray *apps = as_store_get_apps (priv->store);
+		g_autoptr(GPtrArray) apps = NULL;
+		g_autoptr(GPtrArray) apps_merge = NULL;
+
 		g_debug ("no app with ID %s found in system appstream", unique_id);
+#if AS_CHECK_VERSION(0,7,15)
+		apps = as_store_dup_apps (priv->store);
+#else
+		apps = g_ptr_array_ref (as_store_get_apps (priv->store));
+#endif
 		for (guint i = 0; i < apps->len; i++) {
 			item = g_ptr_array_index (apps, i);
 			if (g_strcmp0 (as_app_get_id (item), gs_app_get_id (app)) != 0)
@@ -390,14 +405,24 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 		}
 
 		/* fall back to trying to get a merge app */
-		apps = as_store_get_apps_by_id_merge (priv->store, gs_app_get_id (app));
-		if (apps != NULL) {
-			for (guint i = 0; i < apps->len; i++) {
-				item = g_ptr_array_index (apps, i);
+#if AS_CHECK_VERSION(0,7,15)
+		apps_merge = as_store_dup_apps_by_id_merge (priv->store, gs_app_get_id (app));
+		for (guint i = 0; i < apps_merge->len; i++) {
+			item = g_ptr_array_index (apps_merge, i);
+			if (!gs_appstream_refine_app (plugin, app, item, error))
+				return FALSE;
+		}
+#else
+		apps_merge = as_store_get_apps_by_id_merge (priv->store, gs_app_get_id (app));
+		if (apps_merge != NULL) {
+			g_ptr_array_ref (apps_merge);
+			for (guint i = 0; i < apps_merge->len; i++) {
+				item = g_ptr_array_index (apps_merge, i);
 				if (!gs_appstream_refine_app (plugin, app, item, error))
 					return FALSE;
 			}
 		}
+#endif
 		return TRUE;
 	}
 
@@ -443,11 +468,15 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
-	GPtrArray *array;
 	guint i;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* find any upgrades */
-	array = as_store_get_apps (priv->store);
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (priv->store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (priv->store));
+#endif
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
@@ -588,10 +617,14 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GPtrArray *array;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* search categories for the search term */
-	array = as_store_get_apps (priv->store);
+#if AS_CHECK_VERSION(0,7,15)
+	array = as_store_dup_apps (priv->store);
+#else
+	array = g_ptr_array_ref (as_store_get_apps (priv->store));
+#endif
 	for (guint i = 0; i < array->len; i++) {
 		AsApp *item = g_ptr_array_index (array, i);
 		if (as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
