@@ -53,15 +53,8 @@ struct _GsUpdateMonitor {
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
-typedef enum {
-	GS_UPDATE_MONITOR_MODE_NONE		= 0,
-	GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES	= 1 << 0,
-	GS_UPDATE_MONITOR_MODE_LAST
-} GsUpdateMonitorMode;
-
 typedef struct {
 	GsUpdateMonitor		*monitor;
-	GsUpdateMonitorMode	 mode;
 } DownloadUpdatesData;
 
 static void
@@ -421,8 +414,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
 	/* download any updates if auto-updates are turned on */
-	if (download_updates_data->mode == GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES &&
-	    g_settings_get_boolean (monitor->settings, "download-updates")) {
+	if (g_settings_get_boolean (monitor->settings, "download-updates")) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
 						 "list", apps,
@@ -433,12 +425,8 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    monitor->cancellable,
 						    download_finished_cb,
 						    monitor);
-		return;
-	}
-
-	/* notify immediately if auto-updates are turned off */
-	if (download_updates_data->mode == GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES &&
-	    !g_settings_get_boolean (monitor->settings, "download-updates")) {
+	} else {
+		/* notify immediately if auto-updates are turned off */
 		if (has_important_updates (apps) ||
 		    no_updates_for_a_week (monitor)) {
 			notify_offline_update_available (monitor);
@@ -568,7 +556,7 @@ get_upgrades_finished_cb (GObject *object,
 }
 
 static void
-get_updates (GsUpdateMonitor *monitor, GsUpdateMonitorMode mode)
+get_updates (GsUpdateMonitor *monitor)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(DownloadUpdatesData) download_updates_data = NULL;
@@ -581,7 +569,6 @@ get_updates (GsUpdateMonitor *monitor, GsUpdateMonitorMode mode)
 
 	download_updates_data = g_slice_new0 (DownloadUpdatesData);
 	download_updates_data->monitor = g_object_ref (monitor);
-	download_updates_data->mode = mode;
 
 	/* NOTE: this doesn't actually do any network access */
 	g_debug ("Getting updates");
@@ -599,7 +586,7 @@ get_updates (GsUpdateMonitor *monitor, GsUpdateMonitorMode mode)
 void
 gs_update_monitor_autoupdate (GsUpdateMonitor *monitor)
 {
-	get_updates (monitor, GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES);
+	get_updates (monitor);
 }
 
 static void
@@ -663,7 +650,7 @@ refresh_cache_finished_cb (GObject *object,
 	g_settings_set (monitor->settings, "check-timestamp", "x",
 	                g_date_time_to_unix (now));
 
-	get_updates (monitor, GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES);
+	get_updates (monitor);
 }
 
 typedef enum {
@@ -840,14 +827,6 @@ network_available_notify_cb (GsPluginLoader *plugin_loader,
 			     GsUpdateMonitor *monitor)
 {
 	check_updates (monitor);
-}
-
-static void
-updates_changed_cb (GsPluginLoader *plugin_loader, GsUpdateMonitor *monitor)
-{
-	/* when the list of downloaded-and-ready-to-go updates changes get the
-	 * new list and perhaps show/hide the notification */
-	get_updates (monitor, GS_UPDATE_MONITOR_MODE_NONE);
 }
 
 static void
@@ -1133,9 +1112,6 @@ gs_update_monitor_dispose (GObject *object)
 	}
 	if (monitor->plugin_loader != NULL) {
 		g_signal_handlers_disconnect_by_func (monitor->plugin_loader,
-		                                      updates_changed_cb,
-		                                      monitor);
-		g_signal_handlers_disconnect_by_func (monitor->plugin_loader,
 						      network_available_notify_cb,
 						      monitor);
 		monitor->plugin_loader = NULL;
@@ -1175,8 +1151,6 @@ gs_update_monitor_new (GsApplication *application)
 	g_application_hold (monitor->application);
 
 	monitor->plugin_loader = gs_application_get_plugin_loader (application);
-	g_signal_connect (monitor->plugin_loader, "updates-changed",
-			  G_CALLBACK (updates_changed_cb), monitor);
 	g_signal_connect (monitor->plugin_loader, "notify::allow-updates",
 			  G_CALLBACK (allow_updates_notify_cb), monitor);
 	g_signal_connect (monitor->plugin_loader, "notify::network-available",
