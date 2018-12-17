@@ -670,6 +670,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 	gs_updates_page_set_state (self, GS_UPDATES_PAGE_STATE_ACTION_GET_UPDATES);
 	self->action_cnt++;
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_UPDATES,
+					 "interactive", TRUE,
 					 "refine-flags", refine_flags,
 					 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 					 NULL);
@@ -682,6 +683,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 	g_object_unref (plugin_job);
 	app = gs_plugin_loader_get_system_app (self->plugin_loader);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "interactive", TRUE,
 					 "app", app,
 					 "refine-flags", refine_flags,
 					 NULL);
@@ -695,6 +697,7 @@ gs_updates_page_load (GsUpdatesPage *self)
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED;
 		g_object_unref (plugin_job);
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_DISTRO_UPDATES,
+						 "interactive", TRUE,
 						 "refine-flags", refine_flags,
 						 NULL);
 		gs_plugin_loader_job_process_async (self->plugin_loader,
