@@ -435,6 +435,15 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    monitor);
 		return;
 	}
+
+	/* notify immediately if auto-updates are turned off */
+	if (download_updates_data->mode == GS_UPDATE_MONITOR_MODE_DO_AUTOUPDATES &&
+	    !g_settings_get_boolean (monitor->settings, "download-updates")) {
+		if (has_important_updates (apps) ||
+		    no_updates_for_a_week (monitor)) {
+			notify_offline_update_available (monitor);
+		}
+	}
 }
 
 static gboolean
