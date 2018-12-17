@@ -752,8 +752,7 @@ get_os_name (void)
 }
 
 static void
-updates_changed_cb (GsPluginLoader *plugin_loader,
-                    GsReposDialog *dialog)
+reload_cb (GsPluginLoader *plugin_loader, GsReposDialog *dialog)
 {
 	reload_sources (dialog);
 	reload_third_party_repo (dialog);
@@ -763,8 +762,8 @@ static void
 set_plugin_loader (GsReposDialog *dialog, GsPluginLoader *plugin_loader)
 {
 	dialog->plugin_loader = g_object_ref (plugin_loader);
-	g_signal_connect (dialog->plugin_loader, "updates-changed",
-	                  G_CALLBACK (updates_changed_cb), dialog);
+	g_signal_connect (dialog->plugin_loader, "reload",
+	                  G_CALLBACK (reload_cb), dialog);
 }
 
 static void
@@ -773,7 +772,7 @@ gs_repos_dialog_dispose (GObject *object)
 	GsReposDialog *dialog = GS_REPOS_DIALOG (object);
 
 	if (dialog->plugin_loader != NULL) {
-		g_signal_handlers_disconnect_by_func (dialog->plugin_loader, updates_changed_cb, dialog);
+		g_signal_handlers_disconnect_by_func (dialog->plugin_loader, reload_cb, dialog);
 		g_clear_object (&dialog->plugin_loader);
 	}
 
