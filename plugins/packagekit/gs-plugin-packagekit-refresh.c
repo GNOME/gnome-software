@@ -118,6 +118,15 @@ gs_plugin_download (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		GsAppList *related = gs_app_get_related (app);
+
+		/* add this app */
+		if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+			if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") == 0) {
+				gs_app_list_add (list_tmp, app);
+			continue;
+		}
+
+		/* add each related app */
 		for (guint j = 0; j < gs_app_list_length (related); j++) {
 			GsApp *app_tmp = gs_app_list_index (related, j);
 			if (g_strcmp0 (gs_app_get_management_plugin (app_tmp), "packagekit") == 0)
