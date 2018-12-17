@@ -44,9 +44,15 @@ struct GsPluginData {
 };
 
 static void
-gs_plugin_packagekit_cache_invalid_cb (PkControl *control, GsPlugin *plugin)
+gs_plugin_packagekit_updates_changed_cb (PkControl *control, GsPlugin *plugin)
 {
 	gs_plugin_updates_changed (plugin);
+}
+
+static void
+gs_plugin_packagekit_repo_list_changed_cb (PkControl *control, GsPlugin *plugin)
+{
+	gs_plugin_reload (plugin);
 }
 
 void
@@ -56,9 +62,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->client = pk_client_new ();
 	priv->control = pk_control_new ();
 	g_signal_connect (priv->control, "updates-changed",
-			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
+			  G_CALLBACK (gs_plugin_packagekit_updates_changed_cb), plugin);
 	g_signal_connect (priv->control, "repo-list-changed",
-			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
+			  G_CALLBACK (gs_plugin_packagekit_repo_list_changed_cb), plugin);
 	pk_client_set_background (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
 
