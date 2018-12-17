@@ -211,8 +211,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
 
 		gs_plugin_event_set_error (event, error_local);
-		gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_REFRESH);
-		gs_plugin_event_set_app (event, priv->cached_origin);
+		gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_DOWNLOAD);
+		gs_plugin_event_set_origin (event, priv->cached_origin);
 		if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
 			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE);
 		else
