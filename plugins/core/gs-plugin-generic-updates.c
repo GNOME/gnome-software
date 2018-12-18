@@ -55,11 +55,6 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 	const gchar *id = "org.gnome.Software.OsUpdate";
 	g_autoptr(AsIcon) ic = NULL;
 
-	/* look in cache */
-	app = gs_plugin_cache_lookup (plugin, id);
-	if (app != NULL)
-		return app;
-
 	/* create new */
 	app = gs_app_new (id);
 	gs_app_add_quirk (app, AS_APP_QUIRK_IS_PROXY);
@@ -83,7 +78,6 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 	as_icon_set_name (ic, "software-update-available-symbolic");
 	gs_app_add_icon (app, ic);
-	gs_plugin_cache_add (plugin, id, app);
 	return app;
 }
 
