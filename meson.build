@@ -1,5 +1,5 @@
 project('gnome-software', 'c',
-  version : '3.30.6',
+  version : '3.30.7',
   license : 'GPL-2.0+',
   default_options : ['warning_level=1', 'c_std=c99'],
   meson_version : '>=0.40.0'
