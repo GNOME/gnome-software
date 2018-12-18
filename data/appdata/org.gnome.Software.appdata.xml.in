@@ -46,6 +46,32 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2018-12-18" version="3.30.6">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Fix various thread safety related crashes</li>
+          <li>Fix row unrevealing to not leave behind 2 pixels on the updates page</li>
+          <li>Make the refresh button to actually refresh packagekit cache</li>
+          <li>Fix various issues that could lead to cache refresh getting stuck</li>
+          <li>Show updates available notifications even when automatic updates are disabled</li>
+          <li>Fix counting apps in the updates applied notification</li>
+          <li>Improve packagekit update loading code, hopefully making it more robust</li>
+          <li>Fix an issue that could lead to the packagekit plugin activating on rpm-ostree based systems</li>
+          <li>Switch flatpak updates to use a single transaction, which lets us share more code (and bugs) with the command line flatpak utility</li>
+          <li>Fix various issues with transitioning from the "Download" state to "Restart &amp; Update"</li>
+          <li>Don't error out from update downloads if the ODRS server is unavailable</li>
+          <li>Fix old updates accumulating in the OS Updates item</li>
+          <li>Various flatpakref installation fixes</li>
+          <li>Fix opening the details page when clicking on "Show Details" in GNOME Shell</li>
+          <li>Fix opening shell extensions details from GNOME Tweaks</li>
+          <li>Various fixes for initial loading state</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-10-24" version="3.30.5">
       <description>
         <p>

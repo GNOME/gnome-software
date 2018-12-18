@@ -1,3 +1,31 @@
+Version 3.30.6
+~~~~~~~~~~~~~~
+Released: 2018-12-18
+
+This is a stable release with the following changes:
+ * Fix various thread safety related crashes
+ * Fix row unrevealing to not leave behind 2 pixels on the updates page
+ * Make the refresh button to actually refresh packagekit cache
+ * Fix various issues that could lead to cache refresh getting stuck
+ * Show updates available notifications even when automatic updates are
+   disabled
+ * Fix counting apps in the updates applied notification
+ * Improve packagekit update loading code, hopefully making it more robust
+ * Fix an issue that could lead to the packagekit plugin activating on
+   rpm-ostree based systems
+ * Switch flatpak updates to use a single transaction, which lets us share more
+   code (and bugs) with the command line flatpak utility
+ * Fix various issues with transitioning from the "Download" state to "Restart
+   & Update"
+ * Don't error out from update downloads if the ODRS server is unavailable
+ * Fix old updates accumulating in the OS Updates item
+ * Various flatpakref installation fixes
+ * Fix opening the details page when clicking on "Show Details" in GNOME Shell
+ * Fix opening shell extensions details from GNOME Tweaks
+ * Various fixes for initial loading state
+
+This release also updates translations.
+
 Version 3.30.5
 ~~~~~~~~~~~~~~
 Released: 2018-10-24
