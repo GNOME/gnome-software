@@ -14,7 +14,10 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, fwupd ]
+  dependencies : [ plugin_libs, fwupd ],
+  link_with : [
+    libgnomesoftware
+  ]
 )
 metainfo = 'org.gnome.Software.Plugin.Fwupd.metainfo.xml'
 

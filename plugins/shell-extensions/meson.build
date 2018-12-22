@@ -18,6 +18,9 @@ shared_module(
     plugin_libs,
     libxmlb,
   ],
+  link_with : [
+    libgnomesoftware
+  ]
 )
 
 if get_option('tests')

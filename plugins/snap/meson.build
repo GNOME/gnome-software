@@ -12,7 +12,10 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, snap ]
+  dependencies : [ plugin_libs, snap ],
+  link_with : [
+    libgnomesoftware
+  ]
 )
 metainfo = 'org.gnome.Software.Plugin.Snap.metainfo.xml'
 

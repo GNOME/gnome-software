@@ -13,7 +13,10 @@ sources : 'gs-plugin-modalias.c',
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, gudev ]
+  dependencies : [ plugin_libs, gudev ],
+  link_with : [
+    libgnomesoftware
+  ]
 )
 
 if get_option('tests')

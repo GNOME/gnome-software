@@ -24,6 +24,9 @@ shared_module(
     flatpak,
     libxmlb,
   ],
+  link_with : [
+    libgnomesoftware
+  ]
 )
 metainfo = 'org.gnome.Software.Plugin.Flatpak.metainfo.xml'
 
