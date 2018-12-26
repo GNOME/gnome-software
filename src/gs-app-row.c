@@ -488,6 +488,14 @@ gs_app_row_refresh (GsAppRow *app_row)
 	} else {
 		gtk_widget_hide (priv->label_app_size);
 	}
+
+	/* add warning */
+	if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+		gtk_label_set_text (GTK_LABEL (priv->label_warning),
+				    _("Update requires more system access."));
+		gtk_widget_show (priv->label_warning);
+	}
+
 }
 
 static void

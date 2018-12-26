@@ -64,6 +64,8 @@ struct _GsUpdateDialog
 	GtkWidget	*scrolledwindow_details;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
+	GtkWidget       *permissions_section_title;
+	GtkWidget       *permissions_section_content;
 };
 
 G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
@@ -94,6 +96,57 @@ back_entry_free (BackEntry *entry)
 	g_free (entry->stack_page);
 	g_free (entry->title);
 	g_slice_free (BackEntry, entry);
+}
+
+static struct {
+        GsAppPermissions permission;
+        const char *icon;
+        const char *label;
+} permission_display_data[] = {
+  { GS_APP_PERMISSIONS_NETWORK, "network-transmit-receive-symbolic", N_("Network Access") },
+  { GS_APP_PERMISSIONS_SYSTEM_BUS, "dialog-warning-symbolic", N_("System Services") },
+  { GS_APP_PERMISSIONS_SESSION_BUS, "dialog-warning-symbolic", N_("Session Services") },
+  { GS_APP_PERMISSIONS_DEVICES, "dialog-warning-symbolic", N_("Devices") },
+  { GS_APP_PERMISSIONS_HOME_FULL, "system-file-manager-symbolic", N_("Home directory") },
+  { GS_APP_PERMISSIONS_HOME_READ, "system-file-manager-symbolic", N_("Home directory, read-only") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_FULL, "system-file-manager-symbolic", N_("System file access") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_READ, "system-file-manager-symbolic", N_("System file access, read-only") },
+  { GS_APP_PERMISSIONS_SETTINGS, "applications-system-symbolic", N_("Settings") },
+  { GS_APP_PERMISSIONS_X11, "dialog-warning-symbolic", N_("Legacy display system") },
+
+};
+
+static void
+populate_permissions_section (GsUpdateDialog *dialog, GsAppPermissions permissions)
+{
+	GList *children, *l;
+	gsize i;
+
+	children = gtk_container_get_children (GTK_CONTAINER (dialog->permissions_section_content));
+	for (l = children; l; l = l->next)
+		gtk_widget_destroy (GTK_WIDGET (l->data));
+	g_list_free (children);
+
+	for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
+		GtkWidget *row, *image, *label;
+
+		if ((permissions & permission_display_data[i].permission) == 0)
+			continue;
+
+		row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+		gtk_widget_show (row);
+		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
+			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
+		}
+
+		image = gtk_image_new_from_icon_name (permission_display_data[i].icon, GTK_ICON_SIZE_MENU);
+		gtk_widget_show (image);
+		label = gtk_label_new (_(permission_display_data[i].label));
+		gtk_widget_show (label);
+		gtk_container_add (GTK_CONTAINER (row), image);
+		gtk_container_add (GTK_CONTAINER (row), label);
+		gtk_container_add (GTK_CONTAINER (dialog->permissions_section_content), row);
+	}
 }
 
 static void
@@ -140,6 +193,16 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
+
+        if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+		gtk_widget_show (dialog->permissions_section_title);
+		gtk_widget_show (dialog->permissions_section_content);
+		populate_permissions_section (dialog, gs_app_get_permissions (app));
+	}
+	else {
+		gtk_widget_hide (dialog->permissions_section_title);
+		gtk_widget_hide (dialog->permissions_section_content);
+	}
 }
 
 static void
@@ -758,6 +821,8 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_title);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_content);
 }
 
 GtkWidget *
