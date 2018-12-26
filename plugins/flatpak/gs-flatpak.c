@@ -110,31 +110,12 @@ gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 	}
 }
 
-static void
-gs_flatpak_set_permissions (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
+static GsAppPermissions
+perms_from_metadata (GKeyFile *keyfile)
 {
-	g_autoptr(GBytes) bytes = NULL;
-	g_autoptr(GKeyFile) keyfile = NULL;
-	g_autoptr(GString) s = NULL;
 	char **strv;
 	char *str;
-	GsAppPermissions permissions;
-
-	
-	if (FLATPAK_IS_INSTALLED_REF (xref))
-		bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
-	else if (FLATPAK_IS_REMOTE_REF (xref))
-		bytes = flatpak_remote_ref_get_metadata (FLATPAK_REMOTE_REF (xref));
-	else
-		return;
-
-	keyfile = g_key_file_new ();
-	g_key_file_load_from_data (keyfile,
-				   g_bytes_get_data (bytes, NULL),
-				   g_bytes_get_size (bytes),
-				   0, NULL);
-
-	permissions = GS_APP_PERMISSIONS_NONE;
+	GsAppPermissions permissions = GS_APP_PERMISSIONS_NONE;
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv && g_strv_contains ((const gchar * const*)strv, "system-bus"))
@@ -173,7 +154,67 @@ gs_flatpak_set_permissions (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 		permissions |= GS_APP_PERMISSIONS_SETTINGS;
 	g_free (str);
 
+	return permissions;
+}
+
+static void
+gs_flatpak_set_permissions (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
+{
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GKeyFile) keyfile = NULL;
+
+	keyfile = g_key_file_new ();
+
+	if (FLATPAK_IS_INSTALLED_REF (xref)) {
+		bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
+	}
+	else if (FLATPAK_IS_REMOTE_REF (xref)) {
+		bytes = flatpak_remote_ref_get_metadata (FLATPAK_REMOTE_REF (xref));
+	}
+	else
+		return;
+
+	g_key_file_load_from_data (keyfile,
+				   g_bytes_get_data (bytes, NULL),
+				   g_bytes_get_size (bytes),
+				   0, NULL);
+
+	gs_app_set_permissions (app, perms_from_metadata (keyfile));
+}
+
+static void
+gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalledRef *xref)
+{
+	g_autoptr(GBytes) old_bytes = NULL;
+	g_autoptr(GKeyFile) old_keyfile = NULL;
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GKeyFile) keyfile = NULL;
+	GsAppPermissions permissions;
+
+	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
+	old_keyfile = g_key_file_new ();
+	g_key_file_load_from_data (old_keyfile,
+				   g_bytes_get_data (old_bytes, NULL),
+				   g_bytes_get_size (old_bytes),
+				   0, NULL);
+
+	bytes = flatpak_installation_fetch_remote_metadata_sync (self->installation,
+								 gs_app_get_origin (app),
+								 FLATPAK_REF (xref),
+								 NULL,
+								 NULL);
+	keyfile = g_key_file_new ();
+	g_key_file_load_from_data (keyfile,
+				   g_bytes_get_data (bytes, NULL),
+				   g_bytes_get_size (bytes),
+				   0, NULL);
+					
+	permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
+
 	gs_app_set_permissions (app, permissions);
+
+	if (permissions != GS_APP_PERMISSIONS_NONE)
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
 }
 
 static void
@@ -1421,6 +1462,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 				}
 			}
 		}
+		gs_flatpak_set_update_permissions (self, main_app, xref);
 		gs_app_list_add (list, main_app);
 	}
 
