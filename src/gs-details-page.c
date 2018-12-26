@@ -117,6 +117,8 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_updated_title;
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_version_value;
+	GtkWidget		*label_details_permissions_title;
+	GtkWidget		*button_details_permissions_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*label_license_nonfree_details;
 	GtkWidget		*label_licenses_intro;
@@ -151,6 +153,8 @@ struct _GsDetailsPage
 	GtkWidget		*label_content_rating_none;
 	GtkWidget		*button_details_rating_value;
 	GtkWidget		*label_details_rating_title;
+	GtkWidget		*popover_permissions;
+	GtkWidget		*box_permissions_details;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -944,6 +948,78 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	}
 }
 
+static struct {
+	GsAppPermissions permission;
+	const char *icon;
+	const char *label;
+} permission_display_data[] = {
+  { GS_APP_PERMISSIONS_NETWORK, "network-transmit-receive-symbolic", N_("Network Access") },
+  { GS_APP_PERMISSIONS_SYSTEM_BUS, "dialog-warning-symbolic", N_("System Services") },
+  { GS_APP_PERMISSIONS_SESSION_BUS, "dialog-warning-symbolic", N_("Session Services") },
+  { GS_APP_PERMISSIONS_DEVICES, "dialog-warning-symbolic", N_("Devices") },
+  { GS_APP_PERMISSIONS_HOME_FULL, "system-file-manager-symbolic", N_("Home directory") },
+  { GS_APP_PERMISSIONS_HOME_READ, "system-file-manager-symbolic", N_("Home directory, read-only") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_FULL, "system-file-manager-symbolic", N_("System file access") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_READ, "system-file-manager-symbolic", N_("System file access, read-only") },
+  { GS_APP_PERMISSIONS_SETTINGS, "applications-system-symbolic", N_("Settings") },
+  { GS_APP_PERMISSIONS_X11, "dialog-warning-symbolic", N_("Legacy display system") },
+
+};
+
+static void
+populate_permission_details (GsDetailsPage *self, GsAppPermissions permissions)
+{
+	GList *children, *l;
+
+	children = gtk_container_get_children (GTK_CONTAINER (self->box_permissions_details));
+	for (l = children; l; l = l->next)
+		gtk_widget_destroy (GTK_WIDGET (l->data));
+	g_list_free (children);
+
+	if (permissions == GS_APP_PERMISSIONS_NONE) {
+		GtkWidget *label;
+		label = gtk_label_new (_("This application is fully sandboxed."));
+		gtk_label_set_max_width_chars (GTK_LABEL (label), 40);
+		gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+		gtk_widget_show (label);
+		gtk_container_add (GTK_CONTAINER (self->box_permissions_details), label);
+	}
+	else if (permissions == GS_APP_PERMISSIONS_UNKNOWN) {
+		GtkWidget *label;
+		label = gtk_label_new (_("Unable to determine which parts of the system "
+                                         "this application accesses. This is typical for "
+                                         "older applications."));
+		gtk_label_set_max_width_chars (GTK_LABEL (label), 40);
+		gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+		gtk_widget_show (label);
+		gtk_container_add (GTK_CONTAINER (self->box_permissions_details), label);
+	}
+	else {
+		gsize i;
+
+		for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
+			GtkWidget *row, *image, *label;
+
+			if ((permissions & permission_display_data[i].permission) == 0)
+				continue;
+
+			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+			gtk_widget_show (row);
+			if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
+				gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
+			}
+
+			image = gtk_image_new_from_icon_name (permission_display_data[i].icon, GTK_ICON_SIZE_MENU);
+			gtk_widget_show (image);
+			label = gtk_label_new (_(permission_display_data[i].label));
+			gtk_widget_show (label);
+			gtk_container_add (GTK_CONTAINER (row), image);
+			gtk_container_add (GTK_CONTAINER (row), label);
+			gtk_container_add (GTK_CONTAINER (self->box_permissions_details), row);
+		}
+	}
+}
+
 static void
 gs_details_page_refresh_all (GsDetailsPage *self)
 {
@@ -1151,6 +1227,42 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
 		break;
 	}
+
+	if ((kudos & GS_APP_KUDO_SANDBOXED) > 0)
+          {
+            GtkStyleContext *context = gtk_widget_get_style_context (self->button_details_permissions_value);
+	    GsAppPermissions permissions = gs_app_get_permissions (self->app);
+
+	    populate_permission_details (self, permissions);
+
+            gtk_style_context_remove_class (context, "details-permissions-unknown");
+	    if ((permissions & ~LIMITED_PERMISSIONS) == 0)
+              {
+                gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Limited"));
+                gtk_style_context_add_class (context, "details-permissions-limited");
+              }
+	    else if ((permissions & ~MEDIUM_PERMISSIONS) == 0)
+              {
+                gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Medium"));
+                gtk_style_context_add_class (context, "details-permissions-medium");
+              }
+	    else
+              {
+                gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Warning"));
+                gtk_style_context_add_class (context, "details-permissions-warning");
+              }
+          }
+        else
+          {
+            GtkStyleContext *context = gtk_widget_get_style_context (self->button_details_permissions_value);
+
+	    populate_permission_details (self, GS_APP_PERMISSIONS_UNKNOWN);
+            gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Unknown"));
+            gtk_style_context_add_class (context, "details-permissions-unknown");
+            gtk_style_context_remove_class (context, "details-permissions-limited");
+            gtk_style_context_remove_class (context, "details-permissions-medium");
+            gtk_style_context_remove_class (context, "details-permissions-warning");
+          }
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
@@ -2209,6 +2321,12 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 	gtk_widget_show (self->popover_content_rating);
 }
 
+static void
+gs_details_page_permissions_button_cb (GtkWidget *widget, GsDetailsPage *self)
+{
+	gtk_widget_show (self->popover_permissions);
+}
+
 static gboolean
 gs_details_page_activate_link_cb (GtkLabel *label,
                                   const gchar *uri,
@@ -2415,6 +2533,9 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_details_rating_value, "clicked",
 			  G_CALLBACK (gs_details_page_content_rating_button_cb),
 			  self);
+	g_signal_connect (self->button_details_permissions_value, "clicked",
+			  G_CALLBACK (gs_details_page_permissions_button_cb),
+			  self);
 	g_signal_connect (self->label_details_updated_value, "activate-link",
 			  G_CALLBACK (gs_details_page_history_cb),
 			  self);
@@ -2543,6 +2664,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_permissions_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_permissions_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
@@ -2577,6 +2700,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_content_rating_none);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_rating_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_permissions);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_permissions_details);
 }
 
 static void
