@@ -64,6 +64,8 @@ struct _GsUpdateDialog
 	GtkWidget	*scrolledwindow_details;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
+	GtkWidget       *permissions_section_title;
+	GtkWidget       *permissions_section_content;
 };
 
 G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
@@ -94,6 +96,75 @@ back_entry_free (BackEntry *entry)
 	g_free (entry->stack_page);
 	g_free (entry->title);
 	g_slice_free (BackEntry, entry);
+}
+
+static struct {
+        GsAppPermissions permission;
+        const char *title;
+        const char *subtitle;
+} permission_display_data[] = {
+  { GS_APP_PERMISSIONS_NETWORK, N_("Network"), N_("Can communicate over the network") },
+  { GS_APP_PERMISSIONS_SYSTEM_BUS, N_("System Services"), N_("...") },
+  { GS_APP_PERMISSIONS_SESSION_BUS, N_("Session Services"), N_("...") },
+  { GS_APP_PERMISSIONS_DEVICES, N_("Devices"), N_("Can access system device files") },
+  { GS_APP_PERMISSIONS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_HOME_READ, N_("Home folder"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_FULL, N_("File system"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_FILESYSTEM_READ, N_("File system"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_DOWNLOADS_FULL, N_("Downloads folder"), N_("Can view, edit and create files") },
+  { GS_APP_PERMISSIONS_DOWNLOADS_READ, N_("Downloads folder"), N_("Can view files") },
+  { GS_APP_PERMISSIONS_SETTINGS, N_("Settings"), N_("Can view and change any settings") },
+  { GS_APP_PERMISSIONS_X11, N_("Legacy display system"), N_("Uses an old, insecure display system") },
+
+};
+
+static void
+populate_permissions_section (GsUpdateDialog *dialog, GsAppPermissions permissions)
+{
+	GList *children, *l;
+	gsize i;
+
+	children = gtk_container_get_children (GTK_CONTAINER (dialog->permissions_section_content));
+	for (l = children; l; l = l->next)
+		gtk_widget_destroy (GTK_WIDGET (l->data));
+	g_list_free (children);
+
+	for (i = 0; i < G_N_ELEMENTS (permission_display_data); i++) {
+		GtkWidget *row, *image, *box, *label;
+
+		if ((permissions & permission_display_data[i].permission) == 0)
+			continue;
+
+		row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+		gtk_widget_show (row);
+		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) != 0) {
+			gtk_style_context_add_class (gtk_widget_get_style_context (row), "permission-row-warning");
+		}
+
+		image = gtk_image_new_from_icon_name ("dialog-warning-symbolic", GTK_ICON_SIZE_MENU);
+		if ((permission_display_data[i].permission & ~MEDIUM_PERMISSIONS) == 0)
+			gtk_widget_set_opacity (image, 0);
+
+		gtk_widget_show (image);
+		gtk_container_add (GTK_CONTAINER (row), image);
+
+		box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+		gtk_widget_show (box);
+		gtk_container_add (GTK_CONTAINER (row), box);
+
+		label = gtk_label_new (_(permission_display_data[i].title));
+		gtk_label_set_xalign (GTK_LABEL (label), 0);
+		gtk_widget_show (label);
+		gtk_container_add (GTK_CONTAINER (box), label);
+
+		label = gtk_label_new (_(permission_display_data[i].subtitle));
+		gtk_label_set_xalign (GTK_LABEL (label), 0);
+		gtk_style_context_add_class (gtk_widget_get_style_context (label), "dim-label");
+		gtk_widget_show (label);
+		gtk_container_add (GTK_CONTAINER (box), label);
+
+		gtk_container_add (GTK_CONTAINER (dialog->permissions_section_content), row);
+	}
 }
 
 static void
@@ -140,6 +211,16 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
+
+        if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+		gtk_widget_show (dialog->permissions_section_title);
+		gtk_widget_show (dialog->permissions_section_content);
+		populate_permissions_section (dialog, gs_app_get_permissions (app));
+	}
+	else {
+		gtk_widget_hide (dialog->permissions_section_title);
+		gtk_widget_hide (dialog->permissions_section_content);
+	}
 }
 
 static void
@@ -758,6 +839,8 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_title);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_content);
 }
 
 GtkWidget *
