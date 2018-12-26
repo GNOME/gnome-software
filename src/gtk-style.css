@@ -53,6 +53,14 @@
 	border-radius: 16px;
 }
 
+.details-permissions-limited,
+.details-permissions-limited:backdrop,
+.details-permissions-medium,
+.details-permissions-medium:backdrop,
+.details-permissions-warning,
+.details-permissions-warning:backdrop,
+.details-permissions-unknown,
+.details-permissions-unknown:backdrop,
 .details-license-free,
 .details-license-nonfree,
 .details-license-unknown,
@@ -70,6 +78,12 @@
 	color: #ffffff;
 }
 
+.details-permissions-limited label,
+.details-permissions-limited:backdrop label,
+.details-permissions-limited:hover label,
+.details-permissions-warning label,
+.details-permissions-warning :backdrop label,
+.details-permissions-warning :hover label,
 .details-license-free label,
 .details-license-free:backdrop label,
 .details-license-free:hover label,
@@ -79,6 +93,12 @@
 	color: #fff;
 }
 
+.details-permissions-medium label,
+.details-permissions-medium:backdrop label,
+.details-permissions-medium:hover label,
+.details-permissions-unknown label,
+.details-permissions-unknown:backdrop label,
+.details-permissions-unknown:hover label,
 .details-license-unknown label,
 .details-license-unknown:backdrop label,
 .details-license-unknown:hover label {
@@ -97,42 +117,57 @@
 	text-shadow: none;
 }
 
+.details-permissions-limited,
 .details-license-free {
 	background-color: #4e9a06;
 	border-color: #3e7905;
 }
+.details-permissions-limited:hover,
 .details-license-free:hover {
 	background-color: #5db807;
 	border-color: #4d9606;
 }
+.details-permissions-limited:backdrop,
 .details-license-free:backdrop {
 	border-color: #4e9a06;
 }
 
+.details-permissions-warning,
 .details-license-nonfree {
 	background-color: #ee2222;
 	border-color: #c20f0f;
 }
+.details-permissions-warning:hover,
 .details-license-nonfree:hover {
 	background-color: #f25959;
 	border-color: #ed1b1b;
 }
+.details-permissions-warning:backdrop,
 .details-license-nonfree:backdrop {
 	border-color: #ee2222;
 }
 
+.details-permissions-medium,
+.details-permissions-unknown,
 .details-license-unknown {
 	background-color: #dbdbdb;
 	border-color: #bbbbbb;
 }
+.details-permissions-medium:hover,
+.details-permissions-unknown:hover,
 .details-license-unknown:hover {
 	background-color: #eeeeee;
 	border-color: #d5d5d5;
 }
+.details-permissions-medium:backdrop,
+.details-permissions-unknown:backdrop,
 .details-license-unknown:backdrop {
 	border-color: #dbdbdb;
 }
 
+.permission-row-warning {
+	color: #ee2222;
+}
 
 .kudo-pill {
 	color: @theme_selected_fg_color;
