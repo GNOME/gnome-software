@@ -75,7 +75,7 @@ gs_flatpak_claim_app (GsFlatpak *self, GsApp *app)
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
 	gs_app_set_scope (app, self->scope);
 
-	/* ony when we have a non-temp object */
+	/* only when we have a non-temp object */
 	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0)
 		gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
 }
@@ -111,6 +111,116 @@ gs_flatpak_set_kind_from_flatpak (GsApp *app, FlatpakRef *xref)
 	}
 }
 
+static GsAppPermissions
+perms_from_metadata (GKeyFile *keyfile)
+{
+	char **strv;
+	char *str;
+	GsAppPermissions permissions = GS_APP_PERMISSIONS_NONE;
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
+		permissions |= GS_APP_PERMISSIONS_SYSTEM_BUS;
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "session-bus"))
+		permissions |= GS_APP_PERMISSIONS_SESSION_BUS;
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "x11"))
+		permissions |= GS_APP_PERMISSIONS_X11;
+	g_strfreev (strv);
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "devices", NULL, NULL);
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "all"))
+		permissions |= GS_APP_PERMISSIONS_DEVICES;
+	g_strfreev (strv);
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "shared", NULL, NULL);
+	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "network"))
+		permissions |= GS_APP_PERMISSIONS_NETWORK;
+	g_strfreev (strv);
+
+	strv = g_key_file_get_string_list (keyfile, "Context", "filesystems", NULL, NULL);
+	if (strv != NULL && (g_strv_contains ((const gchar * const *)strv, "home") ||
+	                     g_strv_contains ((const gchar * const *)strv, "home:rw")))
+		permissions |= GS_APP_PERMISSIONS_HOME_FULL;
+	else if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "home:ro"))
+		permissions |= GS_APP_PERMISSIONS_HOME_READ;
+	if (strv != NULL && (g_strv_contains ((const gchar * const *)strv, "host") ||
+	                     g_strv_contains ((const gchar * const *)strv, "host:rw")))
+		permissions |= GS_APP_PERMISSIONS_FILESYSTEM_FULL;
+	else if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "host:ro"))
+		permissions |= GS_APP_PERMISSIONS_FILESYSTEM_READ;
+	if (strv != NULL && (g_strv_contains ((const gchar * const *)strv, "xdg-dowwnload") ||
+	                     g_strv_contains ((const gchar * const *)strv, "xdg-download:rw")))
+		permissions |= GS_APP_PERMISSIONS_DOWNLOADS_FULL;
+	else if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "xdg-download:ro"))
+		permissions |= GS_APP_PERMISSIONS_DOWNLOADS_READ;
+	g_strfreev (strv);
+
+	str = g_key_file_get_string (keyfile, "Session Bus Policy", "ca.desrt.dconf", NULL);
+	if (str != NULL && g_str_equal (str, "talk"))
+		permissions |= GS_APP_PERMISSIONS_SETTINGS;
+	g_free (str);
+
+	return permissions;
+}
+
+static void
+gs_flatpak_set_permissions (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
+{
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GKeyFile) keyfile = NULL;
+
+	keyfile = g_key_file_new ();
+
+	if (FLATPAK_IS_INSTALLED_REF (xref))
+		bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
+	else if (FLATPAK_IS_REMOTE_REF (xref))
+		bytes = g_bytes_ref (flatpak_remote_ref_get_metadata (FLATPAK_REMOTE_REF (xref)));
+	else
+		return;
+
+	g_key_file_load_from_data (keyfile,
+	                           g_bytes_get_data (bytes, NULL),
+	                           g_bytes_get_size (bytes),
+	                           0, NULL);
+
+	gs_app_set_permissions (app, perms_from_metadata (keyfile));
+}
+
+static void
+gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalledRef *xref)
+{
+	g_autoptr(GBytes) old_bytes = NULL;
+	g_autoptr(GKeyFile) old_keyfile = NULL;
+	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GKeyFile) keyfile = NULL;
+	GsAppPermissions permissions;
+
+	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
+	old_keyfile = g_key_file_new ();
+	g_key_file_load_from_data (old_keyfile,
+	                           g_bytes_get_data (old_bytes, NULL),
+	                           g_bytes_get_size (old_bytes),
+	                           0, NULL);
+
+	bytes = flatpak_installation_fetch_remote_metadata_sync (self->installation,
+	                                                         gs_app_get_origin (app),
+	                                                         FLATPAK_REF (xref),
+	                                                         NULL,
+	                                                         NULL);
+	keyfile = g_key_file_new ();
+	g_key_file_load_from_data (keyfile,
+	                           g_bytes_get_data (bytes, NULL),
+	                           g_bytes_get_size (bytes),
+	                           0, NULL);
+
+	permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
+
+	gs_app_set_permissions (app, permissions);
+
+	if (permissions != GS_APP_PERMISSIONS_NONE)
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);
+}
+
 static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
@@ -131,6 +241,8 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	    gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
 		gs_flatpak_set_kind_from_flatpak (app, xref);
 	}
+
+	gs_flatpak_set_permissions (self, app, xref);
 }
 
 static GsApp *
@@ -1357,6 +1469,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 				}
 			}
 		}
+		gs_flatpak_set_update_permissions (self, main_app, xref);
 		gs_app_list_add (list, main_app);
 	}
 
@@ -1543,6 +1656,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 			gs_app_set_origin (app, remote_name);
 			gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (FLATPAK_REF (xref)));
 			gs_plugin_refine_item_scope (self, app);
+			gs_flatpak_set_permissions (self, app, FLATPAK_REF (xref));
 			return TRUE;
 		}
 		g_debug ("%s failed to find remote %s: %s",
