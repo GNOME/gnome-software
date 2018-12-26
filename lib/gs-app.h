@@ -142,6 +142,24 @@ typedef enum {
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
 
+typedef enum {
+	GS_APP_PERMISSIONS_NONE 		= 0, 
+	GS_APP_PERMISSIONS_UNKNOWN		= 1 << 0, 
+	GS_APP_PERMISSIONS_NETWORK 		= 1 << 1, 
+	GS_APP_PERMISSIONS_SYSTEM_BUS   	= 1 << 2,
+	GS_APP_PERMISSIONS_SESSION_BUS		= 1 << 3,
+	GS_APP_PERMISSIONS_DEVICES 		= 1 << 4,
+	GS_APP_PERMISSIONS_HOME_FULL 		= 1 << 5,
+	GS_APP_PERMISSIONS_HOME_READ		= 1 << 6,
+	GS_APP_PERMISSIONS_FILESYSTEM_FULL	= 1 << 7,
+	GS_APP_PERMISSIONS_FILESYSTEM_READ	= 1 << 8,
+	GS_APP_PERMISSIONS_SETTINGS		= 1 << 9,
+	GS_APP_PERMISSIONS_X11			= 1 << 10,
+} GsAppPermissions;
+
+#define LIMITED_PERMISSIONS (GS_APP_PERMISSIONS_SETTINGS|GS_APP_PERMISSIONS_NETWORK)
+#define MEDIUM_PERMISSIONS (LIMITED_PERMISSIONS|GS_APP_PERMISSIONS_X11)
+
 GsApp		*gs_app_new			(const gchar	*id);
 G_DEPRECATED_FOR(gs_app_set_from_unique_id)
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
@@ -360,6 +378,9 @@ gchar		*gs_app_get_origin_ui		(GsApp		*app);
 gchar		*gs_app_get_packaging_format	(GsApp		*app);
 void		 gs_app_subsume_metadata	(GsApp		*app,
 						 GsApp		*donor);
+GsAppPermissions gs_app_get_permissions         (GsApp          *app);
+void             gs_app_set_permissions         (GsApp          *app,
+                                                 GsAppPermissions permissions);
 
 G_END_DECLS
 
