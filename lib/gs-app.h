@@ -98,6 +98,7 @@ typedef enum {
  * @GS_APP_QUIRK_REMOVABLE_HARDWARE:	The device is unusable whilst the action is performed
  * @GS_APP_QUIRK_DEVELOPER_VERIFIED:	The app developer has been verified
  * @GS_APP_QUIRK_PARENTAL_FILTER:	The app has been filtered by parental controls, and should be hidden
+ * @GS_APP_QUIRK_NEW_PERMISSIONS:	The update requires new permissions
  *
  * The application attributes.
  **/
@@ -116,6 +117,7 @@ typedef enum {
 	GS_APP_QUIRK_REMOVABLE_HARDWARE	= 1 << 10,	/* Since: 3.32 */
 	GS_APP_QUIRK_DEVELOPER_VERIFIED	= 1 << 11,	/* Since: 3.32 */
 	GS_APP_QUIRK_PARENTAL_FILTER	= 1 << 12,	/* Since: 3.32 */
+	GS_APP_QUIRK_NEW_PERMISSIONS    = 1 << 13,
 	/*< private >*/
 	GS_APP_QUIRK_LAST
 } GsAppQuirk;
@@ -141,6 +143,30 @@ typedef enum {
 	/*< private >*/
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
+
+typedef enum {
+	GS_APP_PERMISSIONS_NONE 		= 0, 
+	GS_APP_PERMISSIONS_UNKNOWN		= 1 << 0, 
+	GS_APP_PERMISSIONS_NETWORK 		= 1 << 1, 
+	GS_APP_PERMISSIONS_SYSTEM_BUS   	= 1 << 2,
+	GS_APP_PERMISSIONS_SESSION_BUS		= 1 << 3,
+	GS_APP_PERMISSIONS_DEVICES 		= 1 << 4,
+	GS_APP_PERMISSIONS_HOME_FULL 		= 1 << 5,
+	GS_APP_PERMISSIONS_HOME_READ		= 1 << 6,
+	GS_APP_PERMISSIONS_FILESYSTEM_FULL	= 1 << 7,
+	GS_APP_PERMISSIONS_FILESYSTEM_READ	= 1 << 8,
+	GS_APP_PERMISSIONS_DOWNLOADS_FULL 	= 1 << 9,
+	GS_APP_PERMISSIONS_DOWNLOADS_READ	= 1 << 10,
+	GS_APP_PERMISSIONS_SETTINGS		= 1 << 11,
+	GS_APP_PERMISSIONS_X11			= 1 << 12,
+} GsAppPermissions;
+
+#define LIMITED_PERMISSIONS (GS_APP_PERMISSIONS_SETTINGS | \
+			GS_APP_PERMISSIONS_NETWORK | \
+			GS_APP_PERMISSIONS_DOWNLOADS_READ | \
+			GS_APP_PERMISSIONS_DOWNLOADS_FULL)
+#define MEDIUM_PERMISSIONS (LIMITED_PERMISSIONS | \
+			GS_APP_PERMISSIONS_X11)
 
 GsApp		*gs_app_new			(const gchar	*id);
 G_DEPRECATED_FOR(gs_app_set_from_unique_id)
@@ -360,6 +386,9 @@ gchar		*gs_app_get_origin_ui		(GsApp		*app);
 gchar		*gs_app_get_packaging_format	(GsApp		*app);
 void		 gs_app_subsume_metadata	(GsApp		*app,
 						 GsApp		*donor);
+GsAppPermissions gs_app_get_permissions         (GsApp          *app);
+void             gs_app_set_permissions         (GsApp          *app,
+                                                 GsAppPermissions permissions);
 
 G_END_DECLS
 

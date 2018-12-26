@@ -128,6 +128,7 @@ typedef struct
 	GsPrice			*price;
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
+	GsAppPermissions         permissions;
 } GsAppPrivate;
 
 enum {
@@ -4555,6 +4556,22 @@ gs_app_subsume_metadata (GsApp *app, GsApp *donor)
 			continue;
 		gs_app_set_metadata (app, key, value);
 	}
+}
+
+GsAppPermissions
+gs_app_get_permissions (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	return priv->permissions;
+}
+
+void
+gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	priv->permissions = permissions;
 }
 
 /* vim: set noexpandtab: */
