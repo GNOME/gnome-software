@@ -42,6 +42,7 @@ struct _GsFlatpak {
 	GsFlatpakFlags		 flags;
 	FlatpakInstallation	*installation;
 	GHashTable		*broken_remotes;
+	GMutex			 broken_remotes_mutex;
 	GFileMonitor		*monitor;
 	AsAppScope		 scope;
 	GsPlugin		*plugin;
@@ -770,10 +771,13 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		g_autoptr(GFile) file_timestamp = NULL;
 		g_autofree gchar *appstream_fn = NULL;
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
+		g_autoptr(GMutexLocker) locker = NULL;
 
 		/* not enabled */
 		if (flatpak_remote_get_disabled (xremote))
 			continue;
+
+		locker = g_mutex_locker_new (&self->broken_remotes_mutex);
 
 		/* skip known-broken repos */
 		remote_name = flatpak_remote_get_name (xremote);
@@ -1367,7 +1371,9 @@ gs_flatpak_refresh (GsFlatpak *self,
 		    GError **error)
 {
 	/* give all the repos a second chance */
+	g_mutex_lock (&self->broken_remotes_mutex);
 	g_hash_table_remove_all (self->broken_remotes);
+	g_mutex_unlock (&self->broken_remotes_mutex);
 
 	/* manually drop the cache */
 	if (!flatpak_installation_drop_caches (self->installation,
@@ -2740,6 +2746,7 @@ gs_flatpak_finalize (GObject *object)
 	g_object_unref (self->installation);
 	g_object_unref (self->plugin);
 	g_hash_table_unref (self->broken_remotes);
+	g_mutex_clear (&self->broken_remotes_mutex);
 
 	G_OBJECT_CLASS (gs_flatpak_parent_class)->finalize (object);
 }
@@ -2754,6 +2761,7 @@ gs_flatpak_class_init (GsFlatpakClass *klass)
 static void
 gs_flatpak_init (GsFlatpak *self)
 {
+	g_mutex_init (&self->broken_remotes_mutex);
 	self->broken_remotes = g_hash_table_new_full (g_str_hash, g_str_equal,
 						      g_free, NULL);
 }
