@@ -2185,17 +2185,7 @@ gs_flatpak_launch (GsFlatpak *self,
 	}
 
 	/* launch the app */
-	if (!flatpak_installation_launch (self->installation,
-					  gs_flatpak_app_get_ref_name (app),
-					  gs_flatpak_app_get_ref_arch (app),
-					  gs_flatpak_app_get_ref_branch (app),
-					  NULL,
-					  cancellable,
-					  error)) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	return TRUE;
+	return gs_plugin_app_launch (self->plugin, app, error);
 }
 
 gboolean
