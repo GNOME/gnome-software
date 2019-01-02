@@ -1018,30 +1018,11 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 
 static GsApp *
 gs_flatpak_create_installed (GsFlatpak *self,
-			     FlatpakInstalledRef *xref,
-			     GError **error)
+			     FlatpakInstalledRef *xref)
 {
 	g_autoptr(GsApp) app = NULL;
 
 	g_return_val_if_fail (xref != NULL, NULL);
-
-	/*
-	 * Only show the current application in GNOME Software
-	 *
-	 * You can have multiple versions/branches of a particular app-id
-	 * installed but only one of them is "current" where this means:
-	 *  1) the default to launch unless you specify a version
-	 *  2) The one that gets its exported files exported
-	 */
-	if (!flatpak_installed_ref_get_is_current (xref) &&
-	    flatpak_ref_get_kind (FLATPAK_REF(xref)) == FLATPAK_REF_KIND_APP) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "%s not current, ignoring",
-			     flatpak_ref_get_name (FLATPAK_REF (xref)));
-		return NULL;
-	}
 
 	/* create new object */
 	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
@@ -1065,12 +1046,7 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 	}
 	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		g_autoptr(GError) error_local = NULL;
-		g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref, &error_local);
-		if (app == NULL) {
-			g_warning ("failed to add flatpak: %s", error_local->message);
-			continue;
-		}
+		g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_list_add (list, app);
@@ -1124,7 +1100,6 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 		/* add related apps, i.e. what was installed from there */
 		for (guint j = 0; j < xrefs->len; j++) {
 			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, j);
-			g_autoptr(GError) error_local = NULL;
 			g_autoptr(GsApp) related = NULL;
 
 			/* only apps */
@@ -1133,14 +1108,7 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 			if (g_strcmp0 (flatpak_installed_ref_get_origin (xref),
 				       flatpak_remote_get_name (xremote)) != 0)
 				continue;
-			related = gs_flatpak_create_installed (self,
-							       xref,
-							       &error_local);
-			if (related == NULL) {
-				g_warning ("failed to add flatpak: %s",
-					   error_local->message);
-				continue;
-			}
+			related = gs_flatpak_create_installed (self, xref);
 			if (gs_app_get_state (related) == AS_APP_STATE_UNKNOWN)
 				gs_app_set_state (related, AS_APP_STATE_INSTALLED);
 			gs_app_add_related (app, related);
@@ -1197,7 +1165,7 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
 		if (g_strcmp0 (ref, ref_tmp) == 0)
-			return gs_flatpak_create_installed (self, xref, error);
+			return gs_flatpak_create_installed (self, xref);
 	}
 
 	/* look at each remote xref */
@@ -1349,7 +1317,7 @@ get_main_app_of_related (GsFlatpak *self,
 	if (ref == NULL)
 		return NULL;
 
-	return gs_flatpak_create_installed (self, ref, error);
+	return gs_flatpak_create_installed (self, ref);
 }
 
 static GsApp *
@@ -1423,11 +1391,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			continue;
 		}
 
-		app = gs_flatpak_create_installed (self, xref, &error_local);
-		if (app == NULL) {
-			g_warning ("failed to add flatpak: %s", error_local->message);
-			continue;
-		}
+		app = gs_flatpak_create_installed (self, xref);
 		main_app = get_real_app_for_update (self, app, cancellable, &error_local);
 		if (main_app == NULL) {
 			g_debug ("Couldn't get the main app for updatable app extension %s: "
