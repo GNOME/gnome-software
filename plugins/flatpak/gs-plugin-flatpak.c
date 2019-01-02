@@ -420,7 +420,6 @@ static FlatpakTransaction *
 _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    GCancellable *cancellable, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	FlatpakInstallation *installation;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
@@ -437,14 +436,9 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	g_signal_connect (transaction, "ref-to-app",
 			  G_CALLBACK (_ref_to_app), plugin);
 
-	/* add the counterpart installations */
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		GsFlatpak *flatpak_tmp = g_ptr_array_index (priv->flatpaks, i);
-		if (flatpak_tmp == flatpak)
-			continue;
-		installation = gs_flatpak_get_installation (flatpak_tmp);
-		flatpak_transaction_add_dependency_source (transaction, installation);
-	}
+	/* use system installations as dependency sources for user installations */
+	flatpak_transaction_add_default_dependency_sources (transaction);
+
 	return g_steal_pointer (&transaction);
 }
 
