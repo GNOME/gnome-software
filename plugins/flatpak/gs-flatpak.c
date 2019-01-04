@@ -73,11 +73,12 @@ gs_flatpak_claim_app (GsFlatpak *self, GsApp *app)
 		return;
 	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_FLATPAK);
-	gs_app_set_scope (app, self->scope);
 
 	/* only when we have a non-temp object */
-	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0)
+	if ((self->flags & GS_FLATPAK_FLAG_IS_TEMPORARY) == 0) {
+		gs_app_set_scope (app, self->scope);
 		gs_flatpak_app_set_object_id (app, gs_flatpak_get_id (self));
+	}
 }
 
 static void
