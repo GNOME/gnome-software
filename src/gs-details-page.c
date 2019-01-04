@@ -1046,6 +1046,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 updated;
 	guint64 user_integration_bf;
 	gboolean show_support_box = FALSE;
+	g_autofree gchar *origin = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
@@ -1190,15 +1191,20 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	}
 
 	/* set the origin */
-	tmp = gs_app_get_origin_hostname (self->app);
-	if (tmp == NULL)
-		tmp = gs_app_get_origin (self->app);
-	if (tmp == NULL || tmp[0] == '\0') {
+	origin = g_strdup (gs_app_get_origin_hostname (self->app));
+	if (origin == NULL)
+		origin = g_strdup (gs_app_get_origin (self->app));
+	if (origin == NULL) {
+		GFile *local_file = gs_app_get_local_file (self->app);
+		if (local_file != NULL)
+			origin = g_file_get_basename (local_file);
+	}
+	if (origin == NULL || origin[0] == '\0') {
 		/* TRANSLATORS: this is where we don't know the origin of the
 		 * application */
 		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), C_("origin", "Unknown"));
 	} else {
-		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), tmp);
+		gtk_label_set_label (GTK_LABEL (self->label_details_origin_value), origin);
 	}
 
 	/* set MyLanguage kudo */

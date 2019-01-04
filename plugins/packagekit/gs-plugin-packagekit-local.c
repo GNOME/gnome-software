@@ -135,7 +135,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	PkDetails *item;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-	g_autofree gchar *basename = NULL;
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
 	g_autofree gchar *license_spdx = NULL;
@@ -203,7 +202,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 			     "invalid package-id: %s", package_id);
 		return FALSE;
 	}
-	basename = g_path_get_basename (filename);
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -212,7 +210,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 			    pk_details_get_summary (item));
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
-	gs_app_set_origin (app, basename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 	gs_app_add_source_id (app, package_id);
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
