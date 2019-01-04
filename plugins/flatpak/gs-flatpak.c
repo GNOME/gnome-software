@@ -2343,7 +2343,6 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		return g_steal_pointer (&app);
 	}
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_BUNDLE);
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
