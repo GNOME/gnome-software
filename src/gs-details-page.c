@@ -1662,18 +1662,11 @@ gs_details_page_refresh_content_rating (GsDetailsPage *self)
 	AsContentRating *content_rating;
 	GsContentRatingSystem system;
 	guint age = 0;
-	gchar *str;
 	const gchar *display = NULL;
-	g_autofree gchar *locale = NULL;
+	const gchar *locale;
 
 	/* get the content rating system from the locale */
-	locale = g_strdup (setlocale (LC_MESSAGES, NULL));
-	str = g_strstr_len (locale, -1, ".UTF-8");
-	if (str != NULL)
-		*str = '\0';
-	str = g_strstr_len (locale, -1, ".utf8");
-	if (str != NULL)
-		*str = '\0';
+	locale = setlocale (LC_MESSAGES, NULL);
 	system = gs_utils_content_rating_system_from_locale (locale);
 	g_debug ("content rating system is guessed as %s from %s",
 		 gs_content_rating_system_to_str (system),
