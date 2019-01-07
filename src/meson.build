@@ -286,6 +286,7 @@ if get_option('tests')
     sources : [
       'gs-css.c',
       'gs-common.c',
+      'gs-content-rating.c',
       'gs-self-test.c',
     ],
     include_directories : [
