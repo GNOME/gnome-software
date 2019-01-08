@@ -450,11 +450,12 @@ gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 			return "6";
 		return "0";
 	}
+	/* Reference: http://www.esra.org.ir/ */
 	if (system == GS_CONTENT_RATING_SYSTEM_ESRA) {
-		if (age >= 25)
-			return "+25";
 		if (age >= 18)
 			return "+18";
+		if (age >= 15)
+			return "+15";
 		if (age >= 12)
 			return "+12";
 		if (age >= 7)
