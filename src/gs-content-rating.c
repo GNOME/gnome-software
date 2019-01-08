@@ -375,6 +375,28 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 const gchar *
 gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 {
+	/* Apply some fixups for specific rating systems. This is needed to
+	 * ensure that we can do a round trip from
+	 * @system → CSM → OARS → CSM → @system reversibly. The underlying issue
+	 * is that the appstream-glib OARS ↔ CSM mapping does not use CSM ages
+	 * 1–2, 5, 16–17 or 18+. The lack of age 16 is most important, since a
+	 * lot of region-specific rating systems use that age. Without such a
+	 * mapping, any reverse transformation from OARS → CSM is going to
+	 * under-estimate the CSM age so the overall CSM → OARS → CSM
+	 * transformation becomes non-reversible. */
+	if (age == 15 &&
+	    (system == GS_CONTENT_RATING_SYSTEM_IARC ||
+	     system == GS_CONTENT_RATING_SYSTEM_UNKNOWN ||
+	     system == GS_CONTENT_RATING_SYSTEM_DJCTQ ||
+	     system == GS_CONTENT_RATING_SYSTEM_PEGI ||
+	     system == GS_CONTENT_RATING_SYSTEM_KAVI ||
+	     system == GS_CONTENT_RATING_SYSTEM_USK ||
+	     system == GS_CONTENT_RATING_SYSTEM_RUSSIA ||
+	     system == GS_CONTENT_RATING_SYSTEM_MDA))
+		age = 16;
+	else if (age == 15 && system == GS_CONTENT_RATING_SYSTEM_ESRB)
+		age = 17;
+
 	if (system == GS_CONTENT_RATING_SYSTEM_INCAA) {
 		if (age >= 18)
 			return "+18";
