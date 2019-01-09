@@ -9,7 +9,6 @@ As part of this we also have access to the finished binary and libraries, and
 so can also run tools on them to get a metric of awesomeness. So far, the
 metrics of awesomeness (here-on known as "kudos") are:
 
- * `AppMenu` — has an application menu in line with the GNOME HIG
  * `HiDpiIcon` — installs a 128x128 or larger application icon
  * `HighContrast` — uses hicontrast or scalable icons for visually impaired users
  * `ModernToolkit` — uses a modern toolkit like Gtk-3 or QT-5
