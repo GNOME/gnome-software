@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2018-12-29 08:54+0000\n"
-"PO-Revision-Date: 2019-01-08 15:59+0100\n"
+"POT-Creation-Date: 2019-01-08 15:03+0000\n"
+"PO-Revision-Date: 2019-01-09 09:36+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: es <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -68,7 +68,7 @@ msgstr "Panel de actualizaciones"
 msgid "The update details"
 msgstr "Los detalles de la actualización"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1199
+#: data/appdata/org.gnome.Software.appdata.xml.in:1198
 msgid "The GNOME Project"
 msgstr "El proyecto GNOME"
 
@@ -311,6 +311,8 @@ msgstr "Activar el repositorio de extensiones de GNOME Shell"
 #: data/org.gnome.software.gschema.xml:147
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
+"Una cadena que guarda el ID de la cuenta en línea de GNOME usada para "
+"iniciar sesión"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -604,10 +606,9 @@ msgid "Device cannot be used during update."
 msgstr "No se puede usar el dispositivo durante la actualización."
 
 #: src/gs-auth-dialog.c:141
-#, fuzzy
 #| msgid "Sign in to %s…"
 msgid "Sign In / Register…"
-msgstr "Iniciar sesión en %s…"
+msgstr "Iniciar sesión / Registrarse…"
 
 #: src/gs-auth-dialog.c:148
 msgid "Continue"
@@ -615,13 +616,12 @@ msgstr "Continuar"
 
 #: src/gs-auth-dialog.c:155
 msgid "Use"
-msgstr ""
+msgstr "Usar"
 
 #: src/gs-auth-dialog.ui:30
-#, fuzzy
 #| msgid "_Add to Folder…"
 msgid "Add another…"
-msgstr "_Añadir a la carpeta…"
+msgstr "Añadir otra…"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -2749,21 +2749,18 @@ msgstr "No se han encontrado aplicaciones"
 #. TRANSLATORS: menu item that signs into the named account with a particular username
 #: src/gs-shell.c:741
 #, c-format
-#| msgid "Signed in into %s as %s"
 msgid "Signed in as %s"
 msgstr "Sesión iniciada como %s"
 
 #. TRANSLATORS: menu item that signs into the named account
 #: src/gs-shell.c:745
 #, c-format
-#| msgid "Sign in to %s…"
 msgid "Sign in…"
 msgstr "Iniciar sesión…"
 
 #. TRANSLATORS: menu item for signing out from the named account
 #: src/gs-shell.c:753
 #, c-format
-#| msgid "Sign out from %s"
 msgid "Sign out"
 msgstr "Cerrar sesión"
 
@@ -4289,12 +4286,10 @@ msgid "GNOME Shell Extension"
 msgstr "Extensiones de la Shell de GNOME"
 
 #: plugins/snap/gs-plugin-snap.c:81 plugins/snap/gs-plugin-snap.c:83
-#| msgid "To continue you need to sign in."
 msgid "To continue, you need to use an Ubuntu One account."
 msgstr "Para continuar debe usar una cuenta de Ubuntu One."
 
 #: plugins/snap/gs-plugin-snap.c:82
-#| msgid "To continue you need to sign in."
 msgid "To continue, you need to use your Ubuntu One account."
 msgstr "Para continuar necesita usar su cuenta de Ubuntu One."
 
