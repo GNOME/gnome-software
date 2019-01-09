@@ -2216,7 +2216,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 	}
 
 	/* permissions */
-	if (1 || flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME ||
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME ||
 	    flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS) {
 		if (!gs_plugin_refine_item_metadata (self, app,
 						     cancellable, error)) {
