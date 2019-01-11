@@ -490,7 +490,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* add warning */
-	if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+	if (priv->show_update &&
+	    gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
 		gtk_label_set_text (GTK_LABEL (priv->label_warning),
 		                    _("Requires additional permissions"));
 		gtk_widget_show (priv->label_warning);
