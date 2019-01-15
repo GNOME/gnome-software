@@ -1293,23 +1293,34 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
-	str_app = gs_shell_get_title_from_app (app);
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
-		if (origin != NULL) {
+		if (app != NULL && origin != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
 			str_origin = gs_shell_get_title_from_origin (origin);
 			/* TRANSLATORS: failure text for the in-app notification,
 			 * where the first %s is the app name (e.g. "GIMP") and
 			 * the second %s is the origin, e.g. "Fedora" or
 			 * "Fedora Project [fedoraproject.org]" */
-			g_string_append_printf (str, _("Unable to update %s from %s"),
+			g_string_append_printf (str, _("Unable to update %s from %s as download failed"),
 					       str_app, str_origin);
 			buttons = TRUE;
-		} else {
+		} else if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
 			/* TRANSLATORS: failure text for the in-app notification,
 			 * where the %s is the application name (e.g. "GIMP") */
 			g_string_append_printf (str, _("Unable to update %s as download failed"),
 						str_app);
+		} else if (origin != NULL) {
+			str_origin = gs_shell_get_title_from_origin (origin);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the origin, e.g. "Fedora" or
+			 * "Fedora Project [fedoraproject.org]" */
+			g_string_append_printf (str, _("Unable to install updates from %s as download failed"),
+						str_origin);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install updates as download failed"));
 		}
 		break;
 	case GS_PLUGIN_ERROR_NO_NETWORK:
@@ -1320,48 +1331,91 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
 		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to update %s: "
-					       "not enough disk space"),
-					str_app);
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
+			g_string_append_printf (str, _("Unable to update %s: "
+						       "not enough disk space"),
+						str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install updates: "
+						       "not enough disk space"));
+		}
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to update %s: "
-					       "authentication was required"),
-					str_app);
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
+			g_string_append_printf (str, _("Unable to update %s: "
+						       "authentication was required"),
+						str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install updates: "
+						       "authentication was required"));
+		}
 		break;
 	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to update %s: "
-					       "authentication was invalid"),
-					str_app);
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
+			g_string_append_printf (str, _("Unable to update %s: "
+						       "authentication was invalid"),
+						str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install updates: "
+						       "authentication was invalid"));
+		}
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to update %s: "
-					       "you do not have permission to "
-					       "update software"),
-					str_app);
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
+			g_string_append_printf (str, _("Unable to update %s: "
+						       "you do not have permission to "
+						       "update software"),
+						str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install updates: "
+						       "you do not have permission to "
+						       "update software"));
+		}
 		break;
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "Dell XPS 13") */
-		g_string_append_printf (str, _("Unable to update %s: "
-					       "AC power is required"),
-					str_app);
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			g_string_append_printf (str, _("Unable to update %s: "
+						       "AC power is required"),
+						str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			g_string_append_printf (str, _("Unable to install updates: "
+						       "AC power is required"));
+		}
 		break;
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to update %s"), str_app);
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "GIMP") */
+			g_string_append_printf (str, _("Unable to update %s"), str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification */
+			g_string_append_printf (str, _("Unable to install updates"));
+		}
 		break;
 	}
 	if (str->len == 0)
