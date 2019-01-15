@@ -960,16 +960,6 @@ gs_shell_get_title_from_app (GsApp *app)
 	return g_strdup_printf (_("“%s”"), gs_app_get_id (app));
 }
 
-static gboolean
-gs_shell_show_detailed_error (GsShell *shell, const GError *error)
-{
-	if (error->code == GS_PLUGIN_ERROR_FAILED)
-		return TRUE;
-	if (error->code == GS_PLUGIN_ERROR_DOWNLOAD_FAILED)
-		return TRUE;
-	return FALSE;
-}
-
 static gchar *
 get_first_line (const gchar *str)
 {
@@ -1025,6 +1015,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 			/* TRANSLATORS: failure text for the in-app notification */
 			g_string_append (str, _("Unable to download updates"));
 		}
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	case GS_PLUGIN_ERROR_NO_NETWORK:
 		/* TRANSLATORS: failure text for the in-app notification */
@@ -1075,6 +1066,7 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 			/* TRANSLATORS: failure text for the in-app notification */
 			g_string_append (str, _("Unable to get list of updates"));
 		}
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1089,10 +1081,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1141,14 +1129,11 @@ gs_shell_show_event_purchase (GsShell *shell, GsPluginEvent *event)
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to purchase %s"), str_app);
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
 		return FALSE;
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, GS_SHELL_EVENT_BUTTON_NONE);
@@ -1186,6 +1171,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 						       "as download failed"),
 						str_app);
 		}
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
 		if (origin != NULL) {
@@ -1257,6 +1243,7 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to install %s"), str_app);
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1271,10 +1258,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1322,6 +1305,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			/* TRANSLATORS: failure text for the in-app notification */
 			g_string_append_printf (str, _("Unable to install updates as download failed"));
 		}
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	case GS_PLUGIN_ERROR_NO_NETWORK:
 		/* TRANSLATORS: failure text for the in-app notification */
@@ -1416,6 +1400,7 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			/* TRANSLATORS: failure text for the in-app notification */
 			g_string_append_printf (str, _("Unable to install updates"));
 		}
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1430,10 +1415,6 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1469,6 +1450,7 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 						       "as download failed"),
 						str_app);
 		}
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	case GS_PLUGIN_ERROR_NO_NETWORK:
 		/* TRANSLATORS: failure text for the in-app notification,
@@ -1521,6 +1503,7 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the distro name (e.g. "Fedora 25") */
 		g_string_append_printf (str, _("Unable to upgrade to %s"), str_app);
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1535,10 +1518,6 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1593,6 +1572,7 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s"), str_app);
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1607,10 +1587,6 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1657,6 +1633,7 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1671,10 +1648,6 @@ gs_shell_show_event_launch (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1711,14 +1684,11 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
 		return FALSE;
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1755,14 +1725,11 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
 		return FALSE;
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		g_string_append_printf (str, "\n%s", error->message);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
@@ -1825,6 +1792,7 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			return FALSE;
 		/* TRANSLATORS: we failed to get a proper error code */
 		g_string_append (str, _("Sorry, something went wrong"));
+		gs_shell_append_detailed_error (shell, str, error);
 		break;
 	}
 	if (str->len == 0)
@@ -1839,10 +1807,6 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 			buttons |= GS_SHELL_EVENT_BUTTON_MORE_INFO;
 		}
 	}
-
-	/* add extra debugging for debug builds */
-	if (gs_shell_show_detailed_error (shell, error))
-		gs_shell_append_detailed_error (shell, str, error);
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
