@@ -1471,10 +1471,12 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 		}
 		break;
 	case GS_PLUGIN_ERROR_NO_NETWORK:
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to upgrade: "
-					"internet access was required but "
-					"wasn’t available"));
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		g_string_append_printf (str, _("Unable to upgrade to %s: "
+					       "internet access was required but "
+					       "wasn’t available"),
+					str_app);
 		buttons |= GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS;
 		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
