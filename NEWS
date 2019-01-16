@@ -1,3 +1,55 @@
+Version 3.31.2
+~~~~~~~~~~~~~~
+Released: 2019-01-16
+
+This is an unstable release in the 3.31 development series, with the following
+improvements:
+ * Show permissions for installed flatpaks, and new permissions for updates
+ * Use libxmlb to parse AppStream XML, making gnome-software start up faster
+   and use less memory
+ * Update the app icon
+ * Update categories for ESRA rating system
+ * Improve various error messages to have more details
+ * Fix an issue that caused incorrect version numbers to be shown for installed
+   flatpaks
+ * Fix various thread safety related crashes
+ * Fix row unrevealing to not leave behind 2 pixels on the updates page
+ * Make the refresh button to actually refresh packagekit cache
+ * Fix various issues that could lead to cache refresh getting stuck
+ * Show updates available notifications even when automatic updates are
+   disabled
+ * Fix counting apps in the updates applied notification
+ * Improve packagekit update loading code, hopefully making it more robust
+ * Fix an issue that could lead to the packagekit plugin activating on
+   rpm-ostree based systems
+ * Switch flatpak updates to use a single transaction, which lets us share more
+   code (and bugs) with the command line flatpak utility
+ * Fix various issues with transitioning from the "Download" state to "Restart
+   & Update"
+ * Don't error out from update downloads if the ODRS server is unavailable
+ * Fix old updates accumulating in the OS Updates item
+ * Various flatpakref installation fixes
+ * Fix opening the details page when clicking on "Show Details" in GNOME Shell
+ * Fix opening shell extensions details from GNOME Tweaks
+ * Various fixes for initial loading state
+ * Add a separate "Download" step for packagekit offline updates, so that
+   "Restart & Update" is instant
+ * Fix a version comparison issue that led to package updates sometimes showing
+   as downgrades in the OS Updates section (this needs latest appstream-glib)
+ * Show the refresh button when the updates page is in the failed state
+ * Notify about offline updates only after they are fully downloaded
+ * Fix a memory corruption issue on 32-bit arches that made gnome-software very
+   crashy
+ * Fix an issue with stuck back button on the details page after closing and
+   reopening gnome-software
+ * Make distro upgrades to Fedora N+2 release show up correctly
+ * Various flatpak plugin fixes
+ * Allow opening CAB files that include more than one update
+ * Fix critical warnings when quickly switching between category pages
+ * Small memory leak fixes
+
+This release also updates translations.
+
 Version 3.31.1
 ~~~~~~~~~~~~~~
 Released: 2018-10-09

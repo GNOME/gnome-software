@@ -46,6 +46,50 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-01-16" version="3.31.2">
+      <description>
+        <p>
+          This is an unstable release in the 3.31 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Show permissions for installed flatpaks, and new permissions for updates</li>
+          <li>Use libxmlb to parse AppStream XML, making gnome-software start up faster and use less memory</li>
+          <li>Update the app icon</li>
+          <li>Update categories for ESRA rating system</li>
+          <li>Improve various error messages to have more details</li>
+          <li>Fix an issue that caused incorrect version numbers to be shown for installed flatpaks</li>
+          <li>Fix various thread safety related crashes</li>
+          <li>Fix row unrevealing to not leave behind 2 pixels on the updates page</li>
+          <li>Make the refresh button to actually refresh packagekit cache</li>
+          <li>Fix various issues that could lead to cache refresh getting stuck</li>
+          <li>Show updates available notifications even when automatic updates are disabled</li>
+          <li>Fix counting apps in the updates applied notification</li>
+          <li>Improve packagekit update loading code, hopefully making it more robust</li>
+          <li>Fix an issue that could lead to the packagekit plugin activating on rpm-ostree based systems</li>
+          <li>Switch flatpak updates to use a single transaction, which lets us share more code (and bugs) with the command line flatpak utility</li>
+          <li>Fix various issues with transitioning from the "Download" state to "Restart &amp; Update"</li>
+          <li>Don't error out from update downloads if the ODRS server is unavailable</li>
+          <li>Fix old updates accumulating in the OS Updates item</li>
+          <li>Various flatpakref installation fixes</li>
+          <li>Fix opening the details page when clicking on "Show Details" in GNOME Shell</li>
+          <li>Fix opening shell extensions details from GNOME Tweaks</li>
+          <li>Various fixes for initial loading state</li>
+          <li>Add a separate "Download" step for packagekit offline updates, so that "Restart &amp; Update" is instant</li>
+          <li>Fix a version comparison issue that led to package updates sometimes showing as downgrades in the OS Updates section (this needs latest appstream-glib)</li>
+          <li>Show the refresh button when the updates page is in the failed state</li>
+          <li>Notify about offline updates only after they are fully downloaded</li>
+          <li>Fix a memory corruption issue on 32-bit arches that made gnome-software very crashy</li>
+          <li>Fix an issue with stuck back button on the details page after closing and reopening gnome-software</li>
+          <li>Make distro upgrades to Fedora N+2 release show up correctly</li>
+          <li>Various flatpak plugin fixes</li>
+          <li>Allow opening CAB files that include more than one update</li>
+          <li>Fix critical warnings when quickly switching between category pages</li>
+          <li>Small memory leak fixes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2018-10-09" version="3.31.1">
       <description>
         <p>
