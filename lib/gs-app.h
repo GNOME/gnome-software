@@ -391,6 +391,9 @@ void		 gs_app_subsume_metadata	(GsApp		*app,
 GsAppPermissions gs_app_get_permissions		(GsApp		*app);
 void		 gs_app_set_permissions		(GsApp		*app,
 						 GsAppPermissions permissions);
+GsAppPermissions gs_app_get_update_permissions	(GsApp		*app);
+void		 gs_app_set_update_permissions	(GsApp		*app,
+						 GsAppPermissions update_permissions);
 
 G_END_DECLS
 

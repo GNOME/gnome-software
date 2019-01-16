@@ -212,7 +212,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
 		gtk_widget_show (dialog->permissions_section_box);
-		populate_permissions_section (dialog, gs_app_get_permissions (app));
+		populate_permissions_section (dialog, gs_app_get_update_permissions (app));
 	} else {
 		gtk_widget_hide (dialog->permissions_section_box);
 	}

@@ -218,7 +218,7 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 
 	permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
 
-	gs_app_set_permissions (app, permissions);
+	gs_app_set_update_permissions (app, permissions);
 
 	if (permissions != GS_APP_PERMISSIONS_NONE)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS);

@@ -96,6 +96,7 @@ typedef struct
 	gchar			*update_version_ui;
 	gchar			*update_details;
 	AsUrgencyKind		 update_urgency;
+	GsAppPermissions         update_permissions;
 	gchar			*management_plugin;
 	guint			 match_value;
 	guint			 priority;
@@ -4572,6 +4573,22 @@ gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 
 	priv->permissions = permissions;
+}
+
+GsAppPermissions
+gs_app_get_update_permissions (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	return priv->update_permissions;
+}
+
+void
+gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	priv->update_permissions = update_permissions;
 }
 
 /* vim: set noexpandtab: */
