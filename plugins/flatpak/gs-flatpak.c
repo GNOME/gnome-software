@@ -2072,7 +2072,6 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 static void
 gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 {
-#if ! FLATPAK_CHECK_VERSION(1,1,3)
 	const gchar *version;
 
 	/* get first release */
@@ -2090,7 +2089,6 @@ gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 			 gs_app_get_unique_id (app), version);
 		break;
 	}
-#endif
 }
 
 static gboolean
