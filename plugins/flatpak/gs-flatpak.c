@@ -959,6 +959,9 @@ static void
 gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 				   FlatpakInstalledRef *xref)
 {
+#if FLATPAK_CHECK_VERSION(1,1,3)
+	const gchar *appdata_version;
+#endif
 	guint64 mtime;
 	guint64 size_installed;
 	g_autofree gchar *metadata_fn = NULL;
@@ -1015,6 +1018,12 @@ gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 	size_installed = flatpak_installed_ref_get_installed_size (xref);
 	if (size_installed != 0)
 		gs_app_set_size_installed (app, size_installed);
+
+#if FLATPAK_CHECK_VERSION(1,1,3)
+	appdata_version = flatpak_installed_ref_get_appdata_version (xref);
+	if (appdata_version != NULL)
+		gs_app_set_version (app, appdata_version);
+#endif
 }
 
 static GsApp *
@@ -2063,6 +2072,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 static void
 gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 {
+#if ! FLATPAK_CHECK_VERSION(1,1,3)
 	const gchar *version;
 
 	/* get first release */
@@ -2080,6 +2090,7 @@ gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 			 gs_app_get_unique_id (app), version);
 		break;
 	}
+#endif
 }
 
 static gboolean
