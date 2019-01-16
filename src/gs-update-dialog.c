@@ -64,7 +64,7 @@ struct _GsUpdateDialog
 	GtkWidget	*scrolledwindow_details;
 	GtkWidget	*spinner;
 	GtkWidget	*stack;
-	GtkWidget       *permissions_section_title;
+	GtkWidget       *permissions_section_box;
 	GtkWidget       *permissions_section_content;
 };
 
@@ -211,12 +211,10 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
 
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
-		gtk_widget_show (dialog->permissions_section_title);
-		gtk_widget_show (dialog->permissions_section_content);
+		gtk_widget_show (dialog->permissions_section_box);
 		populate_permissions_section (dialog, gs_app_get_permissions (app));
 	} else {
-		gtk_widget_hide (dialog->permissions_section_title);
-		gtk_widget_hide (dialog->permissions_section_content);
+		gtk_widget_hide (dialog->permissions_section_box);
 	}
 }
 
@@ -836,7 +834,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
-	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_title);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_box);
 	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, permissions_section_content);
 }
 
