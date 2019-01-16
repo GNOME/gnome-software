@@ -330,7 +330,7 @@ about_activated (GSimpleAction *action,
 		"William Jon McCann",
 		NULL
 	};
-	const gchar *copyright = "Copyright \xc2\xa9 2016 Richard Hughes, Matthias Clasen, Kalev Lember";
+	const gchar *copyright = "Copyright \xc2\xa9 2016-2019 Richard Hughes, Matthias Clasen, Kalev Lember";
 	GtkAboutDialog *dialog;
 	g_autofree gchar *title = NULL;
 
