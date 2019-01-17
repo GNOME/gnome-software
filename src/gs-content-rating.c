@@ -237,13 +237,13 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Users are encouraged to donate real money") },
 	{ "money-purchasing",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Ability to spend real money in-game") },
+	_("Ability to spend real money in-app") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("No way to chat with other users") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description */
-	_("User-to-user game interactions without chat functionality") },
+	_("User-to-user interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
 	_("Moderated chat functionality between users") },
