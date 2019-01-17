@@ -45,6 +45,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->icon_theme = gtk_icon_theme_new ();
+	gtk_icon_theme_set_screen (priv->icon_theme, gdk_screen_get_default ());
 	priv->icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	g_mutex_init (&priv->icon_theme_lock);
 
