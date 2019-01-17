@@ -264,7 +264,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Sharing social network usernames or email addresses") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	_("No sharing of user information with 3rd parties") },
+	_("No sharing of user information with third parties") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_MILD,		/* v1.1 */
 	/* TRANSLATORS: content rating description */
 	_("Checking for the latest application version") },
