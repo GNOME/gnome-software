@@ -159,7 +159,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Prolonged nudity") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	_("No references or depictions of sexual nature") },
+	_("No references to or depictions of sexual nature") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description */
 	_("Provocative references or depictions") },
@@ -276,10 +276,10 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Sharing information that lets others identify the user") },
 	{ "social-location",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
-	_("No sharing of physical location to other users") },
+	_("No sharing of physical location with other users") },
 	{ "social-location",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
-	_("Sharing physical location to other users") },
+	_("Sharing physical location with other users") },
 
 	/* v1.1 */
 	{ "sex-homosexuality",	AS_CONTENT_RATING_VALUE_NONE,
@@ -302,7 +302,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Indirect references to prostitution") },
 	{ "sex-prostitution",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
-	_("Direct references of prostitution") },
+	_("Direct references to prostitution") },
 	{ "sex-prostitution",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
 	_("Graphic depictions of the act of prostitution") },
@@ -314,7 +314,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("Indirect references to adultery") },
 	{ "sex-adultery",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
-	_("Direct references of adultery") },
+	_("Direct references to adultery") },
 	{ "sex-adultery",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description */
 	_("Graphic depictions of the act of adultery") },
@@ -332,7 +332,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("No references to desecration") },
 	{ "violence-worship",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description */
-	_("Depictions or references to historical desecration") },
+	_("Depictions of or references to historical desecration") },
 	{ "violence-worship",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
 	_("Depictions of modern-day human desecration") },
@@ -356,7 +356,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	_("No references to slavery") },
 	{ "violence-slavery",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description */
-	_("Depictions or references to historical slavery") },
+	_("Depictions of or references to historical slavery") },
 	{ "violence-slavery",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description */
 	_("Depictions of modern-day slavery") },
