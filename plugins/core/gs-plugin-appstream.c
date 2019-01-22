@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2015 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2015-2019 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -141,6 +141,7 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 {
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
 	g_autoptr(XbBuilderFixup) fixup = NULL;
+	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add source */
@@ -157,6 +158,11 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 				      plugin, NULL);
 	xb_builder_fixup_set_max_depth (fixup, 3);
 	xb_builder_source_add_fixup (source, fixup);
+
+	/* add metadata */
+	info = xb_builder_node_insert (NULL, "info", NULL);
+	xb_builder_node_insert_text (info, "filename", filename, NULL);
+	xb_builder_source_set_info (source, info);
 
 	/* success */
 	xb_builder_import_source (builder, source);
@@ -224,6 +230,7 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 {
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
 	g_autoptr(XbBuilderFixup) fixup = NULL;
+	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for desktop files */
@@ -246,6 +253,11 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 					  error)) {
 		return FALSE;
 	}
+
+	/* add metadata */
+	info = xb_builder_node_insert (NULL, "info", NULL);
+	xb_builder_node_insert_text (info, "filename", filename, NULL);
+	xb_builder_source_set_info (source, info);
 
 	/* success */
 	xb_builder_import_source (builder, source);

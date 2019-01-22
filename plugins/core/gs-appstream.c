@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2015-2017 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2018-2019 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -715,6 +716,12 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	tmp = xb_node_query_text (component, "id", NULL);
 	if (tmp != NULL && gs_app_get_id (app) == NULL)
 		gs_app_set_id (app, tmp);
+
+	/* set source */
+	tmp = xb_node_query_text (component, "info/filename", NULL);
+	if (tmp != NULL && gs_app_get_metadata_item (app, "appstream::source-file") == NULL) {
+		gs_app_set_metadata (app, "appstream::source-file", tmp);
+	}
 
 	/* set content rating */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING) {
