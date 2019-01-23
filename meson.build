@@ -159,6 +159,7 @@ endif
 
 if get_option('rpm_ostree')
   ostree = dependency('ostree-1')
+  rpm = dependency('rpm')
   rpm_ostree = dependency('rpm-ostree-1', version : '>= 2018.4')
 endif
 

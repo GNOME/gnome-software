@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2017-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2017-2019 Kalev Lember <klember@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -21,11 +21,15 @@
 
 #include <config.h>
 
+#include <gnome-software.h>
+
+#include <fcntl.h>
 #include <gio/gio.h>
 #include <glib/gstdio.h>
-
-#include <gnome-software.h>
 #include <ostree.h>
+#include <rpm/rpmdb.h>
+#include <rpm/rpmlib.h>
+#include <rpm/rpmts.h>
 #include <rpmostree.h>
 
 #include "gs-rpmostree-generated.h"
@@ -34,6 +38,9 @@
  * initiated the update.
  */
 #define GS_RPMOSTREE_CLIENT_ID PACKAGE_NAME
+
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmts, rpmtsFree, NULL);
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
 
 struct GsPluginData {
 	GsRPMOSTreeOS		*os_proxy;
@@ -53,6 +60,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	/* open transaction */
+	rpmReadConfigFiles(NULL, NULL);
 
 	/* rpm-ostree is already a daemon with a DBus API; hence it makes
 	 * more sense to use a custom plugin instead of using PackageKit.
@@ -772,6 +782,60 @@ resolve_packages_app (GsPlugin *plugin,
 	}
 }
 
+static gboolean
+resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
+                                               GsApp *app,
+                                               GsPluginRefineFlags flags,
+                                               GCancellable *cancellable,
+                                               GError **error)
+{
+	Header h;
+	const gchar *fn;
+	gint rc;
+	g_auto(rpmdbMatchIterator) mi = NULL;
+	g_auto(rpmts) ts = NULL;
+
+	/* open db readonly */
+	ts = rpmtsCreate();
+	rpmtsSetRootDir (ts, NULL);
+	rc = rpmtsOpenDB (ts, O_RDONLY);
+	if (rc != 0) {
+		g_set_error (error,
+		             GS_PLUGIN_ERROR,
+		             GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		             "Failed to open rpmdb: %i", rc);
+		return FALSE;
+	}
+
+	/* look for a specific file */
+	fn = gs_app_get_metadata_item (app, "appstream::source-file");
+	if (fn == NULL)
+		return TRUE;
+
+	mi = rpmtsInitIterator (ts, RPMDBI_INSTFILENAMES, fn, 0);
+	if (mi == NULL) {
+		g_debug ("rpm: no search results for %s", fn);
+		return TRUE;
+	}
+
+	/* process any results */
+	g_debug ("rpm: querying for %s with %s", gs_app_get_id (app), fn);
+	while ((h = rpmdbNextIterator (mi)) != NULL) {
+		const gchar *name;
+
+		/* add default source */
+		name = headerGetString (h, RPMTAG_NAME);
+		if (gs_app_get_source_default (app) == NULL) {
+			g_debug ("rpm: setting source to %s", name);
+			gs_app_add_source (app, name);
+			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		}
+	}
+
+	return TRUE;
+}
+
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
                   GsAppList *list,
@@ -804,19 +868,30 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		GPtrArray *sources;
+
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
+		/* set management plugin for apps where appstream just added the source package name in refine() */
+		if (gs_app_get_management_plugin (app) == NULL &&
+		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
+		    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM &&
+		    gs_app_get_source_default (app) != NULL) {
+			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		}
+		/* resolve the source package name based on installed appdata/desktop file name */
+		if (gs_app_get_management_plugin (app) == NULL &&
+		    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN &&
+		    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM &&
+		    gs_app_get_source_default (app) == NULL) {
+			if (!resolve_appstream_source_file_to_package_name (plugin, app, flags, cancellable, error))
+				return FALSE;
+		}
+		if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "rpm-ostree") != 0)
-			continue;
-		sources = gs_app_get_sources (app);
-		if (sources->len == 0)
+		if (gs_app_get_source_default (app) == NULL)
 			continue;
 
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			resolve_packages_app (plugin, pkglist, layered_packages, app);
+		resolve_packages_app (plugin, pkglist, layered_packages, app);
 	}
 
 	return TRUE;
