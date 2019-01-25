@@ -40,6 +40,7 @@
  */
 #define GS_RPMOSTREE_CLIENT_ID PACKAGE_NAME
 
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(Header, headerFree, NULL)
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmts, rpmtsFree, NULL);
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
 
@@ -462,6 +463,32 @@ make_rpmostree_modifiers_variant (const char *install_package,
 
 	}
 
+	if (install_local_package != NULL) {
+		g_auto(GVariantBuilder) builder;
+		int fd;
+		int idx;
+
+		g_variant_builder_init (&builder, G_VARIANT_TYPE ("ah"));
+
+		fd = openat (AT_FDCWD, install_local_package, O_RDONLY | O_CLOEXEC | O_NOCTTY);
+		if (fd == -1) {
+			g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+			             "Failed to open %s", install_local_package);
+			return FALSE;
+		}
+
+		idx = g_unix_fd_list_append (fd_list, fd, error);
+		if (idx < 0) {
+			close (fd);
+			return FALSE;
+		}
+
+		g_variant_builder_add (&builder, "h", idx);
+		g_variant_dict_insert_value (&dict, "install-local-packages",
+		                             g_variant_new ("ah", &builder));
+		close (fd);
+	}
+
 	*out_fd_list = g_steal_pointer (&fd_list);
 	*out_modifiers = g_variant_ref_sink (g_variant_dict_end (&dict));
 	return TRUE;
@@ -763,6 +790,89 @@ gs_plugin_update_app (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_app_install (GsPlugin *plugin,
+                       GsApp *app,
+                       GCancellable *cancellable,
+                       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *local_filename = NULL;
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GVariant) options = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_AVAILABLE_LOCAL:
+		if (gs_app_get_local_file (app) == NULL) {
+			g_set_error_literal (error,
+			                     GS_PLUGIN_ERROR,
+			                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			                     "local package, but no filename");
+			return FALSE;
+		}
+
+		local_filename = g_file_get_path (gs_app_get_local_file (app));
+		break;
+	default:
+		g_set_error (error,
+		             GS_PLUGIN_ERROR,
+		             GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		             "do not know how to install app in state %s",
+		             as_app_state_to_string (gs_app_get_state (app)));
+		return FALSE;
+	}
+
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+	options = make_rpmostree_options_variant (FALSE,  /* reboot */
+	                                          FALSE,  /* allow-downgrade */
+	                                          FALSE,   /* cache-only */
+	                                          FALSE,  /* download-only */
+	                                          FALSE,  /* skip-purge */
+	                                          TRUE,  /* no-pull-base */
+	                                          FALSE,  /* dry-run */
+	                                          FALSE); /* no-overrides */
+
+	if (!rpmostree_update_deployment (priv->os_proxy,
+	                                  NULL /* install package */,
+	                                  NULL /* remove package */,
+	                                  local_filename,
+	                                  options,
+	                                  &transaction_address,
+	                                  cancellable,
+	                                  error)) {
+		gs_utils_error_convert_gio (error);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_utils_error_convert_gio (error);
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+	/* get the new icon from the package */
+	gs_app_set_local_file (app, NULL);
+	gs_app_add_icon (app, NULL);
+	gs_app_set_pixbuf (app, NULL);
+
+	/* no longer valid */
+	gs_app_clear_source_ids (app);
+
+	return TRUE;
+}
+
+gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
                       GsApp *app,
                       GCancellable *cancellable,
@@ -1028,4 +1138,127 @@ gs_plugin_launch (GsPlugin *plugin,
 		return TRUE;
 
 	return gs_plugin_app_launch (plugin, app, error);
+}
+
+static void
+add_quirks_from_package_name (GsApp *app, const gchar *package_name)
+{
+	/* these packages don't have a .repo file in their file lists, but
+	 * instead install one through rpm scripts / cron job */
+	const gchar *packages_with_repos[] = {
+		"google-chrome-stable",
+		"google-earth-pro-stable",
+		"google-talkplugin",
+		NULL };
+
+	if (g_strv_contains (packages_with_repos, package_name))
+		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
+}
+
+gboolean
+gs_plugin_file_to_app (GsPlugin *plugin,
+		       GsAppList *list,
+		       GFile *file,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	gboolean ret = FALSE;
+	FD_t rpmfd;
+	int r;
+	guint64 epoch;
+	guint64 size;
+	const gchar *name;
+	const gchar *version;
+	const gchar *release;
+	const gchar *license;
+	g_auto(Header) h = NULL;
+	g_auto(rpmts) ts = NULL;
+	g_autofree gchar *evr = NULL;
+	g_autofree gchar *filename = NULL;
+	g_autoptr(GsApp) app = NULL;
+
+	filename = g_file_get_path (file);
+	if (!g_str_has_suffix (filename, ".rpm")) {
+		ret = TRUE;
+		goto out;
+	}
+
+	ts = rpmtsCreate ();
+	rpmtsSetVSFlags (ts, _RPMVSF_NOSIGNATURES);
+
+	/* librpm needs Fopenfd */
+	rpmfd = Fopen (filename, "r.fdio");
+	if (rpmfd == NULL) {
+		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_FAILED,
+		             "Opening %s failed", filename);
+		goto out;
+	}
+	if (Ferror (rpmfd)) {
+		g_set_error (error,
+		             GS_PLUGIN_ERROR,
+		             GS_PLUGIN_ERROR_FAILED,
+		             "Opening %s failed: %s",
+		             filename,
+		             Fstrerror (rpmfd));
+		goto out;
+	}
+
+	if ((r = rpmReadPackageFile (ts, rpmfd, filename, &h)) != RPMRC_OK) {
+		g_set_error (error,
+		             GS_PLUGIN_ERROR,
+		             GS_PLUGIN_ERROR_FAILED,
+		             "Verification of %s failed",
+		             filename);
+		goto out;
+	}
+
+	app = gs_app_new (NULL);
+	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
+
+	/* add default source */
+	name = headerGetString (h, RPMTAG_NAME);
+	g_debug ("rpm: setting source to %s", name);
+	gs_app_add_source (app, name);
+
+	/* add version */
+	epoch = headerGetNumber (h, RPMTAG_EPOCH);
+	version = headerGetString (h, RPMTAG_VERSION);
+	release = headerGetString (h, RPMTAG_RELEASE);
+	if (epoch > 0) {
+		evr = g_strdup_printf ("%" G_GUINT64_FORMAT ":%s-%s",
+		                       epoch, version, release);
+	} else {
+		evr = g_strdup_printf ("%s-%s",
+		                       version, release);
+	}
+	g_debug ("rpm: setting version to %s", evr);
+	gs_app_set_version (app, evr);
+
+	/* set size */
+	size = headerGetNumber (h, RPMTAG_SIZE);
+	gs_app_set_size_installed (app, size);
+
+	/* set license */
+	license = headerGetString (h, RPMTAG_LICENSE);
+	if (license != NULL) {
+		g_autofree gchar *license_spdx = NULL;
+		license_spdx = as_utils_license_to_spdx (license);
+		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, license_spdx);
+		g_debug ("rpm: setting license to %s", license_spdx);
+	}
+
+	add_quirks_from_package_name (app, name);
+
+	gs_app_list_add (list, app);
+	ret = TRUE;
+
+out:
+	if (rpmfd)
+		(void) Fclose (rpmfd);
+	return ret;
 }
