@@ -25,6 +25,7 @@
 
 #include <fcntl.h>
 #include <gio/gio.h>
+#include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
 #include <ostree.h>
 #include <rpm/rpmdb.h>
@@ -437,6 +438,64 @@ make_rpmostree_options_variant (gboolean reboot,
 	return g_variant_ref_sink (g_variant_dict_end (&dict));
 }
 
+static gboolean
+make_rpmostree_modifiers_variant (const char *install_package,
+                                  const char *uninstall_package,
+                                  const char *install_local_package,
+                                  GVariant **out_modifiers,
+                                  GUnixFDList **out_fd_list,
+                                  GError **error)
+{
+	GVariantDict dict;
+	g_autoptr(GUnixFDList) fd_list = g_unix_fd_list_new ();
+
+	g_variant_dict_init (&dict, NULL);
+
+	if (uninstall_package != NULL) {
+		g_autoptr(GPtrArray) repo_pkgs = g_ptr_array_new ();
+
+		g_ptr_array_add (repo_pkgs, uninstall_package);
+
+		g_variant_dict_insert_value (&dict, "uninstall-packages",
+		                             g_variant_new_strv ((const char *const*)repo_pkgs->pdata,
+		                             repo_pkgs->len));
+
+	}
+
+	*out_fd_list = g_steal_pointer (&fd_list);
+	*out_modifiers = g_variant_ref_sink (g_variant_dict_end (&dict));
+	return TRUE;
+}
+
+static gboolean
+rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
+                             const char *install_package,
+                             const char *uninstall_package,
+                             const char *install_local_package,
+                             GVariant *options,
+                             char **out_transaction_address,
+                             GCancellable *cancellable,
+                             GError **error)
+{
+	g_autoptr(GUnixFDList) fd_list = NULL;
+	g_autoptr(GVariant) modifiers = NULL;
+
+	if (!make_rpmostree_modifiers_variant (install_package,
+	                                       uninstall_package,
+	                                       install_local_package,
+	                                       &modifiers, &fd_list, error))
+		return FALSE;
+
+	return gs_rpmostree_os_call_update_deployment_sync (os_proxy,
+	                                                    modifiers,
+	                                                    options,
+	                                                    fd_list,
+	                                                    out_transaction_address,
+	                                                    NULL,
+	                                                    cancellable,
+	                                                    error);
+}
+
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
                    guint cache_age,
@@ -712,8 +771,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
-	g_auto(GStrv) packages_to_remove = NULL;
-	char *strv_empty[] = { NULL };
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
@@ -730,18 +787,14 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	                                          FALSE,  /* dry-run */
 	                                          FALSE); /* no-overrides */
 
-	packages_to_remove = g_new0 (gchar *, 2);
-	packages_to_remove[0] = g_strdup (gs_app_get_source_default (app));
-
-	if (!gs_rpmostree_os_call_pkg_change_sync (priv->os_proxy,
-	                                           options,
-	                                           (const gchar * const*)strv_empty /* packages to add */,
-	                                           (const gchar * const*)packages_to_remove,
-	                                           NULL /* fd list */,
-	                                           &transaction_address,
-	                                           NULL /* fd list out */,
-	                                           cancellable,
-	                                           error)) {
+	if (!rpmostree_update_deployment (priv->os_proxy,
+	                                  NULL /* install package */,
+	                                  gs_app_get_source_default (app),
+	                                  NULL /* install local package */,
+	                                  options,
+	                                  &transaction_address,
+	                                  cancellable,
+	                                  error)) {
 		gs_utils_error_convert_gio (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
