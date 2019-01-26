@@ -473,7 +473,6 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 
 		ref = gs_flatpak_app_get_ref_display (app);
 		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
-			g_prefix_error (error, "failed to add update ref %s: ", ref);
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
@@ -512,7 +511,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 	ref = gs_flatpak_app_get_ref_display (app);
 	if (!flatpak_transaction_add_uninstall (transaction, ref, error)) {
-		g_prefix_error (error, "failed to add uninstall ref %s: ", ref);
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
@@ -637,7 +635,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 		if (!flatpak_transaction_add_install_bundle (transaction, file,
 							     NULL, error)) {
 			g_autofree gchar *fn = g_file_get_path (file);
-			g_prefix_error (error, "failed to add install ref %s: ", fn);
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
@@ -648,7 +645,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 		if (!flatpak_transaction_add_install (transaction,
 						      gs_app_get_origin (app),
 						      ref, NULL, error)) {
-			g_prefix_error (error, "failed to add install ref %s: ", ref);
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
@@ -711,7 +707,6 @@ gs_plugin_update (GsPlugin *plugin,
 
 		ref = gs_flatpak_app_get_ref_display (app);
 		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
-			g_prefix_error (error, "failed to add update ref %s: ", ref);
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
