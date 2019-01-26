@@ -860,6 +860,16 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		}
 	}
 
+	/* set origin for flatpaks */
+	if (gs_app_get_origin (app) == NULL &&
+	    gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
+		g_autoptr(XbNode) parent = xb_node_get_parent (component);
+		if (parent != NULL) {
+			tmp = xb_node_get_attr (parent, "origin");
+			gs_app_set_origin (app, tmp);
+		}
+	}
+
 	/* set addons */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) {
 		if (!gs_appstream_refine_add_addons (plugin, app, silo, error))

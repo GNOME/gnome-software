@@ -2099,14 +2099,15 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GError **error)
 {
 	const gchar *id = gs_app_get_id (app);
+	const gchar *origin = gs_app_get_origin (app);
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(XbNode) component = NULL;
 
 	if (id == NULL)
 		return TRUE;
 
-	/* find using ID */
-	xpath = g_strdup_printf ("components/component/id[text()='%s']/..", id);
+	/* find using ID and origin */
+	xpath = g_strdup_printf ("components[@origin='%s']/component/id[text()='%s']/..", origin, id);
 	component = xb_silo_query_first (silo, xpath, NULL);
 	if (component == NULL)
 		return TRUE;
