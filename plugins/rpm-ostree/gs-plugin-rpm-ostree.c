@@ -614,7 +614,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_auto(GVariantDict) cached_update_dict;
 
 	/* ensure D-Bus properties are updated before reading them */
-	gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error);
+	if (!gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
 
 	cached_update = gs_rpmostree_os_dup_cached_update (priv->os_proxy);
 	g_variant_dict_init (&cached_update_dict, cached_update);
@@ -1013,7 +1016,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	g_autofree gchar *checksum = NULL;
 
 	/* ensure D-Bus properties are updated before reading them */
-	gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error);
+	if (!gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
 
 	booted_deployment = gs_rpmostree_os_dup_booted_deployment (priv->os_proxy);
 	g_assert (g_variant_lookup (booted_deployment,
