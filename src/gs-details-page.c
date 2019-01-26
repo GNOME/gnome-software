@@ -1766,6 +1766,7 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 					  "app", self->app,
 					  "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
 							  GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+					  "dedupe-flags", GS_APP_LIST_FILTER_FLAG_NONE,
 					  NULL);
 	gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job1,
 					    self->cancellable,
