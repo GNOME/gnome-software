@@ -1072,7 +1072,7 @@ gs_appstream_search (GsPlugin *plugin,
 			g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
 			if (app == NULL)
 				return FALSE;
-			g_debug ("add %s", gs_app_get_id (app));
+			g_debug ("add %s", gs_app_get_unique_id (app));
 			gs_app_set_match_value (app, match_value);
 			gs_app_list_add (list, app);
 		}
