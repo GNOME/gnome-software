@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-01-16 18:48+0000\n"
-"PO-Revision-Date: 2019-01-25 23:57+0900\n"
+"POT-Creation-Date: 2019-01-25 15:21+0000\n"
+"PO-Revision-Date: 2019-01-26 20:55+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -71,7 +71,7 @@ msgstr "更新パネル"
 msgid "The update details"
 msgstr "更新の詳細"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1197
+#: data/appdata/org.gnome.Software.appdata.xml.in:1241
 msgid "The GNOME Project"
 msgstr "The GNOME Project"
 
@@ -384,11 +384,11 @@ msgid "More Information"
 msgstr "詳細情報"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4474
+#: lib/gs-app.c:4475
 msgid "Local file"
 msgstr "ローカルファイル"
 
-#: lib/gs-app.c:4521
+#: lib/gs-app.c:4522
 msgid "Package"
 msgstr "パッケージ"
 
@@ -758,8 +758,8 @@ msgstr "%s は“%s”で提供されています。"
 #: src/gs-common.c:258
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
-"インストールを続行するには、このソフトウェアリポジトリを有効にする必要がありま"
-"す。"
+"インストールを続行するには、このソフトウェアリポジトリを有効にする必要があり"
+"ます。"
 
 #. TRANSLATORS: Laws are geographical, urgh...
 #: src/gs-common.c:268
@@ -942,7 +942,7 @@ msgstr ""
 #: src/gs-content-rating.c:162
 #, fuzzy
 #| msgid "Search for applications"
-msgid "No references or depictions of sexual nature"
+msgid "No references to or depictions of sexual nature"
 msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
@@ -1078,7 +1078,7 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:240
-msgid "Ability to spend real money in-game"
+msgid "Ability to spend real money in-app"
 msgstr ""
 
 #. TRANSLATORS: content rating description
@@ -1088,7 +1088,7 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:246
-msgid "User-to-user game interactions without chat functionality"
+msgid "User-to-user interactions without chat functionality"
 msgstr ""
 
 #. TRANSLATORS: content rating description
@@ -1125,7 +1125,7 @@ msgstr ""
 #: src/gs-content-rating.c:267
 #, fuzzy
 #| msgid "Show profiling information for the service"
-msgid "No sharing of user information with 3rd parties"
+msgid "No sharing of user information with third parties"
 msgstr "サービス用のプロファイル情報を表示する"
 
 #. v1.1
@@ -1149,13 +1149,17 @@ msgstr "サービス用のプロファイル情報を表示する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:279
-msgid "No sharing of physical location to other users"
-msgstr ""
+#, fuzzy
+#| msgid "Show profiling information for the service"
+msgid "No sharing of physical location with other users"
+msgstr "サービス用のプロファイル情報を表示する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:282
-msgid "Sharing physical location to other users"
-msgstr ""
+#, fuzzy
+#| msgid "Show profiling information for the service"
+msgid "Sharing physical location with other users"
+msgstr "サービス用のプロファイル情報を表示する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:287
@@ -1197,7 +1201,7 @@ msgstr "アプリケーションを検索する"
 #: src/gs-content-rating.c:305
 #, fuzzy
 #| msgid "Search for applications"
-msgid "Direct references of prostitution"
+msgid "Direct references to prostitution"
 msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
@@ -1219,8 +1223,10 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:317
-msgid "Direct references of adultery"
-msgstr ""
+#, fuzzy
+#| msgid "Search for applications"
+msgid "Direct references to adultery"
+msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:320
@@ -1251,8 +1257,10 @@ msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:335
-msgid "Depictions or references to historical desecration"
-msgstr ""
+#, fuzzy
+#| msgid "Search for applications"
+msgid "Depictions of or references to historical desecration"
+msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:338
@@ -1293,8 +1301,10 @@ msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:359
-msgid "Depictions or references to historical slavery"
-msgstr ""
+#, fuzzy
+#| msgid "Search for applications"
+msgid "Depictions of or references to historical slavery"
+msgstr "アプリケーションを検索する"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:362
@@ -1635,8 +1645,8 @@ msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr ""
-"このアプリケーションはソフトウェアリポジトリが含まれていません。新しいバージョン"
-"のアップデートは行われません。"
+"このアプリケーションはソフトウェアリポジトリが含まれていません。新しいバー"
+"ジョンのアップデートは行われません。"
 
 #: src/gs-details-page.ui:373
 msgid ""
@@ -1656,8 +1666,8 @@ msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr ""
-"このソフトウェアリポジトリを追加することで、他のソフトウェアやアップグレードを利"
-"用できるようになります。"
+"このソフトウェアリポジトリを追加することで、他のソフトウェアやアップグレード"
+"を利用できるようになります。"
 
 #: src/gs-details-page.ui:382
 msgid "Only use software repositories that you trust."
@@ -2394,8 +2404,8 @@ msgid ""
 "All applications from %s will be removed, and you will have to re-install "
 "the repository to use them again."
 msgstr ""
-"%s のアプリケーションはすべて削除されます。再び使用するにはソフトウェアリポ"
-"ジトリをインストールし直す必要があります。"
+"%s のアプリケーションはすべて削除されます。再び使用するにはソフトウェアリポジ"
+"トリをインストールし直す必要があります。"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
@@ -2907,14 +2917,17 @@ msgstr "アップデートをダウンロードできません"
 #: src/gs-shell.c:1022
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
-msgstr "アップデートをダウンロードできません: インターネットアクセスが必要でしたが接続できませんでした"
+msgstr ""
+"アップデートをダウンロードできません: インターネットアクセスが必要でしたが接"
+"続できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
 #: src/gs-shell.c:1031
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
-msgstr "%s からアップデートをダウンロードできません: 充分なディスク領域がありません"
+msgstr ""
+"%s からアップデートをダウンロードできません: 充分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1036
@@ -2935,7 +2948,9 @@ msgstr "アップデートをダウンロードできません: 認証できま�
 #: src/gs-shell.c:1053
 msgid ""
 "Unable to download updates: you do not have permission to install software"
-msgstr "アップデートをダウンロードできません: ソフトウェアをインストールする権限がありません"
+msgstr ""
+"アップデートをダウンロードできません: ソフトウェアをインストールする権限があ"
+"りません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1067
@@ -3023,7 +3038,9 @@ msgstr "サポートしていないため %s をインストールできませ�
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1196
 msgid "Unable to install: internet access was required but wasn’t available"
-msgstr "インストールできません: インターネットアクセスが必要でしたが接続できませんでした"
+msgstr ""
+"インストールできません: インターネットアクセスが必要でしたが接続できませんで"
+"した"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1202
@@ -3055,7 +3072,8 @@ msgstr "%s をインストールできません: 認証できませんでした"
 #: src/gs-shell.c:1228
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
-msgstr "%s をインストールできません: ソフトウェアをインストールする権限がありません"
+msgstr ""
+"%s をインストールできません: ソフトウェアをインストールする権限がありません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
@@ -3111,7 +3129,9 @@ msgstr "%s の削除に失敗しました。"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1312
 msgid "Unable to update: internet access was required but wasn’t available"
-msgstr "アップデートできません: インターネットアクセスが必要でしたが接続できませんでした"
+msgstr ""
+"アップデートできません: インターネットアクセスが必要でしたが接続できませんで"
+"した"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3157,14 +3177,17 @@ msgstr "アップデートをインストールできません: 認証できま�
 #: src/gs-shell.c:1365
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
-msgstr "%s をアップデートできません: ソフトウェアをアップデートする権限がありません"
+msgstr ""
+"%s をアップデートできません: ソフトウェアをアップデートする権限がありません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1371
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
-msgstr "アップデートをインストールできません: ソフトウェアをアップデートする権限がありません"
+msgstr ""
+"アップデートをインストールできません: ソフトウェアをアップデートする権限があ"
+"りません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
@@ -3221,7 +3244,9 @@ msgstr "ダウンロードに失敗したため %s をアップグレードで�
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
-msgstr "%s にアップグレードできません: インターネットアクセスが必要でしたが接続できませんでした"
+msgstr ""
+"%s にアップグレードできません: インターネットアクセスが必要でしたが接続できま"
+"せんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
@@ -3366,7 +3391,9 @@ msgstr "新しいプラグインを使用するには、%sを再起動する必�
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1778
 msgid "This application needs to be restarted to use new plugins."
-msgstr "新しいプラグインを使用するには、このアプリケーションを再起動する必要があります。"
+msgstr ""
+"新しいプラグインを使用するには、このアプリケーションを再起動する必要がありま"
+"す。"
 
 #. TRANSLATORS: need to be connected to the AC power
 #: src/gs-shell.c:1785
