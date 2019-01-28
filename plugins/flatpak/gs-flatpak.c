@@ -249,7 +249,7 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 }
 
 static GsApp *
-gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
+gs_flatpak_create_app (GsFlatpak *self, const gchar *origin, FlatpakRef *xref)
 {
 	GsApp *app_cached;
 	g_autoptr(GsApp) app = NULL;
@@ -257,6 +257,8 @@ gs_flatpak_create_app (GsFlatpak *self, FlatpakRef *xref)
 	/* create a temp GsApp */
 	app = gs_app_new (flatpak_ref_get_name (xref));
 	gs_flatpak_set_metadata (self, app, xref);
+	if (origin != NULL)
+		gs_app_set_origin (app, origin);
 
 	/* return the ref'd cached copy */
 	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
@@ -1031,11 +1033,13 @@ gs_flatpak_create_installed (GsFlatpak *self,
 			     FlatpakInstalledRef *xref)
 {
 	g_autoptr(GsApp) app = NULL;
+	const gchar *origin;
 
 	g_return_val_if_fail (xref != NULL, NULL);
 
 	/* create new object */
-	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
+	origin = flatpak_installed_ref_get_origin (xref);
+	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref));
 	gs_flatpak_set_metadata_installed (self, app, xref);
 	return g_steal_pointer (&app);
 }
@@ -1207,10 +1211,8 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 			FlatpakRef *xref = g_ptr_array_index (refs_remote, j);
 			g_autofree gchar *ref_tmp = flatpak_ref_format_ref (xref);
 			if (g_strcmp0 (ref, ref_tmp) == 0) {
-				GsApp *app;
-				app = gs_flatpak_create_app (self, xref);
-				gs_app_set_origin (app, flatpak_remote_get_name (xremote));
-				return app;
+				const gchar *origin = flatpak_remote_get_name (xremote);
+				return gs_flatpak_create_app (self, origin, xref);
 			}
 		}
 	}
@@ -2346,7 +2348,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	}
 
 	/* load metadata */
-	app = gs_flatpak_create_app (self, FLATPAK_REF (xref_bundle));
+	app = gs_flatpak_create_app (self, NULL /* origin */, FLATPAK_REF (xref_bundle));
 	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 		if (gs_flatpak_app_get_ref_name (app) == NULL)
 			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
@@ -2564,7 +2566,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	}
 
 	/* load metadata */
-	app = gs_flatpak_create_app (self, FLATPAK_REF (xref));
+	app = gs_flatpak_create_app (self, NULL /* origin */, FLATPAK_REF (xref));
 	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 		if (gs_flatpak_app_get_ref_name (app) == NULL)
 			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
