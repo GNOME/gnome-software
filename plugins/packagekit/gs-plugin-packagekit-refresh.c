@@ -81,7 +81,6 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 					 gs_packagekit_helper_cb, helper,
 					 error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to get updates for refresh: ");
 		return FALSE;
 	}
 
@@ -163,7 +162,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	                                   gs_packagekit_helper_cb, helper,
 	                                   error);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		g_prefix_error (error, "failed to refresh cache: ");
 		return FALSE;
 	}
 
