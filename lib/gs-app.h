@@ -248,6 +248,9 @@ const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
 						 GsAppQuality	 quality,
 						 const gchar	*description);
+gboolean	 gs_app_get_description_markup	(GsApp		*app);
+void		 gs_app_set_description_markup	(GsApp		*app,
+						 gboolean	 use_markup);
 const gchar	*gs_app_get_url			(GsApp		*app,
 						 AsUrlKind	 kind);
 void		 gs_app_set_url			(GsApp		*app,
