@@ -101,6 +101,7 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	GsSummaryTile *tile = GS_SUMMARY_TILE (app_tile);
 	const gchar *css;
 	g_autofree gchar *text = NULL;
+	gboolean use_markup = FALSE;
 
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
@@ -143,6 +144,7 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_SHELL_EXTENSION:
 		text = g_strdup (gs_app_get_description (app));
+		use_markup = gs_app_get_description_markup (app);
 		if (text != NULL)
 			g_strdelimit (text, "\n\t", ' ');
 		break;
@@ -152,6 +154,7 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 	}
 
 	gtk_label_set_label (GTK_LABEL (tile->summary), text);
+	gtk_label_set_use_markup (GTK_LABEL (tile->summary), use_markup);
 	gtk_widget_set_visible (tile->summary, text && text[0]);
 }
 

@@ -72,7 +72,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
  * Return value: PangoMarkup
  **/
 static GString *
-gs_app_row_get_description (GsAppRow *app_row)
+gs_app_row_get_description (GsAppRow *app_row, gboolean *use_markup)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	const gchar *tmp = NULL;
@@ -93,8 +93,10 @@ gs_app_row_get_description (GsAppRow *app_row)
 	}
 
 	/* try all these things in order */
-	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0')) {
 		tmp = gs_app_get_description (priv->app);
+		*use_markup = gs_app_get_description_markup (priv->app);
+	}
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_summary (priv->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
@@ -241,6 +243,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	GtkStyleContext *context;
 	GString *str = NULL;
+	gboolean use_markup = FALSE;
 	const gchar *tmp;
 	gboolean missing_search_result;
 	guint64 size = 0;
@@ -265,7 +268,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* join the description lines */
-	str = gs_app_row_get_description (app_row);
+	str = gs_app_row_get_description (app_row, &use_markup);
+	gtk_label_set_use_markup (GTK_LABEL (priv->description_label), use_markup);
 	if (str != NULL) {
 		as_utils_string_replace (str, "\n", " ");
 		gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
