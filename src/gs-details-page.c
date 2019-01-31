@@ -624,7 +624,7 @@ gs_details_page_donate_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
-gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
+gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp, gboolean use_markup)
 {
 	GtkStyleContext *style_context;
 	GtkWidget *para;
@@ -642,6 +642,7 @@ gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 	split = g_strsplit (tmp, "\n\n", -1);
 	for (i = 0; split[i] != NULL; i++) {
 		para = gtk_label_new (split[i]);
+		gtk_label_set_use_markup (GTK_LABEL (para), use_markup);
 		gtk_label_set_line_wrap (GTK_LABEL (para), TRUE);
 		gtk_label_set_max_width_chars (GTK_LABEL (para), 40);
 		gtk_label_set_selectable (GTK_LABEL (para), TRUE);
@@ -1075,7 +1076,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* set the description */
 	tmp = gs_app_get_description (self->app);
-	gs_details_page_set_description (self, tmp);
+	gs_details_page_set_description (self, tmp, gs_app_get_description_markup (self->app));
 
 	/* set the icon */
 	pixbuf = gs_app_get_pixbuf (self->app);
