@@ -262,16 +262,22 @@ static void
 app_row_button_clicked_cb (GsAppRow *app_row,
                            GsExtrasPage *self)
 {
-	GsApp *app;
-	app = gs_app_row_get_app (app_row);
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE ||
-	    gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
+	GsApp *app = gs_app_row_get_app (app_row);
+
+	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE &&
+	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
+		gs_shell_show_uri (self->shell,
+	                           gs_app_get_url (app, AS_URL_KIND_MISSING));
+	} else if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE ||
+	           gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL ||
+	           gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 		gs_page_install_app (GS_PAGE (self), app, GS_SHELL_INTERACTION_FULL,
 				     self->search_cancellable);
-	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
+	} else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 		gs_page_remove_app (GS_PAGE (self), app, self->search_cancellable);
-	else
+	} else {
 		g_critical ("extras: app in unexpected state %u", gs_app_get_state (app));
+	}
 }
 
 static void
