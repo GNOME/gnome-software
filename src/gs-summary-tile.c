@@ -120,6 +120,93 @@ gs_summary_tile_refresh (GsAppTile *self)
 		atk_object_set_name (accessible, name);
 		atk_object_set_description (accessible, gs_app_get_summary (app));
 	}
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsSummaryTile *tile)
+{
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
+	tile->app_state_changed_id = g_idle_add (app_state_changed_idle, tile);
+}
+
+static void
+gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
+{
+	const GdkPixbuf *pixbuf;
+	GsSummaryTile *tile = GS_SUMMARY_TILE (app_tile);
+	const gchar *css;
+	g_autofree gchar *text = NULL;
+	gboolean use_markup = FALSE;
+
+	g_return_if_fail (GS_IS_APP (app) || app == NULL);
+
+	gtk_image_clear (GTK_IMAGE (tile->image));
+	gtk_image_set_pixel_size (GTK_IMAGE (tile->image), 64);
+
+	if (tile->app != NULL)
+		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
+
+	g_set_object (&tile->app, app);
+	if (!app)
+		return;
+
+	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
+
+	g_signal_connect (tile->app, "notify::state",
+			  G_CALLBACK (app_state_changed), tile);
+	g_signal_connect (tile->app, "notify::name",
+			  G_CALLBACK (app_state_changed), tile);
+	g_signal_connect (tile->app, "notify::summary",
+			  G_CALLBACK (app_state_changed), tile);
+	app_state_changed (tile->app, NULL, tile);
+
+	pixbuf = gs_app_get_pixbuf (app);
+	if (pixbuf != NULL) {
+		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
+	} else {
+		gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
+					      "application-x-executable",
+					      GTK_ICON_SIZE_DIALOG);
+	}
+	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
+
+	/* perhaps set custom css */
+	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
+	gs_utils_widget_set_css (GTK_WIDGET (tile), css);
+
+	/* some kinds have boring summaries */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_SHELL_EXTENSION:
+		text = g_strdup (gs_app_get_description (app));
+		use_markup = gs_app_get_description_markup (app);
+		if (text != NULL)
+			g_strdelimit (text, "\n\t", ' ');
+		break;
+	default:
+		text = g_strdup (gs_app_get_summary (app));
+		break;
+	}
+
+	gtk_label_set_label (GTK_LABEL (tile->summary), text);
+	gtk_label_set_use_markup (GTK_LABEL (tile->summary), use_markup);
+	gtk_widget_set_visible (tile->summary, text && text[0]);
+}
+
+static void
+gs_summary_tile_destroy (GtkWidget *widget)
+{
+	GsSummaryTile *tile = GS_SUMMARY_TILE (widget);
+
+	if (tile->app != NULL)
+		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
+	g_clear_handle_id (&tile->app_state_changed_id, g_source_remove);
+	g_clear_object (&tile->app);
+
+	GTK_WIDGET_CLASS (gs_summary_tile_parent_class)->destroy (widget);
+>>>>>>> Support markup in description text
 }
 
 static void
