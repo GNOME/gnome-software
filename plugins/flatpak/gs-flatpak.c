@@ -2105,6 +2105,10 @@ gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 	case AS_APP_STATE_AVAILABLE_LOCAL:
 		gs_app_set_version (app, version);
 		break;
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		gs_app_set_update_version (app, version);
+		break;
 	default:
 		g_debug ("%s is not installed, so ignoring version of %s",
 			 gs_app_get_unique_id (app), version);
