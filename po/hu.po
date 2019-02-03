@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-01-26 12:01+0000\n"
-"PO-Revision-Date: 2019-01-28 22:09+0100\n"
+"POT-Creation-Date: 2019-01-28 21:12+0000\n"
+"PO-Revision-Date: 2019-02-03 15:09+0100\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
@@ -127,8 +127,9 @@ msgid ""
 "If enabled, GNOME Software notifies the user about updates that happened "
 "whilst the user was idle."
 msgstr ""
-"Ha engedélyezve van, akkor a GNOME Szoftverek értesíti a felhasználót azokról "
-"a frissítésekről, amelyek akkor történetek, amikor a felhasználó tétlen volt."
+"Ha engedélyezve van, akkor a GNOME Szoftverek értesíti a felhasználót "
+"azokról a frissítésekről, amelyek akkor történetek, amikor a felhasználó "
+"tétlen volt."
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
@@ -410,7 +411,7 @@ msgstr "Helyi fájl"
 msgid "Package"
 msgstr "Csomag"
 
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:428
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:421
 msgid "Pending"
 msgstr "Függőben"
 
@@ -606,7 +607,7 @@ msgstr "Eltávolítás"
 msgid "Device cannot be used during update."
 msgstr "Az eszköz nem használható frissítés közben."
 
-#: src/gs-app-row.c:496 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:489 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "További jogosultságokat igényel"
 
@@ -1566,41 +1567,41 @@ msgstr "Ismeretlen"
 msgid "You need internet access to write a review"
 msgstr "Értékelés írásához internetelérés szükséges"
 
-#: src/gs-details-page.c:1798 src/gs-details-page.c:1814
+#: src/gs-details-page.c:1799 src/gs-details-page.c:1815
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nem található: „%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2357
+#: src/gs-details-page.c:2358
 msgid "Public domain"
 msgstr "Közkincs"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2360
+#: src/gs-details-page.c:2361
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://hu.wikipedia.org/wiki/K%C3%B6zkincs"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2367
+#: src/gs-details-page.c:2368
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.hu.html"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2377 src/gs-details-page.ui:1181
+#: src/gs-details-page.c:2378 src/gs-details-page.ui:1181
 msgid "Free Software"
 msgstr "Szabad szoftverek"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2434
+#: src/gs-details-page.c:2435
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "A felhasználót a következő licenc köti:"
 msgstr[1] "A felhasználót a következő licencek kötik:"
 
-#: src/gs-details-page.c:2461 src/gs-details-page.ui:1253
+#: src/gs-details-page.c:2462 src/gs-details-page.ui:1253
 msgid "More information"
 msgstr "További információk"
 
@@ -3206,7 +3207,8 @@ msgstr "Nem lehet frissíteni erre: %s, mert a letöltés meghiúsult"
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
 msgstr ""
-"Nem lehet frissíteni erre: %s: internet-hozzáférés szükséges, de nem érhető el"
+"Nem lehet frissíteni erre: %s: internet-hozzáférés szükséges, de nem érhető "
+"el"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
@@ -3632,19 +3634,19 @@ msgstr "%R"
 #. TRANSLATORS: Time in 12h format
 #: src/gs-updates-page.c:242
 msgid "%l:%M %p"
-msgstr "%l.%M %p"
+msgstr "%H:%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
 #: src/gs-updates-page.c:248
 msgid "Yesterday, %R"
-msgstr "Tegnap, %R"
+msgstr "Tegnap %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
 #: src/gs-updates-page.c:252
 msgid "Yesterday, %l:%M %p"
-msgstr "Tegnap, %l.%M %P"
+msgstr "Tegnap %H:%M"
 
 #: src/gs-updates-page.c:255
 msgid "Two days ago"
@@ -3678,7 +3680,7 @@ msgstr "Két héttel ezelőtt"
 #. i.e. "25 May 2012"
 #: src/gs-updates-page.c:271
 msgid "%e %B %Y"
-msgstr "%Y. %B %e"
+msgstr "%Y. %B %-e."
 
 #. TRANSLATORS: the update panel is doing *something* vague
 #: src/gs-updates-page.c:283
