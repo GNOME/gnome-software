@@ -38,12 +38,15 @@
 
 struct GsPluginData {
 	PkClient	*client;
+	GMutex		 client_mutex;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->client_mutex);
 	priv->client = pk_client_new ();
 	pk_client_set_background (priv->client, FALSE);
 	pk_client_set_cache_age (priv->client, G_MAXUINT);
@@ -56,6 +59,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->client_mutex);
 	g_object_unref (priv->client);
 }
 
@@ -71,6 +75,11 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);

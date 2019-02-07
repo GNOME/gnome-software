@@ -40,12 +40,15 @@
 
 struct GsPluginData {
 	PkTask			*task;
+	GMutex			 task_mutex;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->task_mutex);
 	priv->task = pk_task_new ();
 	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
@@ -55,6 +58,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->task_mutex);
 	g_object_unref (priv->task);
 }
 
@@ -74,6 +78,11 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	gboolean ret = TRUE;
 	g_autoptr(GsAppList) installed = gs_app_list_new ();
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
@@ -135,6 +144,11 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	g_autoptr(GHashTable) hash = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
@@ -187,6 +201,11 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -217,6 +236,11 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -256,6 +280,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(GPtrArray) array_package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -295,6 +320,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		 * everything in order to match an actual result. The root cause
 		 * is probably some kind of hard-to-debug race in the daemon. */
 		g_usleep (G_USEC_PER_SEC * 3);
+
+		/* packagekit-glib is not threadsafe */
+		/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+		g_assert (locker != NULL);
 
 		/* actually install the package */
 		gs_packagekit_helper_add_app (helper, app);
@@ -364,6 +394,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "no packages to install");
 			return FALSE;
 		}
+
+		/* packagekit-glib is not threadsafe */
+		/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+		g_assert (locker != NULL);
+
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		addons = gs_app_get_addons (app);
 		for (i = 0; i < gs_app_list_length (addons); i++) {
@@ -396,6 +432,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		local_filename = g_file_get_path (gs_app_get_local_file (app));
 		package_ids = g_strsplit (local_filename, "\t", -1);
+
+		/* packagekit-glib is not threadsafe */
+		/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+		g_assert (locker != NULL);
+
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		gs_packagekit_helper_add_app (helper, app);
 		results = pk_task_install_files_sync (priv->task,
@@ -440,6 +482,11 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -477,6 +524,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	guint cnt = 0;
 	g_autoptr(PkResults) results = NULL;
 	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -510,6 +558,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 				     "no packages to remove");
 		return FALSE;
 	}
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do the action */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
@@ -570,6 +622,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -603,6 +660,11 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	PkBitfield filter;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -633,6 +695,11 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	PkBitfield filter;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);

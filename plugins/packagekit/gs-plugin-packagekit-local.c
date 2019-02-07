@@ -32,12 +32,15 @@
 
 struct GsPluginData {
 	PkTask			*task;
+	GMutex			 task_mutex;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->task_mutex);
 	priv->task = pk_task_new ();
 	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 }
@@ -46,6 +49,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->task_mutex);
 	g_object_unref (priv->task);
 }
 
@@ -65,6 +69,11 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	g_auto(GStrv) files = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
@@ -142,6 +151,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	const gchar *mimetypes[] = {
 		"application/x-app-package",
 		"application/x-deb",
@@ -156,6 +166,10 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		return FALSE;
 	if (!g_strv_contains (mimetypes, content_type))
 		return TRUE;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* get details */
 	filename = g_file_get_path (file);

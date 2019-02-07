@@ -41,6 +41,7 @@
 struct GsPluginData {
 	PkControl		*control;
 	PkClient		*client;
+	GMutex			 client_mutex;
 };
 
 static void
@@ -59,6 +60,8 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->client_mutex);
 	priv->client = pk_client_new ();
 	priv->control = pk_control_new ();
 	g_signal_connect (priv->control, "updates-changed",
@@ -77,6 +80,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->client_mutex);
 	g_object_unref (priv->client);
 	g_object_unref (priv->control);
 }
@@ -109,6 +113,7 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -128,6 +133,10 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 	if (package_ids->len == 0)
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	/* resolve them all at once */
 	results = pk_client_resolve (priv->client,
@@ -216,6 +225,11 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);
@@ -286,6 +300,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	g_autofree const gchar **package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	package_ids = g_new0 (const gchar *, gs_app_list_length (list) + 1);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -298,6 +313,10 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	/* nothing to do */
 	if (cnt == 0)
 		return TRUE;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	/* get any update details */
 	results = pk_client_get_update_detail (priv->client,
@@ -348,6 +367,7 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -361,6 +381,10 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	if (package_ids->len == 0)
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	/* get any details */
 	results = pk_client_get_details (priv->client,
@@ -399,10 +423,15 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
 		return TRUE;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
@@ -578,10 +607,15 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	GsApp *app2;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	guint cache_age_save;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
 
 	/* ask PK to simulate upgrading the system */
 	cache_age_save = pk_client_get_cache_age (priv->client);

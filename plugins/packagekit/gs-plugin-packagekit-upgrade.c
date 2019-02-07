@@ -31,12 +31,15 @@
 
 struct GsPluginData {
 	PkTask			*task;
+	GMutex			 task_mutex;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->task_mutex);
 	priv->task = pk_task_new ();
 	pk_task_set_only_download (priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
@@ -47,6 +50,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->task_mutex);
 	g_object_unref (priv->task);
 }
 
@@ -66,6 +70,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
@@ -74,6 +79,10 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	/* check is distro-upgrade */
 	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
 		return TRUE;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
