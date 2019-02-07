@@ -15,12 +15,15 @@
 
 struct GsPluginData {
 	PkClient		*client;
+	GMutex			 client_mutex;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->client_mutex);
 	priv->client = pk_client_new ();
 
 	pk_client_set_background (priv->client, FALSE);
@@ -31,6 +34,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->client_mutex);
 	g_object_unref (priv->client);
 }
 
@@ -53,6 +57,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 	g_autoptr(GPtrArray) details = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 
 	path = gs_utils_get_url_path (url);
@@ -79,9 +84,12 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->client_mutex);
+	g_assert (locker != NULL);
+
 	package_ids = g_new0 (gchar *, 2);
 	package_ids[0] = g_strdup (path);
-
 	results = pk_client_resolve (priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     package_ids,
