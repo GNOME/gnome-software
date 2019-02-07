@@ -22,12 +22,15 @@
 
 struct GsPluginData {
 	PkTask			*task;
+	GMutex			 task_mutex;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->task_mutex);
 	priv->task = pk_task_new ();
 	pk_task_set_only_download (priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
@@ -40,6 +43,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_mutex_clear (&priv->task_mutex);
 	g_object_unref (priv->task);
 }
 
@@ -53,6 +57,11 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
@@ -134,6 +143,11 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* packagekit-glib is not threadsafe */
+	locker = g_mutex_locker_new (&priv->task_mutex);
+	g_assert (locker != NULL);
 
 	/* cache age of 1 is user-initiated */
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 1);
