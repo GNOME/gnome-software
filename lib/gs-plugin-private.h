@@ -55,5 +55,3 @@ void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_PRIVATE_H */
-
-/* vim: set noexpandtab: */

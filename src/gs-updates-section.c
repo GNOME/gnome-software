@@ -648,5 +648,3 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self->section_header = g_object_ref_sink (_build_section_header (self));
 	return GTK_LIST_BOX (self);
 }
-
-/* vim: set noexpandtab: */

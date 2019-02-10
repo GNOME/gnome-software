@@ -1788,5 +1788,3 @@ main (int argc, char **argv)
 			      (GTestDataFunc) gs_plugins_flatpak_repo_non_ascii_func);
 	return g_test_run ();
 }
-
-/* vim: set noexpandtab: */

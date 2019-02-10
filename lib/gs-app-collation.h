@@ -21,5 +21,3 @@ GsAppList	*gs_app_get_history		(GsApp		*app);
 G_END_DECLS
 
 #endif /* __GS_APP_COLLATION_H */
-
-/* vim: set noexpandtab: */

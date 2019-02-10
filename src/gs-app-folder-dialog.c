@@ -360,5 +360,3 @@ gs_app_folder_dialog_new (GtkWindow *parent, GList *apps)
 
 	return GTK_WIDGET (dialog);
 }
-
-/* vim: set noexpandtab: */

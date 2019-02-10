@@ -32,5 +32,3 @@ gchar		*gs_price_to_string			(GsPrice	*price);
 G_END_DECLS
 
 #endif /* __GS_PRICE_H */
-
-/* vim: set noexpandtab: */

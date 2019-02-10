@@ -46,5 +46,3 @@ void		 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
 G_END_DECLS
 
 #endif /* __GS_UPDATES_SECTION_H */
-
-/* vim: set noexpandtab: */

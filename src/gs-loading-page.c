@@ -216,5 +216,3 @@ gs_loading_page_new (void)
 	self = g_object_new (GS_TYPE_LOADING_PAGE, NULL);
 	return GS_LOADING_PAGE (self);
 }
-
-/* vim: set noexpandtab: */

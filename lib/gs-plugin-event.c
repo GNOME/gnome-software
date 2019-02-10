@@ -306,5 +306,3 @@ gs_plugin_event_new (void)
 	event = g_object_new (GS_TYPE_PLUGIN_EVENT, NULL);
 	return GS_PLUGIN_EVENT (event);
 }
-
-/* vim: set noexpandtab: */

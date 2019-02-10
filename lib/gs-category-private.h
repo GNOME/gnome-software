@@ -21,5 +21,3 @@ gchar		*gs_category_to_string		(GsCategory	*category);
 G_END_DECLS
 
 #endif /* __GS_CATEGORY_PRIVATE_H */
-
-/* vim: set noexpandtab: */

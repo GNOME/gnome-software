@@ -889,5 +889,3 @@ gs_installed_page_new (void)
 	self = g_object_new (GS_TYPE_INSTALLED_PAGE, NULL);
 	return GS_INSTALLED_PAGE (self);
 }
-
-/* vim: set noexpandtab: */

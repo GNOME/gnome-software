@@ -21,5 +21,3 @@ GsPluginLoader	*gs_application_get_plugin_loader	(GsApplication *application);
 gboolean	 gs_application_has_active_window	(GsApplication *application);
 
 #endif  /* __GS_APPLICATION_H */
-
-/* vim: set noexpandtab: */

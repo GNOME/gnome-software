@@ -35,5 +35,3 @@ void		 gs_review_row_set_network_available	(GsReviewRow	*review_row,
 G_END_DECLS
 
 #endif /* GS_REVIEW_ROW_H */
-
-/* vim: set noexpandtab: */

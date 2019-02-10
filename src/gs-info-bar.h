@@ -29,5 +29,3 @@ void		 gs_info_bar_set_warning	(GsInfoBar	*bar,
 G_END_DECLS
 
 #endif /* GS_INFO_BAR_H */
-
-/* vim: set noexpandtab: */

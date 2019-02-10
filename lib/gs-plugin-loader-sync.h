@@ -34,5 +34,3 @@ GPtrArray	*gs_plugin_loader_job_get_categories	(GsPluginLoader	*plugin_loader,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_LOADER_SYNC_H */
-
-/* vim: set noexpandtab: */

@@ -828,5 +828,3 @@ gs_app_row_new (GsApp *app)
 	gs_app_row_set_app (GS_APP_ROW (app_row), app);
 	return app_row;
 }
-
-/* vim: set noexpandtab: */

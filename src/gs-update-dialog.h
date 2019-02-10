@@ -27,5 +27,3 @@ void		 gs_update_dialog_show_update_details		(GsUpdateDialog		*dialog,
 G_END_DECLS
 
 #endif /* GS_UPDATE_DIALOG_H */
-
-/* vim: set noexpandtab: */

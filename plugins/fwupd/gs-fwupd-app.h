@@ -31,5 +31,3 @@ void			 gs_fwupd_app_set_from_release		(GsApp		*app,
 G_END_DECLS
 
 #endif /* __GS_FWUPD_APP_H */
-
-/* vim: set noexpandtab: */

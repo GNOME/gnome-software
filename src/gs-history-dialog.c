@@ -234,5 +234,3 @@ gs_history_dialog_new (void)
 					 "use-header-bar", TRUE,
 					 NULL));
 }
-
-/* vim: set noexpandtab: */

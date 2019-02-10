@@ -22,5 +22,3 @@ GsModeratePage	*gs_moderate_page_new		(void);
 G_END_DECLS
 
 #endif /* __GS_MODERATE_PAGE_H */
-
-/* vim: set noexpandtab: */

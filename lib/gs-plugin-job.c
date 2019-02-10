@@ -679,5 +679,3 @@ gs_plugin_job_init (GsPluginJob *self)
 	self->list = gs_app_list_new ();
 	self->time_created = g_get_monotonic_time ();
 }
-
-/* vim: set noexpandtab: */

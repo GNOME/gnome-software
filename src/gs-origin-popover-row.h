@@ -32,5 +32,3 @@ void		 gs_origin_popover_row_set_size_group	(GsOriginPopoverRow	*row,
 G_END_DECLS
 
 #endif /* GS_ORIGIN_POPOVER_ROW_H */
-
-/* vim: set noexpandtab: */

@@ -974,5 +974,3 @@ gs_app_list_new (void)
 	list = g_object_new (GS_TYPE_APP_LIST, NULL);
 	return GS_APP_LIST (list);
 }
-
-/* vim: set noexpandtab: */

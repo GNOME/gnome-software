@@ -177,5 +177,3 @@ gs_star_widget_new (void)
 	star = g_object_new (GS_TYPE_STAR_WIDGET, NULL);
 	return GTK_WIDGET (star);
 }
-
-/* vim: set noexpandtab: */

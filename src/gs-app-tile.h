@@ -35,5 +35,3 @@ void		 gs_app_tile_set_app	(GsAppTile	*tile,
 G_END_DECLS
 
 #endif /* GS_APP_TILE_H */
-
-/* vim: set noexpandtab: */

@@ -966,5 +966,3 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_VFUNCS_H */
-
-/* vim: set noexpandtab: */

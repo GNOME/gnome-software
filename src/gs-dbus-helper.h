@@ -22,5 +22,3 @@ GsDbusHelper	*gs_dbus_helper_new		(void);
 G_END_DECLS
 
 #endif /* __GS_DBUS_HELPER_H */
-
-/* vim: set noexpandtab: */

@@ -157,5 +157,3 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 			gs_app_set_update_details (app, tmp);
 	}
 }
-
-/* vim: set noexpandtab: */

@@ -30,5 +30,3 @@ gint		 gs_app_compare_priority	(GsApp		*app1,
 G_END_DECLS
 
 #endif /* __GS_APP_PRIVATE_H */
-
-/* vim: set noexpandtab: */

@@ -335,5 +335,3 @@ gs_os_release_new (GError **error)
 	os_release = g_initable_new (GS_TYPE_OS_RELEASE, NULL, error, NULL);
 	return GS_OS_RELEASE (os_release);
 }
-
-/* vim: set noexpandtab: */

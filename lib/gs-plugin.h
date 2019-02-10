@@ -126,5 +126,3 @@ gboolean	 gs_plugin_get_network_available	(GsPlugin	*plugin);
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_H */
-
-/* vim: set noexpandtab: */

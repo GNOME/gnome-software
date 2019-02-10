@@ -56,5 +56,3 @@ void		 gs_app_row_set_show_installed_size	(GsAppRow	*app_row,
 G_END_DECLS
 
 #endif /* GS_APP_ROW_H */
-
-/* vim: set noexpandtab: */

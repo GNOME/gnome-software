@@ -29,5 +29,3 @@ GsApp		*gs_details_page_get_app	(GsDetailsPage		*self);
 G_END_DECLS
 
 #endif /* __GS_DETAILS_PAGE_H */
-
-/* vim: set noexpandtab: */

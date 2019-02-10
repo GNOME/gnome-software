@@ -28,5 +28,3 @@ void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
 G_END_DECLS
 
 #endif /* __GS_UPDATE_MONITOR_H */
-
-/* vim: set noexpandtab: */
