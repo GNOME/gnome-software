@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_VENDOR_H
-#define __GS_VENDOR_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -31,5 +30,3 @@ gchar		*gs_vendor_get_not_found_url		(GsVendor		*vendor,
 							 GsVendorUrlType	 type);
 
 G_END_DECLS
-
-#endif /* __GS_VENDOR_H */

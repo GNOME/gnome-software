@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_APP_COLLATION_H
-#define __GS_APP_COLLATION_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -19,5 +18,3 @@ GsAppList	*gs_app_get_addons		(GsApp		*app);
 GsAppList	*gs_app_get_history		(GsApp		*app);
 
 G_END_DECLS
-
-#endif /* __GS_APP_COLLATION_H */

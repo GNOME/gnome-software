@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_THIRD_PARTY_REPO_ROW_H
-#define GS_THIRD_PARTY_REPO_ROW_H
+#pragma once
 
 #include "gnome-software-private.h"
 #include <gtk/gtk.h>
@@ -33,5 +32,3 @@ void		 gs_third_party_repo_row_set_app	(GsThirdPartyRepoRow	*row,
 GsApp		*gs_third_party_repo_row_get_app	(GsThirdPartyRepoRow	*row);
 
 G_END_DECLS
-
-#endif /* GS_THIRD_PARTY_REPO_ROW_H */

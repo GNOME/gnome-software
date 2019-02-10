@@ -7,8 +7,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_SCREENSHOT_IMAGE_H
-#define GS_SCREENSHOT_IMAGE_H
+#pragma once
 
 #include <gtk/gtk.h>
 #include <libsoup/soup.h>
@@ -36,5 +35,3 @@ void		 gs_screenshot_image_load_async		(GsScreenshotImage	*ssimg,
 							 GCancellable		*cancellable);
 
 G_END_DECLS
-
-#endif /* GS_SCREENSHOT_IMAGE_H */

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_LOADER_SYNC_H
-#define __GS_PLUGIN_LOADER_SYNC_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -32,5 +31,3 @@ GPtrArray	*gs_plugin_loader_job_get_categories	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_LOADER_SYNC_H */

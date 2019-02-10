@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_APP_LIST_PRIVATE_H
-#define __GS_APP_LIST_PRIVATE_H
+#pragma once
 
 #include "gs-app-list.h"
 
@@ -73,5 +72,3 @@ AsAppState	 gs_app_list_get_state		(GsAppList	*list);
 guint		 gs_app_list_get_progress	(GsAppList	*list);
 
 G_END_DECLS
-
-#endif /* __GS_APP_LIST_PRIVATE_H */

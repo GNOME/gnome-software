@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_HISTORY_DIALOG_H
-#define GS_HISTORY_DIALOG_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -24,5 +23,3 @@ void		 gs_history_dialog_set_app	(GsHistoryDialog	*dialog,
 						 GsApp			*app);
 
 G_END_DECLS
-
-#endif /* GS_HISTORY_DIALOG_H */

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_JOB_PRIVATE
-#define __GS_PLUGIN_JOB_PRIVATE
+#pragma once
 
 #include <glib-object.h>
 
@@ -44,5 +43,3 @@ void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_JOB_PRIVATE */

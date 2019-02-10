@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_UPDATES_SECTION_H
-#define __GS_UPDATES_SECTION_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -44,5 +43,3 @@ void		 gs_updates_section_set_size_groups	(GsUpdatesSection	*self,
 							 GtkSizeGroup		*header);
 
 G_END_DECLS
-
-#endif /* __GS_UPDATES_SECTION_H */

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_REPO_ROW_H
-#define GS_REPO_ROW_H
+#pragma once
 
 #include "gnome-software-private.h"
 #include <gtk/gtk.h>
@@ -38,5 +37,3 @@ void		 gs_repo_row_hide_details		(GsRepoRow	*row);
 void		 gs_repo_row_show_status		(GsRepoRow	*row);
 
 G_END_DECLS
-
-#endif /* GS_REPO_ROW_H */

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_SUMMARY_TILE_H
-#define GS_SUMMARY_TILE_H
+#pragma once
 
 #include "gs-app-tile.h"
 
@@ -19,5 +18,3 @@ G_DECLARE_FINAL_TYPE (GsSummaryTile, gs_summary_tile, GS, SUMMARY_TILE, GsAppTil
 GtkWidget	*gs_summary_tile_new	(GsApp		*app);
 
 G_END_DECLS
-
-#endif /* GS_SUMMARY_TILE_H */

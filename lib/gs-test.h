@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_TEST_H
-#define __GS_TEST_H
+#pragma once
 
 #include "gs-app.h"
 
@@ -17,5 +16,3 @@ gchar	*gs_test_get_filename			(const gchar	*testdatadir,
 						 const gchar	*filename);
 
 G_END_DECLS
-
-#endif /* __GS_TEST_H */

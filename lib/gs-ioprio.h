@@ -18,8 +18,7 @@
  * Boston, MA  02110-1301, USA.
  */
 
-#ifndef __GS_IOPRIO_H__
-#define __GS_IOPRIO_H__
+#pragma once
 
 #include <glib.h>
 
@@ -28,5 +27,3 @@ G_BEGIN_DECLS
 void gs_ioprio_init (void);
 
 G_END_DECLS
-
-#endif /* __GS_IOPRIO_H__ */

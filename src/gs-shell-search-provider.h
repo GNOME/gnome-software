@@ -7,8 +7,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_SHELL_SEARCH_PROVIDER_H
-#define __GS_SHELL_SEARCH_PROVIDER_H
+#pragma once
 
 #include "gnome-software-private.h"
 
@@ -23,5 +22,3 @@ void			 gs_shell_search_provider_unregister	(GsShellSearchProvider	 *self);
 GsShellSearchProvider	*gs_shell_search_provider_new		(void);
 void			 gs_shell_search_provider_setup		(GsShellSearchProvider	 *provider,
 								 GsPluginLoader		 *loader);
-
-#endif /* __GS_SHELL_SEARCH_PROVIDER_H */

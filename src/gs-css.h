@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_CSS_H
-#define __GS_CSS_H
+#pragma once
 
 #include <glib-object.h>
 #include <gio/gio.h>
@@ -34,5 +33,3 @@ void		 gs_css_set_rewrite_func	(GsCss		*self,
 						 gpointer	 user_data);
 
 G_END_DECLS
-
-#endif /* __GS_CSS_H */

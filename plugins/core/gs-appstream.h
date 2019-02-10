@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __APPSTREAM_COMMON_H
-#define __APPSTREAM_COMMON_H
+#pragma once
 
 #include <gnome-software.h>
 #include <xmlb.h>
@@ -74,5 +73,3 @@ void		 gs_appstream_component_add_provide	(XbBuilderNode	*component,
 							 const gchar	*str);
 
 G_END_DECLS
-
-#endif /* __APPSTREAM_COMMON_H */

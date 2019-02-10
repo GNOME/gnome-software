@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_APP_ROW_H
-#define GS_APP_ROW_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -54,5 +53,3 @@ void		 gs_app_row_set_show_installed_size	(GsAppRow	*app_row,
 							 gboolean	 show_size);
 
 G_END_DECLS
-
-#endif /* GS_APP_ROW_H */

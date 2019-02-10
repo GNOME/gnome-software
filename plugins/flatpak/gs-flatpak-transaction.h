@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_FLATPAK_TRANSACTION_H
-#define __GS_FLATPAK_TRANSACTION_H
+#pragma once
 
 #include <gnome-software.h>
 #include <flatpak.h>
@@ -30,6 +29,3 @@ gboolean		 gs_flatpak_transaction_run		(FlatpakTransaction	*transaction,
 								 GError			**error);
 
 G_END_DECLS
-
-#endif /* __GS_FLATPAK_TRANSACTION_H */
-

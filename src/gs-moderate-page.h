@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_MODERATE_PAGE_H
-#define __GS_MODERATE_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -20,5 +19,3 @@ G_DECLARE_FINAL_TYPE (GsModeratePage, gs_moderate_page, GS, MODERATE_PAGE, GsPag
 GsModeratePage	*gs_moderate_page_new		(void);
 
 G_END_DECLS
-
-#endif /* __GS_MODERATE_PAGE_H */

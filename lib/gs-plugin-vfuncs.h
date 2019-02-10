@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
+#pragma once
 
 /**
  * SECTION:gs-plugin-vfuncs
@@ -13,9 +14,6 @@
  * @stability: Unstable
  * @short_description: Vfuncs that plugins can implement
  */
-
-#ifndef __GS_PLUGIN_VFUNCS_H
-#define __GS_PLUGIN_VFUNCS_H
 
 #include <appstream-glib.h>
 #include <glib-object.h>
@@ -964,5 +962,3 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
 							 GError		**error);
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_VFUNCS_H */

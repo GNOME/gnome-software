@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GNOME_SOFTWARE_PRIVATE_H__
-#define __GNOME_SOFTWARE_PRIVATE_H__
+#pragma once
 
 #ifndef I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
 #define I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
@@ -21,6 +20,3 @@
 #include <gs-plugin-loader.h>
 #include <gs-plugin-loader-sync.h>
 #include <gs-plugin-private.h>
-
-#endif /* __GNOME_SOFTWARE_PRIVATE_H__ */
-

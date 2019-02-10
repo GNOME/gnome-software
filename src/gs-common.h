@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_COMMON_H
-#define __GS_COMMON_H
+#pragma once
 
 #include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
@@ -46,5 +45,3 @@ gboolean	 gs_utils_list_has_app_fuzzy	(GsAppList	*list,
 						 GsApp		*app);
 
 G_END_DECLS
-
-#endif /* __GS_COMMON_H */

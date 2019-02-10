@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_APP_PRIVATE_H
-#define __GS_APP_PRIVATE_H
+#pragma once
 
 #include "gs-app.h"
 #include "gs-plugin-types.h"
@@ -28,5 +27,3 @@ gint		 gs_app_compare_priority	(GsApp		*app1,
 						 GsApp		*app2);
 
 G_END_DECLS
-
-#endif /* __GS_APP_PRIVATE_H */

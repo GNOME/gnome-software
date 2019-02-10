@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_SHELL_H
-#define __GS_SHELL_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -90,5 +89,3 @@ gboolean	 gs_shell_is_active		(GsShell	*shell);
 GtkWindow	*gs_shell_get_window		(GsShell	*shell);
 
 G_END_DECLS
-
-#endif /* __GS_SHELL_H */

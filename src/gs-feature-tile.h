@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_FEATURE_TILE_H
-#define GS_FEATURE_TILE_H
+#pragma once
 
 #include "gs-app-tile.h"
 
@@ -19,5 +18,3 @@ G_DECLARE_FINAL_TYPE (GsFeatureTile, gs_feature_tile, GS, FEATURE_TILE, GsAppTil
 GtkWidget	*gs_feature_tile_new			(GsApp		*app);
 
 G_END_DECLS
-
-#endif /* GS_FEATURE_TILE_H */
