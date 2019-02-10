@@ -145,5 +145,3 @@ gs_origin_popover_row_new (GsApp *app)
 	gs_origin_popover_row_set_app (row, app);
 	return GTK_WIDGET (row);
 }
-
-/* vim: set noexpandtab: */

@@ -27,5 +27,3 @@ void		 gs_search_page_set_text		(GsSearchPage		*self,
 G_END_DECLS
 
 #endif /* __GS_SEARCH_PAGE_H */
-
-/* vim: set noexpandtab: */

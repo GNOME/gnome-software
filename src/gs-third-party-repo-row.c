@@ -244,5 +244,3 @@ gs_third_party_repo_row_new (void)
 {
 	return g_object_new (GS_TYPE_THIRD_PARTY_REPO_ROW, NULL);
 }
-
-/* vim: set noexpandtab: */

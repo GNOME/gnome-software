@@ -196,5 +196,3 @@ gs_info_bar_set_warning (GsInfoBar *bar, const gchar *text)
 
 	update_label (bar->label_warning, text);
 }
-
-/* vim: set noexpandtab: */

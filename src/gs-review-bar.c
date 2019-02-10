@@ -74,5 +74,3 @@ gs_review_bar_new (void)
 	bar = g_object_new (GS_TYPE_REVIEW_BAR, NULL);
 	return GTK_WIDGET (bar);
 }
-
-/* vim: set noexpandtab: */

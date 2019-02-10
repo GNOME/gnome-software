@@ -3701,5 +3701,3 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
 }
-
-/* vim: set noexpandtab: */

@@ -67,5 +67,3 @@ gboolean		 gs_plugin_event_has_flag	(GsPluginEvent		*event,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_EVENT */
-
-/* vim: set noexpandtab: */

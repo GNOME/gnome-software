@@ -117,5 +117,3 @@ gs_update_list_new (void)
 	update_list = g_object_new (GS_TYPE_UPDATE_LIST, NULL);
 	return GTK_WIDGET (update_list);
 }
-
-/* vim: set noexpandtab: */

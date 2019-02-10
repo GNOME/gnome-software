@@ -21,5 +21,3 @@ GtkWidget	*gs_summary_tile_new	(GsApp		*app);
 G_END_DECLS
 
 #endif /* GS_SUMMARY_TILE_H */
-
-/* vim: set noexpandtab: */

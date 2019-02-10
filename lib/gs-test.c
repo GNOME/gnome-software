@@ -35,5 +35,3 @@ gs_test_flush_main_context (void)
 	if (cnt > 0)
 		g_debug ("cleared %u events", cnt);
 }
-
-/* vim: set noexpandtab: */

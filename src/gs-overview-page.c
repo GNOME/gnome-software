@@ -1133,5 +1133,3 @@ gs_overview_page_new (void)
 {
 	return GS_OVERVIEW_PAGE (g_object_new (GS_TYPE_OVERVIEW_PAGE, NULL));
 }
-
-/* vim: set noexpandtab: */

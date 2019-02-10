@@ -78,5 +78,3 @@ gs_progress_button_new (void)
 {
 	return g_object_new (GS_TYPE_PROGRESS_BUTTON, NULL);
 }
-
-/* vim: set noexpandtab: */

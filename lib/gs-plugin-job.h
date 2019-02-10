@@ -64,5 +64,3 @@ void		 gs_plugin_job_set_price		(GsPluginJob	*self,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_JOB */
-
-/* vim: set noexpandtab: */

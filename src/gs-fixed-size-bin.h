@@ -21,5 +21,3 @@ GtkWidget	*gs_fixed_size_bin_new	(void);
 G_END_DECLS
 
 #endif /* GS_FIXED_SIZE_BIN_H */
-
-/* vim: set noexpandtab: */

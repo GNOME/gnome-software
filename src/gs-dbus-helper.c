@@ -811,5 +811,3 @@ gs_dbus_helper_new (void)
 {
 	return GS_DBUS_HELPER (g_object_new (GS_TYPE_DBUS_HELPER, NULL));
 }
-
-/* vim: set noexpandtab: */

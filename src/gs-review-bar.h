@@ -24,5 +24,3 @@ void		 gs_review_bar_set_fraction	(GsReviewBar	*bar,
 G_END_DECLS
 
 #endif /* GS_REVIEW_BAR_H */
-
-/* vim: set noexpandtab: */

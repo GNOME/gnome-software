@@ -231,5 +231,3 @@ gs_review_dialog_new (void)
 					 "use-header-bar", TRUE,
 					 NULL));
 }
-
-/* vim: set noexpandtab: */

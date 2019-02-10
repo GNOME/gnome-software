@@ -36,5 +36,3 @@ void		 gs_css_set_rewrite_func	(GsCss		*self,
 G_END_DECLS
 
 #endif /* __GS_CSS_H */
-
-/* vim: set noexpandtab: */

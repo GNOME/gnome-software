@@ -21,5 +21,3 @@ GtkWidget	*gs_first_run_dialog_new	(void);
 G_END_DECLS
 
 #endif /* GS_FIRST_RUN_DIALOG_H */
-
-/* vim: set noexpandtab: */

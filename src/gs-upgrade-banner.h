@@ -36,5 +36,3 @@ GsApp		*gs_upgrade_banner_get_app		(GsUpgradeBanner	*self);
 G_END_DECLS
 
 #endif /* GS_UPGRADE_BANNER_H */
-
-/* vim: set noexpandtab: */

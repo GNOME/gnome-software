@@ -93,5 +93,3 @@ gboolean	 gs_utils_parse_evr		(const gchar	 *evr,
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */
-
-/* vim: set noexpandtab: */

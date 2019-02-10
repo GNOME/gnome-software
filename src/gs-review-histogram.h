@@ -29,5 +29,3 @@ void		 gs_review_histogram_set_ratings		(GsReviewHistogram *histogram,
 G_END_DECLS
 
 #endif /* GS_REVIEW_HISTOGRAM_H */
-
-/* vim: set noexpandtab: */

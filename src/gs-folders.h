@@ -46,5 +46,3 @@ void              gs_folders_convert            (void);
 G_END_DECLS
 
 #endif /* __GS_FOLDERS_H */
-
-/* vim: set noexpandtab: */

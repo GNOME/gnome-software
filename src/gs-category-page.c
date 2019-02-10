@@ -615,5 +615,3 @@ gs_category_page_new (void)
 	self = g_object_new (GS_TYPE_CATEGORY_PAGE, NULL);
 	return self;
 }
-
-/* vim: set noexpandtab: */

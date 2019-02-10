@@ -38,5 +38,3 @@ void		 gs_star_widget_set_interactive		(GsStarWidget	*star,
 G_END_DECLS
 
 #endif /* GS_STAR_WIDGET_H */
-
-/* vim: set noexpandtab: */

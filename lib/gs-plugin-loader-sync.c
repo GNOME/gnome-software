@@ -205,5 +205,3 @@ gs_plugin_loader_job_process_app (GsPluginLoader *plugin_loader,
 
 	return app;
 }
-
-/* vim: set noexpandtab: */

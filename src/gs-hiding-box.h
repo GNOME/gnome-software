@@ -24,5 +24,3 @@ gint		 gs_hiding_box_get_spacing	(GsHidingBox	*box);
 G_END_DECLS
 
 #endif /* GS_HIDING_BOX_H_ */
-
-/* vim: set noexpandtab: */

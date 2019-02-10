@@ -21,5 +21,3 @@ GsDebug	 	*gs_debug_new		(void);
 G_END_DECLS
 
 #endif /* __GS_DEBUG_H */
-
-/* vim: set noexpandtab: */

@@ -187,5 +187,3 @@ gs_flatpak_app_get_main_app_ref_name (GsApp *app)
 {
 	return gs_app_get_metadata_item (app, "flatpak::mainApp");
 }
-
-/* vim: set noexpandtab: */

@@ -48,5 +48,3 @@ gboolean	 gs_utils_list_has_app_fuzzy	(GsAppList	*list,
 G_END_DECLS
 
 #endif /* __GS_COMMON_H */
-
-/* vim: set noexpandtab: */

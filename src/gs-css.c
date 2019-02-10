@@ -297,5 +297,3 @@ gs_css_new (void)
 	self = g_object_new (GS_TYPE_CSS, NULL);
 	return GS_CSS (self);
 }
-
-/* vim: set noexpandtab: */

@@ -29,5 +29,3 @@ GsApp		*gs_app_addon_row_get_addon		(GsAppAddonRow	*row);
 G_END_DECLS
 
 #endif /* GS_APP_ADDON_ROW_H */
-
-/* vim: set noexpandtab: */

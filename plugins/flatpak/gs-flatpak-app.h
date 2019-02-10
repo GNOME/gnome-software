@@ -65,5 +65,3 @@ const gchar		*gs_flatpak_app_get_main_app_ref_name	(GsApp		*app);
 G_END_DECLS
 
 #endif /* __GS_FLATPAK_APP_H */
-
-/* vim: set noexpandtab: */

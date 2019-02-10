@@ -1142,5 +1142,3 @@ gs_update_monitor_new (GsApplication *application)
 
 	return monitor;
 }
-
-/* vim: set noexpandtab: */

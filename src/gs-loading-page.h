@@ -29,5 +29,3 @@ GsLoadingPage	*gs_loading_page_new		(void);
 G_END_DECLS
 
 #endif /* __GS_LOADING_PAGE_H */
-
-/* vim: set noexpandtab: */

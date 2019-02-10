@@ -337,5 +337,3 @@ gs_moderate_page_new (void)
 	self = g_object_new (GS_TYPE_MODERATE_PAGE, NULL);
 	return GS_MODERATE_PAGE (self);
 }
-
-/* vim: set noexpandtab: */

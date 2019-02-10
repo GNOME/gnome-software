@@ -46,5 +46,3 @@ void		 gs_app_list_filter		(GsAppList	*list,
 G_END_DECLS
 
 #endif /* __GS_APP_LIST_H */
-
-/* vim: set noexpandtab: */

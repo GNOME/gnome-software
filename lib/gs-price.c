@@ -158,5 +158,3 @@ gs_price_new (gdouble amount, const gchar *currency)
 	price->currency = g_strdup (currency);
 	return GS_PRICE (price);
 }
-
-/* vim: set noexpandtab: */

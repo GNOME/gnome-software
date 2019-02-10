@@ -39,5 +39,3 @@ void			 gs_extras_page_search			(GsExtrasPage		 *self,
 G_END_DECLS
 
 #endif /* __GS_EXTRAS_PAGE_H */
-
-/* vim: set noexpandtab: */

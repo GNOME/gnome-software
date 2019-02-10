@@ -40,5 +40,3 @@ void		 gs_auth_set_goa_object		(GsAuth		*auth,
 G_END_DECLS
 
 #endif /* __GS_AUTH_H */
-
-/* vim: set noexpandtab: */

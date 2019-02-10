@@ -75,5 +75,3 @@ guint		 gs_app_list_get_progress	(GsAppList	*list);
 G_END_DECLS
 
 #endif /* __GS_APP_LIST_PRIVATE_H */
-
-/* vim: set noexpandtab: */

@@ -40,5 +40,3 @@ void		 gs_repo_row_show_status		(GsRepoRow	*row);
 G_END_DECLS
 
 #endif /* GS_REPO_ROW_H */
-
-/* vim: set noexpandtab: */

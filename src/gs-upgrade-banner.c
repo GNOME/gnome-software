@@ -324,5 +324,3 @@ gs_upgrade_banner_new (void)
 			     NULL);
 	return GTK_WIDGET (self);
 }
-
-/* vim: set noexpandtab: */

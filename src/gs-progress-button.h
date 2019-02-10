@@ -26,5 +26,3 @@ void		 gs_progress_button_set_show_progress	(GsProgressButton	*button,
 G_END_DECLS
 
 #endif /* GS_PROGRESS_BUTTON_H */
-
-/* vim: set noexpandtab: */

@@ -19,5 +19,3 @@ gchar	*gs_test_get_filename			(const gchar	*testdatadir,
 G_END_DECLS
 
 #endif /* __GS_TEST_H */
-
-/* vim: set noexpandtab: */

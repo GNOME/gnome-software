@@ -38,5 +38,3 @@ void		 gs_screenshot_image_load_async		(GsScreenshotImage	*ssimg,
 G_END_DECLS
 
 #endif /* GS_SCREENSHOT_IMAGE_H */
-
-/* vim: set noexpandtab: */

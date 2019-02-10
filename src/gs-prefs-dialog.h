@@ -24,5 +24,3 @@ GtkWidget	*gs_prefs_dialog_new		(GtkWindow	*parent,
 G_END_DECLS
 
 #endif /* GS_PREFS_DIALOG_H */
-
-/* vim: set noexpandtab: */

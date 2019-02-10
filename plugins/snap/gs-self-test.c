@@ -327,5 +327,3 @@ main (int argc, char **argv)
 			      (GTestDataFunc) gs_plugins_snap_test_func);
 	return g_test_run ();
 }
-
-/* vim: set noexpandtab: */

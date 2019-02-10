@@ -257,5 +257,3 @@ main (int argc, char **argv)
 			      (GTestDataFunc) gs_plugins_core_generic_updates_func);
 	return g_test_run ();
 }
-
-/* vim: set noexpandtab: */
