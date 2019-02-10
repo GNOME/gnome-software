@@ -104,5 +104,3 @@ gs_review_histogram_new (void)
 	histogram = g_object_new (GS_TYPE_REVIEW_HISTOGRAM, NULL);
 	return GTK_WIDGET (histogram);
 }
-
-/* vim: set noexpandtab: */

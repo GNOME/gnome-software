@@ -92,5 +92,3 @@ GtkWindow	*gs_shell_get_window		(GsShell	*shell);
 G_END_DECLS
 
 #endif /* __GS_SHELL_H */
-
-/* vim: set noexpandtab: */

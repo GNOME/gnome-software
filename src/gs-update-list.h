@@ -31,5 +31,3 @@ void		 gs_update_list_add_app			(GsUpdateList	*update_list,
 G_END_DECLS
 
 #endif /* GS_UPDATE_LIST_H */
-
-/* vim: set noexpandtab: */

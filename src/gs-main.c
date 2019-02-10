@@ -39,5 +39,3 @@ main (int argc, char **argv)
 	status = g_application_run (G_APPLICATION (application), argc, argv);
 	return status;
 }
-
-/* vim: set noexpandtab: */

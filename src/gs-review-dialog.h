@@ -26,5 +26,3 @@ gchar		*gs_review_dialog_get_text	(GsReviewDialog	*dialog);
 G_END_DECLS
 
 #endif /* GS_REVIEW_DIALOG_H */
-
-/* vim: set noexpandtab: */

@@ -591,5 +591,3 @@ gs_utils_list_has_app_fuzzy (GsAppList *list, GsApp *app)
 	}
 	return FALSE;
 }
-
-/* vim: set noexpandtab: */

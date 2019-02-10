@@ -563,5 +563,3 @@ gs_category_new (const gchar *id)
 	category->id = g_strdup (id);
 	return GS_CATEGORY (category);
 }
-
-/* vim: set noexpandtab: */

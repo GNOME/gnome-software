@@ -163,5 +163,3 @@ gs_removal_dialog_new (void)
 	                       NULL);
 	return GTK_WIDGET (dialog);
 }
-
-/* vim: set noexpandtab: */

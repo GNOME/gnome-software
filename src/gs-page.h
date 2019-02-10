@@ -87,5 +87,3 @@ gboolean	 gs_page_is_active			(GsPage		*page);
 G_END_DECLS
 
 #endif /* GS_PAGE_H */
-
-/* vim: set noexpandtab: */

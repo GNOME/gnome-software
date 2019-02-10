@@ -270,5 +270,3 @@ gs_app_addon_row_new (GsApp *app)
 	gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), app);
 	return row;
 }
-
-/* vim: set noexpandtab: */

@@ -282,5 +282,3 @@ typedef enum {
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_TYPES_H */
-
-/* vim: set noexpandtab: */

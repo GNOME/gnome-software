@@ -57,5 +57,3 @@ gs_first_run_dialog_new (void)
 					 "use-header-bar", TRUE,
 					 NULL));
 }
-
-/* vim: set noexpandtab: */

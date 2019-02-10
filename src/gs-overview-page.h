@@ -31,5 +31,3 @@ void		 gs_overview_page_set_category	(GsOverviewPage		*self,
 G_END_DECLS
 
 #endif /* __GS_OVERVIEW_PAGE_H */
-
-/* vim: set noexpandtab: */

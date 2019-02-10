@@ -25,5 +25,3 @@ GtkWidget	*gs_repos_dialog_new		(GtkWindow	*parent,
 G_END_DECLS
 
 #endif /* GS_REPOS_DIALOG_H */
-
-/* vim: set noexpandtab: */

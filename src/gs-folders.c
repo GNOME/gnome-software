@@ -653,5 +653,3 @@ gs_folders_convert (void)
 		
 	}
 }
-
-/* vim: set noexpandtab: */

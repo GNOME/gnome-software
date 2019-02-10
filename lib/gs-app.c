@@ -4576,5 +4576,3 @@ gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
 
 	priv->update_permissions = update_permissions;
 }
-
-/* vim: set noexpandtab: */

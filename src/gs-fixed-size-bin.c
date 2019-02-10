@@ -234,5 +234,3 @@ gs_fixed_size_bin_new (void)
 {
 	return g_object_new (GS_TYPE_FIXED_SIZE_BIN, NULL);
 }
-
-/* vim: set noexpandtab: */

@@ -650,5 +650,3 @@ gs_screenshot_image_new (SoupSession *session)
 	ssimg->session = g_object_ref (session);
 	return GTK_WIDGET (ssimg);
 }
-
-/* vim: set noexpandtab: */

@@ -98,5 +98,3 @@ void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_l
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_LOADER_H */
-
-/* vim: set noexpandtab: */

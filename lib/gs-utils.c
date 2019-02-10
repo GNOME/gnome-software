@@ -1185,5 +1185,3 @@ gs_utils_parse_evr (const gchar *evr,
 	g_assert (*out_release != NULL);
 	return TRUE;
 }
-
-/* vim: set noexpandtab: */

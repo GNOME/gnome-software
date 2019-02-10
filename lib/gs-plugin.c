@@ -2042,5 +2042,3 @@ gs_plugin_new (void)
 	plugin = g_object_new (GS_TYPE_PLUGIN, NULL);
 	return plugin;
 }
-
-/* vim: set noexpandtab: */

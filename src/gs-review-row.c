@@ -321,5 +321,3 @@ gs_review_row_new (AsReview *review)
 
 	return GTK_WIDGET (row);
 }
-
-/* vim: set noexpandtab: */

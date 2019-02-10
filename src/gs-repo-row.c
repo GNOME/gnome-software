@@ -288,5 +288,3 @@ gs_repo_row_new (void)
 {
 	return g_object_new (GS_TYPE_REPO_ROW, NULL);
 }
-
-/* vim: set noexpandtab: */

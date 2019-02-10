@@ -187,5 +187,3 @@ gs_debug_new (void)
 {
 	return GS_DEBUG (g_object_new (GS_TYPE_DEBUG, NULL));
 }
-
-/* vim: set noexpandtab: */

@@ -46,5 +46,3 @@ void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_JOB_PRIVATE */
-
-/* vim: set noexpandtab: */

@@ -85,5 +85,3 @@ gs_prefs_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 	dialog->plugin_loader = g_object_ref (plugin_loader);
 	return GTK_WIDGET (dialog);
 }
-
-/* vim: set noexpandtab: */

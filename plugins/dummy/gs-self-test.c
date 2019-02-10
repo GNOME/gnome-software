@@ -893,5 +893,3 @@ main (int argc, char **argv)
 			      (GTestDataFunc) gs_plugins_dummy_limit_parallel_ops_func);
 	return g_test_run ();
 }
-
-/* vim: set noexpandtab: */

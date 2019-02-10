@@ -2713,5 +2713,3 @@ gs_details_page_new (void)
 	self = g_object_new (GS_TYPE_DETAILS_PAGE, NULL);
 	return GS_DETAILS_PAGE (self);
 }
-
-/* vim: set noexpandtab: */

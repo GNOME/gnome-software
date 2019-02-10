@@ -25,5 +25,3 @@ GsCategory	*gs_category_page_get_category	(GsCategoryPage		*self);
 G_END_DECLS
 
 #endif /* __GS_CATEGORY_PAGE_H */
-
-/* vim: set noexpandtab: */

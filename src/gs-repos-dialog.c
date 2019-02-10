@@ -877,5 +877,3 @@ gs_repos_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 
 	return GTK_WIDGET (dialog);
 }
-
-/* vim: set noexpandtab: */

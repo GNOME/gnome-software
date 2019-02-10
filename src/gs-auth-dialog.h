@@ -26,5 +26,3 @@ GtkWidget	*gs_auth_dialog_new	(GsPluginLoader	*plugin_loader,
 G_END_DECLS
 
 #endif /* GS_AUTH_DIALOG_H */
-
-/* vim: set noexpandtab: */

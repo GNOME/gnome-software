@@ -26,5 +26,3 @@ void		 gs_history_dialog_set_app	(GsHistoryDialog	*dialog,
 G_END_DECLS
 
 #endif /* GS_HISTORY_DIALOG_H */
-
-/* vim: set noexpandtab: */

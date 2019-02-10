@@ -1095,5 +1095,3 @@ gs_application_new (void)
 			     "inactivity-timeout", 12000,
 			     NULL);
 }
-
-/* vim: set noexpandtab: */

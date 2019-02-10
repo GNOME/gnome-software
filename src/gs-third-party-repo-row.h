@@ -35,5 +35,3 @@ GsApp		*gs_third_party_repo_row_get_app	(GsThirdPartyRepoRow	*row);
 G_END_DECLS
 
 #endif /* GS_THIRD_PARTY_REPO_ROW_H */
-
-/* vim: set noexpandtab: */

@@ -44,5 +44,3 @@ const gchar *gs_content_rating_system_to_str (GsContentRatingSystem system);
 G_END_DECLS
 
 #endif /* __GS_CONTENT_RATING_H */
-
-/* vim: set noexpandtab: */

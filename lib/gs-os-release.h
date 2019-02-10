@@ -36,5 +36,3 @@ const gchar		*gs_os_release_get_home_url		(GsOsRelease	*os_release);
 G_END_DECLS
 
 #endif /* __GS_OS_RELEASE_H */
-
-/* vim: set noexpandtab: */

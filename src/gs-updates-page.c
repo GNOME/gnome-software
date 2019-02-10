@@ -1466,5 +1466,3 @@ gs_updates_page_new (void)
 	self = g_object_new (GS_TYPE_UPDATES_PAGE, NULL);
 	return GS_UPDATES_PAGE (self);
 }
-
-/* vim: set noexpandtab: */

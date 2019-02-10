@@ -25,5 +25,3 @@ void		 gs_removal_dialog_show_upgrade_removals	(GsRemovalDialog	 *self,
 G_END_DECLS
 
 #endif /* GS_REMOVAL_DIALOG_H */
-
-/* vim: set noexpandtab: */

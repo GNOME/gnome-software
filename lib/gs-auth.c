@@ -468,5 +468,3 @@ gs_auth_new (const gchar *auth_id,
 
 	return GS_AUTH (auth);
 }
-
-/* vim: set noexpandtab: */

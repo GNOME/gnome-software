@@ -54,5 +54,3 @@ void		 gs_category_increment_size	(GsCategory	*category);
 G_END_DECLS
 
 #endif /* __GS_CATEGORY_H */
-
-/* vim: set noexpandtab: */
