@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_UTILS_H
-#define __GS_UTILS_H
+#pragma once
 
 #include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
@@ -91,5 +90,3 @@ gboolean	 gs_utils_parse_evr		(const gchar	 *evr,
 						 gchar		**out_release);
 
 G_END_DECLS
-
-#endif /* __GS_UTILS_H */

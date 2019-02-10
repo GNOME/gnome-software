@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GNOME_SOFTWARE_H__
-#define __GNOME_SOFTWARE_H__
+#pragma once
 
 #ifndef I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
 #error You have to define I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
@@ -21,6 +20,3 @@
 #include <gs-plugin.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-utils.h>
-
-#endif /* __GNOME_SOFTWARE_H__ */
-

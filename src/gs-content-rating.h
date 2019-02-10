@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_CONTENT_RATING_H
-#define __GS_CONTENT_RATING_H
+#pragma once
 
 G_BEGIN_DECLS
 
@@ -42,5 +41,3 @@ const gchar *gs_content_rating_key_value_to_str (const gchar *id,
 const gchar *gs_content_rating_system_to_str (GsContentRatingSystem system);
 
 G_END_DECLS
-
-#endif /* __GS_CONTENT_RATING_H */

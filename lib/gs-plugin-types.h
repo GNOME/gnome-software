@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_TYPES_H
-#define __GS_PLUGIN_TYPES_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -280,5 +279,3 @@ typedef enum {
 } GsPluginAction;
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_TYPES_H */

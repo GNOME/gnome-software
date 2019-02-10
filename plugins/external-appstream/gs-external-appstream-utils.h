@@ -7,13 +7,10 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_EXTERNAL_APPSTREAM_UTILS_H
-#define GS_EXTERNAL_APPSTREAM_UTILS_H
+#pragma once
 
 #include <config.h>
 #include <glib.h>
 
 const gchar	*gs_external_appstream_utils_get_system_dir (void);
 gchar		*gs_external_appstream_utils_get_file_cache_path (const gchar	*file_name);
-
-#endif /* GS_EXTERNAL_APPSTREAM_UTILS_H */

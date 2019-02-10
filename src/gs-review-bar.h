@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_REVIEW_BAR_H
-#define GS_REVIEW_BAR_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -22,5 +21,3 @@ void		 gs_review_bar_set_fraction	(GsReviewBar	*bar,
 						 gdouble	 fraction);
 
 G_END_DECLS
-
-#endif /* GS_REVIEW_BAR_H */

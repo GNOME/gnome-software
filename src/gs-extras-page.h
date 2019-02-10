@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_EXTRAS_PAGE_H
-#define __GS_EXTRAS_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -37,5 +36,3 @@ void			 gs_extras_page_search			(GsExtrasPage		 *self,
 								 gchar			**resources);
 
 G_END_DECLS
-
-#endif /* __GS_EXTRAS_PAGE_H */

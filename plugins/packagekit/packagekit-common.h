@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __PACKAGEKIT_COMMON_H
-#define __PACKAGEKIT_COMMON_H
+#pragma once
 
 #include <glib.h>
 #include <gnome-software.h>
@@ -37,5 +36,3 @@ void		gs_plugin_packagekit_set_packaging_format	(GsPlugin *plugin,
 								 GsApp *app);
 
 G_END_DECLS
-
-#endif /* __PACKAGEKIT_COMMON_H */

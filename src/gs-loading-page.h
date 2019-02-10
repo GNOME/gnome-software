@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_LOADING_PAGE_H
-#define __GS_LOADING_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -27,5 +26,3 @@ struct _GsLoadingPageClass
 GsLoadingPage	*gs_loading_page_new		(void);
 
 G_END_DECLS
-
-#endif /* __GS_LOADING_PAGE_H */

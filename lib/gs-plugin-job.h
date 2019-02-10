@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_JOB
-#define __GS_PLUGIN_JOB
+#pragma once
 
 #include <glib-object.h>
 
@@ -62,5 +61,3 @@ void		 gs_plugin_job_set_price		(GsPluginJob	*self,
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_JOB */

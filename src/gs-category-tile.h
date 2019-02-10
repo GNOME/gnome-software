@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_CATEGORY_TILE_H
-#define GS_CATEGORY_TILE_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -27,5 +26,3 @@ void		 gs_category_tile_set_colorful		(GsCategoryTile	*tile,
 							 gboolean	 colorful);
 
 G_END_DECLS
-
-#endif /* GS_CATEGORY_TILE_H */

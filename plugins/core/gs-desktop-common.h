@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_DESKTOP_GROUP_H
-#define __GS_DESKTOP_GROUP_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -30,5 +29,3 @@ typedef struct {
 const GsDesktopData	*gs_desktop_get_data		(void);
 
 G_END_DECLS
-
-#endif /* __GS_DESKTOP_GROUP_H */

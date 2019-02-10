@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_APP_LIST_H
-#define __GS_APP_LIST_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -44,5 +43,3 @@ void		 gs_app_list_filter		(GsAppList	*list,
 						 gpointer	 user_data);
 
 G_END_DECLS
-
-#endif /* __GS_APP_LIST_H */

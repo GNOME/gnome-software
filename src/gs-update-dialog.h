@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_UPDATE_DIALOG_H
-#define GS_UPDATE_DIALOG_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -25,5 +24,3 @@ void		 gs_update_dialog_show_update_details		(GsUpdateDialog		*dialog,
 								 GsApp			*app);
 
 G_END_DECLS
-
-#endif /* GS_UPDATE_DIALOG_H */

@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_CATEGORY_PAGE_H
-#define __GS_CATEGORY_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -23,5 +22,3 @@ void		 gs_category_page_set_category	(GsCategoryPage		*self,
 GsCategory	*gs_category_page_get_category	(GsCategoryPage		*self);
 
 G_END_DECLS
-
-#endif /* __GS_CATEGORY_PAGE_H */

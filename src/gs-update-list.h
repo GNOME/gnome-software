@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_UPDATE_LIST_H
-#define GS_UPDATE_LIST_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -29,5 +28,3 @@ void		 gs_update_list_add_app			(GsUpdateList	*update_list,
 							 GsApp		*app);
 
 G_END_DECLS
-
-#endif /* GS_UPDATE_LIST_H */

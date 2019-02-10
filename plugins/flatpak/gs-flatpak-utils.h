@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_FLATPAK_UTILS_H
-#define __GS_FLATPAK_UTILS_H
+#pragma once
 
 G_BEGIN_DECLS
 
@@ -19,6 +18,3 @@ GsApp		*gs_flatpak_app_new_from_repo_file	(GFile		*file,
 							 GError		**error);
 
 G_END_DECLS
-
-#endif /* __GS_FLATPAK_UTILS_H */
-

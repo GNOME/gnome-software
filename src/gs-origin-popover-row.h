@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_ORIGIN_POPOVER_ROW_H
-#define GS_ORIGIN_POPOVER_ROW_H
+#pragma once
 
 #include "gnome-software-private.h"
 #include <gtk/gtk.h>
@@ -30,5 +29,3 @@ void		 gs_origin_popover_row_set_size_group	(GsOriginPopoverRow	*row,
 							 GtkSizeGroup		*size_group);
 
 G_END_DECLS
-
-#endif /* GS_ORIGIN_POPOVER_ROW_H */

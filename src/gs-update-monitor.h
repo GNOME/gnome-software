@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_UPDATE_MONITOR_H
-#define __GS_UPDATE_MONITOR_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -26,5 +25,3 @@ void		 gs_update_monitor_show_error		(GsUpdateMonitor *monitor,
 							 GsShell	*shell);
 
 G_END_DECLS
-
-#endif /* __GS_UPDATE_MONITOR_H */

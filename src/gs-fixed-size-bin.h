@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_FIXED_SIZE_BIN_H
-#define GS_FIXED_SIZE_BIN_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -19,5 +18,3 @@ G_DECLARE_FINAL_TYPE (GsFixedSizeBin, gs_fixed_size_bin, GS, FIXED_SIZE_BIN, Gtk
 GtkWidget	*gs_fixed_size_bin_new	(void);
 
 G_END_DECLS
-
-#endif /* GS_FIXED_SIZE_BIN_H */

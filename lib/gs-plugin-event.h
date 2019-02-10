@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_EVENT
-#define __GS_PLUGIN_EVENT
+#pragma once
 
 #include <glib-object.h>
 
@@ -65,5 +64,3 @@ gboolean		 gs_plugin_event_has_flag	(GsPluginEvent		*event,
 							 GsPluginEventFlag	 flag);
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_EVENT */

@@ -6,9 +6,6 @@
  * SPDX-License-Identifier: LGPL-2.1+
  */
 
-#pragma once
- */
-
 /**
  * SECTION:gs-os-release
  * @title: GsOsRelease

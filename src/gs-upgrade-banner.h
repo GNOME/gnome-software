@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_UPGRADE_BANNER_H
-#define GS_UPGRADE_BANNER_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -34,5 +33,3 @@ void		 gs_upgrade_banner_set_app		(GsUpgradeBanner	*self,
 GsApp		*gs_upgrade_banner_get_app		(GsUpgradeBanner	*self);
 
 G_END_DECLS
-
-#endif /* GS_UPGRADE_BANNER_H */
