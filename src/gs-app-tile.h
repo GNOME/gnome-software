@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_APP_TILE_H
-#define GS_APP_TILE_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -33,5 +32,3 @@ void		 gs_app_tile_set_app	(GsAppTile	*tile,
 					 GsApp		*cat);
 
 G_END_DECLS
-
-#endif /* GS_APP_TILE_H */

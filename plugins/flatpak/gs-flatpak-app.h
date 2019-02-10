@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_FLATPAK_APP_H
-#define __GS_FLATPAK_APP_H
+#pragma once
 
 #include <gnome-software.h>
 #include <flatpak.h>
@@ -63,5 +62,3 @@ void			 gs_flatpak_app_set_main_app_ref_name	(GsApp		*app,
 const gchar		*gs_flatpak_app_get_main_app_ref_name	(GsApp		*app);
 
 G_END_DECLS
-
-#endif /* __GS_FLATPAK_APP_H */

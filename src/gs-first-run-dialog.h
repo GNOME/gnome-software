@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_FIRST_RUN_DIALOG_H
-#define GS_FIRST_RUN_DIALOG_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -19,5 +18,3 @@ G_DECLARE_FINAL_TYPE (GsFirstRunDialog, gs_first_run_dialog, GS, FIRST_RUN_DIALO
 GtkWidget	*gs_first_run_dialog_new	(void);
 
 G_END_DECLS
-
-#endif /* GS_FIRST_RUN_DIALOG_H */

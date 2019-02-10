@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_HIDING_BOX_H_
-#define GS_HIDING_BOX_H_
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -22,5 +21,3 @@ void		 gs_hiding_box_set_spacing	(GsHidingBox	*box,
 gint		 gs_hiding_box_get_spacing	(GsHidingBox	*box);
 
 G_END_DECLS
-
-#endif /* GS_HIDING_BOX_H_ */

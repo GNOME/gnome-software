@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PACKAGEKIT_HELPER_H
-#define __GS_PACKAGEKIT_HELPER_H
+#pragma once
 
 #include <glib-object.h>
 #include <gnome-software.h>
@@ -30,6 +29,3 @@ void		 gs_packagekit_helper_cb		(PkProgress		*progress,
 
 
 G_END_DECLS
-
-#endif /* __GS_PACKAGEKIT_HELPER_H */
-

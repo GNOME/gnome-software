@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_MARKDOWN_H
-#define __GS_MARKDOWN_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -39,6 +38,3 @@ gchar		*gs_markdown_parse			(GsMarkdown		*self,
 							 const gchar		*text);
 
 G_END_DECLS
-
-#endif /* __GS_MARKDOWN_H */
-

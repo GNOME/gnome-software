@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_AUTH_DIALOG_H
-#define GS_AUTH_DIALOG_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -24,5 +23,3 @@ GtkWidget	*gs_auth_dialog_new	(GsPluginLoader	*plugin_loader,
 					 GError		**error);
 
 G_END_DECLS
-
-#endif /* GS_AUTH_DIALOG_H */

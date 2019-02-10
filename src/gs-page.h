@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_PAGE_H
-#define GS_PAGE_H
+#pragma once
 
 #include "gs-shell.h"
 
@@ -85,5 +84,3 @@ gboolean	 gs_page_setup				(GsPage		*page,
 gboolean	 gs_page_is_active			(GsPage		*page);
 
 G_END_DECLS
-
-#endif /* GS_PAGE_H */

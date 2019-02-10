@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PRICE_H
-#define __GS_PRICE_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -30,5 +29,3 @@ void		 gs_price_set_currency			(GsPrice	*price,
 gchar		*gs_price_to_string			(GsPrice	*price);
 
 G_END_DECLS
-
-#endif /* __GS_PRICE_H */

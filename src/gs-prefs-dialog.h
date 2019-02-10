@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_PREFS_DIALOG_H
-#define GS_PREFS_DIALOG_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -22,5 +21,3 @@ GtkWidget	*gs_prefs_dialog_new		(GtkWindow	*parent,
 						 GsPluginLoader	*plugin_loader);
 
 G_END_DECLS
-
-#endif /* GS_PREFS_DIALOG_H */

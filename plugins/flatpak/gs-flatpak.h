@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_FLATPAK_H
-#define __GS_FLATPAK_H
+#pragma once
 
 #include <gnome-software.h>
 #include <flatpak.h>
@@ -126,6 +125,3 @@ gboolean	gs_flatpak_add_recent		(GsFlatpak		*self,
 						 GError			**error);
 
 G_END_DECLS
-
-#endif /* __GS_FLATPAK_H */
-

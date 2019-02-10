@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_INSTALLED_PAGE_H
-#define __GS_INSTALLED_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -20,5 +19,3 @@ G_DECLARE_FINAL_TYPE (GsInstalledPage, gs_installed_page, GS, INSTALLED_PAGE, Gs
 GsInstalledPage	*gs_installed_page_new	(void);
 
 G_END_DECLS
-
-#endif /* __GS_INSTALLED_PAGE_H */

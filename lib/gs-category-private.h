@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_CATEGORY_PRIVATE_H
-#define __GS_CATEGORY_PRIVATE_H
+#pragma once
 
 #include "gs-category.h"
 
@@ -19,5 +18,3 @@ void		 gs_category_set_size		(GsCategory	*category,
 gchar		*gs_category_to_string		(GsCategory	*category);
 
 G_END_DECLS
-
-#endif /* __GS_CATEGORY_PRIVATE_H */

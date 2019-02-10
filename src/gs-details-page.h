@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_DETAILS_PAGE_H
-#define __GS_DETAILS_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -27,5 +26,3 @@ void		 gs_details_page_set_url	(GsDetailsPage		*self,
 GsApp		*gs_details_page_get_app	(GsDetailsPage		*self);
 
 G_END_DECLS
-
-#endif /* __GS_DETAILS_PAGE_H */

@@ -7,8 +7,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_CATEGORY_H
-#define __GS_CATEGORY_H
+#pragma once
 
 #include <glib-object.h>
 #include <gdk/gdk.h>
@@ -52,5 +51,3 @@ guint		 gs_category_get_size		(GsCategory	*category);
 void		 gs_category_increment_size	(GsCategory	*category);
 
 G_END_DECLS
-
-#endif /* __GS_CATEGORY_H */

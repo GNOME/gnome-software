@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_PROGRESS_BUTTON_H
-#define GS_PROGRESS_BUTTON_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -24,5 +23,3 @@ void		 gs_progress_button_set_show_progress	(GsProgressButton	*button,
 							 gboolean		 show_progress);
 
 G_END_DECLS
-
-#endif /* GS_PROGRESS_BUTTON_H */

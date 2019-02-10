@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_AUTH_H
-#define __GS_AUTH_H
+#pragma once
 
 #include <glib-object.h>
 #include <gio/gio.h>
@@ -38,5 +37,3 @@ GoaObject	*gs_auth_peek_goa_object	(GsAuth		*auth);
 void		 gs_auth_set_goa_object		(GsAuth		*auth,
 						 GoaObject	*goa_object);
 G_END_DECLS
-
-#endif /* __GS_AUTH_H */

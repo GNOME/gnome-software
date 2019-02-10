@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_LANGUAGE_H
-#define __GS_LANGUAGE_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -24,5 +23,3 @@ gchar		*gs_language_iso639_to_language		(GsLanguage	 *language,
 							 const gchar	 *iso639);
 
 G_END_DECLS
-
-#endif /* __GS_LANGUAGE_H */

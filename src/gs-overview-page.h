@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_OVERVIEW_PAGE_H
-#define __GS_OVERVIEW_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -29,5 +28,3 @@ void		 gs_overview_page_set_category	(GsOverviewPage		*self,
 						 const gchar		*category);
 
 G_END_DECLS
-
-#endif /* __GS_OVERVIEW_PAGE_H */

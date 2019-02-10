@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_REVIEW_ROW_H
-#define GS_REVIEW_ROW_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -33,5 +32,3 @@ void		 gs_review_row_set_network_available	(GsReviewRow	*review_row,
 							 gboolean	 network_available);
 
 G_END_DECLS
-
-#endif /* GS_REVIEW_ROW_H */

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_FWUPD_APP_H
-#define __GS_FWUPD_APP_H
+#pragma once
 
 #include <gnome-software.h>
 #include <fwupd.h>
@@ -29,5 +28,3 @@ void			 gs_fwupd_app_set_from_release		(GsApp		*app,
 								 FwupdRelease	*rel);
 
 G_END_DECLS
-
-#endif /* __GS_FWUPD_APP_H */

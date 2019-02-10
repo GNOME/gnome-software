@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_LOADER_H
-#define __GS_PLUGIN_LOADER_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -94,7 +93,4 @@ GsPlugin	*gs_plugin_loader_find_plugin		(GsPluginLoader	*plugin_loader,
 void            gs_plugin_loader_set_max_parallel_ops  (GsPluginLoader *plugin_loader,
                                                         guint           max_ops);
 
-
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_LOADER_H */

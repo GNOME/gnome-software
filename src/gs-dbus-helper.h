@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_DBUS_HELPER_H
-#define __GS_DBUS_HELPER_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -20,5 +19,3 @@ G_DECLARE_FINAL_TYPE (GsDbusHelper, gs_dbus_helper, GS, DBUS_HELPER, GObject)
 GsDbusHelper	*gs_dbus_helper_new		(void);
 
 G_END_DECLS
-
-#endif /* __GS_DBUS_HELPER_H */

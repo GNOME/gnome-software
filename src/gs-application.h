@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_APPLICATION_H
-#define __GS_APPLICATION_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -19,5 +18,3 @@ G_DECLARE_FINAL_TYPE (GsApplication, gs_application, GS, APPLICATION, GtkApplica
 GsApplication	*gs_application_new		(void);
 GsPluginLoader	*gs_application_get_plugin_loader	(GsApplication *application);
 gboolean	 gs_application_has_active_window	(GsApplication *application);
-
-#endif  /* __GS_APPLICATION_H */

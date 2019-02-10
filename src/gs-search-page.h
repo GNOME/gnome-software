@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_SEARCH_PAGE_H
-#define __GS_SEARCH_PAGE_H
+#pragma once
 
 #include "gs-page.h"
 
@@ -25,5 +24,3 @@ void		 gs_search_page_set_text		(GsSearchPage		*self,
 							 const gchar		*value);
 
 G_END_DECLS
-
-#endif /* __GS_SEARCH_PAGE_H */

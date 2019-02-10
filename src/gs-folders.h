@@ -7,8 +7,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_FOLDERS_H
-#define __GS_FOLDERS_H
+#pragma once
 
 #include <glib-object.h>
 
@@ -44,5 +43,3 @@ void		  gs_folders_revert		(GsFolders	*folders);
 void              gs_folders_convert            (void);
 
 G_END_DECLS
-
-#endif /* __GS_FOLDERS_H */

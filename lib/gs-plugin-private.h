@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_PRIVATE_H
-#define __GS_PLUGIN_PRIVATE_H
+#pragma once
 
 #include <appstream-glib.h>
 #include <glib-object.h>
@@ -53,5 +52,3 @@ void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 							 GNetworkMonitor	*monitor);
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_PRIVATE_H */

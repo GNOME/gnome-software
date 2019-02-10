@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_REVIEW_DIALOG_H
-#define GS_REVIEW_DIALOG_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -24,5 +23,3 @@ const gchar	*gs_review_dialog_get_summary	(GsReviewDialog	*dialog);
 gchar		*gs_review_dialog_get_text	(GsReviewDialog	*dialog);
 
 G_END_DECLS
-
-#endif /* GS_REVIEW_DIALOG_H */

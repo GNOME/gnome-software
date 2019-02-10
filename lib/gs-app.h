@@ -6,8 +6,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_APP_H
-#define __GS_APP_H
+#pragma once
 
 #include <glib-object.h>
 #include <gdk/gdk.h>
@@ -384,5 +383,3 @@ void		 gs_app_set_update_permissions	(GsApp		*app,
 						 GsAppPermissions update_permissions);
 
 G_END_DECLS
-
-#endif /* __GS_APP_H */

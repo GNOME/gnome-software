@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef GS_INFO_BAR_H
-#define GS_INFO_BAR_H
+#pragma once
 
 #include <gtk/gtk.h>
 
@@ -27,5 +26,3 @@ const gchar	*gs_info_bar_get_warning	(GsInfoBar	*bar);
 void		 gs_info_bar_set_warning	(GsInfoBar	*bar,
 						 const gchar	*text);
 G_END_DECLS
-
-#endif /* GS_INFO_BAR_H */

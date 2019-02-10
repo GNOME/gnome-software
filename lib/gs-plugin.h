@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: GPL-2.0+
  */
 
-#ifndef __GS_PLUGIN_H
-#define __GS_PLUGIN_H
+#pragma once
 
 #include <appstream-glib.h>
 #include <glib-object.h>
@@ -124,5 +123,3 @@ void		 gs_plugin_set_allow_updates		(GsPlugin	*plugin,
 gboolean	 gs_plugin_get_network_available	(GsPlugin	*plugin);
 
 G_END_DECLS
-
-#endif /* __GS_PLUGIN_H */
