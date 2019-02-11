@@ -63,6 +63,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 					  g_permission_get_can_acquire (permission);
 	}
 
+	/* unique to us */
+	gs_plugin_set_app_gtype (plugin, GS_TYPE_FLATPAK_APP);
+
 	/* used for self tests */
 	priv->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
 }
