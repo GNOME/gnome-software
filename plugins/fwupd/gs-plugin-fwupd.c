@@ -83,9 +83,16 @@ gs_plugin_fwupd_error_convert (GError **perror)
 	error->domain = GS_PLUGIN_ERROR;
 }
 
+static GsApp *
+gs_plugin_fwupd_create_app (GsPlugin *plugin, const gchar *id)
+{
+	return GS_APP (g_object_new (GS_TYPE_FWUPD_APP, "id", id, NULL));
+}
+
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	g_autofree gchar *user_agent = NULL;
 	g_autoptr(SoupSession) soup_session = NULL;
@@ -100,6 +107,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	soup_session_remove_feature_by_type (soup_session,
 					     SOUP_TYPE_CONTENT_DECODER);
 	gs_plugin_set_soup_session (plugin, soup_session);
+
+	/* unique to us */
+	plugin_class->create_app = gs_plugin_fwupd_create_app;
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
