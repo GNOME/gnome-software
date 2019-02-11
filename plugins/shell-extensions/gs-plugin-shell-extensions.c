@@ -63,7 +63,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	priv->cached_origin = gs_app_new_source (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_origin_hostname (priv->cached_origin, SHELL_EXTENSIONS_API_URI);
 
@@ -131,7 +131,7 @@ gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
 	g_autoptr(GsApp) app = NULL;
 
 	id = as_utils_appstream_id_build (uuid);
-	app = gs_app_new (id);
+	app = gs_plugin_app_new (plugin, id);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
@@ -385,7 +385,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	g_autoptr(GsApp) app = NULL;
 
 	/* create something that we can use to enable/disable */
-	app = gs_app_new ("org.gnome.extensions");
+	app = gs_plugin_app_new (plugin, "org.gnome.extensions");
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	if (g_settings_get_boolean (priv->settings, "enable-shell-extensions-repo"))
@@ -756,7 +756,7 @@ gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) file = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (plugin));
 
 	/* get cache filename */
 	fn = gs_utils_get_cache_filename ("shell-extensions",

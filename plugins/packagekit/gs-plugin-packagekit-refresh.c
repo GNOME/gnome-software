@@ -144,7 +144,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
 
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);

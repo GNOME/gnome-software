@@ -241,7 +241,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 
 		app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
 		if (app == NULL) {
-			app = gs_app_new (NULL);
+			app = gs_plugin_app_new (plugin, NULL);
 			gs_plugin_packagekit_set_packaging_format (plugin, app);
 			gs_app_add_source (app, pk_package_get_name (package));
 			gs_app_add_source_id (app, pk_package_get_id (package));
