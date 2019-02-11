@@ -363,7 +363,7 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 		return g_steal_pointer (&app);
 
 	/* create new app */
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_app_set_management_plugin (app, "rpm-ostree");
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
@@ -402,7 +402,7 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 		return g_steal_pointer (&app);
 
 	/* create new app */
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_app_set_management_plugin (app, "rpm-ostree");
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	app_set_rpm_ostree_packaging_format (app);
@@ -1408,7 +1408,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		goto out;
 	}
 
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);

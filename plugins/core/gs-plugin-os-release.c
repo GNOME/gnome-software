@@ -17,7 +17,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	priv->app_system = gs_app_new ("system");
+	priv->app_system = gs_plugin_app_new (plugin, "system");
 	gs_app_set_kind (priv->app_system, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_state (priv->app_system, AS_APP_STATE_INSTALLED);
 }

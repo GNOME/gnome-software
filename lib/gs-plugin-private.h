@@ -47,6 +47,7 @@ gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
 							 const gchar	*function_name);
 void		 gs_plugin_interactive_inc		(GsPlugin	*plugin);
 void		 gs_plugin_interactive_dec		(GsPlugin	*plugin);
+GType		 gs_plugin_get_app_gtype		(GsPlugin	*plugin);
 gchar		*gs_plugin_refine_flags_to_string	(GsPluginRefineFlags refine_flags);
 void		 gs_plugin_set_network_monitor		(GsPlugin		*plugin,
 							 GNetworkMonitor	*monitor);
