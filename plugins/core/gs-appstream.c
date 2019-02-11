@@ -18,7 +18,7 @@ GsApp *
 gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GError **error)
 {
 	GsApp *app;
-	g_autoptr(GsApp) app_new = gs_app_new (NULL);
+	g_autoptr(GsApp) app_new = gs_plugin_app_new (plugin, NULL);
 
 	/* refine enough to get the unique ID */
 	if (!gs_appstream_refine_app (plugin, app_new, silo, component,
@@ -1216,8 +1216,7 @@ gs_appstream_add_popular (GsPlugin *plugin,
 		const gchar *component_id = xb_node_query_text (component, "id", NULL);
 		if (component_id == NULL)
 			continue;
-		app = gs_app_new (component_id);
-		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+		app = gs_app_new_wildcard (component_id);
 		gs_app_list_add (list, app);
 	}
 	return TRUE;
@@ -1306,8 +1305,7 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 	for (guint i = 0; i < ids->len; i++) {
 		XbNode *n = g_ptr_array_index (ids, i);
 		g_autoptr(GsApp) app2 = NULL;
-		app2 = gs_app_new (xb_node_get_text (n));
-		gs_app_add_quirk (app2, GS_APP_QUIRK_IS_WILDCARD);
+		app2 = gs_app_new_wildcard (xb_node_get_text (n));
 		gs_app_list_add (list, app2);
 	}
 	return TRUE;
@@ -1342,8 +1340,7 @@ gs_appstream_add_featured (GsPlugin *plugin,
 		const gchar *component_id = xb_node_query_text (component, "id", NULL);
 		if (component_id == NULL)
 			continue;
-		app = gs_app_new (component_id);
-		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+		app = gs_app_new_wildcard (component_id);
 		if (!gs_appstream_copy_metadata (app, component, error))
 			return FALSE;
 		gs_app_list_add (list, app);

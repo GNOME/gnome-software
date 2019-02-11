@@ -157,7 +157,8 @@ typedef enum {
 #define MEDIUM_PERMISSIONS (LIMITED_PERMISSIONS | \
 			GS_APP_PERMISSIONS_X11)
 
-GsApp		*gs_app_new			(const gchar	*id);
+GsApp		*gs_app_new_wildcard		(const gchar	*id);
+GsApp		*gs_app_new_source		(const gchar	*id);
 G_DEPRECATED_FOR(gs_app_set_from_unique_id)
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
 void		 gs_app_set_from_unique_id	(GsApp		*app,

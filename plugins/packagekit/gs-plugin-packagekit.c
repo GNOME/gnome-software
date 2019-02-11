@@ -140,7 +140,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
-		app = gs_app_new (id);
+		app = gs_plugin_app_new (plugin, id);
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -526,7 +526,7 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 	GsApp *app = gs_plugin_cache_lookup (plugin, pk_package_get_id (package));
 	if (app != NULL)
 		return app;
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));

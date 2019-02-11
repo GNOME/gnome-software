@@ -310,7 +310,7 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 
 	app = gs_plugin_cache_lookup (plugin, unique_id);
 	if (app == NULL) {
-		app = gs_app_new (NULL);
+		app = gs_plugin_app_new (plugin, NULL);
 		gs_app_set_from_unique_id (app, unique_id);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));

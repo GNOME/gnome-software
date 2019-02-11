@@ -42,7 +42,7 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 	g_autoptr(AsIcon) ic = NULL;
 
 	/* create new */
-	app = gs_app_new (id);
+	app = gs_plugin_app_new (plugin, id);
 	gs_app_add_quirk (app, GS_APP_QUIRK_IS_PROXY);
 	gs_app_set_management_plugin (app, "");
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPDATE);

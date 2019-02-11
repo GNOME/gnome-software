@@ -137,7 +137,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	if (pk_results_get_role (results) == PK_ROLE_ENUM_UPGRADE_SYSTEM) {
 		g_autoptr(GsApp) app = NULL;
 
-		app = gs_app_new (NULL);
+		app = gs_plugin_app_new (plugin, NULL);
 		gs_app_set_from_unique_id (app, "*/*/*/*/system/*");
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
@@ -161,7 +161,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		g_auto(GStrv) split = NULL;
 
-		app = gs_app_new (NULL);
+		app = gs_plugin_app_new (plugin, NULL);
 		package_id = pk_package_get_id (pkg);
 		split = g_strsplit (package_id, ";", 4);
 		gs_plugin_packagekit_set_packaging_format (plugin, app);
