@@ -151,8 +151,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	priv->cached_origin = gs_app_new_source (gs_plugin_get_name (plugin));
 	gs_app_set_origin_hostname (priv->cached_origin,
 				    FEDORA_PKGDB_COLLECTIONS_API_URI);
 
@@ -173,7 +172,7 @@ _refresh_cache (GsPlugin *plugin,
 		GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (plugin));
 
 	/* check cache age */
 	if (cache_age > 0) {
@@ -273,7 +272,7 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
 
 	/* create */
-	app = gs_app_new (app_id);
+	app = gs_plugin_app_new (plugin, app_id);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
