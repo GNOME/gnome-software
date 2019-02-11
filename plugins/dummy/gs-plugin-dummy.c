@@ -62,7 +62,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
+	priv->cached_origin = gs_app_new_source (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_origin_hostname (priv->cached_origin, "http://www.bbc.co.uk/");
 
@@ -197,7 +197,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
-	app = gs_app_new (path);
+	app = gs_plugin_app_new (plugin, path);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
@@ -271,7 +271,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			  GError **error)
 {
 	if (g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
-		g_autoptr(GsApp) app2 = gs_app_new ("chiron.desktop");
+		g_autoptr(GsApp) app2 = gs_plugin_app_new (plugin, "chiron.desktop");
 		gs_app_list_add (list, app2);
 	}
 	return TRUE;
@@ -320,7 +320,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	as_icon_set_name (ic, "drive-harddisk");
 
 	/* add a live updatable normal application */
-	app = gs_app_new ("chiron.desktop");
+	app = gs_plugin_app_new (plugin, "chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
 	gs_app_add_icon (app, ic);
@@ -362,7 +362,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	as_icon_set_name (ic, "drive-harddisk");
 
 	/* add a live updatable normal application */
-	app = gs_app_new ("chiron.desktop");
+	app = gs_plugin_app_new (plugin, "chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
 	gs_app_set_update_details (app, "Do not crash when using libvirt.");
@@ -375,7 +375,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_object_unref (app);
 
 	/* add a offline OS update */
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "libvirt-glib-devel");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Development files for libvirt");
 	gs_app_set_update_details (app, "Fix several memory leaks.");
@@ -391,7 +391,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_object_unref (app);
 
 	/* add a live OS update */
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "chiron-libs");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "library for chiron");
 	gs_app_set_update_details (app, "Do not crash when using libvirt.");
@@ -407,7 +407,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_object_unref (app);
 
 	/* add a proxy app update */
-	proxy = gs_app_new ("proxy.desktop");
+	proxy = gs_plugin_app_new (plugin, "proxy.desktop");
 	gs_app_set_name (proxy, GS_APP_QUALITY_NORMAL, "Proxy");
 	gs_app_set_summary (proxy, GS_APP_QUALITY_NORMAL, "A proxy app");
 	gs_app_set_update_details (proxy, "Update all related apps.");
@@ -421,7 +421,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_object_unref (proxy);
 
 	/* add a proxy related app */
-	app = gs_app_new ("proxy-related-app.desktop");
+	app = gs_plugin_app_new (plugin, "proxy-related-app.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Related app");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
@@ -431,7 +431,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_object_unref (app);
 
 	/* add another proxy related app */
-	app = gs_app_new ("proxy-another-related-app.desktop");
+	app = gs_plugin_app_new (plugin, "proxy-another-related-app.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Another Related app");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A related app");
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
@@ -455,7 +455,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	/* add all packages */
 	for (i = 0; packages[i] != NULL; i++) {
-		g_autoptr(GsApp) app = gs_app_new (NULL);
+		g_autoptr(GsApp) app = gs_plugin_app_new (plugin, NULL);
 		gs_app_add_source (app, packages[i]);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
@@ -466,7 +466,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	/* add all app-ids */
 	for (i = 0; app_ids[i] != NULL; i++) {
-		g_autoptr(GsApp) app = gs_app_new (app_ids[i]);
+		g_autoptr(GsApp) app = gs_plugin_app_new (plugin, app_ids[i]);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
@@ -486,14 +486,14 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	g_autoptr(GsApp) app2 = NULL;
 
 	/* add wildcard */
-	app1 = gs_app_new ("zeus.desktop");
+	app1 = gs_plugin_app_new (plugin, "zeus.desktop");
 	gs_app_add_quirk (app1, GS_APP_QUIRK_IS_WILDCARD);
 	gs_app_set_metadata (app1, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app1);
 
 	/* add again, this time with a prefix so it gets deduplicated */
-	app2 = gs_app_new ("zeus.desktop");
+	app2 = gs_plugin_app_new (plugin, "zeus.desktop");
 	gs_app_set_scope (app2, AS_APP_SCOPE_USER);
 	gs_app_set_bundle_kind (app2, AS_BUNDLE_KIND_SNAP);
 	gs_app_set_metadata (app2, "GnomeSoftware::Creator",
@@ -730,7 +730,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+	g_autoptr(GsApp) app = gs_plugin_app_new (plugin, "chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
@@ -750,7 +750,7 @@ gs_plugin_add_recent (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+	g_autoptr(GsApp) app = gs_plugin_app_new (plugin, "chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
@@ -784,7 +784,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		return TRUE;
 	}
 
-	app = gs_app_new ("org.fedoraproject.release-rawhide.upgrade");
+	app = gs_plugin_app_new (plugin, "org.fedoraproject.release-rawhide.upgrade");
 	gs_app_set_scope (app, AS_APP_SCOPE_USER);
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -828,7 +828,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	g_autoptr(GsApp) app = gs_app_new (NULL);
+	g_autoptr(GsApp) app = gs_plugin_app_new (plugin, NULL);
 	return gs_plugin_dummy_delay (plugin, app, 3100, cancellable, error);
 }
 

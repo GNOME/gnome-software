@@ -67,8 +67,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	priv->cached_origin = gs_app_new_source (gs_plugin_get_name (plugin));
 	gs_app_set_origin_hostname (priv->cached_origin, priv->review_server);
 
 	/* add the source to the plugin cache which allows us to match the
@@ -167,7 +166,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (plugin));
 
 	/* check cache age */
 	fn = gs_utils_get_cache_filename ("odrs",
@@ -989,9 +988,9 @@ gs_plugin_review_remove (GsPlugin *plugin,
 }
 
 static GsApp *
-gs_plugin_create_app_dummy (const gchar *id)
+gs_plugin_create_app_dummy (GsPlugin *plugin, const gchar *id)
 {
-	GsApp *app = gs_app_new (id);
+	GsApp *app = gs_plugin_app_new (plugin, id);
 	g_autoptr(GString) str = NULL;
 	str = g_string_new (id);
 	as_utils_string_replace (str, ".desktop", "");
@@ -1058,7 +1057,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 		app_id = as_review_get_metadata_item (review, "app_id");
 		app = g_hash_table_lookup (hash, app_id);
 		if (app == NULL) {
-			app = gs_plugin_create_app_dummy (app_id);
+			app = gs_plugin_create_app_dummy (plugin, app_id);
 			gs_app_list_add (list, app);
 			g_hash_table_insert (hash, g_strdup (app_id), app);
 		}
