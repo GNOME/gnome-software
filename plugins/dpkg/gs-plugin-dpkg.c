@@ -75,7 +75,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	}
 
 	/* create app */
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_add_source (app, tokens[0]);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, tokens[0]);

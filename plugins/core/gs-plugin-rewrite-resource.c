@@ -35,7 +35,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		const gchar *css = gs_app_get_metadata_item (app, keys[i]);
 		if (css != NULL) {
 			g_autofree gchar *css_new = NULL;
-			g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+			g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (plugin));
 			gs_app_set_summary_missing (app_dl,
 						    /* TRANSLATORS: status text when downloading */
 						    _("Downloading featured images…"));

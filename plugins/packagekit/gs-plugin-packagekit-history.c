@@ -44,7 +44,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 static void
-gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
+gs_plugin_packagekit_refine_add_history (GsPlugin *plugin, GsApp *app, GVariant *dict)
 {
 	const gchar *version;
 	gboolean ret;
@@ -53,7 +53,7 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	g_autoptr(GsApp) history = NULL;
 
 	/* create new history item with same ID as parent */
-	history = gs_app_new (gs_app_get_id (app));
+	history = gs_plugin_app_new (plugin, gs_app_get_id (app));
 	gs_app_set_kind (history, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_name (history, GS_APP_QUALITY_NORMAL, gs_app_get_name (app));
@@ -195,7 +195,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			 * least installed at some point in time */
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 				g_autoptr(GsApp) app_dummy = NULL;
-				app_dummy = gs_app_new (gs_app_get_id (app));
+				app_dummy = gs_plugin_app_new (plugin, gs_app_get_id (app));
 				gs_plugin_packagekit_set_packaging_format (plugin, app);
 				gs_app_set_metadata (app_dummy, "GnomeSoftware::Creator",
 						     gs_plugin_get_name (plugin));
@@ -212,7 +212,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 		/* add history for application */
 		g_variant_iter_init (&iter, entries);
 		while ((value = g_variant_iter_next_value (&iter))) {
-			gs_plugin_packagekit_refine_add_history (app, value);
+			gs_plugin_packagekit_refine_add_history (plugin, app, value);
 			g_variant_unref (value);
 		}
 	}

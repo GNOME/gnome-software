@@ -4391,6 +4391,46 @@ gs_app_new (const gchar *id)
 }
 
 /**
+ * gs_app_new_wildcard:
+ * @id: an application ID, or %NULL, e.g. "org.gnome.Software.desktop"
+ *
+ * Creates a new application wildcard object. The applications created using
+ * this function will be converted to "actual" #GsApp objects that can be
+ * installed by a specific plugin.
+ *
+ * Returns: a new #GsApp
+ *
+ * Since: 3.32
+ **/
+GsApp *
+gs_app_new_wildcard (const gchar *id)
+{
+	GsApp *app = gs_app_new (id);
+	gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+	return app;
+}
+
+/**
+ * gs_app_new_source:
+ * @id: an application ID, or %NULL, e.g. "org.gnome.Software.desktop"
+ *
+ * Creates a new application source object, typically used for reporting
+ * download progress. The applications created using this function should not
+ * be added as results to the various plugin vfuncs.
+ *
+ * Returns: a new #GsApp
+ *
+ * Since: 3.32
+ **/
+GsApp *
+gs_app_new_source (const gchar *id)
+{
+	GsApp *app = gs_app_new (id);
+	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+	return app;
+}
+
+/**
  * gs_app_set_from_unique_id:
  * @app: a #GsApp
  * @unique_id: an application unique ID, e.g.

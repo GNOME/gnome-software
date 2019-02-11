@@ -218,8 +218,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
 	/* add source */
-	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
+	priv->cached_origin = gs_app_new_source (gs_plugin_get_name (plugin));
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
 
 	/* add the source to the plugin cache which allows us to match the
@@ -266,7 +265,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 				       NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
-		app = gs_app_new (id);
+		app = gs_plugin_app_new (plugin, id);
 		gs_plugin_cache_add (plugin, id, app);
 	}
 
@@ -315,7 +314,7 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 
 	/* create a GsApp based on the device, not the release */
 	id = gs_plugin_fwupd_build_device_id (device);
-	app = gs_app_new (id);
+	app = gs_plugin_app_new (plugin, id);
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -626,7 +625,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 	g_autofree gchar *filename = NULL;
 	g_autofree gchar *filename_sig = NULL;
 	g_autoptr(GBytes) data = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (plugin));
 
 	/* sanity check */
 	if (fwupd_remote_get_filename_cache_sig (remote) == NULL) {
@@ -1019,7 +1018,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		/* create something that we can use to enable/disable */
 		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
-		app = gs_app_new (id);
+		app = gs_plugin_app_new (plugin, id);
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?
