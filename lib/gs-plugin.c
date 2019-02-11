@@ -40,6 +40,7 @@
 #endif
 
 #include "gs-app-list-private.h"
+#include "gs-app-private.h"
 #include "gs-os-release.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin.h"
@@ -374,6 +375,28 @@ gs_plugin_interactive_dec (GsPlugin *plugin)
 		priv->interactive_cnt--;
 	if (priv->interactive_cnt == 0)
 		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+}
+
+/**
+ * gs_plugin_app_new:
+ * @plugin: a #GsPlugin
+ * @id: an application ID
+ *
+ * Creates a GsApp, which may possibly be a subclassed type.
+ * To set a custom type used when creating objects, plugins can use the
+ * GsPluginClass:create_app() vfunc.
+ *
+ * Returns: a #GsApp
+ *
+ * Since: 3.34
+ **/
+GsApp *
+gs_plugin_app_new (GsPlugin *plugin, const gchar *id)
+{
+	GsPluginClass *klass = GS_PLUGIN_GET_CLASS (plugin);
+	if (klass->create_app != NULL)
+		return klass->create_app (plugin, id);
+	return gs_app_new (id);
 }
 
 /**

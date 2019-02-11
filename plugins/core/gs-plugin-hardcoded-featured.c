@@ -61,8 +61,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		}
 
 		/* create new */
-		app = gs_app_new (myapps[i].id);
-		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+		app = gs_app_new_wildcard (myapps[i].id);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator",
 				     gs_plugin_get_name (plugin));
 		gs_app_set_metadata (app, "GnomeSoftware::FeatureTile-css",

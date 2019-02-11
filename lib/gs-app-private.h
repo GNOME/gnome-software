@@ -25,5 +25,6 @@ void		 gs_app_set_pending_action	(GsApp		*app,
 						 GsPluginAction	 action);
 gint		 gs_app_compare_priority	(GsApp		*app1,
 						 GsApp		*app2);
+GsApp		*gs_app_new			(const gchar	*id);
 
 G_END_DECLS

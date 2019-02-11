@@ -231,7 +231,7 @@ gs_flatpak_create_app (GsFlatpak *self, const gchar *origin, FlatpakRef *xref)
 	g_autoptr(GsApp) app = NULL;
 
 	/* create a temp GsApp */
-	app = gs_app_new (flatpak_ref_get_name (xref));
+	app = gs_plugin_app_new (self->plugin, flatpak_ref_get_name (xref));
 	gs_flatpak_set_metadata (self, app, xref);
 	if (origin != NULL)
 		gs_app_set_origin (app, origin);
@@ -814,7 +814,7 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 				     GError **error)
 {
 	g_autofree gchar *str = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (self->plugin));
+	g_autoptr(GsApp) app_dl = gs_app_new_source (gs_plugin_get_name (self->plugin));
 	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
 	g_autoptr(GError) error_local = NULL;
 
@@ -1772,7 +1772,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 		return NULL;
 
 	/* create the complete GsApp from the single string */
-	app = gs_app_new (split[0]);
+	app = gs_plugin_app_new (self->plugin, split[0]);
 	gs_flatpak_claim_app (self, app);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);

@@ -77,7 +77,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		}
 	}
 
-	app = gs_app_new (NULL);
+	app = gs_plugin_app_new (plugin, NULL);
 	gs_plugin_packagekit_set_packaging_format (plugin, app);
 	gs_app_add_source (app, path);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
