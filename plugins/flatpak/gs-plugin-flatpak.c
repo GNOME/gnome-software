@@ -31,9 +31,16 @@ struct GsPluginData {
 	const gchar		*destdir_for_tests;
 };
 
+static GsApp *
+gs_plugin_flatpak_create_app (GsPlugin *plugin, const gchar *id)
+{
+	return GS_APP (g_object_new (GS_TYPE_FLATPAK_APP, "id", id, NULL));
+}
+
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	GsPluginClass *plugin_class = GS_PLUGIN_GET_CLASS (plugin);
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	const gchar *action_id = "org.freedesktop.Flatpak.appstream-update";
 	g_autoptr(GError) error_local = NULL;
@@ -63,6 +70,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		priv->has_system_helper = g_permission_get_allowed (permission) ||
 					  g_permission_get_can_acquire (permission);
 	}
+
+	/* unique to us */
+	plugin_class->create_app = gs_plugin_flatpak_create_app;
 
 	/* used for self tests */
 	priv->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
