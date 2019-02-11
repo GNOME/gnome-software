@@ -975,8 +975,13 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
+#if FLATPAK_CHECK_VERSION(1,1,2)
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+			"user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
+#else
 	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
 			"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
+#endif
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
@@ -1105,8 +1110,13 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
+#if FLATPAK_CHECK_VERSION(1,1,2)
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+			"user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
+#else
 	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
 			"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
+#endif
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
@@ -1157,8 +1167,13 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (app2 != NULL);
 	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
+#if FLATPAK_CHECK_VERSION(1,1,2)
+	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
+		  "user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
+#else
 	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
 		  "user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
+#endif
 
 	/* remove app */
 	g_object_unref (plugin_job);
