@@ -97,6 +97,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 					     SOUP_TYPE_CONTENT_DECODER);
 	gs_plugin_set_soup_session (plugin, soup_session);
 
+	/* unique to us */
+	gs_plugin_set_app_gtype (plugin, GS_TYPE_FWUPD_APP);
+
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
 }
