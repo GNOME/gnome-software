@@ -160,7 +160,7 @@ load_auth (GsPlugin *plugin)
 	g_autofree gchar *macaroon = NULL;
 	g_autofree gchar *discharges_str = NULL;
 	g_autoptr(GVariant) discharges_var = NULL;
-	g_autofree const gchar **discharges = NULL;
+	g_auto(GStrv) discharges = NULL;
 	g_autoptr(SnapdAuthData) auth_data = NULL;
 	g_autoptr(GError) error = NULL;
 
@@ -199,7 +199,7 @@ load_auth (GsPlugin *plugin)
 						  discharges_str,
 						  NULL, NULL, NULL);
 	if (discharges_var)
-		discharges = g_variant_get_strv (discharges_var, NULL);
+		discharges = g_variant_dup_strv (discharges_var, NULL);
 
 	priv->auth_data = snapd_auth_data_new (macaroon, discharges);
 }
