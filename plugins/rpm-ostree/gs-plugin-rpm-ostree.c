@@ -925,9 +925,12 @@ resolve_packages_app (GsPlugin *plugin,
 		if (g_strcmp0 (rpm_ostree_package_get_name (pkg), gs_app_get_source_default (app)) == 0) {
 			gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-			if (!g_strv_contains ((const gchar * const *) layered_packages,
-			                      rpm_ostree_package_get_name (pkg))) {
-				/* on rpm-ostree this package cannot be removed 'live' */
+			if (g_strv_contains ((const gchar * const *) layered_packages,
+			                     rpm_ostree_package_get_name (pkg))) {
+				/* layered packages can always be removed */
+				gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+			} else {
+				/* can't remove packages that are part of the base system */
 				gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 			}
 		}
