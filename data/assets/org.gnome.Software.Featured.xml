@@ -77,24 +77,23 @@ background:
 </value>
     </metadata>
   </component>
-  <component type="desktop" merge="append">
+<component type="desktop" merge="append">
     <id>gnome-chess.desktop</id>
     <metadata>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #5e5c64;
-text-shadow: 0 1px 1px rgba(0,0,0,0.5);
-color: #ffffff;
+text-shadow: 0 1px 2px rgba(0,0,0,.5);
+color: #fff;
 outline-offset: 0;
 outline-color: alpha(#ffffff, 0.75);
 outline-style: dashed;
 outline-offset: 2px;
 box-shadow: none;
 background:
- url('file://@datadir@/gnome-software/featured-chess.svg')
- 10% center / 40% auto no-repeat,
- url('file://@datadir@/gnome-software/featured-chess-bg.svg') 50% 65% / 50% repeat;
+linear-gradient(to left, rgba(0,0,0,.7), rgba(0,0,0,0)),
+ #c0bfbc url('file://@datadir@/gnome-software/featured-chess-bg.png') center / 100% no-repeat;
 </value>
-    </metadata>
-  </component>
+</metadata>
+</component>
   <component type="desktop" merge="append">
     <id>inkscape.desktop</id>
     <metadata>

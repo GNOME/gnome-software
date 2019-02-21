@@ -6,7 +6,7 @@ install_data([
   'featured-builder.png',
   'featured-builder-bg.jpg',
   'featured-chess.svg',
-  'featured-chess-bg.svg',
+  'featured-chess-bg.png',
   'featured-firefox.svg',
   'featured-gimp.png',
   'featured-gnome-sudoku.png',
