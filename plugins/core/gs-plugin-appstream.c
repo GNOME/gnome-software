@@ -468,6 +468,8 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 				 g_build_filename ("/usr/share", "app-info", "xmls", NULL));
 		g_ptr_array_add (parent_appstream,
 				 g_build_filename ("/usr/share", "app-info", "yaml", NULL));
+		g_ptr_array_add (parent_appstream,
+				 g_build_filename ("/var/lib", "app-info", "yaml", NULL));
 		g_ptr_array_add (parent_appdata,
 				 g_build_filename ("/usr/share", "appdata", NULL));
 		g_ptr_array_add (parent_appdata,
