@@ -3224,7 +3224,6 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORY_APPS:
-		gs_app_list_filter (list, gs_plugin_loader_app_is_non_compulsory, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_app_is_valid, helper);
 		gs_app_list_filter (list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 		gs_app_list_filter (list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
