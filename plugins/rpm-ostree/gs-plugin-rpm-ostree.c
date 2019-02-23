@@ -185,6 +185,7 @@ typedef struct {
 	GsPlugin *plugin;
 	GError *error;
 	GMainLoop *loop;
+	GsApp *app;
 	gboolean complete;
 } TransactionProgress;
 
@@ -204,8 +205,11 @@ transaction_progress_free (TransactionProgress *self)
 {
 	g_main_loop_unref (self->loop);
 	g_clear_error (&self->error);
+	g_clear_object (&self->app);
 	g_slice_free (TransactionProgress, self);
 }
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(TransactionProgress, transaction_progress_free);
 
 static void
 transaction_progress_end (TransactionProgress *self)
@@ -222,7 +226,15 @@ on_transaction_progress (GDBusProxy *proxy,
 {
 	TransactionProgress *tp = user_data;
 
-	if (g_strcmp0 (signal_name, "Finished") == 0) {
+	if (g_strcmp0 (signal_name, "PercentProgress") == 0) {
+		const gchar *message = NULL;
+		guint32 percentage;
+		g_variant_get_child (parameters, 0, "&s", &message);
+		g_variant_get_child (parameters, 1, "u", &percentage);
+		g_debug ("PercentProgress: %u, %s\n", percentage, message);
+		if (tp->app != NULL)
+			gs_app_set_progress (tp->app, (guint) percentage);
+	} else if (g_strcmp0 (signal_name, "Finished") == 0) {
 		if (tp->error == NULL) {
 			g_autofree gchar *error_message = NULL;
 			gboolean success = FALSE;
@@ -250,12 +262,12 @@ cancelled_handler (GCancellable *cancellable,
 static gboolean
 gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
                                             const gchar *transaction_address,
+                                            TransactionProgress *tp,
                                             GCancellable *cancellable,
                                             GError **error)
 {
 	GsRPMOSTreeTransaction *transaction = NULL;
 	g_autoptr(GDBusConnection) peer_connection = NULL;
-	TransactionProgress *tp = transaction_progress_new ();
 	gint cancel_handler;
 	gulong signal_handler = 0;
 	gboolean success = FALSE;
@@ -313,7 +325,6 @@ out:
 	if (transaction != NULL)
 		g_object_unref (transaction);
 
-	transaction_progress_free (tp);
 	return success;
 }
 
@@ -523,6 +534,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	{
 		g_autofree gchar *transaction_address = NULL;
 		g_autoptr(GVariant) options = NULL;
+		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 		options = make_rpmostree_options_variant (FALSE,  /* reboot */
 		                                          FALSE,  /* allow-downgrade */
@@ -545,6 +557,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
 		                                                 transaction_address,
+		                                                 tp,
 		                                                 cancellable,
 		                                                 error)) {
 			gs_utils_error_convert_gio (error);
@@ -556,6 +569,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autofree gchar *transaction_address = NULL;
 		g_autoptr(GVariant) options = NULL;
 		GVariantDict dict;
+		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 		g_variant_dict_init (&dict, NULL);
 		g_variant_dict_insert (&dict, "mode", "s", "check");
@@ -573,6 +587,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
 		                                                 transaction_address,
+		                                                 tp,
 		                                                 cancellable,
 		                                                 error)) {
 			gs_utils_error_convert_gio (error);
@@ -708,6 +723,7 @@ trigger_rpmostree_update (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 	/* if we can process this online do not require a trigger */
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
@@ -743,6 +759,7 @@ trigger_rpmostree_update (GsPlugin *plugin,
 
 	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
 	                                                 transaction_address,
+	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_utils_error_convert_gio (error);
@@ -788,6 +805,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autofree gchar *local_filename = NULL;
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
@@ -815,6 +833,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	tp->app = g_object_ref (app);
 
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
 	                                          FALSE,  /* allow-downgrade */
@@ -840,6 +859,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
 	                                                 transaction_address,
+	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_utils_error_convert_gio (error);
@@ -870,12 +890,14 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	tp->app = g_object_ref (app);
 
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
 	                                          FALSE,  /* allow-downgrade */
@@ -901,6 +923,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
 	                                                 transaction_address,
+	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_utils_error_convert_gio (error);
@@ -1066,6 +1089,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	g_autofree gchar *new_refspec = NULL;
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
@@ -1105,6 +1129,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
 	                                                 transaction_address,
+	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_utils_error_convert_gio (error);
