@@ -947,7 +947,8 @@ resolve_packages_app (GsPlugin *plugin,
 		RpmOstreePackage *pkg = g_ptr_array_index (pkglist, i);
 		if (g_strcmp0 (rpm_ostree_package_get_name (pkg), gs_app_get_source_default (app)) == 0) {
 			gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+			if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			if (g_strv_contains ((const gchar * const *) layered_packages,
 			                     rpm_ostree_package_get_name (pkg))) {
 				/* layered packages can always be removed */
