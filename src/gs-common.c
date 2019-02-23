@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013-2015 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2016-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016-2019 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -129,20 +129,36 @@ gs_app_notify_installed (GsApp *app)
 		/* TRANSLATORS: this is the summary of a notification that an application
 		 * has been successfully installed */
 		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
-		/* TRANSLATORS: this is the body of a notification that an application
-		 * has been successfully installed */
-		body = _("Application is ready to be used.");
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+			/* TRANSLATORS: an application has been installed, but
+			 * needs a reboot to complete the installation */
+			body = _("A restart is required for the changes to take effect.");
+		} else {
+			/* TRANSLATORS: this is the body of a notification that an application
+			 * has been successfully installed */
+			body = _("Application is ready to be used.");
+		}
 		break;
 	default:
 		/* TRANSLATORS: this is the summary of a notification that a component
 		 * has been successfully installed */
 		summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+			/* TRANSLATORS: an application has been installed, but
+			 * needs a reboot to complete the installation */
+			body = _("A restart is required for the changes to take effect.");
+		}
 		break;
 	}
 	n = g_notification_new (summary);
 	if (body != NULL)
 		g_notification_set_body (n, body);
-	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
+
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+		/* TRANSLATORS: button text */
+		g_notification_add_button_with_target (n, _("Restart"),
+						       "app.reboot", NULL);
+	} else if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
 		/* TRANSLATORS: this is button that opens the newly installed application */
 		g_notification_add_button_with_target (n, _("Launch"),
 						       "app.launch", "s",
