@@ -1140,7 +1140,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
-	g_autoptr(GVariant) booted_deployment = NULL;
+	g_autoptr(GVariant) default_deployment = NULL;
 	g_auto(GStrv) layered_packages = NULL;
 	g_autofree gchar *checksum = NULL;
 
@@ -1152,11 +1152,11 @@ gs_plugin_refine (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	booted_deployment = gs_rpmostree_os_dup_booted_deployment (priv->os_proxy);
-	g_assert (g_variant_lookup (booted_deployment,
+	default_deployment = gs_rpmostree_os_dup_default_deployment (priv->os_proxy);
+	g_assert (g_variant_lookup (default_deployment,
 	                            "packages", "^as",
 	                            &layered_packages));
-	g_assert (g_variant_lookup (booted_deployment,
+	g_assert (g_variant_lookup (default_deployment,
 	                            "checksum", "s",
 	                            &checksum));
 
