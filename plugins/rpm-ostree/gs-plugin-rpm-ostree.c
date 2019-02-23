@@ -449,6 +449,17 @@ make_rpmostree_modifiers_variant (const char *install_package,
 
 	g_variant_dict_init (&dict, NULL);
 
+	if (install_package != NULL) {
+		g_autoptr(GPtrArray) repo_pkgs = g_ptr_array_new ();
+
+		g_ptr_array_add (repo_pkgs, install_package);
+
+		g_variant_dict_insert_value (&dict, "install-packages",
+		                             g_variant_new_strv ((const char *const*)repo_pkgs->pdata,
+		                             repo_pkgs->len));
+
+	}
+
 	if (uninstall_package != NULL) {
 		g_autoptr(GPtrArray) repo_pkgs = g_ptr_array_new ();
 
@@ -802,6 +813,7 @@ gs_plugin_app_install (GsPlugin *plugin,
                        GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *install_package = NULL;
 	g_autofree gchar *local_filename = NULL;
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
@@ -812,6 +824,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_AVAILABLE:
+		if (gs_app_get_source_default (app) == NULL) {
+			g_set_error_literal (error,
+			                     GS_PLUGIN_ERROR,
+			                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			                     "no source set");
+			return FALSE;
+		}
+
+		install_package = gs_app_get_source_default (app);
+		break;
 	case AS_APP_STATE_AVAILABLE_LOCAL:
 		if (gs_app_get_local_file (app) == NULL) {
 			g_set_error_literal (error,
@@ -845,7 +868,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	                                          FALSE); /* no-overrides */
 
 	if (!rpmostree_update_deployment (priv->os_proxy,
-	                                  NULL /* install package */,
+	                                  install_package,
 	                                  NULL /* remove package */,
 	                                  local_filename,
 	                                  options,
