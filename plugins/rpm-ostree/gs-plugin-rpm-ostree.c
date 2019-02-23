@@ -863,7 +863,7 @@ gs_plugin_app_install (GsPlugin *plugin,
                        GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *install_package = NULL;
+	const gchar *install_package = NULL;
 	g_autofree gchar *local_filename = NULL;
 	g_autofree gchar *transaction_address = NULL;
 	g_autoptr(GVariant) options = NULL;
