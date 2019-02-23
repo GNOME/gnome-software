@@ -209,12 +209,19 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
+static void
+app_set_rpm_ostree_packaging_format (GsApp *app)
+{
+	gs_app_set_metadata (app, "GnomeSoftware::PackagingFormat", "RPM");
+}
+
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_PACKAGE &&
 	    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM) {
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		app_set_rpm_ostree_packaging_format (app);
 	}
 
 	if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE) {
@@ -391,6 +398,7 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	app = gs_app_new (NULL);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_set_management_plugin (app, "rpm-ostree");
+	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_size_download (app, 0);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -429,6 +437,7 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 	app = gs_app_new (NULL);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
 	gs_app_set_management_plugin (app, "rpm-ostree");
+	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_size_download (app, 0);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
@@ -1113,6 +1122,7 @@ resolve_appstream_source_file_to_package_name (GsPlugin *plugin,
 			g_debug ("rpm: setting source to %s", name);
 			gs_app_add_source (app, name);
 			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+			app_set_rpm_ostree_packaging_format (app);
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 		}
 	}
@@ -1168,6 +1178,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		    gs_app_get_scope (app) == AS_APP_SCOPE_SYSTEM &&
 		    gs_app_get_source_default (app) != NULL) {
 			gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+			app_set_rpm_ostree_packaging_format (app);
 		}
 		/* resolve the source package name based on installed appdata/desktop file name */
 		if (gs_app_get_management_plugin (app) == NULL &&
@@ -1355,6 +1366,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	app_set_rpm_ostree_packaging_format (app);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
