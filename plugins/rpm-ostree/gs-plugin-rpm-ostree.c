@@ -50,7 +50,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 
 	/* open transaction */
-	rpmReadConfigFiles(NULL, NULL);
+	rpmReadConfigFiles (NULL, NULL);
 
 	/* rpm-ostree is already a daemon with a DBus API; hence it makes
 	 * more sense to use a custom plugin instead of using PackageKit.
