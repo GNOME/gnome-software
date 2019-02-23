@@ -13,6 +13,7 @@
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
+#include <libdnf/libdnf.h>
 #include <ostree.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlib.h>
@@ -31,23 +32,27 @@ G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmts, rpmtsFree, NULL);
 G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
 
 struct GsPluginData {
+	GMutex			 mutex;
 	GsRPMOSTreeOS		*os_proxy;
 	GsRPMOSTreeSysroot	*sysroot_proxy;
 	OstreeRepo		*ot_repo;
 	OstreeSysroot		*ot_sysroot;
+	DnfContext		*dnf_context;
 	gboolean		 update_triggered;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 
 	/* only works on OSTree */
 	if (!g_file_test ("/run/ostree-booted", G_FILE_TEST_EXISTS)) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	g_mutex_init (&priv->mutex);
 
 	/* open transaction */
 	rpmReadConfigFiles (NULL, NULL);
@@ -84,6 +89,24 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->ot_sysroot);
 	if (priv->ot_repo != NULL)
 		g_object_unref (priv->ot_repo);
+	g_mutex_clear (&priv->mutex);
+}
+
+#define RPMOSTREE_CORE_CACHEDIR "/var/cache/rpm-ostree/"
+#define RPMOSTREE_DIR_CACHE_REPOMD "repomd"
+#define RPMOSTREE_DIR_CACHE_SOLV "solv"
+
+static DnfContext *
+gs_rpmostree_context_new (void)
+{
+	DnfContext *context = dnf_context_new ();
+
+	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
+	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
+	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
+	dnf_context_set_cache_age (context, G_MAXUINT);
+
+	return context;
 }
 
 gboolean
@@ -163,6 +186,24 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
+	}
+
+	/* Set up libdnf context for querying remote metadata */
+	if (priv->dnf_context == NULL) {
+		g_autoptr(DnfContext) context = gs_rpmostree_context_new ();
+		g_autoptr(DnfState) state = dnf_state_new ();
+
+		if (!dnf_context_setup (context, cancellable, error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+
+		if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+
+		g_set_object (&priv->dnf_context, context);
 	}
 
 	return TRUE;
@@ -960,11 +1001,28 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-static void
-resolve_packages_app (GsPlugin *plugin,
-                      GPtrArray *pkglist,
-                      gchar **layered_packages,
-                      GsApp *app)
+static DnfPackage *
+find_package_by_name (DnfSack     *sack,
+                      const char  *pkgname)
+{
+	g_autoptr(GPtrArray) pkgs = NULL;
+	hy_autoquery HyQuery query = hy_query_create (sack);
+
+	hy_query_filter (query, HY_PKG_NAME, HY_EQ, pkgname);
+	hy_query_filter_latest_per_arch (query, TRUE);
+
+	pkgs = hy_query_run (query);
+	if (pkgs->len == 0)
+		return NULL;
+
+	return g_object_ref (pkgs->pdata[pkgs->len-1]);
+}
+
+static gboolean
+resolve_installed_packages_app (GsPlugin *plugin,
+                                GPtrArray *pkglist,
+                                gchar **layered_packages,
+                                GsApp *app)
 {
 	for (guint i = 0; i < pkglist->len; i++) {
 		RpmOstreePackage *pkg = g_ptr_array_index (pkglist, i);
@@ -980,8 +1038,32 @@ resolve_packages_app (GsPlugin *plugin,
 				/* can't remove packages that are part of the base system */
 				gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 			}
+			return TRUE /* found */;
 		}
 	}
+
+	return FALSE /* not found */;
+}
+
+static gboolean
+resolve_available_packages_app (GsPlugin *plugin,
+                                DnfSack *sack,
+                                GsApp *app)
+{
+	g_autoptr(DnfPackage) pkg = NULL;
+
+	pkg = find_package_by_name (sack, gs_app_get_source_default (app));
+	if (pkg != NULL) {
+		gs_app_set_version (app, dnf_package_get_evr (pkg));
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
+		/* anything not part of the base system can be removed */
+		gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+		return TRUE /* found */;
+	}
+
+	return FALSE /* not found */;
 }
 
 static gboolean
@@ -1046,10 +1128,13 @@ gs_plugin_refine (GsPlugin *plugin,
                   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(GVariant) booted_deployment = NULL;
 	g_auto(GStrv) layered_packages = NULL;
 	g_autofree gchar *checksum = NULL;
+
+	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* ensure D-Bus properties are updated before reading them */
 	if (!gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error)) {
@@ -1073,6 +1158,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
+		gboolean found;
 
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
@@ -1096,7 +1182,17 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (gs_app_get_source_default (app) == NULL)
 			continue;
 
-		resolve_packages_app (plugin, pkglist, layered_packages, app);
+		/* first try to resolve from installed packages */
+		found = resolve_installed_packages_app (plugin, pkglist, layered_packages, app);
+
+		/* if we didn't find anything, try resolving from available packages */
+		if (!found)
+			found = resolve_available_packages_app (plugin, dnf_context_get_sack (priv->dnf_context), app);
+
+		/* if we still didn't find anything then it's likely a package
+		 * that is still in appstream data, but removed from the repos */
+		if (!found)
+			g_debug ("failed to resolve %s", gs_app_get_unique_id (app));
 	}
 
 	return TRUE;

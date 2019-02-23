@@ -18,7 +18,7 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, ostree, rpm, rpm_ostree ],
+  dependencies : [ plugin_libs, libdnf, ostree, rpm, rpm_ostree ],
   link_with : [
     libgnomesoftware
   ]
