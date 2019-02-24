@@ -68,6 +68,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_review_count;
 	GtkWidget		*box_details_screenshot;
 	GtkWidget		*box_details_screenshot_main;
+	GtkWidget		*box_details_screenshot_scrolledwindow;
 	GtkWidget		*box_details_screenshot_thumbnails;
 	GtkWidget		*box_details_license_list;
 	GtkWidget		*button_details_launch;
@@ -548,6 +549,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 				screenshots->len > 0);
 	if (screenshots->len == 0) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
+		gtk_widget_hide (self->box_details_screenshot_scrolledwindow);
 		return;
 	}
 
@@ -573,12 +575,15 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 
 	/* set all the thumbnails */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
-	if (screenshots->len < 2)
+	if (screenshots->len < 2) {
+		gtk_widget_hide (self->box_details_screenshot_scrolledwindow);
 		return;
+	}
 
 	list = gtk_list_box_new ();
 	gtk_style_context_add_class (gtk_widget_get_style_context (list), "image-list");
 	gtk_widget_show (list);
+	gtk_widget_show (self->box_details_screenshot_scrolledwindow);
 	gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_thumbnails), list);
 	for (i = 0; i < screenshots->len; i++) {
 		ss = g_ptr_array_index (screenshots, i);
@@ -2627,6 +2632,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_main);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_scrolledwindow);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_thumbnails);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_list);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
