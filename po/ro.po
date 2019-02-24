@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-02-23 21:01+0000\n"
-"PO-Revision-Date: 2019-02-24 11:46+0100\n"
+"POT-Creation-Date: 2019-02-24 11:06+0000\n"
+"PO-Revision-Date: 2019-02-24 15:14+0100\n"
 "Last-Translator: Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
 "sourceforge.net>\n"
@@ -655,7 +655,7 @@ msgstr "Evaluări de top"
 #. Translators: A label for a button to sort apps alphabetically.
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
 #: src/gs-category-page.ui:32 src/gs-editor.ui:225
-#: src/gs-origin-popover-row.c:49
+#: src/gs-origin-popover-row.c:52
 msgid "Name"
 msgstr "Nume"
 
@@ -2261,6 +2261,16 @@ msgstr "Moderează pagina"
 msgid "There are no reviews to moderate"
 msgstr "Nu există recenzii de moderat"
 
+#. TRANSLATORS: the installation location for flatpaks
+#: src/gs-origin-popover-row.c:77
+msgid "system"
+msgstr "sistem"
+
+#. TRANSLATORS: the installation location for flatpaks
+#: src/gs-origin-popover-row.c:80
+msgid "user"
+msgstr "utilizator"
+
 #: src/gs-origin-popover-row.ui:35 src/gs-repo-row.ui:75
 msgid "URL"
 msgstr "URL"
@@ -2269,6 +2279,11 @@ msgstr "URL"
 #: src/gs-origin-popover-row.ui:64
 msgid "Format"
 msgstr "Format"
+
+#. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
+#: src/gs-origin-popover-row.ui:93
+msgid "Installation"
+msgstr "Loc de instalare"
 
 #. add button
 #: src/gs-overview-page.c:318
@@ -2430,7 +2445,7 @@ msgstr "Actualizări automate"
 msgid "Automatic updates are disabled when on mobile or metered connections."
 msgstr ""
 "Actualizările automate sunt dezactivate când sunteți pe o conexiune mobilă "
-"sau contorizată"
+"sau contorizată."
 
 #: src/gs-prefs-dialog.ui:88
 msgid "Automatic Update Notifications"
@@ -5376,9 +5391,6 @@ msgstr "Un snap este un pachet Linux universal"
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Sports"
 #~ msgstr "Sport"
-
-#~ msgid "System"
-#~ msgstr "Sistem"
 
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "Emulator"
