@@ -21,6 +21,9 @@ typedef struct
 	GtkWidget	*format_box;
 	GtkWidget	*format_title;
 	GtkWidget	*format_label;
+	GtkWidget	*installation_box;
+	GtkWidget	*installation_title;
+	GtkWidget	*installation_label;
 	GtkWidget	*selected_image;
 } GsOriginPopoverRowPrivate;
 
@@ -65,6 +68,21 @@ refresh_ui (GsOriginPopoverRow *row)
 	} else {
 		gtk_widget_hide (priv->format_box);
 	}
+
+	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_FLATPAK &&
+	    gs_app_get_scope (priv->app) != AS_APP_SCOPE_UNKNOWN) {
+		AsAppScope scope = gs_app_get_scope (priv->app);
+		if (scope == AS_APP_SCOPE_SYSTEM) {
+			/* TRANSLATORS: the installation location for flatpaks */
+			gtk_label_set_text (GTK_LABEL (priv->installation_label), _("system"));
+		} else if (scope == AS_APP_SCOPE_USER) {
+			/* TRANSLATORS: the installation location for flatpaks */
+			gtk_label_set_text (GTK_LABEL (priv->installation_label), _("user"));
+		}
+		gtk_widget_show (priv->installation_box);
+	} else {
+		gtk_widget_hide (priv->installation_box);
+	}
 }
 
 static void
@@ -100,6 +118,7 @@ gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *siz
 
 	gtk_size_group_add_widget (size_group, priv->url_title);
 	gtk_size_group_add_widget (size_group, priv->format_title);
+	gtk_size_group_add_widget (size_group, priv->installation_title);
 }
 
 static void
@@ -135,6 +154,9 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, format_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_title);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, selected_image);
 }
 
