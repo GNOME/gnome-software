@@ -57,7 +57,6 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autoptr(GsOsRelease) os_release = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 	g_autoptr(GPtrArray) details = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 
 	path = gs_utils_get_url_path (url);
@@ -84,18 +83,17 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
-
 	package_ids = g_new0 (gchar *, 2);
 	package_ids[0] = g_strdup (path);
+
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_resolve (priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     package_ids,
 				     cancellable,
 				     gs_packagekit_helper_cb, helper,
 				     error);
+	g_mutex_unlock (&priv->client_mutex);
 
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to resolve package_ids: ");

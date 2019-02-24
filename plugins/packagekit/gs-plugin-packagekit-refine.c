@@ -99,7 +99,6 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -120,17 +119,15 @@ gs_plugin_packagekit_resolve_packages_with_filter (GsPlugin *plugin,
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
-
 	/* resolve them all at once */
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_resolve (priv->client,
 				     filter,
 				     (gchar **) package_ids->pdata,
 				     cancellable,
 				     gs_packagekit_helper_cb, helper,
 				     error);
+	g_mutex_unlock (&priv->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to resolve package_ids: ");
 		return FALSE;
@@ -211,20 +208,17 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
 
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_search_files (priv->client,
 					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					  (gchar **) to_array,
 					  cancellable,
 					  gs_packagekit_helper_cb, helper,
 					  error);
+	g_mutex_unlock (&priv->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to search file %s: ", filename);
 		return FALSE;
@@ -286,7 +280,6 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	g_autofree const gchar **package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	package_ids = g_new0 (const gchar *, gs_app_list_length (list) + 1);
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -300,16 +293,14 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	if (cnt == 0)
 		return TRUE;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
-
 	/* get any update details */
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_get_update_detail (priv->client,
 					       (gchar **) package_ids,
 					       cancellable,
 					       gs_packagekit_helper_cb, helper,
 					       error);
+	g_mutex_unlock (&priv->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to get update details for %s: ",
 				package_ids[0]);
@@ -353,7 +344,6 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (i = 0; i < gs_app_list_length (list); i++) {
@@ -368,16 +358,14 @@ gs_plugin_packagekit_refine_details2 (GsPlugin *plugin,
 		return TRUE;
 	g_ptr_array_add (package_ids, NULL);
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
-
 	/* get any details */
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_get_details (priv->client,
 					 (gchar **) package_ids->pdata,
 					 cancellable,
 					 gs_packagekit_helper_cb, helper,
 					 error);
+	g_mutex_unlock (&priv->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_autofree gchar *package_ids_str = g_strjoinv (",", (gchar **) package_ids->pdata);
 		g_prefix_error (error, "failed to get details for %s: ",
@@ -409,23 +397,20 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) == 0)
 		return TRUE;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
-
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_get_updates (priv->client,
 					 filter,
 					 cancellable,
 					 gs_packagekit_helper_cb, helper,
 					 error);
+	g_mutex_unlock (&priv->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to get updates for urgency: ");
 		return FALSE;
@@ -593,20 +578,17 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	GsApp *app2;
-	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	guint cache_age_save;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
+	gs_packagekit_helper_add_app (helper, app);
 
 	/* ask PK to simulate upgrading the system */
+	g_mutex_lock (&priv->client_mutex);
 	cache_age_save = pk_client_get_cache_age (priv->client);
 	pk_client_set_cache_age (priv->client, 60 * 60 * 24 * 7); /* once per week */
-	gs_packagekit_helper_add_app (helper, app);
 	results = pk_client_upgrade_system (priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 					    gs_app_get_version (app),
@@ -615,6 +597,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    gs_packagekit_helper_cb, helper,
 					    error);
 	pk_client_set_cache_age (priv->client, cache_age_save);
+	g_mutex_unlock (&priv->client_mutex);
 
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to refine distro upgrade: ");

@@ -55,20 +55,17 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	g_auto(GStrv) files = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->task_mutex);
-	g_assert (locker != NULL);
 
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
 	gs_packagekit_helper_add_app (helper, app);
+	g_mutex_lock (&priv->task_mutex);
 	results = pk_client_get_files_local (PK_CLIENT (priv->task),
 					     files,
 					     cancellable,
 					     gs_packagekit_helper_cb, helper,
 					     error);
+	g_mutex_unlock (&priv->task_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
@@ -137,7 +134,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 	const gchar *mimetypes[] = {
 		"application/x-app-package",
 		"application/x-deb",
@@ -153,19 +149,17 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	if (!g_strv_contains (mimetypes, content_type))
 		return TRUE;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->task_mutex);
-	g_assert (locker != NULL);
-
 	/* get details */
 	filename = g_file_get_path (file);
 	files = g_strsplit (filename, "\t", -1);
+	g_mutex_lock (&priv->task_mutex);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 	results = pk_client_get_details_local (PK_CLIENT (priv->task),
 					       files,
 					       cancellable,
 					       gs_packagekit_helper_cb, helper,
 					       error);
+	g_mutex_unlock (&priv->task_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
 

@@ -56,7 +56,6 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
@@ -66,19 +65,17 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
 		return TRUE;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->task_mutex);
-	g_assert (locker != NULL);
-
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_add_app (helper, app);
+	g_mutex_lock (&priv->task_mutex);
 	results = pk_task_upgrade_system_sync (priv->task,
 					       gs_app_get_version (app),
 					       PK_UPGRADE_KIND_ENUM_COMPLETE,
 					       cancellable,
 					       gs_packagekit_helper_cb, helper,
 					       error);
+	g_mutex_unlock (&priv->task_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;

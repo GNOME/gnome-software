@@ -57,24 +57,21 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->task_mutex);
-	g_assert (locker != NULL);
+	/* get the list of packages to update */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
+	g_mutex_lock (&priv->task_mutex);
 	/* never refresh the metadata here as this can surprise the frontend if
 	 * we end up downloading a different set of packages than what was
 	 * shown to the user */
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
-
-	/* get the list of packages to update */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_get_updates (PK_CLIENT (priv->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_NONE),
 					 cancellable,
 					 gs_packagekit_helper_cb, helper,
 					 error);
+	g_mutex_unlock (&priv->task_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		return FALSE;
 	}
@@ -88,11 +85,17 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 		GsApp *app = gs_app_list_index (list, i);
 		gs_packagekit_helper_add_app (helper, app);
 	}
+	g_mutex_lock (&priv->task_mutex);
+	/* never refresh the metadata here as this can surprise the frontend if
+	 * we end up downloading a different set of packages than what was
+	 * shown to the user */
+	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 	results2 = pk_task_update_packages_sync (priv->task,
 						 package_ids,
 						 cancellable,
 						 gs_packagekit_helper_cb, helper,
 						 error);
+	g_mutex_unlock (&priv->task_mutex);
 	if (results2 == NULL) {
 		gs_plugin_packagekit_error_convert (error);
 		return FALSE;
@@ -143,24 +146,21 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
 
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->task_mutex);
-	g_assert (locker != NULL);
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	gs_packagekit_helper_add_app (helper, app_dl);
 
+	g_mutex_lock (&priv->task_mutex);
 	/* cache age of 1 is user-initiated */
 	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 1);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
-
 	/* refresh the metadata */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	gs_packagekit_helper_add_app (helper, app_dl);
 	results = pk_client_refresh_cache (PK_CLIENT (priv->task),
 	                                   FALSE /* force */,
 	                                   cancellable,
 	                                   gs_packagekit_helper_cb, helper,
 	                                   error);
+	g_mutex_unlock (&priv->task_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		return FALSE;
 	}

@@ -61,20 +61,17 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
-	g_autoptr(GMutexLocker) locker = NULL;
-
-	/* packagekit-glib is not threadsafe */
-	locker = g_mutex_locker_new (&priv->client_mutex);
-	g_assert (locker != NULL);
 
 	to_array[0] = filename;
 	gs_packagekit_helper_add_app (helper, app);
+	g_mutex_lock (&priv->client_mutex);
 	results = pk_client_search_files (priv->client,
 	                                  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 	                                  (gchar **) to_array,
 	                                  cancellable,
 	                                  gs_packagekit_helper_cb, helper,
 	                                  error);
+	g_mutex_unlock (&priv->client_mutex);
 	if (!gs_plugin_packagekit_results_valid (results, error)) {
 		g_prefix_error (error, "failed to search file %s: ", filename);
 		return FALSE;
