@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-02-11 12:20+0000\n"
-"PO-Revision-Date: 2019-02-16 23:34+0300\n"
+"POT-Creation-Date: 2019-02-24 12:46+0000\n"
+"PO-Revision-Date: 2019-02-24 19:42+0300\n"
 "Last-Translator: Emin Tufan Çetin <etcetin@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -397,7 +397,7 @@ msgstr "Daha Çok Bilgi"
 msgid "Local file"
 msgstr "Yerel dosya"
 
-#: lib/gs-app.c:4508
+#: lib/gs-app.c:4510
 msgid "Package"
 msgstr "Paket"
 
@@ -570,7 +570,7 @@ msgstr "İptal"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:145 src/gs-common.c:271 src/gs-page.c:582
+#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:582
 msgid "Install"
 msgstr "Kur"
 
@@ -647,7 +647,7 @@ msgstr "Çok Oylanan"
 #. Translators: A label for a button to sort apps alphabetically.
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
 #: src/gs-category-page.ui:32 src/gs-editor.ui:225
-#: src/gs-origin-popover-row.c:49
+#: src/gs-origin-popover-row.c:52
 msgid "Name"
 msgstr "Ad"
 
@@ -710,29 +710,40 @@ msgstr "Son olarak kurulan güncellemeler gözden geçirme için uygun"
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:131 src/gs-common.c:139
+#: src/gs-common.c:131 src/gs-common.c:145
 #, c-format
 msgid "%s is now installed"
 msgstr "%s şimdi kuruldu"
 
+#. TRANSLATORS: an application has been installed, but
+#. * needs a reboot to complete the installation
+#: src/gs-common.c:135 src/gs-common.c:149
+msgid "A restart is required for the changes to take effect."
+msgstr "Değişikliklerin etkili olması için yeniden başlatmanız gerekiyor."
+
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:134
+#: src/gs-common.c:139
 msgid "Application is ready to be used."
 msgstr "Uygulama kullanıma hazır."
 
+#. TRANSLATORS: button text
+#: src/gs-common.c:159 src/gs-updates-section.c:326
+msgid "Restart"
+msgstr "Yeniden Başlat"
+
 #. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:147
+#: src/gs-common.c:163
 msgid "Launch"
 msgstr "Başlat"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:205
+#: src/gs-common.c:221
 msgid "Install Third-Party Software?"
 msgstr "Üçüncü Taraf Yazılım Kurulsun mu?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:209 src/gs-repos-dialog.c:233
+#: src/gs-common.c:225 src/gs-repos-dialog.c:233
 msgid "Enable Third-Party Software Repository?"
 msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin mi?"
 
@@ -740,7 +751,7 @@ msgstr "Üçüncü Taraf Yazılım Deposu Etkinleştirilsin mi?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:225
+#: src/gs-common.c:241
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -753,46 +764,46 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:235
+#: src/gs-common.c:251
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s, “%s” tarafından sağlanıyor."
 
-#: src/gs-common.c:244
+#: src/gs-common.c:260
 msgid "This software repository must be enabled to continue installation."
 msgstr "Kuruluma devam etmek için bu yazılım deposu etkinleştirilmelidir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:254
+#: src/gs-common.c:270
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "%s yazılımını kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:260
+#: src/gs-common.c:276
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Bu kod çözücüyü kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:267
+#: src/gs-common.c:283
 msgid "Don’t Warn Again"
 msgstr "Bir Daha Uyarma"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:276
+#: src/gs-common.c:292
 msgid "Enable and Install"
 msgstr "Etkinleştir ve Kur"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:419
+#: src/gs-common.c:435
 msgid "Detailed errors from the package manager follow:"
 msgstr "Paket yöneticisinden gelen hata ayrıntıları:"
 
-#: src/gs-common.c:438 src/gs-details-page.ui:417
+#: src/gs-common.c:454 src/gs-details-page.ui:417
 msgid "Details"
 msgstr "Ayrıntılar"
 
@@ -1586,6 +1597,10 @@ msgstr "Daha çok bilgi"
 msgid "Details page"
 msgstr "Ayrıntılar sayfası"
 
+#: src/gs-details-page.ui:211
+msgid "Downloading"
+msgstr "İndiriliyor"
+
 #. Translators: A label for a button to add a shortcut to the selected application.
 #: src/gs-details-page.ui:251
 msgid "_Add shortcut"
@@ -2225,6 +2240,16 @@ msgstr "Sayfayı yönet"
 msgid "There are no reviews to moderate"
 msgstr "Yönetilecek inceleme yok"
 
+#. TRANSLATORS: the installation location for flatpaks
+#: src/gs-origin-popover-row.c:77
+msgid "system"
+msgstr "sistem"
+
+#. TRANSLATORS: the installation location for flatpaks
+#: src/gs-origin-popover-row.c:80
+msgid "user"
+msgstr "kullanıcı"
+
 #: src/gs-origin-popover-row.ui:35 src/gs-repo-row.ui:75
 msgid "URL"
 msgstr "URL"
@@ -2233,6 +2258,11 @@ msgstr "URL"
 #: src/gs-origin-popover-row.ui:64
 msgid "Format"
 msgstr "Biçim"
+
+#. Translators: The installation location for flatpaks, e.g. 'user' or 'system'
+#: src/gs-origin-popover-row.ui:93
+msgid "Installation"
+msgstr "Kurulum"
 
 #. add button
 #: src/gs-overview-page.c:318
@@ -3500,7 +3530,7 @@ msgstr "Sistem Yükseltmesi Tamamlandı"
 #: src/gs-update-monitor.c:873
 #, c-format
 msgid "Welcome to %s %s!"
-msgstr "%s %s’e Hoş Geldiniz!"
+msgstr "%s %s’a Hoş Geldiniz!"
 
 #. TRANSLATORS: title when we've done offline updates
 #: src/gs-update-monitor.c:879
@@ -3770,11 +3800,6 @@ msgstr "Güncellemeler kuruldu"
 #: src/gs-updates-section.c:322
 msgid "A restart is required for them to take effect."
 msgstr "Bunların etkili olması için yeniden başlatmanız gerekiyor."
-
-#. TRANSLATORS: button text
-#: src/gs-updates-section.c:326
-msgid "Restart"
-msgstr "Yeniden Başlat"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
@@ -5263,9 +5288,6 @@ msgstr "Snap, evrensel bir Linux paketidir"
 #~ msgctxt "Menu subcategory of Science"
 #~ msgid "Sports"
 #~ msgstr "Spor"
-
-#~ msgid "System"
-#~ msgstr "Sistem"
 
 #~ msgctxt "Menu subcategory of System"
 #~ msgid "Emulator"
