@@ -76,6 +76,7 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_website;
 	GtkWidget		*button_donate;
 	GtkWidget		*button_install;
+	GtkWidget		*button_update;
 	GtkWidget		*button_remove;
 	GtkWidget		*button_cancel;
 	GtkWidget		*button_more_reviews;
@@ -789,7 +790,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
 	AsAppState state;
 	GsPrice *price;
-	GtkStyleContext *sc;
 	g_autofree gchar *text = NULL;
 
 	state = gs_app_get_state (self->app);
@@ -799,7 +799,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
 		 * can be installed */
 		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
@@ -809,7 +808,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		break;
 	case AS_APP_STATE_PURCHASABLE:
 		gtk_widget_set_visible (self->button_install, TRUE);
-		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
 		price = gs_app_get_price (self->app);
 		text = gs_price_to_string (price);
 		gtk_button_set_label (GTK_BUTTON (self->button_install), text);
@@ -825,18 +823,13 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case AS_APP_STATE_UPDATABLE_LIVE:
-		gtk_widget_set_visible (self->button_install, TRUE);
-		sc = gtk_widget_get_style_context (self->button_install);
 		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+			gtk_widget_set_visible (self->button_install, TRUE);
 			/* TRANSLATORS: button text in the header when firmware
 			 * can be live-installed */
 			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
-			gtk_style_context_add_class (sc, "suggested-action");
 		} else {
-			/* TRANSLATORS: button text in the header when an application
-			 * can be live-updated */
-			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Update"));
-			gtk_style_context_remove_class (sc, "suggested-action");
+			gtk_widget_set_visible (self->button_install, FALSE);
 		}
 		break;
 	case AS_APP_STATE_UNAVAILABLE:
@@ -855,6 +848,20 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		g_warning ("App unexpectedly in state %s",
 			   as_app_state_to_string (state));
 		g_assert_not_reached ();
+	}
+
+	/* update button */
+	switch (state) {
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+			gtk_widget_set_visible (self->button_update, FALSE);
+		} else {
+			gtk_widget_set_visible (self->button_update, TRUE);
+		}
+		break;
+	default:
+		gtk_widget_set_visible (self->button_update, FALSE);
+		break;
 	}
 
 	/* launch button */
@@ -930,6 +937,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 
 	if (app_has_pending_action (self->app)) {
 		gtk_widget_set_visible (self->button_install, FALSE);
+		gtk_widget_set_visible (self->button_update, FALSE);
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	}
@@ -2079,6 +2087,13 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
+gs_details_page_app_update_button_cb (GtkWidget *widget, GsDetailsPage *self)
+{
+	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
+	gs_page_update_app (GS_PAGE (self), self->app, self->app_cancellable);
+}
+
+static void
 gs_details_page_addon_selected_cb (GsAppAddonRow *row,
                                    GParamSpec *pspec,
                                    GsDetailsPage *self)
@@ -2501,6 +2516,9 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_install, "clicked",
 			  G_CALLBACK (gs_details_page_app_install_button_cb),
 			  self);
+	g_signal_connect (self->button_update, "clicked",
+			  G_CALLBACK (gs_details_page_app_update_button_cb),
+			  self);
 	g_signal_connect (self->button_remove, "clicked",
 			  G_CALLBACK (gs_details_page_app_remove_button_cb),
 			  self);
@@ -2617,6 +2635,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_website);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_donate);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_more_reviews);

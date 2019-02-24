@@ -244,6 +244,21 @@
                               </object>
                             </child>
                             <child>
+                              <object class="GtkButton" id="button_update">
+                                <property name="visible">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="label" translatable="yes">_Update</property>
+                                <property name="width_request">105</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="halign">start</property>
+                                <property name="valign">start</property>
+                              </object>
+                              <packing>
+                                <property name="pack-type">end</property>
+                              </packing>
+                            </child>
+                            <child>
                               <object class="GtkLinkButton" id="button_details_add_shortcut">
                                 <property name="visible">False</property>
                                 <property name="can_focus">True</property>
@@ -1124,6 +1139,7 @@
     <property name="ignore_hidden">True</property>
     <widgets>
       <widget name="button_install"/>
+      <widget name="button_update"/>
       <widget name="button_remove"/>
       <widget name="button_details_launch"/>
     </widgets>
