@@ -105,6 +105,7 @@ gs_rpmostree_context_new (void)
 	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
 	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
 	dnf_context_set_cache_age (context, G_MAXUINT);
+	dnf_context_set_enable_filelists (context, FALSE);
 
 	return context;
 }
