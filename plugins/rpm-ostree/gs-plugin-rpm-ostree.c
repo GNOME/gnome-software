@@ -1106,6 +1106,13 @@ resolve_available_packages_app (GsPlugin *plugin,
 
 		/* anything not part of the base system can be removed */
 		gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+
+		/* set origin */
+		if (gs_app_get_origin (app) == NULL) {
+			const gchar *reponame = dnf_package_get_reponame (pkg);
+			gs_app_set_origin (app, reponame);
+		}
+
 		return TRUE /* found */;
 	}
 
