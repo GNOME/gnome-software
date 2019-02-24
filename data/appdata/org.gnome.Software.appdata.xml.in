@@ -46,6 +46,42 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-02-24" version="3.31.90">
+      <description>
+        <p>
+          This is an unstable release in the 3.31 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Fix showing the installed check mark on tiles</li>
+          <li>Fix crashes in the packagekit plugin due to missing locking</li>
+          <li>Add back support for appstream data in /var/{cache,lib}/app-info directories that accidentally got left out with the libxmlb rewrite</li>
+          <li>Update the featured banner for gnome-chess</li>
+          <li>Fix the details page alignment when only one screenshot is shown</li>
+          <li>Move the Update button to the right hand side on the details page</li>
+          <li>Fix enabling repos when installing codecs through the extras page</li>
+          <li>Remove the Sundry folder and sync the apps in the Utilities folder with gnome-menus 3.31.90</li>
+          <li>Improve various content rating texts</li>
+          <li>Drop workarounds for locales with codesets</li>
+          <li>Use the currently selected icon theme for stock icons</li>
+          <li>Don't hide compulsory apps in the category views</li>
+          <li>Use the SPDX-License-Identifier in all source files</li>
+          <li>Remove various useless error prefixes, making flatpak and packagekit error messages shorter and easier to read</li>
+          <li>flatpak: Show the installation type (user, system) in the Source dropdown</li>
+          <li>flatpak: Let apps control the name suffix/prefix they have and don't force (Nightly) suffix for everything on the master branch</li>
+          <li>flatpak: Various fixes for matching flatpaks to appstream entries</li>
+          <li>flatpak: Distinguish between the same app coming from multiple remotes</li>
+          <li>rpm-ostree: Correctly resolve installed appdata files to package names</li>
+          <li>rpm-ostree: Hook up percentage progress for install and remove</li>
+          <li>rpm-ostree: Implement layered package install</li>
+          <li>rpm-ostree: Implement locally downloaded rpm install</li>
+          <li>rpm-ostree: Show the source of the packages when installing layered packages</li>
+          <li>rpm-ostree: Various fixes making things more robust</li>
+          <li>snap: Use new media API</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2019-01-16" version="3.31.2">
       <description>
         <p>

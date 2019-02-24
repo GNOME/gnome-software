@@ -1,3 +1,41 @@
+Version 3.31.90
+~~~~~~~~~~~~~~~
+Released: 2019-02-24
+
+This is an unstable release in the 3.31 development series, with the following
+improvements:
+ * Fix showing the installed check mark on tiles
+ * Fix crashes in the packagekit plugin due to missing locking
+ * Add back support for appstream data in /var/{cache,lib}/app-info directories
+   that accidentally got left out with the libxmlb rewrite
+ * Update the featured banner for gnome-chess
+ * Fix the details page alignment when only one screenshot is shown
+ * Move the Update button to the right hand side on the details page
+ * Fix enabling repos when installing codecs through the extras page
+ * Remove the Sundry folder and sync the apps in the Utilities folder with
+   gnome-menus 3.31.90
+ * Improve various content rating texts
+ * Drop workarounds for locales with codesets
+ * Use the currently selected icon theme for stock icons
+ * Don't hide compulsory apps in the category views
+ * Use the SPDX-License-Identifier in all source files
+ * Remove various useless error prefixes, making flatpak and packagekit error
+   messages shorter and easier to read
+ * flatpak: Show the installation type (user, system) in the Source dropdown
+ * flatpak: Let apps control the name suffix/prefix they have and don't force
+   (Nightly) suffix for everything on the master branch
+ * flatpak: Various fixes for matching flatpaks to appstream entries
+ * flatpak: Distinguish between the same app coming from multiple remotes
+ * rpm-ostree: Correctly resolve installed appdata files to package names
+ * rpm-ostree: Hook up percentage progress for install and remove
+ * rpm-ostree: Implement layered package install
+ * rpm-ostree: Implement locally downloaded rpm install
+ * rpm-ostree: Show the source of the packages when installing layered packages
+ * rpm-ostree: Various fixes making things more robust
+ * snap: Use new media API
+
+This release also updates translations.
+
 Version 3.31.2
 ~~~~~~~~~~~~~~
 Released: 2019-01-16
