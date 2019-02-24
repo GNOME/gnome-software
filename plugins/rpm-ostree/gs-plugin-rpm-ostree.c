@@ -89,25 +89,9 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->ot_sysroot);
 	if (priv->ot_repo != NULL)
 		g_object_unref (priv->ot_repo);
+	if (priv->dnf_context != NULL)
+		g_object_unref (priv->dnf_context);
 	g_mutex_clear (&priv->mutex);
-}
-
-#define RPMOSTREE_CORE_CACHEDIR "/var/cache/rpm-ostree/"
-#define RPMOSTREE_DIR_CACHE_REPOMD "repomd"
-#define RPMOSTREE_DIR_CACHE_SOLV "solv"
-
-static DnfContext *
-gs_rpmostree_context_new (void)
-{
-	DnfContext *context = dnf_context_new ();
-
-	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
-	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
-	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
-	dnf_context_set_cache_age (context, G_MAXUINT);
-	dnf_context_set_enable_filelists (context, FALSE);
-
-	return context;
 }
 
 gboolean
@@ -187,24 +171,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			gs_utils_error_convert_gio (error);
 			return FALSE;
 		}
-	}
-
-	/* Set up libdnf context for querying remote metadata */
-	if (priv->dnf_context == NULL) {
-		g_autoptr(DnfContext) context = gs_rpmostree_context_new ();
-		g_autoptr(DnfState) state = dnf_state_new ();
-
-		if (!dnf_context_setup (context, cancellable, error)) {
-			gs_utils_error_convert_gio (error);
-			return FALSE;
-		}
-
-		if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
-			gs_utils_error_convert_gio (error);
-			return FALSE;
-		}
-
-		g_set_object (&priv->dnf_context, context);
 	}
 
 	return TRUE;
@@ -489,6 +455,15 @@ make_rpmostree_options_variant (gboolean reboot,
 	return g_variant_ref_sink (g_variant_dict_end (&dict));
 }
 
+static GVariant *
+make_refresh_md_options_variant (gboolean force)
+{
+	GVariantDict dict;
+	g_variant_dict_init (&dict, NULL);
+	g_variant_dict_insert (&dict, "force", "b", force);
+	return g_variant_ref_sink (g_variant_dict_end (&dict));
+}
+
 static gboolean
 make_rpmostree_modifiers_variant (const char *install_package,
                                   const char *uninstall_package,
@@ -584,6 +559,62 @@ rpmostree_update_deployment (GsRPMOSTreeOS *os_proxy,
 	                                                    error);
 }
 
+#define RPMOSTREE_CORE_CACHEDIR "/var/cache/rpm-ostree/"
+#define RPMOSTREE_DIR_CACHE_REPOMD "repomd"
+#define RPMOSTREE_DIR_CACHE_SOLV "solv"
+
+static gboolean
+ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(DnfContext) context = dnf_context_new ();
+	g_autoptr(DnfState) state = dnf_state_new ();
+	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+
+	if (priv->dnf_context != NULL)
+		return TRUE;
+
+	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
+	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
+	dnf_context_set_solv_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_SOLV);
+	dnf_context_set_cache_age (context, G_MAXUINT);
+	dnf_context_set_enable_filelists (context, FALSE);
+
+	options = make_refresh_md_options_variant (FALSE /* force */);
+	if (!gs_rpmostree_os_call_refresh_md_sync (priv->os_proxy,
+	                                           options,
+	                                           &transaction_address,
+	                                           cancellable,
+	                                           error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 tp,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	if (!dnf_context_setup (context, cancellable, error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
+		gs_utils_error_convert_gio (error);
+		return FALSE;
+	}
+
+	g_set_object (&priv->dnf_context, context);
+	return TRUE;
+}
+
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
                    guint cache_age,
@@ -591,6 +622,9 @@ gs_plugin_refresh (GsPlugin *plugin,
                    GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	if (!ensure_rpmostree_dnf_context (plugin, cancellable, error))
+		return FALSE;
 
 	if (cache_age == G_MAXUINT)
 		return TRUE;
@@ -1202,7 +1236,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		found = resolve_installed_packages_app (plugin, pkglist, layered_packages, app);
 
 		/* if we didn't find anything, try resolving from available packages */
-		if (!found)
+		if (!found && priv->dnf_context != NULL)
 			found = resolve_available_packages_app (plugin, dnf_context_get_sack (priv->dnf_context), app);
 
 		/* if we still didn't find anything then it's likely a package
