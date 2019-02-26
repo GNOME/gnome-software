@@ -191,19 +191,24 @@ gs_plugin_appstream_load_appdata (GsPlugin *plugin,
 
 static GInputStream *
 gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
-				     GFile *file,
+				     XbBuilderSourceCtx *ctx,
 				     gpointer user_data,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	g_autofree gchar *fn = g_file_get_path (file);
-	g_autoptr(AsApp) app = as_app_new ();
 	GString *xml;
-	if (!as_app_parse_file (app, fn, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
+	g_autoptr(AsApp) app = as_app_new ();
+	g_autoptr(GBytes) bytes = NULL;
+	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
+	if (bytes == NULL)
+		return NULL;
+	as_app_set_id (app, xb_builder_source_ctx_get_filename (ctx));
+	if (!as_app_parse_data (app, bytes, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
 		return NULL;
 	xml = as_app_to_xml (app, error);
 	if (xml == NULL)
 		return NULL;
+	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
 }
 
@@ -220,10 +225,8 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for desktop files */
-	xb_builder_source_add_converter (source,
-					 "application/x-desktop",
-					 gs_plugin_appstream_load_desktop_cb,
-					 NULL, NULL);
+	xb_builder_source_add_adapter (source, "application/x-desktop",
+				       gs_plugin_appstream_load_desktop_cb, NULL, NULL);
 
 	/* add a dummy package name */
 	fixup = xb_builder_fixup_new ("AddDesktopPackageName",
@@ -287,18 +290,23 @@ gs_plugin_appstream_load_desktop (GsPlugin *plugin,
 
 static GInputStream *
 gs_plugin_appstream_load_dep11_cb (XbBuilderSource *self,
-				   GFile *file,
+				   XbBuilderSourceCtx *ctx,
 				   gpointer user_data,
 				   GCancellable *cancellable,
 				   GError **error)
 {
 	GString *xml;
 	g_autoptr(AsStore) store = as_store_new ();
-	if (!as_store_from_file (store, file, NULL, cancellable, error))
+	g_autoptr(GBytes) bytes = NULL;
+	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
+	if (bytes == NULL)
+		return NULL;
+	if (!as_store_from_bytes (store, bytes, cancellable, error))
 		return FALSE;
 	xml = as_store_to_xml (store, AS_NODE_INSERT_FLAG_NONE);
 	if (xml == NULL)
 		return NULL;
+	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
 }
 
@@ -318,10 +326,10 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	/* add support for DEP-11 files */
-	xb_builder_source_add_converter (source,
-					 "application/x-yaml",
-					 gs_plugin_appstream_load_dep11_cb,
-					 NULL, NULL);
+	xb_builder_source_add_adapter (source,
+				       "application/x-yaml",
+				       gs_plugin_appstream_load_dep11_cb,
+				       NULL, NULL);
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file,

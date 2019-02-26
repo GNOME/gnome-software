@@ -654,7 +654,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 
 static GInputStream *
 gs_plugin_appstream_load_json_cb (XbBuilderSource *self,
-				  GFile *file,
+				  XbBuilderSourceCtx *ctx,
 				  gpointer user_data,
 				  GCancellable *cancellable,
 				  GError **error)
@@ -665,14 +665,15 @@ gs_plugin_appstream_load_json_cb (XbBuilderSource *self,
 	JsonNode *json_root;
 	JsonObject *json_item;
 	gchar *xml;
-	g_autofree gchar *fn = g_file_get_path (file);
 	g_autoptr(AsApp) app = as_app_new ();
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(XbBuilderNode) apps = NULL;
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
-	if (!json_parser_load_from_file (json_parser, fn, error)) {
+	if (!json_parser_load_from_stream (json_parser,
+					   xb_builder_source_ctx_get_stream (ctx),
+					   cancellable, error)) {
 		gs_utils_error_convert_json_glib (error);
 		return NULL;
 	}
@@ -735,7 +736,7 @@ gs_plugin_appstream_load_json_cb (XbBuilderSource *self,
 	}
 
 	/* convert back to XML */
-	xml = xb_builder_node_export (apps, XB_NODE_EXPORT_FLAG_NONE, error);
+	xml = xb_builder_node_export (apps, XB_NODE_EXPORT_FLAG_ADD_HEADER, error);
 	if (xml == NULL)
 		return NULL;
 	return g_memory_input_stream_new_from_data (xml, -1, g_free);
@@ -823,10 +824,9 @@ _check_silo (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 					  error);
 	if (fn == NULL)
 		return FALSE;
-	xb_builder_source_add_converter (source,
-					 "application/json",
-					 gs_plugin_appstream_load_json_cb,
-					 plugin, NULL);
+	xb_builder_source_add_adapter (source, "application/json",
+				       gs_plugin_appstream_load_json_cb,
+				       plugin, NULL);
 	file = g_file_new_for_path (fn);
 	if (!xb_builder_source_load_file (source, file,
 					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
