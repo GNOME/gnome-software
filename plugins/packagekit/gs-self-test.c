@@ -264,9 +264,11 @@ main (int argc, char **argv)
 	g_assert (ret);
 
 	/* plugin tests go here */
-	g_test_add_data_func ("/gnome-software/plugins/packagekit/local",
-			      plugin_loader,
-			      (GTestDataFunc) gs_plugins_packagekit_local_func);
+	if (!g_file_test ("/run/ostree-booted", G_FILE_TEST_EXISTS)) {
+		g_test_add_data_func ("/gnome-software/plugins/packagekit/local",
+				      plugin_loader,
+				      (GTestDataFunc) gs_plugins_packagekit_local_func);
+	}
 
 	return g_test_run ();
 }
