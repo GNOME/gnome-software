@@ -552,19 +552,24 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 static GInputStream *
 gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
-				     GFile *file,
+				     XbBuilderSourceCtx *ctx,
 				     gpointer user_data,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	g_autofree gchar *fn = g_file_get_path (file);
-	g_autoptr(AsApp) app = as_app_new ();
 	GString *xml;
-	if (!as_app_parse_file (app, fn, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
+	g_autoptr(AsApp) app = as_app_new ();
+	g_autoptr(GBytes) bytes = NULL;
+	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
+	if (bytes == NULL)
+		return NULL;
+	as_app_set_id (app, xb_builder_source_ctx_get_filename (ctx));
+	if (!as_app_parse_data (app, bytes, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
 		return NULL;
 	xml = as_app_to_xml (app, error);
 	if (xml == NULL)
 		return NULL;
+	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
 }
 
@@ -582,10 +587,8 @@ gs_flatpak_load_desktop_fn (GsFlatpak *self,
 	g_autoptr(XbBuilderFixup) fixup = NULL;
 
 	/* add support for desktop files */
-	xb_builder_source_add_converter (source,
-					 "application/x-desktop",
-					 gs_plugin_appstream_load_desktop_cb,
-					 NULL, NULL);
+	xb_builder_source_add_adapter (source, "application/x-desktop",
+				       gs_plugin_appstream_load_desktop_cb, NULL, NULL);
 
 	/* add the flatpak search keyword */
 	fixup = xb_builder_fixup_new ("AddKeywordFlatpak",
