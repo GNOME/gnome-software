@@ -1359,7 +1359,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GError **error)
 {
 	gboolean ret = FALSE;
-	FD_t rpmfd;
+	FD_t rpmfd = NULL;
 	int r;
 	guint64 epoch;
 	guint64 size;
@@ -1456,7 +1456,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	ret = TRUE;
 
 out:
-	if (rpmfd)
+	if (rpmfd != NULL)
 		(void) Fclose (rpmfd);
 	return ret;
 }
