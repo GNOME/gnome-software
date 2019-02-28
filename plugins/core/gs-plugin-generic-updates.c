@@ -97,9 +97,6 @@ gs_plugin_refine (GsPlugin *plugin,
 	app = gs_plugin_generic_updates_get_os_update (plugin);
 	for (guint i = 0; i < gs_app_list_length (os_updates); i++) {
 		GsApp *app_tmp = gs_app_list_index (os_updates, i);
-		const gchar *id = gs_app_get_unique_id (app_tmp);
-		if (id == NULL)
-			id = gs_app_get_source_default (app_tmp);
 		gs_app_add_related (app, app_tmp);
 		gs_app_list_remove (list, app_tmp);
 	}

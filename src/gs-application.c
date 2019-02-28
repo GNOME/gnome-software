@@ -642,11 +642,9 @@ _copy_file_to_cache (GFile *file_src, GError **error)
 	g_autoptr(GFile) file_dest = NULL;
 	g_autofree gchar *cache_dir = NULL;
 	g_autofree gchar *cache_fn = NULL;
-	g_autofree gchar *filename = NULL;
 	g_autofree gchar *basename = NULL;
 
 	/* get destination location */
-	filename = g_file_get_path (file_src);
 	cache_dir = g_dir_make_tmp ("gnome-software-XXXXXX", error);
 	if (cache_dir == NULL)
 		return NULL;
