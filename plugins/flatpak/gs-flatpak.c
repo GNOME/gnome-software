@@ -1762,6 +1762,14 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 		return g_steal_pointer (&app_cache);
 	}
 
+	/* if the app is per-user we can also use the installed system runtime */
+	if (gs_app_get_scope (parent) == AS_APP_SCOPE_USER) {
+		gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
+		app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+		if (app_cache != NULL)
+			return g_steal_pointer (&app_cache);
+	}
+
 	/* set superclassed app properties */
 	gs_flatpak_app_set_ref_kind (app, FLATPAK_REF_KIND_RUNTIME);
 	gs_flatpak_app_set_ref_name (app, split[0]);
