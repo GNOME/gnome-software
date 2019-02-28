@@ -665,7 +665,7 @@ gs_plugin_update (GsPlugin *plugin,
                   GCancellable *cancellable,
                   GError **error)
 {
-	GsFlatpak *flatpak;
+	GsFlatpak *flatpak = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
