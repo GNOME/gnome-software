@@ -1570,7 +1570,6 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 			      GError **error)
 {
 	g_autofree gchar *ref_display = NULL;
-	g_autoptr(GError) local_error = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
 	/* already set */
@@ -1660,7 +1659,6 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	g_autoptr(GPtrArray) xrefs = NULL;
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
 	g_autoptr(GError) error_local = NULL;
 
@@ -1785,7 +1783,6 @@ gs_flatpak_set_app_metadata (GsFlatpak *self,
 	gboolean secure = TRUE;
 	g_autofree gchar *name = NULL;
 	g_autofree gchar *runtime = NULL;
-	g_autofree gchar *source = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app_runtime = NULL;
 	g_auto(GStrv) shared = NULL;
@@ -2318,7 +2315,6 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GError **error)
 {
 	gint size;
-	g_autofree gchar *content_type = NULL;
 	g_autoptr(GBytes) appstream_gz = NULL;
 	g_autoptr(GBytes) icon_data = NULL;
 	g_autoptr(GBytes) metadata = NULL;
@@ -2356,7 +2352,6 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	if (appstream_gz != NULL) {
 		g_autofree gchar *xpath = NULL;
 		g_autoptr(GBytes) appstream = NULL;
-		g_autoptr(GError) error_local = NULL;
 		g_autoptr(GInputStream) stream_data = NULL;
 		g_autoptr(GInputStream) stream_gz = NULL;
 		g_autoptr(GZlibDecompressor) decompressor = NULL;

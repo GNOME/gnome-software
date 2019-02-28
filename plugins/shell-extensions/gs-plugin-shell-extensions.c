@@ -524,7 +524,6 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	JsonObject *json_ver = NULL;
 	gint64 version;
 	g_autofree gchar *shell_version = NULL;
-	g_autoptr(XbBuilderNode) release = NULL;
 
 	/* look for version, major.minor.micro */
 	if (json_object_has_member (ver_map, priv->shell_version)) {
@@ -666,7 +665,6 @@ gs_plugin_appstream_load_json_cb (XbBuilderSource *self,
 	JsonObject *json_item;
 	gchar *xml;
 	g_autofree gchar *fn = g_file_get_path (file);
-	g_autoptr(AsApp) app = as_app_new ();
 	g_autoptr(JsonParser) json_parser = NULL;
 	g_autoptr(XbBuilderNode) apps = NULL;
 

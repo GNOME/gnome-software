@@ -663,7 +663,6 @@ signout_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const gchar *action_name, *auth_id;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsAuth *auth;
 
 	action_name = g_action_get_name (G_ACTION (action));
@@ -1134,7 +1133,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const GError *error = gs_plugin_event_get_error (event);
-	g_autofree gchar *msg = NULL;
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);

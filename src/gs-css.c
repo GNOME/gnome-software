@@ -53,7 +53,6 @@ _cleanup_string (GString *str)
 gboolean
 gs_css_parse (GsCss *self, const gchar *markup, GError **error)
 {
-	g_autoptr(GHashTable) results = NULL;
 	g_auto(GStrv) parts = NULL;
 
 	/* no data */

@@ -157,7 +157,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	for (i = 0; i < package_array->len; i++) {
 		PkPackage *pkg = g_ptr_array_index (package_array, i);
 		const gchar *package_id;
-		g_autofree gchar *tmp = NULL;
 		g_autoptr(GsApp) app = NULL;
 		g_auto(GStrv) split = NULL;
 

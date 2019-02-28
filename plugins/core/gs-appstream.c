@@ -641,7 +641,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 GError **error)
 {
 	const gchar *tmp;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) bundles = NULL;
 	g_autoptr(GPtrArray) launchables = NULL;
 	g_autoptr(XbNode) req = NULL;
@@ -1169,9 +1168,6 @@ gs_appstream_add_categories (GsPlugin *plugin,
 	for (guint j = 0; j < list->len; j++) {
 		GsCategory *parent = GS_CATEGORY (g_ptr_array_index (list, j));
 		GPtrArray *children = gs_category_get_children (parent);
-		g_autofree gchar *xpath = NULL;
-		g_autoptr(GError) error_local = NULL;
-		g_autoptr(GPtrArray) array = NULL;
 
 		for (guint i = 1; i < children->len; i++) { /* 1 to ignore all */
 			GsCategory *cat = g_ptr_array_index (children, i);

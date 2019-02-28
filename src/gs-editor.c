@@ -923,7 +923,6 @@ gs_editor_button_new_feature_clicked_cb (GtkApplication *application, GsEditor *
 static void
 gs_editor_button_new_os_upgrade_clicked_cb (GtkApplication *application, GsEditor *self)
 {
-	g_autofree gchar *id = NULL;
 	g_autoptr(AsApp) item = as_app_new ();
 	const gchar *css = "border: 1px solid #808080;\nbackground: #fffeee;\ncolor: #000;";
 

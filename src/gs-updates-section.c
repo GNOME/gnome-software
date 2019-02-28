@@ -209,7 +209,6 @@ _reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
 	GsUpdatesSection *self = GS_UPDATES_SECTION (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) apps = NULL;
 	GsApp *app = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GVariant) retval = NULL;
@@ -362,7 +361,6 @@ _download_finished_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 static void
 _button_download_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 {
-	g_autoptr(GError) error = NULL;
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
@@ -382,7 +380,6 @@ _button_download_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 static void
 _button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 {
-	g_autoptr(GError) error = NULL;
 	g_autoptr(GCancellable) cancellable = g_cancellable_new ();
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	GsUpdatesSectionUpdateHelper *helper = g_new0 (GsUpdatesSectionUpdateHelper, 1);

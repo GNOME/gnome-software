@@ -1047,7 +1047,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	guint64 user_integration_bf;
 	gboolean show_support_box = FALSE;
 	g_autofree gchar *origin = NULL;
-	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);

@@ -309,7 +309,6 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 				       GCancellable *cancellable,
 				       GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;

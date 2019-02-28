@@ -1020,7 +1020,6 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) search2 = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
 
 	/* drop all caches */
 	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");

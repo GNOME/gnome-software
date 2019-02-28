@@ -408,7 +408,6 @@ static void
 gs_plugins_dummy_search_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
-	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -598,7 +597,6 @@ gs_plugins_dummy_purchase_func (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get the updates list */

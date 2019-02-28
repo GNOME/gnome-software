@@ -97,7 +97,6 @@ static void
 gs_feature_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (app_tile);
-	g_autoptr(GString) data = NULL;
 
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 

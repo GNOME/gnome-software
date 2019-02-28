@@ -18,7 +18,6 @@ static void
 gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
-	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
 	g_autoptr(GsAppList) list = NULL;

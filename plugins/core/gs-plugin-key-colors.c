@@ -63,7 +63,6 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 	guint bin_size = 200;
 	guint i;
 	guint number_of_bins;
-	g_autoptr(AsImage) im = NULL;
 
 	/* go through each pixel */
 	n_channels = gdk_pixbuf_get_n_channels (pb);

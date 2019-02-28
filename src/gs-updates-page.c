@@ -958,7 +958,6 @@ upgrade_download_finished_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
 		if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED))
@@ -1165,7 +1164,6 @@ gs_updates_page_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
 {
 	GsApp *app;
 	const gchar *uri;
-	g_autoptr(GError) error = NULL;
 
 	app = gs_upgrade_banner_get_app (upgrade_banner);
 	if (app == NULL) {

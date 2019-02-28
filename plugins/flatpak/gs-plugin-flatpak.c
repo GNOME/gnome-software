@@ -620,7 +620,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		if (!flatpak_transaction_add_install_bundle (transaction, file,
 							     NULL, error)) {
-			g_autofree gchar *fn = g_file_get_path (file);
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
@@ -839,7 +838,6 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 	g_autofree gchar *ref = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsApp) app_tmp = NULL;
-	g_autoptr(GsAppList) list_tmp = NULL;
 	g_autoptr(GsFlatpak) flatpak_tmp = NULL;
 
 	/* only use the temporary GsFlatpak to avoid the auth dialog */

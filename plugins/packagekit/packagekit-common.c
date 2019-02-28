@@ -431,7 +431,6 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	for (j = 0; j < source_ids->len; j++) {
 		package_id = g_ptr_array_index (source_ids, j);
 		for (i = 0; i < array->len; i++) {
-			g_autofree gchar *desc = NULL;
 			/* right package? */
 			details = g_ptr_array_index (array, i);
 			if (!gs_pk_compare_ids (package_id,
