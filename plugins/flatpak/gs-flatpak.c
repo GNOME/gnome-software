@@ -1661,6 +1661,7 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
 {
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GPtrArray) refs = NULL;
 
 	/* ensure valid */
 	if (!gs_flatpak_rescan_appstream_store (self, cancellable, error))
@@ -1674,24 +1675,34 @@ gs_flatpak_refine_app_state (GsFlatpak *self,
 	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
-	/* get apps and runtimes */
-	ref = flatpak_installation_get_installed_ref (self->installation,
-						      gs_flatpak_app_get_ref_kind (app),
-						      gs_flatpak_app_get_ref_name (app),
-						      gs_flatpak_app_get_ref_arch (app),
-						      gs_flatpak_app_get_ref_branch (app),
-						      cancellable,
-						      &error_local);
+	/* find the app using the origin and the ID */
+	refs = flatpak_installation_list_installed_refs (self->installation,
+							 cancellable, error);
+	if (refs == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+	for (guint i = 0; i < refs->len; i++) {
+		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (refs, i);
+		const gchar *origin = flatpak_installed_ref_get_origin (ref_tmp);
+		const gchar *name = flatpak_ref_get_name (FLATPAK_REF (ref_tmp));
+		const gchar *arch = flatpak_ref_get_arch (FLATPAK_REF (ref_tmp));
+		const gchar *branch = flatpak_ref_get_branch (FLATPAK_REF (ref_tmp));
+		if (g_strcmp0 (origin, gs_app_get_origin (app)) == 0 &&
+		    g_strcmp0 (name, gs_flatpak_app_get_ref_name (app)) == 0 &&
+		    g_strcmp0 (arch, gs_flatpak_app_get_ref_arch (app)) == 0 &&
+		    g_strcmp0 (branch, gs_flatpak_app_get_ref_branch (app)) == 0) {
+			ref = g_object_ref (ref_tmp);
+			break;
+		}
+	}
 	if (ref != NULL) {
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_id (app));
 		gs_flatpak_set_metadata_installed (self, app, ref);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	} else if (!g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_NOT_INSTALLED)) {
-		g_propagate_error (error, g_steal_pointer (&error_local));
-		gs_flatpak_error_convert (error);
-		return FALSE;
+		return TRUE;
 	}
 
 	/* ensure origin set */
