@@ -1714,6 +1714,15 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		gs_flatpak_set_metadata_installed (self, app, ref);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+		/* flatpak only allows one installed app to be launchable */
+		if (flatpak_installed_ref_get_is_current (ref)) {
+			gs_app_remove_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+		} else {
+			g_debug ("%s is not current, and therefore not launchable",
+				 gs_app_get_unique_id (app));
+			gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+		}
 		return TRUE;
 	}
 
