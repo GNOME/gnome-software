@@ -644,7 +644,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) bundles = NULL;
 	g_autoptr(GPtrArray) launchables = NULL;
-	g_autoptr(GPtrArray) pkgnames = NULL;
 	g_autoptr(XbNode) req = NULL;
 
 	/* is compatible */
@@ -823,19 +822,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	if (!gs_appstream_copy_metadata (app, component, error))
 		return FALSE;
 
-	/* add package names */
-	pkgnames = xb_node_query (component, "pkgname", 0, NULL);
-	if (pkgnames != NULL && gs_app_get_sources(app)->len == 0) {
-		for (guint i = 0; i < pkgnames->len; i++) {
-			XbNode *pkgname = g_ptr_array_index (pkgnames, i);
-			tmp = xb_node_get_text (pkgname);
-			if (tmp != NULL && tmp[0] != '\0')
-				gs_app_add_source (app, tmp);
-		}
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	}
-
 	/* add bundles */
 	bundles = xb_node_query (component, "bundle", 0, NULL);
 	if (bundles != NULL && gs_app_get_sources(app)->len == 0) {
@@ -844,6 +830,22 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			const gchar *kind = xb_node_get_attr (bundle, "type");
 			gs_app_add_source (app, xb_node_get_text (bundle));
 			gs_app_set_bundle_kind (app, as_bundle_kind_from_string (kind));
+		}
+	}
+
+	/* add legacy package names */
+	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN) {
+		g_autoptr(GPtrArray) pkgnames = NULL;
+		pkgnames = xb_node_query (component, "pkgname", 0, NULL);
+		if (pkgnames != NULL && gs_app_get_sources(app)->len == 0) {
+			for (guint i = 0; i < pkgnames->len; i++) {
+				XbNode *pkgname = g_ptr_array_index (pkgnames, i);
+				tmp = xb_node_get_text (pkgname);
+				if (tmp != NULL && tmp[0] != '\0')
+					gs_app_add_source (app, tmp);
+			}
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+			gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		}
 	}
 
