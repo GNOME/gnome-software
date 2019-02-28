@@ -117,7 +117,7 @@ gs_plugin_download (GsPlugin *plugin,
 		GsAppList *related = gs_app_get_related (app);
 
 		/* add this app */
-		if (!gs_app_has_quirk (app, AS_APP_QUIRK_IS_PROXY))
+		if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_PROXY))
 			if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") == 0) {
 				gs_app_list_add (list_tmp, app);
 			continue;
