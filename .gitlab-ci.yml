@@ -17,7 +17,7 @@ before_script:
 build-gnome-software:
   stage: build
   script:
-  - meson -Denable-fwupd=false -Denable-rpm-ostree=true _build .
+  - meson -Drpm_ostree=true _build .
   - ninja -v -C _build
   - mkdir -p /run/dbus
   - mkdir -p /var
