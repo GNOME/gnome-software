@@ -96,6 +96,8 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_license_free;
 	GtkWidget		*button_details_license_nonfree;
 	GtkWidget		*button_details_license_unknown;
+	GtkWidget		*label_details_license_title;
+	GtkWidget		*box_details_license_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
 	GtkWidget		*label_details_size_installed_title;
@@ -104,6 +106,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_size_download_value;
 	GtkWidget		*label_details_updated_title;
 	GtkWidget		*label_details_updated_value;
+	GtkWidget		*label_details_version_title;
 	GtkWidget		*label_details_version_value;
 	GtkWidget		*label_details_permissions_title;
 	GtkWidget		*button_details_permissions_value;
@@ -1316,6 +1319,26 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		break;
 	default:
 		gtk_widget_set_visible (self->label_addons_uninstalled_app, TRUE);
+		break;
+	}
+
+	/* hide fields that don't make sense for sources */
+	switch (gs_app_get_kind (self->app)) {
+	case AS_APP_KIND_SOURCE:
+		gtk_widget_set_visible (self->label_details_license_title, FALSE);
+		gtk_widget_set_visible (self->box_details_license_value, FALSE);
+		gtk_widget_set_visible (self->label_details_permissions_title, FALSE);
+		gtk_widget_set_visible (self->button_details_permissions_value, FALSE);
+		gtk_widget_set_visible (self->label_details_version_title, FALSE);
+		gtk_widget_set_visible (self->label_details_version_value, FALSE);
+		break;
+	default:
+		gtk_widget_set_visible (self->label_details_license_title, TRUE);
+		gtk_widget_set_visible (self->box_details_license_value, TRUE);
+		gtk_widget_set_visible (self->label_details_permissions_title, TRUE);
+		gtk_widget_set_visible (self->button_details_permissions_value, TRUE);
+		gtk_widget_set_visible (self->label_details_version_title, TRUE);
+		gtk_widget_set_visible (self->label_details_version_value, TRUE);
 		break;
 	}
 
@@ -2659,6 +2682,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_free);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_nonfree);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_unknown);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_license_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_title);
@@ -2667,6 +2692,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_installed_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_permissions_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_permissions_value);
