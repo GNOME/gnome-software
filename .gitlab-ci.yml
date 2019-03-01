@@ -23,13 +23,14 @@ build-gnome-software:
   - mkdir -p /var
   - ln -s /var/run /run
   - dbus-daemon --system --fork
+  - /usr/lib/polkit-1/polkitd -n &
   - meson test -v -C _build gs-self-test-lib
   - meson test -v -C _build gs-self-test-core
   - meson test -v -C _build gs-self-test-dpkg
   - meson test -v -C _build gs-self-test-dummy
   - meson test -v -C _build gs-self-test-epiphany
   - /usr/libexec/fwupd/fwupd --immediate-exit --verbose
-  - meson test -v -C _build gs-self-test-fwupd || (systemctl status fwupd.service;exit 1)
+  - meson test -v -C _build gs-self-test-fwupd
   - meson test -v -C _build gs-self-test-modalias
   - meson test -v -C _build gs-self-test-repos
   - meson test -v -C _build gs-self-test-src
