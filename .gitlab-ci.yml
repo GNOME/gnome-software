@@ -1,4 +1,4 @@
-image: fedora:28
+image: fedora:29
 
 stages:
   - build
@@ -6,11 +6,9 @@ stages:
 before_script:
   # Update and use base build deps
   - dnf update -y && dnf -y install git gobject-introspection-devel dnf-plugins-core @buildsys-build
-  - dnf install -y https://people.freedesktop.org/~hughsient/temp/libappstream-glib-0.7.14-0.641.20181015git.fc29.x86_64.rpm https://people.freedesktop.org/~hughsient/temp/libappstream-glib-devel-0.7.14-0.641.20181015git.fc29.x86_64.rpm
   - dnf --enablerepo updates-testing -y builddep gnome-software
   # Some deps may not be sync'd
   - dnf -y install rpm-devel
-  - dnf -y install rpm-ostree-devel
   - dnf -y install libdnf-devel
   - dnf -y install libstemmer-devel
   - dnf -y install gnome-online-accounts-devel
@@ -24,6 +22,8 @@ build-gnome-software:
   - mkdir -p /var
   - ln -s /var/run /run
   - dbus-daemon --system --fork
+  - /usr/lib/polkit-1/polkitd -n &
+  - /usr/libexec/fwupd/fwupd -v &
   - meson test -v -C _build gs-self-test-lib
   - meson test -v -C _build gs-self-test-core
   - meson test -v -C _build gs-self-test-dpkg
