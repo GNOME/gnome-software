@@ -954,8 +954,8 @@ static struct {
 	const char *subtitle;
 } permission_display_data[] = {
   { GS_APP_PERMISSIONS_NETWORK, N_("Network"), N_("Can communicate over the network") },
-  { GS_APP_PERMISSIONS_SYSTEM_BUS, N_("System Services"), N_("...") },
-  { GS_APP_PERMISSIONS_SESSION_BUS, N_("Session Services"), N_("...") },
+  { GS_APP_PERMISSIONS_SYSTEM_BUS, N_("System Services"), N_("Can access D-Bus services on the system bus") },
+  { GS_APP_PERMISSIONS_SESSION_BUS, N_("Session Services"), N_("Can access D-Bus services on the session bus") },
   { GS_APP_PERMISSIONS_DEVICES, N_("Devices"), N_("Can access system device files") },
   { GS_APP_PERMISSIONS_HOME_FULL, N_("Home folder"), N_("Can view, edit and create files") },
   { GS_APP_PERMISSIONS_HOME_READ, N_("Home folder"), N_("Can view files") },
