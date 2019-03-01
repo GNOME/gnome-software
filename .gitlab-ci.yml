@@ -28,6 +28,7 @@ build-gnome-software:
   - meson test -v -C _build gs-self-test-dpkg
   - meson test -v -C _build gs-self-test-dummy
   - meson test -v -C _build gs-self-test-epiphany
+  - /usr/libexec/fwupd/fwupd --immediate-exit --verbose
   - meson test -v -C _build gs-self-test-fwupd || (systemctl status fwupd.service;exit 1)
   - meson test -v -C _build gs-self-test-modalias
   - meson test -v -C _build gs-self-test-repos
