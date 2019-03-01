@@ -23,6 +23,7 @@ build-gnome-software:
   - ln -s /var/run /run
   - dbus-daemon --system --fork
   - /usr/lib/polkit-1/polkitd -n &
+  - /usr/libexec/fwupd/fwupd -v &
   - meson test -v -C _build gs-self-test-lib
   - meson test -v -C _build gs-self-test-core
   - meson test -v -C _build gs-self-test-dpkg
