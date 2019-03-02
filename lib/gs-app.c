@@ -4497,6 +4497,9 @@ gs_app_get_packaging_format (GsApp *app)
 	/* fall back to bundle kind */
 	bundle_kind = gs_app_get_bundle_kind (app);
 	switch (bundle_kind) {
+	case AS_BUNDLE_KIND_UNKNOWN:
+		bundle_kind_ui = NULL;
+		break;
 	case AS_BUNDLE_KIND_LIMBA:
 		bundle_kind_ui = "Limba";
 		break;
@@ -4520,7 +4523,6 @@ gs_app_get_packaging_format (GsApp *app)
 		bundle_kind_ui = as_bundle_kind_to_string (bundle_kind);
 	}
 
-	g_assert (bundle_kind_ui != NULL);
 	return g_strdup (bundle_kind_ui);
 }
 
