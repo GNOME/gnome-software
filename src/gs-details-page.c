@@ -1895,8 +1895,16 @@ gs_details_page_url_to_app_cb (GObject *source,
 void
 gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 {
+	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+<<<<<<< HEAD
+	str = _("Loading details");
+=======
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
+		str = _("Loading details");
+	}
+>>>>>>> f8dd43d5... Update src/gs-details-page.c
 	g_clear_object (&self->app_local_file);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -1928,8 +1936,16 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 void
 gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 {
+	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+<<<<<<< HEAD
+	str = _("Loading details");
+=======
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
+		str = _("Loading details");
+	}
+>>>>>>> f8dd43d5... Update src/gs-details-page.c
 	g_clear_object (&self->app_local_file);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
@@ -1963,12 +1979,21 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 static void
 gs_details_page_load_stage1 (GsDetailsPage *self)
 {
+	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* update UI */
 	gs_page_switch_to (GS_PAGE (self), TRUE);
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
+<<<<<<< HEAD
+	str = _("Loading details");
 
+=======
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
+			str = _("Loading details");
+	}
+	
+>>>>>>> f8dd43d5... Update src/gs-details-page.c
 	/* get extra details about the app */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
