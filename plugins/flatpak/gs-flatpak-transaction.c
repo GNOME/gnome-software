@@ -27,13 +27,6 @@ static guint signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, FLATPAK_TYPE_TRANSACTION)
 
-FlatpakInstallation *
-gs_flatpak_transaction_get_inst (FlatpakTransaction *transaction)
-{
-	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
-	return self->installation;
-}
-
 static void
 gs_flatpak_transaction_finalize (GObject *object)
 {

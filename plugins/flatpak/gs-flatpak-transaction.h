@@ -19,7 +19,6 @@ G_DECLARE_FINAL_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, GS, FLATPAK_
 FlatpakTransaction	*gs_flatpak_transaction_new		(FlatpakInstallation	*installation,
 								 GCancellable		*cancellable,
 								 GError			**error);
-FlatpakInstallation	*gs_flatpak_transaction_get_inst	(FlatpakTransaction	*transaction);
 GsApp			*gs_flatpak_transaction_get_app_by_ref	(FlatpakTransaction	*transaction,
 								 const gchar		*ref);
 void			 gs_flatpak_transaction_add_app		(FlatpakTransaction	*transaction,
