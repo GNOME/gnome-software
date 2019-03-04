@@ -2,7 +2,7 @@ project('gnome-software', 'c',
   version : '3.31.91',
   license : 'GPL-2.0+',
   default_options : ['warning_level=1', 'c_std=c99'],
-  meson_version : '>=0.40.0'
+  meson_version : '>=0.46.0'
 )
 
 conf = configuration_data()
@@ -80,7 +80,7 @@ test_link_args = [
   '-Wl,-z,now',
 ]
 foreach arg: test_link_args
-  if cc.has_argument(arg)
+  if cc.has_link_argument(arg)
     global_link_args += arg
   endif
 endforeach
