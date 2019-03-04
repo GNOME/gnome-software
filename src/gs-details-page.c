@@ -43,7 +43,7 @@ struct _GsDetailsPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GSPluginStatus     status;
+	GsPluginStatus     status;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*app_cancellable;
@@ -1970,7 +1970,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 
 /* refines a GsApp */
 static void
-gs_details_page_load_stage1 (GsDetailsPage *self,)
+gs_details_page_load_stage1 (GsDetailsPage *self)
 {
 	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
