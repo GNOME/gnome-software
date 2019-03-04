@@ -43,7 +43,6 @@ struct _GsDetailsPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
-	GsPluginStatus     status;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*app_cancellable;
@@ -1894,7 +1893,8 @@ gs_details_page_url_to_app_cb (GObject *source,
 }
 
 void
-gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
+gs_details_page_set_local_file (GsDetailsPage *self, GFile *file,
+								GsPluginStatus status)
 {
 	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -1931,7 +1931,8 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 }
 
 void
-gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
+gs_details_page_set_url (GsDetailsPage *self, const gchar *url,
+						 GsPluginStatus status)
 {
 	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
@@ -1970,7 +1971,8 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 
 /* refines a GsApp */
 static void
-gs_details_page_load_stage1 (GsDetailsPage *self)
+gs_details_page_load_stage1 (GsDetailsPage *self,
+							 GsPluginStatus status)
 {
 	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
