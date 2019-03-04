@@ -1898,7 +1898,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
-	if(status == GS_DETAILS_PAGE_STATE_LOADING) {
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
 		str = _("Loading details");
 	}
 	g_clear_object (&self->app_local_file);
@@ -1935,7 +1935,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	const gchar *str = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
-	if(status == GS_DETAILS_PAGE_STATE_LOADING) {
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
 		str = _("Loading details");
 	}
 	g_clear_object (&self->app_local_file);
@@ -1977,7 +1977,7 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	/* update UI */
 	gs_page_switch_to (GS_PAGE (self), TRUE);
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
-	if(status == GS_DETAILS_PAGE_STATE_LOADING) {
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
 			str = _("Loading details");
 	}
 	
