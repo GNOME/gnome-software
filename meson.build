@@ -154,7 +154,7 @@ if get_option('fwupd')
 endif
 
 if get_option('flatpak')
-  flatpak = dependency('flatpak', version : '>= 0.99.3')
+  flatpak = dependency('flatpak', version : '>= 1.0.4')
 endif
 
 if get_option('rpm_ostree')

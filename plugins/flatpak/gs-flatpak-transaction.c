@@ -226,9 +226,7 @@ _transaction_new_operation (FlatpakTransaction *transaction,
 static void
 _transaction_operation_done (FlatpakTransaction *transaction,
 			     FlatpakTransactionOperation *operation,
-#if FLATPAK_CHECK_VERSION(1,0,4)
 			     const gchar *commit,
-#endif
 			     FlatpakTransactionResult details)
 {
 	/* invalidate */
