@@ -1248,21 +1248,29 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		break;
 	}
 
-	if ((kudos & GS_APP_KUDO_SANDBOXED) > 0) {
+	/* only show permissions for flatpak apps */
+	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_FLATPAK &&
+	    gs_app_get_kind (self->app) == AS_APP_KIND_DESKTOP) {
 		GsAppPermissions permissions = gs_app_get_permissions (self->app);
 
 		populate_permission_details (self, permissions);
 
-		if ((permissions & ~LIMITED_PERMISSIONS) == 0)
-			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Low"));
-		else if ((permissions & ~MEDIUM_PERMISSIONS) == 0)
-			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Medium"));
-		else
-			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("High"));
-	} else {
-		populate_permission_details (self, GS_APP_PERMISSIONS_UNKNOWN);
+		if (gs_app_get_permissions (self->app) != GS_APP_PERMISSIONS_UNKNOWN) {
+			if ((permissions & ~LIMITED_PERMISSIONS) == 0)
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Low"));
+			else if ((permissions & ~MEDIUM_PERMISSIONS) == 0)
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Medium"));
+			else
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("High"));
+		} else {
+			gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Unknown"));
+		}
 
-		gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Unknown"));
+		gtk_widget_set_visible (self->label_details_permissions_title, TRUE);
+		gtk_widget_set_visible (self->button_details_permissions_value, TRUE);
+	} else {
+		gtk_widget_set_visible (self->label_details_permissions_title, FALSE);
+		gtk_widget_set_visible (self->button_details_permissions_value, FALSE);
 	}
 
 	/* are we trying to replace something in the baseos */
@@ -1327,16 +1335,12 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	case AS_APP_KIND_SOURCE:
 		gtk_widget_set_visible (self->label_details_license_title, FALSE);
 		gtk_widget_set_visible (self->box_details_license_value, FALSE);
-		gtk_widget_set_visible (self->label_details_permissions_title, FALSE);
-		gtk_widget_set_visible (self->button_details_permissions_value, FALSE);
 		gtk_widget_set_visible (self->label_details_version_title, FALSE);
 		gtk_widget_set_visible (self->label_details_version_value, FALSE);
 		break;
 	default:
 		gtk_widget_set_visible (self->label_details_license_title, TRUE);
 		gtk_widget_set_visible (self->box_details_license_value, TRUE);
-		gtk_widget_set_visible (self->label_details_permissions_title, TRUE);
-		gtk_widget_set_visible (self->button_details_permissions_value, TRUE);
 		gtk_widget_set_visible (self->label_details_version_title, TRUE);
 		gtk_widget_set_visible (self->label_details_version_value, TRUE);
 		break;
