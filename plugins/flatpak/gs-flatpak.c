@@ -103,7 +103,7 @@ perms_from_metadata (GKeyFile *keyfile)
 {
 	char **strv;
 	char *str;
-	GsAppPermissions permissions = GS_APP_PERMISSIONS_NONE;
+	GsAppPermissions permissions = GS_APP_PERMISSIONS_UNKNOWN;
 
 	strv = g_key_file_get_string_list (keyfile, "Context", "sockets", NULL, NULL);
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "system-bus"))
@@ -146,6 +146,10 @@ perms_from_metadata (GKeyFile *keyfile)
 	if (str != NULL && g_str_equal (str, "talk"))
 		permissions |= GS_APP_PERMISSIONS_SETTINGS;
 	g_free (str);
+
+	/* no permissions set */
+	if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
+		return GS_APP_PERMISSIONS_NONE;
 
 	return permissions;
 }
