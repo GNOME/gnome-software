@@ -978,6 +978,10 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
 
+	/* ignore any errors from background downloads */
+	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+		return FALSE;
+
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
 		if (origin != NULL) {
@@ -1041,9 +1045,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
-		/* non-interactive generic */
-		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
-			return FALSE;
 		if (action == GS_PLUGIN_ACTION_DOWNLOAD) {
 			/* TRANSLATORS: failure text for the in-app notification */
 			g_string_append (str, _("Unable to download updates"));
@@ -1259,6 +1260,10 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
+
+	/* ignore any errors from background downloads */
+	if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INTERACTIVE))
+		return FALSE;
 
 	switch (error->code) {
 	case GS_PLUGIN_ERROR_DOWNLOAD_FAILED:
