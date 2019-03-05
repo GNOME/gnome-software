@@ -103,7 +103,7 @@ typedef enum {
 	GS_APP_QUIRK_REMOVABLE_HARDWARE	= 1 << 10,	/* Since: 3.32 */
 	GS_APP_QUIRK_DEVELOPER_VERIFIED	= 1 << 11,	/* Since: 3.32 */
 	GS_APP_QUIRK_PARENTAL_FILTER	= 1 << 12,	/* Since: 3.32 */
-	GS_APP_QUIRK_NEW_PERMISSIONS    = 1 << 13,	/* Since: 3.32 */
+	GS_APP_QUIRK_NEW_PERMISSIONS	= 1 << 13,	/* Since: 3.32 */
 	GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE	= 1 << 14,	/* Since: 3.32 */
 	/*< private >*/
 	GS_APP_QUIRK_LAST
