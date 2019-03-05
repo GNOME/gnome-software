@@ -1899,12 +1899,24 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> a3354bd3528982e6b62c1e4f304bbd5bb13a3dc5
 	str = _("Loading details");
 =======
 	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
 		str = _("Loading details");
 	}
 >>>>>>> f8dd43d5... Update src/gs-details-page.c
+<<<<<<< HEAD
+=======
+=======
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
+		str = _("Loading details");
+	}
+>>>>>>> f8dd43d5910e56864cebbdb5f71c7e91600f1682
+>>>>>>> a3354bd3528982e6b62c1e4f304bbd5bb13a3dc5
 	g_clear_object (&self->app_local_file);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -1940,12 +1952,24 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> a3354bd3528982e6b62c1e4f304bbd5bb13a3dc5
 	str = _("Loading details");
 =======
 	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
 		str = _("Loading details");
 	}
 >>>>>>> f8dd43d5... Update src/gs-details-page.c
+<<<<<<< HEAD
+=======
+=======
+	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
+		str = _("Loading details");
+	}
+>>>>>>> f8dd43d5910e56864cebbdb5f71c7e91600f1682
+>>>>>>> a3354bd3528982e6b62c1e4f304bbd5bb13a3dc5
 	g_clear_object (&self->app_local_file);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
@@ -1986,14 +2010,30 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	gs_page_switch_to (GS_PAGE (self), TRUE);
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	str = _("Loading details");
 
 =======
+=======
+<<<<<<< HEAD
+	str = _("Loading details");
+
+=======
+=======
+>>>>>>> f8dd43d5910e56864cebbdb5f71c7e91600f1682
+>>>>>>> a3354bd3528982e6b62c1e4f304bbd5bb13a3dc5
 	if(gs_details_page_set_state == GS_DETAILS_PAGE_STATE_LOADING) {
 			str = _("Loading details");
 	}
 	
+<<<<<<< HEAD
 >>>>>>> f8dd43d5... Update src/gs-details-page.c
+=======
+<<<<<<< HEAD
+>>>>>>> f8dd43d5... Update src/gs-details-page.c
+=======
+>>>>>>> f8dd43d5910e56864cebbdb5f71c7e91600f1682
+>>>>>>> a3354bd3528982e6b62c1e4f304bbd5bb13a3dc5
 	/* get extra details about the app */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", self->app,
