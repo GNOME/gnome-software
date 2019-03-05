@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
- * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2014-2019 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -2013,6 +2013,18 @@ gs_details_page_reload (GsPage *page)
 		gs_details_page_load_stage1 (self);
 }
 
+static gint
+origin_popover_list_sort_func (GtkListBoxRow *a,
+                               GtkListBoxRow *b,
+                               gpointer user_data)
+{
+	GsApp *a1 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (a));
+	GsApp *a2 = gs_origin_popover_row_get_app (GS_ORIGIN_POPOVER_ROW (b));
+
+	return g_strcmp0 (gs_app_get_origin_ui (a1),
+			  gs_app_get_origin_ui (a2));
+}
+
 static void
 origin_popover_row_activated_cb (GtkListBox *list_box,
                                  GtkListBoxRow *row,
@@ -2597,6 +2609,9 @@ gs_details_page_setup (GsPage *page,
 			  G_CALLBACK (gs_details_page_activate_link_cb),
 			  self);
 	origin_popover_list_box = GTK_WIDGET (gtk_builder_get_object (self->builder, "origin_popover_list_box"));
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (origin_popover_list_box),
+	                            origin_popover_list_sort_func,
+	                            NULL, NULL);
 	gtk_list_box_set_header_func (GTK_LIST_BOX (origin_popover_list_box),
 	                              list_header_func,
 	                              NULL, NULL);
