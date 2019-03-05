@@ -93,6 +93,42 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_mutex_clear (&priv->mutex);
 }
 
+static void
+gs_rpmostree_error_convert (GError **perror)
+{
+	GError *error = perror != NULL ? *perror : NULL;
+
+	/* not set */
+	if (error == NULL)
+		return;
+
+	/* parse remote RPM_OSTREED_ERROR */
+	if (g_dbus_error_is_remote_error (error)) {
+		g_autofree gchar *remote_error = g_dbus_error_get_remote_error (error);
+
+		g_dbus_error_strip_remote_error (error);
+
+		if (g_strcmp0 (remote_error, "org.projectatomic.rpmostreed.Error.NotAuthorized") == 0) {
+			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
+		} else if (g_str_has_prefix (remote_error, "org.projectatomic.rpmostreed.Error")) {
+			error->code = GS_PLUGIN_ERROR_FAILED;
+		} else {
+			g_warning ("can't reliably fixup remote error %s", remote_error);
+			error->code = GS_PLUGIN_ERROR_FAILED;
+		}
+		error->domain = GS_PLUGIN_ERROR;
+		return;
+	}
+
+	/* this are allowed for low-level errors */
+	if (gs_utils_error_convert_gio (perror))
+		return;
+
+	/* this are allowed for low-level errors */
+	if (gs_utils_error_convert_gdbus (perror))
+		return;
+}
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -108,7 +144,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		                                                                   cancellable,
 		                                                                   error);
 		if (priv->sysroot_proxy == NULL) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 	}
@@ -124,7 +160,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		                                            &os_object_path,
 		                                            cancellable,
 		                                            error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 
@@ -135,7 +171,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		                                                         cancellable,
 		                                                         error);
 		if (priv->os_proxy == NULL) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 	}
@@ -148,7 +184,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	                                                     g_variant_builder_end (options_builder),
 	                                                     cancellable,
 	                                                     error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -162,12 +198,12 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 		priv->ot_sysroot = ostree_sysroot_new (sysroot_file);
 		if (!ostree_sysroot_load (priv->ot_sysroot, cancellable, error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 
 		if (!ostree_sysroot_get_repo (priv->ot_sysroot, &priv->ot_repo, cancellable, error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 	}
@@ -587,7 +623,7 @@ ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GErro
 	                                           &transaction_address,
 	                                           cancellable,
 	                                           error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -596,17 +632,17 @@ ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GErro
 	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
 	if (!dnf_context_setup (context, cancellable, error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
 	if (!dnf_context_setup_sack_with_flags (context, state, DNF_CONTEXT_SETUP_SACK_FLAG_SKIP_RPMDB, error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -648,7 +684,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		                                        NULL /* fd list out */,
 		                                        cancellable,
 		                                        error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 
@@ -657,7 +693,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		                                                 tp,
 		                                                 cancellable,
 		                                                 error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 	}
@@ -678,7 +714,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		                                                         &transaction_address,
 		                                                         cancellable,
 		                                                         error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 
@@ -687,7 +723,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		                                                 tp,
 		                                                 cancellable,
 		                                                 error)) {
-			gs_utils_error_convert_gio (error);
+			gs_rpmostree_error_convert (error);
 			return FALSE;
 		}
 	}
@@ -713,7 +749,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 	/* ensure D-Bus properties are updated before reading them */
 	if (!gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -850,7 +886,7 @@ trigger_rpmostree_update (GsPlugin *plugin,
 	                                        NULL /* fd list out */,
 	                                        cancellable,
 	                                        error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -859,7 +895,7 @@ trigger_rpmostree_update (GsPlugin *plugin,
 	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -961,7 +997,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	                                  &transaction_address,
 	                                  cancellable,
 	                                  error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -971,7 +1007,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -1025,7 +1061,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	                                  &transaction_address,
 	                                  cancellable,
 	                                  error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -1035,7 +1071,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -1192,7 +1228,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* ensure D-Bus properties are updated before reading them */
 	if (!gs_rpmostree_sysroot_call_reload_sync (priv->sysroot_proxy, cancellable, error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -1206,7 +1242,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	pkglist = rpm_ostree_db_query_all (priv->ot_repo, checksum, cancellable, error);
 	if (pkglist == NULL) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		return FALSE;
 	}
 
@@ -1298,7 +1334,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	                                       NULL /* fd list out */,
 	                                       cancellable,
 	                                       error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -1308,7 +1344,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	                                                 tp,
 	                                                 cancellable,
 	                                                 error)) {
-		gs_utils_error_convert_gio (error);
+		gs_rpmostree_error_convert (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
