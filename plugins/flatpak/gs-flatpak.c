@@ -208,6 +208,10 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 
 	permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
 
+	/* no new permissions set */
+	if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
+		permissions = GS_APP_PERMISSIONS_NONE;
+
 	gs_app_set_update_permissions (app, permissions);
 
 	if (permissions != GS_APP_PERMISSIONS_NONE)
