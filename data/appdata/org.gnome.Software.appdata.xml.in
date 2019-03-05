@@ -46,6 +46,27 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-03-05" version="3.31.92">
+      <description>
+        <p>
+          This is an unstable release in the 3.31 development series,
+          marking the end of the development cycle. Next release will be 3.32.0!
+        </p>
+        <ul>
+          <li>Add two missing description strings for flatpak permissions</li>
+          <li>Only show permissions for flatpak apps and not for e.g. fonts</li>
+          <li>Fix flatpak permissions to correctly show up for available apps</li>
+          <li>Hide various details page items that don't make sense when showing .flatpakrepo files</li>
+          <li>Fix an issue that caused descriptions to sometimes not get correctly loaded</li>
+          <li>Sort the items in the Source drop down</li>
+          <li>Don't show error notifications for background download and refresh errors</li>
+          <li>Fix an issue that could cause an explosion of "A restart is required" notifications</li>
+          <li>Various flatpak plugin fixes to make it correctly match the data when multiple flatpak repos are available</li>
+          <li>Fix the rpm-ostree plugin to correctly convert remote dbus errors</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2019-02-24" version="3.31.90">
       <description>
         <p>
