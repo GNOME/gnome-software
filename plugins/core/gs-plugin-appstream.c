@@ -391,6 +391,7 @@ gs_plugin_appstream_load_appstream (GsPlugin *plugin,
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		if (g_str_has_suffix (fn, ".xml") ||
 		    g_str_has_suffix (fn, ".yml") ||
+		    g_str_has_suffix (fn, ".yml.gz") ||
 		    g_str_has_suffix (fn, ".xml.gz")) {
 			g_autofree gchar *filename = g_build_filename (path, fn, NULL);
 			g_autoptr(GError) error_local = NULL;
