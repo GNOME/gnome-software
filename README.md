@@ -8,7 +8,7 @@ Plugins are provided for:
  - Traditional package installation via PackageKit (e.g. Debian package, RPM).
  - Next generation packages: [Flatpak](https://flatpak.org/) and [Snap](https://snapcraft.io/).
  - Firmware updates.
- - Ratings and reviews ([ODRS](https://odrs.gnome.org/) and Ubuntu reviews).
+ - Ratings and reviews using [ODRS](https://odrs.gnome.org/).
 
 Software supports showing metadata that closely matches the [AppStream](https://www.freedesktop.org/wiki/Distributions/AppStream/) format.
 
