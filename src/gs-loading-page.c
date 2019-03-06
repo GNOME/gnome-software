@@ -61,6 +61,10 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 			str = _("Software catalog is being downloaded");
 		}
 	}
+	else	{
+			/* TRANSLATORS: initial start */
+			str = _("Software catalog is being downloaded");
+	}
 
 	/* update label */
 	gtk_label_set_label (GTK_LABEL (priv->label), str);
