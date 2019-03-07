@@ -60,13 +60,10 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 			/* TRANSLATORS: initial start */
 			str = _("Software catalog is being downloaded");
 		}
-	} else {
-		/* TRANSLATORS: initial start */
-		str = _("Software catalog is being loaded");
 	}
 	else	{
-			/* TRANSLATORS: initial start */
-			str = _("Software catalog is being downloaded");
+				/* TRANSLATORS: initial start */
+				str = _("Software catalog is being downloaded");
 	}
 
 	/* update label */
