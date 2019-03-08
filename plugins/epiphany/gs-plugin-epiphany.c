@@ -109,6 +109,14 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 		return FALSE;
 	}
 	icon = g_ptr_array_index (icons, 0);
+	if (as_icon_get_filename (icon) == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no filename for icon %s",
+			     as_icon_get_name (icon));
+		return FALSE;
+	}
 	ret = g_file_make_symbolic_link (symlink_icon,
 					 as_icon_get_filename (icon),
 					 NULL,
