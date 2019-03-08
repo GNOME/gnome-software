@@ -801,8 +801,10 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
+
+	/* delete the file from the cache */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	return TRUE;
+	return g_file_delete (local_file, cancellable, error);
 }
 
 static gboolean
