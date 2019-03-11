@@ -46,6 +46,24 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-03-11" version="3.32.0">
+      <description>
+        <p>
+          This is the first stable release for GNOME 3.32. Notable changes compared to 3.30 include:
+        </p>
+        <ul>
+          <li>Appstream parsing is completely rewritten and now uses the new libxmlb library, instead of appstream-glib</li>
+          <li>Improved handling for apps that are available from multiple sources, e.g. as a flatpak from Flathub, as a flatpak from Fedora, and as an RPM package</li>
+          <li>New source selection drop down on the details pages</li>
+          <li>Flatpak apps now list the permissions they need on the details pages, and also show new permissions when updating</li>
+          <li>The flatpak backend received a large number of bug fixes</li>
+          <li>The rpm-ostree backend has grown many new features and bug fixes, including support for installing layered packages and doing distro upgrades</li>
+          <li>Numerous fixes for error reporting, including making error messages more useful and avoiding showing network errors from background operations</li>
+          <li>The items in the app menu were all moved to the window menu</li>
+          <li>New redesigned icon</li>
+        </ul>
+      </description>
+    </release>
     <release date="2019-03-05" version="3.31.92">
       <description>
         <p>

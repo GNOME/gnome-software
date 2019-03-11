@@ -1,3 +1,24 @@
+Version 3.32.0
+~~~~~~~~~~~~~~
+Released: 2019-03-11
+
+This is the first stable release for GNOME 3.32. Notable changes compared to
+3.30 include:
+ * Appstream parsing is completely rewritten and now uses the new libxmlb
+   library, instead of appstream-glib
+ * Improved handling for apps that are available from multiple sources, e.g. as
+   a flatpak from Flathub, as a flatpak from Fedora, and as an RPM package
+ * New source selection drop down on the details pages
+ * Flatpak apps now list the permissions they need on the details pages, and
+   also show new permissions when updating
+ * The flatpak backend received a large number of bug fixes
+ * The rpm-ostree backend has grown many new features and bug fixes, including
+   support for installing layered packages and doing distro upgrades
+ * Numerous fixes for error reporting, including making error messages more
+   useful and avoiding showing network errors from background operations
+ * The items in the app menu were all moved to the window menu
+ * New redesigned icon
+
 Version 3.31.92
 ~~~~~~~~~~~~~~~
 Released: 2019-03-05
