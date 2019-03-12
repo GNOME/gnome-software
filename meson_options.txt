@@ -7,6 +7,7 @@ option('packagekit_autoremove', type : 'boolean', value : false, description : '
 option('polkit', type : 'boolean', value : true, description : 'enable PolKit support')
 option('fwupd', type : 'boolean', value : true, description : 'enable fwupd support')
 option('flatpak', type : 'boolean', value : true, description : 'enable Flatpak support')
+option('malcontent', type : 'boolean', value : true, description : 'enable parental controls support using libmalcontent')
 option('rpm_ostree', type : 'boolean', value : false, description : 'enable rpm-ostree support')
 option('shell_extensions', type : 'boolean', value : true, description : 'enable shell extensions support')
 option('odrs', type : 'boolean', value : true, description : 'enable ODRS support')
