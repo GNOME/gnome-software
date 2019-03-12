@@ -157,6 +157,8 @@ if get_option('flatpak')
   flatpak = dependency('flatpak', version : '>= 1.0.4')
 endif
 
+malcontent = dependency('malcontent-0', required : get_option('parental_controls'))
+
 if get_option('rpm_ostree')
   libdnf = dependency('libdnf')
   ostree = dependency('ostree-1')

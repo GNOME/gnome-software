@@ -29,6 +29,9 @@ endif
 if get_option('packagekit')
   subdir('packagekit')
 endif
+if malcontent.found()
+  subdir('parental-controls')
+endif
 subdir('repos')
 if get_option('rpm_ostree')
   subdir('rpm-ostree')
