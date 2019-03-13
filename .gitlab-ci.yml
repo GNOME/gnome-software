@@ -5,13 +5,10 @@ stages:
 
 before_script:
   # Update and use base build deps
-  - dnf update -y && dnf -y install git gobject-introspection-devel dnf-plugins-core @buildsys-build
-  - dnf --enablerepo updates-testing -y builddep gnome-software
+  - dnf -y update && dnf -y install git gobject-introspection-devel dnf-plugins-core @buildsys-build
+  - dnf -y builddep gnome-software
   # Some deps may not be sync'd
-  - dnf -y install rpm-devel
-  - dnf -y install libdnf-devel
-  - dnf -y install libstemmer-devel
-  - dnf -y install gnome-online-accounts-devel
+  - dnf -y install libxmlb-devel rpm-devel libdnf-devel libstemmer-devel gnome-online-accounts-devel
 
 build-gnome-software:
   stage: build
