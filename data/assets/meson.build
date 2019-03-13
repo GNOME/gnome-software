@@ -2,7 +2,7 @@ install_data([
   'upgrade-bg.png',
   'featured-ardour.png',
   'featured-ardour-bg.png',
-  'featured-blender.png',
+  'featured-blender.svg',
   'featured-builder.png',
   'featured-builder-bg.jpg',
   'featured-chess.svg',
