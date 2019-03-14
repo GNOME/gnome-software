@@ -23,7 +23,6 @@ struct _GsPrefsDialog
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
-	GtkWidget	*switch_updates;
 	GtkWidget	*switch_updates_notify;
 };
 
@@ -53,11 +52,6 @@ gs_prefs_dialog_init (GsPrefsDialog *dialog)
 			 dialog->switch_updates_notify,
 			 "active",
 			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (dialog->settings,
-			 "download-updates",
-			 dialog->switch_updates,
-			 "active",
-			 G_SETTINGS_BIND_DEFAULT);
 }
 
 static void
@@ -69,7 +63,6 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 	object_class->dispose = gs_prefs_dialog_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-prefs-dialog.ui");
-	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates_notify);
 }
 
