@@ -181,6 +181,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (gs_app_get_origin_hostname (app) != NULL)
 		return TRUE;
 
+	/* make sure we don't end up refining flatpak repos */
+	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE)
+		return TRUE;
+
 	/* ensure valid */
 	if (!gs_plugin_repos_setup (plugin, cancellable, error))
 		return FALSE;
