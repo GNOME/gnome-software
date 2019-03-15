@@ -22,6 +22,7 @@ gs_plugins_repos_func (GsPluginLoader *plugin_loader)
 	/* get the extra bits */
 	app = gs_app_new ("testrepos.desktop");
 	gs_app_set_origin (app, "utopia");
+	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
 					 "app", app,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME,
