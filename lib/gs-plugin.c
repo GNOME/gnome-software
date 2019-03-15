@@ -54,6 +54,7 @@ typedef struct
 	GsPluginData		*data;			/* for gs-plugin-{name}.c */
 	GsPluginFlags		 flags;
 	SoupSession		*soup_session;
+	MwscScheduler		*download_scheduler;
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	GHashTable		*vfuncs;		/* string:pointer */
 	GMutex			 vfuncs_mutex;
@@ -213,6 +214,7 @@ gs_plugin_finalize (GObject *object)
 		g_ptr_array_unref (priv->auth_array);
 	if (priv->soup_session != NULL)
 		g_object_unref (priv->soup_session);
+	g_clear_object (&priv->download_scheduler);
 	if (priv->network_monitor != NULL)
 		g_object_unref (priv->network_monitor);
 	g_hash_table_unref (priv->cache);
@@ -686,6 +688,48 @@ gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_set_object (&priv->soup_session, soup_session);
 }
+
+/**
+ * gs_plugin_get_download_scheduler:
+ * @plugin: a #GsPlugin
+ *
+ * Gets the Mogwai scheduler that this plugin can use when downloading. This
+ * may be %NULL if download scheduling is not supported. If so, the plugin
+ * should download things unconditionally.
+ *
+ * Returns: (nullable) (transfer none): the #MwscScheduler
+ *
+ * Since: 3.34
+ **/
+MwscScheduler *
+gs_plugin_get_download_scheduler (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->download_scheduler;
+}
+
+/**
+ * gs_plugin_set_download_scheduler:
+ * @plugin: a #GsPlugin
+ * @scheduler: (nullable) (transfer none): a #MwscScheduler
+ *
+ * Sets the Mogwai scheduler that this plugin can use when downloading. This may
+ * be %NULL if download scheduling is not supported. If so, the plugin should
+ * download things unconditionally.
+ *
+ * The download scheduler may be set on a plugin at any point in its lifecycle,
+ * not just at construction time.
+ *
+ * Since: 3.34
+ **/
+void
+gs_plugin_set_download_scheduler (GsPlugin *plugin, MwscScheduler *scheduler)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_set_object (&priv->download_scheduler, scheduler);
+}
+
+/* TODO: Make use of this; finish plumbing it up */
 
 /**
  * gs_plugin_set_network_monitor:

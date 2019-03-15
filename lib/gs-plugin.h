@@ -11,6 +11,7 @@
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>
+#include <libmogwai-schedule-client/scheduler.h>
 #include <libsoup/soup.h>
 
 #include "gs-app.h"
@@ -71,6 +72,9 @@ const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
 SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
 void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
 							 SoupSession	*soup_session);
+MwscScheduler	*gs_plugin_get_download_scheduler	(GsPlugin	*plugin);
+void		 gs_plugin_set_download_scheduler	(GsPlugin	*plugin,
+							 MwscScheduler	*scheduler);
 void		 gs_plugin_add_auth			(GsPlugin	*plugin,
 							 GsAuth		*auth);
 GsAuth		*gs_plugin_get_auth_by_id		(GsPlugin	*plugin,

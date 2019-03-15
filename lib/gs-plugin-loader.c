@@ -60,6 +60,9 @@ typedef struct
 
 	GNetworkMonitor		*network_monitor;
 	gulong			 network_changed_handler;
+
+	MwscScheduler		*download_scheduler;
+	gulong			 download_scheduler_invalidated_id;
 } GsPluginLoaderPrivate;
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -2083,6 +2086,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  G_CALLBACK (gs_plugin_loader_allow_updates_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
+	gs_plugin_set_download_scheduler (plugin, priv->download_scheduler);
 	gs_plugin_set_auth_array (plugin, priv->auth_array);
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_language (plugin, priv->language);
@@ -2615,6 +2619,11 @@ gs_plugin_loader_dispose (GObject *object)
 		priv->queued_ops_pool = NULL;
 	}
 	g_clear_object (&priv->network_monitor);
+	if (priv->download_scheduler != NULL && priv->download_scheduler_invalidated_id != 0) {
+		g_signal_handler_disconnect (priv->download_scheduler, priv->download_scheduler_invalidated_id);
+		priv->download_scheduler_invalidated_id = 0;
+	}
+	g_clear_object (&priv->download_scheduler);
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->settings);
 	g_clear_pointer (&priv->auth_array, g_ptr_array_unref);
@@ -2725,6 +2734,41 @@ get_max_parallel_ops (void)
 }
 
 static void
+async_result_cb (GObject      *object,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+	*result_out = g_object_ref (result);
+}
+
+static void
+download_scheduler_invalidated_cb (MwscScheduler *scheduler,
+                                   const GError  *error,
+                                   gpointer       user_data)
+{
+	GsPluginLoader *self = GS_PLUGIN_LOADER (user_data);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (self);
+
+	g_assert (priv->download_scheduler != NULL);
+	g_assert (priv->download_scheduler_invalidated_id != 0);
+
+	g_warning ("Download scheduler invalidated; no longer scheduling downloads: %s",
+		   error->message);
+
+	/* Unset the scheduler on all plugins.
+	 * FIXME: Do we want to poll to create a new scheduler? */
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		gs_plugin_set_download_scheduler (plugin, NULL);
+	}
+
+	g_signal_handler_disconnect (priv->download_scheduler, priv->download_scheduler_invalidated_id);
+	priv->download_scheduler_invalidated_id = 0;
+	g_clear_object (&priv->download_scheduler);
+}
+
+static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -2732,6 +2776,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar *match;
 	gchar **projects;
 	guint i;
+	g_autoptr(GMainContext) context = NULL;
+	g_autoptr(GAsyncResult) construct_result = NULL;
+	g_autoptr(GError) local_error = NULL;
 
 	priv->scale = 1;
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -2756,6 +2803,31 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 							    SOUP_SESSION_TIMEOUT, 10,
 							    NULL);
+
+	/* Share a download scheduler.
+	 * FIXME: This does some D-Bus calls to set up the scheduler, so should
+	 * really be constructed asynchronously. We assume for the moment that
+	 * plugin loading always happens before the UI is created, so it won’t
+	 * block the UI. */
+	context = g_main_context_new ();
+	g_main_context_push_thread_default (context);
+
+	/* Get a scheduler object. */
+	mwsc_scheduler_new_async (NULL, async_result_cb, &construct_result);
+	while (construct_result == NULL)
+		g_main_context_iteration (context, TRUE);
+	priv->download_scheduler = mwsc_scheduler_new_finish (construct_result, &local_error);
+	if (priv->download_scheduler == NULL) {
+		g_warning ("Could not create download scheduler; not scheduling downloads: %s",
+			   local_error->message);
+		g_clear_error (&local_error);
+	} else {
+		priv->download_scheduler_invalidated_id =
+			g_signal_connect (priv->download_scheduler, "invalidated",
+					  (GCallback) download_scheduler_invalidated_cb, plugin_loader);
+	}
+
+	g_main_context_pop_thread_default (context);
 
 	/* get the locale without the various UTF-8 suffixes */
 	tmp = g_getenv ("GS_SELF_TEST_LOCALE");

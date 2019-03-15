@@ -62,6 +62,7 @@ librarydeps = [
   json_glib,
   libm,
   libsoup,
+  mogwai_schedule_client,
   valgrind,
 ]
 
@@ -113,6 +114,7 @@ executable(
     json_glib,
     libm,
     libsoup,
+    mogwai_schedule_client,
     valgrind,
   ],
   link_with : [
@@ -142,7 +144,8 @@ if get_option('tests')
       gtk,
       json_glib,
       libm,
-      libsoup
+      libsoup,
+      mogwai_schedule_client,
     ],
     link_with : [
       libgnomesoftware

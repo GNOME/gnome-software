@@ -367,6 +367,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	guint64 security_timestamp_old = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -401,25 +402,19 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
-	/* download any updates if auto-updates are turned on */
-	if (g_settings_get_boolean (monitor->settings, "download-updates")) {
-		g_autoptr(GsPluginJob) plugin_job = NULL;
-		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
-						 "list", apps,
-						 NULL);
-		g_debug ("Getting updates");
-		gs_plugin_loader_job_process_async (monitor->plugin_loader,
-						    plugin_job,
-						    monitor->cancellable,
-						    download_finished_cb,
-						    monitor);
-	} else {
-		/* notify immediately if auto-updates are turned off */
-		if (has_important_updates (apps) ||
-		    no_updates_for_a_week (monitor)) {
-			notify_offline_update_available (monitor);
-		}
-	}
+	/* download any updates; individual plugins are responsible for deciding
+	 * whether it’s appropriate to unconditionally download the updates, or
+	 * to schedule the download in accordance with the user’s metered data
+	 * preferences */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
+					 "list", apps,
+					 NULL);
+	g_debug ("Getting updates");
+	gs_plugin_loader_job_process_async (monitor->plugin_loader,
+					    plugin_job,
+					    monitor->cancellable,
+					    download_finished_cb,
+					    monitor);
 }
 
 static gboolean
