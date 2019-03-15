@@ -107,6 +107,11 @@ json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
 
+if get_option('mogwai')
+  mogwai_schedule_client = dependency('mogwai-schedule-client-0', version : '>= 0.2.0')
+  conf.set('HAVE_MOGWAI', 1)
+endif
+
 if get_option('valgrind')
   message(meson.version())
   # urgh, meson is broken

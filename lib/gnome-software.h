@@ -20,3 +20,7 @@
 #include <gs-plugin.h>
 #include <gs-plugin-vfuncs.h>
 #include <gs-utils.h>
+
+#ifdef GS_ENABLE_EXPERIMENTAL_MOGWAI
+#include <gs-metered.h>
+#endif
