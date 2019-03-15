@@ -367,6 +367,7 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	guint64 security_timestamp_old = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
+	gboolean download_updates;
 
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -401,9 +402,19 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
-	/* download any updates if auto-updates are turned on */
-	if (g_settings_get_boolean (monitor->settings, "download-updates")) {
+#ifdef HAVE_MOGWAI
+	download_updates = TRUE;
+#else
+	download_updates = g_settings_get_boolean (monitor->settings, "download-updates");
+#endif
+
+	if (download_updates) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		/* download any updates; individual plugins are responsible for deciding
+		 * whether it’s appropriate to unconditionally download the updates, or
+		 * to schedule the download in accordance with the user’s metered data
+		 * preferences */
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_DOWNLOAD,
 						 "list", apps,
 						 NULL);

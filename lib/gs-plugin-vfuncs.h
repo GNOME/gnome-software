@@ -686,6 +686,11 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
  * Downloads the application and any dependencies ready to be installed or
  * updated.
  *
+ * Plugins are expected to schedule downloads using the system download
+ * scheduler if appropriate (if the download is not guaranteed to be under a few
+ * hundred kilobytes, for example), so that the user’s metered data preferences
+ * are honoured.
+ *
  * Plugins are expected to send progress notifications to the UI using
  * gs_app_set_progress() using the passed in @app.
  *
@@ -713,6 +718,11 @@ gboolean	 gs_plugin_download_app			(GsPlugin	*plugin,
  * @error: a #GError, or %NULL
  *
  * Downloads a list of applications ready to be installed or updated.
+ *
+ * Plugins are expected to schedule downloads using the system download
+ * scheduler if appropriate (if the download is not guaranteed to be under a few
+ * hundred kilobytes, for example), so that the user’s metered data preferences
+ * are honoured.
  *
  * Returns: %TRUE for success or if not relevant
  **/

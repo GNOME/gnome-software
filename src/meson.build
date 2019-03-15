@@ -108,6 +108,10 @@ if get_option('gspell')
   gnome_software_dependencies += [gspell]
 endif
 
+if get_option('mogwai')
+  gnome_software_dependencies += [mogwai_schedule_client]
+endif
+
 executable(
   'gnome-software',
   resources_src,
