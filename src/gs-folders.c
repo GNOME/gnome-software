@@ -555,6 +555,7 @@ gs_folders_convert (void)
 			"gnome-system-log.desktop",
 			"gnome-system-monitor.desktop",
 			"gucharmap.desktop",
+			"nm-connection-editor.desktop",
 			"org.gnome.baobab.desktop",
 			"org.gnome.Calculator.desktop",
 			"org.gnome.DejaDup.desktop",
