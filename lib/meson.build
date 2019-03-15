@@ -40,6 +40,7 @@ install_headers([
     'gs-app.h',
     'gs-app-list.h',
     'gs-category.h',
+    'gs-metered.h',
     'gs-os-release.h',
     'gs-plugin.h',
     'gs-plugin-event.h',
@@ -62,6 +63,10 @@ librarydeps = [
   valgrind,
 ]
 
+if get_option('mogwai')
+  librarydeps += mogwai_schedule_client
+endif
+
 if get_option('polkit')
   librarydeps += polkit
 endif
@@ -75,6 +80,7 @@ libgnomesoftware = static_library(
     'gs-debug.c',
     'gs-ioprio.c',
     'gs-ioprio.h',
+    'gs-metered.c',
     'gs-os-release.c',
     'gs-plugin.c',
     'gs-plugin-event.c',

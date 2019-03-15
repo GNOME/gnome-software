@@ -16,6 +16,7 @@
 #include <gs-app-collation.h>
 #include <gs-autocleanups.h>
 #include <gs-category.h>
+#include <gs-metered.h>
 #include <gs-os-release.h>
 #include <gs-plugin.h>
 #include <gs-plugin-vfuncs.h>
