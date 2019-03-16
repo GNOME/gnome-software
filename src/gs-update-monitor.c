@@ -674,8 +674,12 @@ check_updates (GsUpdateMonitor *monitor)
 	if (!gs_plugin_loader_get_network_available (monitor->plugin_loader))
 		return;
 
+#ifdef HAVE_MOGWAI
+	refresh_on_metered = TRUE;
+#else
 	refresh_on_metered = g_settings_get_boolean (monitor->settings,
 						     "refresh-when-metered");
+#endif
 
 	if (!refresh_on_metered &&
 	    gs_plugin_loader_get_network_metered (monitor->plugin_loader))
