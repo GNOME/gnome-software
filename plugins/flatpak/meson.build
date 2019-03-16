@@ -1,6 +1,15 @@
 subdir('tests')
 
 cargs = ['-DG_LOG_DOMAIN="GsPluginFlatpak"']
+deps = [
+  plugin_libs,
+  flatpak,
+  libxmlb,
+]
+
+if get_option('mogwai')
+  deps += mogwai_schedule_client
+endif
 
 shared_module(
   'gs_plugin_flatpak',
@@ -19,11 +28,7 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [
-    plugin_libs,
-    flatpak,
-    libxmlb,
-  ],
+  dependencies : deps,
   link_with : [
     libgnomesoftware
   ]
@@ -54,10 +59,7 @@ if get_option('tests')
       include_directories('../..'),
       include_directories('../../lib'),
     ],
-    dependencies : [
-      plugin_libs,
-      flatpak,
-    ],
+    dependencies : deps,
     link_with : [
       libgnomesoftware
     ],

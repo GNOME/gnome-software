@@ -24,6 +24,7 @@
 #include "gs-flatpak.h"
 #include "gs-flatpak-transaction.h"
 #include "gs-flatpak-utils.h"
+#include "gs-metered.h"
 
 struct GsPluginData {
 	GPtrArray		*flatpaks; /* of GsFlatpak */
@@ -448,6 +449,16 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 	if (flatpak == NULL)
 		return TRUE;
 
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_autoptr(GError) error_local = NULL;
+
+		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
+
 	/* build and run non-deployed transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
 	if (transaction == NULL) {
@@ -575,6 +586,19 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* is a source */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_autoptr(GError) error_local = NULL;
+
+		/* FIXME: Add additional details here, especially the download
+		 * size bounds (using `size-minimum` and `size-maximum`, both
+		 * type `t`). */
+		if (!gs_metered_block_app_on_download_scheduler (app, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
 
 	/* build */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
