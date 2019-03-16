@@ -650,19 +650,11 @@ static void
 check_updates (GsUpdateMonitor *monitor)
 {
 	gint64 tmp;
-	gboolean refresh_on_metered;
 	g_autoptr(GDateTime) last_refreshed = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* never check for updates when offline */
 	if (!gs_plugin_loader_get_network_available (monitor->plugin_loader))
-		return;
-
-	refresh_on_metered = g_settings_get_boolean (monitor->settings,
-						     "refresh-when-metered");
-
-	if (!refresh_on_metered &&
-	    gs_plugin_loader_get_network_metered (monitor->plugin_loader))
 		return;
 
 	/* never refresh when the battery is low */
@@ -681,6 +673,7 @@ check_updates (GsUpdateMonitor *monitor)
 		g_debug ("no UPower support, so not doing power level checks");
 	}
 
+	/* TODO: import the code to change the update interval to 2h */
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
 	last_refreshed = g_date_time_new_from_unix_local (tmp);
 	if (last_refreshed != NULL) {
