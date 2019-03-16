@@ -19,6 +19,10 @@
 #include <flatpak.h>
 #include <gnome-software.h>
 
+#ifdef HAVE_MOGWAI
+#include "gs-metered.h"
+#endif  /* HAVE_MOGWAI */
+
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
@@ -448,6 +452,26 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 	if (flatpak == NULL)
 		return TRUE;
 
+#ifdef HAVE_MOGWAI
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+		g_autoptr(GVariant) parameters = NULL;
+		g_autoptr(GError) error_local = NULL;
+
+		/* FIXME: Add additional details here, especially the download
+		 * size bounds (using `size-minimum` and `size-maximum`, both
+		 * type `t`). */
+		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+		parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
+
+		if (!gs_metered_block_on_download_scheduler (parameters, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
+#endif  /* HAVE_MOGWAI */
+
 	/* build and run non-deployed transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
 	if (transaction == NULL) {
@@ -575,6 +599,26 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* is a source */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
+
+#ifdef HAVE_MOGWAI
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+		g_autoptr(GVariant) parameters = NULL;
+		g_autoptr(GError) error_local = NULL;
+
+		/* FIXME: Add additional details here, especially the download
+		 * size bounds (using `size-minimum` and `size-maximum`, both
+		 * type `t`). */
+		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+		parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
+
+		if (!gs_metered_block_on_download_scheduler (parameters, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
+#endif  /* HAVE_MOGWAI */
 
 	/* build */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
