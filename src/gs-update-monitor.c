@@ -772,8 +772,12 @@ check_updates (GsUpdateMonitor *monitor)
 	/* check for language pack */
 	check_language_pack (monitor);
 
+#ifdef HAVE_MOGWAI
+	refresh_on_metered = TRUE;
+#else
 	refresh_on_metered = g_settings_get_boolean (monitor->settings,
 						     "refresh-when-metered");
+#endif
 
 	if (!refresh_on_metered &&
 	    gs_plugin_loader_get_network_metered (monitor->plugin_loader))
