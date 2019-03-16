@@ -897,6 +897,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 	}
 
 	/* file does not yet exist */
+	/* TODO: Should this use Mogwai? */
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);

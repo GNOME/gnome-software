@@ -111,6 +111,7 @@ gs_plugin_download (GsPlugin *plugin,
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 
+	/* TODO: Should this use Mogwai? */
 	/* add any packages */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
