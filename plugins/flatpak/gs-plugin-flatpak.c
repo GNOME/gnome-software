@@ -18,6 +18,8 @@
 
 #include <flatpak.h>
 #include <gnome-software.h>
+#include <libmogwai-schedule-client/schedule-entry.h>
+#include <libmogwai-schedule-client/scheduler.h>
 
 #include "gs-appstream.h"
 #include "gs-flatpak-app.h"
@@ -428,6 +430,33 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	return g_steal_pointer (&transaction);
 }
 
+static void
+download_now_cb (GObject    *obj,
+                 GParamSpec *pspec,
+                 gpointer    user_data)
+{
+	gboolean *out_download_now = user_data;
+	*out_download_now = mwsc_schedule_entry_get_download_now (MWSC_SCHEDULE_ENTRY (obj));
+}
+
+static void
+invalidated_cb (MwscScheduleEntry *entry,
+                const GError      *error,
+                gpointer           user_data)
+{
+	GError **out_error = user_data;
+	*out_error = g_error_copy (error);
+}
+
+static void
+async_result_cb (GObject      *obj,
+                 GAsyncResult *result,
+                 gpointer      user_data)
+{
+	GAsyncResult **result_out = user_data;
+	*result_out = g_object_ref (result);
+}
+
 gboolean
 gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		    GCancellable *cancellable, GError **error)
@@ -435,6 +464,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 	GsFlatpak *flatpak = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	MwscScheduler *scheduler;
 
 	/* not supported */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -445,6 +475,76 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 	}
 	if (flatpak == NULL)
 		return TRUE;
+
+	/* Wait until the download can be scheduled.
+	 * FIXME: In future, downloads could be split up by app, so they can all
+	 * be scheduled separately and, for example, higher priority ones could
+	 * be scheduled with a higher priority. This would have to be aware of
+	 * dependencies. */
+	scheduler = gs_plugin_get_download_scheduler (plugin);
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE) &&
+	    scheduler != NULL) {
+		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+		g_autoptr(GVariant) parameters = NULL;
+		g_autoptr(MwscScheduleEntry) schedule_entry = NULL;
+		g_autoptr(GMainContext) context = NULL;
+		g_autoptr(GAsyncResult) construct_result = NULL;
+		g_autoptr(GAsyncResult) schedule_result = NULL;
+
+		context = g_main_context_new ();
+		g_main_context_push_thread_default (context);
+
+		/* Create a schedule entry for the group of downloads.
+		 * FIXME: The underlying OSTree code supports resuming downloads
+		 * (at a granularity of individual objects), so it should be
+		 * possible to plumb through here. */
+		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+		parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
+
+		mwsc_scheduler_schedule_async (scheduler, parameters, cancellable,
+					       async_result_cb, &schedule_result);
+		while (schedule_result == NULL)
+			g_main_context_iteration (context, TRUE);
+		schedule_entry = mwsc_scheduler_schedule_finish (scheduler, schedule_result, error);
+		if (schedule_entry == NULL) {
+			/* FIXME: Add an auto MainContextThreadHolder in GLib master */
+			g_main_context_pop_thread_default (context);
+			return FALSE;
+		}
+
+		/* Wait until the download is allowed to proceed. */
+		if (!mwsc_schedule_entry_get_download_now (schedule_entry)) {
+			gboolean download_now = FALSE;
+			g_autoptr(GError) invalidated_error = NULL;
+			gulong notify_id, invalidated_id;
+
+			notify_id = g_signal_connect (schedule_entry, "notify::download-now",
+						      (GCallback) download_now_cb, &download_now);
+			invalidated_id = g_signal_connect (schedule_entry, "invalidated",
+							   (GCallback) invalidated_cb, &invalidated_error);
+
+			while (!download_now && invalidated_error == NULL &&
+			       !g_cancellable_is_cancelled (cancellable))
+				g_main_context_iteration (context, TRUE);
+
+			g_signal_handler_disconnect (schedule_entry, invalidated_id);
+			g_signal_handler_disconnect (schedule_entry, notify_id);
+
+			if (!download_now && invalidated_error != NULL) {
+				g_propagate_error (error, g_steal_pointer (&invalidated_error));
+				g_main_context_pop_thread_default (context);
+				return FALSE;
+			} else if (!download_now && g_cancellable_set_error_if_cancelled (cancellable, error)) {
+				g_main_context_pop_thread_default (context);
+				return FALSE;
+			}
+
+			g_assert (download_now);
+		}
+
+		g_main_context_pop_thread_default (context);
+	}
 
 	/* build and run non-deployed transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
