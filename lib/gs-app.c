@@ -2245,6 +2245,21 @@ gs_app_set_launchable (GsApp *app, AsLaunchableKind kind, const gchar *launchabl
 }
 
 /**
+ * gs_app_is_launchable:
+ * @app: a #GsApp
+ *
+ * Get whether the app has any launchables of any #AsLaunchableKind.
+ *
+ * Since: 3.34
+ */
+gboolean
+gs_app_is_launchable (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	return g_hash_table_size (priv->launchables) > 0;
+}
+
+/**
  * gs_app_get_license:
  * @app: a #GsApp
  *
