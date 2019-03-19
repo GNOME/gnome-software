@@ -383,12 +383,6 @@ save_back_entry (GsShell *shell)
 	BackEntry *entry;
 	GsPage *page;
 
-	/* never go back to a details page */
-	if (priv->mode == GS_SHELL_MODE_DETAILS) {
-		g_debug ("ignoring back entry for details");
-		return;
-	}
-
 	entry = g_new0 (BackEntry, 1);
 	entry->mode = priv->mode;
 
