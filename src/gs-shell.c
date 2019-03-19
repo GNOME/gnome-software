@@ -45,7 +45,6 @@ static const gchar *page_name[] = {
 typedef struct {
 	GsShellMode	 mode;
 	GtkWidget	*focus;
-	GsApp		*app;
 	GsCategory	*category;
 	gchar		*search;
 } BackEntry;
@@ -195,7 +194,6 @@ free_back_entry (BackEntry *entry)
 		g_object_remove_weak_pointer (G_OBJECT (entry->focus),
 		                              (gpointer *) &entry->focus);
 	g_clear_object (&entry->category);
-	g_clear_object (&entry->app);
 	g_free (entry->search);
 	g_free (entry);
 }
@@ -478,11 +476,6 @@ gs_shell_go_back (GsShell *shell)
 			 page_name[entry->mode],
 			 gs_category_get_id (entry->category));
 		gs_shell_change_mode (shell, entry->mode, entry->category, FALSE);
-		break;
-	case GS_SHELL_MODE_DETAILS:
-		g_debug ("popping back entry for %s with %p",
-			 page_name[entry->mode], entry->app);
-		gs_shell_change_mode (shell, entry->mode, entry->app, FALSE);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		g_debug ("popping back entry for %s with %s",
