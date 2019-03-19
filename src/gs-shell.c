@@ -2127,6 +2127,19 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 }
 
 void
+gs_shell_reset_state (GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	/* reset to overview, unless we're in the loading state which advances
+	 * to overview on its own */
+	if (priv->mode != GS_SHELL_MODE_LOADING)
+		priv->mode = GS_SHELL_MODE_OVERVIEW;
+
+	gs_shell_clean_back_entry_stack (shell);
+}
+
+void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
 	gs_shell_change_mode (shell, mode, NULL, TRUE);

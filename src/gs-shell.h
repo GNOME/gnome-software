@@ -54,6 +54,7 @@ void		 gs_shell_change_mode		(GsShell	*shell,
 						 GsShellMode	 mode,
 						 gpointer	 data,
 						 gboolean	 scroll_up);
+void		 gs_shell_reset_state		(GsShell	*shell);
 void		 gs_shell_set_mode		(GsShell	*shell,
 						 GsShellMode	 mode);
 void		 gs_shell_modal_dialog_present	(GsShell	*shell,
