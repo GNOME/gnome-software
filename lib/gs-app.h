@@ -243,6 +243,7 @@ const gchar	*gs_app_get_launchable		(GsApp		*app,
 void		 gs_app_set_launchable		(GsApp		*app,
 						 AsLaunchableKind kind,
 						 const gchar	*launchable);
+gboolean	 gs_app_is_launchable		(GsApp		*app);
 const gchar	*gs_app_get_license		(GsApp		*app);
 gboolean	 gs_app_get_license_is_free	(GsApp		*app);
 void		 gs_app_set_license		(GsApp		*app,
