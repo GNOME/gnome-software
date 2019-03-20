@@ -522,24 +522,47 @@ gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 }
 
 static void
-initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
+overview_page_refresh_done (GsOverviewPage *overview_page, gpointer data)
 {
-	GsPage *page;
 	GsShell *shell = data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GsPage *page;
 
-	g_signal_handlers_disconnect_by_func (loading_page, initial_refresh_done, data);
+	g_signal_handlers_disconnect_by_func (overview_page, overview_page_refresh_done, data);
 
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "updates_page"));
 	gs_page_reload (page);
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "installed_page"));
 	gs_page_reload (page);
 
+	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+
+	/* now that we're finished with the loading page, connect the reload signal handler */
+	g_signal_connect (priv->plugin_loader, "reload",
+	                  G_CALLBACK (gs_shell_reload_cb), shell);
+}
+
+static void
+initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
+{
+	GsShell *shell = data;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	g_signal_handlers_disconnect_by_func (loading_page, initial_refresh_done, data);
+
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 
-	/* go to OVERVIEW, unless the "loading" callbacks changed mode already */
-	if (priv->mode == GS_SHELL_MODE_LOADING)
-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
+	/* if the "loaded" signal handler didn't change the mode, kick off async
+	 * overview page refresh, and switch to the page once done */
+	if (priv->mode == GS_SHELL_MODE_LOADING) {
+		GsPage *page;
+
+		page = GS_PAGE (gtk_builder_get_object (priv->builder, "overview_page"));
+		g_signal_connect (page, "refreshed",
+		                  G_CALLBACK (overview_page_refresh_done), shell);
+		gs_page_reload (page);
+		return;
+	}
 
 	/* now that we're finished with the loading page, connect the reload signal handler */
 	g_signal_connect (priv->plugin_loader, "reload",
