@@ -19,6 +19,10 @@
 
 #include "gs-fwupd-app.h"
 
+#ifdef HAVE_MOGWAI
+#include "gs-metered.h"
+#endif  /* HAVE_MOGWAI */
+
 /*
  * SECTION:
  * Queries for new firmware and schedules it to be installed as required.
@@ -900,6 +904,31 @@ gs_plugin_download_app (GsPlugin *plugin,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
+
+#ifdef HAVE_MOGWAI
+		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+			g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+			g_autoptr(GVariant) parameters = NULL;
+			g_autoptr(GError) error_local = NULL;
+			guint64 download_size = gs_app_get_size_download (app);
+
+			g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+
+			if (download_size != 0 && download_size != GS_APP_SIZE_UNKNOWABLE) {
+				g_variant_dict_insert (&parameters_dict, "size-minimum", "t", download_size);
+				g_variant_dict_insert (&parameters_dict, "size-maximum", "t", download_size);
+			}
+
+			parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
+
+			if (!gs_metered_block_on_download_scheduler (parameters, cancellable, &error_local)) {
+				g_warning ("Failed to block on download scheduler: %s",
+					   error_local->message);
+				g_clear_error (&error_local);
+			}
+		}
+#endif  /* HAVE_MOGWAI */
+
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
