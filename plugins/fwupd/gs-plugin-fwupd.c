@@ -18,6 +18,7 @@
 #include <gnome-software.h>
 
 #include "gs-fwupd-app.h"
+#include "gs-metered.h"
 
 /*
  * SECTION:
@@ -905,6 +906,17 @@ gs_plugin_download_app (GsPlugin *plugin,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
+
+		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+			g_autoptr(GError) error_local = NULL;
+
+			if (!gs_metered_block_app_on_download_scheduler (app, cancellable, &error_local)) {
+				g_warning ("Failed to block on download scheduler: %s",
+					   error_local->message);
+				g_clear_error (&error_local);
+			}
+		}
+
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
