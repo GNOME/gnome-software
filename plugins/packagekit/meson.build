@@ -1,5 +1,14 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginPackageKit"']
 cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
+deps = [
+  plugin_libs,
+  packagekit,
+]
+
+if get_option('mogwai')
+  cargs += ['-DGS_ENABLE_EXPERIMENTAL_MOGWAI=1']
+  deps += [mogwai_schedule_client]
+endif
 
 shared_module(
   'gs_plugin_systemd-updates',
@@ -15,7 +24,7 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, packagekit ],
+  dependencies : deps,
   link_with : [
     libgnomesoftware
   ]
@@ -35,7 +44,7 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, packagekit ],
+  dependencies : deps,
   link_with : [
     libgnomesoftware
   ]

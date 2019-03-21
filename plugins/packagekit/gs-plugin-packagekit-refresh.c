@@ -14,6 +14,10 @@
 #include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
+#ifdef HAVE_MOGWAI
+#include "gs-metered.h"
+#endif  /* HAVE_MOGWAI */
+
 /*
  * SECTION:
  * Do a PackageKit UpdatePackages(ONLY_DOWNLOAD) method on refresh and
@@ -130,10 +134,29 @@ gs_plugin_download (GsPlugin *plugin,
 				gs_app_list_add (list_tmp, app_tmp);
 		}
 	}
-	if (gs_app_list_length (list_tmp) > 0)
-		return _download_only (plugin, list_tmp, cancellable, error);
 
-	return TRUE;
+	if (gs_app_list_length (list_tmp) == 0)
+		return TRUE;
+
+#ifdef HAVE_MOGWAI
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_auto(GVariantDict) parameters_dict = G_VARIANT_DICT_INIT (NULL);
+		g_autoptr(GVariant) parameters = NULL;
+		g_autoptr(GError) local_error = NULL;
+
+		/* FIXME: Expand to cover multiple apps */
+		g_variant_dict_insert (&parameters_dict, "resumable", "b", FALSE);
+		parameters = g_variant_ref_sink (g_variant_dict_end (&parameters_dict));
+
+		if (!gs_metered_block_on_download_scheduler (parameters, cancellable, &local_error)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   local_error->message);
+			g_clear_error (&local_error);
+		}
+	}
+#endif  /* HAVE_MOGWAI */
+
+	return _download_only (plugin, list_tmp, cancellable, error);
 }
 
 gboolean
