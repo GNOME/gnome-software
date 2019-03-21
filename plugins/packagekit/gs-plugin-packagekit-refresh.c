@@ -11,6 +11,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gnome-software.h>
 
+#include "gs-metered.h"
 #include "gs-packagekit-helper.h"
 #include "packagekit-common.h"
 
@@ -130,10 +131,21 @@ gs_plugin_download (GsPlugin *plugin,
 				gs_app_list_add (list_tmp, app_tmp);
 		}
 	}
-	if (gs_app_list_length (list_tmp) > 0)
-		return _download_only (plugin, list_tmp, cancellable, error);
 
-	return TRUE;
+	if (gs_app_list_length (list_tmp) == 0)
+		return TRUE;
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_autoptr(GError) error_local = NULL;
+
+		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
+			g_warning ("Failed to block on download scheduler: %s",
+				   error_local->message);
+			g_clear_error (&error_local);
+		}
+	}
+
+	return _download_only (plugin, list_tmp, cancellable, error);
 }
 
 gboolean
