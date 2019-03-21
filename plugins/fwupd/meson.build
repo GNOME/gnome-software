@@ -1,5 +1,14 @@
 cargs = ['-DG_LOG_DOMAIN="GsPluginFwupd"']
 cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
+deps = [
+  plugin_libs,
+  fwupd,
+]
+
+if get_option('mogwai')
+  cargs += ['-DGS_ENABLE_EXPERIMENTAL_MOGWAI=1']
+  deps += [mogwai_schedule_client]
+endif
 
 shared_module(
   'gs_plugin_fwupd',
@@ -14,7 +23,7 @@ shared_module(
   install : true,
   install_dir: plugin_dir,
   c_args : cargs,
-  dependencies : [ plugin_libs, fwupd ],
+  dependencies : deps,
   link_with : [
     libgnomesoftware
   ]
@@ -42,9 +51,7 @@ if get_option('tests')
       include_directories('../..'),
       include_directories('../../lib'),
     ],
-    dependencies : [
-      plugin_libs,
-    ],
+    dependencies : deps,
     link_with : [
       libgnomesoftware
     ],
