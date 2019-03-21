@@ -1014,7 +1014,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		/* ignore these, they're built in */
-		if (fwupd_remote_get_kind (remote) == FWUPD_REMOTE_KIND_LOCAL)
+		if (fwupd_remote_get_kind (remote) != FWUPD_REMOTE_KIND_DOWNLOAD)
 			continue;
 
 		/* create something that we can use to enable/disable */
