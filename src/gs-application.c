@@ -743,23 +743,29 @@ launch_activated (GSimpleAction *action,
 		  GVariant      *parameter,
 		  gpointer       data)
 {
-	const gchar *desktop_id;
-	GdkDisplay *display;
+	GsApplication *self = GS_APPLICATION (data);
+	const gchar *id;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginJob) refine_job = NULL;
+	g_autoptr(GsPluginJob) launch_job = NULL;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GAppInfo) appinfo = NULL;
-	g_autoptr(GAppLaunchContext) context = NULL;
 
-	desktop_id = g_variant_get_string (parameter, NULL);
-	display = gdk_display_get_default ();
-	appinfo = G_APP_INFO (gs_utils_get_desktop_app_info (desktop_id));
-	if (appinfo == NULL) {
-		g_warning ("no such desktop file: %s", desktop_id);
+	id = g_variant_get_string (parameter, NULL);
+	app = gs_app_new (id);
+	refine_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
+					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
+					 NULL);
+	if (!gs_plugin_loader_job_action (self->plugin_loader, refine_job, self->cancellable, &error)) {
+		g_warning ("Failed to refine app: %s", error->message);
 		return;
 	}
-
-	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
-	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
-		g_warning ("launching %s failed: %s", desktop_id, error->message);
+	launch_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
+					 "app", app,
+					 NULL);
+	if (!gs_plugin_loader_job_action (self->plugin_loader, launch_job, self->cancellable, &error)) {
+		g_warning ("Failed to launch app: %s", error->message);
+		return;
 	}
 }
 
