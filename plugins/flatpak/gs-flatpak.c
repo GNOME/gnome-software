@@ -1382,6 +1382,7 @@ get_main_app_of_related (GsFlatpak *self,
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
 	const gchar *ref_name;
 	g_auto(GStrv) app_tokens = NULL;
+	FlatpakRefKind ref_kind = FLATPAK_REF_KIND_RUNTIME;
 
 	ref_name = gs_flatpak_app_get_main_app_ref_name (related_app);
 	if (ref_name == NULL) {
@@ -1399,11 +1400,15 @@ get_main_app_of_related (GsFlatpak *self,
 		return NULL;
 	}
 
+	/* get the right ref kind for the main app */
+	if (g_strcmp0 (app_tokens[0], "app") == 0)
+		ref_kind = FLATPAK_REF_KIND_APP;
+
 	/* this function only returns G_IO_ERROR_NOT_FOUND when the metadata file
 	 * is missing, but if that's the case then things should have broken before
 	 * this point */
 	ref = flatpak_installation_get_installed_ref (self->installation,
-						      FLATPAK_REF_KIND_APP,
+						      ref_kind,
 						      app_tokens[1],
 						      app_tokens[2],
 						      app_tokens[3],
