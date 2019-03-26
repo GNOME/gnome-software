@@ -714,3 +714,233 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	return TRUE;
 }
+
+gboolean
+gs_plugin_file_to_app (GsPlugin *plugin,
+		       GsAppList *list,
+		       GFile *file,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autofree gchar *content_type = NULL;
+	const gchar * const mimetypes_repo[] = {
+		"inode/directory",
+		NULL };
+
+	/* does this match any of the mimetypes we support */
+	content_type = gs_utils_get_content_type (file, cancellable, error);
+	if (content_type == NULL)
+		return FALSE;
+	if (g_strv_contains (mimetypes_repo, content_type)) {
+		/* If it looks like an ostree repo that could be on a USB drive,
+		 * have eos-updater check it for available OS updates */
+		g_autoptr (GFile) repo_dir = NULL;
+
+		repo_dir = g_file_get_child (file, ".ostree");
+		if (g_file_query_exists (repo_dir, NULL))
+			return check_for_os_updates (plugin, cancellable, error);
+	}
+
+	return TRUE;
+}
+
+static char *
+get_os_collection_id (GError **error)
+{
+	OstreeDeployment *booted_deployment;
+	GKeyFile *origin;
+	g_autofree char *refspec = NULL;
+	g_autofree char *remote = NULL;
+	g_autofree char *collection_id = NULL;
+	g_autoptr(OstreeRepo) repo = NULL;
+	g_autoptr(OstreeSysroot) sysroot = NULL;
+
+	sysroot = ostree_sysroot_new_default ();
+	if (!ostree_sysroot_load (sysroot, NULL, error))
+		return NULL;
+
+	booted_deployment = ostree_sysroot_get_booted_deployment (sysroot);
+	if (booted_deployment == NULL) {
+		g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+			     "Could not get booted deployment");
+		return NULL;
+	}
+
+	origin = ostree_deployment_get_origin (booted_deployment);
+	if (origin == NULL) {
+		g_set_error (error, G_IO_ERROR, G_IO_ERROR_FAILED,
+			     "Could not get deployment origin");
+		return NULL;
+	}
+
+	refspec = g_key_file_get_string (origin, "origin", "refspec", error);
+	if (refspec == NULL)
+		return NULL;
+
+	ostree_parse_refspec (refspec, &remote, NULL, error);
+	if (remote == NULL)
+		return NULL;
+
+	repo = ostree_repo_new_default ();
+	if (!ostree_repo_open (repo, NULL, error))
+		return NULL;
+
+	if (!ostree_repo_get_remote_option (repo, remote, "collection-id", NULL, &collection_id, error))
+		return NULL;
+
+	return g_steal_pointer (&collection_id);
+}
+
+gboolean
+gs_plugin_os_get_copyable (GsPlugin *plugin,
+			   const gchar *copy_dest,
+			   gboolean *copyable,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	g_autoptr(GError) local_error = NULL;
+	g_autofree char *collection_id = get_os_collection_id (&local_error);
+
+	if (local_error != NULL)
+		g_debug ("Failed to get OSTree collection ID: %s", local_error->message);
+
+	*copyable = (collection_id != NULL);
+
+	return TRUE;
+}
+
+typedef struct {
+	GCancellable *cancellable;  /* (owned) */
+	gulong cancelled_id;
+	gboolean finished;
+	GError *error;  /* (nullable) (owned) */
+	GMainContext *context;  /* (owned) */
+} OsCopyProcessHelper;
+
+static void
+os_copy_process_helper_free (OsCopyProcessHelper *helper)
+{
+	g_clear_object (&helper->cancellable);
+	g_assert (helper->cancelled_id == 0);  /* disconnected in watch_cb() */
+	g_clear_error (&helper->error);
+	g_main_context_unref (helper->context);
+	g_free (helper);
+}
+
+static OsCopyProcessHelper *
+os_copy_process_helper_new (GMainContext *context,
+                            GCancellable *cancellable,
+                            gulong        cancelled_id)
+{
+	OsCopyProcessHelper *helper = g_new0 (OsCopyProcessHelper, 1);
+	helper->cancellable = g_object_ref (cancellable);
+	helper->cancelled_id = cancelled_id;
+	helper->finished = FALSE;
+	helper->error = NULL;
+	helper->context = g_main_context_ref (context);
+
+	return helper;
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (OsCopyProcessHelper, os_copy_process_helper_free)
+
+static void
+os_copy_process_watch_cb (GPid pid, gint status, gpointer user_data)
+{
+	OsCopyProcessHelper *helper = user_data;
+	g_autoptr(GError) error = NULL;
+
+	if (!g_cancellable_is_cancelled (helper->cancellable) && status != 0)
+		g_set_error (&helper->error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to copy OS to removable media: command "
+			     "failed with status %d", status);
+
+	g_cancellable_disconnect (helper->cancellable, helper->cancelled_id);
+	helper->cancelled_id = 0;
+	g_spawn_close_pid (pid);
+
+	/* once the copy terminates (successfully or not), set plugin status to
+	 * update UI accordingly */
+
+	helper->finished = TRUE;
+	g_main_context_wakeup (helper->context);
+}
+
+static void
+os_copy_cancelled_cb (GCancellable *cancellable, gpointer user_data)
+{
+	GPid pid = GPOINTER_TO_INT (user_data);
+
+	/* terminate the process which is copying the OS */
+	kill (pid, SIGTERM);
+}
+
+gboolean
+gs_plugin_os_copy (GsPlugin *plugin,
+		   const gchar *copy_dest,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	/* this is used in an async function but we block here until that
+	 * returns so we won't auto-free while other threads depend on this */
+	g_autoptr(OsCopyProcessHelper) helper = NULL;
+	gboolean spawn_retval;
+	const gchar *argv[] = {"/usr/bin/pkexec",
+			       "/usr/bin/eos-updater-prepare-volume",
+			       copy_dest,
+			       NULL};
+	GPid child_pid;
+	gulong cancelled_id;
+	g_autoptr(GMainContext) context = NULL;
+	g_autoptr(GSource) child_watch_source = NULL;
+
+	context = g_main_context_new ();
+	g_main_context_push_thread_default (context);
+
+	g_debug ("Copying OS to: %s", copy_dest);
+
+	spawn_retval = g_spawn_async (".",
+				      (gchar **) argv,
+				      NULL,
+				      G_SPAWN_DO_NOT_REAP_CHILD,
+				      NULL,
+				      NULL,
+				      &child_pid,
+				      error);
+
+	if (spawn_retval) {
+		cancelled_id = g_cancellable_connect (cancellable,
+						      G_CALLBACK (os_copy_cancelled_cb),
+						      GINT_TO_POINTER (child_pid),
+						      NULL);
+
+		helper = os_copy_process_helper_new (context, cancellable, cancelled_id);
+		child_watch_source = g_child_watch_source_new (child_pid);
+		g_source_set_callback (child_watch_source,
+				       G_SOURCE_FUNC (os_copy_process_watch_cb), helper, NULL);
+		g_source_attach (child_watch_source, context);
+	} else {
+		g_main_context_pop_thread_default (context);
+		return FALSE;
+	}
+
+	/* Iterate the main loop until either the copy process completes or the
+	 * user cancels the copy. Without this, it is impossible to cancel the
+	 * copy because we reach the end of this function, its parent GTask
+	 * returns and we disconnect the handler that would kill the copy
+	 * process. */
+	while (!helper->finished)
+		g_main_context_iteration (context, TRUE);
+
+	g_source_destroy (child_watch_source);
+	g_main_context_pop_thread_default (context);
+
+	if (helper->error) {
+		g_propagate_error (error, g_steal_pointer (&helper->error));
+		return FALSE;
+	}
+
+	return TRUE;
+}
