@@ -91,6 +91,23 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_SNAP)
 		gs_app_set_management_plugin (app, "snap");
+
+	if (g_str_has_prefix (gs_app_get_id (app), "io.snapcraft.")) {
+		g_autofree gchar *name_and_id = NULL;
+		gchar *divider, *snap_name;/*, *id;*/
+
+		name_and_id = g_strdup (gs_app_get_id (app) + strlen ("io.snapcraft."));
+		divider = strrchr (name_and_id, '-');
+		if (divider != NULL) {
+			*divider = '\0';
+			snap_name = name_and_id;
+			/*id = divider + 1;*/ /* NOTE: Should probably validate ID */
+
+			gs_app_set_management_plugin (app, "snap");
+			gs_app_set_metadata (app, "snap::name", snap_name);
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
+		}
+	}
 }
 
 static void
@@ -930,6 +947,21 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	snap = local_snap != NULL ? local_snap : store_snap;
 	gs_app_set_version (app, snapd_snap_get_version (snap));
+
+	switch (snapd_snap_get_snap_type (snap)) {
+	case SNAPD_SNAP_TYPE_APP:
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		break;
+	case SNAPD_SNAP_TYPE_KERNEL:
+	case SNAPD_SNAP_TYPE_GADGET:
+	case SNAPD_SNAP_TYPE_OS:
+		gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
+		break;
+        default:
+	case SNAPD_SNAP_TYPE_UNKNOWN:
+		gs_app_set_kind (app, AS_APP_KIND_UNKNOWN);
+		break;
+	}
 
 	/* add information specific to installed snaps */
 	if (local_snap != NULL) {
