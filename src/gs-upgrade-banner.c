@@ -57,6 +57,22 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	name_bold = g_strdup_printf ("<b>%s</b>", gs_app_get_name (priv->app));
 	version_bold = g_strdup_printf ("<b>%s</b>", gs_app_get_version (priv->app));
 
+	/* Show the right button text. Distributions which are based on OSTree
+	 * don’t need a post-reboot installation step. */
+	if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+		gtk_button_set_label (GTK_BUTTON (priv->button_upgrades_install),
+				      _("_Restart Now"));
+		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_warning),
+				    _("Updates will be applied when the "
+				      "computer is restarted."));
+	} else {
+		gtk_button_set_label (GTK_BUTTON (priv->button_upgrades_install),
+				      _("_Install"));
+		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_warning),
+				    _("It is recommended that you back up your "
+				      "data and files before upgrading."));
+	}
+
 	/* Refresh the title. Normally a distro upgrade state goes from
 	 *
 	 * AVAILABLE (available to download) to
