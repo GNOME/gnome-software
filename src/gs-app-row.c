@@ -390,9 +390,14 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* pixbuf */
-	if (gs_app_get_pixbuf (priv->app) != NULL)
+	if (gs_app_get_pixbuf (priv->app) == NULL) {
+		gtk_image_set_from_icon_name (GTK_IMAGE (priv->image),
+					      "application-x-executable",
+					      GTK_ICON_SIZE_DIALOG);
+	} else {
 		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					  gs_app_get_pixbuf (priv->app));
+	}
 
 	context = gtk_widget_get_style_context (priv->image);
 	if (missing_search_result)
