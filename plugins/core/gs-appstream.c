@@ -473,6 +473,11 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 		if (g_hash_table_lookup (installed, version) != NULL)
 			continue;
 
+		/* limit this to three versions backwards if there has never
+		 * been a detected installed version */
+		if (g_hash_table_size (installed) == 0 && i >= 3)
+			break;
+
 		/* use the 'worst' urgency, e.g. critical over enhancement */
 		urgency_tmp = as_urgency_kind_from_string (xb_node_get_attr (release, "urgency"));
 		if (urgency_tmp > urgency_best)
