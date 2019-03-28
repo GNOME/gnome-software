@@ -149,6 +149,10 @@ if get_option('packagekit')
   endif
 endif
 
+if get_option('eos_updater')
+  ostree = dependency('ostree-1')
+endif
+
 if get_option('fwupd')
   fwupd = dependency('fwupd', version : '>= 1.0.3')
 endif
