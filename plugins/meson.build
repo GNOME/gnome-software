@@ -14,6 +14,9 @@ subdir('dummy')
 subdir('epiphany')
 subdir('fedora-pkgdb-collections')
 
+if get_option('eos_updater')
+  subdir('eos-updater')
+endif
 if get_option('flatpak')
   subdir('flatpak')
 endif
