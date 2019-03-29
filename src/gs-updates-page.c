@@ -894,7 +894,7 @@ gs_updates_page_button_refresh_cb (GtkWidget *widget,
 		gtk_dialog_add_button (GTK_DIALOG (dialog),
 				       /* TRANSLATORS: this is a link to the
 					* control-center network panel */
-				       _("Check Anyway"),
+				       _("Check _Anyway"),
 				       GTK_RESPONSE_ACCEPT);
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (gs_updates_page_refresh_confirm_cb),
