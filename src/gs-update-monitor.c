@@ -651,6 +651,57 @@ typedef enum {
 	UP_DEVICE_LEVEL_LAST
 } UpDeviceLevel;
 
+/*
+ * determines active locale and looks for langpacks
+ * installs located language pack, if not already
+ */
+static void
+check_language_pack (GsUpdateMonitor *monitor) {
+
+	const gchar *locale;
+
+	g_autoptr(GsPluginJob) langpacks_plugin_job = NULL;
+	g_autoptr(GsAppList) search_app_list = NULL;
+	g_autoptr(GError) error = NULL;
+
+	locale = gs_plugin_loader_get_locale (monitor->plugin_loader);
+
+	langpacks_plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_LANGUAGE_PACKS,
+						   "search", locale,
+						   "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						   NULL);
+	search_app_list = gs_plugin_loader_job_process (monitor->plugin_loader,
+							langpacks_plugin_job,
+							NULL,
+							&error);
+
+	if (!search_app_list)
+		return;
+
+	/* there shall be one langpack for a given locale */
+	if (gs_app_list_length (search_app_list) == 1) {
+
+		g_autoptr(GsApp) lang_pack_app = NULL;
+		lang_pack_app = gs_app_list_index (search_app_list, 0);
+
+		if (lang_pack_app && gs_app_get_source_id_default(lang_pack_app) &&
+			!gs_app_is_installed(lang_pack_app)) {
+
+			g_autoptr(GsPluginJob) plugin_install_job = NULL;
+			plugin_install_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+								"app", lang_pack_app,
+								NULL);
+			gs_plugin_loader_job_action (monitor->plugin_loader,
+							plugin_install_job,
+							NULL,
+							&error);
+			if (!error) {
+				g_debug ("language pack for %s installed.", gs_app_get_name (lang_pack_app));
+			}
+		}
+	}
+}
+
 static void
 check_updates (GsUpdateMonitor *monitor)
 {
@@ -662,6 +713,9 @@ check_updates (GsUpdateMonitor *monitor)
 	/* never check for updates when offline */
 	if (!gs_plugin_loader_get_network_available (monitor->plugin_loader))
 		return;
+
+	/* check for language pack */
+	check_language_pack (monitor);
 
 	refresh_on_metered = g_settings_get_boolean (monitor->settings,
 						     "refresh-when-metered");

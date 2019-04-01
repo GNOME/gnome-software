@@ -961,4 +961,22 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
+/**
+ * gs_plugin_add_language_packs:
+ * @plugin: a #GsPlugin
+ * @list: a #GsAppList
+ * @language_code: a #LANGUAGE_CODE or #LOCALE, e.g. "ja" or "ja_JP"
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Updates a list of applications, typically scheduling them for offline update.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_add_language_packs		(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 const gchar    *language_code,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
 G_END_DECLS
