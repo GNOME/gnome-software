@@ -162,6 +162,12 @@ typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
 							 GError		**error);
 typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 							 GsApp		*app);
+typedef gboolean	 (*GsPluginGetLangPacksFunc)	(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 const gchar    *locale,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
 
 /* async helper */
 typedef struct {
@@ -681,6 +687,14 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		{
 			GsPluginUrlToAppFunc plugin_func = func;
+			ret = plugin_func (plugin, list,
+					   gs_plugin_job_get_search (helper->plugin_job),
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_LANGPACKS:
+		{
+			GsPluginGetLangPacksFunc plugin_func = func;
 			ret = plugin_func (plugin, list,
 					   gs_plugin_job_get_search (helper->plugin_job),
 					   cancellable, &error_local);
@@ -3668,4 +3682,11 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 	if (!g_thread_pool_set_max_threads (priv->queued_ops_pool, max_ops, &error))
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
+}
+
+const gchar *
+gs_plugin_loader_get_locale (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->locale;
 }

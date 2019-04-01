@@ -226,6 +226,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_DESTROY:			Destroy the plugin
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
+ * @GS_PLUGIN_ACTION_GET_LANGPACKS:		Get appropriate language pack
  *
  * The plugin action.
  **/
@@ -270,6 +271,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_DESTROY,
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_GET_ALTERNATES,
+	GS_PLUGIN_ACTION_GET_LANGPACKS,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;
