@@ -20,7 +20,7 @@ struct {
 	const gchar *id;
 	const gchar *css;
 } myapps[] = {
-	{ "org.gnome.Builder.desktop",
+	{ "org.gnome.Builder",
 		"border-color: #000000;\n"
 		"text-shadow: 0 1px 1px rgba(0,0,0,0.5);\n"
 		"color: #ffffff;\n"
