@@ -12,6 +12,7 @@ subdir('core')
 subdir('dpkg')
 subdir('dummy')
 subdir('epiphany')
+subdir('fedora-langpacks')
 subdir('fedora-pkgdb-collections')
 
 if get_option('eos_updater')
