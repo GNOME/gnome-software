@@ -3707,3 +3707,17 @@ gs_plugin_loader_set_max_parallel_ops (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to set the maximum number of ops in parallel: %s",
 			   error->message);
 }
+
+const gchar *
+gs_plugin_loader_get_locale (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->locale;
+}
+
+const gchar *
+gs_plugin_loader_get_language (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->language;
+}

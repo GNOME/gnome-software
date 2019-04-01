@@ -651,6 +651,83 @@ typedef enum {
 	UP_DEVICE_LEVEL_LAST
 } UpDeviceLevel;
 
+/*
+ * 1. Determine active locale and language
+ * 2. Try locating respective langpack. for example: langpacks-xx
+ * 3. Install located langpack, if not already installed
+ * 4. And, Notify users.
+ */
+static void
+check_language_pack (GsUpdateMonitor *monitor) {
+
+	gboolean langpack_setting;
+	gchar *locale = NULL;
+	gchar *language = NULL;
+	gchar *lang_pack_candidate = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsAppList) search_app_list = NULL;
+	g_autoptr(GError) error = NULL;
+
+	const gchar *body = NULL;
+	g_autoptr(GNotification) n = NULL;
+
+	langpack_setting = g_settings_get_boolean (monitor->settings, "download-langpacks-notify");
+	g_debug ("==>> msg from check_langpack; langpack setting: %d ", langpack_setting);
+
+	if(langpack_setting) {
+		locale = (gchar*) gs_plugin_loader_get_locale (monitor->plugin_loader);
+		g_debug ("==>> active locale: %s ", locale);
+		language = (gchar*) gs_plugin_loader_get_language (monitor->plugin_loader);
+		g_debug ("==>> active language: %s ", language);
+
+		lang_pack_candidate = g_strconcat("langpack-", language, NULL);
+		g_debug ("==>> langpack candidate: %s ", lang_pack_candidate);
+
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+										 "search", lang_pack_candidate,
+										 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+										 NULL);
+		search_app_list = gs_plugin_loader_job_process (monitor->plugin_loader,
+														plugin_job,
+														NULL,
+														&error);
+		if (search_app_list != NULL) {
+			g_debug ("Search applist length: %u", gs_app_list_length (search_app_list));
+		}
+
+		for (guint i = 0; i < gs_app_list_length (search_app_list); i++) {
+			GsApp *app_tmp = gs_app_list_index (search_app_list, i);
+			g_debug ("Listing app: %s ", gs_app_to_string(app_tmp));
+			g_debug ("Language Pack Current State: %u", gs_app_get_state(app_tmp));
+			g_debug ("Language Pack Installed?: %d", gs_app_is_installed(app_tmp));
+		}
+
+		if (gs_app_list_length (search_app_list) == 1) {
+
+			g_autoptr(GsPluginJob) plugin_install_job = NULL;
+			GsApp *lang_pack_app = gs_app_list_index (search_app_list, 0);
+
+			if (!gs_app_is_installed(lang_pack_app)) {
+				plugin_install_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
+														"app", lang_pack_app,
+														NULL);
+				g_debug ("==>> Trying to install Language Pack ...");
+				gs_plugin_loader_job_action(monitor->plugin_loader,
+											plugin_install_job, NULL, &error);
+				if(!error) {
+					body = g_strdup_printf (_(" For language: %s."), gs_app_get_name (lang_pack_app));
+					/* TRANSLATORS: this is a language pack install */
+					n = g_notification_new (_("Language Pack Installed"));
+					g_notification_set_body (n, body);
+					g_application_send_notification (monitor->application, "installed", n);
+				}
+			}
+
+		}
+	}
+
+}
+
 static void
 check_updates (GsUpdateMonitor *monitor)
 {
@@ -662,6 +739,9 @@ check_updates (GsUpdateMonitor *monitor)
 	/* never check for updates when offline */
 	if (!gs_plugin_loader_get_network_available (monitor->plugin_loader))
 		return;
+
+	/* check for language pack */
+	check_language_pack (monitor);
 
 	refresh_on_metered = g_settings_get_boolean (monitor->settings,
 						     "refresh-when-metered");
