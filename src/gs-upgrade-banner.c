@@ -122,8 +122,9 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
 		break;
 	default:
-		g_critical ("Unexpected app state %s",
-			    as_app_state_to_string (gs_app_get_state (priv->app)));
+		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
+			    as_app_state_to_string (gs_app_get_state (priv->app)),
+			    gs_app_get_unique_id (priv->app));
 		break;
 	}
 
@@ -148,7 +149,9 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_show (priv->button_upgrades_install);
 		break;
 	default:
-		g_critical ("Unexpected app state");
+		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
+			    as_app_state_to_string (gs_app_get_state (priv->app)),
+			    gs_app_get_unique_id (priv->app));
 		break;
 	}
 
