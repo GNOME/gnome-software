@@ -221,7 +221,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_REFINE:			Refine the application
  * @GS_PLUGIN_ACTION_REFRESH:			Refresh all the sources
  * @GS_PLUGIN_ACTION_FILE_TO_APP:		Convert the file to an application
- * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the file to an application
+ * @GS_PLUGIN_ACTION_URL_TO_APP:		Convert the URI to an application
  * @GS_PLUGIN_ACTION_GET_RECENT:		Get the apps recently released
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
  * @GS_PLUGIN_ACTION_INITIALIZE:		Initialize the plugin
