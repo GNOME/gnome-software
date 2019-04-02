@@ -90,6 +90,16 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
 		break;
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+		/* TRANSLATORS: This is the text displayed while waiting to
+		 * download a distro upgrade. First %s is the distro name and
+		 * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23" */
+		str = g_strdup_printf (_("Waiting to Download %s %s"),
+				       name_bold, version_bold);
+		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
+		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
+		gtk_widget_set_visible (priv->button_upgrades_cancel, TRUE);
+		break;
 	case AS_APP_STATE_INSTALLING:
 		/* TRANSLATORS: This is the text displayed while downloading a
 		 * distro upgrade. First %s is the distro name and the 2nd %s
@@ -128,6 +138,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_show (priv->button_upgrades_download);
 		gtk_widget_hide (priv->button_upgrades_install);
 		break;
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 	case AS_APP_STATE_INSTALLING:
 		gtk_widget_hide (priv->button_upgrades_download);
 		gtk_widget_hide (priv->button_upgrades_install);
