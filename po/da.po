@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-03-01 19:56+0000\n"
+"POT-Creation-Date: 2019-03-24 19:18+0000\n"
 "PO-Revision-Date: 2019-03-11 20:00+0100\n"
 "Last-Translator: Alan Mortensen <alanmortensen.am@gmail.com>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
@@ -71,7 +71,7 @@ msgstr "Opdateringspanel"
 msgid "The update details"
 msgstr "Opdateringsdetaljerne"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1277
+#: data/appdata/org.gnome.Software.appdata.xml.in:1316
 msgid "The GNOME Project"
 msgstr "GNOME-projektet"
 
@@ -133,7 +133,8 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
-msgstr "Om der automatisk skal genopfriskes på en forbrugsafregnet forbindelse"
+msgstr ""
+"Om der automatisk skal genopfriskes på en forbrugsafregnet forbindelse"
 
 #: data/org.gnome.software.gschema.xml:26
 msgid ""
@@ -176,7 +177,8 @@ msgstr "En liste over populære programmer"
 
 #: data/org.gnome.software.gschema.xml:48
 msgid "A list of applications to use, overriding the system defined ones."
-msgstr "En liste over programmer som skal bruges frem for de systemdefinerede."
+msgstr ""
+"En liste over programmer som skal bruges frem for de systemdefinerede."
 
 #: data/org.gnome.software.gschema.xml:52
 msgid "The last update check timestamp"
@@ -225,11 +227,13 @@ msgid "Reviews with karma less than this number will not be shown."
 msgstr "Anmeldelser med mindre karma end dette nummer vil ikke blive vist."
 
 #: data/org.gnome.software.gschema.xml:87
-msgid "A list of official repositories that should not be considered 3rd party"
+msgid ""
+"A list of official repositories that should not be considered 3rd party"
 msgstr "En liste over officielle arkiver, som ikke skal anses som tredjepart"
 
 #: data/org.gnome.software.gschema.xml:91
-msgid "A list of official repositories that should be considered free software"
+msgid ""
+"A list of official repositories that should be considered free software"
 msgstr "En liste over officielle arkiver, der skal anses som fri software"
 
 #: data/org.gnome.software.gschema.xml:95
@@ -240,7 +244,8 @@ msgstr ""
 "software"
 
 #: data/org.gnome.software.gschema.xml:99
-msgid "Install bundled applications for all users on the system where possible"
+msgid ""
+"Install bundled applications for all users on the system where possible"
 msgstr ""
 "Installér bundtede programmer for alle brugere på systemet, hvor det er "
 "muligt"
@@ -311,11 +316,6 @@ msgstr "Softwareinstallation"
 msgid "Install selected software on the system"
 msgstr "Installér valgte programmer på systemet"
 
-#. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
-#: src/gnome-software-local-file.desktop.in:10
-msgid "system-software-install"
-msgstr "system-software-install"
-
 #: src/gnome-software.ui:10
 msgid "Select All"
 msgstr "Vælg alle"
@@ -363,7 +363,7 @@ msgstr "Søg"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:276 src/gs-app-row.c:292 src/gs-details-page.ui:834
+#: src/gnome-software.ui:276 src/gs-app-row.c:292 src/gs-details-page.ui:837
 msgid "Source"
 msgstr "Kilde"
 
@@ -399,7 +399,7 @@ msgstr "Mere information"
 msgid "Local file"
 msgstr "Lokal fil"
 
-#: lib/gs-app.c:4510
+#: lib/gs-app.c:4513
 msgid "Package"
 msgstr "Pakke"
 
@@ -407,7 +407,7 @@ msgstr "Pakke"
 msgid "Pending"
 msgstr "Venter"
 
-#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:182 src/gs-app-tile.ui:51
+#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:185 src/gs-app-tile.ui:51
 #: src/gs-feature-tile.c:72
 msgid "Installed"
 msgstr "Installeret"
@@ -416,7 +416,7 @@ msgstr "Installeret"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:171 src/gs-details-page.c:317
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:171 src/gs-details-page.c:321
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "Installerer"
@@ -425,7 +425,7 @@ msgstr "Installerer"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:177 src/gs-repo-row.c:126
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:177 src/gs-repo-row.c:125
 #: src/gs-third-party-repo-row.c:106
 msgid "Removing"
 msgstr "Fjerner"
@@ -435,7 +435,7 @@ msgid "Folder Name"
 msgstr "Mappenavn"
 
 #: src/gs-app-folder-dialog.c:307 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.ui:240 src/gs-editor.c:609 src/gs-editor.c:641
+#: src/gs-details-page.ui:243 src/gs-editor.c:609 src/gs-editor.c:641
 #: src/gs-installed-page.c:598 src/gs-removal-dialog.ui:32
 #: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
@@ -535,8 +535,9 @@ msgstr ""
 "Ask Hjorth Larsen\n"
 "Alan Mortensen\n"
 "\n"
-"Dansk-gruppen <dansk@dansk-gruppen.dk>\n"
-"Mere info: http://www.dansk-gruppen.dk"
+"Dansk-gruppen\n"
+"Websted <http://dansk-gruppen.dk>\n"
+"E-mail <dansk@dansk-gruppen.dk>"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
@@ -544,7 +545,7 @@ msgstr ""
 #. TRANSLATORS: this is the menu item that opens the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:335 src/gs-shell.c:1942
+#: src/gs-application.c:335 src/gs-shell.c:1957
 #, c-format
 msgid "About %s"
 msgstr "Om %s"
@@ -660,7 +661,7 @@ msgstr "Navn"
 
 #. TRANSLATORS: A label for a button to show the settings for
 #. the selected shell extension.
-#: src/gs-category-page.ui:118 src/gs-details-page.c:893
+#: src/gs-category-page.ui:118 src/gs-details-page.c:897
 msgid "Extension Settings"
 msgstr "Udvidelsesindstillinger"
 
@@ -761,12 +762,13 @@ msgstr "Aktivér softwarearkiver fra tredjepart?"
 #: src/gs-common.c:241
 #, c-format
 msgid ""
-"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
-"source_software\">free and open source software</a>, and is provided by “%s”."
+"%s is not <a "
+"href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">free "
+"and open source software</a>, and is provided by “%s”."
 msgstr ""
-"%s er ikke <a href=\"https://da.wikipedia.org/wiki/Free/"
-"Libre_and_Open_Source_Software\">fri og åben kildekode-software</a>, og er "
-"leveret af “%s”."
+"%s er ikke <a "
+"href=\"https://da.wikipedia.org/wiki/Free/Libre_and_Open_Source_Software\">fri "
+"og åben kildekode-software</a>, og er leveret af “%s”."
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -809,7 +811,7 @@ msgstr "Aktivér og installér"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Detaljerede fejlbeskeder fra pakkehåndteringen følger:"
 
-#: src/gs-common.c:454 src/gs-details-page.ui:432
+#: src/gs-common.c:454 src/gs-details-page.ui:435
 msgid "Details"
 msgstr "Detaljer"
 
@@ -1060,7 +1062,8 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:206
 msgid "Users are encouraged to purchase specific real-world items"
-msgstr "Brugere opfordres til at købe specifikke ting fra den virkelige verden"
+msgstr ""
+"Brugere opfordres til at købe specifikke ting fra den virkelige verden"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:209
@@ -1154,7 +1157,8 @@ msgstr "Tjekker for den seneste version af programmet"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:260
 msgid "Sharing diagnostic data that does not let others identify the user"
-msgstr "Deling af diagnostiske data som ikke lader andre identificere brugeren"
+msgstr ""
+"Deling af diagnostiske data som ikke lader andre identificere brugeren"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:263
@@ -1371,28 +1375,29 @@ msgstr "Flere pakker påkrævet"
 msgid "Find in Software"
 msgstr "Find i Software"
 
-#: src/gs-details-page.c:312
+#: src/gs-details-page.c:316
 msgid "Removing…"
 msgstr "Fjerner …"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:331
+#: src/gs-details-page.c:335
 msgid "Pending installation…"
 msgstr "Afventer installering …"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:338
+#: src/gs-details-page.c:342
 msgid "Pending update…"
 msgstr "Afventer opdatering …"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:663
+#: src/gs-details-page.c:667
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
-msgstr "Dette program kan kun bruges når der er en aktiv internet-forbindelse."
+msgstr ""
+"Dette program kan kun bruges når der er en aktiv internet-forbindelse."
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
@@ -1400,8 +1405,8 @@ msgstr "Dette program kan kun bruges når der er en aktiv internet-forbindelse."
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:809 src/gs-details-page.c:835
-#: src/gs-details-page.ui:159 src/gs-third-party-repo-row.c:83
+#: src/gs-details-page.c:813 src/gs-details-page.c:839
+#: src/gs-details-page.ui:162 src/gs-third-party-repo-row.c:83
 #: src/gs-upgrade-banner.ui:122
 msgid "_Install"
 msgstr "_Installér"
@@ -1413,101 +1418,101 @@ msgstr "_Installér"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:849 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:853 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "_Installér …"
 
 #. TRANSLATORS: A label for a button to execute the selected
 #. application.
-#: src/gs-details-page.c:898
+#: src/gs-details-page.c:902
 msgid "_Launch"
 msgstr "_Kør"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:923 src/gs-details-page.ui:184
+#: src/gs-details-page.c:927 src/gs-details-page.ui:187
 msgid "_Remove"
 msgstr "_Fjern"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:960 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "Netværk"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:960 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "Kan kommunikere over netværket"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:961 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "Systemtjenester"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:961 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "Kan tilgå D-Bustjenester på systembussen"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:962 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "Sessionstjenester"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:962 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "Kan tilgå D-Bustjenester på sessionsbussen"
 
-#: src/gs-details-page.c:959 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:963 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "Enheder"
 
-#: src/gs-details-page.c:959 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:963 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "Kan tilgå filer på systemenheden"
 
-#: src/gs-details-page.c:960 src/gs-details-page.c:961
+#: src/gs-details-page.c:964 src/gs-details-page.c:965
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "Hjemmemappe"
 
-#: src/gs-details-page.c:960 src/gs-details-page.c:962
-#: src/gs-details-page.c:964 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:964 src/gs-details-page.c:966
+#: src/gs-details-page.c:968 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "Kan se, redigere og oprette filer"
 
-#: src/gs-details-page.c:961 src/gs-details-page.c:963
-#: src/gs-details-page.c:965 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:965 src/gs-details-page.c:967
+#: src/gs-details-page.c:969 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "Kan se filer"
 
-#: src/gs-details-page.c:962 src/gs-details-page.c:963
+#: src/gs-details-page.c:966 src/gs-details-page.c:967
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "Filsystem"
 
-#: src/gs-details-page.c:964 src/gs-details-page.c:965
+#: src/gs-details-page.c:968 src/gs-details-page.c:969
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "Mappe til hentede filer"
 
-#: src/gs-details-page.c:966 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:970 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "Indstillinger"
 
-#: src/gs-details-page.c:966 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:970 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "Kan se og ændre alle indstillinger"
 
-#: src/gs-details-page.c:967 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:971 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "Forældet system til visning"
 
-#: src/gs-details-page.c:967 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:971 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "Bruger et gammelt, usikkert system til visning"
 
-#: src/gs-details-page.c:982
+#: src/gs-details-page.c:986
 msgid "This application is fully sandboxed."
 msgstr "Dette program køres i sandkassetilstand."
 
-#: src/gs-details-page.c:990
+#: src/gs-details-page.c:994
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1516,82 +1521,82 @@ msgstr ""
 "typisk for ældre programmer."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1138
+#: src/gs-details-page.c:1142
 msgctxt "version"
 msgid "Unknown"
 msgstr "Ukendt"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1151
+#: src/gs-details-page.c:1155
 msgctxt "updated"
 msgid "Never"
 msgstr "Aldrig"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1204
+#: src/gs-details-page.c:1208
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Ukendt"
 
-#: src/gs-details-page.c:1254
+#: src/gs-details-page.c:1261
 msgid "Low"
 msgstr "Lav"
 
-#: src/gs-details-page.c:1256
+#: src/gs-details-page.c:1263
 msgid "Medium"
 msgstr "Middel"
 
-#: src/gs-details-page.c:1258
+#: src/gs-details-page.c:1265
 msgid "High"
 msgstr "Høj"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1262 src/gs-details-page.ui:953 src/gs-review-row.c:57
+#: src/gs-details-page.c:1267 src/gs-details-page.ui:956 src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "Ukendt"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1614
+#: src/gs-details-page.c:1642
 msgid "You need internet access to write a review"
 msgstr "Du skal have internetadgang for at skrive en anmeldelse"
 
-#: src/gs-details-page.c:1797 src/gs-details-page.c:1813
+#: src/gs-details-page.c:1825 src/gs-details-page.c:1841
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Kunne ikke finde “%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2363
+#: src/gs-details-page.c:2404
 msgid "Public domain"
 msgstr "Public domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2366
+#: src/gs-details-page.c:2407
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://da.wikipedia.org/wiki/Offentligt_dom%C3%A6ne"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2373
+#: src/gs-details-page.c:2414
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.da.html"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2383 src/gs-details-page.ui:1197
+#: src/gs-details-page.c:2424 src/gs-details-page.ui:1200
 msgid "Free Software"
 msgstr "Fri software"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2440
+#: src/gs-details-page.c:2481
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Brugere er bundet af følgende licens:"
 msgstr[1] "Brugere er bundet af følgende licenser:"
 
-#: src/gs-details-page.c:2467 src/gs-details-page.ui:1269
+#: src/gs-details-page.c:2508 src/gs-details-page.ui:1272
 msgid "More information"
 msgstr "Mere information"
 
@@ -1599,33 +1604,33 @@ msgstr "Mere information"
 msgid "Details page"
 msgstr "Detaljeside"
 
-#: src/gs-details-page.ui:211
+#: src/gs-details-page.ui:214
 msgid "Downloading"
 msgstr "Henter"
 
-#: src/gs-details-page.ui:250
+#: src/gs-details-page.ui:253
 msgid "_Update"
 msgstr "_Opdatér"
 
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:266
+#: src/gs-details-page.ui:269
 msgid "_Add shortcut"
 msgstr "_Tilføj genvej"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:277
+#: src/gs-details-page.ui:280
 msgid "Re_move shortcut"
 msgstr "F_jern kilde"
 
-#: src/gs-details-page.ui:351
+#: src/gs-details-page.ui:354
 msgid "No screenshot provided"
 msgstr "Intet skærmbillede angivet"
 
-#: src/gs-details-page.ui:371
+#: src/gs-details-page.ui:374
 msgid "Software Repository Included"
 msgstr "Softwarearkiv inkluderet"
 
-#: src/gs-details-page.ui:372
+#: src/gs-details-page.ui:375
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1633,11 +1638,11 @@ msgstr ""
 "Dette program inkluderer et softwarearkiv, som tilbyder opdateringer så vel "
 "som adgang til anden software."
 
-#: src/gs-details-page.ui:379
+#: src/gs-details-page.ui:382
 msgid "No Software Repository Included"
 msgstr "Intet softwarearkiv inkluderet"
 
-#: src/gs-details-page.ui:380
+#: src/gs-details-page.ui:383
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1645,7 +1650,7 @@ msgstr ""
 "Dette program inkluderer ikke et softwarearkiv. Det vil ikke blive opdateret "
 "med nye versioner."
 
-#: src/gs-details-page.ui:388
+#: src/gs-details-page.ui:391
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1653,11 +1658,11 @@ msgstr ""
 "Denne software udbydes allerede af din distribution og bør ikke erstattes."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:395
+#: src/gs-details-page.ui:398
 msgid "Software Repository Identified"
 msgstr "Softwarearkiv fundet"
 
-#: src/gs-details-page.ui:396
+#: src/gs-details-page.ui:399
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1665,113 +1670,113 @@ msgstr ""
 "Tilføjelse af dette softwarearkiv vil give dig adgang til mere software samt "
 "opdateringer."
 
-#: src/gs-details-page.ui:397
+#: src/gs-details-page.ui:400
 msgid "Only use software repositories that you trust."
 msgstr "Brug kun softwarearkiver, du stoler på."
 
-#: src/gs-details-page.ui:407
+#: src/gs-details-page.ui:410
 msgid "_Website"
 msgstr "_Webside"
 
-#: src/gs-details-page.ui:416
+#: src/gs-details-page.ui:419
 msgid "_Donate"
 msgstr "_Donér"
 
-#: src/gs-details-page.ui:526
+#: src/gs-details-page.ui:529
 msgid "Localized in your Language"
 msgstr "Oversat til dit sprog"
 
-#: src/gs-details-page.ui:537
+#: src/gs-details-page.ui:540
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: src/gs-details-page.ui:548
+#: src/gs-details-page.ui:551
 msgid "Release Activity"
 msgstr "Udgivelsesaktivitet"
 
-#: src/gs-details-page.ui:559
+#: src/gs-details-page.ui:562
 msgid "System Integration"
 msgstr "Systemintegration"
 
-#: src/gs-details-page.ui:570
+#: src/gs-details-page.ui:573
 msgid "Sandboxed"
 msgstr "Sandboxed"
 
-#: src/gs-details-page.ui:589
+#: src/gs-details-page.ui:592
 msgid "Version"
 msgstr "Version"
 
-#: src/gs-details-page.ui:625
+#: src/gs-details-page.ui:628
 msgid "Age Rating"
 msgstr "Aldersvurdering"
 
-#: src/gs-details-page.ui:663 src/gs-details-page.ui:1355
+#: src/gs-details-page.ui:666 src/gs-details-page.ui:1358
 msgid "Permissions"
 msgstr "Rettigheder"
 
-#: src/gs-details-page.ui:701
+#: src/gs-details-page.ui:704
 msgid "Updated"
 msgstr "Opdateret"
 
-#: src/gs-details-page.ui:735
+#: src/gs-details-page.ui:738
 msgid "Category"
 msgstr "Kategori"
 
 # i modsætning til "oversigtsside" mv. tidliger og senere
-#: src/gs-details-page.ui:772
+#: src/gs-details-page.ui:775
 msgid "Installed Size"
 msgstr "Størrelse på installation"
 
-#: src/gs-details-page.ui:803
+#: src/gs-details-page.ui:806
 msgid "Download Size"
 msgstr "Størrelse på download"
 
-#: src/gs-details-page.ui:865
+#: src/gs-details-page.ui:868
 msgid "Developer"
 msgstr "Udvikler"
 
-#: src/gs-details-page.ui:910
+#: src/gs-details-page.ui:913
 msgid "License"
 msgstr "Licens"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:929
+#: src/gs-details-page.ui:932
 msgid "Free"
 msgstr "Fri"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:941
+#: src/gs-details-page.ui:944
 msgid "Proprietary"
 msgstr "Proprietær"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:991 src/gs-installed-page.c:478
+#: src/gs-details-page.ui:994 src/gs-installed-page.c:478
 #: plugins/core/gs-desktop-common.c:317
 msgid "Add-ons"
 msgstr "Udvidelser"
 
-#: src/gs-details-page.ui:1003
+#: src/gs-details-page.ui:1006
 msgid "Selected add-ons will be installed with the application."
 msgstr "Valgte udvidelser vil blive installeret sammen med programmet."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1041
+#: src/gs-details-page.ui:1044
 msgid "Reviews"
 msgstr "Anmeldelser"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1059
+#: src/gs-details-page.ui:1062
 msgid "_Write a Review"
 msgstr "_Skriv en anmeldelse"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1080
+#: src/gs-details-page.ui:1083
 msgid "_Show More"
 msgstr "_Vis mere"
 
-#: src/gs-details-page.ui:1208
+#: src/gs-details-page.ui:1211
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1779,11 +1784,11 @@ msgstr ""
 "Dette betyder, at softwaren frit kan køres, kopieres, distribueres, studeres "
 "eller ændres."
 
-#: src/gs-details-page.ui:1248
+#: src/gs-details-page.ui:1251
 msgid "Proprietary Software"
 msgstr "Proprietær software"
 
-#: src/gs-details-page.ui:1259
+#: src/gs-details-page.ui:1262
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1793,19 +1798,19 @@ msgstr ""
 "er ofte begrænsinger for dets brug, og dets kildekode kan normalvis ikke "
 "tilgås."
 
-#: src/gs-details-page.ui:1291
+#: src/gs-details-page.ui:1294
 msgid "Unknown Software License"
 msgstr "Ukendt softwarelicens"
 
-#: src/gs-details-page.ui:1302
+#: src/gs-details-page.ui:1305
 msgid "The license terms of this software are unknown."
 msgstr "Licens-betingelserne for dette software er ukendte."
 
-#: src/gs-details-page.ui:1322
+#: src/gs-details-page.ui:1325
 msgid "The application was rated this way because it features:"
 msgstr "Dette program er vurderet på denne måde, fordi det indeholder:"
 
-#: src/gs-details-page.ui:1336
+#: src/gs-details-page.ui:1339
 msgid "No details were available for this rating."
 msgstr "Ingen detaljer var tilgængelige for denne vurdering."
 
@@ -2134,11 +2139,11 @@ msgstr "Codecsside"
 msgid "Welcome"
 msgstr "Velkommen"
 
-#: src/gs-first-run-dialog.ui:40
+#: src/gs-first-run-dialog.ui:43
 msgid "Welcome to Software"
 msgstr "Velkommen til Software"
 
-#: src/gs-first-run-dialog.ui:50
+#: src/gs-first-run-dialog.ui:53
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -2148,7 +2153,7 @@ msgstr ""
 "for fra ét samlet sted. Se vores anbefalinger, gennemse kategorierne eller "
 "søg efter de programmer du ønsker."
 
-#: src/gs-first-run-dialog.ui:59
+#: src/gs-first-run-dialog.ui:62
 msgid "_Let’s Go Shopping"
 msgstr "_Lad os handle"
 
@@ -2227,14 +2232,9 @@ msgid "_Remove from Folder"
 msgstr "_Fjern fra mappe"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:61
+#: src/gs-loading-page.c:61 src/gs-loading-page.c:65
 msgid "Software catalog is being downloaded"
 msgstr "Softwarekataloget er ved at blive hentet"
-
-#. TRANSLATORS: initial start
-#: src/gs-loading-page.c:65
-msgid "Software catalog is being loaded"
-msgstr "Softwarekataloget er ved at blive indlæst"
 
 #: src/gs-loading-page.ui:7
 msgid "Loading page"
@@ -2616,45 +2616,45 @@ msgstr "Ingen yderligere arkiver"
 
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for enabling a repo
-#: src/gs-repo-row.c:96
+#: src/gs-repo-row.c:95
 msgid "_Enable"
 msgstr "A_ktivér"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for removing a repo. The ellipsis indicates that further
 #. steps are required
-#: src/gs-repo-row.c:105
+#: src/gs-repo-row.c:104
 msgid "_Remove…"
 msgstr "_Fjern …"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for disabling a repo. The ellipsis indicates that further
 #. steps are required
-#: src/gs-repo-row.c:110
+#: src/gs-repo-row.c:109
 msgid "_Disable…"
 msgstr "_Deaktivér …"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being enabled
-#: src/gs-repo-row.c:118
+#: src/gs-repo-row.c:117
 msgid "Enabling"
 msgstr "Aktiverer"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being disabled
-#: src/gs-repo-row.c:130
+#: src/gs-repo-row.c:129
 msgid "Disabling"
 msgstr "Deaktiverer"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
-#: src/gs-repo-row.c:144
+#: src/gs-repo-row.c:143
 msgid "Enabled"
 msgstr "Aktiveret"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is disabled.
-#: src/gs-repo-row.c:150
+#: src/gs-repo-row.c:149
 msgid "Disabled"
 msgstr "Deaktiveret"
 
@@ -2868,19 +2868,19 @@ msgid "No Application Found"
 msgstr "Intet program fundet"
 
 #. TRANSLATORS: menu item that signs into the named account with a particular username
-#: src/gs-shell.c:726
+#: src/gs-shell.c:736
 #, c-format
 msgid "Signed in as %s"
 msgstr "Logget på som %s"
 
 #. TRANSLATORS: menu item that signs into the named account
-#: src/gs-shell.c:730
+#: src/gs-shell.c:740
 #, c-format
 msgid "Sign in…"
 msgstr "Log på …"
 
 #. TRANSLATORS: menu item for signing out from the named account
-#: src/gs-shell.c:738
+#: src/gs-shell.c:748
 #, c-format
 msgid "Sign out"
 msgstr "Log af"
@@ -2893,32 +2893,32 @@ msgstr "Log af"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:921 src/gs-shell.c:926 src/gs-shell.c:941 src/gs-shell.c:945
+#: src/gs-shell.c:931 src/gs-shell.c:936 src/gs-shell.c:951 src/gs-shell.c:955
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:988
+#: src/gs-shell.c:1002
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Kunne ikke hente firmware-opdateringer fra %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:994
+#: src/gs-shell.c:1008
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Kunne ikke hente opdateringer fra %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1001 src/gs-shell.c:1049
+#: src/gs-shell.c:1015 src/gs-shell.c:1060
 msgid "Unable to download updates"
 msgstr "Kunne ikke hente opdateringer"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1007
+#: src/gs-shell.c:1021
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2927,28 +2927,28 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1016
+#: src/gs-shell.c:1030
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "Kunne ikke hente opdateringer fra %s: ikke nok diskplads"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1021
+#: src/gs-shell.c:1035
 msgid "Unable to download updates: not enough disk space"
 msgstr "Kunne ikke hente opdateringer: ikke nok diskplads"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1028
+#: src/gs-shell.c:1042
 msgid "Unable to download updates: authentication was required"
 msgstr "Kunne ikke hente opdateringer: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1033
+#: src/gs-shell.c:1047
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Kunne ikke hente opdateringer: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1038
+#: src/gs-shell.c:1052
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2956,41 +2956,41 @@ msgstr ""
 "software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1052
+#: src/gs-shell.c:1063
 msgid "Unable to get list of updates"
 msgstr "Kunne ikke hente liste over opdateringer"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1088
+#: src/gs-shell.c:1099
 #, c-format
 msgid "Unable to purchase %s: authentication was required"
 msgstr "Kunne ikke købe %s: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1095
+#: src/gs-shell.c:1106
 #, c-format
 msgid "Unable to purchase %s: authentication was invalid"
 msgstr "Kunne ikke købe %s: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1102
+#: src/gs-shell.c:1113
 #, c-format
 msgid "Unable to purchase %s: no payment method setup"
 msgstr "Kunne ikke købe %s: betalingsmetode er ikke sat op"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1109
+#: src/gs-shell.c:1120
 #, c-format
 msgid "Unable to purchase %s: payment was declined"
 msgstr "Kunne ikke købe %s: betaling blev afvist"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1116
+#: src/gs-shell.c:1127
 #, c-format
 msgid "Unable to purchase %s"
 msgstr "Kunne ikke købe %s"
@@ -2998,14 +2998,14 @@ msgstr "Kunne ikke købe %s"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1148
+#: src/gs-shell.c:1159
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Kunne ikke installere %s fordi download mislykkedes fra %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1154
+#: src/gs-shell.c:1165
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Kunne ikke installere %s fordi download mislykkedes"
@@ -3014,52 +3014,52 @@ msgstr "Kunne ikke installere %s fordi download mislykkedes"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1167
+#: src/gs-shell.c:1178
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Kunne ikke installere %s, fordi %s-runtimen ikke er tilgængelig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1173
+#: src/gs-shell.c:1184
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Kunne ikke installere %s fordi det ikke understøttes"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1180
+#: src/gs-shell.c:1191
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Kunne ikke installere: netværksadgang var påkrævet, men var ikke tilgængelig"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1186
+#: src/gs-shell.c:1197
 msgid "Unable to install: the application has an invalid format"
 msgstr "Kunne ikke installere: programmet har et ugyldigt format"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1191
+#: src/gs-shell.c:1202
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Kunne ikke installere %s: ikke nok diskplads"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1198
+#: src/gs-shell.c:1209
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Kunne ikke installere %s: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1205
+#: src/gs-shell.c:1216
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Kunne ikke installere %s: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1212
+#: src/gs-shell.c:1223
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -3067,14 +3067,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1220
+#: src/gs-shell.c:1231
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Kunne ikke installere %s: strømforsyning er påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1229
+#: src/gs-shell.c:1240
 #, c-format
 msgid "Unable to install %s"
 msgstr "Kunne ikke installere %s"
@@ -3083,14 +3083,14 @@ msgstr "Kunne ikke installere %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1272
+#: src/gs-shell.c:1287
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Kunne ikke opdatere %s fra %s, fordi download mislykkedes"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1279
+#: src/gs-shell.c:1294
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Kunne ikke opdatere %s fordi download mislykkedes"
@@ -3098,72 +3098,72 @@ msgstr "Kunne ikke opdatere %s fordi download mislykkedes"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1286
+#: src/gs-shell.c:1301
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Kunne ikke installere opdateringer fra %s, fordi download mislykkedes"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1290
+#: src/gs-shell.c:1305
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Kunne ikke installere opdateringer, fordi download mislykkedes"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1296
+#: src/gs-shell.c:1311
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Kunne ikke opdatere: netværksadgang var påkrævet, men var ikke tilgængelig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1306
+#: src/gs-shell.c:1321
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Kunne ikke opdatere %s: ikke nok diskplads"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1311
+#: src/gs-shell.c:1326
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Kunne ikke installere opdateringer: ikke nok diskplads"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1321
+#: src/gs-shell.c:1336
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Kunne ikke opdatere %s: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1326
+#: src/gs-shell.c:1341
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Kunne ikke installere opdateringer: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1335
+#: src/gs-shell.c:1350
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Kunne ikke opdatere %s: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1340
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Kunne ikke installere opdateringer: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1349
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Kunne ikke opdatere %s: du har ikke rettigheder til at opdatere software"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1355
+#: src/gs-shell.c:1370
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3173,27 +3173,27 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1365
+#: src/gs-shell.c:1380
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Kunne ikke opdatere %s: strømforsyning er påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1371
+#: src/gs-shell.c:1386
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Kunne ikke installere opdateringer: strømforsyning er påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1382
+#: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to update %s"
 msgstr "Kunne ikke opdatere %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1385
+#: src/gs-shell.c:1400
 #, c-format
 msgid "Unable to install updates"
 msgstr "Kunne ikke installere opdateringer"
@@ -3201,21 +3201,21 @@ msgstr "Kunne ikke installere opdateringer"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1428
+#: src/gs-shell.c:1443
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Kunne ikke opgradere fra %s til %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1433
+#: src/gs-shell.c:1448
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Kunne ikke opgradere til %s fordi download mislykkedes"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1442
+#: src/gs-shell.c:1457
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3225,77 +3225,77 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1451
+#: src/gs-shell.c:1466
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Kunne ikke opgradere til %s: ikke nok diskplads"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1459
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Kunne ikke opgradere til %s: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1466
+#: src/gs-shell.c:1481
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Kunne ikke opgradere til %s: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1473
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Kunne ikke opgradere til %s: du har ikke rettigheder til at opgradere"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1480
+#: src/gs-shell.c:1495
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Kunne ikke opgradere til %s: strømforsyning er påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1489
+#: src/gs-shell.c:1504
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Kunne ikke opgradere til %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1527
+#: src/gs-shell.c:1542
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Kunne ikke fjerne %s: godkendelse var påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1533
+#: src/gs-shell.c:1548
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Kunne ikke fjerne %s: godkendelse var ugyldig"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1539
+#: src/gs-shell.c:1554
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Kunne ikke fjerne %s: du har ikke rettigheder til at fjerne software"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1546
+#: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Kunne ikke fjerne %s: strømforsyning er påkrævet"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1558
+#: src/gs-shell.c:1573
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Kunne ikke fjerne %s"
@@ -3304,65 +3304,65 @@ msgstr "Kunne ikke fjerne %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1601
+#: src/gs-shell.c:1616
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Kunne ikke starte %s: %s er ikke installeret"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1608 src/gs-shell.c:1659 src/gs-shell.c:1700
-#: src/gs-shell.c:1748
+#: src/gs-shell.c:1623 src/gs-shell.c:1674 src/gs-shell.c:1715
+#: src/gs-shell.c:1763
 msgid "Not enough disk space — free up some space and try again"
 msgstr "Ikke nok diskplads — frigør venligst noget plads og forsøg igen"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1619 src/gs-shell.c:1670 src/gs-shell.c:1711
-#: src/gs-shell.c:1778
+#: src/gs-shell.c:1634 src/gs-shell.c:1685 src/gs-shell.c:1726
+#: src/gs-shell.c:1793
 msgid "Sorry, something went wrong"
 msgstr "Beklager, noget gik galt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1651
+#: src/gs-shell.c:1666
 msgid "Failed to install file: not supported"
 msgstr "Kunne ikke installere fil: understøttes ikke"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1655
+#: src/gs-shell.c:1670
 msgid "Failed to install file: authentication failed"
 msgstr "Kunne ikke installere fil: godkendelse mislykkedes"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1692
+#: src/gs-shell.c:1707
 msgid "Failed to install: not supported"
 msgstr "Kunne ikke installere: understøttes ikke"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1696
+#: src/gs-shell.c:1711
 msgid "Failed to install: authentication failed"
 msgstr "Kunne ikke installere: godkendelse mislykkedes"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1742
+#: src/gs-shell.c:1757
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Kunne ikke kontakte %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1757
+#: src/gs-shell.c:1772
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "%s skal genstartes for at bruge nye udvidelsesmoduler."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1762
+#: src/gs-shell.c:1777
 msgid "This application needs to be restarted to use new plugins."
 msgstr "Dette program skal genstartes for at bruge nye udvidelsesmoduler."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1769
+#: src/gs-shell.c:1784
 msgid "AC power is required"
 msgstr "Strømforsyning er påkrævet"
 
@@ -3748,7 +3748,8 @@ msgstr "Dette kan koste penge"
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
-msgstr "Tjek efter opdateringer ved brug af mobilbredbånd kan koste dig penge."
+msgstr ""
+"Tjek efter opdateringer ved brug af mobilbredbånd kan koste dig penge."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
@@ -3900,20 +3901,14 @@ msgstr ""
 msgid "Add, remove or update software on this computer"
 msgstr "Tilføj, fjern eller opdatér software på denne computer"
 
-#. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
-#: src/org.gnome.Software.desktop.in:6
-#: src/org.gnome.Software.Editor.desktop.in:6
-msgid "org.gnome.Software"
-msgstr "org.gnome.Software"
-
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
 msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
+""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
 msgstr ""
-"Opdateringer;Opgrader;Kilder;Pakkearkiver;Indstillinger;Installer;"
-"Afinstaller;Program;Software;App;Store;"
+""
+"Opdateringer;Opgrader;Kilder;Pakkearkiver;Indstillinger;Installer;Afinstaller;Program;Software;App;Store;"
 
 #: src/org.gnome.Software.Editor.desktop.in:4
 msgid "Design the featured banners for GNOME Software"
@@ -4395,7 +4390,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak er et framework til skrivebordsprogrammer på Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:822
+#: plugins/flatpak/gs-flatpak.c:806
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Henter flatpak-metadata til %s …"
@@ -4436,7 +4431,7 @@ msgid "GNOME Shell Extensions Repository"
 msgstr "GNOME Shell-udvidelserarkiv"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:777
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:778
 msgid "Downloading shell extension metadata…"
 msgstr "Henter metadata til shell-udvidelse …"
 
@@ -4466,6 +4461,15 @@ msgstr "Understøttelse af Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "En snap er en universel Linux-pakke"
+
+#~ msgid "system-software-install"
+#~ msgstr "system-software-install"
+
+#~ msgid "Software catalog is being loaded"
+#~ msgstr "Softwarekataloget er ved at blive indlæst"
+
+#~ msgid "org.gnome.Software"
+#~ msgstr "org.gnome.Software"
 
 #~ msgid "..."
 #~ msgstr "…"
@@ -4570,8 +4574,8 @@ msgstr "En snap er en universel Linux-pakke"
 
 #~ msgid "Limba provides developers a way to easily create software bundles"
 #~ msgstr ""
-#~ "Limba giver udviklere en mulighed for at oprette software-pakker på en "
-#~ "enkel måde"
+#~ "Limba giver udviklere en mulighed for at oprette software-pakker på en enkel "
+#~ "måde"
 
 #~ msgid "The list of extra sources that have been previously enabled"
 #~ msgstr "Listen over ekstra kilder, som tidligere er bleveret aktiveret"
@@ -4591,8 +4595,7 @@ msgstr "En snap er en universel Linux-pakke"
 
 #~ msgid "Player-to-player preset interactions without chat functionality"
 #~ msgstr ""
-#~ "Foruddefinerede spiller til spiller-interaktiioner uden chat-"
-#~ "funktionalitet"
+#~ "Foruddefinerede spiller til spiller-interaktiioner uden chat-funktionalitet"
 
 #~ msgid ""
 #~ "Provides access to additional software, including web browsers and games."
@@ -4616,18 +4619,17 @@ msgstr "En snap er en universel Linux-pakke"
 #~ msgstr "Fjern kilde"
 
 #~ msgid ""
-#~ "Software sources can be downloaded from the internet. They give you "
-#~ "access to additional software that is not provided by %s."
+#~ "Software sources can be downloaded from the internet. They give you access "
+#~ "to additional software that is not provided by %s."
 #~ msgstr ""
-#~ "Softwarekilder kan hentes på internettet. De giver dig adgang til "
-#~ "yderligere software, som ikke udbydes af %s."
+#~ "Softwarekilder kan hentes på internettet. De giver dig adgang til yderligere "
+#~ "software, som ikke udbydes af %s."
 
 #~ msgid ""
-#~ "Removing a source will also remove any software you have installed from "
-#~ "it."
+#~ "Removing a source will also remove any software you have installed from it."
 #~ msgstr ""
-#~ "Fjernelse af kilder vil også fjerne alle programmer, du har installeret "
-#~ "fra dem."
+#~ "Fjernelse af kilder vil også fjerne alle programmer, du har installeret fra "
+#~ "dem."
 
 #~ msgid "No software installed from this source"
 #~ msgstr "Ingen software installeret fra denne kilde"
@@ -5444,8 +5446,7 @@ msgstr "En snap er en universel Linux-pakke"
 
 #~ msgid "An offline update was requested but no packages required updating."
 #~ msgstr ""
-#~ "En offline-opdatering blev forespurgt, men ingen pakker krævede "
-#~ "opdatering."
+#~ "En offline-opdatering blev forespurgt, men ingen pakker krævede opdatering."
 
 #~ msgid "No space was left on the drive."
 #~ msgstr "Der var ingen resterende plads på drevet."
@@ -5554,3 +5555,4 @@ msgstr "En snap er en universel Linux-pakke"
 
 #~ msgid "Querying..."
 #~ msgstr "Forespørger …"
+
