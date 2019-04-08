@@ -173,7 +173,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* if any packages remaing in UNKNOWN state, try to resolve them again,
+	/* if any packages remaining in UNKNOWN state, try to resolve them again,
 	 * but this time without ARCH filter */
 	resolve2_list = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {

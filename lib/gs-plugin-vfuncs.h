@@ -907,7 +907,7 @@ gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
  * list. If no plugins can handle the file, the list will be empty.
  *
  * For example, the PackageKit plugin can turn a .rpm file into a application
- * of kind %AS_APP_KIND_UNKNOWN but that in some cases it will be futher refined
+ * of kind %AS_APP_KIND_UNKNOWN but that in some cases it will be further refined
  * into a %AS_APP_KIND_DESKTOP (with all the extra metadata) by the appstream
  * plugin.
  *

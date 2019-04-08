@@ -18,7 +18,7 @@ conf.set_quoted('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
 # install docs
 install_data('README.md', install_dir : 'share/doc/gnome-software')
 
-# get suported warning flags
+# get supported warning flags
 test_args = [
   '-fstack-protector-strong',
   '-Waggregate-return',

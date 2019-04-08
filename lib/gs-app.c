@@ -267,7 +267,7 @@ gs_app_get_unique_id_unlocked (GsApp *app)
  * @app1: a #GsApp
  * @app2: a #GsApp
  *
- * Compares two applications using thier priority.
+ * Compares two applications using their priority.
  *
  * Use `gs_plugin_add_rule(plugin,GS_PLUGIN_RULE_BETTER_THAN,"plugin-name")`
  * to set the application priority values.
