@@ -305,8 +305,14 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* get the GNOME Shell version */
 	version = g_dbus_proxy_get_cached_property (priv->proxy,
 						    "ShellVersion");
-	if (version != NULL)
-		priv->shell_version = g_variant_dup_string (version, NULL);
+	if (version == NULL) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "unable to get shell version");
+		return FALSE;
+	}
+	priv->shell_version = g_variant_dup_string (version, NULL);
 	return TRUE;
 }
 
