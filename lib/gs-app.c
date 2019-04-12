@@ -2176,7 +2176,9 @@ const gchar *
 gs_app_get_url (GsApp *app, AsUrlKind kind)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
 	return g_hash_table_lookup (priv->urls, as_url_kind_to_string (kind));
 }
 
