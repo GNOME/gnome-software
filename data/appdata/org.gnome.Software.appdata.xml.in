@@ -46,6 +46,26 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-04-15" version="3.32.1">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add drop shadows to app icons</li>
+          <li>Various fixes to initial loading screen</li>
+          <li>Show a generic icon instead of empty space if we failed to load the app icon</li>
+          <li>Update featured banners for Maps and Blender</li>
+          <li>Update featured app IDs</li>
+          <li>Fix a crash due to missing locking</li>
+          <li>Fix missing back button under certain conditions</li>
+          <li>Fix loading AppSteam data from .yml.gz files</li>
+          <li>Fix an issue that caused flatpak repo to not be correctly shown when it matched an existing packagekit repo name</li>
+          <li>Hide the fwupd Vendor repo in the repos dialog</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2019-03-11" version="3.32.0">
       <description>
         <p>
