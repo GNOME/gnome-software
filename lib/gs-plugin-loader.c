@@ -172,6 +172,12 @@ typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
 							 GError		**error);
 typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 							 GsApp		*app);
+typedef gboolean	 (*GsPluginGetLangPacksFunc)	(GsPlugin	*plugin,
+							 GsAppList	*list,
+							 const gchar    *language_code,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
 
 /* async helper */
 typedef struct {
@@ -702,6 +708,14 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		{
 			GsPluginUrlToAppFunc plugin_func = func;
+			ret = plugin_func (plugin, list,
+					   gs_plugin_job_get_search (helper->plugin_job),
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_LANGUAGE_PACKS:
+		{
+			GsPluginGetLangPacksFunc plugin_func = func;
 			ret = plugin_func (plugin, list,
 					   gs_plugin_job_get_search (helper->plugin_job),
 					   cancellable, &error_local);

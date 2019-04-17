@@ -653,8 +653,8 @@ typedef enum {
 
 /*
  * 1. Determine active locale and language
- * 2. Try locating respective langpack. for example: langpacks-xx
- * 3. Install located langpack, if not already installed
+ * 2. Try searching for respective langpack. for example: LangPack-xx
+ * 3. Install located language pack, if not already installed
  * 4. And, Notify users.
  *
  * Later, keep an info; NOT to install again if removed by user!
@@ -665,7 +665,6 @@ check_language_pack (GsUpdateMonitor *monitor) {
 	gboolean langpack_setting;
 	gchar *locale = NULL;
 	gchar *language = NULL;
-	gchar *lang_pack_candidate = NULL;
 
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GsAppList) search_app_list = NULL;
@@ -677,7 +676,7 @@ check_language_pack (GsUpdateMonitor *monitor) {
 	const gchar *body = NULL;
 	g_autoptr(GNotification) n = NULL;
 
-	langpack_setting = g_settings_get_boolean (monitor->settings, "download-langpacks-notify");
+	langpack_setting = g_settings_get_boolean (monitor->settings, "install-langpack-notify");
 	g_debug ("=> msg from check_langpack; langpack setting: %d ", langpack_setting);
 
 	if (!langpack_setting)
@@ -688,24 +687,29 @@ check_language_pack (GsUpdateMonitor *monitor) {
 	language = (gchar*) gs_plugin_loader_get_language (monitor->plugin_loader);
 	g_debug ("=> msg from check_langpack; active language: %s ", language);
 
-	lang_pack_candidate = g_strconcat("LangPack-", language, NULL);
-	g_debug ("=> msg from check_langpack; langpack candidate: %s ", lang_pack_candidate);
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
-					 "search", lang_pack_candidate,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
-					 NULL);
+	/*
+	 * Todo: Pass language_code instead of locale
+	 * 	that would require plugin to search for langpacks
+	 */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_LANGUAGE_PACKS,
+									"search", locale,
+									"refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+									NULL);
 	search_app_list = gs_plugin_loader_job_process (monitor->plugin_loader,
 							plugin_job,
 							NULL,
 							&error);
-	if (search_app_list == NULL)
-		return;
 
-	g_debug ("Search applist length: %u", gs_app_list_length (search_app_list));
+	if (search_app_list == NULL) {
+		g_debug ("=> msg from check_langpack; Search applist is NULL, returning.");
+		return;
+	}
+	g_debug ("=> msg from check_langpack; Search applist length: %u",
+		gs_app_list_length (search_app_list));
 
 	if (gs_app_list_length (search_app_list) == 1) {
 		lang_pack_app = gs_app_list_index (search_app_list, 0);
+		g_debug ("langpack isInstalled?: %d ", gs_app_is_installed(lang_pack_app));
 	} else {
 		for (guint i = 0; i < gs_app_list_length (search_app_list); i++) {
 			GsApp *app_tmp = gs_app_list_index (search_app_list, i);
@@ -714,14 +718,15 @@ check_language_pack (GsUpdateMonitor *monitor) {
 				lang_pack_app = app_tmp;
 				break;
 			} else if (g_str_has_suffix(gs_app_get_id(app_tmp),
-					   lang_pack_candidate) && !lang_pack_app) {
+					   language) && !lang_pack_app) {
 				lang_pack_app = app_tmp;
 			}
 		}
 	}
-
+	
 	if (lang_pack_app && !gs_app_is_installed(lang_pack_app)) {
-		g_debug ("Listing langpack app: %s ", gs_app_to_string(lang_pack_app));
+		g_debug ("=> msg from check_langpack; Listing language pack app TO BE INSTALLED... %s ",
+			gs_app_to_string(lang_pack_app));
 		plugin_install_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 							 "app", lang_pack_app,
 							 NULL);
@@ -729,12 +734,12 @@ check_language_pack (GsUpdateMonitor *monitor) {
 		gs_plugin_loader_job_action(monitor->plugin_loader, plugin_install_job, NULL, &error);
 		if(!error) {
 			body = g_strdup_printf (_(" For language: %s."), gs_app_get_name (lang_pack_app));
-			/* TRANSLATORS: this is a language pack install notification */
 			n = g_notification_new (_("Language Pack Installed"));
 			g_notification_set_body (n, body);
 			g_application_send_notification (monitor->application, "installed", n);
 		}
 	}
+	
 }
 
 static void
