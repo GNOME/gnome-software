@@ -589,7 +589,7 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 			} else {
 				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), FALSE);
 			}
-			return GDK_EVENT_PROPAGATE;
+			return GDK_EVENT_STOP;
 		}
 	}
 
