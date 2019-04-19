@@ -85,6 +85,7 @@ typedef enum {
  * @GS_APP_QUIRK_PARENTAL_FILTER:	The app has been filtered by parental controls, and should be hidden
  * @GS_APP_QUIRK_NEW_PERMISSIONS:	The update requires new permissions
  * @GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE:	The app cannot be run by the current user due to parental controls, and should not be launchable
+ * @GS_APP_QUIRK_HIDE_FROM_SEARCH:	The app should not be shown in search results
  *
  * The application attributes.
  **/
@@ -105,6 +106,7 @@ typedef enum {
 	GS_APP_QUIRK_PARENTAL_FILTER	= 1 << 12,	/* Since: 3.32 */
 	GS_APP_QUIRK_NEW_PERMISSIONS	= 1 << 13,	/* Since: 3.32 */
 	GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE	= 1 << 14,	/* Since: 3.32 */
+	GS_APP_QUIRK_HIDE_FROM_SEARCH	= 1 << 15,	/* Since: 3.32 */
 	/*< private >*/
 	GS_APP_QUIRK_LAST
 } GsAppQuirk;

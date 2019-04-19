@@ -243,6 +243,8 @@ _as_app_quirk_flag_to_string (GsAppQuirk quirk)
 		return "new-permissions";
 	if (quirk == GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE)
 		return "parental-not-launchable";
+	if (quirk == GS_APP_QUIRK_HIDE_FROM_SEARCH)
+		return "hide-from-search";
 	return NULL;
 }
 
