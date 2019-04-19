@@ -235,6 +235,14 @@ _as_app_quirk_flag_to_string (GsAppQuirk quirk)
 		return "is-proxy";
 	if (quirk == GS_APP_QUIRK_REMOVABLE_HARDWARE)
 		return "removable-hardware";
+	if (quirk == GS_APP_QUIRK_DEVELOPER_VERIFIED)
+		return "developer-verified";
+	if (quirk == GS_APP_QUIRK_PARENTAL_FILTER)
+		return "parental-filter";
+	if (quirk == GS_APP_QUIRK_NEW_PERMISSIONS)
+		return "new-permissions";
+	if (quirk == GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE)
+		return "parental-not-launchable";
 	return NULL;
 }
 
