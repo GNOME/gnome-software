@@ -1229,6 +1229,19 @@ resolve_available_packages_app (GsPlugin *plugin,
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, dnf_package_get_name (pkg));
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, dnf_package_get_summary (pkg));
 
+		/* set hide-from-search quirk for available apps we don't want to show */
+		if (!gs_app_is_installed (app)) {
+			switch (gs_app_get_kind (app)) {
+			case AS_APP_KIND_DESKTOP:
+			case AS_APP_KIND_WEB_APP:
+			case AS_APP_KIND_CONSOLE:
+				gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH);
+				break;
+			default:
+				break;
+			}
+		}
+
 		return TRUE /* found */;
 	}
 
