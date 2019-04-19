@@ -1226,6 +1226,14 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 
+	/* don't show apps with hide-from-search quirk, unless they are already installed */
+	if (!gs_app_is_installed (app) &&
+	    gs_app_has_quirk (app, GS_APP_QUIRK_HIDE_FROM_SEARCH)) {
+		g_debug ("app invalid as hide-from-search quirk set %s",
+		         gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
 	/* don't show sources */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
 		g_debug ("app invalid as source %s",
