@@ -302,6 +302,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 	JsonNode *json_root;
 	guint i;
 	g_autoptr(JsonParser) json_parser = NULL;
+	g_autoptr(GHashTable) reviewer_ids = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
 
 	/* nothing */
@@ -338,6 +339,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 	/* parse each rating */
 	reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	json_reviews = json_node_get_array (json_root);
+	reviewer_ids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	for (i = 0; i < json_array_get_length (json_reviews); i++) {
 		JsonNode *json_review;
 		JsonObject *json_item;
@@ -364,6 +366,14 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 		/* create review */
 		review = gs_plugin_odrs_parse_review_object (plugin,
 							     json_item);
+
+		/* dedupe each on the user_hash */
+		if (g_hash_table_lookup (reviewer_ids, as_review_get_reviewer_id (review)) != NULL) {
+			g_debug ("duplicate review %s, skipping",
+				 as_review_get_reviewer_id (review));
+			continue;
+		}
+		g_hash_table_add (reviewer_ids, g_strdup (as_review_get_reviewer_id (review)));
 		g_ptr_array_add (reviews, g_object_ref (review));
 	}
 	return g_steal_pointer (&reviews);
