@@ -537,14 +537,20 @@ static JsonNode *
 gs_plugin_odrs_get_compat_ids (GsApp *app)
 {
 	GPtrArray *provides = gs_app_get_provides (app);
+	g_autoptr(GHashTable) ids = NULL;
 	g_autoptr(JsonArray) json_array = json_array_new ();
 	g_autoptr(JsonNode) json_node = json_node_new (JSON_NODE_ARRAY);
+
+	ids = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	for (guint i = 0; i < provides->len; i++) {
 		AsProvide *provide = g_ptr_array_index (provides, i);
 		if (as_provide_get_kind (provide) != AS_PROVIDE_KIND_ID)
 			continue;
 		if (as_provide_get_value (provide) == NULL)
 			continue;
+		if (g_hash_table_lookup (ids, as_provide_get_value (provide)) != NULL)
+			continue;
+		g_hash_table_add (ids, g_strdup (as_provide_get_value (provide)));
 		json_array_add_string_element (json_array, as_provide_get_value (provide));
 	}
 	if (json_array_get_length (json_array) == 0)
