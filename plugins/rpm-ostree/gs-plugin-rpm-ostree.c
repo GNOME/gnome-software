@@ -1099,6 +1099,21 @@ find_package_by_name (DnfSack     *sack,
 	return g_object_ref (pkgs->pdata[pkgs->len-1]);
 }
 
+static GPtrArray *
+find_packages_by_provides (DnfSack *sack,
+                           gchar **search)
+{
+	g_autoptr(GPtrArray) pkgs = NULL;
+	hy_autoquery HyQuery query = hy_query_create (sack);
+
+	hy_query_filter_provides_in (query, search);
+	hy_query_filter_latest_per_arch (query, TRUE);
+
+	pkgs = hy_query_run (query);
+
+	return g_steal_pointer (&pkgs);
+}
+
 static gboolean
 resolve_installed_packages_app (GsPlugin *plugin,
                                 GPtrArray *pkglist,
@@ -1147,6 +1162,10 @@ resolve_available_packages_app (GsPlugin *plugin,
 			const gchar *reponame = dnf_package_get_reponame (pkg);
 			gs_app_set_origin (app, reponame);
 		}
+
+		/* set more metadata for packages that don't have appstream data */
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, dnf_package_get_name (pkg));
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, dnf_package_get_summary (pkg));
 
 		return TRUE /* found */;
 	}
@@ -1495,4 +1514,49 @@ out:
 	if (rpmfd != NULL)
 		(void) Fclose (rpmfd);
 	return ret;
+}
+
+gboolean
+gs_plugin_add_search_what_provides (GsPlugin *plugin,
+                                    gchar **search,
+                                    GsAppList *list,
+                                    GCancellable *cancellable,
+                                    GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_autoptr(GPtrArray) pkglist = NULL;
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->dnf_context == NULL)
+		return TRUE;
+
+	pkglist = find_packages_by_provides (dnf_context_get_sack (priv->dnf_context), search);
+	for (guint i = 0; i < pkglist->len; i++) {
+		DnfPackage *pkg = g_ptr_array_index (pkglist, i);
+		g_autoptr(GsApp) app = NULL;
+
+		app = gs_plugin_cache_lookup (plugin, dnf_package_get_nevra (pkg));
+		if (app != NULL) {
+			gs_app_list_add (list, app);
+			continue;
+		}
+
+		/* create new app */
+		app = gs_app_new (NULL);
+		gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT);
+		app_set_rpm_ostree_packaging_format (app);
+		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		gs_app_add_source (app, dnf_package_get_name (pkg));
+
+		gs_plugin_cache_add (plugin, dnf_package_get_nevra (pkg), app);
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
 }
