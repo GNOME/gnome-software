@@ -14,6 +14,7 @@
 #include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 #include <locale.h>
+#include <sys/stat.h>
 
 #include "gs-application.h"
 #include "gs-debug.h"
@@ -31,6 +32,13 @@ main (int argc, char **argv)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
+
+	/* Override the umask to 022 to make it possible to share files between
+	 * the gnome-software process and flatpak system helper process.
+	 * Ideally this should be set when needed in the flatpak plugin, but
+	 * umask is thread-unsafe so there is really no local way to fix this.
+	 */
+	umask (022);
 
 	/* redirect logs */
 	application = gs_application_new ();
