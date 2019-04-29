@@ -156,6 +156,12 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 	guint percent = flatpak_transaction_progress_get_progress (progress);
 	if (flatpak_transaction_progress_get_is_estimating (progress))
 		return;
+	if (gs_app_get_progress (app) != 100 &&
+	    gs_app_get_progress (app) > percent) {
+		g_warning ("ignoring percentage %u%% -> %u%% as going down...",
+			   gs_app_get_progress (app), percent);
+		return;
+	}
 	gs_app_set_progress (app, percent);
 }
 
