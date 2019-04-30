@@ -713,7 +713,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set content rating */
-	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING) {
+	if (TRUE) {
 		if (!gs_appstream_refine_app_content_ratings (plugin, app, component, error))
 			return FALSE;
 	}
