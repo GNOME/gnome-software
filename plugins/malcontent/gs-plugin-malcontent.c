@@ -59,11 +59,7 @@ convert_app_filter_oars_value (MctAppFilterOarsValue filter_value)
  * this user to use), return %TRUE; otherwise return %FALSE.
  *
  * The #AsContentRating in @app may be %NULL if no OARS ratings are provided for
- * the app. If so, we have to assume the most restrictive ratings.
- *
- * We don’t need to worry about updating the app list when the app filter value
- * is changed, as changing it requires logging out and back in as an
- * administrator. */
+ * the app. If so, we have to assume the most restrictive ratings. */
 static gboolean
 app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 {
@@ -165,6 +161,7 @@ app_filter_changed_cb (MctManager *manager,
 		/* The user’s app filter has changed, which means that different
 		 * apps could be filtered from before. Reload everything to be
 		 * sure of re-filtering correctly. */
+		g_debug ("Reloading due to app filter changing for user %" G_GUINT64_FORMAT, user_id);
 		gs_plugin_reload (plugin);
 	}
 }
