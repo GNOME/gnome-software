@@ -54,6 +54,38 @@ convert_app_filter_oars_value (MctAppFilterOarsValue filter_value)
   return (AsContentRatingValue) filter_value;
 }
 
+static gboolean
+app_is_expected_to_have_content_rating (GsApp *app)
+{
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE))
+		return FALSE;
+
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_ADDON:
+	case AS_APP_KIND_CODEC:
+	case AS_APP_KIND_DRIVER:
+	case AS_APP_KIND_FIRMWARE:
+	case AS_APP_KIND_FONT:
+	case AS_APP_KIND_GENERIC:
+	case AS_APP_KIND_INPUT_METHOD:
+	case AS_APP_KIND_LOCALIZATION:
+	case AS_APP_KIND_OS_UPDATE:
+	case AS_APP_KIND_OS_UPGRADE:
+	case AS_APP_KIND_RUNTIME:
+	case AS_APP_KIND_SOURCE:
+		return FALSE;
+	case AS_APP_KIND_UNKNOWN:
+	case AS_APP_KIND_DESKTOP:
+	case AS_APP_KIND_WEB_APP:
+	case AS_APP_KIND_SHELL_EXTENSION:
+	case AS_APP_KIND_CONSOLE:
+	default:
+		break;
+	}
+
+	return TRUE;
+}
+
 /* Check whether the OARS rating for @app is as, or less, extreme than the
  * user’s preferences in @app_filter. If so (i.e. if the app is suitable for
  * this user to use), return %TRUE; otherwise return %FALSE.
@@ -66,7 +98,11 @@ app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 	AsContentRating *rating = gs_app_get_content_rating (app);  /* (nullable) */
 	g_autofree const gchar **oars_sections = mct_app_filter_get_oars_sections (app_filter);
 
-	if (rating == NULL) {
+	if (rating == NULL && !app_is_expected_to_have_content_rating (app)) {
+		/* Some apps, such as flatpak runtimes, are not expected to have
+		 * content ratings. */
+		return TRUE;
+	} else if (rating == NULL) {
 		g_debug ("No OARS ratings provided for ‘%s’: assuming most extreme",
 		         gs_app_get_unique_id (app));
 	}
@@ -211,8 +247,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* not valid */
 	if (gs_app_get_id (app) == NULL)
-		return TRUE;
-	if (gs_app_is_launchable (app))
 		return TRUE;
 
 	/* Filter by various parental filters. The filter can’t be %NULL,
