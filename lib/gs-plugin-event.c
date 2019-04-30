@@ -157,10 +157,14 @@ const gchar *
 gs_plugin_event_get_unique_id (GsPluginEvent *event)
 {
 	/* just proxy */
-	if (event->origin != NULL)
+	if (event->origin != NULL &&
+	    gs_app_get_unique_id (event->origin) != NULL) {
 		return gs_app_get_unique_id (event->origin);
-	if (event->app != NULL)
+	}
+	if (event->app != NULL &&
+	    gs_app_get_unique_id (event->app) != NULL) {
 		return gs_app_get_unique_id (event->app);
+	}
 
 	/* generate from error */
 	if (event->error != NULL) {
