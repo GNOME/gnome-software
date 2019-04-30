@@ -928,6 +928,60 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_repo_enable (GsPlugin *plugin,
+                       GsApp *app,
+                       gboolean enable,
+                       GCancellable *cancellable,
+                       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GVariantBuilder) options_builder = NULL;
+	g_autoptr(TransactionProgress) tp = NULL;
+
+	if (enable)
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	else
+		gs_app_set_state (app, AS_APP_STATE_REMOVING);
+
+	options_builder = g_variant_builder_new (G_VARIANT_TYPE ("a{ss}"));
+	g_variant_builder_add (options_builder, "{ss}", "enabled", enable ? "1" : "0");
+	if (!gs_rpmostree_os_call_modify_yum_repo_sync (priv->os_proxy,
+	                                                gs_app_get_id (app),
+	                                                g_variant_builder_end (options_builder),
+	                                                &transaction_address,
+	                                                cancellable,
+	                                                error)) {
+		gs_rpmostree_error_convert (error);
+		gs_app_set_state_recover (app);
+		gs_utils_error_add_origin_id (error, app);
+		return FALSE;
+	}
+
+	tp = transaction_progress_new ();
+	tp->app = g_object_ref (app);
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 tp,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_rpmostree_error_convert (error);
+		gs_app_set_state_recover (app);
+		gs_utils_error_add_origin_id (error, app);
+		return FALSE;
+	}
+
+
+	/* state is known */
+	if (enable)
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	else
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
+	return TRUE;
+}
+
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
                        GsApp *app,
@@ -944,6 +998,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
+
+	/* enable repo */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+		return gs_plugin_repo_enable (plugin, app, TRUE, cancellable, error);
 
 	switch (gs_app_get_state (app)) {
 	case AS_APP_STATE_AVAILABLE:
@@ -1040,6 +1098,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
+
+	/* disable repo */
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+		return gs_plugin_repo_enable (plugin, app, FALSE, cancellable, error);
 
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	tp->app = g_object_ref (app);
@@ -1555,6 +1617,54 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 		gs_app_add_source (app, dnf_package_get_name (pkg));
 
 		gs_plugin_cache_add (plugin, dnf_package_get_nevra (pkg), app);
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_sources (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = NULL;
+	GPtrArray *repos;
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (priv->dnf_context == NULL)
+		return TRUE;
+
+	repos = dnf_context_get_repos (priv->dnf_context);
+	if (repos == NULL)
+		return TRUE;
+
+	for (guint i = 0; i < repos->len; i++) {
+		DnfRepo *repo = g_ptr_array_index (repos, i);
+		g_autofree gchar *description = NULL;
+		g_autoptr(GsApp) app = NULL;
+		gboolean enabled;
+
+		/* hide these from the user */
+		if (dnf_repo_is_devel (repo) || dnf_repo_is_source (repo))
+			continue;
+
+		app = gs_app_new (dnf_repo_get_id (repo));
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+
+		enabled = (dnf_repo_get_enabled (repo) & DNF_REPO_ENABLED_PACKAGES) > 0;
+		gs_app_set_state (app, enabled ? AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+
+		description = dnf_repo_get_description (repo);
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, description);
+
 		gs_app_list_add (list, app);
 	}
 
