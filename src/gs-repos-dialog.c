@@ -135,6 +135,7 @@ repo_supports_removal (GsApp *repo)
 	/* can't remove a repo, only enable/disable existing ones */
 	if (g_strcmp0 (management_plugin, "fwupd") == 0 ||
 	    g_strcmp0 (management_plugin, "packagekit") == 0 ||
+	    g_strcmp0 (management_plugin, "rpm-ostree") == 0 ||
 	    g_strcmp0 (management_plugin, "shell-extensions") == 0)
 		return FALSE;
 
