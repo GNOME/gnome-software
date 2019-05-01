@@ -46,6 +46,25 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-05-07" version="3.32.2">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Avoid showing a review more than once</li>
+          <li>Correctly update progress bar when downloading packagekit distro upgrades</li>
+          <li>Fix a crash when closing the updates dialog before the content has loaded</li>
+          <li>Fix CTRL+F not working right in certains conditions</li>
+          <li>Set 022 umask to make sure flatpak system helper process can read the files we've written</li>
+          <li>rpm-ostree: Implement getting the repo list, and enabling and disabling repos</li>
+          <li>rpm-ostree: Implement provides search</li>
+          <li>rpm-ostree: Make layered apps not discoverable in the UI</li>
+          <li>Various other minor bug fixes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release date="2019-04-15" version="3.32.1">
       <description>
         <p>

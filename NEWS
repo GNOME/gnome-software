@@ -1,3 +1,22 @@
+Version 3.32.2
+~~~~~~~~~~~~~~
+Released: 2019-05-07
+
+This is a stable release with the following changes:
+ * Avoid showing a review more than once
+ * Correctly update progress bar when downloading packagekit distro upgrades
+ * Fix a crash when closing the updates dialog before the content has loaded
+ * Fix CTRL+F not working right in certains conditions
+ * Set 022 umask to make sure flatpak system helper process can read the files
+   we've written
+ * rpm-ostree: Implement getting the repo list, and enabling and disabling
+   repos
+ * rpm-ostree: Implement provides search
+ * rpm-ostree: Make layered apps not discoverable in the UI
+ * Various other minor bug fixes
+
+This release also updates translations.
+
 Version 3.32.1
 ~~~~~~~~~~~~~~
 Released: 2019-04-15
