@@ -608,6 +608,9 @@ gs_plugin_destroy (GsPlugin *plugin)
 						      G_CALLBACK (updater_state_changed),
 						      plugin);
 		g_signal_handlers_disconnect_by_func (priv->updater_proxy,
+						      G_CALLBACK (updater_downloaded_bytes_changed),
+						      plugin);
+		g_signal_handlers_disconnect_by_func (priv->updater_proxy,
 						      G_CALLBACK (updater_version_changed),
 						      plugin);
 	}
