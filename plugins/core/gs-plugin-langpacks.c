@@ -49,22 +49,22 @@ gs_plugin_add_language_packs (GsPlugin *plugin,
   GsPluginLoader	*plugin_loader = NULL;
   gchar *identified_langpack_unique_id = NULL;
 
-  g_debug ("=> msg from langpack plugin; Plugin Name: %s ", plugin_name);
-  g_debug ("=> msg from langpack plugin; Input Language Code: %s ", language_code);
+  g_debug ("msg from langpack plugin; Plugin Name: %s ", plugin_name);
+  g_debug ("msg from langpack plugin; Input Language Code: %s ", language_code);
 
   lang_pack_candidate = g_strconcat("LangPack-", language_code, NULL);
-	g_debug ("=> msg from langpack plugin; langpack candidate: %s ", lang_pack_candidate);
+	g_debug ("msg from langpack plugin; langpack candidate: %s ", lang_pack_candidate);
 
   plugin_loader = gs_plugin_loader_new ();
   if (plugin_loader != NULL) {
-    g_debug ("=> msg from langpack plugin; plugin_loader is instantiated!!");
+    g_debug ("msg from langpack plugin; plugin_loader is instantiated!!");
   }
 
   /* trying to search appropriate langpack available */
   
   plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH, "search", "langpack", NULL);
   if (plugin_job != NULL) {
-    g_debug ("=> msg from langpack plugin; plugin_job is instantiated!!");
+    g_debug ("msg from langpack plugin; plugin_job is instantiated!!");
   }
 
   search_app_list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error1);
@@ -73,9 +73,9 @@ gs_plugin_add_language_packs (GsPlugin *plugin,
 	g_assert (search_app_list != NULL);*/
 
   if (search_app_list == NULL) {
-    g_debug ("=> msg from langpack plugin; search_app_list is NOT instantiated!!");
+    g_debug ("msg from langpack plugin; search_app_list is NOT instantiated!!");
   } else {
-    g_debug ("=> msg from langpack plugin; Search applist length: %u", gs_app_list_length (search_app_list));
+    g_debug ("msg from langpack plugin; Search applist length: %u", gs_app_list_length (search_app_list));
   }
   
   /*for (guint i = 0; i < gs_app_list_length (search_app_list); i++) {
@@ -191,7 +191,7 @@ gs_plugin_add_language_packs (GsPlugin *plugin,
     gs_app_set_to_be_installed(app, TRUE);
     /* gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Language Pack"); */
 
-    g_debug ("=> msg from langpack plugin; If app ready to be installed? %d", gs_app_get_to_be_installed(app));
+    g_debug ("msg from langpack plugin; If app ready to be installed? %d", gs_app_get_to_be_installed(app));
     gs_app_list_add(list, app);
   }
 
