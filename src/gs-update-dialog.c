@@ -245,19 +245,21 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
 
-	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
-
 	/* get the results */
 	list = gs_plugin_loader_job_process_finish (plugin_loader, res, &error);
-	if (list == NULL) {
-		if (g_error_matches (error,
-				    GS_PLUGIN_ERROR,
-				    GS_PLUGIN_ERROR_CANCELLED)) {
-			/* This should only ever happen while the dialog is being closed */
-			g_debug ("get installed updates cancelled");
-			return;
-		}
 
+	/* if we're in teardown, short-circuit and return immediately without
+	 * dereferencing priv variables */
+	if (g_error_matches (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+	    dialog->spinner == NULL) {
+		g_debug ("get installed updates cancelled");
+		return;
+	}
+
+	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
+
+	/* error */
+	if (list == NULL) {
 		g_warning ("failed to get installed updates: %s", error->message);
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		return;
