@@ -531,6 +531,60 @@ app_has_local_source (GsApp *app)
 	return url != NULL && g_str_has_prefix (url, "file://");
 }
 
+static gboolean
+get_installation_dir_free_space (GsFlatpak *flatpak, guint64 *free_space, GError **error)
+{
+	g_autoptr (GFile) installation_dir = NULL;
+	g_autoptr (GFileInfo) info = NULL;
+
+	installation_dir = flatpak_installation_get_path (gs_flatpak_get_installation (flatpak));
+
+	info = g_file_query_filesystem_info (installation_dir,
+					     G_FILE_ATTRIBUTE_FILESYSTEM_FREE,
+					     NULL,
+					     error);
+	if (info == NULL)
+		return FALSE;
+
+	*free_space = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_FILESYSTEM_FREE);
+	return TRUE;
+}
+
+static gboolean
+gs_flatpak_has_space_to_install (GsFlatpak *flatpak, GsApp *app)
+{
+	g_autoptr(GError) error = NULL;
+	guint64 free_space = 0;
+	guint64 min_free_space = 0;
+	guint64 space_required = 0;
+
+	space_required = gs_app_get_size_download (app);
+	if (space_required == GS_APP_SIZE_UNKNOWABLE) {
+		g_warning ("Failed to query download size: %s", gs_app_get_unique_id (app));
+		space_required = 0;
+	}
+	if (!flatpak_installation_get_min_free_space_bytes (gs_flatpak_get_installation (flatpak),
+							    &min_free_space,
+							    &error)) {
+		g_autoptr(GFile) installation_file = flatpak_installation_get_path (gs_flatpak_get_installation (flatpak));
+		g_autofree gchar *path = g_file_get_path (installation_file);
+		g_warning ("Error getting min-free-space config value of OSTree repo at %s:%s", path, error->message);
+		g_clear_error (&error);
+	}
+	space_required = space_required + min_free_space;
+
+	if (!get_installation_dir_free_space (flatpak, &free_space, &error)) {
+		g_warning ("Error getting the free space available for installing %s: %s",
+			   gs_app_get_unique_id (app), error->message);
+		/* Even if we fail to get free space, we don't want to block this user-intiated
+		 * install action. It might happen that there is enough space to install but
+		 * an error happened during querying the filesystem info. */
+		return TRUE;
+	}
+
+	return free_space >= space_required;
+}
+
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -573,6 +627,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* is a source */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
+
+	/* Check for free disk space. Take into account OSTree repo's  min-free-space-* config option */
+	if (!gs_flatpak_has_space_to_install (flatpak, app)) {
+		g_debug ("Skipping installation for %s: not enough space on disk",
+			 gs_app_get_unique_id (app));
+		gs_app_set_state_recover (app);
+		g_set_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_SPACE,
+			     "You don't have enough space to install %s. Please remove apps or documents to create more space.",
+			     gs_app_get_unique_id (app));
+		return FALSE;
+	}
 
 	/* build */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
