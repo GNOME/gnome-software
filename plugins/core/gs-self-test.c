@@ -94,6 +94,37 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugins_core_langpacks_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GError) error = NULL;
+
+	const gchar *locale = "ja_JP";
+
+	/* drop all caches */
+	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_plugin_loader_setup_again (plugin_loader);
+
+	/* get langpacks result based on locale */
+	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_GET_LANGUAGE_PACKS,
+				 "search", locale,
+				 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+				 NULL);
+	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+
+	/* check if we have just one app in the list */
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+
+	/* check app's source and kind */
+	app = gs_app_list_index (list, 0);
+	g_assert_cmpstr (gs_app_get_source_default(app), ==, "langpacks-ja");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_LOCALIZATION);
+}
+
+
+static void
 gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
@@ -188,6 +219,7 @@ main (int argc, char **argv)
 		"appstream",
 		"generic-updates",
 		"icons",
+		"langpacks",
 		"os-release",
 		NULL
 	};
@@ -254,5 +286,8 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/core/generic-updates",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_core_generic_updates_func);
+	g_test_add_data_func ("/gnome-software/plugins/core/langpacks",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_core_langpacks_func);
 	return g_test_run ();
 }

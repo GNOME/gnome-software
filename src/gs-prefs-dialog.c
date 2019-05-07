@@ -25,7 +25,6 @@ struct _GsPrefsDialog
 	GsPluginLoader	*plugin_loader;
 	GtkWidget	*switch_updates;
 	GtkWidget	*switch_updates_notify;
-	GtkWidget	*switch_langpack_install;
 };
 
 G_DEFINE_TYPE (GsPrefsDialog, gs_prefs_dialog, GTK_TYPE_DIALOG)
@@ -50,11 +49,6 @@ gs_prefs_dialog_init (GsPrefsDialog *dialog)
 	dialog->cancellable = g_cancellable_new ();
 	dialog->settings = g_settings_new ("org.gnome.software");
 	g_settings_bind (dialog->settings,
-			 "install-langpack-notify",
-			 dialog->switch_langpack_install,
-			 "active",
-			 G_SETTINGS_BIND_DEFAULT);
-	g_settings_bind (dialog->settings,
 			 "download-updates-notify",
 			 dialog->switch_updates_notify,
 			 "active",
@@ -77,7 +71,6 @@ gs_prefs_dialog_class_init (GsPrefsDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-prefs-dialog.ui");
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_updates_notify);
-	gtk_widget_class_bind_template_child (widget_class, GsPrefsDialog, switch_langpack_install);
 }
 
 GtkWidget *
