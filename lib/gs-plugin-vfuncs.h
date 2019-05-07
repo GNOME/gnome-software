@@ -965,7 +965,7 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
  * gs_plugin_add_language_packs:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
- * @language_code: a #LANGUAGE_CODE, e.g. "ja"
+ * @language_code: a #LANGUAGE_CODE or #LOCALE, e.g. "ja" or "ja_JP"
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
