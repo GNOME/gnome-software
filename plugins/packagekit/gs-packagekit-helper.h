@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2019 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -21,6 +22,8 @@ GsPackagekitHelper *gs_packagekit_helper_new		(GsPlugin		*plugin);
 GsPlugin	*gs_packagekit_helper_get_plugin	(GsPackagekitHelper	*self);
 void		 gs_packagekit_helper_add_app		(GsPackagekitHelper	*self,
 							 GsApp			*app);
+void		 gs_packagekit_helper_set_progress_app	(GsPackagekitHelper	*self,
+							 GsApp			*progress_app);
 GsApp		*gs_packagekit_helper_get_app_by_id	(GsPackagekitHelper	*progress,
 							 const gchar		*package_id);
 void		 gs_packagekit_helper_cb		(PkProgress		*progress,

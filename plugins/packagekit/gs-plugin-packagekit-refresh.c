@@ -148,7 +148,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	gs_packagekit_helper_add_app (helper, app_dl);
+	gs_packagekit_helper_set_progress_app (helper, app_dl);
 
 	g_mutex_lock (&priv->task_mutex);
 	/* cache age of 1 is user-initiated */

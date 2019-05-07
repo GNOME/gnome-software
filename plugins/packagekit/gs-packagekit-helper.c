@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2019 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -15,6 +16,7 @@
 struct _GsPackagekitHelper {
 	GObject			 parent_instance;
 	GHashTable		*apps;
+	GsApp			*progress_app;
 	GsPlugin		*plugin;
 };
 
@@ -29,7 +31,9 @@ gs_packagekit_helper_cb (PkProgress *progress, PkProgressType type, gpointer use
 	GsApp *app = NULL;
 
 	/* optional */
-	if (package_id != NULL)
+	if (self->progress_app != NULL)
+		app = self->progress_app;
+	else if (package_id != NULL)
 		app = gs_packagekit_helper_get_app_by_id (self, package_id);
 
 	if (type == PK_PROGRESS_TYPE_STATUS) {
@@ -65,6 +69,12 @@ gs_packagekit_helper_add_app (GsPackagekitHelper *self, GsApp *app)
 	}
 }
 
+void
+gs_packagekit_helper_set_progress_app (GsPackagekitHelper *self, GsApp *progress_app)
+{
+	g_set_object (&self->progress_app, progress_app);
+}
+
 GsPlugin *
 gs_packagekit_helper_get_plugin (GsPackagekitHelper *self)
 {
@@ -90,6 +100,7 @@ gs_packagekit_helper_finalize (GObject *object)
 	self = GS_PACKAGEKIT_HELPER (object);
 
 	g_object_unref (self->plugin);
+	g_clear_object (&self->progress_app);
 	g_hash_table_unref (self->apps);
 
 	G_OBJECT_CLASS (gs_packagekit_helper_parent_class)->finalize (object);
