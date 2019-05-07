@@ -1196,6 +1196,8 @@ resolve_installed_packages_app (GsPlugin *plugin,
 				/* can't remove packages that are part of the base system */
 				gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
 			}
+			if (gs_app_get_origin (app) == NULL)
+				gs_app_set_origin (app, "rpm-ostree");
 			return TRUE /* found */;
 		}
 	}
