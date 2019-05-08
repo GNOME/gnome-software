@@ -726,9 +726,10 @@ gs_plugin_appstream_load_json_cb (XbBuilderSource *self,
 
 	/* parse each app */
 	for (guint i = 0; i < json_array_get_length (json_extensions_array); i++) {
-		XbBuilderNode *component;
 		JsonNode *json_extension;
 		JsonObject *json_extension_obj;
+		g_autoptr(XbBuilderNode) component = NULL;
+
 		json_extension = json_array_get_element (json_extensions_array, i);
 		json_extension_obj = json_node_get_object (json_extension);
 		component = gs_plugin_shell_extensions_parse_app (plugin,
