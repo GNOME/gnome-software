@@ -16,21 +16,21 @@
           <object class="GtkLabel" id="label_upgrades_title">
             <property name="visible">True</property>
             <property name="margin-top">66</property>
-            <property name="margin_bottom">26</property>
+            <property name="margin_bottom">16</property>
             <!-- Just a placeholder; actual label text is set in code -->
             <property name="label">GNOME 3.20 Now Available</property>
-            <attributes>
-              <attribute name="scale" value="1.8"/>
-            </attributes>
+            <style>
+              <class name="type-large-title"/>
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkLabel" id="label_upgrades_summary">
             <property name="visible">True</property>
             <property name="label" translatable="yes">A major upgrade, with new features and added polish.</property>
-            <attributes>
-              <attribute name="scale" value="1.2"/>
-            </attributes>
+            <style>
+              <class name="type-title-1"/>
+            </style>
           </object>
         </child>
         <child>
