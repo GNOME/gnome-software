@@ -448,6 +448,7 @@ _build_section_header (GsUpdatesSection *self)
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
 	context = gtk_widget_get_style_context (label);
 	gtk_style_context_add_class (context, "app-listbox-header-title");
+	gtk_style_context_add_class (context, "type-heading");
 
 	/* use a stack so we can switch which buttons are showing without the
 	 * sizegroup resizing */

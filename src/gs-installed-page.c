@@ -483,7 +483,7 @@ gs_installed_page_get_section_header (GsInstalledPageSection section)
 		GtkStyleContext *context = gtk_widget_get_style_context (header);
 		gtk_label_set_xalign (GTK_LABEL (header), 0.0);
 		gtk_style_context_add_class (context, "app-listbox-header");
-		gtk_style_context_add_class (context, "app-listbox-header-title");
+		gtk_style_context_add_class (context, "type-heading");
 	}
 	return header;
 }
