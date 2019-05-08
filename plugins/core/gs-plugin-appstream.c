@@ -27,6 +27,7 @@
 
 struct GsPluginData {
 	XbSilo			*silo;
+	GMutex			 silo_mutex;
 	GSettings		*settings;
 };
 
@@ -34,6 +35,8 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	g_mutex_init (&priv->silo_mutex);
 
 	/* need package name */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
@@ -48,6 +51,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_object_unref (priv->silo);
 	g_object_unref (priv->settings);
+	g_mutex_clear (&priv->silo_mutex);
 }
 
 static gboolean
@@ -410,10 +414,10 @@ gs_plugin_appstream_load_appstream (GsPlugin *plugin,
 	return TRUE;
 }
 
-static gboolean
-gs_plugin_appstream_check_silo (GsPlugin *plugin,
-				GCancellable *cancellable,
-				GError **error)
+static XbSilo *
+gs_plugin_appstream_ensure_silo (GsPlugin *plugin,
+                                 GCancellable *cancellable,
+                                 GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *locale;
@@ -422,12 +426,15 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
 	g_autoptr(XbNode) n = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = g_ptr_array_new_with_free_func (g_free);
 
+	locker = g_mutex_locker_new (&priv->silo_mutex);
+
 	/* everything is okay */
 	if (priv->silo != NULL && xb_silo_is_valid (priv->silo))
-		return TRUE;
+		return g_object_ref (priv->silo);
 
 	/* drat! silo needs regenerating */
 	g_clear_object (&priv->silo);
@@ -458,7 +465,7 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 		if (!xb_builder_source_load_xml (source, test_xml,
 						 XB_BUILDER_SOURCE_FLAG_NONE,
 						 error))
-			return FALSE;
+			return NULL;
 		fixup1 = xb_builder_fixup_new ("AddOriginKeywords",
 					       gs_plugin_appstream_add_origin_keyword_cb,
 					       plugin, NULL);
@@ -494,18 +501,18 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 			const gchar *fn = g_ptr_array_index (parent_appstream, i);
 			if (!gs_plugin_appstream_load_appstream (plugin, builder, fn,
 								 cancellable, error))
-				return FALSE;
+				return NULL;
 		}
 		for (guint i = 0; i < parent_appdata->len; i++) {
 			const gchar *fn = g_ptr_array_index (parent_appdata, i);
 			if (!gs_plugin_appstream_load_appdata (plugin, builder, fn,
 							       cancellable, error))
-				return FALSE;
+				return NULL;
 		}
 		if (!gs_plugin_appstream_load_desktop (plugin, builder,
 						       "/usr/share/applications",
 						       cancellable, error)) {
-			return FALSE;
+			return NULL;
 		}
 	}
 
@@ -514,7 +521,7 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 					      GS_UTILS_CACHE_FLAG_WRITEABLE,
 					      error);
 	if (blobfn == NULL)
-		return FALSE;
+		return NULL;
 	file = g_file_new_for_path (blobfn);
 	g_debug ("ensuring %s", blobfn);
 	priv->silo = xb_builder_ensure (builder, file,
@@ -522,20 +529,20 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 					NULL, error);
 	if (priv->silo == NULL)
-		return FALSE;
+		return NULL;
 
 	/* watch all directories too */
 	for (guint i = 0; i < parent_appstream->len; i++) {
 		const gchar *fn = g_ptr_array_index (parent_appstream, i);
 		g_autoptr(GFile) file_tmp = g_file_new_for_path (fn);
 		if (!xb_silo_watch_file (priv->silo, file_tmp, cancellable, error))
-			return FALSE;
+			return NULL;
 	}
 	for (guint i = 0; i < parent_appdata->len; i++) {
 		const gchar *fn = g_ptr_array_index (parent_appdata, i);
 		g_autoptr(GFile) file_tmp = g_file_new_for_path (fn);
 		if (!xb_silo_watch_file (priv->silo, file_tmp, cancellable, error))
-			return FALSE;
+			return NULL;
 	}
 
 	/* test we found something */
@@ -546,18 +553,24 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "No AppStream data found");
-		return FALSE;
+		return NULL;
 	}
 
 	/* success */
-	return TRUE;
+	return g_object_ref (priv->silo);
 }
 
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	g_autoptr(XbSilo) silo = NULL;
+
 	/* set up silo, compiling if required */
-	return gs_plugin_appstream_check_silo (plugin, cancellable, error);
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
+		return FALSE;
+
+	return TRUE;
 }
 
 gboolean
@@ -567,15 +580,16 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *path = NULL;
 	g_autofree gchar *scheme = NULL;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(XbNode) component = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
 
 	/* not us */
@@ -586,10 +600,10 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	/* create app */
 	path = gs_utils_get_url_path (url);
 	xpath = g_strdup_printf ("components/component/id[text()='%s']", path);
-	component = xb_silo_query_first (priv->silo, xpath, NULL);
+	component = xb_silo_query_first (silo, xpath, NULL);
 	if (component == NULL)
 		return TRUE;
-	app = gs_appstream_create_app (plugin, priv->silo, component, error);
+	app = gs_appstream_create_app (plugin, silo, component, error);
 	if (app == NULL)
 		return FALSE;
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
@@ -643,15 +657,14 @@ gs_plugin_appstream_set_compulsory_quirk (GsApp *app, XbNode *component)
 }
 
 static gboolean
-gs_plugin_appstream_refine_state (GsPlugin *plugin, GsApp *app, GError **error)
+gs_plugin_appstream_refine_state (GsPlugin *plugin, GsApp *app, XbSilo *silo, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(XbNode) component = NULL;
 
 	xpath = g_strdup_printf ("component/id[text()='%s']", gs_app_get_id (app));
-	component = xb_silo_query_first (priv->silo, xpath, &error_local);
+	component = xb_silo_query_first (silo, xpath, &error_local);
 	if (component == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
@@ -667,11 +680,11 @@ gs_plugin_appstream_refine_state (GsPlugin *plugin, GsApp *app, GError **error)
 static gboolean
 gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GsApp *app,
+			  XbSilo *silo,
 			  GsPluginRefineFlags flags,
 			  gboolean *found,
 			  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GString) xpath = g_string_new (NULL);
@@ -685,7 +698,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	/* look in AppStream then fall back to AppData */
 	xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
 	xb_string_append_union (xpath, "component/id[text()='%s']/../pkgname/..", id);
-	components = xb_silo_query (priv->silo, xpath->str, 0, &error_local);
+	components = xb_silo_query (silo, xpath->str, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
@@ -696,7 +709,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	}
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
-		if (!gs_appstream_refine_app (plugin, app, priv->silo,
+		if (!gs_appstream_refine_app (plugin, app, silo,
 					      component, flags, error))
 			return FALSE;
 		gs_plugin_appstream_set_compulsory_quirk (app, component);
@@ -704,7 +717,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 
 	/* if an installed desktop or appdata file exists set to installed */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
-		if (!gs_plugin_appstream_refine_state (plugin, app, error))
+		if (!gs_plugin_appstream_refine_state (plugin, app, silo, error))
 			return FALSE;
 	}
 
@@ -716,10 +729,10 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 static gboolean
 gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 			       GsApp *app,
+			       XbSilo *silo,
 			       GsPluginRefineFlags flags,
 			       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *sources = gs_app_get_sources (app);
 	g_autoptr(GError) error_local = NULL;
 
@@ -735,7 +748,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 
 		xpath = g_strdup_printf ("components/component/pkgname[text()='%s']/..",
 					 pkgname);
-		components = xb_silo_query (priv->silo, xpath, 0, &error_local);
+		components = xb_silo_query (silo, xpath, 0, &error_local);
 		if (components == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 				continue;
@@ -746,7 +759,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 		}
 		for (guint i = 0; i < components->len; i++) {
 			XbNode *component = g_ptr_array_index (components, i);
-			if (!gs_appstream_refine_app (plugin, app, priv->silo,
+			if (!gs_appstream_refine_app (plugin, app, silo,
 						      component, flags, error))
 				return FALSE;
 			gs_plugin_appstream_set_compulsory_quirk (app, component);
@@ -765,6 +778,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	gboolean found = FALSE;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* not us */
 	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE &&
@@ -772,14 +786,15 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
 
 	/* find by ID then fall back to package name */
-	if (!gs_plugin_refine_from_id (plugin, app, flags, &found, error))
+	if (!gs_plugin_refine_from_id (plugin, app, silo, flags, &found, error))
 		return FALSE;
 	if (!found) {
-		if (!gs_plugin_refine_from_pkgname (plugin, app, flags, error))
+		if (!gs_plugin_refine_from_pkgname (plugin, app, silo, flags, error))
 			return FALSE;
 	}
 
@@ -795,14 +810,15 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
 
 	/* not enough info to find */
@@ -812,7 +828,7 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 
 	/* find all app with package names when matching any prefixes */
 	xpath = g_strdup_printf ("components/component/id[text()='%s']/../pkgname/..", id);
-	components = xb_silo_query (priv->silo, xpath, 0, &error_local);
+	components = xb_silo_query (silo, xpath, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 			return TRUE;
@@ -826,12 +842,12 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 		g_autoptr(GsApp) new = NULL;
 
 		/* new app */
-		new = gs_appstream_create_app (plugin, priv->silo, component, error);
+		new = gs_appstream_create_app (plugin, silo, component, error);
 		if (new == NULL)
 			return FALSE;
 		gs_app_set_scope (new, AS_APP_SCOPE_SYSTEM);
 		gs_app_subsume_metadata (new, app);
-		if (!gs_appstream_refine_app (plugin, new, priv->silo, component,
+		if (!gs_appstream_refine_app (plugin, new, silo, component,
 					      refine_flags, error))
 			return FALSE;
 		gs_app_list_add (list, new);
@@ -848,11 +864,14 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
+
 	return gs_appstream_add_category_apps (plugin,
-					       priv->silo,
+					       silo,
 					       category,
 					       list,
 					       cancellable,
@@ -866,11 +885,14 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
+
 	return gs_appstream_search (plugin,
-				    priv->silo,
+				    silo,
 				    values,
 				    list,
 				    cancellable,
@@ -883,20 +905,21 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(XbSilo) silo = NULL;
 
 	/* check silo is valid */
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
 
 	/* get all installed appdata files (notice no 'components/' prefix...) */
-	components = xb_silo_query (priv->silo, "component", 0, NULL);
+	components = xb_silo_query (silo, "component", 0, NULL);
 	if (components == NULL)
 		return TRUE;
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
-		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, priv->silo, component, error);
+		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
 		if (app == NULL)
 			return FALSE;
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -912,10 +935,13 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
-	return gs_appstream_add_categories (plugin, priv->silo, list,
+
+	return gs_appstream_add_categories (plugin, silo, list,
 					    cancellable, error);
 }
 
@@ -925,10 +951,13 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
-	return gs_appstream_add_popular (plugin, priv->silo, list, cancellable, error);
+
+	return gs_appstream_add_popular (plugin, silo, list, cancellable, error);
 }
 
 gboolean
@@ -937,10 +966,13 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
-	return gs_appstream_add_featured (plugin, priv->silo, list, cancellable, error);
+
+	return gs_appstream_add_featured (plugin, silo, list, cancellable, error);
 }
 
 gboolean
@@ -950,10 +982,13 @@ gs_plugin_add_recent (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
-	return gs_appstream_add_recent (plugin, priv->silo, list, age,
+
+	return gs_appstream_add_recent (plugin, silo, list, age,
 					cancellable, error);
 }
 
@@ -964,10 +999,13 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
 		return FALSE;
-	return gs_appstream_add_alternates (plugin, priv->silo, app, list,
+
+	return gs_appstream_add_alternates (plugin, silo, app, list,
 					    cancellable, error);
 }
 
@@ -977,5 +1015,11 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	return gs_plugin_appstream_check_silo (plugin, cancellable, error);
+	g_autoptr(XbSilo) silo = NULL;
+
+	silo = gs_plugin_appstream_ensure_silo (plugin, cancellable, error);
+	if (silo == NULL)
+		return FALSE;
+
+	return TRUE;
 }
