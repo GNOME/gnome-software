@@ -225,6 +225,8 @@ gs_plugin_finalize (GObject *object)
 	if (priv->module != NULL)
 		g_module_close (priv->module);
 #endif
+
+	G_OBJECT_CLASS (gs_plugin_parent_class)->finalize (object);
 }
 
 /**
