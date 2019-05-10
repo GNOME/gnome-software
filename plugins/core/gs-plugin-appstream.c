@@ -27,6 +27,7 @@
 
 struct GsPluginData {
 	XbSilo			*silo;
+	GRWLock			 silo_lock;
 	GSettings		*settings;
 };
 
@@ -34,6 +35,10 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	/* XbSilo needs external locking as we destroy the silo and build a new
+	 * one when something changes */
+	g_rw_lock_init (&priv->silo_lock);
 
 	/* need package name */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
@@ -48,6 +53,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_object_unref (priv->silo);
 	g_object_unref (priv->settings);
+	g_rw_lock_clear (&priv->silo_lock);
 }
 
 static gboolean
@@ -422,8 +428,11 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
 	g_autoptr(XbNode) n = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GRWLockWriterLocker) locker = NULL;
 	g_autoptr(GPtrArray) parent_appdata = g_ptr_array_new_with_free_func (g_free);
 	g_autoptr(GPtrArray) parent_appstream = g_ptr_array_new_with_free_func (g_free);
+
+	locker = g_rw_lock_writer_locker_new (&priv->silo_lock);
 
 	/* everything is okay */
 	if (priv->silo != NULL && xb_silo_is_valid (priv->silo))
@@ -571,6 +580,7 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	g_autofree gchar *path = NULL;
 	g_autofree gchar *scheme = NULL;
 	g_autofree gchar *xpath = NULL;
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(XbNode) component = NULL;
 
@@ -582,6 +592,8 @@ gs_plugin_url_to_app (GsPlugin *plugin,
 	scheme = gs_utils_get_url_scheme (url);
 	if (g_strcmp0 (scheme, "appstream") != 0)
 		return TRUE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* create app */
 	path = gs_utils_get_url_path (url);
@@ -648,7 +660,10 @@ gs_plugin_appstream_refine_state (GsPlugin *plugin, GsApp *app, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(XbNode) component = NULL;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	xpath = g_strdup_printf ("component/id[text()='%s']", gs_app_get_id (app));
 	component = xb_silo_query_first (priv->silo, xpath, &error_local);
@@ -674,6 +689,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GString) xpath = g_string_new (NULL);
 	g_autoptr(GPtrArray) components = NULL;
 
@@ -681,6 +697,8 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* look in AppStream then fall back to AppData */
 	xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
@@ -731,7 +749,10 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	for (guint j = 0; j < sources->len; j++) {
 		const gchar *pkgname = g_ptr_array_index (sources, j);
 		g_autofree gchar *xpath = NULL;
+		g_autoptr(GRWLockReaderLocker) locker = NULL;
 		g_autoptr(GPtrArray) components = NULL;
+
+		locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 		xpath = g_strdup_printf ("components/component/pkgname[text()='%s']/..",
 					 pkgname);
@@ -799,6 +820,7 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 	const gchar *id;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GPtrArray) components = NULL;
 
 	/* check silo is valid */
@@ -809,6 +831,8 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* find all app with package names when matching any prefixes */
 	xpath = g_strdup_printf ("components/component/id[text()='%s']/../pkgname/..", id);
@@ -849,8 +873,12 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_add_category_apps (plugin,
 					       priv->silo,
 					       category,
@@ -867,8 +895,12 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_search (plugin,
 				    priv->silo,
 				    values,
@@ -884,11 +916,14 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
 	g_autoptr(GPtrArray) components = NULL;
 
 	/* check silo is valid */
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* get all installed appdata files (notice no 'components/' prefix...) */
 	components = xb_silo_query (priv->silo, "component", 0, NULL);
@@ -913,8 +948,12 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_add_categories (plugin, priv->silo, list,
 					    cancellable, error);
 }
@@ -926,8 +965,12 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_add_popular (plugin, priv->silo, list, cancellable, error);
 }
 
@@ -938,8 +981,12 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_add_featured (plugin, priv->silo, list, cancellable, error);
 }
 
@@ -951,8 +998,12 @@ gs_plugin_add_recent (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_add_recent (plugin, priv->silo, list, age,
 					cancellable, error);
 }
@@ -965,8 +1016,12 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			  GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GRWLockReaderLocker) locker = NULL;
+
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
+
+	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_add_alternates (plugin, priv->silo, app, list,
 					    cancellable, error);
 }
