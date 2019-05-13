@@ -12,9 +12,6 @@
 
 G_BEGIN_DECLS
 
-void		 gs_app_set_priority		(GsApp		*app,
-						 guint		 priority);
-guint		 gs_app_get_priority		(GsApp		*app);
 void		 gs_app_set_unique_id		(GsApp		*app,
 						 const gchar	*unique_id);
 void		 gs_app_remove_addon		(GsApp		*app,
