@@ -1174,9 +1174,11 @@ gs_appstream_add_categories (GsPlugin *plugin,
 		GsCategory *parent = GS_CATEGORY (g_ptr_array_index (list, j));
 		GPtrArray *children = gs_category_get_children (parent);
 
-		for (guint i = 1; i < children->len; i++) { /* 1 to ignore all */
+		for (guint i = 0; i < children->len; i++) {
 			GsCategory *cat = g_ptr_array_index (children, i);
 			GPtrArray *groups = gs_category_get_desktop_groups (cat);
+			if (g_strcmp0 (gs_category_get_id (cat), "all") == 0)
+				continue;
 			for (guint k = 0; k < groups->len; k++) {
 				const gchar *group = g_ptr_array_index (groups, k);
 				guint cnt = gs_appstream_count_component_for_groups (plugin, silo, group);
