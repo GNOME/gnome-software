@@ -24,6 +24,12 @@ gs_flatpak_app_get_ref_arch (GsApp *app)
 }
 
 const gchar *
+gs_flatpak_app_get_ref_collection_id (GsApp *app)
+{
+	return gs_app_get_metadata_item (app, "flatpak::RefCollectionId");
+}
+
+const gchar *
 gs_flatpak_app_get_ref_branch (GsApp *app)
 {
 	return gs_app_get_metadata_item (app, "flatpak::RefBranch");
@@ -118,6 +124,12 @@ void
 gs_flatpak_app_set_ref_arch (GsApp *app, const gchar *val)
 {
 	gs_app_set_metadata (app, "flatpak::RefArch", val);
+}
+
+void
+gs_flatpak_app_set_ref_collection_id (GsApp *app, const gchar *val)
+{
+	gs_app_set_metadata (app, "flatpak::RefCollectionId", val);
 }
 
 void

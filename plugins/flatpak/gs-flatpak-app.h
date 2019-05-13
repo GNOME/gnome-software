@@ -24,6 +24,7 @@ GsApp			*gs_flatpak_app_new			(const gchar	*id);
 
 const gchar		*gs_flatpak_app_get_ref_name		(GsApp		*app);
 const gchar		*gs_flatpak_app_get_ref_arch		(GsApp		*app);
+const gchar		*gs_flatpak_app_get_ref_collection_id	(GsApp		*app);
 const gchar		*gs_flatpak_app_get_ref_branch		(GsApp		*app);
 FlatpakRefKind		 gs_flatpak_app_get_ref_kind		(GsApp		*app);
 const gchar		*gs_flatpak_app_get_ref_kind_as_str	(GsApp		*app);
@@ -39,6 +40,8 @@ const gchar		*gs_flatpak_app_get_runtime_url		(GsApp		*app);
 void			 gs_flatpak_app_set_ref_name		(GsApp		*app,
 								 const gchar	*val);
 void			 gs_flatpak_app_set_ref_arch		(GsApp		*app,
+								 const gchar	*val);
+void			 gs_flatpak_app_set_ref_collection_id	(GsApp		*app,
 								 const gchar	*val);
 void			 gs_flatpak_app_set_ref_branch		(GsApp		*app,
 								 const gchar	*val);
