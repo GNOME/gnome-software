@@ -364,6 +364,9 @@ void		 gs_app_set_to_be_installed	(GsApp		*app,
 void		 gs_app_set_match_value		(GsApp		*app,
 						 guint		 match_value);
 guint		 gs_app_get_match_value		(GsApp		*app);
+void		 gs_app_set_priority		(GsApp		*app,
+						 guint		 priority);
+guint		 gs_app_get_priority		(GsApp		*app);
 
 gboolean	 gs_app_has_quirk		(GsApp		*app,
 						 GsAppQuirk	 quirk);
