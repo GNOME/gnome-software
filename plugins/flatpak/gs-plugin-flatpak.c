@@ -58,6 +58,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	permission = gs_utils_get_permission (action_id, NULL, &error_local);
 	if (permission == NULL) {
 		g_debug ("no permission for %s: %s", action_id, error_local->message);
+		g_clear_error (&error_local);
 	} else {
 		priv->has_system_helper = g_permission_get_allowed (permission) ||
 					  g_permission_get_can_acquire (permission);
@@ -382,6 +383,7 @@ gs_plugin_flatpak_find_app_by_ref (GsPlugin *plugin, const gchar *ref,
 		app = gs_flatpak_ref_to_app (flatpak_tmp, ref, cancellable, &error_local);
 		if (app == NULL) {
 			g_debug ("%s", error_local->message);
+			g_clear_error (&error_local);
 			continue;
 		}
 		g_debug ("found ref=%s->%s", ref, gs_app_get_unique_id (app));
@@ -757,6 +759,7 @@ gs_plugin_flatpak_file_to_app_repo (GsPlugin *plugin,
 							 cancellable, &error_local);
 		if (app_tmp == NULL) {
 			g_debug ("%s", error_local->message);
+			g_clear_error (&error_local);
 			continue;
 		}
 		return g_steal_pointer (&app_tmp);
