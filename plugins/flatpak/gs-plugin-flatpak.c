@@ -58,6 +58,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	permission = gs_utils_get_permission (action_id, NULL, &error_local);
 	if (permission == NULL) {
 		g_debug ("no permission for %s: %s", action_id, error_local->message);
+		g_clear_error (&error_local);
 	} else {
 		priv->has_system_helper = g_permission_get_allowed (permission) ||
 					  g_permission_get_can_acquire (permission);
@@ -373,12 +374,13 @@ gs_plugin_flatpak_find_app_by_ref (GsPlugin *plugin, const gchar *ref,
 				   GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(GError) error_local = NULL;
 
 	g_debug ("finding ref %s", ref);
 	for (guint i = 0; i < priv->flatpaks->len; i++) {
 		GsFlatpak *flatpak_tmp = g_ptr_array_index (priv->flatpaks, i);
 		g_autoptr(GsApp) app = NULL;
+		g_autoptr(GError) error_local = NULL;
+
 		app = gs_flatpak_ref_to_app (flatpak_tmp, ref, cancellable, &error_local);
 		if (app == NULL) {
 			g_debug ("%s", error_local->message);
