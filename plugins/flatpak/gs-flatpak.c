@@ -816,7 +816,7 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	g_autofree gchar *str = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (self->plugin));
 	g_autoptr(GsFlatpakProgressHelper) phelper = NULL;
-	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	/* TRANSLATORS: status text when downloading new metadata */
 	str = g_strdup_printf (_("Getting flatpak metadata for %s…"), remote_name);
@@ -826,11 +826,11 @@ gs_flatpak_refresh_appstream_remote (GsFlatpak *self,
 	if (!flatpak_installation_update_remote_sync (self->installation,
 						      remote_name,
 						      cancellable,
-						      &local_error)) {
+						      &error_local)) {
 		g_debug ("Failed to update metadata for remote %s: %s\n",
-			 remote_name, local_error->message);
-		gs_flatpak_error_convert (&local_error);
-		g_propagate_error (error, g_steal_pointer (&local_error));
+			 remote_name, error_local->message);
+		gs_flatpak_error_convert (&error_local);
+		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
 	phelper = gs_flatpak_progress_helper_new (self->plugin, app_dl);
