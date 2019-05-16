@@ -80,8 +80,8 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 	gnome_bg_load_from_preferences (bg, settings);
 	return gnome_bg_create_thumbnail (bg, factory,
 					  gdk_screen_get_default (),
-					  (gint) ssimg->width,
-					  (gint) ssimg->height);
+					  (gint) ssimg->width * ssimg->scale,
+					  (gint) ssimg->height * ssimg->scale);
 #else
 	return NULL;
 #endif
@@ -102,7 +102,7 @@ gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf 
 	/* use a temp AsImage */
 	im = as_image_new ();
 	as_image_set_pixbuf (im, pixbuf);
-	return (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_INTERNAL) > 0;
+	return (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_NONE) == 0;
 }
 
 static void
@@ -128,8 +128,8 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 				} else {
 					gdk_pixbuf_composite (pixbuf, pixbuf_bg,
 							      0, 0,
-							      (gint) ssimg->width,
-							      (gint) ssimg->height,
+							      (gint) ssimg->width * ssimg->scale,
+							      (gint) ssimg->height * ssimg->scale,
 							      0, 0, 1.0f, 1.0f,
 							      GDK_INTERP_NEAREST, 255);
 				}
