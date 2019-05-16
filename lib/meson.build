@@ -54,6 +54,7 @@ install_headers([
 librarydeps = [
   appstream_glib,
   gio_unix,
+  glib,
   gmodule,
   goa,
   gtk,
@@ -108,6 +109,7 @@ executable(
   dependencies : [
     appstream_glib,
     gio_unix,
+    glib,
     gmodule,
     goa,
     gtk,
@@ -138,6 +140,7 @@ if get_option('tests')
     dependencies : [
       appstream_glib,
       gio_unix,
+      glib,
       gmodule,
       goa,
       gtk,
