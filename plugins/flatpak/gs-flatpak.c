@@ -163,6 +163,7 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 	g_autoptr(GBytes) bytes = NULL;
 	g_autoptr(GKeyFile) keyfile = NULL;
 	GsAppPermissions permissions;
+	g_autoptr(GError) error_local = NULL;
 
 	old_bytes = flatpak_installed_ref_load_metadata (FLATPAK_INSTALLED_REF (xref), NULL, NULL);
 	old_keyfile = g_key_file_new ();
@@ -175,14 +176,21 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 	                                                         gs_app_get_origin (app),
 	                                                         FLATPAK_REF (xref),
 	                                                         NULL,
-	                                                         NULL);
-	keyfile = g_key_file_new ();
-	g_key_file_load_from_data (keyfile,
-	                           g_bytes_get_data (bytes, NULL),
-	                           g_bytes_get_size (bytes),
-	                           0, NULL);
+	                                                         &error_local);
+	if (bytes == NULL) {
+		g_debug ("Failed to get metadata for remote ‘%s’: %s",
+			 gs_app_get_origin (app), error_local->message);
+		g_clear_error (&error_local);
+		permissions = GS_APP_PERMISSIONS_UNKNOWN;
+	} else {
+		keyfile = g_key_file_new ();
+		g_key_file_load_from_data (keyfile,
+			                   g_bytes_get_data (bytes, NULL),
+			                   g_bytes_get_size (bytes),
+			                   0, NULL);
 
-	permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
+		permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
+	}
 
 	/* no new permissions set */
 	if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
