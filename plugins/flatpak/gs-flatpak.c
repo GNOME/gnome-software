@@ -508,8 +508,10 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 #else
 		g_autoptr(GError) error_local = NULL;
 		main_ref = gs_flatpak_get_xremote_main_ref (self, xremote, &error_local);
-		if (main_ref == NULL)
+		if (main_ref == NULL) {
 			g_warning ("failed to get main ref: %s", error_local->message);
+			g_clear_error (&error_local);
+		}
 #endif
 		if (main_ref != NULL) {
 			g_autoptr(XbBuilderFixup) fixup = NULL;
@@ -1393,6 +1395,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			g_debug ("Couldn't get the main app for updatable app extension %s: "
 				 "%s; adding the app itself to the updates list...",
 				 gs_app_get_unique_id (app), error_local->message);
+			g_clear_error (&error_local);
 			main_app = g_object_ref (app);
 		}
 		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
@@ -1425,6 +1428,7 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 										  &error_local)) {
 					g_warning ("failed to get download size: %s",
 						   error_local->message);
+					g_clear_error (&error_local);
 					gs_app_set_size_download (main_app, GS_APP_SIZE_UNKNOWABLE);
 				} else {
 					gs_app_set_size_download (main_app, download_size);
@@ -1661,7 +1665,6 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
                                       GError **error)
 {
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) refs = NULL;
 
 	/* already found */
@@ -2075,6 +2078,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 		if (!ret) {
 			g_warning ("libflatpak failed to return application "
 				   "size: %s", error_local->message);
+			g_clear_error (&error_local);
 		}
 	}
 
@@ -2659,6 +2663,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 		gs_plugin_event_set_error (event, error_local);
 		gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
 		gs_plugin_report_event (self->plugin, event);
+		g_clear_error (&error_local);
 	}
 
 	/* get this now, as it's not going to be available at install time */
