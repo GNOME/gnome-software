@@ -261,7 +261,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	appstream_urls = g_settings_get_strv (priv->settings,
 					      "external-appstream-urls");
 	for (guint i = 0; appstream_urls[i] != NULL; ++i) {
-		g_autoptr(GError) local_error = NULL;
+		g_autoptr(GError) error_local = NULL;
 		if (!g_str_has_prefix (appstream_urls[i], "https")) {
 			g_warning ("Not considering %s as an external "
 				   "appstream source: please use an https URL",
@@ -272,9 +272,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 							       appstream_urls[i],
 							       cache_age,
 							       cancellable,
-							       &local_error)) {
+							       &error_local)) {
 			g_warning ("Failed to update external appstream file: %s",
-				   local_error->message);
+				   error_local->message);
 		}
 	}
 
