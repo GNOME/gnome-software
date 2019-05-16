@@ -195,7 +195,7 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 	g_autoptr(AsImage) im = NULL;
 	gboolean ret;
 	const GPtrArray *images;
-	g_autoptr(GError) local_error = NULL;
+	g_autoptr(GError) error_local = NULL;
 	g_autofree char *filename = NULL;
 	g_autofree char *size_dir = NULL;
 	g_autofree char *cache_kind = NULL;
@@ -239,7 +239,7 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 	cache_kind = g_build_filename ("screenshots", size_dir, NULL);
 	filename = gs_utils_get_cache_filename (cache_kind, basename,
 						GS_UTILS_CACHE_FLAG_WRITEABLE,
-						&local_error);
+						&error_local);
 
         if (filename == NULL) {
 		/* if we cannot get a cache filename, warn about that but do not
@@ -247,20 +247,20 @@ gs_screenshot_image_save_downloaded_img (GsScreenshotImage *ssimg,
 		 * operation */
                 g_warning ("Failed to get cache filename for counterpart "
                            "screenshot '%s' in folder '%s': %s", basename,
-                           cache_kind, local_error->message);
+                           cache_kind, error_local->message);
                 return TRUE;
         }
 
 	ret = as_image_save_filename (im, filename, width, height,
 				      AS_IMAGE_SAVE_FLAG_PAD_16_9,
-				      &local_error);
+				      &error_local);
 
 	if (!ret) {
 		/* if we cannot save this screenshot, warn about that but do not
 		 * set a user's visible error because this is a complementary
 		 * operation */
                 g_warning ("Failed to save screenshot '%s': %s", filename,
-                           local_error->message);
+                           error_local->message);
         }
 
 	return TRUE;
