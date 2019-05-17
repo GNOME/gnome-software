@@ -27,6 +27,8 @@ struct _GsPageClass
 	void		(*app_copied)		(GsPage       *page,
 						 GsApp        *app,
 						 const GError *error);
+	void		(*os_copied)		(GsPage		 *page,
+						 const GError	 *error);
 	void		(*switch_to)		(GsPage		 *page,
 						 gboolean	  scroll_up);
 	void		(*switch_from)		(GsPage		 *page);
@@ -70,6 +72,10 @@ void		 gs_page_launch_app			(GsPage		*page,
 							 GCancellable	*cancellable);
 void		 gs_page_copy_app			(GsPage			*page,
 							 GsApp			*app,
+							 GFile			*copy_dest,
+							 GsShellInteraction	 interaction,
+							 GCancellable		*cancellable);
+void		 gs_page_copy_os			(GsPage			*page,
 							 GFile			*copy_dest,
 							 GsShellInteraction	 interaction,
 							 GCancellable		*cancellable);
