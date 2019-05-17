@@ -43,5 +43,6 @@ gchar		*gs_utils_build_unique_id_kind	(AsAppKind	 kind,
 						 const gchar	*id);
 gboolean	 gs_utils_list_has_app_fuzzy	(GsAppList	*list,
 						 GsApp		*app);
+void		 gs_utils_reboot_notify		(GsAppList	*list);
 
 G_END_DECLS

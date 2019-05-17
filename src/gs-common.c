@@ -607,3 +607,31 @@ gs_utils_list_has_app_fuzzy (GsAppList *list, GsApp *app)
 	}
 	return FALSE;
 }
+
+void
+gs_utils_reboot_notify (GsAppList *list)
+{
+	g_autoptr(GNotification) n = NULL;
+	const gchar *title;
+	const gchar *body;
+
+	/* TRANSLATORS: we've just live-updated some apps */
+	title = ngettext ("An update has been installed",
+	                  "Updates have been installed",
+	                  gs_app_list_length (list));
+
+	/* TRANSLATORS: the new apps will not be run until we restart */
+	body = ngettext ("A restart is required for it to take effect.",
+	                 "A restart is required for them to take effect.",
+	                 gs_app_list_length (list));
+
+	n = g_notification_new (title);
+	g_notification_set_body (n, body);
+	/* TRANSLATORS: button text */
+	g_notification_add_button (n, _("Not Now"), "app.nop");
+	/* TRANSLATORS: button text */
+	g_notification_add_button_with_target (n, _("Restart"), "app.reboot", NULL);
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+	g_notification_set_priority (n, G_NOTIFICATION_PRIORITY_URGENT);
+	g_application_send_notification (g_application_get_default (), "restart-required", n);
+}
