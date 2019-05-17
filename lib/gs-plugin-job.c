@@ -36,6 +36,7 @@ struct _GsPluginJob
 	AsReview		*review;
 	GsPrice			*price;
 	gint64			 time_created;
+	GFile			*copy_dest;
 };
 
 enum {
@@ -56,6 +57,7 @@ enum {
 	PROP_MAX_RESULTS,
 	PROP_PRICE,
 	PROP_TIMEOUT,
+	PROP_COPY_DEST,
 	PROP_LAST
 };
 
@@ -95,6 +97,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->search != NULL) {
 		g_string_append_printf (str, " with search=%s",
 					self->search);
+	}
+	if (self->copy_dest != NULL) {
+		g_string_append_printf (str, " with copy destination=%s",
+					g_file_peek_path (self->copy_dest));
 	}
 	if (self->category != NULL) {
 		GsCategory *parent = gs_category_get_parent (self->category);
@@ -439,6 +445,20 @@ gs_plugin_job_get_price (GsPluginJob *self)
 	return self->price;
 }
 
+void
+gs_plugin_job_set_copy_dest (GsPluginJob *self, GFile *copy_dest)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->copy_dest, copy_dest);
+}
+
+GFile *
+gs_plugin_job_get_copy_dest (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->copy_dest;
+}
+
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -465,6 +485,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_SEARCH:
 		g_value_set_string (value, self->search);
+		break;
+	case PROP_COPY_DEST:
+		g_value_set_object (value, self->copy_dest);
 		break;
 	case PROP_AUTH:
 		g_value_set_object (value, self->auth);
@@ -526,6 +549,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
 		break;
+	case PROP_COPY_DEST:
+		gs_plugin_job_set_copy_dest (self, g_value_get_object (value));
+		break;
 	case PROP_AUTH:
 		gs_plugin_job_set_auth (self, g_value_get_object (value));
 		break;
@@ -564,6 +590,7 @@ gs_plugin_job_finalize (GObject *obj)
 {
 	GsPluginJob *self = GS_PLUGIN_JOB (obj);
 	g_free (self->search);
+	g_clear_object (&self->copy_dest);
 	g_clear_object (&self->auth);
 	g_clear_object (&self->app);
 	g_clear_object (&self->list);
@@ -621,6 +648,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
+
+	pspec = g_param_spec_object ("copy-dest", NULL, NULL,
+				     G_TYPE_FILE,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_COPY_DEST, pspec);
 
 	pspec = g_param_spec_object ("auth", NULL, NULL,
 				     GS_TYPE_AUTH,
