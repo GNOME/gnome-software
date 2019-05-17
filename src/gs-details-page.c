@@ -1081,9 +1081,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	pixbuf = gs_app_get_pixbuf (self->app);
 	if (pixbuf != NULL) {
 		gs_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
-		gtk_widget_set_visible (self->application_details_icon, TRUE);
 	} else {
-		gtk_widget_set_visible (self->application_details_icon, FALSE);
+		gtk_image_set_from_icon_name (GTK_IMAGE (self->application_details_icon),
+		                              "application-x-executable",
+		                              GTK_ICON_SIZE_DIALOG);
 	}
 
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_HOMEPAGE);
