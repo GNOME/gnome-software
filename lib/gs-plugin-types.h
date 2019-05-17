@@ -233,6 +233,8 @@ typedef enum {
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
  * @GS_PLUGIN_ACTION_GET_COPYABLE:		Get whether the app is copyable to a destination
  * @GS_PLUGIN_ACTION_COPY:			Copy the app to a destination
+ * @GS_PLUGIN_ACTION_OS_GET_COPYABLE:		Get whether the OS is copyable to a destination
+ * @GS_PLUGIN_ACTION_OS_COPY:			Copy the OS to a destination
  *
  * The plugin action.
  **/
@@ -280,6 +282,8 @@ typedef enum {
 	GS_PLUGIN_ACTION_GET_ALTERNATES,
 	GS_PLUGIN_ACTION_GET_COPYABLE,
 	GS_PLUGIN_ACTION_COPY,
+	GS_PLUGIN_ACTION_OS_GET_COPYABLE,
+	GS_PLUGIN_ACTION_OS_COPY,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;
