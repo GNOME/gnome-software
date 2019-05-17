@@ -1593,6 +1593,26 @@ out:
 	return ret;
 }
 
+static gchar **
+what_provides_decompose (gchar **values)
+{
+	GPtrArray *array = g_ptr_array_new ();
+
+	/* iter on each provide string, and wrap it with the Fedora prefix */
+	for (guint i = 0; values[i] != NULL; i++) {
+		g_ptr_array_add (array, g_strdup (values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("gstreamer0.10(%s)", values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("gstreamer1(%s)", values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("font(%s)", values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("mimehandler(%s)", values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("postscriptdriver(%s)", values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("plasma4(%s)", values[i]));
+		g_ptr_array_add (array, g_strdup_printf ("plasma5(%s)", values[i]));
+	}
+	g_ptr_array_add (array, NULL);
+	return (gchar **) g_ptr_array_free (array, FALSE);
+}
+
 gboolean
 gs_plugin_add_search_what_provides (GsPlugin *plugin,
                                     gchar **search,
@@ -1603,13 +1623,15 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_autoptr(GPtrArray) pkglist = NULL;
+	g_auto(GStrv) provides = NULL;
 
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	if (priv->dnf_context == NULL)
 		return TRUE;
 
-	pkglist = find_packages_by_provides (dnf_context_get_sack (priv->dnf_context), search);
+	provides = what_provides_decompose (search);
+	pkglist = find_packages_by_provides (dnf_context_get_sack (priv->dnf_context), provides);
 	for (guint i = 0; i < pkglist->len; i++) {
 		DnfPackage *pkg = g_ptr_array_index (pkglist, i);
 		g_autoptr(GsApp) app = NULL;
