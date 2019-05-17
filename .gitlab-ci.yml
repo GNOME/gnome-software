@@ -1,14 +1,13 @@
-image: fedora:29
+image: fedora:30
 
 stages:
   - build
 
 before_script:
   # Update and use base build deps
-  - dnf -y update && dnf -y install git gobject-introspection-devel dnf-plugins-core @buildsys-build
+  - dnf -y update
+  - dnf -y install 'dnf-command(builddep)' dbus-daemon
   - dnf -y builddep gnome-software
-  # Some deps may not be sync'd
-  - dnf -y install libxmlb-devel rpm-devel libdnf-devel libstemmer-devel gnome-online-accounts-devel
 
 build-gnome-software:
   stage: build
