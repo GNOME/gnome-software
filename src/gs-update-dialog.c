@@ -355,7 +355,7 @@ format_version_update (GsApp *app)
 	/* have both */
 	if (version_current != NULL && version_update != NULL &&
 	    g_strcmp0 (version_current, version_update) != 0) {
-		return g_strdup_printf ("%s ▶ %s",
+		return g_strdup_printf ("%s → %s",
 					version_current,
 					version_update);
 	}
