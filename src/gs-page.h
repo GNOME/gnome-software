@@ -24,6 +24,9 @@ struct _GsPageClass
 						 GsApp		 *app);
 	void		(*app_removed)		(GsPage		 *page,
 						 GsApp		 *app);
+	void		(*app_copied)		(GsPage       *page,
+						 GsApp        *app,
+						 const GError *error);
 	void		(*switch_to)		(GsPage		 *page,
 						 gboolean	  scroll_up);
 	void		(*switch_from)		(GsPage		 *page);
@@ -65,6 +68,11 @@ void		 gs_page_update_app			(GsPage		*page,
 void		 gs_page_launch_app			(GsPage		*page,
 							 GsApp		*app,
 							 GCancellable	*cancellable);
+void		 gs_page_copy_app			(GsPage			*page,
+							 GsApp			*app,
+							 GFile			*copy_dest,
+							 GsShellInteraction	 interaction,
+							 GCancellable		*cancellable);
 void		 gs_page_shortcut_add			(GsPage		*page,
 							 GsApp		*app,
 							 GCancellable	*cancellable);
