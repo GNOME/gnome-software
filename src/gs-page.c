@@ -120,6 +120,10 @@ static void
 gs_page_app_installed_cb (GObject *source,
                           GAsyncResult *res,
                           gpointer user_data);
+static void
+gs_page_app_copied_cb (GObject *source,
+                       GAsyncResult *res,
+                       gpointer user_data);
 
 static void
 gs_page_install_authenticate_cb (GsPage *page,
@@ -270,6 +274,34 @@ gs_page_app_removed_cb (GObject *source,
 	    GS_PAGE_GET_CLASS (page)->app_removed != NULL) {
 		GS_PAGE_GET_CLASS (page)->app_removed (page, helper->app);
 	}
+}
+
+static void
+gs_page_app_copied_cb (GObject *source,
+		       GAsyncResult *res,
+		       gpointer user_data)
+{
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsPage *page = helper->page;
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+
+	ret = gs_plugin_loader_job_action_finish (plugin_loader, res, &error);
+	if (g_error_matches (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_CANCELLED)) {
+		g_debug ("app copy cancelled: %s", error->message);
+		return;
+	}
+	if (!ret) {
+		g_warning ("failed to copy %s: %s", gs_app_get_id (helper->app),
+		           error->message);
+		/* emit the callback below anyway, with the error */
+	}
+
+	if (GS_PAGE_GET_CLASS (page)->app_copied != NULL)
+		GS_PAGE_GET_CLASS (page)->app_copied (page, helper->app, error);
 }
 
 GtkWidget *
@@ -514,6 +546,42 @@ gs_page_install_app (GsPage *page,
 						    helper->cancellable,
 						    gs_page_app_installed_cb,
 						    helper);
+	}
+}
+
+void
+gs_page_copy_app (GsPage *page,
+		  GsApp *app,
+		  GFile *copy_dest,
+		  GsShellInteraction interaction,
+		  GCancellable *cancellable)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	GsPageHelper *helper = g_slice_new0 (GsPageHelper);
+	helper->action = GS_PLUGIN_ACTION_COPY;
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
+	helper->cancellable = g_object_ref (cancellable);
+	helper->interaction = interaction;
+
+	if (gs_app_is_installed (app)) {
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+
+		plugin_job = gs_plugin_job_newv (helper->action,
+						 "app", helper->app,
+						 "copy-dest", copy_dest,
+						 "interactive", TRUE,
+						 NULL);
+
+		gs_plugin_loader_job_process_async (priv->plugin_loader,
+						    plugin_job,
+						    helper->cancellable,
+						    gs_page_app_copied_cb,
+						    helper);
+	} else {
+		// NOTE: it should be impossible to reach this state
+		g_warning ("App %s must be installed to copy to USB",
+			   gs_app_get_name (app));
 	}
 }
 
