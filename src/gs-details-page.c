@@ -43,10 +43,12 @@ struct _GsDetailsPage
 	GsPage			 parent_instance;
 
 	GsPluginLoader		*plugin_loader;
+	GsPluginStatus		 plugin_status;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*app_cancellable;
 	GsApp			*app;
+	gboolean		 app_copyable;
 	GsApp			*app_local_file;
 	GsShell			*shell;
 	SoupSession		*session;
@@ -54,6 +56,7 @@ struct _GsDetailsPage
 	gboolean		 show_all_reviews;
 	GSettings		*settings;
 	GtkSizeGroup		*size_group_origin_popover;
+	GPtrArray		*copy_dests;  /* (element-type GFile) (owned) */
 
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
@@ -81,6 +84,7 @@ struct _GsDetailsPage
 	GtkWidget		*button_remove;
 	GtkWidget		*button_cancel;
 	GtkWidget		*button_more_reviews;
+	GtkWidget		*button_copy;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
@@ -201,6 +205,12 @@ gs_details_page_update_shortcut_button (GsDetailsPage *self)
 	if (gs_app_get_kind (self->app) != AS_APP_KIND_DESKTOP)
 		return;
 
+	/* leave the button hidden if there's a pending action or we're copying
+	 * the app because the progress bar or spinner will be visible */
+	if (gs_app_get_pending_action (self->app) != GS_PLUGIN_ACTION_UNKNOWN ||
+	    self->plugin_status == GS_PLUGIN_STATUS_COPYING)
+		return;
+
 	/* only consider the shortcut button if the app is installed */
 	switch (gs_app_get_state (self->app)) {
 	case AS_APP_STATE_INSTALLED:
@@ -235,6 +245,57 @@ gs_details_page_update_shortcut_button (GsDetailsPage *self)
 	}
 }
 
+static GFile *
+get_removable_destination (GsDetailsPage *self)
+{
+	/* first one is the most-recently added mount on a removable disk */
+	if (self->copy_dests != NULL && self->copy_dests->len > 0)
+		return self->copy_dests->pdata[0];
+
+	return NULL;
+}
+
+static void
+gs_details_page_update_copy_button (GsDetailsPage *self)
+{
+	GFile *copy_dest;
+
+	gtk_widget_set_sensitive (self->button_copy, FALSE);
+	gtk_widget_set_visible (self->button_copy, FALSE);
+
+	if (self->plugin_status == GS_PLUGIN_STATUS_COPYING)
+		return;
+
+	copy_dest = get_removable_destination (self);
+	if (self->app != NULL && gs_app_is_installed (self->app) && self->app_copyable) {
+		if (copy_dest != NULL) {
+			gtk_button_set_label (GTK_BUTTON (self->button_copy), _("Copy to US_B"));
+			gtk_widget_set_sensitive (self->button_copy, TRUE);
+		} else {
+			gtk_button_set_label (GTK_BUTTON (self->button_copy), _("Insert USB to Copy To"));
+			gtk_widget_set_sensitive (self->button_copy, FALSE);
+		}
+		gtk_widget_set_visible (self->button_copy, TRUE);
+	}
+}
+
+static void
+gs_details_page_app_get_copyable_cb (GObject *source_object,
+				     GAsyncResult *res,
+				     gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+	g_autoptr(GError) error = NULL;
+	gboolean copyable;
+
+	copyable = gs_plugin_loader_job_app_get_copyable_finish (plugin_loader,
+								 res, &error);
+	g_debug ("%s: copyable = %s", G_STRFUNC, copyable ? "yes" : "no");
+	self->app_copyable = copyable;
+	gs_details_page_update_copy_button (self);
+}
+
 static gboolean
 app_has_pending_action (GsApp *app)
 {
@@ -248,6 +309,13 @@ app_has_pending_action (GsApp *app)
 
 	return (gs_app_get_pending_action (app) != GS_PLUGIN_ACTION_UNKNOWN) ||
 	       (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL);
+}
+
+static gboolean
+plugin_has_pending_action (GsDetailsPage *self)
+{
+	return (self->plugin_status == GS_PLUGIN_STATUS_COPYING) ||
+		app_has_pending_action (self->app);
 }
 
 static void
@@ -301,7 +369,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_cancel, FALSE);
 		break;
 	}
-	if (app_has_pending_action (self->app)) {
+	if (plugin_has_pending_action (self)) {
 		gtk_widget_set_visible (self->button_cancel, TRUE);
 		gtk_widget_set_sensitive (self->button_cancel,
 					  !g_cancellable_is_cancelled (self->app_cancellable) &&
@@ -317,6 +385,10 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
 		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 				     _("Installing"));
+	} else if (self->plugin_status == GS_PLUGIN_STATUS_COPYING) {
+		gtk_widget_set_visible (self->label_progress_status, TRUE);
+		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
+				     _("Copying"));
 	} else {
 		gtk_widget_set_visible (self->label_progress_status, FALSE);
 	}
@@ -368,7 +440,8 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	}
 
 	/* spinner */
-	if (state == AS_APP_STATE_REMOVING) {
+	if (state == AS_APP_STATE_REMOVING ||
+	    self->plugin_status == GS_PLUGIN_STATUS_COPYING) {
 		gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
 		gtk_widget_set_visible (self->spinner_remove, TRUE);
 		/* align text together with the spinner if we're showing it */
@@ -389,7 +462,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 		gtk_widget_set_visible (self->box_progress, FALSE);
 		break;
 	}
-	if (app_has_pending_action (self->app))
+	if (plugin_has_pending_action (self))
 		gtk_widget_set_visible (self->box_progress, TRUE);
 }
 
@@ -866,6 +939,9 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		break;
 	}
 
+	/* copy button */
+	gs_details_page_update_copy_button (self);
+
 	/* launch button */
 	switch (gs_app_get_state (self->app)) {
 	case AS_APP_STATE_INSTALLED:
@@ -942,6 +1018,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_update, FALSE);
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 		gtk_widget_set_visible (self->button_remove, FALSE);
+		gtk_widget_set_visible (self->button_copy, FALSE);
 	}
 }
 
@@ -1342,6 +1419,8 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	gs_details_page_update_shortcut_button (self);
 
+	gs_details_page_update_copy_button (self);
+
 	/* update progress */
 	gs_details_page_refresh_progress (self);
 
@@ -1712,6 +1791,9 @@ gs_details_page_refresh_content_rating (GsDetailsPage *self)
 static void
 _set_app (GsDetailsPage *self, GsApp *app)
 {
+	g_autoptr(GsPluginJob) plugin_job = NULL;
+	GFile *copy_dest;
+
 	/* do not show all the reviews by default */
 	self->show_all_reviews = FALSE;
 
@@ -1749,6 +1831,25 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::pending-action",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
+
+	/* also check (asynchronously) whether the app will
+	 * certainly fail a copy so we can update the UI
+	 * accordingly. Cases where the plugin would know a copy
+	 * would fail include a Flatpak which lacks a collection
+	 * ID or broader issues like the user lacking write
+	 * access to the destination. */
+	copy_dest = get_removable_destination (self);
+	plugin_job = gs_plugin_job_newv (
+		GS_PLUGIN_ACTION_GET_COPYABLE,
+		"app", self->app,
+		"copy-dest", copy_dest,
+		 NULL);
+	gs_plugin_loader_job_app_get_copyable_async (
+		self->plugin_loader,
+		plugin_job,
+		self->cancellable,
+		gs_details_page_app_get_copyable_cb,
+		self);
 }
 
 /* show the UI and do operations that should not block page load */
@@ -2098,6 +2199,17 @@ gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
+gs_details_page_app_copy_button_cb (GtkWidget *widget, GsDetailsPage *self)
+{
+	GFile *copy_dest = get_removable_destination (self);
+
+	g_set_object (&self->app_cancellable,
+		      gs_app_get_cancellable (self->app));
+	gs_page_copy_app (GS_PAGE (self), self->app, copy_dest,
+			  GS_SHELL_INTERACTION_FULL, self->app_cancellable);
+}
+
+static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GList) addons = NULL;
@@ -2255,6 +2367,16 @@ gs_details_page_write_review_cb (GtkButton *button,
 }
 
 static void
+gs_details_page_copy_dests_notify_cb (GsPluginLoader *plugin_loader,
+				      GParamSpec *pspec,
+				      GsDetailsPage *self)
+{
+	g_clear_pointer (&self->copy_dests, g_ptr_array_unref);
+	self->copy_dests = gs_plugin_loader_dup_copy_dests (plugin_loader);
+	gs_details_page_update_copy_button (self);
+}
+
+static void
 gs_details_page_app_installed (GsPage *page, GsApp *app)
 {
 	gs_details_page_reload (page);
@@ -2270,6 +2392,22 @@ static void
 show_all_cb (GtkWidget *widget, gpointer user_data)
 {
 	gtk_widget_show (widget);
+}
+
+static void
+gs_details_page_app_copied (GsPage *page, GsApp *app, const GError *error)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (page);
+
+	if (error == NULL) {
+		gtk_button_set_label (GTK_BUTTON (self->button_copy), _("Copied to USB"));
+		gtk_widget_set_sensitive (self->button_copy, FALSE);
+	} else {
+		/* This should reset to the ‘Copy to USB’ original text. The
+		 * error is displayed by the shell separately as a popup
+		 * notification. */
+		gs_details_page_update_copy_button (self);
+	}
 }
 
 static void
@@ -2517,6 +2655,30 @@ gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
 	gs_details_page_refresh_reviews (self);
 }
 
+static void
+gs_details_page_plugin_status_changed_cb (GsPluginLoader *plugin_loader,
+                                          GsApp *app,
+                                          GsPluginStatus status,
+                                          GsDetailsPage *self)
+{
+	self->plugin_status = status;
+
+	if (app == NULL || app != self->ap)
+		return;
+
+	/* Various bits of UI state depend on the plugin status, so refresh
+	 * everything. */
+	gs_details_page_refresh_all (self);
+
+	if (status == GS_PLUGIN_STATUS_COPYING) {
+		/* prevent the app from being deleted, etc. while it's being copied */
+		gs_app_add_quirk (app, GS_APP_QUIRK_COMPULSORY);
+	} else {
+		/* allow removal once copying has completed */
+		gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
+	}
+}
+
 static gboolean
 gs_details_page_setup (GsPage *page,
                        GsShell *shell,
@@ -2537,6 +2699,14 @@ gs_details_page_setup (GsPage *page,
 	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
 
+	self->plugin_status = GS_PLUGIN_STATUS_FINISHED;
+
+	self->copy_dests = NULL;
+	g_signal_connect (plugin_loader, "notify::copy-dests",
+			  G_CALLBACK (gs_details_page_copy_dests_notify_cb),
+			  self);
+	gs_details_page_copy_dests_notify_cb (plugin_loader, NULL, self);
+
 	/* show review widgets if we have plugins that provide them */
 	self->enable_reviews =
 		gs_plugin_loader_get_plugin_supported (plugin_loader,
@@ -2548,6 +2718,11 @@ gs_details_page_setup (GsPage *page,
 	/* hide some UI when offline */
 	g_signal_connect_object (self->plugin_loader, "notify::network-available",
 				 G_CALLBACK (gs_details_page_network_available_notify_cb),
+				 self, 0);
+
+	/* update UI when copying updates to removable media */
+	g_signal_connect_object (self->plugin_loader, "status-changed",
+				 G_CALLBACK (gs_details_page_plugin_status_changed_cb),
 				 self, 0);
 
 	/* setup details */
@@ -2562,6 +2737,9 @@ gs_details_page_setup (GsPage *page,
 			  self);
 	g_signal_connect (self->button_cancel, "clicked",
 			  G_CALLBACK (gs_details_page_app_cancel_button_cb),
+			  self);
+	g_signal_connect (self->button_copy, "clicked",
+			  G_CALLBACK (gs_details_page_app_copy_button_cb),
 			  self);
 	g_signal_connect (self->button_more_reviews, "clicked",
 			  G_CALLBACK (gs_details_page_more_reviews_button_cb),
@@ -2629,6 +2807,10 @@ gs_details_page_dispose (GObject *object)
 		g_clear_object (&self->app);
 	}
 	g_clear_object (&self->app_local_file);
+
+	g_signal_handlers_disconnect_by_func (self->plugin_loader, gs_details_page_copy_dests_notify_cb, self);
+	g_clear_pointer (&self->copy_dests, g_ptr_array_unref);
+
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
@@ -2649,6 +2831,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	object_class->dispose = gs_details_page_dispose;
 	page_class->app_installed = gs_details_page_app_installed;
 	page_class->app_removed = gs_details_page_app_removed;
+	page_class->app_copied = gs_details_page_app_copied;
 	page_class->switch_to = gs_details_page_switch_to;
 	page_class->reload = gs_details_page_reload;
 	page_class->setup = gs_details_page_setup;
@@ -2681,6 +2864,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_cancel);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_more_reviews);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_copy);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, infobar_details_package_baseos);
