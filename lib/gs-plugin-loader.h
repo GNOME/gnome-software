@@ -54,6 +54,14 @@ void		 gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 GPtrArray	*gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+void		 gs_plugin_loader_job_app_get_copyable_async (GsPluginLoader *plugin_loader,
+							      GsPluginJob *plugin_job,
+							      GCancellable *cancellable,
+							      GAsyncReadyCallback callback,
+							      gpointer user_data);
+gboolean	 gs_plugin_loader_job_app_get_copyable_finish (GsPluginLoader *plugin_loader,
+							       GAsyncResult *res,
+							       GError **error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 gchar		**whitelist,
 							 gchar		**blacklist,

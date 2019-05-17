@@ -172,6 +172,17 @@ typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
 							 GError		**error);
 typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 							 GsApp		*app);
+typedef gboolean	 (*GsPluginGetCopyableFunc)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GFile		*copy_dest,
+							 gboolean	*result,
+							 GCancellable	*cancellable,
+							 GError		**error);
+typedef gboolean	 (*GsPluginCopyFunc)		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GFile		*copy_dest,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 /* async helper */
 typedef struct {
@@ -187,6 +198,7 @@ typedef struct {
 	guint				 timeout_id;
 	gboolean			 timeout_triggered;
 	gchar				**tokens;
+	gboolean			 boolean_retval;
 } GsPluginLoaderHelper;
 
 static GsPluginLoaderHelper *
@@ -704,6 +716,23 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			GsPluginUrlToAppFunc plugin_func = func;
 			ret = plugin_func (plugin, list,
 					   gs_plugin_job_get_search (helper->plugin_job),
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_GET_COPYABLE:
+		{
+			GsPluginGetCopyableFunc plugin_func = func;
+			ret = plugin_func (plugin, app,
+					   gs_plugin_job_get_copy_dest (helper->plugin_job),
+					   &helper->boolean_retval,
+					   cancellable, &error_local);
+		}
+		break;
+	case GS_PLUGIN_ACTION_COPY:
+		{
+			GsPluginCopyFunc plugin_func = func;
+			ret = plugin_func (plugin, app,
+					   gs_plugin_job_get_copy_dest (helper->plugin_job),
 					   cancellable, &error_local);
 		}
 		break;
@@ -1589,6 +1618,100 @@ gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_loader,
 
 	gs_utils_error_convert_gio (error);
 	return g_task_propagate_pointer (G_TASK (res), error);
+}
+
+
+static gboolean
+gs_plugin_loader_app_get_copyable_run (GsPluginLoaderHelper *helper,
+				       GCancellable *cancellable,
+				       GError **error)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+	GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
+
+	/* run each plugin */
+	for (guint i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		if (g_cancellable_set_error_if_cancelled (cancellable, error)) {
+			gs_utils_error_convert_gio (error);
+			return FALSE;
+		}
+
+		helper->function_name = "gs_plugin_app_get_copyable";
+		if (!gs_plugin_loader_call_vfunc (helper, plugin, app, NULL,
+						  GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						  cancellable, error)) {
+			return FALSE;
+		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
+	return TRUE;
+}
+
+static void
+gs_plugin_loader_job_app_get_copyable_thread_cb (GTask *task,
+						 gpointer object,
+						 gpointer task_data,
+						 GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
+
+	if (!gs_plugin_loader_app_get_copyable_run (helper, cancellable, &error)) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	g_task_return_boolean (task, helper->boolean_retval);
+}
+
+/**
+ * gs_plugin_loader_job_app_get_copyable_async:
+ *
+ * This method calls gs_plugin_app_get_copyable() for the @plugin belonging to
+ * @plugin_job if the plugin implements it.
+ **/
+void
+gs_plugin_loader_job_app_get_copyable_async (GsPluginLoader *plugin_loader,
+					     GsPluginJob *plugin_job,
+					     GCancellable *cancellable,
+					     GAsyncReadyCallback callback,
+					     gpointer user_data)
+{
+	GsPluginLoaderHelper *helper;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save helper */
+	helper = gs_plugin_loader_helper_new (plugin_loader, plugin_job);
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
+	g_task_run_in_thread (task, gs_plugin_loader_job_app_get_copyable_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_job_app_get_copyable_finish:
+ *
+ * Return value: the value of the plugin's gs_plugin_app_get_copyable(), if it
+ * exists, or %FALSE if not.
+ **/
+gboolean
+gs_plugin_loader_job_app_get_copyable_finish (GsPluginLoader *plugin_loader,
+					      GAsyncResult *res,
+					      GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_TASK (res), FALSE);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (res), error);
 }
 
 /******************************************************************************/
