@@ -9,6 +9,8 @@
 #include "config.h"
 
 #include <locale.h>
+#include <gio/gio.h>
+#include <gio/gunixmounts.h>
 #include <glib/gi18n.h>
 #include <appstream-glib.h>
 #include <math.h>
@@ -60,6 +62,11 @@ typedef struct
 
 	GNetworkMonitor		*network_monitor;
 	gulong			 network_changed_handler;
+
+	/* List of currently mounted USB sticks, with the most recently mounted
+	 * as the first element. May be empty. */
+	GVolumeMonitor		*volume_monitor;
+	GList			*removable_mounts;  /* (element-type GMount) */
 } GsPluginLoaderPrivate;
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -81,6 +88,7 @@ enum {
 	PROP_EVENTS,
 	PROP_ALLOW_UPDATES,
 	PROP_NETWORK_AVAILABLE,
+	PROP_COPY_DESTS,
 	PROP_LAST
 };
 
@@ -2410,6 +2418,129 @@ gs_plugin_loader_find_plugins (const gchar *path, GError **error)
 	return g_steal_pointer (&fns);
 }
 
+static GPtrArray *
+mounts_dup_as_mount_roots (GList *mounts)
+{
+	g_autoptr(GPtrArray) mount_roots = g_ptr_array_new_with_free_func (g_object_unref);
+	const gchar *additional_copy_dests_str;
+
+	/* To help out with debugging: Set this to a colon-separated list of
+	 * paths which gnome-software should treat as fake USB drives. */
+	additional_copy_dests_str = g_getenv ("GS_FAKE_COPY_DESTS");
+	if (additional_copy_dests_str != NULL) {
+		g_auto(GStrv) additional_copy_dests = NULL;
+
+		additional_copy_dests = g_strsplit (additional_copy_dests_str, ":", 0);
+		for (gsize i = 0; additional_copy_dests[i] != NULL; i++)
+			g_ptr_array_add (mount_roots, g_file_new_for_path (additional_copy_dests[i]));
+	} else {
+		/* Otherwise, use the actual mount points. */
+		for (GList *l = mounts; l; l = l->next) {
+			GMount *mount = G_MOUNT (l->data);
+			g_ptr_array_add (mount_roots, g_mount_get_root (mount));
+		}
+	}
+
+	return g_steal_pointer (&mount_roots);
+}
+
+static gboolean
+mount_list_remove_if_exists (GList  **list,
+			     GMount  *mount)
+{
+	guint orig_len = 0;
+
+	g_return_val_if_fail (list != NULL, FALSE);
+
+	orig_len = g_list_length (*list);
+	if (*list != NULL)
+		*list = g_list_remove (*list, mount);
+
+	return orig_len != g_list_length (*list);
+}
+
+static void
+mount_added_cb (GVolumeMonitor *volume_monitor,
+		GMount *mount,
+		GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autofree gchar *mount_name = g_mount_get_name (mount);
+	g_autoptr(GUnixMountEntry) mount_entry = NULL;
+	g_autoptr(GFile) mount_root = NULL;
+	g_autofree gchar *mount_root_path = NULL;
+	g_autoptr(GDrive) drive = NULL;
+
+	if (g_mount_is_shadowed (mount)) {
+		g_debug ("Ignoring mount ‘%s’ as it’s shadowed", mount_name);
+		return;
+	}
+
+	mount_root = g_mount_get_root (mount);
+	mount_root_path = g_file_get_path (mount_root);
+
+	mount_entry = g_unix_mount_at (mount_root_path, NULL);
+
+	if (mount_entry != NULL &&
+	    (g_unix_is_system_fs_type (g_unix_mount_get_fs_type (mount_entry)) ||
+	     g_unix_is_system_device_path (g_unix_mount_get_device_path (mount_entry)))) {
+		g_debug ("Ignoring mount ‘%s’ as its file system type (%s) or "
+			 "device path (%s) indicate it’s a system mount.",
+			 mount_name, g_unix_mount_get_fs_type (mount_entry),
+			 g_unix_mount_get_device_path (mount_entry));
+		return;
+	}
+
+	drive = g_mount_get_drive (mount);
+
+	if (drive != NULL && !g_drive_is_removable (drive)) {
+		g_debug ("Ignoring mount ‘%s’ as it’s not a removable drive",
+			 mount_name);
+		return;
+	}
+
+	g_debug ("Adding mount ‘%s’", mount_name);
+
+	/* remove this mount if it already exists in the list and add it to the
+	 * front so we prioritize mounts by recency */
+	mount_list_remove_if_exists (&priv->removable_mounts, mount);
+	priv->removable_mounts = g_list_prepend (priv->removable_mounts,
+						 g_object_ref (mount));
+	g_object_notify (G_OBJECT (plugin_loader), "copy-dests");
+}
+
+static void
+mount_removed_cb (GVolumeMonitor *volume_monitor,
+		  GMount *mount,
+		  GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	g_autofree gchar *mount_name = g_mount_get_name (mount);
+
+	g_debug ("%s: Mount ‘%s’ removed", G_STRFUNC, mount_name);
+
+	if (mount_list_remove_if_exists (&priv->removable_mounts, mount))
+		g_object_notify (G_OBJECT (plugin_loader), "copy-dests");
+}
+
+/**
+ * gs_plugin_loader_dup_copy_dests:
+ * @plugin_loader: a #GsPluginLoader
+ *
+ * Get the currently-valid list of copy destinations. Note this list is subject
+ * to change so you should also connect to the
+ * #GsPluginLoader::notify::copy-dests signal to be informed of updates.
+ *
+ * Returns: (transfer container) (element-type GFile): a #GPtrArray of #GFiles
+ *    for the currently-valid copy destinations
+ */
+GPtrArray *
+gs_plugin_loader_dup_copy_dests (GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return mounts_dup_as_mount_roots (priv->removable_mounts);
+}
+
 /**
  * gs_plugin_loader_setup:
  * @plugin_loader: a #GsPluginLoader
@@ -2440,6 +2571,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint j;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autolist(GMount) mounts = NULL;
 
 	/* use the default, but this requires a 'make install' */
 	if (priv->locations->len == 0) {
@@ -2462,6 +2594,17 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				  G_CALLBACK (gs_plugin_loader_plugin_dir_changed_cb), plugin_loader);
 		g_ptr_array_add (priv->file_monitors, monitor);
 	}
+
+	/* initialise monitoring for USB drives */
+	priv->volume_monitor = g_volume_monitor_get ();
+	priv->removable_mounts = NULL;
+	g_signal_connect (priv->volume_monitor, "mount-added",
+			  G_CALLBACK (mount_added_cb), plugin_loader);
+	g_signal_connect (priv->volume_monitor, "mount-removed",
+			  G_CALLBACK (mount_removed_cb), plugin_loader);
+	mounts = g_volume_monitor_get_mounts (priv->volume_monitor);
+	for (GList *l = mounts; l; l = l->next)
+		mount_added_cb (priv->volume_monitor, l->data, plugin_loader);
 
 	/* search for plugins */
 	for (i = 0; i < priv->locations->len; i++) {
@@ -2699,6 +2842,9 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 	case PROP_NETWORK_AVAILABLE:
 		g_value_set_boolean (value, gs_plugin_loader_get_network_available (plugin_loader));
 		break;
+	case PROP_COPY_DESTS:
+		g_value_take_boxed (value, gs_plugin_loader_dup_copy_dests (plugin_loader));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2745,6 +2891,11 @@ gs_plugin_loader_dispose (GObject *object)
 		g_thread_pool_free (priv->queued_ops_pool, TRUE, TRUE);
 		priv->queued_ops_pool = NULL;
 	}
+	g_signal_handlers_disconnect_by_func (priv->volume_monitor, mount_added_cb, plugin_loader);
+	g_signal_handlers_disconnect_by_func (priv->volume_monitor, mount_removed_cb, plugin_loader);
+	g_clear_object (&priv->volume_monitor);
+	g_list_free_full (priv->removable_mounts, g_object_unref);
+	priv->removable_mounts = NULL;
 	g_clear_object (&priv->network_monitor);
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->settings);
@@ -2799,6 +2950,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 				      FALSE,
 				      G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_NETWORK_AVAILABLE, pspec);
+
+	pspec = g_param_spec_boxed ("copy-dests", NULL, NULL,
+				    G_TYPE_PTR_ARRAY,
+				    G_PARAM_READABLE);
+	g_object_class_install_property (object_class, PROP_COPY_DESTS, pspec);
 
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
