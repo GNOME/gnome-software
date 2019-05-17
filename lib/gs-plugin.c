@@ -122,6 +122,8 @@ gs_plugin_status_to_string (GsPluginStatus status)
 		return "installing";
 	if (status == GS_PLUGIN_STATUS_REMOVING)
 		return "removing";
+	if (status == GS_PLUGIN_STATUS_COPYING)
+		return "copying";
 	return "unknown";
 }
 

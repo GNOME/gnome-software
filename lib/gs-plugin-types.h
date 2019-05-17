@@ -21,6 +21,7 @@ G_BEGIN_DECLS
  * @GS_PLUGIN_STATUS_QUERYING:		Querying in progress
  * @GS_PLUGIN_STATUS_INSTALLING:	Installing in progress
  * @GS_PLUGIN_STATUS_REMOVING:		Removing in progress
+ * @GS_PLUGIN_STATUS_COPYING:		Copying (to removable media) in progress
  *
  * The ststus of the plugin.
  **/
@@ -33,6 +34,7 @@ typedef enum {
 	GS_PLUGIN_STATUS_QUERYING,
 	GS_PLUGIN_STATUS_INSTALLING,
 	GS_PLUGIN_STATUS_REMOVING,
+	GS_PLUGIN_STATUS_COPYING,
 	/*< private >*/
 	GS_PLUGIN_STATUS_LAST
 } GsPluginStatus;
