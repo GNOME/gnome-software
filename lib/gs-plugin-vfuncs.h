@@ -969,7 +969,7 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Updates a list of applications, typically scheduling them for offline update.
+ * Returns a list of language packs, as per input language code or locale.
  *
  * Returns: %TRUE for success or if not relevant
  **/
