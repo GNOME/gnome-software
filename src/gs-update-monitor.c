@@ -675,7 +675,7 @@ check_language_pack (GsUpdateMonitor *monitor) {
 							NULL,
 							&error);
 
-	if (!search_app_list)
+	if (search_app_list == NULL)
 		return;
 
 	/* there shall be one langpack for a given locale */
@@ -684,18 +684,19 @@ check_language_pack (GsUpdateMonitor *monitor) {
 		g_autoptr(GsApp) lang_pack_app = NULL;
 		lang_pack_app = gs_app_list_index (search_app_list, 0);
 
-		if (lang_pack_app && gs_app_get_source_id_default(lang_pack_app) &&
-			!gs_app_is_installed(lang_pack_app)) {
+		if (lang_pack_app && gs_app_get_source_id_default (lang_pack_app) &&
+			!gs_app_is_installed (lang_pack_app)) {
 
+			gboolean ret;
 			g_autoptr(GsPluginJob) plugin_install_job = NULL;
 			plugin_install_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 								"app", lang_pack_app,
 								NULL);
-			gs_plugin_loader_job_action (monitor->plugin_loader,
-							plugin_install_job,
-							NULL,
-							&error);
-			if (!error) {
+			ret = gs_plugin_loader_job_action (monitor->plugin_loader,
+							   plugin_install_job,
+							   NULL,
+							   &error);
+			if (ret == TRUE) {
 				g_debug ("language pack for %s installed.", gs_app_get_name (lang_pack_app));
 			}
 		}
