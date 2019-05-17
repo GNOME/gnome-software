@@ -6,7 +6,7 @@ stages:
 before_script:
   # Update and use base build deps
   - dnf -y update
-  - dnf -y install 'dnf-command(builddep)' dbus-daemon
+  - dnf -y install 'dnf-command(builddep)'
   - dnf -y builddep gnome-software
 
 build-gnome-software:
@@ -14,12 +14,6 @@ build-gnome-software:
   script:
   - meson -Drpm_ostree=true _build .
   - ninja -v -C _build
-  - mkdir -p /run/dbus
-  - mkdir -p /var
-  - ln -s /var/run /run
-  - dbus-daemon --system --fork
-  - /usr/lib/polkit-1/polkitd -n &
-  - /usr/libexec/fwupd/fwupd -v &
   - meson test -v -C _build gs-self-test-lib
   - meson test -v -C _build gs-self-test-core
   - meson test -v -C _build gs-self-test-dpkg
