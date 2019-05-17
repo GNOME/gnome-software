@@ -239,7 +239,7 @@ shared_module(
 
 shared_module(
   'gs_plugin_langpacks',
-  sources : 'gs-plugin-langpacks.c',
+  sources : 'gs-plugin-fedora-langpacks.c',
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),
