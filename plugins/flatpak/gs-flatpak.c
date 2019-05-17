@@ -215,6 +215,7 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_flatpak_app_set_ref_name (app, flatpak_ref_get_name (xref));
 	gs_flatpak_app_set_ref_arch (app, flatpak_ref_get_arch (xref));
 	gs_flatpak_app_set_ref_branch (app, flatpak_ref_get_branch (xref));
+	gs_flatpak_app_set_ref_collection_id (app, flatpak_ref_get_collection_id (xref));
 	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
 
 	/* map the flatpak kind to the gnome-software kind */
@@ -427,6 +428,55 @@ gs_flatpak_get_xremote_main_ref (GsFlatpak *self, FlatpakRemote *xremote, GError
 #endif
 
 static gboolean
+gs_flatpak_mark_apps_from_usb_remote (GsFlatpak *self,
+				      FlatpakRemote *remote,
+				      gboolean *found_usb_apps,
+				      GCancellable *cancellable,
+				      GError **error)
+{
+	g_autoptr(GPtrArray) refs = NULL;
+	g_autofree gchar *remote_url = flatpak_remote_get_url (remote);
+
+	refs = flatpak_installation_list_remote_refs_sync (self->installation,
+							   remote_url,
+							   cancellable,
+							   error);
+
+	if (refs == NULL)
+		return FALSE;
+
+	for (guint i = 0; i < refs->len; ++i) {
+		FlatpakRef *ref = FLATPAK_REF (g_ptr_array_index (refs, i));
+		g_autoptr(GsApp) app = gs_flatpak_create_app (self, NULL /* origin */, ref);
+		const gchar *ref_collection_id = flatpak_ref_get_collection_id (ref);
+		const gchar *app_collection_id = NULL;
+
+		app_collection_id = gs_flatpak_app_get_ref_collection_id (app);
+		if (g_strcmp0 (ref_collection_id, app_collection_id) != 0) {
+			g_debug ("Not marking app %s as coming from USB at %s, "
+				 "since the app and ref collection IDs don't "
+				 "match (%s != %s)",
+				 gs_app_get_unique_id (app), remote_url,
+				 app_collection_id, ref_collection_id);
+			continue;
+		}
+
+		gs_app_add_category (app, "USB");
+
+		/* add a keyword so users can search for "usb" */
+		/* TODO as_app_add_keyword (as_app, NULL, "usb"); */
+
+		/* adding the priority so these apps are not filtered out in the
+		 * category view when there are others with the same ID */
+		gs_app_set_priority (app, 100);
+
+		if (found_usb_apps)
+			*found_usb_apps = TRUE;
+	}
+	return TRUE;
+}
+
+static gboolean
 gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				  XbBuilder *builder,
 				  FlatpakRemote *xremote,
@@ -444,6 +494,19 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(XbBuilderFixup) fixup3 = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
+	g_autofree gchar *remote_url = NULL;
+	g_autofree gchar *collection_id = NULL;
+
+	remote_url = flatpak_remote_get_url (xremote);
+	if (g_str_has_prefix (remote_url, "file:")) {
+		g_autoptr(GFile) remote_local_repo = g_file_new_for_uri (remote_url);
+		if (!g_file_query_exists (remote_local_repo, cancellable)) {
+			g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND,
+				     "Local repo for remote %s not found: %s",
+				     flatpak_remote_get_name (xremote), remote_url);
+			return FALSE;
+		}
+	}
 
 	/* get the AppStream data location */
 	appstream_dir = flatpak_remote_get_appstream_dir (xremote, NULL);
@@ -663,6 +726,8 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(GPtrArray) usb_remotes = NULL;
+	const FlatpakRemoteType types[] = { FLATPAK_REMOTE_TYPE_STATIC, FLATPAK_REMOTE_TYPE_USB };
 
 	reader_locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 	/* everything is okay */
@@ -686,21 +751,45 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 		xb_builder_add_locale (builder, locales[i]);
 
 	/* go through each remote adding metadata */
-	xremotes = flatpak_installation_list_remotes (self->installation,
-						      cancellable,
-						      error);
+	xremotes = flatpak_installation_list_remotes_by_type (self->installation,
+							      types,
+							      G_N_ELEMENTS (types),
+							      cancellable, error);
 	if (xremotes == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	usb_remotes = g_ptr_array_new ();
+
 	for (guint i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
+
+		/* gather the USB type remotes for marking the #GsApp objects
+		 * we create here as coming from it later */
+		if (flatpak_remote_get_remote_type (xremote) == FLATPAK_REMOTE_TYPE_USB) {
+			g_ptr_array_add (usb_remotes, xremote);
+			continue;
+		}
 		if (flatpak_remote_get_disabled (xremote))
 			continue;
 		g_debug ("found remote %s",
 			 flatpak_remote_get_name (xremote));
 		if (!gs_flatpak_add_apps_from_xremote (self, builder, xremote, cancellable, error))
 			return FALSE;
+	}
+
+	for (guint i = 0; i < usb_remotes->len; ++i) {
+		FlatpakRemote *remote = g_ptr_array_index (usb_remotes, i);
+		g_autoptr(GError) local_error = NULL;
+		if (!gs_flatpak_mark_apps_from_usb_remote (self, remote, NULL,
+							   cancellable, &local_error)) {
+			g_autofree gchar *remote_url = flatpak_remote_get_url (remote);
+			g_debug ("Failed to mark apps coming from USB remote at %s: %s",
+				 remote_url,
+				 local_error->message);
+			continue;
+		}
 	}
 
 	/* add any installed files without AppStream info */
@@ -1799,6 +1888,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
 	gs_flatpak_app_set_ref_branch (app, split[2]);
+	/* TODO collection ID? */
 
 	/* save in the cache */
 	gs_plugin_cache_add (self->plugin, NULL, app);
