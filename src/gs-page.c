@@ -214,6 +214,13 @@ gs_page_app_installed_cb (GObject *source,
 		return;
 	}
 
+	/* the single update needs system reboot, e.g. for firmware */
+	if (gs_app_has_quirk (helper->app, GS_APP_QUIRK_NEEDS_REBOOT)) {
+		g_autoptr(GsAppList) list = gs_app_list_new ();
+		gs_app_list_add (list, helper->app);
+		gs_utils_reboot_notify (list);
+	}
+
 	/* only show this if the window is not active */
 	if (gs_app_is_installed (helper->app) &&
 	    helper->action == GS_PLUGIN_ACTION_INSTALL &&
