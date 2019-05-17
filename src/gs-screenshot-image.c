@@ -11,12 +11,6 @@
 
 #include <glib/gi18n.h>
 
-#ifdef HAVE_GNOME_DESKTOP
-#define GNOME_DESKTOP_USE_UNSTABLE_API
-#include <libgnome-desktop/gnome-bg.h>
-#include <libgnome-desktop/gnome-desktop-thumbnail.h>
-#endif
-
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
 
@@ -35,7 +29,6 @@ struct _GsScreenshotImage
 	SoupMessage	*message;
 	gchar		*filename;
 	const gchar	*current_image;
-	gboolean	 use_desktop_background;
 	guint		 width;
 	guint		 height;
 	guint		 scale;
@@ -66,91 +59,34 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 	ssimg->showing_image = FALSE;
 }
 
-static GdkPixbuf *
-gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
-{
-#ifdef HAVE_GNOME_DESKTOP
-	g_autoptr(GnomeBG) bg = NULL;
-	g_autoptr(GnomeDesktopThumbnailFactory) factory = NULL;
-	g_autoptr(GSettings) settings = NULL;
-
-	factory = gnome_desktop_thumbnail_factory_new (GNOME_DESKTOP_THUMBNAIL_SIZE_LARGE);
-	bg = gnome_bg_new ();
-	settings = g_settings_new ("org.gnome.desktop.background");
-	gnome_bg_load_from_preferences (bg, settings);
-	return gnome_bg_create_thumbnail (bg, factory,
-					  gdk_screen_get_default (),
-					  (gint) ssimg->width,
-					  (gint) ssimg->height);
-#else
-	return NULL;
-#endif
-}
-
-static gboolean
-gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf *pixbuf)
-{
-	g_autoptr(AsImage) im = NULL;
-
-	/* nothing to show, means no background mode */
-	if (pixbuf == NULL)
-		return FALSE;
-	/* background mode explicitly disabled */
-	if (!ssimg->use_desktop_background)
-		return FALSE;
-
-	/* use a temp AsImage */
-	im = as_image_new ();
-	as_image_set_pixbuf (im, pixbuf);
-	return (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_INTERNAL) > 0;
-}
-
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
-	g_autoptr(GdkPixbuf) pixbuf_bg = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 
 	/* no need to composite */
 	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
-		pixbuf_bg = gdk_pixbuf_new_from_file (ssimg->filename, NULL);
+		pixbuf = gdk_pixbuf_new_from_file (ssimg->filename, NULL);
 	} else {
 		/* this is always going to have alpha */
 		pixbuf = gdk_pixbuf_new_from_file_at_scale (ssimg->filename,
 							    (gint) (ssimg->width * ssimg->scale),
 							    (gint) (ssimg->height * ssimg->scale),
 							    FALSE, NULL);
-		if (pixbuf != NULL) {
-			if (gs_screenshot_image_use_desktop_background (ssimg, pixbuf)) {
-				pixbuf_bg = gs_screenshot_image_get_desktop_pixbuf (ssimg);
-				if (pixbuf_bg == NULL) {
-					pixbuf_bg = g_object_ref (pixbuf);
-				} else {
-					gdk_pixbuf_composite (pixbuf, pixbuf_bg,
-							      0, 0,
-							      (gint) ssimg->width,
-							      (gint) ssimg->height,
-							      0, 0, 1.0f, 1.0f,
-							      GDK_INTERP_NEAREST, 255);
-				}
-			} else {
-				pixbuf_bg = g_object_ref (pixbuf);
-			}
-		}
 	}
 
 	/* show icon */
 	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
-		if (pixbuf_bg != NULL) {
+		if (pixbuf != NULL) {
 			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
-							     pixbuf_bg, (gint) ssimg->scale);
+							     pixbuf, (gint) ssimg->scale);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
 		ssimg->current_image = "image2";
 	} else {
-		if (pixbuf_bg != NULL) {
+		if (pixbuf != NULL) {
 			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
-							     pixbuf_bg, (gint) ssimg->scale);
+							     pixbuf, (gint) ssimg->scale);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
 		ssimg->current_image = "image1";
@@ -369,14 +305,6 @@ gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 	gtk_widget_set_size_request (ssimg->stack, (gint) width, (gint) height);
 }
 
-void
-gs_screenshot_image_set_use_desktop_background (GsScreenshotImage *ssimg,
-                                                gboolean use_desktop_background)
-{
-	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
-	ssimg->use_desktop_background = use_desktop_background;
-}
-
 static gchar *
 gs_screenshot_get_cachefn_for_url (const gchar *url)
 {
@@ -592,7 +520,6 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
 	AtkObject *accessible;
 
-	ssimg->use_desktop_background = TRUE;
 	ssimg->settings = g_settings_new ("org.gnome.software");
 	ssimg->showing_image = FALSE;
 

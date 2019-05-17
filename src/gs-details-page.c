@@ -515,7 +515,6 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 						      640,
 						      48);
-			gs_screenshot_image_set_use_desktop_background (GS_SCREENSHOT_IMAGE (ssimg), FALSE);
 			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 			gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_main), ssimg);
 			gtk_widget_set_visible (ssimg, TRUE);
