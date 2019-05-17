@@ -611,6 +611,44 @@ gboolean	 gs_plugin_app_copy			(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
+ * gs_plugin_os_get_copyable:
+ * @plugin: a #GsPlugin
+ * @copy_dest: the destination directory
+ * @copyable: whether this app can be copied
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Determine whether gs_plugin_os_copy() with this @copy_dest should succeed
+ * (barring runtime errors which cannot be known in advance).
+ *
+ * @copyable will be pointed to %FALSE if copying the OS to @copy_dest will
+ * certainly fail or %TRUE otherwise
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_os_get_copyable			(GsPlugin	*plugin,
+								 GFile		*copy_dest,
+								 gboolean	*copyable,
+								 GCancellable	*cancellable,
+								 GError		**error);
+
+/**
+ * gs_plugin_os_copy:
+ * @plugin: a #GsPlugin
+ * @copy_dest: the destination directory
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Copy the latest version of the OS to the destination directory.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_os_copy			(GsPlugin	*plugin,
+							 GFile		*copy_dest,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
  * gs_plugin_app_install:
  * @plugin: a #GsPlugin
  * @app: a #GsApp
