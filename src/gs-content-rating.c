@@ -502,16 +502,16 @@ gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_ESRB) {
 		if (age >= 18)
-			return "Adults Only";
+			return _("Adults Only");
 		if (age >= 17)
-			return "Mature";
+			return _("Mature");
 		if (age >= 13)
-			return "Teen";
+			return _("Teen");
 		if (age >= 10)
-			return "Everyone 10+";
+			return _("Everyone 10+");
 		if (age >= 6)
-			return "Everyone";
-		return "Early Childhood";
+			return _("Everyone");
+		return _("Early Childhood");
 	}
 	/* IARC = everything else */
 	if (age >= 18)
