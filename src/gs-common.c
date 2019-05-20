@@ -612,19 +612,21 @@ void
 gs_utils_reboot_notify (GsAppList *list)
 {
 	g_autoptr(GNotification) n = NULL;
+	const gchar *title;
+	const gchar *body;
 
-	if (gs_app_list_length (list) == 1) {
-		/* TRANSLATORS: we've just live-updated some apps */
-		n = g_notification_new (_("An update has been installed"));
-		/* TRANSLATORS: the new apps will not be run until we restart */
-		g_notification_set_body (n, _("A restart is required for it to take effect."));
-	} else {
-		/* TRANSLATORS: we've just live-updated some apps */
-		n = g_notification_new (_("Updates have been installed"));
-		/* TRANSLATORS: the new app will not work until we restart */
-		g_notification_set_body (n, _("A restart is required for them to take effect."));
-	}
+	/* TRANSLATORS: we've just live-updated some apps */
+	title = ngettext ("An update has been installed",
+	                  "Updates have been installed",
+	                  gs_app_list_length (list));
 
+	/* TRANSLATORS: the new apps will not be run until we restart */
+	body = ngettext ("A restart is required for it to take effect.",
+	                 "A restart is required for them to take effect.",
+	                 gs_app_list_length (list));
+
+	n = g_notification_new (title);
+	g_notification_set_body (n, body);
 	/* TRANSLATORS: button text */
 	g_notification_add_button (n, _("Not Now"), "app.nop");
 	/* TRANSLATORS: button text */
