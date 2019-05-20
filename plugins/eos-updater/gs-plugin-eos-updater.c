@@ -767,6 +767,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMainContext) context = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -784,14 +785,9 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	g_assert (app == priv->os_upgrade);
 	os_upgrade_set_download_by_user (app, TRUE);
-	/* TODO: cancellation doesn’t work because the UI-facing GCancellable
-	 * is disconnected from the job cancellable (which is exposed as
-	 * @cancellable here) as soon as this async method returns. Should we
-	 * block this method until the download completes (i.e. until
-	 * eos-updater reaches the UPDATE_READY state)? */
 	os_upgrade_set_cancellable (plugin, cancellable);
 
-	g_message ("GsPluginEosUpdater: %s: set cancellable to %p", G_STRFUNC, cancellable);
+	g_debug ("GsPluginEosUpdater: %s: set cancellable to %p", G_STRFUNC, cancellable);
 
 	/* we need to poll again if there has been an error; the state of the
 	 * OS upgrade will then be dealt with from outside this function,
@@ -803,8 +799,35 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 		gs_eos_updater_error_convert (error);
 		return success;
 	} else {
+		/* Now that we’ve called os_upgrade_set_download_by_user(TRUE),
+		 * calling sync_state_from_updater() will call Fetch() on the
+		 * updater service and start the download. */
 		if (!sync_state_from_updater (plugin, cancellable, error))
 			return FALSE;
+	}
+
+	/* Block until the download is complete or failed. Cancellation should
+	 * result in the updater changing state to %EOS_UPDATER_STATE_ERROR.
+	 * Updates of the updater’s progress properties should result in
+	 * callbacks to updater_downloaded_bytes_changed() to update the app
+	 * download progress. */
+	context = g_main_context_dup_thread_default ();
+	while (gs_eos_updater_get_state (priv->updater_proxy) == EOS_UPDATER_STATE_FETCHING)
+		g_main_context_iteration (context, TRUE);
+
+	/* Process the final state. */
+	if (gs_eos_updater_get_state (priv->updater_proxy) == EOS_UPDATER_STATE_ERROR) {
+		const gchar *error_name;
+		const gchar *error_message;
+		g_autoptr(GError) local_error = NULL;
+
+		error_name = gs_eos_updater_get_error_name (priv->updater_proxy);
+		error_message = gs_eos_updater_get_error_message (priv->updater_proxy);
+		local_error = g_dbus_error_new_for_dbus_error (error_name, error_message);
+		gs_eos_updater_error_convert (&local_error);
+		g_propagate_error (error, g_steal_pointer (&local_error));
+
+		return FALSE;
 	}
 
 	return TRUE;
