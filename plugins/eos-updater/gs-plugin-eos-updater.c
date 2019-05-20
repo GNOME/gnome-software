@@ -583,6 +583,17 @@ gs_plugin_setup (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	g_signal_connect_object (priv->updater_proxy, "notify::state",
+				 G_CALLBACK (updater_state_changed),
+				 plugin, G_CONNECT_SWAPPED);
+	g_signal_connect_object (priv->updater_proxy,
+				 "notify::downloaded-bytes",
+				 G_CALLBACK (updater_downloaded_bytes_changed),
+				 plugin, G_CONNECT_SWAPPED);
+	g_signal_connect_object (priv->updater_proxy, "notify::version",
+				 G_CALLBACK (updater_version_changed),
+				 plugin, G_CONNECT_SWAPPED);
+
 	/* prepare EOS upgrade app + sync initial state */
 	return setup_os_upgrade (plugin, cancellable, error);
 }
@@ -665,17 +676,6 @@ setup_os_upgrade (GsPlugin      *plugin,
 
 	/* for debug purposes we create the OS upgrade even if the EOS updater is NULL */
 	if (priv->updater_proxy != NULL) {
-		g_signal_connect_object (priv->updater_proxy, "notify::state",
-					 G_CALLBACK (updater_state_changed),
-					 plugin, G_CONNECT_SWAPPED);
-		g_signal_connect_object (priv->updater_proxy,
-					 "notify::downloaded-bytes",
-					 G_CALLBACK (updater_downloaded_bytes_changed),
-					 plugin, G_CONNECT_SWAPPED);
-		g_signal_connect_object (priv->updater_proxy, "notify::version",
-					 G_CALLBACK (updater_version_changed),
-					 plugin, G_CONNECT_SWAPPED);
-
 		/* sync initial state */
 		if (!sync_state_from_updater (plugin, cancellable, error))
 			return FALSE;
