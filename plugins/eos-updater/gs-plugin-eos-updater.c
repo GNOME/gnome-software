@@ -24,13 +24,15 @@
  */
 
 #include <config.h>
-
-#include <ostree.h>
-#include <gnome-software.h>
+#include <gio/gio.h>
+#include <glib.h>
 #include <glib/gi18n.h>
+#include <glib-object.h>
+#include <gnome-software.h>
 #include <gs-plugin.h>
 #include <gs-utils.h>
 #include <math.h>
+#include <ostree.h>
 
 #include "gs-eos-updater-generated.h"
 
