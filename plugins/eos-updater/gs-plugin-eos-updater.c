@@ -674,12 +674,9 @@ setup_os_upgrade (GsPlugin      *plugin,
 
 	priv->os_upgrade = g_steal_pointer (&app);
 
-	/* for debug purposes we create the OS upgrade even if the EOS updater is NULL */
-	if (priv->updater_proxy != NULL) {
-		/* sync initial state */
-		if (!sync_state_from_updater (plugin, cancellable, error))
-			return FALSE;
-	}
+	/* sync initial state */
+	if (!sync_state_from_updater (plugin, cancellable, error))
+		return FALSE;
 
 	return TRUE;
 }
