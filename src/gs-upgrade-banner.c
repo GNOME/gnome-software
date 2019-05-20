@@ -128,6 +128,10 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		break;
 	}
 
+	/* Hide the upgrade box until the app state is known. */
+	gtk_widget_set_visible (priv->box_upgrades,
+				(gs_app_get_state (priv->app) != AS_APP_STATE_UNKNOWN));
+
 	/* Refresh the summary if we got anything better than the default blurb */
 	if (gs_app_get_summary (priv->app) != NULL)
 		gtk_label_set_text (GTK_LABEL (priv->label_upgrades_summary),
