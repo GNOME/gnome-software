@@ -6,7 +6,7 @@ stages:
 before_script:
   # Update and use base build deps
   - dnf -y update
-  - dnf -y install 'dnf-command(builddep)'
+  - dnf -y install 'dnf-command(builddep)' dbus
   - dnf -y builddep gnome-software
 
 build-gnome-software:
