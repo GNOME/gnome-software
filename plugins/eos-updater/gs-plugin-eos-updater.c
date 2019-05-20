@@ -811,7 +811,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	 * Updates of the updater’s progress properties should result in
 	 * callbacks to updater_downloaded_bytes_changed() to update the app
 	 * download progress. */
-	context = g_main_context_dup_thread_default ();
+	context = g_main_context_ref_thread_default ();
 	while (gs_eos_updater_get_state (priv->updater_proxy) == EOS_UPDATER_STATE_FETCHING)
 		g_main_context_iteration (context, TRUE);
 
