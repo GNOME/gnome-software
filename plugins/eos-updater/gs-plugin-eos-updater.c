@@ -46,6 +46,8 @@
  * TODO: document main_context and threading
  */
 
+static const guint max_progress_for_update = 75;
+
 typedef enum {
 	EOS_UPDATER_STATE_NONE = 0,
 	EOS_UPDATER_STATE_READY,
@@ -141,7 +143,7 @@ gs_eos_updater_error_convert (GError **perror)
 #define EOS_UPGRADE_APPLY_STEP_TIME 0.250 /* sec */
 
 static gboolean setup_os_upgrade (GsPlugin *plugin, GCancellable *cancellable, GError **error);
-static gboolean sync_state_from_updater (GsPlugin *plugin, GCancellable *cancellable, GError **error);
+static void sync_state_from_updater (GsPlugin *plugin);
 
 struct GsPluginData
 {
@@ -162,34 +164,6 @@ os_upgrade_cancelled_cb (GCancellable *cancellable,
 
 	g_debug ("%s: Cancelling upgrade", G_STRFUNC);
 	gs_eos_updater_call_cancel (priv->updater_proxy, NULL, NULL, NULL);
-}
-
-static void
-app_ensure_set_metadata_variant (GsApp *app, const gchar *key, GVariant *var)
-{
-	/* we need to assign it to NULL in order to be able to override it
-	 * (safeguard mechanism in GsApp...) */
-	gs_app_set_metadata_variant (app, key, NULL);
-	gs_app_set_metadata_variant (app, key, var);
-}
-
-static void
-os_upgrade_set_download_by_user (GsApp *app, gboolean value)
-{
-	g_autoptr(GVariant) var = g_variant_new_boolean (value);
-
-	g_debug ("%s: %s", G_STRFUNC, value ? "true" : "false");
-
-	app_ensure_set_metadata_variant (app, "eos::DownloadByUser", var);
-}
-
-static gboolean
-os_upgrade_get_download_by_user (GsApp *app)
-{
-	GVariant *value = gs_app_get_metadata_variant (app, "eos::DownloadByUser");
-	if (value == NULL)
-		return FALSE;
-	return g_variant_get_boolean (value);
 }
 
 static gboolean
@@ -245,41 +219,15 @@ eos_updater_error_is_cancelled (const gchar *error_name)
 static void
 updater_state_changed (GsPlugin *plugin)
 {
-	g_autoptr(GError) local_error = NULL;
-
 	g_debug ("%s", G_STRFUNC);
 
-	if (!sync_state_from_updater (plugin, NULL, &local_error)) {
-		GsPluginData *priv = gs_plugin_get_data (plugin);
-		GsApp *app = priv->os_upgrade;
-
-		g_warning ("Error syncing state from updater: %s", local_error->message);
-
-		/* only set up an error to be shown to the user if the user had
-		 * manually started the upgrade, and if the error in question
-		 * is not originated by the user canceling the upgrade; errors
-		 * are typically reported here due to eos-updater dying part-way
-		 * through an upgrade (and hence the state reverting to NONE) */
-		if (os_upgrade_get_download_by_user (app) &&
-		    !g_error_matches (local_error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
-			gs_eos_updater_error_convert (&local_error);
-			gs_plugin_event_set_app (event, app);
-			gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD);
-			gs_plugin_event_set_error (event, local_error);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			gs_plugin_report_event (plugin, event);
-		}
-	}
+	sync_state_from_updater (plugin);
 }
 
 static void
 updater_downloaded_bytes_changed (GsPlugin *plugin)
 {
-	g_autoptr(GError) local_error = NULL;
-
-	if (!sync_state_from_updater (plugin, NULL, &local_error))
-		g_warning ("Error syncing downloaded bytes from updater: %s", local_error->message);
+	sync_state_from_updater (plugin);
 }
 
 static void
@@ -327,22 +275,19 @@ fake_os_upgrade_progress (GsPlugin *plugin)
 /* This method deals with the synchronization between the EOS updater's states
  * (D-Bus service) and the OS upgrade's states (GsApp), in order to show the user
  * what is happening and what they can do. */
-static gboolean
-sync_state_from_updater (GsPlugin      *plugin,
-                         GCancellable  *cancellable,
-                         GError       **error)
+static void
+sync_state_from_updater (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app = priv->os_upgrade;
 	EosUpdaterState state;
 	AsAppState previous_app_state = gs_app_get_state (app);
 	AsAppState current_app_state;
-	const guint max_progress_for_update = 75;
 
 	/* in case the OS upgrade has been disabled */
 	if (priv->updater_proxy == NULL) {
 		g_debug ("%s: Updater disabled", G_STRFUNC);
-		return TRUE;
+		return;
 	}
 
 	state = gs_eos_updater_get_state (priv->updater_proxy);
@@ -352,42 +297,17 @@ sync_state_from_updater (GsPlugin      *plugin,
 	case EOS_UPDATER_STATE_NONE:
 	case EOS_UPDATER_STATE_READY: {
 		app_set_state (plugin, app, AS_APP_STATE_UNKNOWN);
-
-		if (os_upgrade_get_download_by_user (app)) {
-			// TODO: sync call will block the main thread
-			if (!gs_eos_updater_call_poll_sync (priv->updater_proxy,
-							    cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
-		}
 		break;
 	} case EOS_UPDATER_STATE_POLLING: {
 		/* Nothing to do here. */
 		break;
 	} case EOS_UPDATER_STATE_UPDATE_AVAILABLE: {
+		guint64 total_size;
+
 		app_set_state (plugin, app, AS_APP_STATE_AVAILABLE);
 
-		if (os_upgrade_get_download_by_user (app)) {
-			g_auto(GVariantDict) options_dict = G_VARIANT_DICT_INIT (NULL);
-
-			/* when the OS upgrade was started by the user and the
-			 * updater reports an available update, (meaning we were
-			 * polling before), we should readily call fetch */
-			g_variant_dict_insert (&options_dict, "force", "b", TRUE);
-
-			// TODO: sync call will block the main thread
-			if (!gs_eos_updater_call_fetch_full_sync (priv->updater_proxy,
-								  g_variant_dict_end (&options_dict),
-								  cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
-		} else {
-			guint64 total_size =
-				gs_eos_updater_get_download_size (priv->updater_proxy);
-			gs_app_set_size_download (app, total_size);
-		}
+		total_size = gs_eos_updater_get_download_size (priv->updater_proxy);
+		gs_app_set_size_download (app, total_size);
 
 		break;
 	}
@@ -418,20 +338,6 @@ sync_state_from_updater (GsPlugin      *plugin,
 	}
 	case EOS_UPDATER_STATE_UPDATE_READY: {
 		app_set_state (plugin, app, AS_APP_STATE_UPDATABLE);
-
-		/* if there's an update ready to deployed, and it was started by
-		 * the user, we should proceed to applying the upgrade */
-		if (os_upgrade_get_download_by_user (app)) {
-			gs_app_set_progress (app, max_progress_for_update);
-
-			// TODO: sync call will block the main thread
-			if (!gs_eos_updater_call_apply_sync (priv->updater_proxy,
-							     cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
-		}
-
 		break;
 	}
 	case EOS_UPDATER_STATE_APPLYING_UPDATE: {
@@ -460,16 +366,13 @@ sync_state_from_updater (GsPlugin      *plugin,
 	case EOS_UPDATER_STATE_ERROR: {
 		const gchar *error_name;
 		const gchar *error_message;
-		g_autoptr(GError) local_error = NULL;
 
 		error_name = gs_eos_updater_get_error_name (priv->updater_proxy);
 		error_message = gs_eos_updater_get_error_message (priv->updater_proxy);
-		local_error = g_dbus_error_new_for_dbus_error (error_name, error_message);
 
 		/* unless the error is because the user cancelled the upgrade,
 		 * we should make sure it gets in the journal */
-		if (!(os_upgrade_get_download_by_user (app) &&
-		      eos_updater_error_is_cancelled (error_name)))
+		if (!eos_updater_error_is_cancelled (error_name))
 			g_warning ("Got OS upgrade error state with name '%s': %s",
 				   error_name, error_message);
 
@@ -477,33 +380,6 @@ sync_state_from_updater (GsPlugin      *plugin,
 		 * go through the ready → poll → fetch → apply loop again in
 		 * order to recover its state. So go back to ‘unknown’. */
 		app_set_state (plugin, app, AS_APP_STATE_UNKNOWN);
-
-		/* if we need to restart when an error occurred, just call poll
-		 * since it will perform the full upgrade as the
-		 * eos::DownloadByUser is true */
-		if (os_upgrade_get_download_by_user (app)) {
-			g_debug ("Restarting OS upgrade on error");
-			// TODO: sync call will block the main thread
-			if (!gs_eos_updater_call_poll_sync (priv->updater_proxy,
-							    cancellable, error)) {
-				gs_eos_updater_error_convert (error);
-				return FALSE;
-			}
-		}
-
-		/* only set up an error to be shown to the user if the user had
-		 * manually started the upgrade, and if the error in question is not
-		 * originated by the user canceling the upgrade */
-		if (os_upgrade_get_download_by_user (app) &&
-		    !eos_updater_error_is_cancelled (error_name)) {
-			g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
-			gs_eos_updater_error_convert (&local_error);
-			gs_plugin_event_set_app (event, app);
-			gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD);
-			gs_plugin_event_set_error (event, local_error);
-			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
-			gs_plugin_report_event (plugin, event);
-		}
 
 		break;
 	}
@@ -518,14 +394,6 @@ sync_state_from_updater (GsPlugin      *plugin,
 		 G_STRFUNC, as_app_state_to_string (previous_app_state),
 		 as_app_state_to_string (current_app_state));
 
-	/* reset the 'download-by-user' state on error or completion */
-	if (state == EOS_UPDATER_STATE_ERROR ||
-	    state == EOS_UPDATER_STATE_UPDATE_APPLIED ||
-	    state == EOS_UPDATER_STATE_NONE ||
-	    state == EOS_UPDATER_STATE_READY) {
-		os_upgrade_set_download_by_user (app, FALSE);
-	}
-
 	/* if the state changed from or to 'unknown', we need to notify that a
 	 * new update should be shown */
 	if (should_add_os_upgrade (previous_app_state) !=
@@ -533,8 +401,6 @@ sync_state_from_updater (GsPlugin      *plugin,
 		g_debug ("%s: Calling gs_plugin_updates_changed()", G_STRFUNC);
 		gs_plugin_updates_changed (plugin);
 	}
-
-	return TRUE;
 }
 
 /* This is called in the main thread, so will end up creating an @updater_proxy
@@ -680,18 +546,24 @@ setup_os_upgrade (GsPlugin      *plugin,
 	priv->os_upgrade = g_steal_pointer (&app);
 
 	/* sync initial state */
-	if (!sync_state_from_updater (plugin, cancellable, error))
-		return FALSE;
+	sync_state_from_updater (plugin);
 
 	return TRUE;
 }
 
-static gboolean
-check_for_os_updates (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+// TODO: run in main_context
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GCancellable *cancellable,
+		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	EosUpdaterState updater_state;
 	gboolean success;
+
+	/* We let the eos-updater daemon do its own caching, so ignore the @cache_age. */
+	g_debug ("%s: cache_age: %u", G_STRFUNC, cache_age);
 
 	/* check if the OS upgrade has been disabled */
 	if (priv->updater_proxy == NULL) {
@@ -706,7 +578,7 @@ check_for_os_updates (GsPlugin *plugin, GCancellable *cancellable, GError **erro
 	case EOS_UPDATER_STATE_ERROR:
 	case EOS_UPDATER_STATE_NONE:
 	case EOS_UPDATER_STATE_READY:
-		// TODO: sync call will block the main thread
+		/* This sync call will block the job thread, which is OK. */
 		success = gs_eos_updater_call_poll_sync (priv->updater_proxy,
 							 cancellable, error);
 		gs_eos_updater_error_convert (error);
@@ -716,19 +588,6 @@ check_for_os_updates (GsPlugin *plugin, GCancellable *cancellable, GError **erro
 			 G_STRFUNC, eos_updater_state_to_str (updater_state));
 		return TRUE;
 	}
-}
-
-// TODO: run in main_context
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GCancellable *cancellable,
-		   GError **error)
-{
-	g_debug ("%s: cache_age: %u", G_STRFUNC, cache_age);
-
-	/* We let the eos-updater daemon do its own caching, so ignore the @cache_age. */
-	return check_for_os_updates (plugin, cancellable, error);
 }
 
 // TODO: run in main_context
@@ -789,6 +648,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GMainContext) context = NULL;
 	gulong cancelled_id = 0;
+	gboolean done, restarted;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -805,27 +665,8 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	}
 
 	g_assert (app == priv->os_upgrade);
-	os_upgrade_set_download_by_user (app, TRUE);
 
-	/* we need to poll again if there has been an error; the state of the
-	 * OS upgrade will then be dealt with from outside this function,
-	 * according to the state changes of the update itself */
-	if (gs_eos_updater_get_state (priv->updater_proxy) == EOS_UPDATER_STATE_ERROR) {
-		gboolean success;
-		// TODO: sync call will block the main thread
-		success = gs_eos_updater_call_poll_sync (priv->updater_proxy,
-							 cancellable, error);
-		gs_eos_updater_error_convert (error);
-		return success;
-	} else {
-		/* Now that we’ve called os_upgrade_set_download_by_user(TRUE),
-		 * calling sync_state_from_updater() will call Fetch() on the
-		 * updater service and start the download. */
-		if (!sync_state_from_updater (plugin, cancellable, error))
-			return FALSE;
-	}
-
-	/* Set up cancellation. */
+	/* Set up cancellation. TODO: actually needed? */
 	g_debug ("Chaining cancellation from %p to %p", cancellable, priv->cancellable);
 	if (cancellable != NULL) {
 		cancelled_id = g_cancellable_connect (cancellable,
@@ -833,32 +674,162 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 						      plugin, NULL);
 	}
 
-	/* Block until the download is complete or failed. Cancellation should
-	 * result in the updater changing state to %EOS_UPDATER_STATE_ERROR.
-	 * Updates of the updater’s progress properties should result in
-	 * callbacks to updater_downloaded_bytes_changed() to update the app
-	 * download progress. */
-	context = g_main_context_ref_thread_default ();
-	g_debug ("TODO: %s state before looping is %s", G_STRFUNC, eos_updater_state_to_str (gs_eos_updater_get_state (priv->updater_proxy)));
+	/* Step through the state machine until we are finished downloading and
+	 * applying the update, or until an error occurs. All of the D-Bus calls
+	 * here will block until the method call is complete. */
+	done = FALSE;
+	restarted = FALSE;
 
-	while (gs_eos_updater_get_state (priv->updater_proxy) != EOS_UPDATER_STATE_FETCHING) {
-		g_message ("TODO %s: %s", G_STRFUNC, eos_updater_state_to_str (gs_eos_updater_get_state (priv->updater_proxy)));
-		g_main_context_iteration (context, TRUE);
-	}
+	while (!done && !g_cancellable_is_cancelled (cancellable)) {
+		EosUpdaterState state;
 
-	while (gs_eos_updater_get_state (priv->updater_proxy) == EOS_UPDATER_STATE_FETCHING) {
-		g_message ("TODO %s: %s", G_STRFUNC, eos_updater_state_to_str (gs_eos_updater_get_state (priv->updater_proxy)));
-		// TODO don’t seem to be looping here
-		g_main_context_iteration (context, TRUE);
+		state = gs_eos_updater_get_state (priv->updater_proxy);
+		g_debug ("%s: State ‘%s’", G_STRFUNC, eos_updater_state_to_str (state));
+
+		/* TODO this will busyloop */
+		/* TODO: block on the state changing */
+
+		switch (state) {
+		case EOS_UPDATER_STATE_NONE:
+		case EOS_UPDATER_STATE_READY: {
+			g_autoptr(GsPluginEvent) event = NULL;
+			g_autoptr(GError) local_error = NULL;
+
+			/* Poll for an update. This typically only happens if
+			 * we’ve drifted out of sync with the updater process
+			 * due to it dying. In that case, only restart once
+			 * before giving up, so we don’t end up in an endless
+			 * loop (say, if eos-updater always died 50% of the way
+			 * through a download). */
+			if (!restarted) {
+				restarted = TRUE;
+				g_debug ("Restarting OS upgrade from none/ready state");
+				if (!gs_eos_updater_call_poll_sync (priv->updater_proxy,
+								    cancellable, error)) {
+					gs_eos_updater_error_convert (error);
+					return FALSE;
+				}
+				continue;
+			}
+
+			/* Display an error to the user.
+			 * TODO: Just return this using @error? */
+			event = gs_plugin_event_new ();
+			g_set_error_literal (&local_error, GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     _("EOS update service could not fetch and apply the update."));
+			gs_eos_updater_error_convert (&local_error);
+			gs_plugin_event_set_app (event, app);
+			gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD);
+			gs_plugin_event_set_error (event, local_error);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (plugin, event);
+
+			/* Error out. */
+			done = TRUE;
+
+			break;
+		} case EOS_UPDATER_STATE_POLLING: {
+			/* Nothing to do here. */
+			break;
+		} case EOS_UPDATER_STATE_UPDATE_AVAILABLE: {
+			g_auto(GVariantDict) options_dict = G_VARIANT_DICT_INIT (NULL);
+
+			/* when the OS upgrade was started by the user and the
+			 * updater reports an available update, (meaning we were
+			 * polling before), we should readily call fetch */
+			g_variant_dict_insert (&options_dict, "force", "b", TRUE);
+
+			if (!gs_eos_updater_call_fetch_full_sync (priv->updater_proxy,
+								  g_variant_dict_end (&options_dict),
+								  cancellable, error)) {
+				gs_eos_updater_error_convert (error);
+				return FALSE;
+			}
+
+			break;
+		}
+		case EOS_UPDATER_STATE_FETCHING: {
+			/* Nothing to do here. */
+			break;
+		}
+		case EOS_UPDATER_STATE_UPDATE_READY: {
+			/* if there's an update ready to deployed, and it was started by
+			 * the user, we should proceed to applying the upgrade */
+			gs_app_set_progress (app, max_progress_for_update);
+
+			if (!gs_eos_updater_call_apply_sync (priv->updater_proxy,
+							     cancellable, error)) {
+				gs_eos_updater_error_convert (error);
+				return FALSE;
+			}
+
+			break;
+		}
+		case EOS_UPDATER_STATE_APPLYING_UPDATE: {
+			/* Nothing to do here. */
+			break;
+		}
+		case EOS_UPDATER_STATE_UPDATE_APPLIED: {
+			/* Done! */
+			done = TRUE;
+			break;
+		}
+		case EOS_UPDATER_STATE_ERROR: {
+			const gchar *error_name;
+			const gchar *error_message;
+			g_autoptr(GError) local_error = NULL;
+
+			error_name = gs_eos_updater_get_error_name (priv->updater_proxy);
+			error_message = gs_eos_updater_get_error_message (priv->updater_proxy);
+			local_error = g_dbus_error_new_for_dbus_error (error_name, error_message);
+
+			/* If we need to restart when an error occurred, just
+			 * call poll since it will perform the full upgrade.
+			 * Allow one restart for the case where eos-updater is
+			 * in %EOS_UPDATER_STATE_ERROR when
+			 * gs_plugin_app_upgrade_download() is first called. */
+			if (!restarted) {
+				restarted = TRUE;
+				g_debug ("Restarting OS upgrade on error");
+				if (!gs_eos_updater_call_poll_sync (priv->updater_proxy,
+								    cancellable, error)) {
+					gs_eos_updater_error_convert (error);
+					return FALSE;
+				}
+				continue;
+			}
+
+			/* Display an error to the user, unless they cancelled
+			 * the download.
+			 * TODO: Just return this using @error? */
+			if (!eos_updater_error_is_cancelled (error_name)) {
+				g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
+				gs_eos_updater_error_convert (&local_error);
+				gs_plugin_event_set_app (event, app);
+				gs_plugin_event_set_action (event, GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD);
+				gs_plugin_event_set_error (event, local_error);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (plugin, event);
+			}
+
+			/* Error out. */
+			done = TRUE;
+
+			break;
+		}
+		default:
+			g_warning ("Encountered unknown eos-updater state: %u", state);
+			break;
+		}
 	}
-	g_debug ("TODO: %s state after looping is %s", G_STRFUNC, eos_updater_state_to_str (gs_eos_updater_get_state (priv->updater_proxy)));
 
 	if (cancellable != NULL && cancelled_id != 0) {
 		g_debug ("Disconnecting cancellable %p", cancellable);
 		g_cancellable_disconnect (cancellable, cancelled_id);
 	}
 
-	/* Process the final state. */
+	/* Process the final state. TODO */
 	if (gs_eos_updater_get_state (priv->updater_proxy) == EOS_UPDATER_STATE_ERROR) {
 		const gchar *error_name;
 		const gchar *error_message;
