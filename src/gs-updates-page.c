@@ -987,6 +987,7 @@ gs_updates_page_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 	if (self->cancellable_upgrade_download != NULL)
 		g_object_unref (self->cancellable_upgrade_download);
 	self->cancellable_upgrade_download = g_cancellable_new ();
+	g_debug ("Starting upgrade download with cancellable %p", self->cancellable_upgrade_download);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPGRADE_DOWNLOAD,
 					 "interactive", TRUE,
 					 "app", app,
@@ -1268,6 +1269,7 @@ static void
 gs_updates_page_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
                                    GsUpdatesPage *self)
 {
+	g_debug ("Cancelling upgrade download with %p", self->cancellable_upgrade_download);
 	g_cancellable_cancel (self->cancellable_upgrade_download);
 }
 

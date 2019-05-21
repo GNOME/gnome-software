@@ -247,6 +247,7 @@ gs_plugin_loader_helper_free (GsPluginLoaderHelper *helper)
 	}
 
 	if (helper->cancellable_id > 0) {
+		g_debug ("Disconnecting cancellable %p", helper->cancellable_caller);
 		g_cancellable_disconnect (helper->cancellable_caller,
 					  helper->cancellable_id);
 	}
@@ -3353,6 +3354,7 @@ static void
 gs_plugin_loader_cancelled_cb (GCancellable *cancellable, GsPluginLoaderHelper *helper)
 {
 	/* just proxy this forward */
+	g_debug ("Cancelling job with cancellable %p", helper->cancellable);
 	g_cancellable_cancel (helper->cancellable);
 }
 
@@ -3573,6 +3575,7 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	/* jobs always have a valid cancellable, so proxy the caller */
 	helper->cancellable = g_object_ref (cancellable_job);
+	g_debug ("Chaining cancellation from %p to %p", cancellable, cancellable_job);
 	if (cancellable != NULL) {
 		helper->cancellable_caller = g_object_ref (cancellable);
 		helper->cancellable_id =
