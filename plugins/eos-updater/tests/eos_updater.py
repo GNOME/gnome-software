@@ -36,6 +36,7 @@ Usage:
 # The LGPL 2.1+ has been chosen as that’s the license eos-updater is under.
 
 from enum import IntEnum
+from gi.repository import GLib
 import time
 
 import dbus
@@ -331,19 +332,36 @@ def FinishFetch(self):
 
     if self.__fetch_action == 'success':
         # Simulate the download.
+        i = 0
+        loop = GLib.MainLoop(None)
         download_size = self.props[MAIN_IFACE]['DownloadSize']
-        for i in range(0, 100):
+
+        def _download_progress_cb():
+            nonlocal i
+            nonlocal loop
+
             # Allow cancellation.
             if self.props[MAIN_IFACE]['State'] != UpdaterState.FETCHING:
-                return
+                return False
 
             downloaded_bytes = (i / 100.0) * download_size
             self.__set_properties(self, MAIN_IFACE, {
                 'DownloadedBytes':
                     dbus.Int64(downloaded_bytes, variant_level=1),
             })
-            time.sleep(0.1)
 
+            i += 1
+
+            if i > 100:
+                loop.quit()
+                return False
+            else:
+                return True
+
+        GLib.timeout_add(100, _download_progress_cb)
+        loop.run()
+
+        # TODO: update eos-updater with this
         self.__change_state(self, UpdaterState.UPDATE_READY)
     elif self.__fetch_action == 'early-error':
         # Handled in Fetch() itself.

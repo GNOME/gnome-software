@@ -107,6 +107,7 @@ class ManualTest(dbusmock.DBusTestCase):
         '''Instruct the user to do a manual check and block until done'''
         input('\033[92;1m' + prompt + '\033[0m\n')
 
+    @unittest.skip('TODO')
     def test_poll_no_update(self):
         '''Test that no updates are shown if eos-updater successfully says
         there are none.'''
@@ -120,6 +121,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.manual_check('Check there are no EOS updates listed')
         self.await_state(UpdaterState.READY)
 
+    @unittest.skip('TODO')
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.LiveBoot',
               'com.endlessm.Updater.Error.WrongConfiguration',
@@ -137,6 +139,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.manual_check('Check there are no EOS updates listed, and a '
                           'GsPluginEosUpdater is printed on the terminal')
 
+    @unittest.skip('TODO')
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.LiveBoot',
               'com.endlessm.Updater.Error.WrongConfiguration',
@@ -157,6 +160,7 @@ class ManualTest(dbusmock.DBusTestCase):
                           'GsPluginEosUpdater is printed on the terminal')
         self.await_state(UpdaterState.ERROR)
 
+    @unittest.skip('TODO')
     @ddt.data(True, False)
     def test_update_available(self, manually_refresh):
         '''Test that the entire update process works if an update is
@@ -190,6 +194,7 @@ class ManualTest(dbusmock.DBusTestCase):
                           'click it)')
         self.await_state(UpdaterState.UPDATE_APPLIED)
 
+    @unittest.skip('TODO')
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.WrongConfiguration',
               'com.endlessm.Updater.Error.Fetching',
@@ -221,6 +226,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.dbusmock.FinishPoll()
         self.manual_check('Check an EOS update is listed again')
 
+    @unittest.skip('TODO')
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.WrongConfiguration',
               'com.endlessm.Updater.Error.Fetching',
@@ -256,6 +262,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.dbusmock.FinishPoll()
         self.manual_check('Check an EOS update is listed again')
 
+    @unittest.skip('TODO')
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.WrongConfiguration',
               'com.endlessm.Updater.Error.Cancelled')
@@ -288,6 +295,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.dbusmock.FinishPoll()
         self.manual_check('Check an EOS update is listed again')
 
+    @unittest.skip('TODO')
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.WrongConfiguration',
               'com.endlessm.Updater.Error.Cancelled')
@@ -314,7 +322,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.await_state(UpdaterState.APPLYING_UPDATE)
         self.dbusmock.FinishApply()
 
-        # TODO: upgrade-banner doesn’t handle unknown app state
+        # TODO: upgrade-banner doesn’t handle unknown app state asda
         # 13:37:40:0287 Gs  Unexpected app state ‘unknown’ of app
         # ‘system/*/*/os-upgrade/com.endlessm.EOS.upgrade/*’
         self.await_state(UpdaterState.ERROR)
@@ -327,6 +335,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.dbusmock.FinishPoll()
         self.manual_check('Check an EOS update is listed again')
 
+    @unittest.skip('TODO')
     def test_no_eos_updater_running(self):
         '''Test that the plugin doesn’t make a fuss if eos-updater is
         unavailable.'''
@@ -337,8 +346,6 @@ class ManualTest(dbusmock.DBusTestCase):
         self.manual_check('Check there are no EOS updates listed, and no '
                           'errors shown')
 
-    @unittest.skip('TODO: currently doesn’t work as cancellables aren’t '
-                   'hooked up for the correct lifetime')
     def test_fetch_ui_cancellation(self):
         '''Test that cancelling a download from the UI works correctly.'''
         self.dbusmock.SetPollAction(
@@ -358,6 +365,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.await_state(UpdaterState.ERROR)
         self.manual_check('Check a fetch cancellation error is displayed')
 
+    @unittest.skip('TODO')
     def test_poll_eos_updater_dies(self):
         '''Test that gnome-software recovers if eos-updater dies while
         polling for updates.'''
@@ -380,6 +388,7 @@ class ManualTest(dbusmock.DBusTestCase):
         self.await_state(UpdaterState.POLLING)
         self.dbusmock.FinishPoll()
 
+    @unittest.skip('TODO')
     def test_fetch_eos_updater_dies(self):
         '''Test that gnome-software recovers if eos-updater dies while
         fetching an update.'''
@@ -398,6 +407,7 @@ class ManualTest(dbusmock.DBusTestCase):
 
         self.manual_check('Check an error is shown for the fetch failure')
 
+    @unittest.skip('TODO')
     def test_apply_eos_updater_dies(self):
         '''Test that gnome-software recovers if eos-updater dies while
         applying an update.'''
