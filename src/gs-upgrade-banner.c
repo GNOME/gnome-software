@@ -32,10 +32,10 @@ typedef struct
 G_DEFINE_TYPE_WITH_PRIVATE (GsUpgradeBanner, gs_upgrade_banner, GTK_TYPE_BIN)
 
 enum {
-	SIGNAL_DOWNLOAD_BUTTON_CLICKED,
-	SIGNAL_INSTALL_BUTTON_CLICKED,
-	SIGNAL_HELP_BUTTON_CLICKED,
-	SIGNAL_CANCEL_BUTTON_CLICKED,
+	SIGNAL_DOWNLOAD_CLICKED,
+	SIGNAL_INSTALL_CLICKED,
+	SIGNAL_HELP_CLICKED,
+	SIGNAL_CANCEL_CLICKED,
 	SIGNAL_LAST
 };
 
@@ -202,25 +202,25 @@ app_progress_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
 static void
 download_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 {
-	g_signal_emit (self, signals[SIGNAL_DOWNLOAD_BUTTON_CLICKED], 0);
+	g_signal_emit (self, signals[SIGNAL_DOWNLOAD_CLICKED], 0);
 }
 
 static void
 install_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 {
-	g_signal_emit (self, signals[SIGNAL_INSTALL_BUTTON_CLICKED], 0);
+	g_signal_emit (self, signals[SIGNAL_INSTALL_CLICKED], 0);
 }
 
 static void
 learn_more_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 {
-	g_signal_emit (self, signals[SIGNAL_HELP_BUTTON_CLICKED], 0);
+	g_signal_emit (self, signals[SIGNAL_HELP_CLICKED], 0);
 }
 
 static void
 cancel_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 {
-	g_signal_emit (self, signals[SIGNAL_CANCEL_BUTTON_CLICKED], 0);
+	g_signal_emit (self, signals[SIGNAL_CANCEL_CLICKED], 0);
 }
 
 void
@@ -308,28 +308,28 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 
 	widget_class->destroy = gs_upgrade_banner_destroy;
 
-	signals [SIGNAL_DOWNLOAD_BUTTON_CLICKED] =
+	signals [SIGNAL_DOWNLOAD_CLICKED] =
 		g_signal_new ("download-clicked",
 		              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 		              G_STRUCT_OFFSET (GsUpgradeBannerClass, download_clicked),
 		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
 		              G_TYPE_NONE, 0);
 
-	signals [SIGNAL_INSTALL_BUTTON_CLICKED] =
+	signals [SIGNAL_INSTALL_CLICKED] =
 		g_signal_new ("install-clicked",
 		              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 		              G_STRUCT_OFFSET (GsUpgradeBannerClass, install_clicked),
 		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
 		              G_TYPE_NONE, 0);
 
-	signals [SIGNAL_CANCEL_BUTTON_CLICKED] =
+	signals [SIGNAL_CANCEL_CLICKED] =
 		g_signal_new ("cancel-clicked",
 		              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 		              G_STRUCT_OFFSET (GsUpgradeBannerClass, cancel_clicked),
 		              NULL, NULL, g_cclosure_marshal_VOID__VOID,
 		              G_TYPE_NONE, 0);
 
-	signals [SIGNAL_HELP_BUTTON_CLICKED] =
+	signals [SIGNAL_HELP_CLICKED] =
 		g_signal_new ("help-clicked",
 		              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 		              G_STRUCT_OFFSET (GsUpgradeBannerClass, help_clicked),
