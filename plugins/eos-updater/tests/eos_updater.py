@@ -36,9 +36,11 @@ Usage:
 # The LGPL 2.1+ has been chosen as that’s the license eos-updater is under.
 
 from enum import IntEnum
+from gi.repository import GLib
 import time
 
 import dbus
+import dbus.mainloop.glib
 from dbusmock import MOCK_IFACE
 
 
@@ -64,6 +66,9 @@ BUS_NAME = 'com.endlessm.Updater'
 MAIN_OBJ = '/com/endlessm/Updater'
 MAIN_IFACE = 'com.endlessm.Updater'
 SYSTEM_BUS = True
+
+
+dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
 
 def load(mock, parameters):
@@ -325,32 +330,57 @@ def SetFetchAction(self, action, error_name, error_message):
     self.__fetch_error_message = error_message
 
 
-@dbus.service.method(MOCK_IFACE, in_signature='', out_signature='')
-def FinishFetch(self):
+@dbus.service.method(MOCK_IFACE, in_signature='', out_signature='',
+                     async_callbacks=('success_cb', 'error_cb'))
+def FinishFetch(self, success_cb, error_cb):
+    '''Finish a pending client call to Fetch().
+
+    This is implemented using async_callbacks since if the fetch action is
+    ‘success’ it will block until the simulated download is complete, emitting
+    download progress signals throughout. As it’s implemented asynchronously,
+    this allows any calls to Cancel() to be handled by the mock service
+    part-way through the fetch.
+    '''
     self.__check_state(self, set([UpdaterState.FETCHING]))
 
     if self.__fetch_action == 'success':
         # Simulate the download.
+        i = 0
         download_size = self.props[MAIN_IFACE]['DownloadSize']
-        for i in range(0, 100):
+
+        def _download_progress_cb():
+            nonlocal i
+
             # Allow cancellation.
             if self.props[MAIN_IFACE]['State'] != UpdaterState.FETCHING:
-                return
+                return False
 
             downloaded_bytes = (i / 100.0) * download_size
             self.__set_properties(self, MAIN_IFACE, {
                 'DownloadedBytes':
                     dbus.Int64(downloaded_bytes, variant_level=1),
             })
-            time.sleep(0.1)
 
-        self.__change_state(self, UpdaterState.UPDATE_READY)
+            i += 1
+
+            # Keep looping until the download is complete.
+            if i <= 100:
+                return True
+
+            # When the download is complete, change the service state and
+            # finish the asynchronous FinishFetch() call.
+            self.__change_state(self, UpdaterState.UPDATE_READY)
+            success_cb()
+            return False
+
+        GLib.timeout_add(100, _download_progress_cb)
     elif self.__fetch_action == 'early-error':
         # Handled in Fetch() itself.
-        pass
+        success_cb()
     elif self.__fetch_action == 'late-error':
         self.__set_error(self, self.__fetch_error_name,
                          self.__fetch_error_message)
+        success_cb()
     else:
         assert(False)
 
