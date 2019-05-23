@@ -134,8 +134,14 @@ class ManualTest(dbusmock.DBusTestCase):
         self.launch_gnome_software()
         self.await_state(UpdaterState.ERROR)
 
-        self.manual_check('Check there are no EOS updates listed, and a '
-                          'GsPluginEosUpdater is printed on the terminal')
+        if error_name != 'com.endlessm.Updater.Error.Cancelled':
+            self.manual_check('Check there are no EOS updates listed, and a '
+                              'GsPluginEosUpdater error is printed on the '
+                              'terminal')
+        else:
+            self.manual_check('Check there are no EOS updates listed, and no '
+                              'GsPluginEosUpdater cancellation error is '
+                              'printed on the terminal')
 
     @ddt.data('com.endlessm.Updater.Error.WrongState',
               'com.endlessm.Updater.Error.LiveBoot',
@@ -153,8 +159,14 @@ class ManualTest(dbusmock.DBusTestCase):
         self.await_state(UpdaterState.POLLING)
         self.dbusmock.FinishPoll()
 
-        self.manual_check('Check there are no EOS updates listed, and a '
-                          'GsPluginEosUpdater is printed on the terminal')
+        if error_name != 'com.endlessm.Updater.Error.Cancelled':
+            self.manual_check('Check there are no EOS updates listed, and a '
+                              'GsPluginEosUpdater error is printed on the '
+                              'terminal')
+        else:
+            self.manual_check('Check there are no EOS updates listed, and no '
+                              'GsPluginEosUpdater cancellation error is '
+                              'printed on the terminal')
         self.await_state(UpdaterState.ERROR)
 
     @ddt.data(True, False)
@@ -314,9 +326,6 @@ class ManualTest(dbusmock.DBusTestCase):
         self.await_state(UpdaterState.APPLYING_UPDATE)
         self.dbusmock.FinishApply()
 
-        # TODO: upgrade-banner doesn’t handle unknown app state
-        # 13:37:40:0287 Gs  Unexpected app state ‘unknown’ of app
-        # ‘system/*/*/os-upgrade/com.endlessm.EOS.upgrade/*’
         self.await_state(UpdaterState.ERROR)
         if error_name != 'com.endlessm.Updater.Error.Cancelled':
             self.manual_check('Check an apply error is displayed')
@@ -337,8 +346,6 @@ class ManualTest(dbusmock.DBusTestCase):
         self.manual_check('Check there are no EOS updates listed, and no '
                           'errors shown')
 
-    @unittest.skip('TODO: currently doesn’t work as cancellables aren’t '
-                   'hooked up for the correct lifetime')
     def test_fetch_ui_cancellation(self):
         '''Test that cancelling a download from the UI works correctly.'''
         self.dbusmock.SetPollAction(
