@@ -9,7 +9,7 @@
 
 #include <glib/gi18n.h>
 #include <string.h>
-
+#include <glib/gprintf.h>
 #include "gs-content-rating.h"
 
 const gchar *
@@ -358,6 +358,18 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	return NULL;
 }
 
+static gchar translated[128][5];
+
+static const char* get_esrb_string(gchar* output, gchar* source, gchar* translate) {
+
+	int equal = g_strcmp0 (source, translate);
+	if (equal == 0)
+		return source;
+
+	g_sprintf (output, _("%s (%s)"), source, translate);
+	return output;
+}
+
 /* data obtained from https://en.wikipedia.org/wiki/Video_game_rating_system */
 const gchar *
 gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
@@ -502,16 +514,17 @@ gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_ESRB) {
 		if (age >= 18)
-			return _("Adults Only");
+			return get_esrb_string(translated[0], "Adults Only", _("Adults Only"));
 		if (age >= 17)
-			return _("Mature");
+			return get_esrb_string(translated[1], "Mature", _("Mature"));
 		if (age >= 13)
-			return _("Teen");
+			return get_esrb_string(translated[2], "Teen", _("Teen"));
 		if (age >= 10)
-			return _("Everyone 10+");
+			return get_esrb_string(translated[3], "Everyone 10+", _("Everyone 10+"));
 		if (age >= 6)
-			return _("Everyone");
-		return _("Early Childhood");
+			return get_esrb_string(translated[4], "Everyone", _("Everyone"));
+
+		return get_esrb_string(translated[5], "Early Childhood", _("Early Childhood"));
 	}
 	/* IARC = everything else */
 	if (age >= 18)
