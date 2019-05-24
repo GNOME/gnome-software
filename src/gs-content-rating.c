@@ -358,7 +358,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	return NULL;
 }
 
-static gchar translated[128][5];
+static gchar translated[6][128];
 
 static const char* get_esrb_string(gchar* output, gchar* source, gchar* translate) {
 
@@ -366,7 +366,7 @@ static const char* get_esrb_string(gchar* output, gchar* source, gchar* translat
 	if (equal == 0)
 		return source;
 
-	g_sprintf (output, _("%s (%s)"), source, translate);
+	g_snprintf (output, sizeof(translated[0]), _("%s (%s)"), source, translate);
 	return output;
 }
 
