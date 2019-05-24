@@ -1,3 +1,19 @@
+Version 3.32.3
+~~~~~~~~~~~~~~
+Released: 2019-05-24
+
+This is a stable release with the following changes:
+ * Add missing XbSilo locking, hopefully fixing a large number of reported
+   crashes
+ * Fix a regression that caused the fonts category to go missing
+ * Show a placeholder on the details page when we don't have the actual icon
+ * Plug a large memory leak
+ * Use nicer arrows for version numbers on the updates page
+ * Fix an issue that led to screenshots not being correctly scaled on hidpi
+ * flatpak: Fix several double-uses of GErrors
+ * flatpak: Handle failure of a libflatpak function updating permissions
+ * rpm-ostree: Implement what-provides decompose
+
 Version 3.32.2
 ~~~~~~~~~~~~~~
 Released: 2019-05-07
