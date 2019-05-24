@@ -2459,17 +2459,36 @@ mount_list_remove_if_exists (GList  **list,
 	return orig_len != g_list_length (*list);
 }
 
+typedef struct {
+	GsPluginLoader *plugin_loader;  /* (owned) */
+	GMount *mount;  /* (owned) */
+} MountAddedData;
+
+static void
+mount_added_data_free (MountAddedData *data)
+{
+	g_clear_object (&data->mount);
+	g_clear_object (&data->plugin_loader);
+	g_free (data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (MountAddedData, mount_added_data_free)
+
+static void mount_added_info_cb (GObject      *obj,
+                                 GAsyncResult *result,
+                                 gpointer      user_data);
+
 static void
 mount_added_cb (GVolumeMonitor *volume_monitor,
 		GMount *mount,
 		GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autofree gchar *mount_name = g_mount_get_name (mount);
 	g_autoptr(GUnixMountEntry) mount_entry = NULL;
 	g_autoptr(GFile) mount_root = NULL;
 	g_autofree gchar *mount_root_path = NULL;
 	g_autoptr(GDrive) drive = NULL;
+	g_autoptr(MountAddedData) data = NULL;
 
 	if (g_mount_is_shadowed (mount)) {
 		g_debug ("Ignoring mount ‘%s’ as it’s shadowed", mount_name);
@@ -2499,14 +2518,55 @@ mount_added_cb (GVolumeMonitor *volume_monitor,
 		return;
 	}
 
+	/* Check the root directory is writable. If it’s read-only, assume the
+	 * entire mount is read-only and ignore it. */
+	data = g_new0 (MountAddedData, 1);
+	data->plugin_loader = g_object_ref (plugin_loader);
+	data->mount = g_object_ref (mount);
+
+	g_file_query_info_async (mount_root,
+				 G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE,
+				 G_FILE_QUERY_INFO_NONE,
+				 G_PRIORITY_DEFAULT,
+				 NULL,  /* cancellable */
+				 mount_added_info_cb,
+				 g_steal_pointer (&data));
+}
+
+static void
+mount_added_info_cb (GObject      *obj,
+                     GAsyncResult *result,
+                     gpointer      user_data)
+{
+	GFile *mount_root = G_FILE (obj);
+	g_autoptr(MountAddedData) data = user_data;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (data->plugin_loader);
+	g_autofree gchar *mount_name = g_mount_get_name (data->mount);
+	g_autoptr(GFileInfo) mount_root_info = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	mount_root_info = g_file_query_info_finish (mount_root, result, &error_local);
+
+	if (error_local != NULL) {
+		g_debug ("Ignoring mount ‘%s’ due to an error reading its details: %s",
+			 mount_name, error_local->message);
+		return;
+	}
+
+	if (!g_file_info_get_attribute_boolean (mount_root_info, G_FILE_ATTRIBUTE_ACCESS_CAN_WRITE)) {
+		g_debug ("Ignoring mount ‘%s’ as it’s not writeable",
+			 mount_name);
+		return;
+	}
+
 	g_debug ("Adding mount ‘%s’", mount_name);
 
 	/* remove this mount if it already exists in the list and add it to the
 	 * front so we prioritize mounts by recency */
-	mount_list_remove_if_exists (&priv->removable_mounts, mount);
+	mount_list_remove_if_exists (&priv->removable_mounts, data->mount);
 	priv->removable_mounts = g_list_prepend (priv->removable_mounts,
-						 g_object_ref (mount));
-	g_object_notify (G_OBJECT (plugin_loader), "copy-dests");
+						 g_object_ref (data->mount));
+	g_object_notify (G_OBJECT (data->plugin_loader), "copy-dests");
 }
 
 static void
