@@ -1689,7 +1689,7 @@ gs_details_page_refresh_content_rating (GsDetailsPage *self)
 	AsContentRating *content_rating;
 	GsContentRatingSystem system;
 	guint age = 0;
-	const gchar *display = NULL;
+	g_autofree gchar *display = NULL;
 	const gchar *locale;
 
 	/* get the content rating system from the locale */
