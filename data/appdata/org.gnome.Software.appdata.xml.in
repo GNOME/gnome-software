@@ -46,6 +46,24 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-05-24" version="3.32.3">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add missing XbSilo locking, hopefully fixing a large number of reported crashes</li>
+          <li>Fix a regression that caused the fonts category to go missing</li>
+          <li>Show a placeholder on the details page when we don't have the actual icon</li>
+          <li>Plug a large memory leak</li>
+          <li>Use nicer arrows for version numbers on the updates page</li>
+          <li>Fix an issue that led to screenshots not being correctly scaled on hidpi</li>
+          <li>flatpak: Fix several double-uses of GErrors</li>
+          <li>flatpak: Handle failure of a libflatpak function updating permissions</li>
+          <li>rpm-ostree: Implement what-provides decompose</li>
+        </ul>
+      </description>
+    </release>
     <release date="2019-05-07" version="3.32.2">
       <description>
         <p>
