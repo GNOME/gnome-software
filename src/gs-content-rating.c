@@ -8,8 +8,8 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
-#include <string.h>
 #include <glib/gprintf.h>
+#include <string.h>
 #include "gs-content-rating.h"
 
 const gchar *
@@ -361,10 +361,10 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 static char *
 get_esrb_string (gchar *source, gchar *translate)
 {
-	int equal = g_strcmp0 (source, translate);
-	if (equal == 0)
+	if (g_strcmp0 (source, translate) == 0)
 		return g_strdup (source);
-
+	/* TRANSLATORS: This is the formatting of English and localized name
+ 	   of the rating e.g. "Adults Only (solo adultos)" */
 	return g_strdup_printf (_("%s (%s)"), source, translate);
 }
 
@@ -499,7 +499,7 @@ gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 			return g_strdup ("M18");
 		if (age >= 16)
 			return g_strdup ("ADV");
-		return g_strdup ("General");
+		return get_esrb_string ("General", _("General"));
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_GRAC) {
 		if (age >= 18)
@@ -508,7 +508,7 @@ gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 			return g_strdup ("15");
 		if (age >= 12)
 			return g_strdup ("12");
-		return g_strdup ("ALL");
+		return get_esrb_string ("ALL", _("ALL"));
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_ESRB) {
 		if (age >= 18)
