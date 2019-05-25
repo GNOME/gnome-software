@@ -358,185 +358,182 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	return NULL;
 }
 
-static gchar translated[6][128];
-
-static const char* get_esrb_string(gchar* output, gchar* source, gchar* translate) {
+static char* get_esrb_string(gchar* source, gchar* translate) {
 
 	int equal = g_strcmp0 (source, translate);
 	if (equal == 0)
-		return source;
+		return g_strdup (source);
 
-	g_snprintf (output, sizeof(translated[0]), _("%s (%s)"), source, translate);
-	return output;
+	return g_strdup_printf (_("%s (%s)"), source, translate);
 }
 
 /* data obtained from https://en.wikipedia.org/wiki/Video_game_rating_system */
-const gchar *
+gchar *
 gs_utils_content_rating_age_to_str (GsContentRatingSystem system, guint age)
 {
 	if (system == GS_CONTENT_RATING_SYSTEM_INCAA) {
 		if (age >= 18)
-			return "+18";
+			return g_strdup ("+18");
 		if (age >= 13)
-			return "+13";
-		return "ATP";
+			return g_strdup ("+13");
+		return g_strdup ("ATP");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_ACB) {
 		if (age >= 18)
-			return "R18+";
+			return g_strdup ("R18+");
 		if (age >= 15)
-			return "MA15+";
-		return "PG";
+			return g_strdup ("MA15+");
+		return g_strdup ("PG");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_DJCTQ) {
 		if (age >= 18)
-			return "18";
+			return g_strdup ("18");
 		if (age >= 16)
-			return "16";
+			return g_strdup ("16");
 		if (age >= 14)
-			return "14";
+			return g_strdup ("14");
 		if (age >= 12)
-			return "12";
+			return g_strdup ("12");
 		if (age >= 10)
-			return "10";
-		return "L";
+			return g_strdup ("10");
+		return g_strdup ("L");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_GSRR) {
 		if (age >= 18)
-			return "限制";
+			return g_strdup ("限制");
 		if (age >= 15)
-			return "輔15";
+			return g_strdup ("輔15");
 		if (age >= 12)
-			return "輔12";
+			return g_strdup ("輔12");
 		if (age >= 6)
-			return "保護";
-		return "普通";
+			return g_strdup ("保護");
+		return g_strdup ("普通");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_PEGI) {
 		if (age >= 18)
-			return "18";
+			return g_strdup ("18");
 		if (age >= 16)
-			return "16";
+			return g_strdup ("16");
 		if (age >= 12)
-			return "12";
+			return g_strdup ("12");
 		if (age >= 7)
-			return "7";
+			return g_strdup ("7");
 		if (age >= 3)
-			return "3";
+			return g_strdup ("3");
 		return NULL;
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_KAVI) {
 		if (age >= 18)
-			return "18+";
+			return g_strdup ("18+");
 		if (age >= 16)
-			return "16+";
+			return g_strdup ("16+");
 		if (age >= 12)
-			return "12+";
+			return g_strdup ("12+");
 		if (age >= 7)
-			return "7+";
+			return g_strdup ("7+");
 		if (age >= 3)
-			return "3+";
+			return g_strdup ("3+");
 		return NULL;
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_USK) {
 		if (age >= 18)
-			return "18";
+			return g_strdup ("18");
 		if (age >= 16)
-			return "16";
+			return g_strdup ("16");
 		if (age >= 12)
-			return "12";
+			return g_strdup ("12");
 		if (age >= 6)
-			return "6";
-		return "0";
+			return g_strdup ("6");
+		return g_strdup ("0");
 	}
 	/* Reference: http://www.esra.org.ir/ */
 	if (system == GS_CONTENT_RATING_SYSTEM_ESRA) {
 		if (age >= 18)
-			return "+18";
+			return g_strdup ("+18");
 		if (age >= 15)
-			return "+15";
+			return g_strdup ("+15");
 		if (age >= 12)
-			return "+12";
+			return g_strdup ("+12");
 		if (age >= 7)
-			return "+7";
+			return g_strdup ("+7");
 		if (age >= 3)
-			return "+3";
+			return g_strdup ("+3");
 		return NULL;
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_CERO) {
 		if (age >= 18)
-			return "Z";
+			return g_strdup ("Z");
 		if (age >= 17)
-			return "D";
+			return g_strdup ("D");
 		if (age >= 15)
-			return "C";
+			return g_strdup ("C");
 		if (age >= 12)
-			return "B";
-		return "A";
+			return g_strdup ("B");
+		return g_strdup ("A");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_OFLCNZ) {
 		if (age >= 18)
-			return "R18";
+			return g_strdup ("R18");
 		if (age >= 16)
-			return "R16";
+			return g_strdup ("R16");
 		if (age >= 15)
-			return "R15";
+			return g_strdup ("R15");
 		if (age >= 13)
-			return "R13";
-		return "G";
+			return g_strdup ("R13");
+		return g_strdup ("G");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_RUSSIA) {
 		if (age >= 18)
-			return "18+";
+			return g_strdup ("18+");
 		if (age >= 16)
-			return "16+";
+			return g_strdup ("16+");
 		if (age >= 12)
-			return "12+";
+			return g_strdup ("12+");
 		if (age >= 6)
-			return "6+";
-		return "0+";
+			return g_strdup ("6+");
+		return g_strdup ("0+");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_MDA) {
 		if (age >= 18)
-			return "M18";
+			return g_strdup ("M18");
 		if (age >= 16)
-			return "ADV";
-		return "General";
+			return g_strdup ("ADV");
+		return g_strdup ("General");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_GRAC) {
 		if (age >= 18)
-			return "18";
+			return g_strdup ("18");
 		if (age >= 15)
-			return "15";
+			return g_strdup ("15");
 		if (age >= 12)
-			return "12";
-		return "ALL";
+			return g_strdup ("12");
+		return g_strdup ("ALL");
 	}
 	if (system == GS_CONTENT_RATING_SYSTEM_ESRB) {
 		if (age >= 18)
-			return get_esrb_string(translated[0], "Adults Only", _("Adults Only"));
+			return get_esrb_string ("Adults Only", _("Adults Only"));
 		if (age >= 17)
-			return get_esrb_string(translated[1], "Mature", _("Mature"));
+			return get_esrb_string ("Mature", _("Mature"));
 		if (age >= 13)
-			return get_esrb_string(translated[2], "Teen", _("Teen"));
+			return get_esrb_string ("Teen", _("Teen"));
 		if (age >= 10)
-			return get_esrb_string(translated[3], "Everyone 10+", _("Everyone 10+"));
+			return get_esrb_string ("Everyone 10+", _("Everyone 10+"));
 		if (age >= 6)
-			return get_esrb_string(translated[4], "Everyone", _("Everyone"));
+			return get_esrb_string ("Everyone", _("Everyone"));
 
-		return get_esrb_string(translated[5], "Early Childhood", _("Early Childhood"));
+		return get_esrb_string ("Early Childhood", _("Early Childhood"));
 	}
 	/* IARC = everything else */
 	if (age >= 18)
-		return "18+";
+		return g_strdup ("18+");
 	if (age >= 16)
-		return "16+";
+		return g_strdup ("16+");
 	if (age >= 12)
-		return "12+";
+		return g_strdup ("12+");
 	if (age >= 7)
-		return "7+";
+		return g_strdup ("7+");
 	if (age >= 3)
-		return "3+";
+		return g_strdup ("3+");
 	return NULL;
 }
 

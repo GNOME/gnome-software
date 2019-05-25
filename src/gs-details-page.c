@@ -1710,6 +1710,7 @@ gs_details_page_refresh_content_rating (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
 		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
 		gs_details_page_content_rating_set_css (self->button_details_rating_value, age);
+        g_free(display);
 	} else {
 		gtk_widget_set_visible (self->button_details_rating_value, FALSE);
 		gtk_widget_set_visible (self->label_details_rating_title, FALSE);
