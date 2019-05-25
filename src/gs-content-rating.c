@@ -358,8 +358,9 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	return NULL;
 }
 
-static char* get_esrb_string(gchar* source, gchar* translate) {
-
+static char *
+get_esrb_string (gchar *source, gchar *translate)
+{
 	int equal = g_strcmp0 (source, translate);
 	if (equal == 0)
 		return g_strdup (source);
