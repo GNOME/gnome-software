@@ -556,6 +556,20 @@ _gs_utils_locale_has_translations (const gchar *locale)
 	return TRUE;
 }
 
+static gchar *
+_gs_utils_get_language_from_locale (const gchar *locale)
+{
+	gchar *separator;
+
+	separator = strpbrk (locale, "._");
+
+	if (separator == NULL)
+		return NULL;
+
+	return g_strndup(locale, separator - locale);
+}
+
+
 static gboolean
 gs_appstream_origin_valid (const gchar *origin)
 {
@@ -891,6 +905,15 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			xpath = g_strdup_printf ("languages/lang[text()='%s'][@percentage>50]", tmp);
 			if (xb_node_query_text (component, xpath, NULL) != NULL)
 				gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
+			else {
+				g_autofree gchar *language;
+				language = _gs_utils_get_language_from_locale (tmp);
+				if (language != NULL) {
+					xpath = g_strdup_printf ("languages/lang[text()='%s'][@percentage>50]", language);
+					if (xb_node_query_text (component, xpath, NULL) != NULL)
+						gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
+				}
+			}
 		}
 
 		/* any keywords */
