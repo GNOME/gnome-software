@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-05-22 12:22+0000\n"
-"PO-Revision-Date: 2019-05-22 12:22+0000\n"
+"POT-Creation-Date: 2019-05-25 20:02+0000\n"
+"PO-Revision-Date: 2019-05-28 17:54+0200\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Id-Version: gnome-software master\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 2.0.4\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -70,7 +70,7 @@ msgstr "Quadre d'actualitzacions"
 msgid "The update details"
 msgstr "Detalls de l'actualització"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1355
+#: data/appdata/org.gnome.Software.appdata.xml.in:1373
 msgid "The GNOME Project"
 msgstr "El projecte GNOME"
 
@@ -286,9 +286,9 @@ msgstr ""
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:127
-msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
+msgid "'https://end.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://ca.wikipedia.org/wiki/Programari_de_propietat'"
-
+  
 #: data/org.gnome.software.gschema.xml:128
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "L'URI que explica programari no lliure i de propietat"
@@ -1334,6 +1334,45 @@ msgstr "Representacions de l'esclavitud avui en dia"
 msgid "Graphic depictions of modern-day slavery"
 msgstr "Representacions gràfiques de l'esclavitud avui en dia"
 
+#. TRANSLATORS: This is the formatting of English and localized name
+#. of the rating e.g. "Adults Only (solo adultos)"
+#: src/gs-content-rating.c:368
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: src/gs-content-rating.c:502
+msgid "General"
+msgstr "general"
+
+#: src/gs-content-rating.c:511
+msgid "ALL"
+msgstr "tots"
+
+#: src/gs-content-rating.c:515
+msgid "Adults Only"
+msgstr "només adults"
+
+#: src/gs-content-rating.c:517
+msgid "Mature"
+msgstr "madur"
+
+#: src/gs-content-rating.c:519
+msgid "Teen"
+msgstr "adolescents"
+
+#: src/gs-content-rating.c:521
+msgid "Everyone 10+"
+msgstr "majors de 10 anys"
+
+#: src/gs-content-rating.c:523
+msgid "Everyone"
+msgstr "tothom"
+
+#: src/gs-content-rating.c:525
+msgid "Early Childhood"
+msgstr "infantesa"
+
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:281
 msgid "An application"
@@ -1564,17 +1603,14 @@ msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconeguda"
 
-#. N.T.: Ens refereix al nivell de permisos
 #: src/gs-details-page.c:1261
 msgid "Low"
 msgstr "Baix"
 
-#. N.T.: Ens refereix al nivell de permisos
 #: src/gs-details-page.c:1263
 msgid "Medium"
 msgstr "Mitjà"
 
-#. N.T.: Ens refereix al nivell de permisos
 #: src/gs-details-page.c:1265
 msgid "High"
 msgstr "Alt"
