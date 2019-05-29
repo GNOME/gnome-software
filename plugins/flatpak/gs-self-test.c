@@ -1337,7 +1337,6 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
-	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 
 	/* switch to the new repo */
 	g_assert (unlink ("/var/tmp/self-test/repo") == 0);
