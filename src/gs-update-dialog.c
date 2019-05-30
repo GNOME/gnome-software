@@ -552,7 +552,7 @@ get_section_header (GsUpdateDialog *dialog, GsUpdateDialogSection section)
 	gtk_widget_set_margin_start (label, 6);
 	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
 	context = gtk_widget_get_style_context (label);
-	gtk_style_context_add_class (context, "text-title-1");
+	gtk_style_context_add_class (context, "title-4");
 
 	/* success */
 	return header;
