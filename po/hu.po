@@ -8,16 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-03-01 19:56+0000\n"
-"PO-Revision-Date: 2019-03-03 19:54+0100\n"
-"Last-Translator: Meskó Balázs <mesko.balazs@fsf.hu>\n"
+"POT-Creation-Date: 2019-05-29 15:49+0000\n"
+"PO-Revision-Date: 2019-06-01 14:44+0200\n"
+"Last-Translator: Balázs Úr <ur.balazs at fsf dot hu>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Lokalize 18.12.3\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -69,7 +69,7 @@ msgstr "Frissítések panel"
 msgid "The update details"
 msgstr "A frissítés részletei"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1277
+#: data/appdata/org.gnome.Software.appdata.xml.in:1373
 msgid "The GNOME Project"
 msgstr "A GNOME projekt"
 
@@ -320,11 +320,6 @@ msgstr "Szoftvertelepítő"
 msgid "Install selected software on the system"
 msgstr "A kijelölt szoftverek telepítése a rendszerre"
 
-#. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
-#: src/gnome-software-local-file.desktop.in:10
-msgid "system-software-install"
-msgstr "system-software-install"
-
 #: src/gnome-software.ui:10
 msgid "Select All"
 msgstr "Összes kijelölése"
@@ -370,7 +365,7 @@ msgstr "Keresés"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:276 src/gs-app-row.c:292 src/gs-details-page.ui:834
+#: src/gnome-software.ui:276 src/gs-app-row.c:292 src/gs-details-page.ui:837
 msgid "Source"
 msgstr "Forrás"
 
@@ -402,19 +397,19 @@ msgid "More Information"
 msgstr "További információk"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4461
+#: lib/gs-app.c:4479
 msgid "Local file"
 msgstr "Helyi fájl"
 
-#: lib/gs-app.c:4510
+#: lib/gs-app.c:4531
 msgid "Package"
 msgstr "Csomag"
 
-#: src/gs-app-addon-row.c:82 src/gs-app-row.c:407
+#: src/gs-app-addon-row.c:82 src/gs-app-row.c:412
 msgid "Pending"
 msgstr "Függőben"
 
-#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:182 src/gs-app-tile.ui:51
+#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:185 src/gs-app-tile.ui:51
 #: src/gs-feature-tile.c:72
 msgid "Installed"
 msgstr "Telepítve"
@@ -423,7 +418,7 @@ msgstr "Telepítve"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:171 src/gs-details-page.c:317
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:171 src/gs-details-page.c:321
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "Telepítés"
@@ -442,7 +437,7 @@ msgid "Folder Name"
 msgstr "Mappa neve"
 
 #: src/gs-app-folder-dialog.c:307 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.ui:240 src/gs-editor.c:609 src/gs-editor.c:641
+#: src/gs-details-page.ui:243 src/gs-editor.c:609 src/gs-editor.c:641
 #: src/gs-installed-page.c:598 src/gs-removal-dialog.ui:32
 #: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
@@ -548,7 +543,7 @@ msgstr ""
 #. TRANSLATORS: this is the menu item that opens the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:335 src/gs-shell.c:1942
+#: src/gs-application.c:335 src/gs-shell.c:1957
 #, c-format
 msgid "About %s"
 msgstr "%s névjegye"
@@ -573,7 +568,7 @@ msgstr "Telepítés…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:138 src/gs-auth-dialog.ui:44 src/gs-updates-section.c:484
+#: src/gs-app-row.c:138 src/gs-auth-dialog.ui:44 src/gs-updates-section.c:474
 msgid "Cancel"
 msgstr "Mégse"
 
@@ -581,7 +576,7 @@ msgstr "Mégse"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:582
+#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:589
 msgid "Install"
 msgstr "Telepítés"
 
@@ -595,8 +590,8 @@ msgstr "Frissítés"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:156 src/gs-app-row.c:165 src/gs-page.c:741
-#: src/gs-repos-dialog.c:322
+#: src/gs-app-row.c:156 src/gs-app-row.c:165 src/gs-page.c:748
+#: src/gs-repos-dialog.c:323
 msgid "Remove"
 msgstr "Eltávolítás"
 
@@ -606,7 +601,7 @@ msgstr "Eltávolítás"
 msgid "Device cannot be used during update."
 msgstr "Az eszköz nem használható frissítés közben."
 
-#: src/gs-app-row.c:475 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:480 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "További jogosultságokat igényel"
 
@@ -664,7 +659,7 @@ msgstr "Név"
 
 #. TRANSLATORS: A label for a button to show the settings for
 #. the selected shell extension.
-#: src/gs-category-page.ui:118 src/gs-details-page.c:893
+#: src/gs-category-page.ui:118 src/gs-details-page.c:896
 msgid "Extension Settings"
 msgstr "Kiterjesztésbeállítások"
 
@@ -739,7 +734,7 @@ msgid "Application is ready to be used."
 msgstr "Az alkalmazás használatra kész."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:159 src/gs-updates-section.c:325
+#: src/gs-common.c:159 src/gs-common.c:633
 msgid "Restart"
 msgstr "Újraindítás"
 
@@ -754,7 +749,7 @@ msgid "Install Third-Party Software?"
 msgstr "Telepíti a harmadik féltől származó szoftvereket?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:225 src/gs-repos-dialog.c:233
+#: src/gs-common.c:225 src/gs-repos-dialog.c:234
 msgid "Enable Third-Party Software Repository?"
 msgstr "Engedélyezi a harmadik féltől származó szoftvertárolót?"
 
@@ -815,9 +810,28 @@ msgstr "Engedélyezés és telepítés"
 msgid "Detailed errors from the package manager follow:"
 msgstr "A részletes hibaüzenetek a következők voltak a csomagkezelőtől:"
 
-#: src/gs-common.c:454 src/gs-details-page.ui:432
+#: src/gs-common.c:454 src/gs-details-page.ui:435
 msgid "Details"
 msgstr "Részletek"
+
+#. TRANSLATORS: we've just live-updated some apps
+#: src/gs-common.c:619
+msgid "An update has been installed"
+msgid_plural "Updates have been installed"
+msgstr[0] "Egy frissítés lett telepítve"
+msgstr[1] "Frissítések lettek telepítve"
+
+#. TRANSLATORS: the new apps will not be run until we restart
+#: src/gs-common.c:624
+msgid "A restart is required for it to take effect."
+msgid_plural "A restart is required for them to take effect."
+msgstr[0] "Újraindítás szükséges a változtatás érvénybe léptetéséhez."
+msgstr[1] "Újraindítás szükséges a változtatások érvénybe léptetéséhez."
+
+#. TRANSLATORS: button text
+#: src/gs-common.c:631 src/gs-update-monitor.c:104
+msgid "Not Now"
+msgstr "Most nem"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:62
@@ -1322,6 +1336,45 @@ msgstr "Modern kori rabszolgaság ábrázolása"
 msgid "Graphic depictions of modern-day slavery"
 msgstr "Modern kori rabszolgaság grafikus ábrázolása"
 
+#. TRANSLATORS: This is the formatting of English and localized name
+#. of the rating e.g. "Adults Only (solo adultos)"
+#: src/gs-content-rating.c:368
+#, c-format
+msgid "%s (%s)"
+msgstr "%s (%s)"
+
+#: src/gs-content-rating.c:502
+msgid "General"
+msgstr "Általános"
+
+#: src/gs-content-rating.c:511
+msgid "ALL"
+msgstr "ÖSSZES"
+
+#: src/gs-content-rating.c:515
+msgid "Adults Only"
+msgstr "Csak felnőtt"
+
+#: src/gs-content-rating.c:517
+msgid "Mature"
+msgstr "Érett"
+
+#: src/gs-content-rating.c:519
+msgid "Teen"
+msgstr "Tizenéves"
+
+#: src/gs-content-rating.c:521
+msgid "Everyone 10+"
+msgstr "Mindenki 10+"
+
+#: src/gs-content-rating.c:523
+msgid "Everyone"
+msgstr "Mindenki"
+
+#: src/gs-content-rating.c:525
+msgid "Early Childhood"
+msgstr "Fiatal gyermekkor"
+
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:281
 msgid "An application"
@@ -1387,24 +1440,24 @@ msgstr "További csomagok szükségesek"
 msgid "Find in Software"
 msgstr "Keresés a Szoftverben"
 
-#: src/gs-details-page.c:312
+#: src/gs-details-page.c:316
 msgid "Removing…"
 msgstr "Eltávolítás…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:331
+#: src/gs-details-page.c:335
 msgid "Pending installation…"
 msgstr "Függőben lévő telepítés…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:338
+#: src/gs-details-page.c:342
 msgid "Pending update…"
 msgstr "Függőben lévő frissítés…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:663
+#: src/gs-details-page.c:666
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1417,8 +1470,8 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:809 src/gs-details-page.c:835
-#: src/gs-details-page.ui:159 src/gs-third-party-repo-row.c:83
+#: src/gs-details-page.c:812 src/gs-details-page.c:838
+#: src/gs-details-page.ui:162 src/gs-third-party-repo-row.c:83
 #: src/gs-upgrade-banner.ui:122
 msgid "_Install"
 msgstr "_Telepítés"
@@ -1430,101 +1483,101 @@ msgstr "_Telepítés"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:849 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:852 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "_Telepítés…"
 
 #. TRANSLATORS: A label for a button to execute the selected
 #. application.
-#: src/gs-details-page.c:898
+#: src/gs-details-page.c:901
 msgid "_Launch"
 msgstr "I_ndítás"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:923 src/gs-details-page.ui:184
+#: src/gs-details-page.c:926 src/gs-details-page.ui:187
 msgid "_Remove"
 msgstr "_Eltávolítás"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:959 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "Hálózat"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:959 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "Kommunikálhat a hálózaton keresztül"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:960 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "Rendszerszolgáltatások"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:960 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "Hozzáférhet a D-Bus szolgáltatásokhoz a rendszerbuszon"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:961 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "Munkamenet-szolgáltatások"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:961 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "Hozzáférhet a D-Bus szolgáltatásokhoz a munkamenetbuszon"
 
-#: src/gs-details-page.c:959 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:962 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "Eszközök"
 
-#: src/gs-details-page.c:959 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:962 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "Hozzáférhet a rendszereszköz fájljaihoz"
 
-#: src/gs-details-page.c:960 src/gs-details-page.c:961
+#: src/gs-details-page.c:963 src/gs-details-page.c:964
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "Saját mappa"
 
-#: src/gs-details-page.c:960 src/gs-details-page.c:962
-#: src/gs-details-page.c:964 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:963 src/gs-details-page.c:965
+#: src/gs-details-page.c:967 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "Megtekinthet, szerkeszthet és létrehozhat fájlokat"
 
-#: src/gs-details-page.c:961 src/gs-details-page.c:963
-#: src/gs-details-page.c:965 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:964 src/gs-details-page.c:966
+#: src/gs-details-page.c:968 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "Megtekinthet fájlokat"
 
-#: src/gs-details-page.c:962 src/gs-details-page.c:963
+#: src/gs-details-page.c:965 src/gs-details-page.c:966
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "Fájlrendszer"
 
-#: src/gs-details-page.c:964 src/gs-details-page.c:965
+#: src/gs-details-page.c:967 src/gs-details-page.c:968
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "Letöltések mappa"
 
-#: src/gs-details-page.c:966 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:969 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "Beállítások"
 
-#: src/gs-details-page.c:966 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:969 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "Megtekinthet és megváltoztathat bármilyen beállítást"
 
-#: src/gs-details-page.c:967 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:970 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "Örökölt megjelenítési rendszer"
 
-#: src/gs-details-page.c:967 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:970 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "Egy régi, nem biztonságos megjelenítési rendszert használ"
 
-#: src/gs-details-page.c:982
+#: src/gs-details-page.c:985
 msgid "This application is fully sandboxed."
 msgstr "Ez az alkalmazás teljesen biztonságos."
 
-#: src/gs-details-page.c:990
+#: src/gs-details-page.c:993
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1533,82 +1586,82 @@ msgstr ""
 "hozzá. Ez jellemző a régebbi alkalmazásoknál."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1138
+#: src/gs-details-page.c:1142
 msgctxt "version"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1151
+#: src/gs-details-page.c:1155
 msgctxt "updated"
 msgid "Never"
 msgstr "Soha"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1204
+#: src/gs-details-page.c:1208
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
-#: src/gs-details-page.c:1254
+#: src/gs-details-page.c:1261
 msgid "Low"
 msgstr "Alacsony"
 
-#: src/gs-details-page.c:1256
+#: src/gs-details-page.c:1263
 msgid "Medium"
 msgstr "Közepes"
 
-#: src/gs-details-page.c:1258
+#: src/gs-details-page.c:1265
 msgid "High"
 msgstr "Magas"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1262 src/gs-details-page.ui:953 src/gs-review-row.c:57
+#: src/gs-details-page.c:1267 src/gs-details-page.ui:956 src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "Ismeretlen"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1614
+#: src/gs-details-page.c:1642
 msgid "You need internet access to write a review"
 msgstr "Értékelés írásához internetelérés szükséges"
 
-#: src/gs-details-page.c:1797 src/gs-details-page.c:1813
+#: src/gs-details-page.c:1825 src/gs-details-page.c:1841
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nem található: „%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2363
+#: src/gs-details-page.c:2404
 msgid "Public domain"
 msgstr "Közkincs"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2366
+#: src/gs-details-page.c:2407
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://hu.wikipedia.org/wiki/K%C3%B6zkincs"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2373
+#: src/gs-details-page.c:2414
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.hu.html"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2383 src/gs-details-page.ui:1197
+#: src/gs-details-page.c:2424 src/gs-details-page.ui:1200
 msgid "Free Software"
 msgstr "Szabad szoftver"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2440
+#: src/gs-details-page.c:2481
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "A felhasználót a következő licenc köti:"
 msgstr[1] "A felhasználót a következő licencek kötik:"
 
-#: src/gs-details-page.c:2467 src/gs-details-page.ui:1269
+#: src/gs-details-page.c:2508 src/gs-details-page.ui:1272
 msgid "More information"
 msgstr "További információk"
 
@@ -1616,33 +1669,33 @@ msgstr "További információk"
 msgid "Details page"
 msgstr "Részletek oldal"
 
-#: src/gs-details-page.ui:211
+#: src/gs-details-page.ui:214
 msgid "Downloading"
 msgstr "Letöltés"
 
-#: src/gs-details-page.ui:250
+#: src/gs-details-page.ui:253
 msgid "_Update"
 msgstr "_Frissítés"
 
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:266
+#: src/gs-details-page.ui:269
 msgid "_Add shortcut"
 msgstr "Parancsikon hozzá_adása"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:277
+#: src/gs-details-page.ui:280
 msgid "Re_move shortcut"
 msgstr "Parancsikon el_távolítása"
 
-#: src/gs-details-page.ui:351
+#: src/gs-details-page.ui:354
 msgid "No screenshot provided"
 msgstr "Nincs képernyőkép megadva"
 
-#: src/gs-details-page.ui:371
+#: src/gs-details-page.ui:374
 msgid "Software Repository Included"
 msgstr "Szoftvertárolót tartalmaz"
 
-#: src/gs-details-page.ui:372
+#: src/gs-details-page.ui:375
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1650,11 +1703,11 @@ msgstr ""
 "Ez az alkalmazás szoftvertárolót tartalmaz, amely frissítéseket és más "
 "szoftverekhez való hozzáférést biztosít."
 
-#: src/gs-details-page.ui:379
+#: src/gs-details-page.ui:382
 msgid "No Software Repository Included"
 msgstr "Nem tartalmaz szoftvertárolót"
 
-#: src/gs-details-page.ui:380
+#: src/gs-details-page.ui:383
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1662,7 +1715,7 @@ msgstr ""
 "Ez az alkalmazás nem tartalmaz szoftvertárolót. Nem lesz új verziókkal "
 "frissítve."
 
-#: src/gs-details-page.ui:388
+#: src/gs-details-page.ui:391
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1670,11 +1723,11 @@ msgstr ""
 "Ezt a szoftvert a disztribúciója már biztosítja, és nem szabad lecserélni."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:395
+#: src/gs-details-page.ui:398
 msgid "Software Repository Identified"
 msgstr "Szoftvertároló azonosítva"
 
-#: src/gs-details-page.ui:396
+#: src/gs-details-page.ui:399
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1682,112 +1735,112 @@ msgstr ""
 "Ezen szoftvertároló hozzáadása hozzáférést biztosít további szoftverekhez és "
 "frissítésekhez."
 
-#: src/gs-details-page.ui:397
+#: src/gs-details-page.ui:400
 msgid "Only use software repositories that you trust."
 msgstr "Csak olyan szoftvertárolókat használjon, amelyekben megbízik."
 
-#: src/gs-details-page.ui:407
+#: src/gs-details-page.ui:410
 msgid "_Website"
 msgstr "_Webhely"
 
-#: src/gs-details-page.ui:416
+#: src/gs-details-page.ui:419
 msgid "_Donate"
 msgstr "_Adományozás"
 
-#: src/gs-details-page.ui:526
+#: src/gs-details-page.ui:529
 msgid "Localized in your Language"
 msgstr "Honosítva az ön nyelvén"
 
-#: src/gs-details-page.ui:537
+#: src/gs-details-page.ui:540
 msgid "Documentation"
 msgstr "Dokumentáció"
 
-#: src/gs-details-page.ui:548
+#: src/gs-details-page.ui:551
 msgid "Release Activity"
 msgstr "Kiadási tevékenység"
 
-#: src/gs-details-page.ui:559
+#: src/gs-details-page.ui:562
 msgid "System Integration"
 msgstr "Rendszer-integráció"
 
-#: src/gs-details-page.ui:570
+#: src/gs-details-page.ui:573
 msgid "Sandboxed"
 msgstr "Biztonságos"
 
-#: src/gs-details-page.ui:589
+#: src/gs-details-page.ui:592
 msgid "Version"
 msgstr "Verzió"
 
-#: src/gs-details-page.ui:625
+#: src/gs-details-page.ui:628
 msgid "Age Rating"
 msgstr "Korhatár-besorolás"
 
-#: src/gs-details-page.ui:663 src/gs-details-page.ui:1355
+#: src/gs-details-page.ui:666 src/gs-details-page.ui:1358
 msgid "Permissions"
 msgstr "Jogosultságok"
 
-#: src/gs-details-page.ui:701
+#: src/gs-details-page.ui:704
 msgid "Updated"
 msgstr "Frissítve"
 
-#: src/gs-details-page.ui:735
+#: src/gs-details-page.ui:738
 msgid "Category"
 msgstr "Kategória"
 
-#: src/gs-details-page.ui:772
+#: src/gs-details-page.ui:775
 msgid "Installed Size"
 msgstr "Telepített méret"
 
-#: src/gs-details-page.ui:803
+#: src/gs-details-page.ui:806
 msgid "Download Size"
 msgstr "Letöltési méret"
 
-#: src/gs-details-page.ui:865
+#: src/gs-details-page.ui:868
 msgid "Developer"
 msgstr "Fejlesztő"
 
-#: src/gs-details-page.ui:910
+#: src/gs-details-page.ui:913
 msgid "License"
 msgstr "Licenc"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:929
+#: src/gs-details-page.ui:932
 msgid "Free"
 msgstr "Szabad"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:941
+#: src/gs-details-page.ui:944
 msgid "Proprietary"
 msgstr "Tulajdonosi"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:991 src/gs-installed-page.c:478
+#: src/gs-details-page.ui:994 src/gs-installed-page.c:478
 #: plugins/core/gs-desktop-common.c:317
 msgid "Add-ons"
 msgstr "Kiegészítők"
 
-#: src/gs-details-page.ui:1003
+#: src/gs-details-page.ui:1006
 msgid "Selected add-ons will be installed with the application."
 msgstr "A kijelölt kiegészítők telepítve lesznek az alkalmazással."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1041
+#: src/gs-details-page.ui:1044
 msgid "Reviews"
 msgstr "Vélemények"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1059
+#: src/gs-details-page.ui:1062
 msgid "_Write a Review"
 msgstr "Í_rjon véleményt"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1080
+#: src/gs-details-page.ui:1083
 msgid "_Show More"
 msgstr "_Több"
 
-#: src/gs-details-page.ui:1208
+#: src/gs-details-page.ui:1211
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1795,11 +1848,11 @@ msgstr ""
 "Ez azt jelenti, hogy a szoftver szabadon futtatható, másolható, "
 "terjeszthető, tanulmányozható és módosítható."
 
-#: src/gs-details-page.ui:1248
+#: src/gs-details-page.ui:1251
 msgid "Proprietary Software"
 msgstr "Tulajdonosi szoftver"
 
-#: src/gs-details-page.ui:1259
+#: src/gs-details-page.ui:1262
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1809,20 +1862,20 @@ msgstr ""
 "van. Gyakran megkötések vannak a használatára, és a forráskódja általában "
 "nem hozzáférhető."
 
-#: src/gs-details-page.ui:1291
+#: src/gs-details-page.ui:1294
 msgid "Unknown Software License"
 msgstr "Ismeretlen szoftverlicenc"
 
-#: src/gs-details-page.ui:1302
+#: src/gs-details-page.ui:1305
 msgid "The license terms of this software are unknown."
 msgstr "Ennek a szoftvernek a licencfeltételei ismeretlenek."
 
-#: src/gs-details-page.ui:1322
+#: src/gs-details-page.ui:1325
 msgid "The application was rated this way because it features:"
 msgstr ""
 "Az alkalmazás azért lett így besorolva, mert a következőket tartalmazza:"
 
-#: src/gs-details-page.ui:1336
+#: src/gs-details-page.ui:1339
 msgid "No details were available for this rating."
 msgstr "Nem érhetőek el részletek ehhez a besoroláshoz."
 
@@ -2152,11 +2205,11 @@ msgstr "Kodekek oldal"
 msgid "Welcome"
 msgstr "Üdvözöljük"
 
-#: src/gs-first-run-dialog.ui:40
+#: src/gs-first-run-dialog.ui:43
 msgid "Welcome to Software"
 msgstr "Üdvözli a Szoftver"
 
-#: src/gs-first-run-dialog.ui:50
+#: src/gs-first-run-dialog.ui:53
 msgid ""
 "Software lets you install all the software you need, all from one place. See "
 "our recommendations, browse the categories, or search for the applications "
@@ -2166,7 +2219,7 @@ msgstr ""
 "helyről. Nézze meg a javaslatainkat, böngésszen a kategóriákban, vagy "
 "keresse meg a kívánt alkalmazást."
 
-#: src/gs-first-run-dialog.ui:59
+#: src/gs-first-run-dialog.ui:62
 msgid "_Let’s Go Shopping"
 msgstr "_Gyerünk vásárolni"
 
@@ -2244,14 +2297,9 @@ msgid "_Remove from Folder"
 msgstr "_Eltávolítás mappából"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:61
+#: src/gs-loading-page.c:61 src/gs-loading-page.c:65
 msgid "Software catalog is being downloaded"
 msgstr "A szoftverkatalógus letöltésre kerül"
-
-#. TRANSLATORS: initial start
-#: src/gs-loading-page.c:65
-msgid "Software catalog is being loaded"
-msgstr "A szoftverkatalógus betöltésre kerül"
 
 #: src/gs-loading-page.ui:7
 msgid "Loading page"
@@ -2323,14 +2371,14 @@ msgid "Recommended Productivity Applications"
 msgstr "Javasolt irodai alkalmazások"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:993 src/gs-repos-dialog.c:821
+#: src/gs-overview-page.c:993 src/gs-repos-dialog.c:822
 msgid "Access additional software from selected third party sources."
 msgstr ""
 "Hozzáférés további szoftverekhez a kiválasztott harmadik féltől származó "
 "forrásokból."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:997 src/gs-repos-dialog.c:825
+#: src/gs-overview-page.c:997 src/gs-repos-dialog.c:826
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2340,13 +2388,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:1002 src/gs-repos-dialog.c:830
+#: src/gs-overview-page.c:1002 src/gs-repos-dialog.c:831
 msgid "Find out more…"
 msgstr "Tudjon meg többet…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:1010 src/gs-repos-dialog.c:238
+#: src/gs-overview-page.c:1010 src/gs-repos-dialog.c:239
 msgid "Enable"
 msgstr "Engedélyezés"
 
@@ -2382,38 +2430,38 @@ msgstr "Nem találhatók alkalmazásadatok"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:482
+#: src/gs-page.c:489
 #, c-format
 msgid "Are you sure you want to purchase %s?"
 msgstr "Biztos, hogy megveszi a következőt: „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:486
+#: src/gs-page.c:493
 #, c-format
 msgid "%s will be installed, and you will be charged %s."
 msgstr "A(z) %s telepítve lesz, és levonásra kerül %s."
 
 #. TRANSLATORS: this is button text to purchase the application
-#: src/gs-page.c:499
+#: src/gs-page.c:506
 msgid "Purchase"
 msgstr "Megvásárlás"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:573
+#: src/gs-page.c:580
 #, c-format
 msgid "Prepare %s"
 msgstr "%s előkészítése"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:710
+#: src/gs-page.c:717
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Biztosan el szeretné távolítani a(z) %s tárolót?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:714
+#: src/gs-page.c:721
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2424,13 +2472,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:722
+#: src/gs-page.c:729
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Biztos, hogy el akarja távolítani a következőt: „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:725
+#: src/gs-page.c:732
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s eltávolításra kerül, és telepíteni kell a jövőbeli használatához."
@@ -2588,20 +2636,20 @@ msgstr[1] "%s és %s telepítve"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:298
+#: src/gs-repos-dialog.c:299
 #, c-format
 msgid "Remove “%s”?"
 msgstr "Eltávolítja ezt: „%s”?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:303
+#: src/gs-repos-dialog.c:304
 #, c-format
 msgid "Disable “%s”?"
 msgstr "Letiltja ezt: „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:307
+#: src/gs-repos-dialog.c:308
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2610,19 +2658,19 @@ msgstr ""
 "kapni, a biztonsági frissítéseket is beleértve."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:325
+#: src/gs-repos-dialog.c:326
 msgid "Disable"
 msgstr "Letiltás"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:734
+#: src/gs-repos-dialog.c:735
 msgid "the operating system"
 msgstr "az operációs rendszer"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:800 src/gs-repos-dialog.c:836
+#: src/gs-repos-dialog.c:801 src/gs-repos-dialog.c:837
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -2630,7 +2678,7 @@ msgstr ""
 "szoftvereket."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:818
+#: src/gs-repos-dialog.c:819
 msgid "Third Party Repositories"
 msgstr "Harmadik féltől származó tárolók"
 
@@ -2774,6 +2822,14 @@ msgstr "Vélemény"
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr "Mit gondol az alkalmazásról? Próbálja megindokolni véleményét."
 
+#: src/gs-review-dialog.ui:186
+msgid ""
+"Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
+"\">privacy policy</a>."
+msgstr ""
+"Keresse meg az <a href=\"https://odrs.gnome.org/privacy\">adatvédelmi "
+"irányelveinkben</a>, hogy mely adatok lettek elküldve."
+
 #. Translators: A label for the total number of reviews.
 #: src/gs-review-histogram.ui:412
 msgid "ratings in total"
@@ -2836,39 +2892,39 @@ msgstr "Eltávolítás…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:299
+#: src/gs-screenshot-image.c:235
 msgid "Screenshot not found"
 msgstr "Nem található képernyőkép"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:314
+#: src/gs-screenshot-image.c:250
 msgid "Failed to load image"
 msgstr "A kép betöltése meghiúsult"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:447
+#: src/gs-screenshot-image.c:375
 msgid "Screenshot size not found"
 msgstr "A képernyőkép mérete nem található"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:477
+#: src/gs-screenshot-image.c:405
 msgid "Could not create cache"
 msgstr "Nem lehet létrehozni a gyorsítótárat"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:537
+#: src/gs-screenshot-image.c:465
 msgid "Screenshot not valid"
 msgstr "A képernyőkép nem érvényes"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:552
+#: src/gs-screenshot-image.c:480
 msgid "Screenshot not available"
 msgstr "A képernyőkép nem érhető el"
 
-#: src/gs-screenshot-image.c:605
+#: src/gs-screenshot-image.c:532
 msgid "Screenshot"
 msgstr "Képernyőkép"
 
@@ -2890,19 +2946,19 @@ msgid "No Application Found"
 msgstr "Nem található alkalmazás"
 
 #. TRANSLATORS: menu item that signs into the named account with a particular username
-#: src/gs-shell.c:726
+#: src/gs-shell.c:736
 #, c-format
 msgid "Signed in as %s"
 msgstr "Bejelentkezés mint %s"
 
 #. TRANSLATORS: menu item that signs into the named account
-#: src/gs-shell.c:730
+#: src/gs-shell.c:740
 #, c-format
 msgid "Sign in…"
 msgstr "Bejelentkezés…"
 
 #. TRANSLATORS: menu item for signing out from the named account
-#: src/gs-shell.c:738
+#: src/gs-shell.c:748
 #, c-format
 msgid "Sign out"
 msgstr "Kijelentkezés"
@@ -2915,32 +2971,32 @@ msgstr "Kijelentkezés"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:921 src/gs-shell.c:926 src/gs-shell.c:941 src/gs-shell.c:945
+#: src/gs-shell.c:931 src/gs-shell.c:936 src/gs-shell.c:951 src/gs-shell.c:955
 #, c-format
 msgid "“%s”"
 msgstr "„%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:988
+#: src/gs-shell.c:1002
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "A firmware frissítések nem tölthetőek le innen: %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:994
+#: src/gs-shell.c:1008
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "A frissítések nem tölthetőek le innen: %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1001 src/gs-shell.c:1049
+#: src/gs-shell.c:1015 src/gs-shell.c:1060
 msgid "Unable to download updates"
 msgstr "A frissítések nem tölthetőek le"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1007
+#: src/gs-shell.c:1021
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2949,68 +3005,68 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1016
+#: src/gs-shell.c:1030
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "A frissítések nem tölthetőek le innen: %s, nincs elég lemezterület"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1021
+#: src/gs-shell.c:1035
 msgid "Unable to download updates: not enough disk space"
 msgstr "A frissítések nem tölthetőek le: nincs elég lemezterület"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1028
+#: src/gs-shell.c:1042
 msgid "Unable to download updates: authentication was required"
 msgstr "A frissítések nem tölthetőek le: hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1033
+#: src/gs-shell.c:1047
 msgid "Unable to download updates: authentication was invalid"
 msgstr "A frissítések nem tölthetőek le: a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1038
+#: src/gs-shell.c:1052
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "A frissítések nem tölthetőek le: nincs joga szoftvereket telepíteni"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1052
+#: src/gs-shell.c:1063
 msgid "Unable to get list of updates"
 msgstr "A frissítések listája nem kérhető le"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1088
+#: src/gs-shell.c:1099
 #, c-format
 msgid "Unable to purchase %s: authentication was required"
 msgstr "A(z) %s nem vásárolható meg: hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1095
+#: src/gs-shell.c:1106
 #, c-format
 msgid "Unable to purchase %s: authentication was invalid"
 msgstr "A(z) %s nem vásárolható meg: a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1102
+#: src/gs-shell.c:1113
 #, c-format
 msgid "Unable to purchase %s: no payment method setup"
 msgstr "A(z) %s nem vásárolható meg: nincs fizetési mód beállítva"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1109
+#: src/gs-shell.c:1120
 #, c-format
 msgid "Unable to purchase %s: payment was declined"
 msgstr "A(z) %s nem vásárolható meg: a fizetés vissza lett utasítva"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1116
+#: src/gs-shell.c:1127
 #, c-format
 msgid "Unable to purchase %s"
 msgstr "A(z) %s nem vásárolható meg"
@@ -3018,14 +3074,14 @@ msgstr "A(z) %s nem vásárolható meg"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1148
+#: src/gs-shell.c:1159
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "A(z) %s nem telepíthető, mert a letöltés meghiúsult innen: %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1154
+#: src/gs-shell.c:1165
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "A(z) %s nem telepíthető, mert a letöltés meghiúsult"
@@ -3034,65 +3090,65 @@ msgstr "A(z) %s nem telepíthető, mert a letöltés meghiúsult"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1167
+#: src/gs-shell.c:1178
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "A(z) %s nem telepíthető, mert a(z) %s futtatókörnyezet nem érhető el"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1173
+#: src/gs-shell.c:1184
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "A(z) %s nem telepíthető, mert nem támogatott"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1180
+#: src/gs-shell.c:1191
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "Nem telepíthető: internet-hozzáférés szükséges, de nem érhető el"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1186
+#: src/gs-shell.c:1197
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nem telepíthető: az alkalmazás formátuma érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1191
+#: src/gs-shell.c:1202
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "A(z) %s nem telepíthető: nincs elég lemezterület"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1198
+#: src/gs-shell.c:1209
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "A(z) %s nem telepíthető: hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1205
+#: src/gs-shell.c:1216
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "A(z) %s nem telepíthető: a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1212
+#: src/gs-shell.c:1223
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "A(z) %s nem telepíthető: nincs joga szoftvereket telepíteni"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1220
+#: src/gs-shell.c:1231
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "A(z) %s nem telepíthető: elektromos hálózat szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1229
+#: src/gs-shell.c:1240
 #, c-format
 msgid "Unable to install %s"
 msgstr "A(z) %s nem telepíthető"
@@ -3101,14 +3157,14 @@ msgstr "A(z) %s nem telepíthető"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1272
+#: src/gs-shell.c:1287
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "A(z) %s nem frissíthető %s használatakor, mert a letöltés meghiúsult"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1279
+#: src/gs-shell.c:1294
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "A(z) %s nem frissíthető, mert a letöltés meghiúsult"
@@ -3116,7 +3172,7 @@ msgstr "A(z) %s nem frissíthető, mert a letöltés meghiúsult"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1286
+#: src/gs-shell.c:1301
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr ""
@@ -3124,64 +3180,64 @@ msgstr ""
 "meghiúsult"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1290
+#: src/gs-shell.c:1305
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Nem lehet telepíteni a frissítéseket, mert a letöltés meghiúsult"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1296
+#: src/gs-shell.c:1311
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "Nem lehet frissíteni: internetelérés szükséges, de nem érhető el"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1306
+#: src/gs-shell.c:1321
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "A(z) %s nem frissíthető: nincs elég lemezterület"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1311
+#: src/gs-shell.c:1326
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Nem lehet telepíteni a frissítéseket: nincs elég szabad hely"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1321
+#: src/gs-shell.c:1336
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "A(z) %s nem frissíthető: hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1326
+#: src/gs-shell.c:1341
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Nem lehet telepíteni a frissítéseket: hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1335
+#: src/gs-shell.c:1350
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "A(z) %s nem frissíthető: a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1340
+#: src/gs-shell.c:1355
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Nem lehet telepíteni a frissítéseket: a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1349
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "A(z) %s nem frissíthető: nincs joga szoftvereket frissíteni"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1355
+#: src/gs-shell.c:1370
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3190,27 +3246,27 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1365
+#: src/gs-shell.c:1380
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "A(z) %s nem frissíthető: elektromos hálózat szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1371
+#: src/gs-shell.c:1386
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Nem lehet telepíteni a frissítéseket: elektromos hálózat szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1382
+#: src/gs-shell.c:1397
 #, c-format
 msgid "Unable to update %s"
 msgstr "A(z) %s nem frissíthető"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1385
+#: src/gs-shell.c:1400
 #, c-format
 msgid "Unable to install updates"
 msgstr "Nem lehet telepíteni a frissítéseket"
@@ -3218,21 +3274,21 @@ msgstr "Nem lehet telepíteni a frissítéseket"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1428
+#: src/gs-shell.c:1443
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nem lehet frissíteni erre: %s, erről: %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1433
+#: src/gs-shell.c:1448
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nem lehet frissíteni erre: %s, mert a letöltés meghiúsult"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1442
+#: src/gs-shell.c:1457
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3242,77 +3298,77 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1451
+#: src/gs-shell.c:1466
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nem lehet frissíteni erre: %s, nincs elég lemezterület"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1459
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nem lehet frissíteni erre: %s, hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1466
+#: src/gs-shell.c:1481
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nem lehet frissíteni erre: %s, a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1473
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nem lehet frissíteni erre: %s, nincs joga frissíteni"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1480
+#: src/gs-shell.c:1495
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Nem lehet frissíteni erre: %s, elektromos hálózat szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1489
+#: src/gs-shell.c:1504
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nem lehet frissíteni erre: %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1527
+#: src/gs-shell.c:1542
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "A(z) %s nem távolítható el: hitelesítés szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1533
+#: src/gs-shell.c:1548
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "A(z) %s nem távolítható el: a hitelesítés érvénytelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1539
+#: src/gs-shell.c:1554
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "A(z) %s nem távolítható el: nincs joga szoftvereket eltávolítani"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1546
+#: src/gs-shell.c:1561
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "A(z) %s nem távolítható el: elektromos hálózat szükséges"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1558
+#: src/gs-shell.c:1573
 #, c-format
 msgid "Unable to remove %s"
 msgstr "A(z) %s nem távolítható el"
@@ -3321,66 +3377,66 @@ msgstr "A(z) %s nem távolítható el"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1601
+#: src/gs-shell.c:1616
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "A(z) %s nem indítható el: a(z) %s nincs telepítve"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1608 src/gs-shell.c:1659 src/gs-shell.c:1700
-#: src/gs-shell.c:1748
+#: src/gs-shell.c:1623 src/gs-shell.c:1674 src/gs-shell.c:1715
+#: src/gs-shell.c:1763
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Nincs elég lemezterület – szabadítson fel egy kis helyet, és próbálja újra"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1619 src/gs-shell.c:1670 src/gs-shell.c:1711
-#: src/gs-shell.c:1778
+#: src/gs-shell.c:1634 src/gs-shell.c:1685 src/gs-shell.c:1726
+#: src/gs-shell.c:1793
 msgid "Sorry, something went wrong"
 msgstr "Elnézést, hiba történt"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1651
+#: src/gs-shell.c:1666
 msgid "Failed to install file: not supported"
 msgstr "Nem sikerült telepíteni a fájlt: nem támogatott"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1655
+#: src/gs-shell.c:1670
 msgid "Failed to install file: authentication failed"
 msgstr "Nem sikerült telepíteni a fájlt: a hitelesítés sikertelen"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1692
+#: src/gs-shell.c:1707
 msgid "Failed to install: not supported"
 msgstr "Nem sikerült telepíteni: nem támogatott"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1696
+#: src/gs-shell.c:1711
 msgid "Failed to install: authentication failed"
 msgstr "Nem sikerült telepíteni: a hitelesítés sikertelen"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1742
+#: src/gs-shell.c:1757
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nem vehető fel a kapcsolat ezzel: %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1757
+#: src/gs-shell.c:1772
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "A(z) %s újraindítása szükséges az új bővítmények használatához."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1762
+#: src/gs-shell.c:1777
 msgid "This application needs to be restarted to use new plugins."
 msgstr "Az alkalmazás újraindítása szükséges az új bővítmények használatához."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1769
+#: src/gs-shell.c:1784
 msgid "AC power is required"
 msgstr "Elektromos hálózat szükséges"
 
@@ -3416,37 +3472,37 @@ msgstr "Nem áll rendelkezésre frissítési leírás."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:288
+#: src/gs-update-dialog.c:290
 #, c-format
 msgid "Installed on %s"
 msgstr "Telepítve ekkor: %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:308
+#: src/gs-update-dialog.c:310
 msgid "Installed Updates"
 msgstr "Telepített frissítések"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:524
+#: src/gs-update-dialog.c:526
 msgid "Additions"
 msgstr "Telepítendők"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:528
+#: src/gs-update-dialog.c:530
 msgid "Removals"
 msgstr "Eltávolítandók"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:532
+#: src/gs-update-dialog.c:534
 msgid "Updates"
 msgstr "Frissítendők"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:536
+#: src/gs-update-dialog.c:538
 msgid "Downgrades"
 msgstr "Visszafejlesztendők"
 
@@ -3473,11 +3529,6 @@ msgstr "Szoftverfrissítések érhetők el"
 #: src/gs-update-monitor.c:101
 msgid "Important OS and application updates are ready to be installed"
 msgstr "Fontos rendszer- és alkalmazásfrissítések állnak készen telepítésre"
-
-#. TRANSLATORS: button text
-#: src/gs-update-monitor.c:104 src/gs-updates-section.c:323
-msgid "Not Now"
-msgstr "Most nem"
 
 #: src/gs-update-monitor.c:105
 msgid "View"
@@ -3831,51 +3882,41 @@ msgstr "A frissítések automatikusan kezelve vannak"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:273
+#: src/gs-updates-section.c:274
 msgid "Restart & Update"
 msgstr "Újraindítás és frissítés"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:279
+#: src/gs-updates-section.c:280
 msgid "Update All"
 msgstr "Összes frissítése"
 
-#. TRANSLATORS: we've just live-updated some apps
-#: src/gs-updates-section.c:319
-msgid "Updates have been installed"
-msgstr "Frissítések lettek telepítve"
-
-#. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-updates-section.c:321
-msgid "A restart is required for them to take effect."
-msgstr "A változtatások érvénybe léptetéséhez újraindítás szükséges."
-
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:421
+#: src/gs-updates-section.c:411
 msgid "Integrated Firmware"
 msgstr "Beépített firmware"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:425
+#: src/gs-updates-section.c:415
 msgid "Requires Restart"
 msgstr "Újraindítás szükséges"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:429
+#: src/gs-updates-section.c:419
 msgid "Application Updates"
 msgstr "Alkalmazásfrissítések"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:433
+#: src/gs-updates-section.c:423
 msgid "Device Firmware"
 msgstr "Eszköz firmware"
 
-#: src/gs-updates-section.c:461 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:451 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "_Letöltés"
 
@@ -3920,12 +3961,6 @@ msgstr "Ajánlott az adatainak és fájljainak mentése a frissítés előtt."
 #: src/org.gnome.Software.desktop.in:4
 msgid "Add, remove or update software on this computer"
 msgstr "Szoftver hozzáadása, eltávolítása vagy frissítése ezen a számítógépen"
-
-#. Translators: Do NOT translate or transliterate this text (this is an icon file name)!
-#: src/org.gnome.Software.desktop.in:6
-#: src/org.gnome.Software.Editor.desktop.in:6
-msgid "org.gnome.Software"
-msgstr "org.gnome.Software"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: src/org.gnome.Software.desktop.in:12
@@ -4453,17 +4488,17 @@ msgstr ""
 "Az ODRS egy szolgáltatás, mely felhasználói értékeléseket biztosít az "
 "alkalmazásokhoz"
 
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:391
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:403
 msgid "GNOME Shell Extensions Repository"
 msgstr "GNOME Shell kiterjesztések tárolója"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:777
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:800
 msgid "Downloading shell extension metadata…"
 msgstr "Shell kiterjesztések letöltése…"
 
 #. TRANSLATORS: the one-line summary
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:871
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:900
 msgid "GNOME Shell Extension"
 msgstr "GNOME Shell kiterjesztés"
 
@@ -4476,7 +4511,7 @@ msgid "To continue, you need to use your Ubuntu One account."
 msgstr "A folytatáshoz az Ubuntu One fiókját kell használnia."
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:224
+#: plugins/snap/gs-plugin-snap.c:241
 msgid "Snap Store"
 msgstr "Snap tároló"
 
@@ -4487,6 +4522,3 @@ msgstr "Snap támogatás"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "A snapek univerzális Linuxos csomagok"
-
-#~ msgid "..."
-#~ msgstr "…"
