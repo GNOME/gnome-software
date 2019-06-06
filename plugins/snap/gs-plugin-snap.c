@@ -933,17 +933,22 @@ static void
 serialize_node (SnapdMarkdownNode *node, GString *text, guint indentation)
 {
 	GPtrArray *children = snapd_markdown_node_get_children (node);
+	g_autofree gchar *escaped_text = NULL;
+	g_autoptr(GString) url = NULL;
 
 	switch (snapd_markdown_node_get_node_type (node)) {
 	case SNAPD_MARKDOWN_NODE_TYPE_TEXT:
-		g_string_append (text, snapd_markdown_node_get_text (node));
+		escaped_text = g_markup_escape_text (snapd_markdown_node_get_text (node), -1);
+		g_string_append (text, escaped_text);
 		return;
 
 	case SNAPD_MARKDOWN_NODE_TYPE_PARAGRAPH:
-	case SNAPD_MARKDOWN_NODE_TYPE_UNORDERED_LIST:
-	case SNAPD_MARKDOWN_NODE_TYPE_CODE_BLOCK:
 		serialize_nodes (children, text, indentation);
 		g_string_append (text, "\n");
+		return;
+
+	case SNAPD_MARKDOWN_NODE_TYPE_UNORDERED_LIST:
+		serialize_nodes (children, text, indentation);
 		return;
 
 	case SNAPD_MARKDOWN_NODE_TYPE_LIST_ITEM:
@@ -954,11 +959,30 @@ serialize_node (SnapdMarkdownNode *node, GString *text, guint indentation)
 		serialize_nodes (children, text, indentation + 1);
 		return;
 
+	case SNAPD_MARKDOWN_NODE_TYPE_CODE_BLOCK:
 	case SNAPD_MARKDOWN_NODE_TYPE_CODE_SPAN:
+		g_string_append (text, "<tt>");
+		serialize_nodes (children, text, indentation);
+		g_string_append (text, "</tt>");
+		return;
+
 	case SNAPD_MARKDOWN_NODE_TYPE_EMPHASIS:
+		g_string_append (text, "<i>");
+		serialize_nodes (children, text, indentation);
+		g_string_append (text, "</i>");
+		return;
+
 	case SNAPD_MARKDOWN_NODE_TYPE_STRONG_EMPHASIS:
+		g_string_append (text, "<b>");
+		serialize_nodes (children, text, indentation);
+		g_string_append (text, "</b>");
+		return;
+
 	case SNAPD_MARKDOWN_NODE_TYPE_URL:
-		return serialize_nodes (children, text, indentation);
+		url = g_string_new ("");
+		serialize_nodes (children, url, indentation);
+		g_string_append_printf (text, "<a href=\"%s\">%s</a>", url->str, url->str);
+		return;
 
 	default:
 		g_assert_not_reached();
@@ -966,7 +990,7 @@ serialize_node (SnapdMarkdownNode *node, GString *text, guint indentation)
 }
 
 static gchar *
-gs_plugin_snap_get_description (SnapdSnap *snap)
+gs_plugin_snap_get_markup_description (SnapdSnap *snap)
 {
 	g_autoptr(SnapdMarkdownParser) parser = snapd_markdown_parser_new (SNAPD_MARKDOWN_VERSION_0);
 	g_autoptr(GPtrArray) nodes = NULL;
@@ -1122,7 +1146,7 @@ refine_app_with_client (GsPluginSnap         *self,
 		contact = NULL;
 	gs_app_set_url (app, AS_URL_KIND_CONTACT, contact);
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_summary (snap));
-	description = gs_plugin_snap_get_description (snap);
+	description = gs_plugin_snap_get_markup_description (snap);
 	gs_app_set_description (app, GS_APP_QUALITY_NORMAL, description);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, snapd_snap_get_license (snap));
 	developer_name = snapd_snap_get_publisher_display_name (snap);
