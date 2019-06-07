@@ -459,11 +459,24 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
 }
 
 static void
+gs_details_page_load_main_screenshot (GsDetailsPage *self,
+				      AsScreenshot *screenshot)
+{
+	GsScreenshotImage *ssmain;
+	g_autoptr(GList) children = NULL;
+
+	children = gtk_container_get_children (GTK_CONTAINER (self->box_details_screenshot_main));
+	ssmain = GS_SCREENSHOT_IMAGE (children->data);
+
+	gs_screenshot_image_set_screenshot (ssmain, screenshot);
+	gs_screenshot_image_load_async (ssmain, NULL);
+}
+
+static void
 gs_details_page_screenshot_selected_cb (GtkListBox *list,
                                         GtkListBoxRow *row,
                                         GsDetailsPage *self)
 {
-	GsScreenshotImage *ssmain;
 	GsScreenshotImage *ssthumb;
 	AsScreenshot *ss;
 	g_autoptr(GList) children = NULL;
@@ -471,13 +484,10 @@ gs_details_page_screenshot_selected_cb (GtkListBox *list,
 	if (row == NULL)
 		return;
 
-	children = gtk_container_get_children (GTK_CONTAINER (self->box_details_screenshot_main));
-	ssmain = GS_SCREENSHOT_IMAGE (children->data);
-
 	ssthumb = GS_SCREENSHOT_IMAGE (gtk_bin_get_child (GTK_BIN (row)));
 	ss = gs_screenshot_image_get_screenshot (ssthumb);
-	gs_screenshot_image_set_screenshot (ssmain, ss);
-	gs_screenshot_image_load_async (ssmain, NULL);
+
+	gs_details_page_load_main_screenshot (self, ss);
 }
 
 static void
@@ -488,7 +498,13 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 	GtkWidget *label;
 	GtkWidget *list;
 	GtkWidget *ssimg;
+	GtkWidget *main_screenshot = NULL;
 	guint i;
+	gboolean is_offline = !gs_plugin_loader_get_network_available (self->plugin_loader);
+	guint num_screenshots_loaded = 0;
+
+	/* reset the visibility of screenshots */
+	gtk_widget_show (self->box_details_screenshot);
 
 	/* treat screenshots differently */
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_FONT) {
@@ -521,7 +537,7 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 		gtk_widget_set_visible (self->box_details_screenshot,
 		                        screenshots->len > 0);
 		gtk_widget_set_visible (self->box_details_screenshot_fallback,
-		                        screenshots->len == 0);
+		                        screenshots->len == 0 && !is_offline);
 		return;
 	}
 
@@ -541,54 +557,51 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 		break;
 	default:
 		gtk_widget_set_visible (self->box_details_screenshot_fallback,
-					screenshots->len == 0);
+					screenshots->len == 0 && !is_offline);
 		break;
 	}
 
-	/* set screenshots */
+	/* reset screenshots */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
-	gtk_widget_set_visible (self->box_details_screenshot,
-				screenshots->len > 0);
-	if (screenshots->len == 0) {
-		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
-		gtk_widget_hide (self->box_details_screenshot_scrolledwindow);
-		return;
-	}
-
-	/* set the default image */
-	ss = g_ptr_array_index (screenshots, 0);
-	ssimg = gs_screenshot_image_new (self->session);
-	gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssimg)), FALSE);
-	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
-
-	/* use a slightly larger screenshot if it's the only screenshot */
-	if (screenshots->len == 1) {
-		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      AS_IMAGE_LARGE_WIDTH,
-					      AS_IMAGE_LARGE_HEIGHT);
-	} else {
-		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      AS_IMAGE_NORMAL_WIDTH,
-					      AS_IMAGE_NORMAL_HEIGHT);
-	}
-	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
-	gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_main), ssimg);
-	gtk_widget_set_visible (ssimg, TRUE);
-
-	/* set all the thumbnails */
 	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
-	if (screenshots->len < 2) {
-		gtk_widget_hide (self->box_details_screenshot_scrolledwindow);
-		return;
-	}
 
 	list = gtk_list_box_new ();
 	gtk_style_context_add_class (gtk_widget_get_style_context (list), "image-list");
 	gtk_widget_show (list);
 	gtk_widget_show (self->box_details_screenshot_scrolledwindow);
 	gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_thumbnails), list);
+
 	for (i = 0; i < screenshots->len; i++) {
 		ss = g_ptr_array_index (screenshots, i);
+
+		/* we need to load the main screenshot only once if we're online
+		 * but all times if we're offline (to check which are cached and
+		 * hide those who aren't) */
+		if (is_offline || main_screenshot == NULL) {
+			GtkWidget *ssmain = gs_screenshot_image_new (self->session);
+			gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssmain)), FALSE);
+			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssmain), ss);
+			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssmain),
+						      AS_IMAGE_NORMAL_WIDTH,
+						      AS_IMAGE_NORMAL_HEIGHT);
+			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssmain), NULL);
+
+			/* when we're offline, the load will be immediate, so we
+			 * can check if it succeeded, and just skip it and its
+			 * thumbnails otherwise */
+			if (is_offline &&
+			    !gs_screenshot_image_is_showing (GS_SCREENSHOT_IMAGE (ssmain)))
+				continue;
+
+			/* only set the main_screenshot once */
+			if (main_screenshot == NULL) {
+				main_screenshot = ssmain;
+				gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main),
+						    main_screenshot, FALSE, FALSE, 0);
+				gtk_widget_show (main_screenshot);
+			}
+		}
+
 		ssimg = gs_screenshot_image_new (self->session);
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
@@ -599,14 +612,35 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 		gtk_list_box_insert (GTK_LIST_BOX (list), ssimg, -1);
 		gtk_widget_set_visible (ssimg, TRUE);
+		++num_screenshots_loaded;
 	}
 
+	if (main_screenshot == NULL) {
+		gtk_widget_hide (self->box_details_screenshot);
+		return;
+	}
+
+	/* reload the main screenshot with a larger size if it's the only screenshot
+	 * available */
+	if (num_screenshots_loaded == 1) {
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (main_screenshot),
+					      AS_IMAGE_LARGE_WIDTH,
+					      AS_IMAGE_LARGE_HEIGHT);
+		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (main_screenshot), NULL);
+	}
+
+	if (num_screenshots_loaded <= 1) {
+		gtk_widget_hide (self->box_details_screenshot_thumbnails);
+		return;
+	}
+
+	gtk_widget_show (self->box_details_screenshot_thumbnails);
 	gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
-	gtk_list_box_select_row (GTK_LIST_BOX (list),
-				 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
 	g_signal_connect (list, "row-selected",
 			  G_CALLBACK (gs_details_page_screenshot_selected_cb),
 			  self);
+	gtk_list_box_select_row (GTK_LIST_BOX (list),
+				 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
 }
 
 static void
