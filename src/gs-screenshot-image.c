@@ -495,6 +495,12 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				    g_object_ref (ssimg));
 }
 
+gboolean
+gs_screenshot_image_is_showing (GsScreenshotImage *ssimg)
+{
+	return ssimg->showing_image;
+}
+
 static void
 gs_screenshot_image_destroy (GtkWidget *widget)
 {
