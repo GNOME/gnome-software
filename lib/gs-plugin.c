@@ -1583,6 +1583,8 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_destroy";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "gs_plugin_add_alternates";
+	if (action == GS_PLUGIN_ACTION_SWITCH_CHANNEL)
+		return "gs_plugin_app_switch_channel";
 	return NULL;
 }
 
@@ -1677,6 +1679,8 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "destroy";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "get-alternates";
+	if (action == GS_PLUGIN_ACTION_SWITCH_CHANNEL)
+		return "switch-channel";
 	return NULL;
 }
 
@@ -1771,6 +1775,8 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_DESTROY;
 	if (g_strcmp0 (action, "get-alternates") == 0)
 		return GS_PLUGIN_ACTION_GET_ALTERNATES;
+	if (g_strcmp0 (action, "switch-channel") == 0)
+		return GS_PLUGIN_ACTION_SWITCH_CHANNEL;
 	return GS_PLUGIN_ACTION_UNKNOWN;
 }
 
