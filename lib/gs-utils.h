@@ -77,6 +77,8 @@ gboolean	 gs_utils_error_convert_appstream (GError	**perror);
 
 gchar		*gs_utils_get_url_scheme	(const gchar	*url);
 gchar		*gs_utils_get_url_path		(const gchar	*url);
+gchar		*gs_utils_get_url_query_param	(const gchar	*url,
+						 const gchar	*name);
 const gchar	*gs_user_agent			(void);
 void		 gs_utils_append_key_value	(GString	*str,
 						 gsize		 align_len,
