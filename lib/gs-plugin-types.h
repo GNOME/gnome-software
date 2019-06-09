@@ -129,6 +129,7 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME:	Require developer name
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS:		Require kudos
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING:	Require content rating
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_CHANNELS:		Require channel information
  *
  * The refine flags.
  **/
@@ -165,6 +166,7 @@ typedef enum {
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_DEVELOPER_NAME	((guint64) 1 << 29)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS		((guint64) 1 << 30)
 #define GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING	((guint64) 1 << 31)
+#define GS_PLUGIN_REFINE_FLAGS_REQUIRE_CHANNELS		((guint64) 1 << 32)
 typedef guint64 GsPluginRefineFlags;
 
 /**
@@ -229,6 +231,7 @@ typedef enum {
  * @GS_PLUGIN_ACTION_PURCHASE:			Purchase an app
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
+ * @GS_PLUGIN_ACTION_SWITCH_CHANNEL:		Switch app channel
  *
  * The plugin action.
  **/
@@ -274,6 +277,7 @@ typedef enum {
 	GS_PLUGIN_ACTION_PURCHASE,
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_GET_ALTERNATES,
+	GS_PLUGIN_ACTION_SWITCH_CHANNEL,
 	/*< private >*/
 	GS_PLUGIN_ACTION_LAST
 } GsPluginAction;
