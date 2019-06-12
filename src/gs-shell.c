@@ -829,7 +829,7 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
-	/* adapt the window for low resolution screens */
+	/* adapt the window for low (smaller than 800x600) and medium (1366x768) resolution screens */
 	if (gs_utils_is_low_resolution (GTK_WIDGET (priv->main_window))) {
 		    GtkWidget *buttonbox = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 
@@ -845,6 +845,9 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates")),
 					     "non-homogeneous", TRUE,
 					     NULL);
+	}
+	if (gs_utils_is_medium_resolution (GTK_WIDGET (priv->main_window))) {
+		gtk_window_set_default_size (priv->main_window, 1050, 600);
 	}
 }
 
