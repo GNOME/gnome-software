@@ -56,6 +56,16 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_rw_lock_clear (&priv->silo_lock);
 }
 
+static const gchar *
+gs_plugin_appstream_convert_component_kind (const gchar *kind)
+{
+	if (g_strcmp0 (kind, "web-application") == 0)
+		return "webapp";
+	if (g_strcmp0 (kind, "console-application") == 0)
+		return "console";
+	return kind;
+}
+
 static gboolean
 gs_plugin_appstream_upgrade_cb (XbBuilderFixup *self,
 				XbBuilderNode *bn,
@@ -74,6 +84,11 @@ gs_plugin_appstream_upgrade_cb (XbBuilderFixup *self,
 		xb_builder_node_set_element (bn, "component");
 	} else if (g_strcmp0 (xb_builder_node_get_element (bn), "metadata") == 0) {
 		xb_builder_node_set_element (bn, "custom");
+	} else if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0) {
+		const gchar *type_old = xb_builder_node_get_attr (bn, "type");
+		const gchar *type_new = gs_plugin_appstream_convert_component_kind (type_old);
+		if (type_old != type_new)
+			xb_builder_node_set_attr (bn, "type", type_new);
 	}
 	return TRUE;
 }
@@ -145,7 +160,7 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 	}
 
 	/* fix up any legacy installed files */
-	fixup = xb_builder_fixup_new ("AppStreamUpgrade",
+	fixup = xb_builder_fixup_new ("AppStreamUpgrade2",
 				      gs_plugin_appstream_upgrade_cb,
 				      plugin, NULL);
 	xb_builder_fixup_set_max_depth (fixup, 3);
@@ -359,7 +374,7 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 	xb_builder_source_add_fixup (source, fixup1);
 
 	/* fix up any legacy installed files */
-	fixup2 = xb_builder_fixup_new ("AppStreamUpgrade",
+	fixup2 = xb_builder_fixup_new ("AppStreamUpgrade2",
 				       gs_plugin_appstream_upgrade_cb,
 				       plugin, NULL);
 	xb_builder_fixup_set_max_depth (fixup2, 3);
