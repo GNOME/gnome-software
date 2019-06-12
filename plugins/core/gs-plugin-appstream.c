@@ -751,16 +751,17 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	/* find all apps when matching any prefixes */
 	for (guint j = 0; j < sources->len; j++) {
 		const gchar *pkgname = g_ptr_array_index (sources, j);
-		g_autofree gchar *xpath = NULL;
 		g_autoptr(GRWLockReaderLocker) locker = NULL;
-		g_autoptr(GPtrArray) components = NULL;
+		g_autoptr(GString) xpath = g_string_new (NULL);
+		g_autoptr(XbNode) component = NULL;
 
 		locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
-		xpath = g_strdup_printf ("components/component/pkgname[text()='%s']/..",
-					 pkgname);
-		components = xb_silo_query (priv->silo, xpath, 0, &error_local);
-		if (components == NULL) {
+		/* prefer desktop apps and then fallback to anything else */
+		xb_string_append_union (xpath, "components/component[@type='desktop']/pkgname[text()='%s']/..", pkgname);
+		xb_string_append_union (xpath, "components/component/pkgname[text()='%s']/..", pkgname);
+		component = xb_silo_query_first (priv->silo, xpath->str, &error_local);
+		if (component == NULL) {
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
 				continue;
 			if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
@@ -768,13 +769,9 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 			g_propagate_error (error, g_steal_pointer (&error_local));
 			return FALSE;
 		}
-		for (guint i = 0; i < components->len; i++) {
-			XbNode *component = g_ptr_array_index (components, i);
-			if (!gs_appstream_refine_app (plugin, app, priv->silo,
-						      component, flags, error))
-				return FALSE;
-			gs_plugin_appstream_set_compulsory_quirk (app, component);
-		}
+		if (!gs_appstream_refine_app (plugin, app, priv->silo, component, flags, error))
+			return FALSE;
+		gs_plugin_appstream_set_compulsory_quirk (app, component);
 	}
 
 	/* success */
