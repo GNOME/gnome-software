@@ -8,6 +8,7 @@ before_script:
   - dnf -y update
   - dnf -y install 'dnf-command(builddep)' dbus-daemon
   - dnf -y builddep gnome-software
+  - dnf -y update https://kojipkgs.fedoraproject.org//packages/flatpak/1.4.0/2.fc30/x86_64/flatpak-1.4.0-2.fc30.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/flatpak/1.4.0/2.fc30/x86_64/flatpak-devel-1.4.0-2.fc30.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/flatpak/1.4.0/2.fc30/x86_64/flatpak-libs-1.4.0-2.fc30.x86_64.rpm https://kojipkgs.fedoraproject.org//packages/flatpak/1.4.0/2.fc30/x86_64/flatpak-selinux-1.4.0-2.fc30.x86_64.rpm
 
 build-gnome-software:
   stage: build
