@@ -13,7 +13,6 @@
 
 struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
-	FlatpakInstallation	*installation;
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
 };
