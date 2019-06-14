@@ -38,7 +38,6 @@ typedef struct {
 	GsApp		*app;
 	GsPage		*page;
 	GCancellable	*cancellable;
-	SoupSession	*soup_session;
 	gulong		 notify_quirk_id;
 	GtkWidget	*button_install;
 	GsPluginAction	 action;
@@ -58,8 +57,6 @@ gs_page_helper_free (GsPageHelper *helper)
 		g_object_unref (helper->page);
 	if (helper->cancellable != NULL)
 		g_object_unref (helper->cancellable);
-	if (helper->soup_session != NULL)
-		g_object_unref (helper->soup_session);
 	g_slice_free (GsPageHelper, helper);
 }
 
@@ -563,6 +560,7 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 {
 	GtkWidget *content_area;
 	GtkWidget *dialog;
+	g_autoptr(SoupSession) soup_session = NULL;
 	GtkWidget *ssimg;
 	g_autofree gchar *escaped = NULL;
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
@@ -592,9 +590,9 @@ gs_page_needs_user_action (GsPageHelper *helper, AsScreenshot *ss)
 	gtk_widget_set_sensitive (helper->button_install, FALSE);
 
 	/* load screenshot */
-	helper->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-							      gs_user_agent (), NULL);
-	ssimg = gs_screenshot_image_new (helper->soup_session);
+	soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+						      gs_user_agent (), NULL);
+	ssimg = gs_screenshot_image_new (soup_session);
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
