@@ -43,7 +43,6 @@ typedef struct {
 	GtkWidget	*button_install;
 	GsPluginAction	 action;
 	GsShellInteraction interaction;
-	GsPrice		*price;
 	GsPageAuthCallback callback;
 	gpointer	 callback_data;
 } GsPageHelper;
@@ -61,8 +60,6 @@ gs_page_helper_free (GsPageHelper *helper)
 		g_object_unref (helper->cancellable);
 	if (helper->soup_session != NULL)
 		g_object_unref (helper->soup_session);
-	if (helper->price != NULL)
-		g_object_unref (helper->price);
 	g_slice_free (GsPageHelper, helper);
 }
 
