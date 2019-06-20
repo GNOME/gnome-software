@@ -219,7 +219,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
 
 	/* add the source to the plugin cache which allows us to match the
@@ -266,7 +265,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 				       NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
-		app = gs_app_new (id);
+		app = gs_fwupd_app_new (id);
 		gs_plugin_cache_add (plugin, id, app);
 	}
 
@@ -274,7 +273,6 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_CABINET);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
-	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_add_category (app, "System");
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
 
@@ -283,18 +281,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 	as_icon_set_name (icon, "application-x-firmware");
 	gs_app_add_icon (app, icon);
-	gs_fwupd_app_set_from_release (app, rel);
-	gs_fwupd_app_set_from_device (app, dev);
-
-	if (fwupd_release_get_appstream_id (rel) != NULL)
-		gs_app_set_id (app, fwupd_release_get_appstream_id (rel));
-
-	/* the same as we have already */
-	if (g_strcmp0 (fwupd_device_get_version (dev),
-		       fwupd_release_get_version (rel)) == 0) {
-		g_warning ("same firmware version as installed");
-	}
-
+	gs_fwupd_app_refine (app, dev);
 	return app;
 }
 
@@ -315,9 +302,8 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 
 	/* create a GsApp based on the device, not the release */
 	id = gs_plugin_fwupd_build_device_id (device);
-	app = gs_app_new (id);
+	app = gs_fwupd_app_new (id);
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_version (app, fwupd_device_get_version (device));
@@ -326,7 +312,6 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_description (device));
 	gs_app_set_origin (app, fwupd_device_get_vendor (device));
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (device));
-	gs_app_set_management_plugin (app, "fwupd");
 
 	/* create icon */
 	icons = fwupd_device_get_icons (device);
@@ -790,7 +775,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	g_set_object (&priv->app_current, app);
 
 	/* only offline supported */
-	if (gs_app_get_metadata_item (app, "fwupd::OnlyOffline") != NULL)
+	if (gs_fwupd_app_get_only_offline (app))
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -812,19 +797,10 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 			       GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	const gchar *remote_id = gs_app_get_metadata_item (app, "fwupd::remote-id");
-	if (remote_id == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "not enough data for fwupd %s",
-			     gs_app_get_unique_id (app));
-		return FALSE;
-	}
 	gs_app_set_state (app, enabled ?
 	                  AS_APP_STATE_INSTALLING : AS_APP_STATE_REMOVING);
 	if (!fwupd_client_modify_remote (priv->client,
-	                                 remote_id,
+	                                 gs_fwupd_app_get_remote_id (app),
 	                                 "Enabled",
 	                                 enabled ? "true" : "false",
 	                                 cancellable,
@@ -1019,9 +995,8 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		/* create something that we can use to enable/disable */
 		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
-		app = gs_app_new (id);
+		app = gs_fwupd_app_new (id);
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?
 				  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
@@ -1032,9 +1007,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 #endif
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 				fwupd_remote_get_metadata_uri (remote));
-		gs_app_set_metadata (app, "fwupd::remote-id",
-				     fwupd_remote_get_id (remote));
-		gs_app_set_management_plugin (app, "fwupd");
+		gs_fwupd_app_set_remote_id (app, fwupd_remote_get_id (remote));
 		gs_app_list_add (list, app);
 	}
 	return TRUE;

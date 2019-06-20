@@ -12,19 +12,26 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_FWUPD_APP (gs_fwupd_app_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsFwupdApp, gs_fwupd_app, GS, FWUPD_APP, GsApp)
+
+GsApp			*gs_fwupd_app_new			(const gchar	*id);
 const gchar		*gs_fwupd_app_get_device_id		(GsApp		*app);
+const gchar		*gs_fwupd_app_get_remote_id		(GsApp		*app);
 const gchar		*gs_fwupd_app_get_update_uri		(GsApp		*app);
 gboolean		 gs_fwupd_app_get_is_locked		(GsApp		*app);
+gboolean		 gs_fwupd_app_get_only_offline		(GsApp		*app);
 
 void			 gs_fwupd_app_set_device_id		(GsApp		*app,
 								 const gchar	*device_id);
+void			 gs_fwupd_app_set_remote_id		(GsApp		*app,
+								 const gchar	*remote_id);
 void			 gs_fwupd_app_set_update_uri		(GsApp		*app,
 								 const gchar	*update_uri);
 void			 gs_fwupd_app_set_is_locked		(GsApp		*app,
 								 gboolean	 is_locked);
-void			 gs_fwupd_app_set_from_device		(GsApp		*app,
+void			 gs_fwupd_app_refine			(GsApp		*app,
 								 FwupdDevice	*dev);
-void			 gs_fwupd_app_set_from_release		(GsApp		*app,
-								 FwupdRelease	*rel);
 
 G_END_DECLS
