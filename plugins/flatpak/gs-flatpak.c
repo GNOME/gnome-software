@@ -239,7 +239,7 @@ gs_flatpak_create_app (GsFlatpak *self, const gchar *origin, FlatpakRef *xref)
 	g_autoptr(GsApp) app = NULL;
 
 	/* create a temp GsApp */
-	app = gs_app_new (flatpak_ref_get_name (xref));
+	app = gs_flatpak_app_new (flatpak_ref_get_name (xref));
 	gs_flatpak_set_metadata (self, app, xref);
 	if (origin != NULL)
 		gs_app_set_origin (app, origin);
@@ -1851,7 +1851,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 		return NULL;
 
 	/* create the complete GsApp from the single string */
-	app = gs_app_new (split[0]);
+	app = gs_flatpak_app_new (split[0]);
 	gs_flatpak_claim_app (self, app);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);

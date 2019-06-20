@@ -12,6 +12,10 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_FLATPAK_APP (gs_flatpak_app_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsFlatpakApp, gs_flatpak_app, GS, FLATPAK_APP, GsApp)
+
 typedef enum {
 	GS_FLATPAK_APP_FILE_KIND_UNKNOWN,
 	GS_FLATPAK_APP_FILE_KIND_REPO,
