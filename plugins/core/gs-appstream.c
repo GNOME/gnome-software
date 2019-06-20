@@ -27,7 +27,7 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 		return NULL;
 
 	/* look for existing object */
-	app = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app_new));
+	app = gs_plugin_cache_lookup (plugin, gs_app_get_cache_key (app_new));
 	if (app != NULL)
 		return app;
 
