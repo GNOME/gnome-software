@@ -45,6 +45,10 @@
 #include "gs-plugin.h"
 #include "gs-utils.h"
 
+typedef GsApp		*(*GsPluginCreateAppFunc)	(GsPlugin	*plugin,
+							 const gchar	*id);
+
+
 typedef struct
 {
 	GHashTable		*cache;
@@ -371,6 +375,28 @@ gs_plugin_interactive_dec (GsPlugin *plugin)
 		priv->interactive_cnt--;
 	if (priv->interactive_cnt == 0)
 		gs_plugin_remove_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
+}
+
+/**
+ * gs_plugin_app_new:
+ * @plugin: a #GsPlugin
+ * @id: an application ID
+ *
+ * Creates a GsApp, which may possibly be a subclassed type.
+ * To set a custom type used when creating objects, plugins can use the
+ * gs_plugin_create_app() vfunc.
+ *
+ * Returns: (transfer full): a #GsApp
+ *
+ * Since: 3.34
+ **/
+GsApp *
+gs_plugin_app_new (GsPlugin *plugin, const gchar *id)
+{
+	GsPluginCreateAppFunc func = gs_plugin_get_symbol (plugin, "gs_plugin_create_app");
+	if (func != NULL)
+		return func (plugin, id);
+	return gs_app_new (id);
 }
 
 /**
