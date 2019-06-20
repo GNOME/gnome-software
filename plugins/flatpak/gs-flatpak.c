@@ -205,6 +205,8 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
+	g_autofree gchar *source = NULL;
+
 	/* core */
 	gs_flatpak_claim_app (self, app);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
@@ -215,6 +217,10 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_flatpak_app_set_ref_name (app, flatpak_ref_get_name (xref));
 	gs_flatpak_app_set_ref_arch (app, flatpak_ref_get_arch (xref));
 	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
+
+	/* custom cachekey */
+	source = flatpak_ref_format_ref (xref);
+	gs_app_add_source (app, source);
 
 	/* map the flatpak kind to the gnome-software kind */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
@@ -236,7 +242,7 @@ gs_flatpak_create_app (GsFlatpak *self, const gchar *origin, FlatpakRef *xref)
 		gs_app_set_origin (app, origin);
 
 	/* return the ref'd cached copy */
-	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_cache_key (app));
 	if (app_cached != NULL)
 		return app_cached;
 
@@ -270,7 +276,7 @@ gs_flatpak_create_source (GsFlatpak *self, FlatpakRemote *xremote)
 	gs_flatpak_claim_app (self, app);
 
 	/* we already have one, returned the ref'd cached copy */
-	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+	app_cached = gs_plugin_cache_lookup (self->plugin, gs_app_get_cache_key (app));
 	if (app_cached != NULL)
 		return app_cached;
 
@@ -1779,7 +1785,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	gs_app_set_branch (app, split[2]);
 
 	/* search in the cache */
-	app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+	app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_cache_key (app));
 	if (app_cache != NULL) {
 		/* since the cached runtime can have been created somewhere else
 		 * (we're using a global cache), we need to make sure that a
@@ -1792,7 +1798,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	/* if the app is per-user we can also use the installed system runtime */
 	if (gs_app_get_scope (parent) == AS_APP_SCOPE_USER) {
 		gs_app_set_scope (app, AS_APP_SCOPE_UNKNOWN);
-		app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_unique_id (app));
+		app_cache = gs_plugin_cache_lookup (self->plugin, gs_app_get_cache_key (app));
 		if (app_cache != NULL)
 			return g_steal_pointer (&app_cache);
 	}

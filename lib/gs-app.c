@@ -1261,6 +1261,27 @@ gs_app_get_unique_id (GsApp *app)
 }
 
 /**
+ * gs_app_get_cache_key:
+ * @app: a #GsApp
+ *
+ * Gets the cache key used for de-duplication.
+ * If the plugin has not provided a custom #GsApp subclass with the `get_cache_key`
+ * vfunc implemented then gs_app_get_unique_id() will be used.
+ *
+ * Returns: A string ID suitable for deduplication
+ *
+ * Since: 3.34
+ **/
+const gchar *
+gs_app_get_cache_key (GsApp *app)
+{
+	GsAppClass *klass = GS_APP_GET_CLASS (app);
+	if (klass->get_cache_key != NULL)
+		return klass->get_cache_key (app);
+	return gs_app_get_unique_id (app);
+}
+
+/**
  * gs_app_set_unique_id:
  * @app: a #GsApp
  * @unique_id: a unique application ID, e.g. `system/package/fedora/desktop/gimp.desktop/i386/master`

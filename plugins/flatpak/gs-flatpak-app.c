@@ -50,6 +50,20 @@ gs_flatpak_app_file_kind_to_string (GsFlatpakAppFileKind file_kind)
 	return NULL;
 }
 
+static const gchar *
+gs_flatpak_app_get_cache_key (GsApp *app)
+{
+	/* check exists */
+	if (gs_app_get_source_default (app) == NULL) {
+		g_autofree gchar *tmp = gs_app_to_string (app);
+		g_critical ("no source set for cache key: %s", tmp);
+		return gs_app_get_unique_id (app);
+	}
+
+	/* something like 'runtime/org.test.Runtime/x86_64/master' */
+	return gs_app_get_source_default (app);
+}
+
 static void
 gs_flatpak_app_to_string (GsApp *app, GString *str)
 {
@@ -276,6 +290,7 @@ gs_flatpak_app_class_init (GsFlatpakAppClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GsAppClass *klass_app = GS_APP_CLASS (klass);
 	klass_app->to_string = gs_flatpak_app_to_string;
+	klass_app->get_cache_key = gs_flatpak_app_get_cache_key;
 	object_class->finalize = gs_flatpak_app_finalize;
 }
 

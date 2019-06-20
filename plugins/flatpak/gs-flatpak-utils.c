@@ -59,6 +59,7 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 {
 	g_autofree gchar *title = NULL;
 	g_autofree gchar *url = NULL;
+	g_autofree gchar *source = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	app = gs_flatpak_app_new (flatpak_remote_get_name (xremote));
@@ -69,6 +70,10 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 			 flatpak_remote_get_name (xremote));
 	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+
+	/* for intra-plugin dedepe */
+	source = g_strdup_printf ("source/%s", flatpak_remote_get_name (xremote));
+	gs_app_add_source (app, source);
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);

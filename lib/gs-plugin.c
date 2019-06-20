@@ -1458,7 +1458,7 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 
 	/* default */
 	if (key == NULL)
-		key = gs_app_get_unique_id (app);
+		key = gs_app_get_cache_key (app);
 
 	g_return_if_fail (key != NULL);
 

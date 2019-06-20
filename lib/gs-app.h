@@ -26,7 +26,8 @@ struct _GsAppClass
 	GObjectClass		 parent_class;
 	void			 (*to_string)	(GsApp		*app,
 						 GString	*str);
-	gpointer		 padding[30];
+	const gchar		*(*get_cache_key) (GsApp	*app);
+	gpointer		 padding[29];
 };
 
 /**
@@ -191,6 +192,7 @@ gboolean	gs_app_get_allow_cancel		(GsApp	*app);
 void		gs_app_set_allow_cancel		 (GsApp	*app,
 						  gboolean	allow_cancel);
 const gchar	*gs_app_get_unique_id		(GsApp		*app);
+const gchar	*gs_app_get_cache_key		(GsApp		*app);
 const gchar	*gs_app_get_branch		(GsApp		*app);
 void		 gs_app_set_branch		(GsApp		*app,
 						 const gchar	*branch);
