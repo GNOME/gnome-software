@@ -18,7 +18,7 @@ GsApp *
 gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GError **error)
 {
 	GsApp *app;
-	g_autoptr(GsApp) app_new = gs_app_new (NULL);
+	g_autoptr(GsApp) app_new = gs_plugin_app_new (plugin, NULL);
 
 	/* refine enough to get the unique ID */
 	if (!gs_appstream_refine_app (plugin, app_new, silo, component,
