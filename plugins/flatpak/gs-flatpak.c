@@ -2121,19 +2121,27 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GsPluginRefineFlags flags,
 			     GError **error)
 {
-	const gchar *id = gs_app_get_id (app);
 	const gchar *origin = gs_app_get_origin (app);
+	g_autofree gchar *ref_display = NULL;
+	g_autofree gchar *ref_display_safe = NULL;
 	g_autofree gchar *xpath = NULL;
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(XbNode) component = NULL;
 
-	if (id == NULL)
+	if (gs_flatpak_app_get_ref_name (app) == NULL)
 		return TRUE;
 
 	/* find using ID and origin */
-	xpath = g_strdup_printf ("components[@origin='%s']/component/id[text()='%s']/..", origin, id);
-	component = xb_silo_query_first (silo, xpath, NULL);
-	if (component == NULL)
+	ref_display = gs_flatpak_app_get_ref_display (app);
+	ref_display_safe = xb_string_escape (ref_display);
+	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
+				 origin, ref_display_safe);
+	component = xb_silo_query_first (silo, xpath, &error_local);
+	if (component == NULL) {
+		g_debug ("no match for %s, cannot fall back to %s: %s",
+			 xpath, gs_app_get_id (app), error_local->message);
 		return TRUE;
+	}
 	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, error))
 		return FALSE;
 
