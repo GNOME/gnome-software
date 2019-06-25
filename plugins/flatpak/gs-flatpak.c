@@ -214,7 +214,6 @@ gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 	gs_flatpak_app_set_ref_kind (app, flatpak_ref_get_kind (xref));
 	gs_flatpak_app_set_ref_name (app, flatpak_ref_get_name (xref));
 	gs_flatpak_app_set_ref_arch (app, flatpak_ref_get_arch (xref));
-	gs_flatpak_app_set_ref_branch (app, flatpak_ref_get_branch (xref));
 	gs_flatpak_app_set_commit (app, flatpak_ref_get_commit (xref));
 
 	/* map the flatpak kind to the gnome-software kind */
@@ -1615,7 +1614,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 								   gs_flatpak_app_get_ref_kind (app),
 								   gs_flatpak_app_get_ref_name (app),
 								   gs_flatpak_app_get_ref_arch (app),
-								   gs_flatpak_app_get_ref_branch (app),
+								   gs_app_get_branch (app),
 								   cancellable,
 								   &error_local);
 		if (xref != NULL) {
@@ -1647,7 +1646,7 @@ gs_flatpak_create_fake_ref (GsApp *app, GError **error)
 			      gs_flatpak_app_get_ref_kind_as_str (app),
 			      gs_flatpak_app_get_ref_name (app),
 			      gs_flatpak_app_get_ref_arch (app),
-			      gs_flatpak_app_get_ref_branch (app));
+			      gs_app_get_branch (app));
 	xref = flatpak_ref_parse (id, error);
 	if (xref == NULL) {
 		gs_flatpak_error_convert (error);
@@ -1691,7 +1690,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		if (g_strcmp0 (origin, gs_app_get_origin (app)) == 0 &&
 		    g_strcmp0 (name, gs_flatpak_app_get_ref_name (app)) == 0 &&
 		    g_strcmp0 (arch, gs_flatpak_app_get_ref_arch (app)) == 0 &&
-		    g_strcmp0 (branch, gs_flatpak_app_get_ref_branch (app)) == 0) {
+		    g_strcmp0 (branch, gs_app_get_branch (app)) == 0) {
 			ref = g_object_ref (ref_tmp);
 			break;
 		}
@@ -1798,7 +1797,7 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	gs_flatpak_app_set_ref_kind (app, FLATPAK_REF_KIND_RUNTIME);
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
-	gs_flatpak_app_set_ref_branch (app, split[2]);
+	gs_app_set_branch (app, split[2]);
 
 	/* save in the cache */
 	gs_plugin_cache_add (self->plugin, NULL, app);
@@ -1941,7 +1940,7 @@ gs_plugin_refine_item_metadata (GsFlatpak *self,
 					 gs_flatpak_app_get_ref_kind_as_str (app),
 					 gs_flatpak_app_get_ref_name (app),
 					 gs_flatpak_app_get_ref_arch (app),
-					 gs_flatpak_app_get_ref_branch (app),
+					 gs_app_get_branch (app),
 					 "active",
 					 "metadata",
 					 NULL);
@@ -1974,7 +1973,7 @@ gs_flatpak_get_installed_ref (GsFlatpak *self,
 						      gs_flatpak_app_get_ref_kind (app),
 						      gs_flatpak_app_get_ref_name (app),
 						      gs_flatpak_app_get_ref_arch (app),
-						      gs_flatpak_app_get_ref_branch (app),
+						      gs_app_get_branch (app),
 						      cancellable,
 						      error);
 	if (ref == NULL)
@@ -2187,7 +2186,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
 		if (gs_app_get_version (app) == NULL) {
 			const gchar *branch;
-			branch = gs_flatpak_app_get_ref_branch (app);
+			branch = gs_app_get_branch (app);
 			gs_app_set_version (app, branch);
 		}
 	}
@@ -2299,7 +2298,7 @@ gs_flatpak_launch (GsFlatpak *self,
 	if (!flatpak_installation_launch (self->installation,
 					  gs_flatpak_app_get_ref_name (app),
 					  gs_flatpak_app_get_ref_arch (app),
-					  gs_flatpak_app_get_ref_branch (app),
+					  gs_app_get_branch (app),
 					  NULL,
 					  cancellable,
 					  error)) {
