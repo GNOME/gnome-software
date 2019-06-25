@@ -24,6 +24,9 @@ typedef struct
 	GtkWidget	*installation_box;
 	GtkWidget	*installation_title;
 	GtkWidget	*installation_label;
+	GtkWidget	*branch_box;
+	GtkWidget	*branch_title;
+	GtkWidget	*branch_label;
 	GtkWidget	*selected_image;
 } GsOriginPopoverRowPrivate;
 
@@ -83,6 +86,13 @@ refresh_ui (GsOriginPopoverRow *row)
 	} else {
 		gtk_widget_hide (priv->installation_box);
 	}
+
+	if (gs_app_get_branch (priv->app) != NULL) {
+		gtk_label_set_text (GTK_LABEL (priv->branch_label), gs_app_get_branch (priv->app));
+		gtk_widget_show (priv->branch_box);
+	} else {
+		gtk_widget_hide (priv->branch_box);
+	}
 }
 
 static void
@@ -119,6 +129,7 @@ gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *siz
 	gtk_size_group_add_widget (size_group, priv->url_title);
 	gtk_size_group_add_widget (size_group, priv->format_title);
 	gtk_size_group_add_widget (size_group, priv->installation_title);
+	gtk_size_group_add_widget (size_group, priv->branch_title);
 }
 
 static void
@@ -157,6 +168,9 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, installation_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_title);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, selected_image);
 }
 
