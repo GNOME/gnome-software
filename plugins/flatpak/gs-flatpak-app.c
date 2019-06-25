@@ -24,12 +24,6 @@ gs_flatpak_app_get_ref_arch (GsApp *app)
 }
 
 const gchar *
-gs_flatpak_app_get_ref_branch (GsApp *app)
-{
-	return gs_app_get_metadata_item (app, "flatpak::RefBranch");
-}
-
-const gchar *
 gs_flatpak_app_get_commit (GsApp *app)
 {
 	return gs_app_get_metadata_item (app, "flatpak::Commit");
@@ -94,7 +88,7 @@ gs_flatpak_app_get_ref_display (GsApp *app)
 	const gchar *ref_kind_as_str = gs_flatpak_app_get_ref_kind_as_str (app);
 	const gchar *ref_name = gs_flatpak_app_get_ref_name (app);
 	const gchar *ref_arch = gs_flatpak_app_get_ref_arch (app);
-	const gchar *ref_branch = gs_flatpak_app_get_ref_branch (app);
+	const gchar *ref_branch = gs_app_get_branch (app);
 
 	g_return_val_if_fail (ref_kind_as_str != NULL, NULL);
 	g_return_val_if_fail (ref_name != NULL, NULL);
@@ -118,12 +112,6 @@ void
 gs_flatpak_app_set_ref_arch (GsApp *app, const gchar *val)
 {
 	gs_app_set_metadata (app, "flatpak::RefArch", val);
-}
-
-void
-gs_flatpak_app_set_ref_branch (GsApp *app, const gchar *val)
-{
-	gs_app_set_metadata (app, "flatpak::RefBranch", val);
 }
 
 void
