@@ -834,6 +834,22 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			const gchar *kind = xb_node_get_attr (bundle, "type");
 			gs_app_add_source (app, xb_node_get_text (bundle));
 			gs_app_set_bundle_kind (app, as_bundle_kind_from_string (kind));
+
+			/* get the type/name/arch/branch */
+			if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
+				g_auto(GStrv) split = g_strsplit (xb_node_get_text (bundle), "/", -1);
+				if (g_strv_length (split) != 4) {
+					g_set_error (error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+						     "invalid ID %s for a flatpak ref",
+						     xb_node_get_text (bundle));
+					return FALSE;
+				}
+
+				/* we only need the branch for the unique ID */
+				gs_app_set_branch (app, split[3]);
+			}
 		}
 	}
 
