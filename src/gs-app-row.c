@@ -371,6 +371,12 @@ gs_app_row_refresh (GsAppRow *app_row)
 		}
 	}
 
+	/* FIXME: Hide app ratings on the installed and updates pages, as they’re
+	 * not useful in the user’s decision making at that point. Ratings are
+	 * only useful when a user is initially deciding whether to install an
+	 * application. */
+	gtk_widget_hide (priv->star);
+
 	/* folders */
 	if (priv->show_folders &&
 	    gs_utils_is_current_desktop ("GNOME") &&
