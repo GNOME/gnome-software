@@ -12,7 +12,6 @@
 #include <glib/gi18n.h>
 
 #include "gs-app-row.h"
-#include "gs-star-widget.h"
 #include "gs-progress-button.h"
 #include "gs-common.h"
 #include "gs-folders.h"
@@ -27,7 +26,6 @@ typedef struct
 	GtkWidget	*version_current_label;
 	GtkWidget	*version_arrow_label;
 	GtkWidget	*version_update_label;
-	GtkWidget	*star;
 	GtkWidget	*folder_label;
 	GtkWidget	*description_box;
 	GtkWidget	*description_label;
@@ -357,18 +355,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_widget_show (priv->version_box);
 		else
 			gtk_widget_hide (priv->version_box);
-
-		gtk_widget_hide (priv->star);
 	} else {
 		gtk_widget_hide (priv->version_box);
-		if (missing_search_result || gs_app_get_rating (priv->app) <= 0) {
-			gtk_widget_hide (priv->star);
-		} else {
-			gtk_widget_show (priv->star);
-			gtk_widget_set_sensitive (priv->star, FALSE);
-			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
-						   gs_app_get_rating (priv->app));
-		}
 	}
 
 	/* folders */
@@ -667,7 +655,6 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_current_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_arrow_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_update_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, star);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, folder_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
@@ -701,7 +688,6 @@ gs_app_row_init (GsAppRow *app_row)
 
 	gtk_widget_set_has_window (GTK_WIDGET (app_row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (app_row));
-	gs_star_widget_set_icon_size (GS_STAR_WIDGET (priv->star), 12);
 
 	priv->settings = g_settings_new ("org.gnome.software");
 
