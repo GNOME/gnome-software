@@ -43,6 +43,7 @@ typedef struct
 	gboolean	 colorful;
 	gboolean	 show_folders;
 	gboolean	 show_buttons;
+	gboolean	 show_rating;
 	gboolean	 show_source;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
@@ -361,7 +362,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_hide (priv->star);
 	} else {
 		gtk_widget_hide (priv->version_box);
-		if (missing_search_result || gs_app_get_rating (priv->app) <= 0) {
+		if (missing_search_result || gs_app_get_rating (priv->app) <= 0 || !priv->show_rating) {
 			gtk_widget_hide (priv->star);
 		} else {
 			gtk_widget_show (priv->star);
@@ -753,6 +754,15 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_buttons = show_buttons;
+	gs_app_row_refresh (app_row);
+}
+
+void
+gs_app_row_set_show_rating (GsAppRow *app_row, gboolean show_rating)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_rating = show_rating;
 	gs_app_row_refresh (app_row);
 }
 
