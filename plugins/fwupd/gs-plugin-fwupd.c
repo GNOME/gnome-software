@@ -114,13 +114,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->client);
 }
 
-void
-gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
-{
-	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
-}
-
 static void
 gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 {
