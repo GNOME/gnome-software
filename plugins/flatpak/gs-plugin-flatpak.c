@@ -597,6 +597,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsFlatpak *flatpak;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
+	g_autoptr(GError) error_local = NULL;
+	gboolean already_installed = FALSE;
 
 	/* queue for install if installation needs the network */
 	if (!app_has_local_source (app) &&
@@ -699,18 +701,42 @@ gs_plugin_app_install (GsPlugin *plugin,
 		g_autofree gchar *ref = gs_flatpak_app_get_ref_display (app);
 		if (!flatpak_transaction_add_install (transaction,
 						      gs_app_get_origin (app),
-						      ref, NULL, error)) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
+						      ref, NULL, &error_local)) {
+			/* Somehow, the app might already be installed. */
+			if (g_error_matches (error_local, FLATPAK_ERROR,
+					     FLATPAK_ERROR_ALREADY_INSTALLED)) {
+				already_installed = TRUE;
+				g_clear_error (&error_local);
+			} else {
+				g_propagate_error (error, g_steal_pointer (&error_local));
+				gs_flatpak_error_convert (error);
+				return FALSE;
+			}
 		}
 	}
 
 	/* run transaction */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
-		gs_flatpak_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+	if (!already_installed) {
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		if (!gs_flatpak_transaction_run (transaction, cancellable, &error_local)) {
+			/* Somehow, the app might already be installed. */
+			if (g_error_matches (error_local, FLATPAK_ERROR,
+					     FLATPAK_ERROR_ALREADY_INSTALLED)) {
+				already_installed = TRUE;
+				g_clear_error (&error_local);
+			} else {
+				g_propagate_error (error, g_steal_pointer (&error_local));
+				gs_flatpak_error_convert (error);
+				gs_app_set_state_recover (app);
+				return FALSE;
+			}
+		}
+	}
+
+	if (already_installed) {
+		/* Set the app back to UNKNOWN so that refining it gets all the right details. */
+		g_debug ("App %s is already installed", gs_app_get_unique_id (app));
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 	}
 
 	/* get any new state */
