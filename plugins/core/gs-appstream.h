@@ -24,7 +24,7 @@ gboolean	 gs_appstream_refine_app		(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_appstream_search			(GsPlugin	*plugin,
 							 XbSilo		*silo,
-							 gchar		**values,
+							 const gchar * const *values,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
