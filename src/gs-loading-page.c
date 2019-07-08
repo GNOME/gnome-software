@@ -114,11 +114,25 @@ gs_loading_page_load (GsLoadingPage *self)
 {
 	GsLoadingPagePrivate *priv = gs_loading_page_get_instance_private (self);
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GSettings) settings = NULL;
+	guint64 cache_age;
 
-	/* ensure that at least some metadata of any age is present, and also
-	 * spin up the plugins enough as to prime caches */
+	/* Ensure that at least some metadata of any age is present, and also
+	 * spin up the plugins enough as to prime caches. If this is the first
+	 * run of gnome-software, set the cache age to 24h to ensure that the
+	 * metadata is refreshed if, for example, this is the first boot of a
+	 * computer which has been in storage (after manufacture) for a while.
+	 * Otherwise, set the cache age to the maximum, to only refresh if we’re
+	 * completely missing app data — otherwise, we want to start up as fast
+	 * as possible. */
+	settings = g_settings_new ("org.gnome.software");
+	if (g_settings_get_boolean (settings, "first-run"))
+		cache_age = 60 * 60 * 24;  /* 24 hours */
+	else
+		cache_age = G_MAXUINT;
+
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFRESH,
-					 "age", (guint64) G_MAXUINT,
+					 "age", cache_age,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 					priv->cancellable,
