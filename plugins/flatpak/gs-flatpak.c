@@ -205,9 +205,12 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 static void
 gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
+	g_autofree gchar *ref_tmp = flatpak_ref_format_ref (FLATPAK_REF (xref));
+
 	/* core */
 	gs_flatpak_claim_app (self, app);
 	gs_app_set_branch (app, flatpak_ref_get_branch (xref));
+	gs_app_add_source (app, ref_tmp);
 	gs_plugin_refine_item_scope (self, app);
 
 	/* flatpak specific */
