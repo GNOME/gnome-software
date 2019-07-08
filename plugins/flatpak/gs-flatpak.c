@@ -2122,20 +2122,19 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GError **error)
 {
 	const gchar *origin = gs_app_get_origin (app);
-	g_autofree gchar *ref_display = NULL;
-	g_autofree gchar *ref_display_safe = NULL;
+	const gchar *source = gs_app_get_source_default (app);
+	g_autofree gchar *source_safe = NULL;
 	g_autofree gchar *xpath = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(XbNode) component = NULL;
 
-	if (gs_flatpak_app_get_ref_name (app) == NULL)
+	if (origin == NULL || source == NULL)
 		return TRUE;
 
-	/* find using ID and origin */
-	ref_display = gs_flatpak_app_get_ref_display (app);
-	ref_display_safe = xb_string_escape (ref_display);
+	/* find using source and origin */
+	source_safe = xb_string_escape (source);
 	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
-				 origin, ref_display_safe);
+				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, &error_local);
 	if (component == NULL) {
 		g_debug ("no match for %s, cannot fall back to %s: %s",
