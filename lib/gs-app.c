@@ -4323,7 +4323,7 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	pspec = g_param_spec_uint64 ("pending-action", NULL, NULL,
 				     0, G_MAXUINT64, 0,
-				     G_PARAM_READABLE | G_PARAM_PRIVATE);
+				     G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_PENDING_ACTION, pspec);
 }
 
