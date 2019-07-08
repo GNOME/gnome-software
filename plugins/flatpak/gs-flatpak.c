@@ -1804,7 +1804,6 @@ gs_flatpak_create_runtime (GsFlatpak *self, GsApp *parent, const gchar *runtime)
 	gs_flatpak_app_set_ref_kind (app, FLATPAK_REF_KIND_RUNTIME);
 	gs_flatpak_app_set_ref_name (app, split[0]);
 	gs_flatpak_app_set_ref_arch (app, split[1]);
-	gs_app_set_branch (app, split[2]);
 
 	/* save in the cache */
 	gs_plugin_cache_add (self->plugin, NULL, app);
