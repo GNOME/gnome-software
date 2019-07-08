@@ -920,7 +920,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 	return gs_appstream_search (plugin,
 				    priv->silo,
-				    values,
+				    (const gchar * const *) values,
 				    list,
 				    cancellable,
 				    error);

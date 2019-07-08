@@ -2704,7 +2704,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 gboolean
 gs_flatpak_search (GsFlatpak *self,
-		   gchar **values,
+		   const gchar * const *values,
 		   GsAppList *list,
 		   GCancellable *cancellable,
 		   GError **error)

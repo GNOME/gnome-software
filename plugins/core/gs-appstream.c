@@ -1010,7 +1010,7 @@ gs_appstream_silo_search_component2 (GPtrArray *array, XbNode *component, const 
 }
 
 static guint16
-gs_appstream_silo_search_component (GPtrArray *array, XbNode *component, gchar **search)
+gs_appstream_silo_search_component (GPtrArray *array, XbNode *component, const gchar * const *search)
 {
 	guint16 matches_sum = 0;
 
@@ -1027,7 +1027,7 @@ gs_appstream_silo_search_component (GPtrArray *array, XbNode *component, gchar *
 gboolean
 gs_appstream_search (GsPlugin *plugin,
 		     XbSilo *silo,
-		     gchar **values,
+		     const gchar * const *values,
 		     GsAppList *list,
 		     GCancellable *cancellable,
 		     GError **error)
@@ -1036,7 +1036,7 @@ gs_appstream_search (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_search_helper_free);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
-	struct {
+	const struct {
 		AsAppSearchMatch	 match_value;
 		const gchar		*xpath;
 	} queries[] = {
