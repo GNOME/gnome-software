@@ -913,7 +913,7 @@ gs_plugin_add_search (GsPlugin *plugin, gchar **values, GsAppList *list,
 	if (!_check_silo (plugin, cancellable, error))
 		return FALSE;
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	if (!gs_appstream_search (plugin, priv->silo, values, list_tmp,
+	if (!gs_appstream_search (plugin, priv->silo, (const gchar * const *) values, list_tmp,
 				  cancellable, error))
 		return FALSE;
 	_claim_components (plugin, list_tmp);

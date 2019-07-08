@@ -92,7 +92,7 @@ GsApp		*gs_flatpak_find_source_by_url	(GsFlatpak		*self,
 						 GCancellable		*cancellable,
 						 GError			**error);
 gboolean	gs_flatpak_search		(GsFlatpak		*self,
-						 gchar			**values,
+						 const gchar * const	*values,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
