@@ -16,7 +16,6 @@ pkconf.set('VERSION', meson.project_version())
 configure_file(
   input : 'gnome-software.pc.in',
   output : 'gnome-software.pc',
-  install: true,
   install_dir: join_paths(get_option('libdir'), 'pkgconfig'),
   configuration : pkconf
 )
