@@ -793,7 +793,6 @@ gs_flatpak_progress_cb (const gchar *status,
 
 		switch (gs_app_get_state (phelper->app)) {
 		case AS_APP_STATE_INSTALLING:
-		case AS_APP_STATE_PURCHASING:
 			plugin_status = GS_PLUGIN_STATUS_INSTALLING;
 			break;
 		case AS_APP_STATE_REMOVING:

@@ -63,8 +63,6 @@ gs_plugin_fwupd_error_convert (GError **perror)
 			error->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
 			break;
 		case FWUPD_ERROR_AUTH_FAILED:
-			error->code = GS_PLUGIN_ERROR_AUTH_INVALID;
-			break;
 		case FWUPD_ERROR_SIGNATURE_INVALID:
 			error->code = GS_PLUGIN_ERROR_NO_SECURITY;
 			break;

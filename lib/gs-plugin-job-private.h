@@ -30,14 +30,12 @@ guint64			 gs_plugin_job_get_age			(GsPluginJob	*self);
 GsAppListSortFunc	 gs_plugin_job_get_sort_func		(GsPluginJob	*self);
 gpointer		 gs_plugin_job_get_sort_func_data	(GsPluginJob	*self);
 const gchar		*gs_plugin_job_get_search		(GsPluginJob	*self);
-GsAuth			*gs_plugin_job_get_auth			(GsPluginJob	*self);
 GsApp			*gs_plugin_job_get_app			(GsPluginJob	*self);
 GsAppList		*gs_plugin_job_get_list			(GsPluginJob	*self);
 GFile			*gs_plugin_job_get_file			(GsPluginJob	*self);
 GsPlugin		*gs_plugin_job_get_plugin		(GsPluginJob	*self);
 GsCategory		*gs_plugin_job_get_category		(GsPluginJob	*self);
 AsReview		*gs_plugin_job_get_review		(GsPluginJob	*self);
-GsPrice			*gs_plugin_job_get_price		(GsPluginJob	*self);
 gchar			*gs_plugin_job_to_string		(GsPluginJob	*self);
 void			 gs_plugin_job_set_action		(GsPluginJob	*self,
 								 GsPluginAction	 action);

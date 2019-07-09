@@ -10,10 +10,8 @@
 #include <glib-object.h>
 
 #include "gs-app-list-private.h"
-#include "gs-auth.h"
 #include "gs-category.h"
 #include "gs-plugin-types.h"
-#include "gs-price.h"
 
 G_BEGIN_DECLS
 
@@ -41,8 +39,6 @@ void		 gs_plugin_job_set_sort_func_data	(GsPluginJob	*self,
 							 gpointer	 sort_func_data);
 void		 gs_plugin_job_set_search		(GsPluginJob	*self,
 							 const gchar	*search);
-void		 gs_plugin_job_set_auth			(GsPluginJob	*self,
-							 GsAuth		*auth);
 void		 gs_plugin_job_set_app			(GsPluginJob	*self,
 							 GsApp		*app);
 void		 gs_plugin_job_set_list			(GsPluginJob	*self,
@@ -55,8 +51,6 @@ void		 gs_plugin_job_set_category		(GsPluginJob	*self,
 							 GsCategory	*category);
 void		 gs_plugin_job_set_review		(GsPluginJob	*self,
 							 AsReview	*review);
-void		 gs_plugin_job_set_price		(GsPluginJob	*self,
-							 GsPrice	*price);
 
 #define		 gs_plugin_job_newv(a,...)		GS_PLUGIN_JOB(g_object_new(GS_TYPE_PLUGIN_JOB, "action", a, __VA_ARGS__))
 

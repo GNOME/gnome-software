@@ -14,7 +14,6 @@
 #include <gs-app.h>
 #include <gs-app-list.h>
 #include <gs-app-collation.h>
-#include <gs-auth.h>
 #include <gs-autocleanups.h>
 #include <gs-category.h>
 #include <gs-os-release.h>

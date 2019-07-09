@@ -34,7 +34,6 @@ void	gs_image_set_from_pixbuf		(GtkImage		*image,
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
 void		 gs_utils_widget_set_css	(GtkWidget	*widget,
 						 const gchar	*css);
-const gchar	*gs_utils_get_error_value	(const GError	*error);
 void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,

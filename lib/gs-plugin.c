@@ -47,7 +47,6 @@
 
 typedef struct
 {
-	GPtrArray		*auth_array;
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
 	GModule			*module;
@@ -209,8 +208,6 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->data);
 	g_free (priv->locale);
 	g_free (priv->language);
-	if (priv->auth_array != NULL)
-		g_ptr_array_unref (priv->auth_array);
 	if (priv->soup_session != NULL)
 		g_object_unref (priv->soup_session);
 	if (priv->network_monitor != NULL)
@@ -596,64 +593,6 @@ gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_free (priv->language);
 	priv->language = g_strdup (language);
-}
-
-/**
- * gs_plugin_set_auth_array:
- * @plugin: a #GsPlugin
- * @auth_array: (element-type GsAuth): an array
- *
- * Sets the authentication objects that can be added by the plugin.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_set_auth_array (GsPlugin *plugin, GPtrArray *auth_array)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	priv->auth_array = g_ptr_array_ref (auth_array);
-}
-
-/**
- * gs_plugin_add_auth:
- * @plugin: a #GsPlugin
- * @auth: a #GsAuth
- *
- * Adds an authentication object that can be used for all the plugins.
- *
- * Since: 3.22
- **/
-void
-gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	g_ptr_array_add (priv->auth_array, g_object_ref (auth));
-}
-
-/**
- * gs_plugin_get_auth_by_id:
- * @plugin: a #GsPlugin
- * @auth_id: an ID, e.g. "dummy-sso"
- *
- * Gets a specific authentication object.
- *
- * Returns: the #GsAuth, or %NULL if not found
- *
- * Since: 3.22
- **/
-GsAuth *
-gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *auth_id)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	guint i;
-
-	/* match on ID */
-	for (i = 0; i < priv->auth_array->len; i++) {
-		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
-		if (g_strcmp0 (gs_auth_get_auth_id (auth), auth_id) == 0)
-			return auth;
-	}
-	return NULL;
 }
 
 /**
@@ -1530,10 +1469,6 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "no-security";
 	if (error == GS_PLUGIN_ERROR_NO_SPACE)
 		return "no-space";
-	if (error == GS_PLUGIN_ERROR_AUTH_REQUIRED)
-		return "auth-required";
-	if (error == GS_PLUGIN_ERROR_AUTH_INVALID)
-		return "auth-invalid";
 	if (error == GS_PLUGIN_ERROR_PLUGIN_DEPSOLVE_FAILED)
 		return "plugin-depsolve-failed";
 	if (error == GS_PLUGIN_ERROR_DOWNLOAD_FAILED)
@@ -1550,10 +1485,6 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "ac-power-required";
 	if (error == GS_PLUGIN_ERROR_TIMED_OUT)
 		return "timed-out";
-	if (error == GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP)
-		return "purchase-not-setup";
-	if (error == GS_PLUGIN_ERROR_PURCHASE_DECLINED)
-		return "purchase-declined";
 	return NULL;
 }
 
@@ -1644,8 +1575,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_initialize";
 	if (action == GS_PLUGIN_ACTION_DESTROY)
 		return "gs_plugin_destroy";
-	if (action == GS_PLUGIN_ACTION_PURCHASE)
-		return "gs_plugin_app_purchase";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "gs_plugin_add_alternates";
 	return NULL;
@@ -1740,8 +1669,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "initialize";
 	if (action == GS_PLUGIN_ACTION_DESTROY)
 		return "destroy";
-	if (action == GS_PLUGIN_ACTION_PURCHASE)
-		return "purchase";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "get-alternates";
 	return NULL;
@@ -1836,8 +1763,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_INITIALIZE;
 	if (g_strcmp0 (action, "destroy") == 0)
 		return GS_PLUGIN_ACTION_DESTROY;
-	if (g_strcmp0 (action, "purchase") == 0)
-		return GS_PLUGIN_ACTION_PURCHASE;
 	if (g_strcmp0 (action, "get-alternates") == 0)
 		return GS_PLUGIN_ACTION_GET_ALTERNATES;
 	return GS_PLUGIN_ACTION_UNKNOWN;

@@ -66,7 +66,6 @@ typedef struct
 	gchar			*events_info_uri;
 	gboolean		 in_mode_change;
 	GsPage			*page;
-	GSimpleActionGroup	*auth_actions;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -648,110 +647,6 @@ search_mode_enabled_cb (GtkSearchBar *search_bar, GParamSpec *pspec, GsShell *sh
 	                              gtk_search_bar_get_search_mode (search_bar));
 }
 
-static void
-signin_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	const gchar *action_name, *auth_id;
-	GsAuth *auth;
-
-	action_name = g_action_get_name (G_ACTION (action));
-	g_return_if_fail (g_str_has_prefix (action_name, "signin-"));
-	auth_id = action_name + strlen ("signin-");
-
-	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, auth_id);
-	g_return_if_fail (auth != NULL);
-
-	gs_page_authenticate (priv->page, NULL,
-			      gs_auth_get_auth_id (auth),
-			      priv->cancellable,
-			      NULL, NULL);
-}
-
-static void
-signout_activated_cb (GSimpleAction *action, GVariant *parameter, GsShell *shell)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	const gchar *action_name, *auth_id;
-	GsAuth *auth;
-
-	action_name = g_action_get_name (G_ACTION (action));
-	g_return_if_fail (g_str_has_prefix (action_name, "signout-"));
-	auth_id = action_name + strlen ("signout-");
-
-	auth = gs_plugin_loader_get_auth_by_id (priv->plugin_loader, auth_id);
-	g_return_if_fail (auth != NULL);
-
-	gs_auth_set_goa_object (auth, NULL);
-}
-
-static void
-gs_shell_reload_auth_menus (GsShell *shell)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GMenu *accounts_menu;
-	GPtrArray *auth_array;
-
-	accounts_menu = G_MENU (gtk_builder_get_object (priv->builder, "accounts_menu"));
-	g_menu_remove_all (accounts_menu);
-
-	auth_array = gs_plugin_loader_get_auths (priv->plugin_loader);
-	for (guint i = 0; i < auth_array->len; i++) {
-		GsAuth *auth = g_ptr_array_index (auth_array, i);
-		gboolean logged_in;
-		g_autofree gchar *signin_action_name = NULL;
-		GSimpleAction *signin_action;
-		g_autofree gchar *signin_target = NULL;
-		g_autofree gchar *signout_action_name = NULL;
-		GSimpleAction *signout_action;
-		g_autofree gchar *signout_target = NULL;
-		GoaObject *goa_object;
-		g_autofree gchar *signin_label = NULL;
-		g_autofree gchar *signout_label = NULL;
-		g_autoptr(GMenu) auth_menu = NULL;
-		g_autoptr(GMenuItem) signin_item = NULL;
-		g_autoptr(GMenuItem) signout_item = NULL;
-
-
-		goa_object = gs_auth_peek_goa_object (auth);
-		logged_in = goa_object != NULL;
-
-		auth_menu = g_menu_new ();
-		accounts_menu = G_MENU (gtk_builder_get_object (priv->builder, "accounts_menu"));
-		g_menu_append_section (accounts_menu, gs_auth_get_provider_name (auth), G_MENU_MODEL (auth_menu));
-
-		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_auth_id (auth));
-		signin_action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (priv->auth_actions), signin_action_name));
-		g_simple_action_set_enabled (signin_action, !logged_in);
-
-		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_auth_id (auth));
-		signout_action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (priv->auth_actions), signout_action_name));
-		g_simple_action_set_enabled (signout_action, logged_in);
-
-
-		if (logged_in) {
-			GoaAccount *goa_account = goa_object_peek_account (goa_object);
-
-			/* TRANSLATORS: menu item that signs into the named account with a particular username */
-			signin_label = g_strdup_printf (_("Signed in as %s"),
-							goa_account_get_presentation_identity (goa_account));
-		} else {
-			/* TRANSLATORS: menu item that signs into the named account */
-			signin_label = g_strdup_printf (_("Sign in…"));
-		}
-
-		signin_target = g_strdup_printf ("auth.%s", signin_action_name);
-		signin_item = g_menu_item_new (signin_label, signin_target);
-		g_menu_append_item (auth_menu, signin_item);
-
-		/* TRANSLATORS: menu item for signing out from the named account */
-		signout_label = g_strdup_printf (_("Sign out"));
-		signout_target = g_strdup_printf ("auth.%s", signout_action_name);
-		signout_item = g_menu_item_new (signout_label, signout_target);
-		g_menu_append_item (auth_menu, signout_item);
-	}
-}
-
 static gboolean
 window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 {
@@ -1037,16 +932,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 		}
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
-	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to download updates: "
-				        "authentication was required"));
-		break;
-	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Unable to download updates: "
-				        "authentication was invalid"));
-		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Unable to download updates: you do not have"
@@ -1080,59 +965,6 @@ gs_shell_show_event_refresh (GsShell *shell, GsPluginEvent *event)
 
 	/* show in-app notification */
 	gs_shell_show_event_app_notify (shell, str->str, buttons);
-	return TRUE;
-}
-
-static gboolean
-gs_shell_show_event_purchase (GsShell *shell, GsPluginEvent *event)
-{
-	GsApp *app = gs_plugin_event_get_app (event);
-	const GError *error = gs_plugin_event_get_error (event);
-	g_autofree gchar *str_app = NULL;
-	g_autoptr(GString) str = g_string_new (NULL);
-
-	str_app = gs_shell_get_title_from_app (app);
-	switch (error->code) {
-	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to purchase %s: "
-					       "authentication was required"),
-					str_app);
-		break;
-	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to purchase %s: "
-					       "authentication was invalid"),
-					str_app);
-		break;
-	case GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to purchase %s: "
-					       "no payment method setup"),
-					str_app);
-		break;
-	case GS_PLUGIN_ERROR_PURCHASE_DECLINED:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to purchase %s: "
-					       "payment was declined"),
-					str_app);
-		break;
-	default:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to purchase %s"), str_app);
-		gs_shell_append_detailed_error (shell, str, error);
-		break;
-	}
-	if (str->len == 0)
-		return FALSE;
-
-	/* show in-app notification */
-	gs_shell_show_event_app_notify (shell, str->str, GS_SHELL_EVENT_BUTTON_NONE);
 	return TRUE;
 }
 
@@ -1203,19 +1035,6 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					       "not enough disk space"),
 					str_app);
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
-		break;
-	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "authentication was required"),
-					str_app);
-		break;
-	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to install %s: "
-					       "authentication was invalid"),
-					str_app);
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		/* TRANSLATORS: failure text for the in-app notification,
@@ -1327,34 +1146,6 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 						       "not enough disk space"));
 		}
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
-		break;
-	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "authentication was required"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "authentication was required"));
-		}
-		break;
-	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
-			g_string_append_printf (str, _("Unable to update %s: "
-						       "authentication was invalid"),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append_printf (str, _("Unable to install updates: "
-						       "authentication was invalid"));
-		}
 		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		if (app != NULL) {
@@ -1468,20 +1259,6 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 					str_app);
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
-	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "authentication was required"),
-					str_app);
-		break;
-	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the distro name (e.g. "Fedora 25") */
-		g_string_append_printf (str, _("Unable to upgrade to %s: "
-					       "authentication was invalid"),
-					str_app);
-		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the distro name (e.g. "Fedora 25") */
@@ -1536,18 +1313,6 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 
 	str_app = gs_shell_get_title_from_app (app);
 	switch (error->code) {
-	case GS_PLUGIN_ERROR_AUTH_REQUIRED:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: authentication was required"),
-					str_app);
-		break;
-	case GS_PLUGIN_ERROR_AUTH_INVALID:
-		/* TRANSLATORS: failure text for the in-app notification,
-		 * where the %s is the application name (e.g. "GIMP") */
-		g_string_append_printf (str, _("Unable to remove %s: authentication was invalid"),
-					str_app);
-		break;
 	case GS_PLUGIN_ERROR_NO_SECURITY:
 		/* TRANSLATORS: failure text for the in-app notification,
 		 * where the %s is the application name (e.g. "GIMP") */
@@ -1661,14 +1426,6 @@ gs_shell_show_event_file_to_app (GsShell *shell, GsPluginEvent *event)
 	g_autoptr(GString) str = g_string_new (NULL);
 
 	switch (error->code) {
-	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install file: not supported"));
-		break;
-	case GS_PLUGIN_ERROR_NO_SECURITY:
-		/* TRANSLATORS: failure text for the in-app notification */
-		g_string_append (str, _("Failed to install file: authentication failed"));
-		break;
 	case GS_PLUGIN_ERROR_NO_SPACE:
 		/* TRANSLATORS: failure text for the in-app notification */
 		g_string_append (str, _("Not enough disk space — free up some space "
@@ -1836,8 +1593,6 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ACTION_REFRESH:
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 		return gs_shell_show_event_refresh (shell, event);
-	case GS_PLUGIN_ACTION_PURCHASE:
-		return gs_shell_show_event_purchase (shell, event);
 	case GS_PLUGIN_ACTION_INSTALL:
 		return gs_shell_show_event_install (shell, event);
 	case GS_PLUGIN_ACTION_UPDATE:
@@ -1966,7 +1721,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	GtkWidget *widget;
 	GtkStyleContext *style_context;
 	GsPage *page;
-	GPtrArray *auth_array;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
 
@@ -2110,33 +1864,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* primary menu */
 	gs_shell_add_about_menu_item (shell);
-
-	/* auth menu */
-	priv->auth_actions = g_simple_action_group_new ();
-	gtk_widget_insert_action_group (GTK_WIDGET (priv->main_window), "auth", G_ACTION_GROUP (priv->auth_actions));
-	auth_array = gs_plugin_loader_get_auths (priv->plugin_loader);
-	for (guint i = 0; i < auth_array->len; i++) {
-		GsAuth *auth = g_ptr_array_index (auth_array, i);
-		g_autoptr(GSimpleAction) signin_action = NULL;
-		g_autofree gchar *signin_action_name = NULL;
-		g_autoptr(GSimpleAction) signout_action = NULL;
-		g_autofree gchar *signout_action_name = NULL;
-
-		signin_action_name = g_strdup_printf ("signin-%s", gs_auth_get_auth_id (auth));
-		signin_action = g_simple_action_new (signin_action_name, NULL);
-		g_signal_connect (signin_action, "activate", G_CALLBACK (signin_activated_cb), shell);
-		g_action_map_add_action (G_ACTION_MAP (priv->auth_actions), G_ACTION (signin_action));
-
-		signout_action_name = g_strdup_printf ("signout-%s", gs_auth_get_auth_id (auth));
-		signout_action = g_simple_action_new (signout_action_name, NULL);
-		g_signal_connect (signout_action, "activate", G_CALLBACK (signout_activated_cb), shell);
-		g_action_map_add_action (G_ACTION_MAP (priv->auth_actions), G_ACTION (signout_action));
-
-		g_signal_connect_object (auth, "changed",
-					 G_CALLBACK (gs_shell_reload_auth_menus),
-					 shell, G_CONNECT_SWAPPED);
-		gs_shell_reload_auth_menus (shell);
-	}
 
 	/* show loading page, which triggers the initial refresh */
 	gs_shell_change_mode (shell, GS_SHELL_MODE_LOADING, NULL, TRUE);
@@ -2327,7 +2054,6 @@ gs_shell_dispose (GObject *object)
 	g_clear_pointer (&priv->pages, g_hash_table_unref);
 	g_clear_pointer (&priv->events_info_uri, g_free);
 	g_clear_pointer (&priv->modal_dialogs, g_ptr_array_unref);
-	g_clear_object (&priv->auth_actions);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }

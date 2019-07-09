@@ -28,13 +28,11 @@ struct _GsPluginJob
 	GsAppListSortFunc	 sort_func;
 	gpointer		 sort_func_data;
 	gchar			*search;
-	GsAuth			*auth;
 	GsApp			*app;
 	GsAppList		*list;
 	GFile			*file;
 	GsCategory		*category;
 	AsReview		*review;
-	GsPrice			*price;
 	gint64			 time_created;
 };
 
@@ -47,14 +45,12 @@ enum {
 	PROP_FILTER_FLAGS,
 	PROP_DEDUPE_FLAGS,
 	PROP_INTERACTIVE,
-	PROP_AUTH,
 	PROP_APP,
 	PROP_LIST,
 	PROP_FILE,
 	PROP_CATEGORY,
 	PROP_REVIEW,
 	PROP_MAX_RESULTS,
-	PROP_PRICE,
 	PROP_TIMEOUT,
 	PROP_LAST
 };
@@ -110,14 +106,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->review != NULL) {
 		g_string_append_printf (str, " with review=%s",
 					as_review_get_id (self->review));
-	}
-	if (self->price != NULL) {
-		g_autofree gchar *price_string = gs_price_to_string (self->price);
-		g_string_append_printf (str, " with price=%s", price_string);
-	}
-	if (self->auth != NULL) {
-		g_string_append_printf (str, " with auth=%s",
-					gs_auth_get_auth_id (self->auth));
 	}
 	if (self->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (self->file);
@@ -322,20 +310,6 @@ gs_plugin_job_get_search (GsPluginJob *self)
 }
 
 void
-gs_plugin_job_set_auth (GsPluginJob *self, GsAuth *auth)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->auth, auth);
-}
-
-GsAuth *
-gs_plugin_job_get_auth (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->auth;
-}
-
-void
 gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
@@ -425,20 +399,6 @@ gs_plugin_job_get_review (GsPluginJob *self)
 	return self->review;
 }
 
-void
-gs_plugin_job_set_price (GsPluginJob *self, GsPrice *price)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->price, price);
-}
-
-GsPrice *
-gs_plugin_job_get_price (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->price;
-}
-
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -466,9 +426,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_SEARCH:
 		g_value_set_string (value, self->search);
 		break;
-	case PROP_AUTH:
-		g_value_set_object (value, self->auth);
-		break;
 	case PROP_APP:
 		g_value_set_object (value, self->app);
 		break;
@@ -483,9 +440,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_REVIEW:
 		g_value_set_object (value, self->review);
-		break;
-	case PROP_PRICE:
-		g_value_set_object (value, self->price);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, self->max_results);
@@ -526,9 +480,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
 		break;
-	case PROP_AUTH:
-		gs_plugin_job_set_auth (self, g_value_get_object (value));
-		break;
 	case PROP_APP:
 		gs_plugin_job_set_app (self, g_value_get_object (value));
 		break;
@@ -550,9 +501,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_TIMEOUT:
 		gs_plugin_job_set_timeout (self, g_value_get_uint (value));
 		break;
-	case PROP_PRICE:
-		gs_plugin_job_set_price (self, g_value_get_object (value));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -564,14 +512,12 @@ gs_plugin_job_finalize (GObject *obj)
 {
 	GsPluginJob *self = GS_PLUGIN_JOB (obj);
 	g_free (self->search);
-	g_clear_object (&self->auth);
 	g_clear_object (&self->app);
 	g_clear_object (&self->list);
 	g_clear_object (&self->file);
 	g_clear_object (&self->plugin);
 	g_clear_object (&self->category);
 	g_clear_object (&self->review);
-	g_clear_object (&self->price);
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
 
@@ -622,11 +568,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
 
-	pspec = g_param_spec_object ("auth", NULL, NULL,
-				     GS_TYPE_AUTH,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_AUTH, pspec);
-
 	pspec = g_param_spec_object ("app", NULL, NULL,
 				     GS_TYPE_APP,
 				     G_PARAM_READWRITE);
@@ -661,11 +602,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   0, G_MAXUINT, 60,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_TIMEOUT, pspec);
-
-	pspec = g_param_spec_object ("price", NULL, NULL,
-				     GS_TYPE_PRICE,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_PRICE, pspec);
 }
 
 static void

@@ -516,28 +516,6 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 }
 
 /**
- * gs_utils_get_error_value:
- * @error: A GError
- *
- * Gets the machine-readable value stored in the error message.
- * The machine readable string is after the first "@", e.g.
- * message = "Requires authentication with @aaa"
- *
- * Returns: a string, or %NULL
- */
-const gchar *
-gs_utils_get_error_value (const GError *error)
-{
-	gchar *str;
-	if (error == NULL)
-		return NULL;
-	str = g_strstr_len (error->message, -1, "@");
-	if (str == NULL)
-		return NULL;
-	return (const gchar *) str + 1;
-}
-
-/**
  * gs_utils_build_unique_id_kind:
  * @kind: A #AsAppKind
  * @id: An application ID

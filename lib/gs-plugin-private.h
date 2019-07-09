@@ -39,8 +39,6 @@ void		 gs_plugin_set_locale			(GsPlugin	*plugin,
 							 const gchar	*locale);
 void		 gs_plugin_set_language			(GsPlugin	*plugin,
 							 const gchar	*language);
-void		 gs_plugin_set_auth_array		(GsPlugin	*plugin,
-							 GPtrArray	*auth_array);
 GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
 							 GsPluginRule	 rule);
 gpointer	 gs_plugin_get_symbol			(GsPlugin	*plugin,
