@@ -415,7 +415,7 @@ _build_section_header (GsUpdatesSection *self)
 		label = gtk_label_new (_("Requires Restart"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
 		/* TRANSLATORS: This is the header for online runtime and
-		 * app updates, typically flatpaks or snaps */
+		 * app updates, typically flatpaks */
 		label = gtk_label_new (_("Application Updates"));
 	} else if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE) {
 		/* TRANSLATORS: This is the header for device firmware that can

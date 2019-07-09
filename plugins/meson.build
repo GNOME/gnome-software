@@ -39,9 +39,6 @@ endif
 if get_option('shell_extensions')
   subdir('shell-extensions')
 endif
-if get_option('snap')
-  subdir('snap')
-endif
 if get_option('external_appstream')
   subdir('external-appstream')
 endif

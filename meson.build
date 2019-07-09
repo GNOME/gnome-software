@@ -172,10 +172,6 @@ if get_option('gudev')
   gudev = dependency('gudev-1.0')
 endif
 
-if get_option('snap')
-  snap = dependency('snapd-glib', version : '>= 1.48')
-endif
-
 gnome = import('gnome')
 i18n = import('i18n')
 

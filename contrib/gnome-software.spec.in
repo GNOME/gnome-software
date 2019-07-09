@@ -46,9 +46,6 @@ BuildRequires: rpm-ostree-devel
 BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
 BuildRequires: liboauth-devel
-%if 0%{?fedora}
-BuildRequires: snapd-glib-devel >= 1.42
-%endif
 
 Requires: appstream-data
 %if 0%{?fedora}
@@ -93,27 +90,11 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description editor
 Editor for designing banners for GNOME Software.
 
-%if 0%{?fedora}
-%package snap
-Summary: Support for Ubuntu Snap packages
-Requires: %{name}%{?_isa} = %{version}-%{release}
-Requires: snapd-login-service
-Supplements: (gnome-software%{?_isa} and snapd%{?_isa})
-
-%description snap
-Adds support for Snap packages from the Snap store.
-%endif
-
 %prep
 %autosetup -p1
 
 %build
 %meson \
-%if 0%{?fedora}
-    -Dsnap=true \
-%else
-    -Dsnap=false \
-%endif
     -Dgudev=true \
     -Dpackagekit=true \
     -Dexternal_appstream=false \
@@ -204,12 +185,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override
 %{_libexecdir}/gnome-software-cmd
 %{_libexecdir}/gnome-software-restarter
-
-%if 0%{?fedora}
-%files snap
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
-%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
-%endif
 
 %files devel
 %{_libdir}/pkgconfig/gnome-software.pc
