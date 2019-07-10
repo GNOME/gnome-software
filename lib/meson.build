@@ -68,26 +68,28 @@ if get_option('polkit')
   librarydeps += polkit
 endif
 
+libgnomesoftware_sources = [
+  'gs-app.c',
+  'gs-app-list.c',
+  'gs-auth.c',
+  'gs-category.c',
+  'gs-debug.c',
+  'gs-ioprio.c',
+  'gs-ioprio.h',
+  'gs-os-release.c',
+  'gs-plugin.c',
+  'gs-plugin-event.c',
+  'gs-plugin-job.c',
+  'gs-plugin-loader.c',
+  'gs-plugin-loader-sync.c',
+  'gs-price.c',
+  'gs-test.c',
+  'gs-utils.c',
+]
+
 libgnomesoftware = static_library(
   'libgnomesoftware',
-  sources : [
-    'gs-app.c',
-    'gs-app-list.c',
-    'gs-auth.c',
-    'gs-category.c',
-    'gs-debug.c',
-    'gs-ioprio.c',
-    'gs-ioprio.h',
-    'gs-os-release.c',
-    'gs-plugin.c',
-    'gs-plugin-event.c',
-    'gs-plugin-job.c',
-    'gs-plugin-loader.c',
-    'gs-plugin-loader-sync.c',
-    'gs-price.c',
-    'gs-test.c',
-    'gs-utils.c',
-  ],
+  sources : libgnomesoftware_sources,
   include_directories : [
     include_directories('..'),
   ],
