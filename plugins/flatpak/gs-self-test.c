@@ -418,9 +418,8 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 
 	/* progress should be set to zero right before installing */
-	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
-
 	gs_test_flush_main_context ();
+	g_assert_cmpint (gs_app_get_progress (app), ==, 0);
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
