@@ -201,8 +201,24 @@ snapd_client_install2_sync (SnapdClient *client,
 			    SnapdProgressCallback progress_callback, gpointer progress_callback_data,
 			    GCancellable *cancellable, GError **error)
 {
+	g_autoptr(SnapdChange) change = NULL;
+	g_autoptr(GPtrArray) tasks = NULL;
+	SnapdTask *task;
+
 	g_assert_cmpstr (name, ==, "snap");
 	g_assert (channel == NULL);
+
+	tasks = g_ptr_array_new_with_free_func (g_object_unref);
+	task = g_object_new (SNAPD_TYPE_TASK,
+			     "progress-done", 0,
+			     "progress-total", 1,
+			     NULL);
+	g_ptr_array_add (tasks, task);
+	change = g_object_new (SNAPD_TYPE_CHANGE,
+			       "tasks", tasks,
+			       NULL);
+	progress_callback (client, change, NULL, progress_callback_data);
+
 	snap_installed = TRUE;
 	return TRUE;
 }
@@ -213,7 +229,24 @@ snapd_client_remove_sync (SnapdClient *client,
 			  SnapdProgressCallback progress_callback, gpointer progress_callback_data,
 			  GCancellable *cancellable, GError **error)
 {
+	g_autoptr(SnapdChange) change = NULL;
+	g_autoptr(GPtrArray) tasks = NULL;
+	SnapdTask *task;
+
 	g_assert_cmpstr (name, ==, "snap");
+
+	tasks = g_ptr_array_new_with_free_func (g_object_unref);
+	task = g_object_new (SNAPD_TYPE_TASK,
+			     "progress-done", 0,
+			     "progress-total", 1,
+			     NULL);
+	g_ptr_array_add (tasks, task);
+	change = g_object_new (SNAPD_TYPE_CHANGE,
+			       "tasks", tasks,
+			       NULL);
+	progress_callback (client, change, NULL, progress_callback_data);
+
+	snap_installed = FALSE;
 	return TRUE;
 }
 
