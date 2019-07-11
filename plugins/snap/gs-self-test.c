@@ -74,26 +74,28 @@ make_snap (const gchar *name, SnapdSnapStatus status)
 	gchar *common_ids[] = { NULL };
 	g_autoptr(GDateTime) install_date = NULL;
 	g_autoptr(GPtrArray) apps = NULL;
-	g_autoptr(GPtrArray) screenshots = NULL;
-	SnapdScreenshot *screenshot;
+	g_autoptr(GPtrArray) media = NULL;
+	SnapdMedia *m;
 
 	install_date = g_date_time_new_utc (2017, 1, 2, 11, 23, 58);
 
 	apps = g_ptr_array_new_with_free_func (g_object_unref);
 
-	screenshots = g_ptr_array_new_with_free_func (g_object_unref);
-	screenshot = g_object_new (SNAPD_TYPE_SCREENSHOT,
-				   "url", "http://example.com/screenshot1.jpg",
-				   "width", 640,
-				   "height", 480,
-				   NULL);
-	g_ptr_array_add (screenshots, screenshot);
-	screenshot = g_object_new (SNAPD_TYPE_SCREENSHOT,
-				   "url", "http://example.com/screenshot2.jpg",
-				   "width", 1024,
-				   "height", 768,
-				   NULL);
-	g_ptr_array_add (screenshots, screenshot);
+	media = g_ptr_array_new_with_free_func (g_object_unref);
+	m = g_object_new (SNAPD_TYPE_MEDIA,
+			  "type", "screenshot",
+			  "url", "http://example.com/screenshot1.jpg",
+			  "width", 640,
+			  "height", 480,
+			  NULL);
+	g_ptr_array_add (media, m);
+	m = g_object_new (SNAPD_TYPE_MEDIA,
+			  "type", "screenshot",
+			  "url", "http://example.com/screenshot2.jpg",
+			  "width", 1024,
+			  "height", 768,
+			  NULL);
+	g_ptr_array_add (media, m);
 
 	return g_object_new (SNAPD_TYPE_SNAP,
 			     "apps", status == SNAPD_SNAP_STATUS_INSTALLED ? apps : NULL,
@@ -104,8 +106,8 @@ make_snap (const gchar *name, SnapdSnapStatus status)
 			     "id", name,
 			     "install-date", status == SNAPD_SNAP_STATUS_INSTALLED ? install_date : NULL,
 			     "installed-size", status == SNAPD_SNAP_STATUS_INSTALLED ? 1000 : 0,
+			     "media", status == SNAPD_SNAP_STATUS_AVAILABLE ? media : NULL,
 			     "name", name,
-			     "screenshots", status == SNAPD_SNAP_STATUS_AVAILABLE ? screenshots : NULL,
 			     "status", status,
 			     "snap-type", SNAPD_SNAP_TYPE_APP,
 			     "summary", "SUMMARY",
