@@ -46,12 +46,6 @@ void		 gs_page_set_header_start_widget	(GsPage		*page,
 GtkWidget	*gs_page_get_header_end_widget		(GsPage		*page);
 void		 gs_page_set_header_end_widget		(GsPage		*page,
 							 GtkWidget	*widget);
-void		 gs_page_authenticate			(GsPage			*page,
-							 GsApp			*app,
-							 const gchar		*auth_id,
-							 GCancellable		*cancellable,
-							 GsPageAuthCallback	 callback,
-							 gpointer		 user_data);
 void		 gs_page_install_app			(GsPage			*page,
 							 GsApp			*app,
 							 GsShellInteraction	interaction,

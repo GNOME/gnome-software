@@ -28,7 +28,6 @@ struct _GsPluginJob
 	GsAppListSortFunc	 sort_func;
 	gpointer		 sort_func_data;
 	gchar			*search;
-	GsAuth			*auth;
 	GsApp			*app;
 	GsAppList		*list;
 	GFile			*file;
@@ -46,7 +45,6 @@ enum {
 	PROP_FILTER_FLAGS,
 	PROP_DEDUPE_FLAGS,
 	PROP_INTERACTIVE,
-	PROP_AUTH,
 	PROP_APP,
 	PROP_LIST,
 	PROP_FILE,
@@ -108,10 +106,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	if (self->review != NULL) {
 		g_string_append_printf (str, " with review=%s",
 					as_review_get_id (self->review));
-	}
-	if (self->auth != NULL) {
-		g_string_append_printf (str, " with auth=%s",
-					gs_auth_get_auth_id (self->auth));
 	}
 	if (self->file != NULL) {
 		g_autofree gchar *path = g_file_get_path (self->file);
@@ -316,20 +310,6 @@ gs_plugin_job_get_search (GsPluginJob *self)
 }
 
 void
-gs_plugin_job_set_auth (GsPluginJob *self, GsAuth *auth)
-{
-	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
-	g_set_object (&self->auth, auth);
-}
-
-GsAuth *
-gs_plugin_job_get_auth (GsPluginJob *self)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
-	return self->auth;
-}
-
-void
 gs_plugin_job_set_app (GsPluginJob *self, GsApp *app)
 {
 	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
@@ -446,9 +426,6 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 	case PROP_SEARCH:
 		g_value_set_string (value, self->search);
 		break;
-	case PROP_AUTH:
-		g_value_set_object (value, self->auth);
-		break;
 	case PROP_APP:
 		g_value_set_object (value, self->app);
 		break;
@@ -503,9 +480,6 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_SEARCH:
 		gs_plugin_job_set_search (self, g_value_get_string (value));
 		break;
-	case PROP_AUTH:
-		gs_plugin_job_set_auth (self, g_value_get_object (value));
-		break;
 	case PROP_APP:
 		gs_plugin_job_set_app (self, g_value_get_object (value));
 		break;
@@ -538,7 +512,6 @@ gs_plugin_job_finalize (GObject *obj)
 {
 	GsPluginJob *self = GS_PLUGIN_JOB (obj);
 	g_free (self->search);
-	g_clear_object (&self->auth);
 	g_clear_object (&self->app);
 	g_clear_object (&self->list);
 	g_clear_object (&self->file);
@@ -594,11 +567,6 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SEARCH, pspec);
-
-	pspec = g_param_spec_object ("auth", NULL, NULL,
-				     GS_TYPE_AUTH,
-				     G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_AUTH, pspec);
 
 	pspec = g_param_spec_object ("app", NULL, NULL,
 				     GS_TYPE_APP,

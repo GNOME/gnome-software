@@ -18,7 +18,6 @@
 
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
-#include "gs-auth-dialog.h"
 #include "gs-history-dialog.h"
 #include "gs-origin-popover-row.h"
 #include "gs-screenshot-image.h"
@@ -1421,33 +1420,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsDetailsPageReviewHelper, gs_details_page_review_
 static void
 gs_details_page_app_set_review_cb (GObject *source,
                                    GAsyncResult *res,
-                                   gpointer user_data);
-
-static void
-gs_details_page_authenticate_cb (GsPage *page,
-				 gboolean authenticated,
-				 gpointer user_data)
-{
-	g_autoptr(GsDetailsPageReviewHelper) helper = (GsDetailsPageReviewHelper *) user_data;
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	if (!authenticated)
-		return;
-
-	plugin_job = gs_plugin_job_newv (helper->action,
-					 "app", helper->app,
-					 "review", helper->review,
-					 NULL);
-	gs_plugin_loader_job_process_async (helper->self->plugin_loader, plugin_job,
-					    helper->self->cancellable,
-					    gs_details_page_app_set_review_cb,
-					    helper);
-	g_steal_pointer (&helper);
-}
-
-static void
-gs_details_page_app_set_review_cb (GObject *source,
-                                   GAsyncResult *res,
                                    gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
@@ -1455,19 +1427,6 @@ gs_details_page_app_set_review_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_job_action_finish (plugin_loader, res, &error)) {
-		/* try to authenticate then retry */
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-			gs_page_authenticate (GS_PAGE (helper->self),
-					      helper->app,
-					      gs_utils_get_error_value (error),
-					      helper->self->cancellable,
-					      gs_details_page_authenticate_cb,
-					      helper);
-			g_steal_pointer (&helper);
-			return;
-		}
 		g_warning ("failed to set review on %s: %s",
 			   gs_app_get_id (helper->app), error->message);
 		return;

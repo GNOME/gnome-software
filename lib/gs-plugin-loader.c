@@ -36,7 +36,6 @@ typedef struct
 	gchar			*language;
 	gboolean		 plugin_dir_dirty;
 	SoupSession		*soup_session;
-	GPtrArray		*auth_array;
 	GPtrArray		*file_monitors;
 	GsPluginStatus		 global_status_last;
 
@@ -125,10 +124,6 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 AsReview	*review,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginAuthFunc)		(GsPlugin	*plugin,
-							 GsAuth		*auth,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
@@ -2074,7 +2069,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  G_CALLBACK (gs_plugin_loader_allow_updates_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
-	gs_plugin_set_auth_array (plugin, priv->auth_array);
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_language (plugin, priv->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
@@ -2103,29 +2097,6 @@ gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	return priv->scale;
-}
-
-GsAuth *
-gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
-				 const gchar *auth_id)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	guint i;
-
-	/* match on ID */
-	for (i = 0; i < priv->auth_array->len; i++) {
-		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
-		if (g_strcmp0 (gs_auth_get_auth_id (auth), auth_id) == 0)
-			return auth;
-	}
-	return NULL;
-}
-
-GPtrArray *
-gs_plugin_loader_get_auths (GsPluginLoader *plugin_loader)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	return priv->auth_array;
 }
 
 void
@@ -2608,7 +2579,6 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&priv->network_monitor);
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->settings);
-	g_clear_pointer (&priv->auth_array, g_ptr_array_unref);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
@@ -2732,7 +2702,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 						   get_max_parallel_ops (),
 						   FALSE,
 						   NULL);
-	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->file_monitors = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->locations = g_ptr_array_new_with_free_func (g_free);
 	priv->settings = g_settings_new ("org.gnome.software");

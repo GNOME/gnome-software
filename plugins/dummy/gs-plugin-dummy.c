@@ -19,8 +19,6 @@ struct GsPluginData {
 	guint			 quirk_id;
 	guint			 allow_updates_id;
 	gboolean		 allow_updates_inhibit;
-	guint			 has_auth;
-	GsAuth			*auth;
 	GsApp			*cached_origin;
 	GHashTable		*installed_apps;	/* id:1 */
 	GHashTable		*available_apps;	/* id:1 */
@@ -52,13 +50,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	if (g_getenv ("GS_SELF_TEST_TOGGLE_ALLOW_UPDATES") != NULL) {
 		priv->allow_updates_id = g_timeout_add_seconds (10,
 			gs_plugin_dummy_allow_updates_cb, plugin);
-	}
-
-	/* set up a dummy authentication provider */
-	priv->auth = gs_auth_new (gs_plugin_get_name (plugin), "google", NULL);
-	if (priv->auth != NULL) {
-		gs_auth_set_provider_name (priv->auth, "GNOME SSO");
-		gs_plugin_add_auth (plugin, priv->auth);
 	}
 
 	/* add source */
@@ -102,8 +93,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_hash_table_unref (priv->available_apps);
 	if (priv->quirk_id > 0)
 		g_source_remove (priv->quirk_id);
-	if (priv->auth != NULL)
-		g_object_unref (priv->auth);
 	if (priv->cached_origin != NULL)
 		g_object_unref (priv->cached_origin);
 }
@@ -925,18 +914,6 @@ gs_plugin_review_remove (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-
-	/* simulate an auth check */
-	if (!priv->has_auth) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_AUTH_REQUIRED,
-			     "authentication is required using @%s",
-			     gs_plugin_get_name (plugin));
-		return FALSE;
-	}
-
 	/* all okay */
 	g_debug ("Removing dummy self-review");
 	return TRUE;
