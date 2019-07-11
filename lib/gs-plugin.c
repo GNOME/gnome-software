@@ -1550,10 +1550,6 @@ gs_plugin_error_to_string (GsPluginError error)
 		return "ac-power-required";
 	if (error == GS_PLUGIN_ERROR_TIMED_OUT)
 		return "timed-out";
-	if (error == GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP)
-		return "purchase-not-setup";
-	if (error == GS_PLUGIN_ERROR_PURCHASE_DECLINED)
-		return "purchase-declined";
 	return NULL;
 }
 
@@ -1644,8 +1640,6 @@ gs_plugin_action_to_function_name (GsPluginAction action)
 		return "gs_plugin_initialize";
 	if (action == GS_PLUGIN_ACTION_DESTROY)
 		return "gs_plugin_destroy";
-	if (action == GS_PLUGIN_ACTION_PURCHASE)
-		return "gs_plugin_app_purchase";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "gs_plugin_add_alternates";
 	return NULL;
@@ -1740,8 +1734,6 @@ gs_plugin_action_to_string (GsPluginAction action)
 		return "initialize";
 	if (action == GS_PLUGIN_ACTION_DESTROY)
 		return "destroy";
-	if (action == GS_PLUGIN_ACTION_PURCHASE)
-		return "purchase";
 	if (action == GS_PLUGIN_ACTION_GET_ALTERNATES)
 		return "get-alternates";
 	return NULL;
@@ -1836,8 +1828,6 @@ gs_plugin_action_from_string (const gchar *action)
 		return GS_PLUGIN_ACTION_INITIALIZE;
 	if (g_strcmp0 (action, "destroy") == 0)
 		return GS_PLUGIN_ACTION_DESTROY;
-	if (g_strcmp0 (action, "purchase") == 0)
-		return GS_PLUGIN_ACTION_PURCHASE;
 	if (g_strcmp0 (action, "get-alternates") == 0)
 		return GS_PLUGIN_ACTION_GET_ALTERNATES;
 	return GS_PLUGIN_ACTION_UNKNOWN;

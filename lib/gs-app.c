@@ -112,7 +112,6 @@ typedef struct
 	GFile			*local_file;
 	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;
-	GsPrice			*price;
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
@@ -587,10 +586,6 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_size (str, "size-installed", priv->size_installed);
 	if (priv->size_download != 0)
 		gs_app_kv_size (str, "size-download", gs_app_get_size_download (app));
-	if (priv->price != NULL)
-		gs_app_kv_printf (str, "price", "%s %.2f",
-				  gs_price_get_currency (priv->price),
-				  gs_price_get_amount (priv->price));
 	for (i = 0; i < gs_app_list_length (priv->related); i++) {
 		GsApp *app_tmp = gs_app_list_index (priv->related, i);
 		const gchar *id = gs_app_get_unique_id (app_tmp);
@@ -914,8 +909,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		    state == AS_APP_STATE_AVAILABLE_LOCAL ||
 		    state == AS_APP_STATE_UPDATABLE ||
 		    state == AS_APP_STATE_UPDATABLE_LIVE ||
-		    state == AS_APP_STATE_UNAVAILABLE ||
-		    state == AS_APP_STATE_PURCHASABLE)
+		    state == AS_APP_STATE_UNAVAILABLE)
 			state_change_ok = TRUE;
 		break;
 	case AS_APP_STATE_INSTALLED:
@@ -953,7 +947,6 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* removing has to go into an stable state */
 		if (state == AS_APP_STATE_UNKNOWN ||
 		    state == AS_APP_STATE_AVAILABLE ||
-		    state == AS_APP_STATE_PURCHASABLE ||
 		    state == AS_APP_STATE_INSTALLED)
 			state_change_ok = TRUE;
 		break;
@@ -983,19 +976,6 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		    state == AS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_PURCHASABLE:
-		/* local has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_PURCHASING)
-			state_change_ok = TRUE;
-		break;
-	case AS_APP_STATE_PURCHASING:
-		/* purchasing has to go into an stable state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_AVAILABLE ||
-		    state == AS_APP_STATE_PURCHASABLE)
-			state_change_ok = TRUE;
-		break;
 	default:
 		g_warning ("state %s unhandled",
 			   as_app_state_to_string (priv->state));
@@ -1022,7 +1002,6 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-	case AS_APP_STATE_PURCHASING:
 		/* transient, so ignore */
 		break;
 	default:
@@ -1869,46 +1848,6 @@ gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->pixbuf, pixbuf);
-}
-
-/**
- * gs_app_get_price:
- * @app: a #GsApp
- *
- * Gets the price required to purchase the application.
- *
- * Returns: (transfer none): a #GsPrice, or %NULL
- *
- * Since: 3.26
- **/
-GsPrice *
-gs_app_get_price (GsApp *app)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return priv->price;
-}
-
-/**
- * gs_app_set_price:
- * @app: a #GsApp
- * @amount: the amount of this price, e.g. 0.99
- * @currency: an ISO 4217 currency code, e.g. "USD"
- *
- * Sets a price required to purchase the application.
- *
- * Since: 3.26
- **/
-void
-gs_app_set_price (GsApp *app, gdouble amount, const gchar *currency)
-{
-	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = NULL;
-	g_return_if_fail (GS_IS_APP (app));
-	locker = g_mutex_locker_new (&priv->mutex);
-	if (priv->price != NULL)
-		g_object_unref (priv->price);
-	priv->price = gs_price_new (amount, currency);
 }
 
 typedef enum {
@@ -4204,8 +4143,6 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->content_rating);
 	if (priv->pixbuf != NULL)
 		g_object_unref (priv->pixbuf);
-	if (priv->price != NULL)
-		g_object_unref (priv->price);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }

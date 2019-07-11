@@ -1200,7 +1200,6 @@ gs_shell_update_are_updates_in_progress (GsUpdatesPage *self)
 		switch (gs_app_get_state (app)) {
 		case AS_APP_STATE_INSTALLING:
 		case AS_APP_STATE_REMOVING:
-		case AS_APP_STATE_PURCHASING:
 			return TRUE;
 			break;
 		default:

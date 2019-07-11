@@ -66,8 +66,6 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_RESTART_REQUIRED:		A restart is required
  * @GS_PLUGIN_ERROR_AC_POWER_REQUIRED:		AC power is required
  * @GS_PLUGIN_ERROR_TIMED_OUT:			The job timed out
- * @GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP:		Purchase support not setup
- * @GS_PLUGIN_ERROR_PURCHASE_DECLINED:		Purchase was declined
  *
  * The failure error types.
  **/
@@ -88,8 +86,6 @@ typedef enum {
 	GS_PLUGIN_ERROR_RESTART_REQUIRED,
 	GS_PLUGIN_ERROR_AC_POWER_REQUIRED,
 	GS_PLUGIN_ERROR_TIMED_OUT,
-	GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP,
-	GS_PLUGIN_ERROR_PURCHASE_DECLINED,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;
@@ -226,7 +222,6 @@ typedef enum {
  * @GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL:    Get the list of historical updates
  * @GS_PLUGIN_ACTION_INITIALIZE:		Initialize the plugin
  * @GS_PLUGIN_ACTION_DESTROY:			Destroy the plugin
- * @GS_PLUGIN_ACTION_PURCHASE:			Purchase an app
  * @GS_PLUGIN_ACTION_DOWNLOAD:			Download an application
  * @GS_PLUGIN_ACTION_GET_ALTERNATES:		Get the alternates for a specific application
  *
@@ -271,7 +266,6 @@ typedef enum {
 	GS_PLUGIN_ACTION_GET_UPDATES_HISTORICAL,
 	GS_PLUGIN_ACTION_INITIALIZE,
 	GS_PLUGIN_ACTION_DESTROY,
-	GS_PLUGIN_ACTION_PURCHASE,
 	GS_PLUGIN_ACTION_DOWNLOAD,
 	GS_PLUGIN_ACTION_GET_ALTERNATES,
 	/*< private >*/

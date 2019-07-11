@@ -797,7 +797,6 @@ static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
 	AsAppState state;
-	GsPrice *price;
 	g_autofree gchar *text = NULL;
 
 	state = gs_app_get_state (self->app);
@@ -812,15 +811,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (self->button_install, FALSE);
-		break;
-	case AS_APP_STATE_PURCHASABLE:
-		gtk_widget_set_visible (self->button_install, TRUE);
-		price = gs_app_get_price (self->app);
-		text = gs_price_to_string (price);
-		gtk_button_set_label (GTK_BUTTON (self->button_install), text);
-		break;
-	case AS_APP_STATE_PURCHASING:
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
 	case AS_APP_STATE_UNKNOWN:
@@ -931,8 +921,6 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		case AS_APP_STATE_REMOVING:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_UNKNOWN:
-		case AS_APP_STATE_PURCHASABLE:
-		case AS_APP_STATE_PURCHASING:
 		case AS_APP_STATE_QUEUED_FOR_INSTALL:
 			gtk_widget_set_visible (self->button_remove, FALSE);
 			break;

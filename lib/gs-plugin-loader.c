@@ -122,11 +122,6 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginPurchaseFunc)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsPrice	*price,
-							 GCancellable	*cancellable,
-							 GError		**error);
 typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 AsReview	*review,
@@ -373,10 +368,6 @@ gs_plugin_loader_is_error_fatal (const GError *err)
 		return TRUE;
 	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID))
 		return TRUE;
-	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_PURCHASE_NOT_SETUP))
-		return TRUE;
-	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_PURCHASE_DECLINED))
-		return TRUE;
 	return FALSE;
 }
 
@@ -601,14 +592,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		{
 			GsPluginActionFunc plugin_func = func;
 			ret = plugin_func (plugin, app, cancellable, &error_local);
-		}
-		break;
-	case GS_PLUGIN_ACTION_PURCHASE:
-		{
-			GsPluginPurchaseFunc plugin_func = func;
-			ret = plugin_func (plugin, app,
-					   gs_plugin_job_get_price (helper->plugin_job),
-					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
@@ -1147,7 +1130,6 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 	switch (gs_app_get_state (app)) {
 	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_PURCHASING:
 		return TRUE;
 		break;
 	default:
