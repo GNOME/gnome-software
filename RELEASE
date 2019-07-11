@@ -2,7 +2,7 @@ GNOME Software Release Notes
 
 Write release entries:
 
-git log --format="%s" --cherry-pick --right-only 3.32.3... | grep -i -v trivial | grep -v Merge | sort | uniq
+git log --format="%s" --cherry-pick --right-only 3.32.4... | grep -i -v trivial | grep -v Merge | sort | uniq
 Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
 Generate NEWS file:
