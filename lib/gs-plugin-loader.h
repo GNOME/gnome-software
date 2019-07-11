@@ -11,7 +11,6 @@
 #include <glib-object.h>
 
 #include "gs-app.h"
-#include "gs-auth.h"
 #include "gs-category.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-private.h"
@@ -64,9 +63,6 @@ gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
 void		 gs_plugin_loader_add_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
-GsAuth		*gs_plugin_loader_get_auth_by_id	(GsPluginLoader	*plugin_loader,
-							 const gchar	*auth_id);
-GPtrArray	*gs_plugin_loader_get_auths		(GsPluginLoader *plugin_loader);
 guint		 gs_plugin_loader_get_scale		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_set_scale		(GsPluginLoader	*plugin_loader,
 							 guint		 scale);

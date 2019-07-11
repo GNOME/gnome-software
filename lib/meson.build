@@ -39,7 +39,6 @@ install_headers([
     'gnome-software.h',
     'gs-app.h',
     'gs-app-list.h',
-    'gs-auth.h',
     'gs-category.h',
     'gs-os-release.h',
     'gs-plugin.h',
@@ -72,7 +71,6 @@ libgnomesoftware = static_library(
   sources : [
     'gs-app.c',
     'gs-app-list.c',
-    'gs-auth.c',
     'gs-category.c',
     'gs-debug.c',
     'gs-ioprio.c',

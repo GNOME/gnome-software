@@ -16,7 +16,6 @@ struct GsPluginData {
 	SnapdAuthData		*auth_data;
 	gchar			*store_name;
 	SnapdSystemConfinement	 system_confinement;
-	GsAuth			*auth;
 
 	GMutex			 store_snaps_lock;
 	GHashTable		*store_snaps;
@@ -40,9 +39,6 @@ get_client (GsPlugin *plugin, GError **error)
 	return g_steal_pointer (&client);
 }
 
-static void
-load_auth (GsPlugin *plugin);
-
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -60,20 +56,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	priv->store_snaps = g_hash_table_new_full (g_str_hash, g_str_equal,
 						   g_free, (GDestroyNotify) g_object_unref);
-
-	priv->auth = gs_auth_new ("snapd", "ubuntusso", &error);
-	if (priv->auth) {
-		gs_auth_set_provider_name (priv->auth, "Snap Store");
-		gs_auth_set_header (priv->auth, _("To continue, you need to use an Ubuntu One account."),
-						_("To continue, you need to use your Ubuntu One account."),
-						_("To continue, you need to use an Ubuntu One account."));
-		gs_plugin_add_auth (plugin, priv->auth);
-		g_signal_connect_object (priv->auth, "changed",
-					 G_CALLBACK (load_auth),
-					 plugin, G_CONNECT_SWAPPED);
-	} else {
-		g_warning ("Failed to instantiate the snapd authentication object: %s", error->message);
-	}
 
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "desktop-categories");
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_BETTER_THAN, "packagekit");
@@ -165,60 +147,6 @@ snapd_error_convert (GError **perror)
 		error->code = GS_PLUGIN_ERROR_FAILED;
 	}
 	error->domain = GS_PLUGIN_ERROR;
-}
-
-static void
-load_auth (GsPlugin *plugin)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsAuth *auth;
-	GoaObject *goa_object;
-	GoaPasswordBased *password_based;
-	g_autofree gchar *macaroon = NULL;
-	g_autofree gchar *discharges_str = NULL;
-	g_autoptr(GVariant) discharges_var = NULL;
-	g_auto(GStrv) discharges = NULL;
-	g_autoptr(SnapdAuthData) auth_data = NULL;
-	g_autoptr(GError) error = NULL;
-
-	auth = gs_plugin_get_auth_by_id (plugin, "snapd");
-	if (auth == NULL)
-		return;
-
-	g_clear_object (&priv->auth_data);
-	goa_object = gs_auth_peek_goa_object (auth);
-	if (goa_object == NULL)
-		return;
-
-	password_based = goa_object_peek_password_based (goa_object);
-	g_return_if_fail (password_based != NULL);
-
-	goa_password_based_call_get_password_sync (password_based,
-						   "macaroon",
-						   &macaroon,
-						   NULL, &error);
-	if (error != NULL) {
-		g_warning ("Failed to get macaroon: %s", error->message);
-		return;
-	}
-
-	goa_password_based_call_get_password_sync (password_based,
-						   "discharges",
-						   &discharges_str,
-						   NULL, &error);
-	if (error != NULL) {
-		g_warning ("Failed to get discharges %s", error->message);
-		return;
-	}
-
-	if (discharges_str)
-		discharges_var = g_variant_parse (G_VARIANT_TYPE ("as"),
-						  discharges_str,
-						  NULL, NULL, NULL);
-	if (discharges_var)
-		discharges = g_variant_dup_strv (discharges_var, NULL);
-
-	priv->auth_data = snapd_auth_data_new (macaroon, discharges);
 }
 
 gboolean
@@ -387,7 +315,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_free (priv->store_name);
-	g_clear_object (&priv->auth);
 	g_clear_pointer (&priv->store_snaps, g_hash_table_unref);
 	g_mutex_clear (&priv->store_snaps_lock);
 }

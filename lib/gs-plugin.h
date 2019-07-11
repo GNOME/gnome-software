@@ -15,7 +15,6 @@
 
 #include "gs-app.h"
 #include "gs-app-list.h"
-#include "gs-auth.h"
 #include "gs-category.h"
 #include "gs-plugin-event.h"
 #include "gs-plugin-types.h"
@@ -71,10 +70,6 @@ const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
 SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
 void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
 							 SoupSession	*soup_session);
-void		 gs_plugin_add_auth			(GsPlugin	*plugin,
-							 GsAuth		*auth);
-GsAuth		*gs_plugin_get_auth_by_id		(GsPlugin	*plugin,
-							 const gchar	*auth_id);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,
 							 const gchar	*name);

@@ -13,7 +13,6 @@
 
 #include "gs-page.h"
 #include "gs-common.h"
-#include "gs-auth-dialog.h"
 #include "gs-screenshot-image.h"
 
 typedef struct
@@ -42,8 +41,6 @@ typedef struct {
 	GtkWidget	*button_install;
 	GsPluginAction	 action;
 	GsShellInteraction interaction;
-	GsPageAuthCallback callback;
-	gpointer	 callback_data;
 } GsPageHelper;
 
 static void
@@ -61,110 +58,6 @@ gs_page_helper_free (GsPageHelper *helper)
 }
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
-
-static void
-gs_page_authenticate_cb (GtkDialog *dialog,
-		 GtkResponseType response_type,
-		 gpointer user_data)
-{
-	g_autoptr(GsPageHelper) helper = user_data;
-
-	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	if (helper->callback != NULL)
-		helper->callback (helper->page, response_type == GTK_RESPONSE_OK, helper->callback_data);
-}
-
-void
-gs_page_authenticate (GsPage *page,
-		      GsApp *app,
-		      const gchar *auth_id,
-		      GCancellable *cancellable,
-		      GsPageAuthCallback callback,
-		      gpointer user_data)
-{
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	g_autoptr(GsPageHelper) helper = NULL;
-	GtkWidget *dialog;
-	g_autoptr(GError) error = NULL;
-
-	helper = g_slice_new0 (GsPageHelper);
-	helper->app = app != NULL ? g_object_ref (app) : NULL;
-	helper->page = g_object_ref (page);
-	helper->callback = callback;
-	helper->callback_data = user_data;
-
-	dialog = gs_auth_dialog_new (priv->plugin_loader,
-				     app,
-				     auth_id,
-				     &error);
-	if (dialog == NULL) {
-		g_warning ("%s", error->message);
-		return;
-	}
-	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
-	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gs_page_authenticate_cb),
-			  helper);
-	g_steal_pointer (&helper);
-}
-
-static void
-gs_page_app_installed_cb (GObject *source,
-                          GAsyncResult *res,
-                          gpointer user_data);
-
-static void
-gs_page_install_authenticate_cb (GsPage *page,
-				 gboolean authenticated,
-				 gpointer user_data)
-{
-	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	if (!authenticated)
-		return;
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
-					 "interactive", TRUE,
-					 "app", helper->app,
-					 NULL);
-	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
-					    helper->cancellable,
-					    gs_page_app_installed_cb,
-					    helper);
-	g_steal_pointer (&helper);
-}
-
-static void
-gs_page_app_removed_cb (GObject *source,
-                        GAsyncResult *res,
-                        gpointer user_data);
-
-static void
-gs_page_remove_authenticate_cb (GsPage *page,
-				gboolean authenticated,
-				gpointer user_data)
-{
-	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	g_autoptr(GsPluginJob) plugin_job = NULL;
-
-	if (!authenticated)
-		return;
-
-	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
-					 "interactive", TRUE,
-					 "app", helper->app,
-					 NULL);
-	gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
-					    helper->cancellable,
-					    gs_page_app_removed_cb,
-					    helper);
-	g_steal_pointer (&helper);
-}
 
 static void
 gs_page_app_installed_cb (GObject *source,
@@ -188,20 +81,6 @@ gs_page_app_installed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		/* try to authenticate then retry */
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-			gs_page_authenticate (page,
-					      helper->app,
-					      gs_utils_get_error_value (error),
-					      helper->cancellable,
-					      gs_page_install_authenticate_cb,
-					      helper);
-			g_steal_pointer (&helper);
-			return;
-		}
-
 		g_warning ("failed to install %s: %s",
 		           gs_app_get_id (helper->app),
 		           error->message);
@@ -249,20 +128,6 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		/* try to authenticate then retry */
-		if (g_error_matches (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
-			gs_page_authenticate (page,
-					      helper->app,
-					      gs_utils_get_error_value (error),
-					      helper->cancellable,
-					      gs_page_remove_authenticate_cb,
-					      helper);
-			g_steal_pointer (&helper);
-			return;
-		}
-
 		g_warning ("failed to remove: %s", error->message);
 		return;
 	}
