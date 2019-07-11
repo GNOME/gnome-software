@@ -71,6 +71,11 @@ gs_plugin_fwupd_error_convert (GError **perror)
 		case FWUPD_ERROR_AC_POWER_REQUIRED:
 			error->code = GS_PLUGIN_ERROR_AC_POWER_REQUIRED;
 			break;
+#if FWUPD_CHECK_VERSION(1,2,10)
+		case FWUPD_ERROR_BATTERY_LEVEL_TOO_LOW:
+			error->code = GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW;
+			break;
+#endif
 		default:
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;

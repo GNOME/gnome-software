@@ -66,6 +66,7 @@ typedef guint64 GsPluginFlags;
  * @GS_PLUGIN_ERROR_RESTART_REQUIRED:		A restart is required
  * @GS_PLUGIN_ERROR_AC_POWER_REQUIRED:		AC power is required
  * @GS_PLUGIN_ERROR_TIMED_OUT:			The job timed out
+ * @GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW:	The system battery level is too low
  *
  * The failure error types.
  **/
@@ -86,6 +87,7 @@ typedef enum {
 	GS_PLUGIN_ERROR_RESTART_REQUIRED,
 	GS_PLUGIN_ERROR_AC_POWER_REQUIRED,
 	GS_PLUGIN_ERROR_TIMED_OUT,
+	GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;

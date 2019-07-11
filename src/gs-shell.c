@@ -1179,6 +1179,13 @@ gs_shell_show_event_install (GsShell *shell, GsPluginEvent *event)
 					       "AC power is required"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "Dell XPS 13") */
+		g_string_append_printf (str, _("Unable to install %s: "
+					       "The battery level is too low"),
+					str_app);
+		break;
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
@@ -1334,6 +1341,21 @@ gs_shell_show_event_update (GsShell *shell, GsPluginEvent *event)
 						       "AC power is required"));
 		}
 		break;
+	case GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW:
+		if (app != NULL) {
+			str_app = gs_shell_get_title_from_app (app);
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			g_string_append_printf (str, _("Unable to update %s: "
+						       "The battery level is too low"),
+						str_app);
+		} else {
+			/* TRANSLATORS: failure text for the in-app notification,
+			 * where the %s is the application name (e.g. "Dell XPS 13") */
+			g_string_append_printf (str, _("Unable to install updates: "
+						       "The battery level is too low"));
+		}
+		break;
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
@@ -1443,6 +1465,13 @@ gs_shell_show_event_upgrade (GsShell *shell, GsPluginEvent *event)
 					       "AC power is required"),
 					str_app);
 		break;
+	case GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the distro name (e.g. "Fedora 25") */
+		g_string_append_printf (str, _("Unable to upgrade to %s: "
+					       "The battery level is too low"),
+					str_app);
+		break;
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
 	default:
@@ -1507,6 +1536,13 @@ gs_shell_show_event_remove (GsShell *shell, GsPluginEvent *event)
 		 * where the %s is the application name (e.g. "GIMP") */
 		g_string_append_printf (str, _("Unable to remove %s: "
 					       "AC power is required"),
+					str_app);
+		break;
+	case GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW:
+		/* TRANSLATORS: failure text for the in-app notification,
+		 * where the %s is the application name (e.g. "GIMP") */
+		g_string_append_printf (str, _("Unable to remove %s: "
+					       "The battery level is too low"),
 					str_app);
 		break;
 	case GS_PLUGIN_ERROR_CANCELLED:
@@ -1729,6 +1765,10 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
 		/* TRANSLATORS: need to be connected to the AC power */
 		g_string_append (str, _("AC power is required"));
+		break;
+	case GS_PLUGIN_ERROR_BATTERY_LEVEL_TOO_LOW:
+		/* TRANSLATORS: not enough juice to do this safely */
+		g_string_append (str, _("The battery level is too low"));
 		break;
 	case GS_PLUGIN_ERROR_CANCELLED:
 		break;
