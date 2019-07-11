@@ -102,7 +102,7 @@ make_snap (const gchar *name, SnapdSnapStatus status)
 			     "common-ids", common_ids,
 			     "description", "DESCRIPTION",
 			     "download-size", status == SNAPD_SNAP_STATUS_AVAILABLE ? 500 : 0,
-			     "icon", "/icon",
+			     "icon", status == SNAPD_SNAP_STATUS_AVAILABLE ? NULL : "/icon",
 			     "id", name,
 			     "install-date", status == SNAPD_SNAP_STATUS_INSTALLED ? install_date : NULL,
 			     "installed-size", status == SNAPD_SNAP_STATUS_INSTALLED ? 1000 : 0,
@@ -299,8 +299,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (as_image_get_width (image), ==, 1024);
 	g_assert_cmpint (as_image_get_height (image), ==, 768);
 	pixbuf = gs_app_get_pixbuf (app);
-	g_assert_cmpint (gdk_pixbuf_get_width (pixbuf), ==, 1);
-	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 1);
+	g_assert_null (pixbuf);
 	g_assert_cmpint (gs_app_get_size_installed (app), ==, 0);
 	g_assert_cmpint (gs_app_get_size_download (app), ==, 500);
 	g_assert_cmpint (gs_app_get_install_date (app), ==, 0);
@@ -308,6 +307,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -316,6 +316,10 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_size_installed (app), ==, 1000);
 	g_assert_cmpint (gs_app_get_install_date (app), ==, g_date_time_to_unix (g_date_time_new_utc (2017, 1, 2, 11, 23, 58)));
+
+	pixbuf = gs_app_get_pixbuf (app);
+	g_assert_cmpint (gdk_pixbuf_get_width (pixbuf), ==, 64);
+	g_assert_cmpint (gdk_pixbuf_get_height (pixbuf), ==, 64);
 
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
