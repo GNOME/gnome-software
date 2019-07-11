@@ -165,9 +165,10 @@ snapd_client_get_icon_sync (SnapdClient *client,
 }
 
 gboolean
-snapd_client_get_interfaces_sync (SnapdClient *client,
-				  GPtrArray **plugs, GPtrArray **slots,
-				  GCancellable *cancellable, GError **error)
+snapd_client_get_connections_sync (SnapdClient *client,
+				   GPtrArray **established, GPtrArray **undesired,
+				   GPtrArray **plugs, GPtrArray **slots,
+				   GCancellable *cancellable, GError **error)
 {
 	if (plugs)
 		*plugs = g_ptr_array_new_with_free_func (g_object_unref);
