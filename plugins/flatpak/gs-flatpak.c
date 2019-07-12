@@ -148,6 +148,11 @@ perms_from_metadata (GKeyFile *keyfile)
 		permissions |= GS_APP_PERMISSIONS_SETTINGS;
 	g_free (str);
 
+	str = g_key_file_get_string (keyfile, "Session Bus Policy", "org.freedesktop.Flatpak", NULL);
+	if (str != NULL && g_str_equal (str, "talk"))
+		permissions |= GS_APP_PERMISSIONS_ESCAPE_SANDBOX;
+	g_free (str);
+
 	/* no permissions set */
 	if (permissions == GS_APP_PERMISSIONS_UNKNOWN)
 		return GS_APP_PERMISSIONS_NONE;
@@ -188,7 +193,6 @@ gs_flatpak_set_update_permissions (GsFlatpak *self, GsApp *app, FlatpakInstalled
 			                   g_bytes_get_data (bytes, NULL),
 			                   g_bytes_get_size (bytes),
 			                   0, NULL);
-
 		permissions = perms_from_metadata (keyfile) & ~perms_from_metadata (old_keyfile);
 	}
 
