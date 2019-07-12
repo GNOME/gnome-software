@@ -723,9 +723,17 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 {
 
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GdkRectangle geometry;
+	GdkDisplay *display;
+	GdkMonitor *monitor;
 
-	/* adapt the window for low resolution screens */
-	if (gs_utils_is_low_resolution (GTK_WIDGET (priv->main_window))) {
+	display = gtk_widget_get_display (GTK_WIDGET (priv->main_window));
+	monitor = gdk_display_get_monitor_at_window (display,
+						     gtk_widget_get_window (GTK_WIDGET (priv->main_window)));
+
+	/* adapt the window for low and medium resolution screens */
+	gdk_monitor_get_geometry (monitor, &geometry);
+	if (geometry.width < 800 || geometry.height < 600) {
 		    GtkWidget *buttonbox = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 
 		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
@@ -740,6 +748,8 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates")),
 					     "non-homogeneous", TRUE,
 					     NULL);
+	} else if (geometry.width < 1366 || geometry.height < 768) {
+		gtk_window_set_default_size (priv->main_window, 1050, 600);
 	}
 }
 
