@@ -1383,7 +1383,8 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 		GtkWidget *row;
 
 		addon = gs_app_list_index (addons, i);
-		if (gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
+		if (gs_app_get_state (addon) == AS_APP_STATE_UNKNOWN ||
+		    gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
 			continue;
 
 		row = gs_app_addon_row_new (addon);
