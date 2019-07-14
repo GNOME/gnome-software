@@ -924,7 +924,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		/* add a kudo to featured and popular apps */
 		if (xb_node_query_text (component, "kudos/kudo[text()='GnomeSoftware::popular']", NULL) != NULL)
 			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
-		if (xb_node_query_text (component, "categories/category[text()='featured']", NULL) != NULL)
+		if (xb_node_query_text (component, "categories/category[text()='Featured']", NULL) != NULL)
 			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
 
 		/* add new-style kudos */
