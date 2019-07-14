@@ -720,8 +720,13 @@ gs_appstream_refine_app (GsPlugin *plugin,
 
 	/* set name */
 	tmp = xb_node_query_text (component, "name", NULL);
-	if (tmp != NULL)
+	if (tmp != NULL) {
 		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
+	} else {
+		/* this is a heuristic, but works even with old-style AppStream
+		 * files without the merge attribute */
+		gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+	}
 
 	/* set summary */
 	tmp = xb_node_query_text (component, "summary", NULL);
@@ -1081,6 +1086,11 @@ gs_appstream_search (GsPlugin *plugin,
 			g_autoptr(GsApp) app = gs_appstream_create_app (plugin, silo, component, error);
 			if (app == NULL)
 				return FALSE;
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
+				g_debug ("not returning wildcard %s",
+					 gs_app_get_unique_id (app));
+				continue;
+			}
 			g_debug ("add %s", gs_app_get_unique_id (app));
 			gs_app_set_match_value (app, match_value);
 			gs_app_list_add (list, app);
