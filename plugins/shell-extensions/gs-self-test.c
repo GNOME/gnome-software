@@ -36,7 +36,12 @@ gs_plugins_shell_extensions_installed_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (list != NULL);
-	g_assert_cmpint (gs_app_list_length (list), >, 1);
+
+	/* no shell-extensions installed, abort */
+	if (gs_app_list_length (list) < 1) {
+		g_test_skip ("no shell extensions installed");
+		return;
+	}
 
 	/* test properties */
 	app = gs_app_list_lookup (list, "*/*/*/*/background-logo_fedorahosted.org/*");
