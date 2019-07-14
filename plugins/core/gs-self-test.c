@@ -224,6 +224,7 @@ main (int argc, char **argv)
 		"  </component>\n"
 		"  <component type=\"os-upgrade\">\n"
 		"    <id>org.fedoraproject.Fedora-25</id>\n"
+		"    <name>Fedora</name>\n"
 		"    <summary>Fedora Workstation</summary>\n"
 		"    <pkgname>fedora-release</pkgname>\n"
 		"  </component>\n"
