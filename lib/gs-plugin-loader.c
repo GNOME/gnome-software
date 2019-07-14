@@ -1230,9 +1230,9 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	if (!gs_plugin_job_has_refine_flags (helper->plugin_job,
 						 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) &&
 	    (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)) {
-//		g_debug ("app invalid as only a %s: %s",
-//			 as_app_kind_to_string (gs_app_get_kind (app)),
-//			 gs_plugin_loader_get_app_str (app));
+		g_debug ("app invalid as only a %s: %s",
+			 as_app_kind_to_string (gs_app_get_kind (app)),
+			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 
