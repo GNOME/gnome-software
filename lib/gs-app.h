@@ -283,6 +283,7 @@ void		 gs_app_set_pixbuf		(GsApp		*app,
 GPtrArray	*gs_app_get_icons		(GsApp		*app);
 void		 gs_app_add_icon		(GsApp		*app,
 						 AsIcon		*icon);
+gboolean	 gs_app_get_use_drop_shadow	(GsApp		*app);
 GFile		*gs_app_get_local_file		(GsApp		*app);
 void		 gs_app_set_local_file		(GsApp		*app,
 						 GFile		*local_file);

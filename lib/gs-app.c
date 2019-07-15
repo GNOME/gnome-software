@@ -1680,6 +1680,33 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
 }
 
 /**
+ * gs_app_get_use_drop_shadow:
+ * @app: a #GsApp
+ *
+ * Uses a heuristic to work out if the application  pixbuf should have a drop
+ * shadow applied.
+ *
+ * Returns: %TRUE if a drop shadow should be applied
+ *
+ * Since: 3.34
+ **/
+gboolean
+gs_app_get_use_drop_shadow (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	AsIcon *ic;
+
+	/* guess */
+	if (priv->icons->len == 0)
+		return TRUE;
+
+	/* stock, and symbolic */
+	ic = g_ptr_array_index (priv->icons, 0);
+	return as_icon_get_kind (ic) != AS_ICON_KIND_STOCK ||
+		!g_str_has_suffix (as_icon_get_name (ic), "-symbolic");
+}
+
+/**
  * gs_app_get_agreement:
  * @app: a #GsApp
  *
