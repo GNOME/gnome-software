@@ -1170,11 +1170,11 @@ gs_appstream_add_category_apps (GsPlugin *plugin,
 		for (guint i = 0; i < components->len; i++) {
 			XbNode *component = g_ptr_array_index (components, i);
 			g_autoptr(GsApp) app = NULL;
-
-			/* add all the data we can */
-			app = gs_appstream_create_app (plugin, silo, component, error);
-			if (app == NULL)
-				return FALSE;
+			const gchar *id = xb_node_query_text (component, "id", NULL);
+			if (id == NULL)
+				continue;
+			app = gs_app_new (id);
+			gs_app_add_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
 			gs_app_list_add (list, app);
 		}
 
