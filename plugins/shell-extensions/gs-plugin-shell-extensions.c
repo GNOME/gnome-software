@@ -927,18 +927,13 @@ gs_plugin_add_category_apps (GsPlugin *plugin, GsCategory *category, GsAppList *
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	if (!g_settings_get_boolean (priv->settings, "enable-shell-extensions-repo"))
 		return TRUE;
 	if (!_check_silo (plugin, cancellable, error))
 		return FALSE;
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
-	if (!gs_appstream_add_category_apps (plugin, priv->silo, category,
-					     list_tmp, cancellable, error))
-		return FALSE;
-	_claim_components (plugin, list_tmp);
-	gs_app_list_add_list (list, list_tmp);
-	return TRUE;
+	return gs_appstream_add_category_apps (plugin, priv->silo, category,
+					       list, cancellable, error);
 }
 
 gboolean
