@@ -456,7 +456,6 @@ _build_section_header (GsUpdatesSection *self)
 			  self);
 	gtk_stack_add_named (self->button_stack, self->button_download, "download");
 	gtk_widget_set_visible (self->button_download, TRUE);
-	gtk_widget_set_margin_end (self->button_download, 6);
 
 	/* add update button */
 	self->button_update = gs_progress_button_new ();
@@ -467,7 +466,6 @@ _build_section_header (GsUpdatesSection *self)
 			  self);
 	gtk_stack_add_named (self->button_stack, self->button_update, "update");
 	gtk_widget_set_visible (self->button_update, TRUE);
-	gtk_widget_set_margin_end (self->button_update, 6);
 
 	/* add cancel button */
 	self->button_cancel = gs_progress_button_new ();
