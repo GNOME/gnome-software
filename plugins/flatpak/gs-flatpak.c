@@ -2766,22 +2766,11 @@ gs_flatpak_add_category_apps (GsFlatpak *self,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
-
-	if (!gs_flatpak_rescan_appstream_store (self, cancellable, error))
-		return FALSE;
-
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
-	if (!gs_appstream_add_category_apps (self->plugin, self->silo,
-					     category, list_tmp,
-					     cancellable, error))
-		return FALSE;
-
-	gs_flatpak_claim_app_list (self, list_tmp);
-	gs_app_list_add_list (list, list_tmp);
-
-	return TRUE;
+	return gs_appstream_add_category_apps (self->plugin, self->silo,
+					       category, list,
+					       cancellable, error);
 }
 
 gboolean
