@@ -668,69 +668,83 @@ gs_plugin_update (GsPlugin *plugin,
                   GError **error)
 {
 	GsFlatpak *flatpak = NULL;
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	/* list of apps to be handled by each flatpak installation */
+	g_autoptr(GHashTable) applist_by_flatpaks = g_hash_table_new (g_direct_hash, g_direct_equal);
 	g_autoptr(FlatpakTransaction) transaction = NULL;
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GsAppList) list_tmp = NULL;
+
+	for (guint i = 0; i < priv->flatpaks->len; i++) {
+		g_autoptr(GsAppList) tmp_list = gs_app_list_new ();
+		g_hash_table_insert (applist_by_flatpaks,
+				     g_ptr_array_index (priv->flatpaks, i),
+				     g_steal_pointer(&tmp_list));
+	}
 
 	/* not supported */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-		if (flatpak != NULL)
+		if (flatpak != NULL) {
+		        list_tmp = g_hash_table_lookup (applist_by_flatpaks, flatpak);
 			gs_app_list_add (list_tmp, app);
-	}
-	if (flatpak == NULL)
-		return TRUE;
-
-	/* build and run transaction */
-	transaction = _build_transaction (plugin, flatpak, cancellable, error);
-	if (transaction == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app = gs_app_list_index (list_tmp, i);
-		g_autofree gchar *ref = NULL;
-
-		ref = gs_flatpak_app_get_ref_display (app);
-		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
 		}
 	}
 
-	/* run transaction */
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app = gs_app_list_index (list_tmp, i);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	}
-	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
+	/* build and run transaction for each flatpak installation */
+	for (guint j = 0; j < priv->flatpaks->len; j++) {
+	        flatpak = g_ptr_array_index (priv->flatpaks, j);
+		list_tmp = (GsAppList*)g_hash_table_lookup (applist_by_flatpaks, flatpak);
+		transaction = _build_transaction (plugin, flatpak, cancellable, error);
+		if (transaction == NULL) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 			GsApp *app = gs_app_list_index (list_tmp, i);
-			gs_app_set_state_recover (app);
+			g_autofree gchar *ref = NULL;
+
+			ref = gs_flatpak_app_get_ref_display (app);
+			if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+				gs_flatpak_error_convert (error);
+				return FALSE;
+			}
 		}
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	gs_plugin_updates_changed (plugin);
-
-	/* get any new state */
-	if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app = gs_app_list_index (list_tmp, i);
-		g_autofree gchar *ref = NULL;
-
-		ref = gs_flatpak_app_get_ref_display (app);
-		if (!gs_flatpak_refine_app (flatpak, app,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
-					    cancellable, error)) {
-			g_prefix_error (error, "failed to run refine for %s: ", ref);
+		/* run transaction */
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		}
+		if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
+			for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+				GsApp *app = gs_app_list_index (list_tmp, i);
+				gs_app_set_state_recover (app);
+			}
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
+		gs_plugin_updates_changed (plugin);
+
+		/* get any new state */
+		if (!gs_flatpak_refresh (flatpak, G_MAXUINT, cancellable, error)) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			g_autofree gchar *ref = NULL;
+
+			ref = gs_flatpak_app_get_ref_display (app);
+			if (!gs_flatpak_refine_app (flatpak, app,
+						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+						    cancellable, error)) {
+				g_prefix_error (error, "failed to run refine for %s: ", ref);
+				gs_flatpak_error_convert (error);
+				return FALSE;
+			}
+		}
+		
 	}
 	return TRUE;
 }
