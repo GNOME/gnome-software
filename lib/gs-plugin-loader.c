@@ -770,6 +770,12 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 }
 
 static gboolean
+gs_plugin_loader_app_is_non_wildcard (GsApp *app, gpointer user_data)
+{
+	return !gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+}
+
+static gboolean
 gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 				    GsAppList *list,
 				    GsPluginRefineFlags refine_flags,
@@ -809,13 +815,11 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-	return TRUE;
-}
 
-static gboolean
-gs_plugin_loader_app_is_non_wildcard (GsApp *app, gpointer user_data)
-{
-	return !gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD);
+
+	/* filter any MATCH_ANY_PREFIX apps left in the list */
+	gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
+	return TRUE;
 }
 
 static gboolean
@@ -969,9 +973,6 @@ gs_plugin_loader_run_refine (GsPluginLoaderHelper *helper,
 	ret = gs_plugin_loader_run_refine_internal (helper2, list, cancellable, error);
 	if (!ret)
 		goto out;
-
-	/* filter any MATCH_ANY_PREFIX apps left in the list */
-	gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
 
 	/* remove any addons that have the same source as the parent app */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
