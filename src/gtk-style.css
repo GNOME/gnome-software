@@ -524,3 +524,22 @@ flowboxchild {
 .switcher-label {
 	opacity: 0.5;
 }
+
+.featured-button {
+	background-image: none;
+	background-color: shade(@theme_bg_color, 0.8);
+	color: @theme_selected_fg_color;
+	opacity: 0.8;
+	border-radius: 60px;
+	box-shadow: none
+}
+
+.featured-button-left {
+	margin-left: -20px;
+	padding: 10px 10px 10px 20px;
+}
+
+.featured-button-right {
+	margin-right: -20px;
+	padding: 10px 20px 10px 10px;
+}
