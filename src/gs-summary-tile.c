@@ -97,6 +97,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsSummaryTile *tile)
 static void
 gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
+	GtkStyleContext *context;
 	const GdkPixbuf *pixbuf;
 	GsSummaryTile *tile = GS_SUMMARY_TILE (app_tile);
 	const gchar *css;
@@ -134,6 +135,12 @@ gs_summary_tile_set_app (GsAppTile *app_tile, GsApp *app)
 					      GTK_ICON_SIZE_DIALOG);
 	}
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
+
+	context = gtk_widget_get_style_context (tile->image);
+	if (gs_app_get_use_drop_shadow (tile->app))
+		gtk_style_context_add_class (context, "icon-dropshadow");
+	else
+		gtk_style_context_remove_class (context, "icon-dropshadow");
 
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
