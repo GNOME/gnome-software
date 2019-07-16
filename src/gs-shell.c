@@ -459,7 +459,12 @@ gs_shell_go_back (GsShell *shell)
 	BackEntry *entry;
 	GtkWidget *widget;
 
-	g_return_if_fail (!g_queue_is_empty (priv->back_entry_stack));
+	/* nothing to do */
+	if (g_queue_is_empty (priv->back_entry_stack)) {
+		g_debug ("no back stack, showing overview");
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
+		return;
+	}
 
 	entry = g_queue_pop_head (priv->back_entry_stack);
 
