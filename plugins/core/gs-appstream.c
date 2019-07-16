@@ -1082,6 +1082,7 @@ gs_appstream_search (GsPlugin *plugin,
 		{ AS_APP_SEARCH_MATCH_NAME,	"name[text()~=stem(?)]" },
 		{ AS_APP_SEARCH_MATCH_KEYWORD,	"keywords/keyword[text()~=stem(?)]" },
 		{ AS_APP_SEARCH_MATCH_ID,	"id[text()~=stem(?)]" },
+		{ AS_APP_SEARCH_MATCH_ID,	"launchable[text()~=stem(?)]" },
 		{ AS_APP_SEARCH_MATCH_ORIGIN,	"../components[@origin~=stem(?)]" },
 		{ AS_APP_SEARCH_MATCH_NONE,	NULL }
 	};

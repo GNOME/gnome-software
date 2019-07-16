@@ -548,6 +548,31 @@ search_activated (GSimpleAction *action,
 }
 
 static void
+_search_launchable_details_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+	GsApp *a;
+	GsApplication *app = GS_APPLICATION (user_data);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	list = gs_plugin_loader_job_process_finish (app->plugin_loader, res, &error);
+	if (list == NULL) {
+		g_warning ("failed to find application: %s", error->message);
+		return;
+	}
+	if (gs_app_list_length (list) == 0) {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
+		gs_shell_show_notification (app->shell,
+					    /* TRANSLATORS: we tried to show an app that did not exist */
+					    _("Sorry! There are no details for that application."));
+		return;
+	}
+	a = gs_app_list_index (list, 0);
+	gs_shell_reset_state (app->shell);
+	gs_shell_show_app (app->shell, a);
+}
+
+static void
 details_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
@@ -559,17 +584,30 @@ details_activated (GSimpleAction *action,
 	gs_application_present_window (app, NULL);
 
 	g_variant_get (parameter, "(&s&s)", &id, &search);
+	g_debug ("trying to activate %s:%s for details", id, search);
 	if (search != NULL && search[0] != '\0') {
 		gs_shell_reset_state (app->shell);
 		gs_shell_show_search_result (app->shell, id, search);
 	} else {
-		g_autoptr (GsApp) a = NULL;
-		if (as_utils_unique_id_valid (id))
-			a = gs_plugin_loader_app_create (app->plugin_loader, id);
-		else
-			a = gs_app_new (id);
-		gs_shell_reset_state (app->shell);
-		gs_shell_show_app (app->shell, a);
+		g_autoptr(GsPluginJob) plugin_job = NULL;
+		if (as_utils_unique_id_valid (id)) {
+			g_autoptr(GsApp) a = gs_plugin_loader_app_create (app->plugin_loader, id);
+			gs_shell_reset_state (app->shell);
+			gs_shell_show_app (app->shell, a);
+			return;
+		}
+
+		/* find by launchable */
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+						 "search", id,
+						 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						 "dedupe-flags", GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED |
+								 GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES,
+						 NULL);
+		gs_plugin_loader_job_process_async (app->plugin_loader, plugin_job,
+						    app->cancellable,
+						    _search_launchable_details_cb,
+						    app);
 	}
 }
 
