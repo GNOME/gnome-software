@@ -293,7 +293,7 @@ gs_app_list_check_for_duplicate (GsAppList *list, GsApp *app)
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
 		for (guint i = 0; i < list->array->len; i++) {
 			GsApp *app_tmp = g_ptr_array_index (list->array, i);
-			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
+			if (!gs_app_has_quirk (app_tmp, GS_APP_QUIRK_IS_WILDCARD))
 				continue;
 			/* not adding exactly the same wildcard */
 			if (g_strcmp0 (gs_app_get_unique_id (app_tmp),
