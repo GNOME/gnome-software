@@ -986,7 +986,10 @@ is_graphical (GsPlugin *plugin, GsApp *app, GCancellable *cancellable)
 	if (client == NULL)
 		return FALSE;
 
-	if (!snapd_client_get_connections_sync (client, NULL, NULL, &plugs, NULL, cancellable, &error)) {
+	if (!snapd_client_get_connections2_sync (client,
+						 SNAPD_GET_CONNECTIONS_FLAGS_SELECT_ALL, NULL, NULL,
+						 NULL, NULL, &plugs, NULL,
+						 cancellable, &error)) {
 		g_warning ("Failed to get connections: %s", error->message);
 		return FALSE;
 	}
