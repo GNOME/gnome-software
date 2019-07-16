@@ -830,6 +830,12 @@ gs_shell_show_event_app_notify (GsShell *shell,
 	gtk_widget_set_visible (widget, title != NULL);
 }
 
+void
+gs_shell_show_notification (GsShell *shell, const gchar *title)
+{
+	gs_shell_show_event_app_notify (shell, title, GS_SHELL_EVENT_BUTTON_NONE);
+}
+
 static gchar *
 gs_shell_get_title_from_origin (GsApp *app)
 {
