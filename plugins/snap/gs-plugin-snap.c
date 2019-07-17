@@ -539,20 +539,35 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		g_string_prepend (id, gs_category_get_id (c));
 	}
 
+	/*
+	 * Unused categories:
+	 *
+	 * health-and-fitness
+	 * personalisation
+	 * devices-and-iot
+	 * security
+	 * server-and-cloud
+	 * entertainment
+	 */
+
 	if (strcmp (id->str, "games/featured") == 0)
 		sections = "games";
 	else if (strcmp (id->str, "audio-video/featured") == 0)
-		sections = "music;video";
+		sections = "music-and-audio";
 	else if (strcmp (id->str, "graphics/featured") == 0)
-		sections = "graphics";
+		sections = "photo-and-video;art-and-design";
 	else if (strcmp (id->str, "communication/featured") == 0)
-		sections = "social-networking";
+		sections = "social;news-and-weather";
 	else if (strcmp (id->str, "productivity/featured") == 0)
 		sections = "productivity;finance";
 	else if (strcmp (id->str, "developer-tools/featured") == 0)
-		sections = "developers";
+		sections = "development";
 	else if (strcmp (id->str, "utilities/featured") == 0)
 		sections = "utilities";
+	else if (strcmp (id->str, "education-science/featured") == 0)
+		sections = "education;science";
+	else if (strcmp (id->str, "reference/featured") == 0)
+		sections = "books-and-reference";
 
 	if (sections != NULL) {
 		g_auto(GStrv) tokens = NULL;
