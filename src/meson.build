@@ -77,7 +77,8 @@ gnome_software_dependencies = [
   gtk,
   json_glib,
   libm,
-  libsoup
+  libsoup,
+  libxmlb,
 ]
 
 if get_option('packagekit')
