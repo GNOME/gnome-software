@@ -1003,9 +1003,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		/* create each app */
 		app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
 
-		/* we have no update view for local files */
+		/* we *might* have no update view for local files */
 		gs_app_set_version (app, gs_app_get_update_version (app));
-		gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
+		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
 					gs_app_get_update_details (app));
 		gs_app_list_add (list, app);
 	}

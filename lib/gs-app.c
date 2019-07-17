@@ -1304,7 +1304,7 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= priv->name_quality)
+	if (quality < priv->name_quality)
 		return;
 	priv->name_quality = quality;
 	if (_g_set_str (&priv->name, name))
@@ -2086,7 +2086,7 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= priv->summary_quality)
+	if (quality < priv->summary_quality)
 		return;
 	priv->summary_quality = quality;
 	if (_g_set_str (&priv->summary, summary))
@@ -2131,7 +2131,7 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 	locker = g_mutex_locker_new (&priv->mutex);
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= priv->description_quality)
+	if (quality < priv->description_quality)
 		return;
 	priv->description_quality = quality;
 	_g_set_str (&priv->description, description);
