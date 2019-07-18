@@ -63,7 +63,7 @@ gs_app_tile_set_app (GsAppTile *self, GsApp *app)
 	g_set_object (&priv->app, app);
 
 	/* optional refresh */
-	if (klass->refresh != NULL) {
+	if (klass->refresh != NULL && priv->app != NULL) {
 		g_signal_connect (app, "notify::state",
 				  G_CALLBACK (gs_app_tile_state_changed_cb), self);
 		g_signal_connect (app, "notify::name",
