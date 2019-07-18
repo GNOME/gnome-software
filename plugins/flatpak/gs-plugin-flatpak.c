@@ -450,7 +450,11 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		return TRUE;
 
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_autoptr(FlatpakInstallation) installation = NULL;
 		g_autoptr(GError) error_local = NULL;
+
+		installation = gs_flatpak_get_installation (flatpak);
+		flatpak_installation_set_no_interaction (installation, TRUE);
 
 		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
 			g_warning ("Failed to block on download scheduler: %s",
@@ -588,7 +592,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return gs_flatpak_app_install_source (flatpak, app, cancellable, error);
 
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+		g_autoptr(FlatpakInstallation) installation = NULL;
 		g_autoptr(GError) error_local = NULL;
+
+		installation = gs_flatpak_get_installation (flatpak);
+		flatpak_installation_set_no_interaction (installation, TRUE);
 
 		/* FIXME: Add additional details here, especially the download
 		 * size bounds (using `size-minimum` and `size-maximum`, both
