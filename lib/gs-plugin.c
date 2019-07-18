@@ -1369,6 +1369,12 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 
 	locker = g_mutex_locker_new (&priv->cache_mutex);
 
+	/* the user probably doesn't want to do this */
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
+		g_warning ("adding wildcard app %s to plugin cache",
+			   gs_app_get_unique_id (app));
+	}
+
 	/* default */
 	if (key == NULL)
 		key = gs_app_get_unique_id (app);

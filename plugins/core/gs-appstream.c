@@ -26,6 +26,10 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 				      error))
 		return NULL;
 
+	/* never add wildcard apps to the plugin cache */
+	if (gs_app_has_quirk (app_new, GS_APP_QUIRK_IS_WILDCARD))
+		return g_steal_pointer (&app_new);
+
 	/* look for existing object */
 	app = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app_new));
 	if (app != NULL)
