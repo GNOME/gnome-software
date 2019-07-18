@@ -412,8 +412,13 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	FlatpakInstallation *installation;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
-	/* create transaction */
 	installation = gs_flatpak_get_installation (flatpak);
+
+	/* Let flatpak know if it is a background operation */
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		flatpak_installation_set_no_interaction (installation, TRUE);
+
+	/* create transaction */
 	transaction = gs_flatpak_transaction_new (installation, cancellable, error);
 	if (transaction == NULL) {
 		g_prefix_error (error, "failed to build transaction: ");
