@@ -228,6 +228,9 @@ main (int argc, char **argv)
 		"    <summary>Fedora Workstation</summary>\n"
 		"    <pkgname>fedora-release</pkgname>\n"
 		"  </component>\n"
+		"  <info>\n"
+		"    <scope>user</scope>\n"
+		"  </info>\n"
 		"</components>\n";
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
 

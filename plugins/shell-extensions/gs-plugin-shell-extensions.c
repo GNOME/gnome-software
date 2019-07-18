@@ -823,6 +823,7 @@ _check_silo (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_autoptr(GRWLockReaderLocker) reader_locker = NULL;
 	g_autoptr(GRWLockWriterLocker) writer_locker = NULL;
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
 	reader_locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
@@ -843,6 +844,11 @@ _check_silo (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 					      XB_SILO_PROFILE_FLAG_XPATH |
 					      XB_SILO_PROFILE_FLAG_DEBUG);
 	}
+
+	/* add metadata */
+	info = xb_builder_node_insert (NULL, "info", NULL);
+	xb_builder_node_insert_text (info, "scope", "user", NULL);
+	xb_builder_source_set_info (source, info);
 
 	/* add support for JSON files */
 	fn = gs_utils_get_cache_filename ("shell-extensions",

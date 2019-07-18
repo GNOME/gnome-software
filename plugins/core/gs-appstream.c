@@ -726,6 +726,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_metadata (app, "appstream::source-file", tmp);
 	}
 
+	/* set scope */
+	tmp = xb_node_query_text (component, "../info/scope", NULL);
+	if (tmp != NULL)
+		gs_app_set_scope (app, as_app_scope_from_string (tmp));
+
 	/* set content rating */
 	if (refine_flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_CONTENT_RATING) {
 		if (!gs_appstream_refine_app_content_ratings (plugin, app, component, error))
@@ -884,7 +889,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 					gs_app_add_source (app, tmp);
 			}
 			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-			gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		}
 	}
 

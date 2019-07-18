@@ -68,6 +68,9 @@ main (int argc, char **argv)
 		"      <modalias>pci:*</modalias>\n"
 		"    </provides>\n"
 		"  </component>\n"
+		"  <info>\n"
+		"    <scope>system</scope>\n"
+		"  </info>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);

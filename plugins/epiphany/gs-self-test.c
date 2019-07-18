@@ -68,6 +68,9 @@ main (int argc, char **argv)
 		"    <pkgname>test</pkgname>\n"
 		"    <icon type=\"remote\">file://%s</icon>\n"
 		"  </component>\n"
+		"  <info>\n"
+		"    <scope>user</scope>\n"
+		"  </info>\n"
 		"</components>\n", fn);
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
 
