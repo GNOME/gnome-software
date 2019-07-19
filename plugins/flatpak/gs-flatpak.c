@@ -1353,7 +1353,7 @@ get_real_app_for_update (GsFlatpak *self,
 		g_debug ("Related extension app %s of main app %s is updatable, so "
 			 "setting the latter's state instead.", gs_app_get_unique_id (app),
 			 gs_app_get_unique_id (main_app));
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 	}
 
 	return main_app;
