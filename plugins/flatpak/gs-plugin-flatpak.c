@@ -385,6 +385,7 @@ gs_plugin_flatpak_find_app_by_ref (GsPlugin *plugin, const gchar *ref,
 		app = gs_flatpak_ref_to_app (flatpak_tmp, ref, cancellable, &error_local);
 		if (app == NULL) {
 			g_debug ("%s", error_local->message);
+			g_clear_error (&error_local);
 			continue;
 		}
 		g_debug ("found ref=%s->%s", ref, gs_app_get_unique_id (app));
