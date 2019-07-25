@@ -1,13 +1,6 @@
 install_data([
   'upgrade-bg.png',
-  'featured-ardour.png',
-  'featured-ardour-bg.png',
-  'featured-blender.svg',
-  'featured-builder.png',
-  'featured-builder-bg.jpg',
-  'featured-chess.svg',
-  'featured-chess-bg.png',
-  'featured-firefox.svg',
+  'featured-foliate.svg',
   'featured-gimp.png',
   'featured-gnome-sudoku.png',
   'featured-inkscape.svg',
@@ -15,9 +8,8 @@ install_data([
   'featured-maps-bg.png',
   'featured-mypaint.png',
   'featured-polari.svg',
-  'featured-transmission.svg',
-  'featured-weather.svg',
-  'featured-weather-bg.png'
+  'featured-sound-recorder.svg',
+  'featured-transmission.svg'
   ],
   install_dir : 'share/gnome-software'
 )
