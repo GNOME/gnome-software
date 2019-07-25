@@ -1,159 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<components version="0.8">
-  <component type="desktop" merge="append">
-    <id>ardour5.desktop</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #333333;
-text-shadow: 0 1px 1px rgba(0,0,0,0.5);
-color: #ffffff;
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-background:
- url('file://@datadir@/gnome-software/featured-ardour.png')
- 30% 49% / 33% no-repeat,
- url('file://@datadir@/gnome-software/featured-ardour-bg.png')
- center center / 100% auto no-repeat,
- linear-gradient(to bottom, #373936, #60625e);
-</value>
-    </metadata>
-  </component>
-  <component type="desktop" merge="append">
-    <id>blender.desktop</id>
-    <categories>
-      <category>Featured</category>
-    </categories>
-    <kudos>
-      <kudo>GnomeSoftware::popular</kudo>
-    </kudos>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">color: rgba(0,0,0,0.6);
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-box-shadow: none;
-background: url('file://@datadir@/gnome-software/featured-blender.svg')
- 10% 40% / 50% auto no-repeat, -gtk-gradient (radial,
- center bottom, 0, center center, 1,
- from(#fcbf83), to(#f0a135));
-</value>
-    </metadata>
-  </component>
-  <component type="desktop" merge="append">
-    <id>firefox.desktop</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #babdb6;
-text-shadow: 0 1px 1px rgba(255,255,255,0.7);
-color: #888a85;
-outline-offset: 0;
-outline-color: alpha(#888a85, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-box-shadow: none;
-background:
- url('file://@datadir@/gnome-software/featured-firefox.svg')
- 40% 30% / 20% auto no-repeat,
- linear-gradient(to bottom, #d3d7cf, #eeeeec);
-</value>
-    </metadata>
-  </component>
-  <component type="desktop" merge="append">
-    <id>org.gimp.GIMP</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #2a6c10;
-text-shadow: 0 1px 1px rgba(255,255,255,0.7);
-color: #333;
-outline-offset: 0;
-outline-color: alpha(#333, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-background:
- url('file://@datadir@/gnome-software/featured-gimp.png')
- left 50% / 50% auto no-repeat,
- linear-gradient(to bottom, #8ac674, #cbddc3);
-</value>
-    </metadata>
-  </component>
-<component type="desktop" merge="append">
-    <id>org.gnome.Chess</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #5e5c64;
-text-shadow: 0 1px 2px rgba(0,0,0,.5);
-color: #fff;
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-box-shadow: none;
-background:
-linear-gradient(to left, rgba(0,0,0,.7), rgba(0,0,0,0)),
- #c0bfbc url('file://@datadir@/gnome-software/featured-chess-bg.png') center / 100% no-repeat;
-</value>
-</metadata>
-</component>
-  <component type="desktop" merge="append">
+<components>
+  <component>
     <id>inkscape.desktop</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #819a6b;
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #ccc;
 text-shadow: none;
 color: #606060;
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
- background:
+background:
  url('file://@datadir@/gnome-software/featured-inkscape.svg')
  20% / 60% auto no-repeat,
  linear-gradient(to bottom, #ffffff, #e2e2e2);
 </value>
-    </metadata>
+    </custom>
   </component>
-  <component type="desktop" merge="append">
+  <component>
     <id>mypaint.desktop</id>
-    <metadata>
+    <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #4c52aa;
 color: #362d89;
-outline-offset: 0;
-outline-color: alpha(#362d89, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
+text-shadow: none;
 background:
  url('file://@datadir@/gnome-software/featured-mypaint.png')
- left 67% / 50% auto no-repeat,
+ left 62% / 70% auto no-repeat,
  linear-gradient(to bottom, #8fa5d9, #d8e0ef);
 </value>
-    </metadata>
+    </custom>
   </component>
-  <component type="desktop" merge="append">
-    <id>org.gnome.Builder.desktop</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #000000;
-text-shadow: 0 1px 1px rgba(0,0,0,0.5);
-color: #ffffff;
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-background:
- url('file://@datadir@/gnome-software/featured-builder.png')
- left center / 100% auto no-repeat,
- url('file://@datadir@/gnome-software/featured-builder-bg.jpg')
- center / cover no-repeat;
-</value>
-    </metadata>
-  </component>
-  <component type="desktop" merge="append">
+  <component>
     <id>org.gnome.Maps.desktop</id>
-    <metadata>
+    <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #deddda;
 text-shadow: 0 1px 1px rgba(255,255,255,0.5);
 color: #000000;
-outline-offset: 0;
-outline-color: alpha(#000000, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
 box-shadow: none;
 background: #f6f5f4,
  url('file://@datadir@/gnome-software/featured-maps.svg')
@@ -161,11 +39,11 @@ background: #f6f5f4,
  url('file://@datadir@/gnome-software/featured-maps-bg.png')
  bottom center / cover no-repeat;
 </value>
-    </metadata>
+    </custom>
   </component>
-  <component type="desktop" merge="append">
+  <component>
     <id>org.gnome.Polari.desktop</id>
-    <metadata>
+    <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #4e9a06;
 text-shadow: 0 2px #418e64;
 color: #a8c74f;
@@ -177,44 +55,312 @@ background:
  url('file://@datadir@/gnome-software/featured-polari.svg')
  70% 80% / 120% auto no-repeat, #43a570;
 </value>
-    </metadata>
+    </custom>
   </component>
-  <component type="desktop" merge="append">
-    <id>org.gnome.Weather</id>
-    <metadata>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #1a5fb4;
-text-shadow: 0 1px 1px rgba(0,0,0,0.5);
-color: #ffffff;
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
-box-shadow: none;
-background:
-url('file://@datadir@/gnome-software/featured-weather.svg')
- 20% 60% / 35% auto no-repeat,
- url('file://@datadir@/gnome-software/featured-weather-bg.png'),
- linear-gradient(to bottom, #1a5fb4, #62a0ea);
-      </value>
-    </metadata>
-  </component>
-  <component type="desktop" merge="append">
+  <component>
     <id>transmission-gtk.desktop</id>
-    <metadata>
+    <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #d65100;
 text-shadow: 0 1px 1px rgba(0,0,0,0.5);
 color: #ffffff;
-outline-offset: 0;
-outline-color: alpha(#ffffff, 0.75);
-outline-style: dashed;
-outline-offset: 2px;
 box-shadow: none;
 background:
  url('file://@datadir@/gnome-software/featured-transmission.svg')
- 10% 20% / 427px auto no-repeat, -gtk-gradient (radial,
+ 10% 40% / 427px auto no-repeat, -gtk-gradient (radial,
  center bottom, 0, center center, 0.8,
  from(#ffa348), to(#e66100));
 </value>
-    </metadata>
+    </custom>
+  </component>
+  <component>
+    <id>org.gnome.Podcasts</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #d7430a;
+background: #f7632a,
+ url('file://@datadir@/gnome-software/featured-podcasts.svg')
+ 10% 20% / 50% auto no-repeat;
+color: #fff;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.gnome.Boxes</id>
+    <categories>
+      <category>Featured</category>
+    </categories>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #ed8254;
+background: #fca937 url('file://@datadir@/gnome-software/featured-boxes.svg') 
+ 10% 40% / 60% auto no-repeat;
+color: #cd6234;
+text-shadow: 0 1px rgba(255,255,255,0.3);</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.github.johnfactotum.Foliate</id>
+    <categories>
+      <category>Featured</category>
+    </categories>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #00aaaa;
+background: #00cccc url('file://@datadir@/gnome-software/featured-foliate.svg') 
+ 10% 40% / 50% auto no-repeat;
+color: #004444;
+text-shadow: none;
+</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.gnome.SoundRecorder</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #bbb;
+/* background: #f6f5f4 url('file://@datadir@/gnome-software/featured-sound-recorder.svg') 
+ 10% 40% / 50% auto no-repeat; */
+background: #443f51 url('file://@datadir@/gnome-software/featured-sound-recorder.svg') 
+ 10% 40% / 50% auto no-repeat;
+color: #fff;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.kde.kdenlive</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #df321e;
+background: #ffd6ac url('file://@datadir@/gnome-software/featured-kdenlive-bg.jpg')
+ left 20% / 60% auto no-repeat;
+color: #df321e;
+box-shadow: none;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.gimp.GIMP</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #4a8c30;
+text-shadow: none;
+color: rgba(255,255,255,0.9);
+background:
+ url('file://@datadir@/gnome-software/featured-gimp.png')
+ left 50% / 50% auto no-repeat,
+ linear-gradient(to bottom, #8ac674, #cbddc3);
+</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.videolan.VLC</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #df321e;
+background: #fafafa url('file://@datadir@/gnome-software/featured-vlc-bg.jpg')
+ left 13% / 90% auto no-repeat;
+color: #222;
+box-shadow: none;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.spotify.Client</id>
+    <categories>
+      <category>Featured</category>
+    </categories>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #b47fba;
+text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+color: #ffffff;
+box-shadow: none;
+background: url('http://people.gnome.org/~jimmac/gnome-software/spotify-logo.svg') 
+ 10% / 200px auto no-repeat, -gtk-gradient (linear, left top, left bottom, from(#b47fba), to(#000));</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.slack.Slack</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #eee;
+background: url('http://people.gnome.org/~jimmac/gnome-software/slack-logo.svg') 10% 48px / 200px auto no-repeat, url('file://@datadir@/gnome-software/featured-slack-bg.jpg')
+ center / cover no-repeat;
+color: #fff;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.gnome.FeedReader</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #d65100;
+text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+color: #ffffff;
+box-shadow: none;
+background:
+ url('file://@datadir@/gnome-software/featured-FeedReader.svg')
+ 30% 60% / 30% auto no-repeat, -gtk-gradient (radial,
+ center bottom, 0, center center, 0.8,
+ from(#ffa348), to(#e66100));
+</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.bitwarden.desktop</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #1c6d8c;
+box-shadow: none;
+background: #3c8dbc 
+ url('file://@datadir@/gnome-software/featured-bitwarden.svg')
+ 12px 60% / 60% auto no-repeat;
+color: #fff;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.dropbox.Client</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #a8c3d6;
+box-shadow: none;
+text-shadow: 0 1px rgba(255,255,255,0.8);
+background: #b8d3e6 url('file://@datadir@/gnome-software/featured-dropbox.png') 
+ left 40% / 100% auto no-repeat;
+color: #47525d;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.github.calo001.fondo</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: -gtk-gradient (linear, left top, right top, from(rgba(0,0,0,0)), to(rgba(0,0,0,0.5))), 
+url('file://@datadir@/gnome-software/featured-fondo-bg.jpg') center 20% no-repeat;
+background-size: cover;		
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.darktable.Darktable</id>
+    <categories>
+      <category>Featured</category>
+    </categories>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: url('file://@datadir@/gnome-software/featured-darktable-bg.jpg') center 45% no-repeat;
+background-size: cover;		
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.calibre_ebook.calibre</id>
+    <categories>
+      <category>Featured</category>
+    </categories>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: url('file://@datadir@/gnome-software/featured-calibre-bg.jpg') center 45% repeat;
+background-size: cover;
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
+  </component>
+  <component>
+    <id>fr.free.Homebank</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: url('file://@datadir@/gnome-software/featured-homebank-bg.jpg') center 45% repeat;
+background-size: cover;
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
+  </component>
+  <component>
+    <id>de.wolfvollprecht.UberWriter</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #ddd;
+background: #ededed,
+ url('file://@datadir@/gnome-software/featured-uberwriter.svg')
+ 10% 50% / 40% auto no-repeat;
+color: #000;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>net.sourceforge.Klavaro</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: url('file://@datadir@/gnome-software/featured-klavaro-bg.jpg') center 45% repeat;
+background-size: cover;
+color: #000;
+box-shadow: none;
+text-shadow: 0 0 4px #fff;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.github.junrrein.PDFSlicer</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #1c6d8c;
+box-shadow: none;
+background: #3c8dbc 
+ url('file://@datadir@/gnome-software/featured-pdf-slicer.svg')
+ 12px 70% / 30% auto no-repeat;
+color: #fff;
+text-shadow: none;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.gnome.Todo</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: url('file://@datadir@/gnome-software/featured-todo-bg.jpg') center 40% repeat;
+background-size: cover;
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.github.fabiocolacio.marker</id>
+    <categories>
+      <category>Featured</category>
+    </categories>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #a88;
+background: url('file://@datadir@/gnome-software/featured-marker-bg.jpg') center 45% repeat;
+background-size: cover;
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
+  </component>
+  <component>
+    <id>com.valvesoftware.Steam</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #1b2838;
+text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+color: #ffffff;
+box-shadow: none;
+background: #1b2838 url('http://people.gnome.org/~jimmac/gnome-software/steam-logo.svg') 
+ 10% / 200px auto no-repeat;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.gnome.tetravex</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: url('file://@datadir@/gnome-software/featured-tetravex-bg.jpg') center 45% repeat;
+background-size: cover;
+color: #000;
+box-shadow: none;
+text-shadow: 0 0 2px #fff;</value>
+    </custom>
+  </component>
+  <component>
+    <id>org.stellarium.Stellarium</id>
+    <custom>
+      <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
+background: -gtk-gradient (linear, left top, right top, from(rgba(0,0,0,0)), to(rgba(0,0,0,0.9))), 
+url('file://@datadir@/gnome-software/featured-stellarium-bg.jpg') center 20% no-repeat;
+background-size: cover;		
+color: #fff;
+box-shadow: none;
+text-shadow: 0 1px 2px #000;</value>
+    </custom>
   </component>
 </components>
