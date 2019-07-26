@@ -67,6 +67,7 @@ typedef struct
 	gchar			*summary_missing;
 	gchar			*description;
 	GsAppQuality		 description_quality;
+	gboolean		 description_markup;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GPtrArray		*key_colors;
@@ -2136,6 +2137,45 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 		return;
 	priv->description_quality = quality;
 	_g_set_str (&priv->description, description);
+}
+
+/**
+ * gs_app_get_description_markup:
+ * @app: a #GsApp
+ *
+ * Gets if the description uses markup.
+ *
+ * Returns: %TRUE if the description is formatted using markup.
+ *
+ * Since: 3.32
+ **/
+gboolean
+gs_app_get_description_markup (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return priv->description_markup;
+}
+
+/**
+ * gs_app_set_description_markup:
+ * @app: a #GsApp
+ * @use_markup: if the description uses markup
+ *
+ * Sets the description is formatted using markup.
+ *
+ * Since: 3.32
+ **/
+void
+gs_app_set_description_markup (GsApp *app, gboolean use_markup)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	priv->description_markup = use_markup;
 }
 
 /**

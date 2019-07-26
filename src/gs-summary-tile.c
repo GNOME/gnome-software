@@ -42,6 +42,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	gboolean installed;
 	g_autofree gchar *name = NULL;
 	g_autofree gchar *summary = NULL;
+	gboolean use_markup = FALSE;
 	const gchar *css;
 
 	if (app == NULL)
@@ -57,6 +58,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_SHELL_EXTENSION:
 		summary = g_strdup (gs_app_get_description (app));
+		use_markup = gs_app_get_description_markup (app);
 		if (summary != NULL)
 			g_strdelimit (summary, "\n\t", ' ');
 		break;
@@ -66,6 +68,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	}
 
 	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
+	gtk_label_set_use_markup (GTK_LABEL (tile->summary), use_markup);
 	gtk_widget_set_visible (tile->summary, summary && summary[0]);
 
 	pixbuf = gs_app_get_pixbuf (app);
