@@ -15,6 +15,7 @@
 #include "config.h"
 
 #include <gtk/gtk.h>
+#include <appstream-glib.h>
 
 #include "gs-css.h"
 
@@ -54,14 +55,19 @@ gboolean
 gs_css_parse (GsCss *self, const gchar *markup, GError **error)
 {
 	g_auto(GStrv) parts = NULL;
+	g_autoptr(GString) markup_str = NULL;
 
 	/* no data */
 	if (markup == NULL || markup[0] == '\0')
 		return TRUE;
 
 	/* old style, no IDs */
-	if (!g_str_has_prefix (markup, "#")) {
-		g_hash_table_insert (self->ids, g_strdup ("tile"), g_strdup (markup));
+	markup_str = g_string_new (markup);
+	as_utils_string_replace (markup_str, "@datadir@", DATADIR);
+	if (!g_str_has_prefix (markup_str->str, "#")) {
+		g_hash_table_insert (self->ids,
+				     g_strdup ("tile"),
+				     g_string_free (g_steal_pointer (&markup_str), FALSE));
 		return TRUE;
 	}
 
@@ -70,7 +76,7 @@ gs_css_parse (GsCss *self, const gchar *markup, GError **error)
 	 *    #tile {border-radius: 0;}
 	 *    #name {color: white;}
 	 */
-	parts = g_strsplit (markup + 1, "\n#", -1);
+	parts = g_strsplit (markup_str->str + 1, "\n#", -1);
 	for (guint i = 0; parts[i] != NULL; i++) {
 		g_autoptr(GString) current_css = NULL;
 		g_autoptr(GString) current_key = NULL;
