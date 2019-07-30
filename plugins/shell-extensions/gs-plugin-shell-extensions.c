@@ -460,6 +460,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* find the component using the UUID */
+	if (uuid == NULL)
+		return TRUE;
+
 	xpath = g_strdup_printf ("components/component/custom/"
 				 "value[@key='shell-extensions::uuid'][text()='%s']/../..",
 				 uuid);

@@ -442,6 +442,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autofree gchar *appstream_dir_fn = NULL;
 	g_autofree gchar *appstream_fn = NULL;
 	g_autofree gchar *icon_prefix = NULL;
+	g_autofree gchar *default_branch = NULL;
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file_xml = NULL;
 	g_autoptr(GSettings) settings = NULL;
@@ -532,8 +533,9 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 
 	/* do we want to filter to the default branch */
 	settings = g_settings_new ("org.gnome.software");
+	default_branch = flatpak_remote_get_default_branch (xremote);
 	if (g_settings_get_boolean (settings, "filter-default-branch") &&
-	    flatpak_remote_get_default_branch (xremote) != NULL) {
+	    default_branch != NULL) {
 		g_autoptr(XbBuilderFixup) fixup = NULL;
 		fixup = xb_builder_fixup_new ("FilterDefaultbranch",
 					      gs_flatpak_filter_default_branch_cb,
