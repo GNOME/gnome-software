@@ -259,7 +259,7 @@ gs_shell_change_mode (GsShell *shell,
 
 	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_explore"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_OVERVIEW);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
@@ -742,7 +742,7 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 		    GtkWidget *buttonbox = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 
 		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
-					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all")),
+					     GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_explore")),
 					     "non-homogeneous", TRUE,
 					     NULL);
 		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
@@ -1932,7 +1932,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_back_button_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_explore"));
 	g_object_set_data (G_OBJECT (widget),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_OVERVIEW));
