@@ -1696,6 +1696,9 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::license",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
+	g_signal_connect_object (self->app, "notify::quirk",
+				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
+				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
 				 G_CALLBACK (gs_details_page_progress_changed_cb),
 				 self, 0);
