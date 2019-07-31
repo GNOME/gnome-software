@@ -489,9 +489,6 @@ _list_header_func (GtkListBoxRow *row, GtkListBoxRow *before, gpointer user_data
 
 	/* section changed */
 	if (before == NULL) {
-		GtkWidget *parent;
-		if ((parent = gtk_widget_get_parent (GTK_WIDGET (self->section_header))) != NULL)
-			gtk_container_remove (GTK_CONTAINER (parent), GTK_WIDGET (self->section_header));
 		header = self->section_header;
 	} else {
 		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
