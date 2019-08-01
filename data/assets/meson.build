@@ -19,6 +19,7 @@ install_data([
   'featured-marker-bg.jpg',
   'featured-mypaint.png',
   'featured-pdf-slicer.svg',
+  'featured-podcasts.svg',
   'featured-polari.svg',
   'featured-slack-bg.jpg',
   'featured-sound-recorder.svg',
