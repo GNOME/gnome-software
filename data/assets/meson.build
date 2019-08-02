@@ -17,7 +17,7 @@ install_data([
   'featured-maps.svg',
   'featured-maps-bg.png',
   'featured-marker-bg.jpg',
-  'featured-mypaint.png',
+  'featured-mypaint.svg',
   'featured-pdf-slicer.svg',
   'featured-podcasts.svg',
   'featured-polari.svg',
