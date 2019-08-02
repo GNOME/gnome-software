@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-07-18 10:57+0000\n"
-"PO-Revision-Date: 2019-07-24 10:35+0200\n"
+"POT-Creation-Date: 2019-07-30 15:34+0000\n"
+"PO-Revision-Date: 2019-08-02 09:05+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Spanish - Spain <gnome-es-list@gnome.org>\n"
 "Language: es_ES\n"
@@ -439,7 +439,7 @@ msgid "Folder Name"
 msgstr "Nombre de la carpeta"
 
 #: src/gs-app-folder-dialog.c:307 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.ui:243 src/gs-editor.c:609 src/gs-editor.c:641
+#: src/gs-details-page.ui:243 src/gs-editor.c:729 src/gs-editor.c:762
 #: src/gs-installed-page.c:598 src/gs-removal-dialog.ui:32
 #: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
@@ -554,7 +554,6 @@ msgstr "Una buena manera de gestionar el software en su sistema."
 
 #. TRANSLATORS: we tried to show an app that did not exist
 #: src/gs-application.c:567
-#| msgid "Please restart the application."
 msgid "Sorry! There are no details for that application."
 msgstr "No hay detalles para esa aplicación."
 
@@ -1558,7 +1557,6 @@ msgid "Uses an old, insecure display system"
 msgstr "Usa un sistema de visualización antiguo e inseguro"
 
 #: src/gs-details-page.c:958 src/gs-update-dialog.c:104
-#| msgid "Sandboxed"
 msgid "Sandbox escape"
 msgstr "Salir del aislamiento"
 
@@ -1871,74 +1869,85 @@ msgstr "La aplicación se ha calificado así por los siguientes motivos:"
 msgid "No details were available for this rating."
 msgstr "No hay detalles disponibles para esta puntuación."
 
-#: src/gs-editor.c:347
+#. TRANSLATORS: error dialog title
+#: src/gs-editor.c:152
+#| msgid "Failed to load image"
+msgid "Failed to load components"
+msgstr "Falló al cargar los componentes"
+
+#: src/gs-editor.c:378
 msgid "CSS validated OK!"
 msgstr "CSS validado correctamente."
 
 #. TRANSLATORS: error dialog title
-#: src/gs-editor.c:550
+#: src/gs-editor.c:645 src/gs-editor.c:660
 msgid "Failed to load file"
 msgstr "Falló al cargar el archivo"
 
 #. TRANSLATORS: window title
-#: src/gs-editor.c:584 src/gs-editor.c:860
+#: src/gs-editor.c:704 src/gs-editor.c:1052
 msgid "Unsaved changes"
 msgstr "Cambios sin guardar"
 
-#: src/gs-editor.c:586
+#: src/gs-editor.c:706
 msgid "The application list is already loaded."
 msgstr "La lista de aplicaciones ya está cargada."
 
 #. TRANSLATORS: button text
-#: src/gs-editor.c:590
+#: src/gs-editor.c:710
 msgid "Merge documents"
 msgstr "Mezclar documentos"
 
 #. TRANSLATORS: button text
-#: src/gs-editor.c:594 src/gs-editor.c:865
+#: src/gs-editor.c:714 src/gs-editor.c:1057
 msgid "Throw away changes"
 msgstr "Descartar los cambios"
 
 #. import the new file
-#: src/gs-editor.c:606 src/gs-editor.c:638
+#: src/gs-editor.c:726
 msgid "Open AppStream File"
 msgstr "Abrir archivo AppStream"
 
-#: src/gs-editor.c:610
+#: src/gs-editor.c:730
 msgid "_Open"
 msgstr "_Abrir"
 
-#: src/gs-editor.c:642
+#: src/gs-editor.c:759
+#| msgid "Open AppStream File"
+msgid "Save AppStream File"
+msgstr "Guardar archivo AppStream"
+
+#: src/gs-editor.c:763
 msgid "_Save"
 msgstr "_Guardar"
 
 #. TRANSLATORS: error dialog title
-#: src/gs-editor.c:662
+#: src/gs-editor.c:784
 msgid "Failed to save file"
 msgstr "Falló al guardar el archivo"
 
 #. TRANSLATORS, the %s is the app name, e.g. 'Inkscape'
-#: src/gs-editor.c:737
+#: src/gs-editor.c:854
 #, c-format
 msgid "%s banner design deleted."
 msgstr "Eliminado el diseño del banner %s."
 
 #. TRANSLATORS, this is a notification
-#: src/gs-editor.c:740
+#: src/gs-editor.c:857
 msgid "Banner design deleted."
 msgstr "Diseño de banner eliminado."
 
-#: src/gs-editor.c:862
+#: src/gs-editor.c:1054
 msgid "The application list has unsaved changes."
 msgstr "La lista de aplicaciones tiene cambios sin guardar."
 
 #. TRANSLATORS: show the program version
-#: src/gs-editor.c:1096
+#: src/gs-editor.c:1285
 msgid "Use verbose logging"
 msgstr "Usar registro detallado"
 
 #. TRANSLATORS: program name, an application to add and remove software repositories
-#: src/gs-editor.c:1104
+#: src/gs-editor.c:1293
 msgid "GNOME Software Banner Designer"
 msgstr "Diseñador de banners de software de GNOME"
 
@@ -4426,7 +4435,7 @@ msgstr ""
 "Flatpak es un entorno de desarrollo para aplicaciones de escritorio en Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:830
+#: plugins/flatpak/gs-flatpak.c:832
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Obteniendo metadatos flatpak para %s…"
@@ -4468,12 +4477,12 @@ msgid "GNOME Shell Extensions Repository"
 msgstr "Repositorio de extensiones de GNOME Shell"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:800
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:803
 msgid "Downloading shell extension metadata…"
 msgstr "Descargando metadatos de extensión de la Shell…"
 
 #. TRANSLATORS: the one-line summary
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:906
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:909
 msgid "GNOME Shell Extension"
 msgstr "Extensiones de la Shell de GNOME"
 
