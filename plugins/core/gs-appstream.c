@@ -1200,13 +1200,19 @@ gs_appstream_count_component_for_groups (GsPlugin *plugin, XbSilo *silo, const g
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GError) error_local = NULL;
 
-	if (g_strv_length (split) != 2)
+	if (g_strv_length (split) == 1) { /* "all" group for a parent category */
+		xpath = g_strdup_printf ("components/component/categories/"
+					 "category[text()='%s']/../..",
+					 split[0]);
+	} else if (g_strv_length (split) == 2) {
+		xpath = g_strdup_printf ("components/component/categories/"
+					 "category[text()='%s']/../"
+					 "category[text()='%s']/../..",
+					 split[0], split[1]);
+	} else {
 		return 0;
+	}
 
-	xpath = g_strdup_printf ("components/component/categories/"
-				 "category[text()='%s']/../"
-				 "category[text()='%s']/../..",
-				 split[0], split[1]);
 	array = xb_silo_query (silo, xpath, limit, &error_local);
 	if (array == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
@@ -1235,14 +1241,16 @@ gs_appstream_add_categories (GsPlugin *plugin,
 		for (guint i = 0; i < children->len; i++) {
 			GsCategory *cat = g_ptr_array_index (children, i);
 			GPtrArray *groups = gs_category_get_desktop_groups (cat);
-			if (g_strcmp0 (gs_category_get_id (cat), "all") == 0)
-				continue;
 			for (guint k = 0; k < groups->len; k++) {
 				const gchar *group = g_ptr_array_index (groups, k);
 				guint cnt = gs_appstream_count_component_for_groups (plugin, silo, group);
 				for (guint l = 0; l < cnt; l++) {
 					gs_category_increment_size (parent);
-					gs_category_increment_size (cat);
+					if (children->len > 1) {
+						/* Parent category has multiple groups, so increment
+						 * each group's size too */
+						gs_category_increment_size (cat);
+					}
 				}
 			}
 		}
