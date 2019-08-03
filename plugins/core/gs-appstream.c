@@ -1223,10 +1223,10 @@ gs_appstream_count_component_for_groups (GsPlugin *plugin, XbSilo *silo, const g
  * applications available in each category */
 gboolean
 gs_appstream_add_categories (GsPlugin *plugin,
-				  XbSilo *silo,
-				  GPtrArray *list,
-				  GCancellable *cancellable,
-				  GError **error)
+			     XbSilo *silo,
+			     GPtrArray *list,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	for (guint j = 0; j < list->len; j++) {
 		GsCategory *parent = GS_CATEGORY (g_ptr_array_index (list, j));
