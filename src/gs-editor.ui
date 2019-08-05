@@ -66,7 +66,6 @@
               <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="border_width">24</property>
                 <property name="hscrollbar_policy">never</property>
                 <child>
                   <object class="GtkViewport">
@@ -75,12 +74,13 @@
                     <child>
                       <object class="GtkFlowBox" id="flowbox_main">
                         <property name="visible">True</property>
-                        <property name="halign">start</property>
+                        <property name="halign">center</property>
                         <property name="valign">start</property>
+                        <property name="border_width">24</property>
                         <property name="homogeneous">True</property>
                         <property name="column_spacing">12</property>
                         <property name="row_spacing">12</property>
-                        <property name="min_children_per_line">4</property>
+                        <property name="min_children_per_line">1</property>
                         <property name="max_children_per_line">4</property>
                         <property name="selection_mode">none</property>
                       </object>
