@@ -8,6 +8,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "gs-fwupd-app.h"
 
@@ -119,12 +120,68 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 		gs_app_remove_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION);
 }
 
+static gchar *
+gs_fwupd_release_get_name (FwupdRelease *release)
+{
+	const gchar *name = fwupd_release_get_name (release);
+	GPtrArray *cats = fwupd_release_get_categories (release);
+
+	for (guint i = 0; i < cats->len; i++) {
+		const gchar *cat = g_ptr_array_index (cats, i);
+		if (g_strcmp0 (cat, "X-Device") == 0) {
+			/* TRANSLATORS: a specific part of hardware,
+			 * the first %s is the device name, e.g. 'Unifying Receiver` */
+			return g_strdup_printf (_("%s Device"), name);
+		}
+		if (g_strcmp0 (cat, "X-System") == 0) {
+			/* TRANSLATORS: the entire system, e.g. all internal devices,
+			 * the first %s is the device name, e.g. 'ThinkPad P50` */
+			return g_strdup_printf (_("%s System"), name);
+		}
+		if (g_strcmp0 (cat, "X-EmbeddedController") == 0) {
+			/* TRANSLATORS: the EC is typically the keyboard controller chip,
+			 * the first %s is the device name, e.g. 'ThinkPad P50` */
+			return g_strdup_printf (_("%s Embedded Controller"), name);
+		}
+		if (g_strcmp0 (cat, "X-ManagementEngine") == 0) {
+			/* TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
+			 * the first %s is the device name, e.g. 'ThinkPad P50` */
+			return g_strdup_printf (_("%s ME"), name);
+		}
+		if (g_strcmp0 (cat, "X-CorporateManagementEngine") == 0) {
+			/* TRANSLATORS: ME stands for Management Engine (with Intel AMT),
+			 * where the first %s is the device name, e.g. 'ThinkPad P50` */
+			return g_strdup_printf (_("%s Corporate ME"), name);
+		}
+		if (g_strcmp0 (cat, "X-ConsumerManagementEngine") == 0) {
+			/* TRANSLATORS: ME stands for Management Engine, where
+			 * the first %s is the device name, e.g. 'ThinkPad P50` */
+			return g_strdup_printf (_("%s Consumer ME"), name);
+		}
+		if (g_strcmp0 (cat, "X-Controller") == 0) {
+			/* TRANSLATORS: the controller is a device that has other devices
+			 * plugged into it, for example ThunderBolt, FireWire or USB,
+			 * the first %s is the device name, e.g. 'Intel ThunderBolt` */
+			return g_strdup_printf (_("%s Controller"), name);
+		}
+		if (g_strcmp0 (cat, "X-ThunderboltController") == 0) {
+			/* TRANSLATORS: the Thunderbolt controller is a device that
+			 * has other high speed Thunderbolt devices plugged into it;
+			 * the first %s is the system name, e.g. 'ThinkPad P50` */
+			return g_strdup_printf (_("%s Thunderbolt Controller"), name);
+		}
+	}
+
+	/* default fallback */
+	return g_strdup (name);
+}
+
 void
 gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 {
 	if (fwupd_release_get_name (rel) != NULL) {
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 fwupd_release_get_name (rel));
+		g_autofree gchar *tmp = gs_fwupd_release_get_name (rel);
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, tmp);
 	}
 	if (fwupd_release_get_summary (rel) != NULL) {
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
