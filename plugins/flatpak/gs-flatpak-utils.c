@@ -206,3 +206,17 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	/* success */
 	return g_steal_pointer (&app);
 }
+
+char *
+gs_flatpak_app_source_resolve_default_arch (const gchar *source)
+{
+	g_auto(GStrv) split = NULL;
+	const gchar *arch;
+
+	split = g_strsplit (source, "//", -1);
+	if (g_strv_length (split) != 2)
+		return NULL;
+
+	arch = flatpak_get_default_arch();
+	return g_build_filename (split[0], arch, split[1], NULL);
+}
