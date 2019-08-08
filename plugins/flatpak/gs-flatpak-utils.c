@@ -210,13 +210,13 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 char *
 gs_flatpak_app_source_resolve_default_arch (const gchar *source)
 {
-	g_auto(GStrv) split = NULL;
-	const gchar *arch;
+	g_auto(GStrv) split = g_strsplit (source, "/", -1);
 
-	split = g_strsplit (source, "//", -1);
-	if (g_strv_length (split) != 2)
+	if (g_strv_length (split) != 4)
 		return NULL;
 
-	arch = flatpak_get_default_arch();
-	return g_build_filename (split[0], arch, split[1], NULL);
+	if (strlen (split[2]) != 0)
+		return NULL;
+
+	return g_strjoin ("/", split[0], split[1], flatpak_get_default_arch (), split[3], NULL);
 }
