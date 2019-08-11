@@ -7,8 +7,8 @@
 msgid ""
 msgstr "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-07-18 10:57+0000\n"
-"PO-Revision-Date: 2019-07-25 12:00+0100\n"
+"POT-Creation-Date: 2019-08-06 15:36+0000\n"
+"PO-Revision-Date: 2019-08-11 12:00+0100\n"
 "Last-Translator: Asier Sarasua Garmendia <asier.sarasua@gmail.com>\n"
 "Language-Team: Basque <librezale@librezale.eus>\n"
 "Language: eu\n"
@@ -63,11 +63,11 @@ msgstr "Eguneraketen xehetasunak"
 msgid "The GNOME Project"
 msgstr "GNOME proiektua"
 
-#: data/org.gnome.software.external-appstream.policy.in:11
+#: data/org.gnome.software.external-appstream.policy.in.in:11
 msgid "Install an appstream file into a system location"
 msgstr "Instalatu appstream fitxategi bat sistemaren kokaleku batean"
 
-#: data/org.gnome.software.external-appstream.policy.in:12
+#: data/org.gnome.software.external-appstream.policy.in.in:12
 msgid "Installing an appstream file into a system location"
 msgstr "Appstream fitxategi bat sistemaren kokaleku batean instalatzen"
 
@@ -169,93 +169,97 @@ msgid "The last update timestamp"
 msgstr "Azken eguneraketaren denbora-zigilua"
 
 #: data/org.gnome.software.gschema.xml:68
+msgid "The last timestamp when the system was online and got any updates"
+msgstr "Sistema linean egon zen eta eguneratzeak jaso zituen azken unearen data-zigilua"
+
+#: data/org.gnome.software.gschema.xml:72
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr "Adina segundotan pantaila-argazkia oraindik baliozkoa den egiaztatzeko"
 
-#: data/org.gnome.software.gschema.xml:69
+#: data/org.gnome.software.gschema.xml:73
 msgid ""
 "Choosing a larger value will mean less round-trips to the remote server but "
 "updates to the screenshots may take longer to show to the user. A value of 0 "
 "means to never check the server if the image already exists in the cache."
 msgstr "Balio handiagoa aukeratzean, gutxiagotan atzituko da urruneko zerbitzaria, baina pantaila-argazkien eguneraketak denbora gehiago beharko du erabiltzaileari erakusteko. Irudia cachean gordeta dagoenean zerbitzaria inoiz ez begiratzeko adierazten du 0 balioak."
 
-#: data/org.gnome.software.gschema.xml:78
+#: data/org.gnome.software.gschema.xml:82
 msgid "The server to use for application reviews"
 msgstr "Aplikazioen berrikuspenetan erabiliko den zerbitzaria"
 
-#: data/org.gnome.software.gschema.xml:82
+#: data/org.gnome.software.gschema.xml:86
 msgid "The minimum karma score for reviews"
 msgstr "Gutxieneko karmaren puntuazioa berrikuspenetan"
 
-#: data/org.gnome.software.gschema.xml:83
+#: data/org.gnome.software.gschema.xml:87
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Zenbaki hau baino baxuagoko karma dutenen berrikuspenak ez dira bistaratuko."
 
-#: data/org.gnome.software.gschema.xml:87
+#: data/org.gnome.software.gschema.xml:91
 msgid "A list of official repositories that should not be considered 3rd party"
 msgstr "Hirugarrentzat hartuko ez diren biltegi ofizialen zerrenda"
 
-#: data/org.gnome.software.gschema.xml:91
+#: data/org.gnome.software.gschema.xml:95
 msgid "A list of official repositories that should be considered free software"
 msgstr "Software libretzat hartuko diren biltegi ofizialen zerrenda"
 
-#: data/org.gnome.software.gschema.xml:95
+#: data/org.gnome.software.gschema.xml:99
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr "Lizentziaren URLa aplikazio bat software libretzat hartzen denean erabiltzeko"
 
-#: data/org.gnome.software.gschema.xml:99
+#: data/org.gnome.software.gschema.xml:103
 msgid "Install bundled applications for all users on the system where possible"
 msgstr "Instalatu paketatutako aplikazioak sistemaren erabiltzaile guztientzako, posible denean"
 
-#: data/org.gnome.software.gschema.xml:103
+#: data/org.gnome.software.gschema.xml:107
 msgid "Show the folder management UI"
 msgstr "Erakutsi karpeten kudeaketaren UIa"
 
-#: data/org.gnome.software.gschema.xml:107
+#: data/org.gnome.software.gschema.xml:111
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Baimendu software-biltegien elkarrizketa-koadroa atzitzea"
 
-#: data/org.gnome.software.gschema.xml:111
+#: data/org.gnome.software.gschema.xml:115
 msgid "Offer upgrades for pre-releases"
 msgstr "Eskaini aurre-argitalpenen bertsio-berritzea"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:119
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr "Erakutsi UI elementu batzuk erabiltzaileari aplikazio bat librea ez dela jakinaraziz"
 
-#: data/org.gnome.software.gschema.xml:119
+#: data/org.gnome.software.gschema.xml:123
 msgid "Show the prompt to install nonfree software repositories"
 msgstr "Galdetu libreak ez diren software-biltegiak instalatu nahi diren"
 
-#: data/org.gnome.software.gschema.xml:123
+#: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr "Erakutsi aplikazioen instalatutako tamaina instalatutako aplikazioen zerrendan"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:131
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://eu.wikipedia.org/wiki/Software_jabedun'"
 
-#: data/org.gnome.software.gschema.xml:128
+#: data/org.gnome.software.gschema.xml:132
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "Libreak ez diren eta jabedun motako softwareak azaltzen duen URIa"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:136
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
 msgstr "Appstream fitxategietara zuzentzen dituzten URLen zerrenda aplikazioen informazioen karpetara deskargatzeko"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:140
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr "Instalatu AppStream fitxategiak sistemaren kokaleku batean erabiltzaile guztientzako"
 
-#: data/org.gnome.software.gschema.xml:140
+#: data/org.gnome.software.gschema.xml:144
 msgid "Enable GNOME Shell extensions repository"
 msgstr "Gaitu GNOME Shell hedapenen biltegia"
 
-#: data/org.gnome.software.gschema.xml:147
+#: data/org.gnome.software.gschema.xml:151
 msgid "A string storing the gnome-online-account id used to login"
 msgstr "Saioa hasteko gnome-online-account IDa gordetzen duen kate bat"
 
@@ -273,7 +277,7 @@ msgstr "Hautatu dena"
 
 #: src/gnome-software.ui:16
 msgid "Select None"
-msgstr "Hautatu bat ere ez"
+msgstr "Ez hautatu ezer"
 
 #: src/gnome-software.ui:38
 msgid "_Software Repositories"
@@ -293,8 +297,8 @@ msgstr "Joan atzera"
 
 #. Translators: A label for a button to show all available software.
 #: src/gnome-software.ui:100
-msgid "_All"
-msgstr "_Denak"
+msgid "_Explore"
+msgstr "Es_ploratu"
 
 #. Translators: A label for a button to show only software which is already installed.
 #: src/gnome-software.ui:123
@@ -312,7 +316,7 @@ msgstr "Bilatu"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:276 src/gs-app-row.c:293 src/gs-details-page.ui:838
+#: src/gnome-software.ui:276 src/gs-app-row.c:293 src/gs-details-page.ui:841
 msgid "Source"
 msgstr "Iturburua"
 
@@ -384,7 +388,7 @@ msgid "Folder Name"
 msgstr "Karpetaren izena"
 
 #: src/gs-app-folder-dialog.c:307 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.ui:243 src/gs-editor.c:609 src/gs-editor.c:641
+#: src/gs-details-page.ui:243 src/gs-editor.c:729 src/gs-editor.c:762
 #: src/gs-installed-page.c:598 src/gs-removal-dialog.ui:32
 #: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
@@ -731,7 +735,7 @@ msgstr "Gaitu eta instalatu"
 msgid "Detailed errors from the package manager follow:"
 msgstr "Pakete-kudeatzaileak emandako erroreen xehetasunak:"
 
-#: src/gs-common.c:454 src/gs-details-page.ui:435
+#: src/gs-common.c:454 src/gs-details-page.ui:438
 msgid "Details"
 msgstr "Xehetasunak"
 
@@ -1354,13 +1358,13 @@ msgstr "Kentzen…"
 #. * bar to inform the user that the app should be installed soon
 #: src/gs-details-page.c:334
 msgid "Pending installation…"
-msgstr "Zain dagoen instalazioa..."
+msgstr "Zain dagoen instalazioa…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
 #: src/gs-details-page.c:341
 msgid "Pending update…"
-msgstr "Zain dagoen eguneraketa..."
+msgstr "Zain dagoen eguneraketa…"
 
 #. TRANSLATORS: this is the warning box
 #: src/gs-details-page.c:665
@@ -1529,7 +1533,7 @@ msgstr "Altua"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1255 src/gs-details-page.ui:958 src/gs-review-row.c:57
+#: src/gs-details-page.c:1255 src/gs-details-page.ui:961 src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "Ezezaguna"
 
@@ -1538,41 +1542,41 @@ msgstr "Ezezaguna"
 msgid "You need internet access to write a review"
 msgstr "Interneterako sarbidea behar duzu berrikuspena idazteko"
 
-#: src/gs-details-page.c:1774 src/gs-details-page.c:1790
+#: src/gs-details-page.c:1777 src/gs-details-page.c:1793
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Ezin da \"%s” aurkitu"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2353
+#: src/gs-details-page.c:2356
 msgid "Public domain"
 msgstr "Domeinu Publikoa"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2356
+#: src/gs-details-page.c:2359
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://eu.wikipedia.org/wiki/Software_jabedun"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2363
+#: src/gs-details-page.c:2366
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2373 src/gs-details-page.ui:1202
+#: src/gs-details-page.c:2376 src/gs-details-page.ui:1205
 msgid "Free Software"
 msgstr "Software librea"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2430
+#: src/gs-details-page.c:2433
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Erabiltzaileak honako lizentziarekin lotuta daude:"
 msgstr[1] "Erabiltzaileak honako lizentziekin lotuta daude:"
 
-#: src/gs-details-page.c:2457 src/gs-details-page.ui:1274
+#: src/gs-details-page.c:2460 src/gs-details-page.ui:1277
 msgid "More information"
 msgstr "Informazio gehiago"
 
@@ -1594,257 +1598,266 @@ msgid "_Add shortcut"
 msgstr "_Gehitu lasterbidea"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:280
+#: src/gs-details-page.ui:283
 msgid "Re_move shortcut"
 msgstr "_Kendu lasterbidea"
 
-#: src/gs-details-page.ui:354
+#: src/gs-details-page.ui:357
 msgid "No screenshot provided"
 msgstr "Ez da pantaila-argazkirik eman"
 
-#: src/gs-details-page.ui:374
+#: src/gs-details-page.ui:377
 msgid "Software Repository Included"
 msgstr "Software-biltegia sartu da"
 
-#: src/gs-details-page.ui:375
+#: src/gs-details-page.ui:378
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
 msgstr "Aplikazio honek software-biltegi bat du eguneraketak eskaintzeko, bai eta beste software batzuetarako sarbidea emateko ere."
 
-#: src/gs-details-page.ui:382
+#: src/gs-details-page.ui:385
 msgid "No Software Repository Included"
 msgstr "Ez da software-biltegia sartu"
 
-#: src/gs-details-page.ui:383
+#: src/gs-details-page.ui:386
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr "Aplikazio honek ez du software-biltegirik sartzen. Ez da eguneratuko bertsio berriak daudenean."
 
-#: src/gs-details-page.ui:391
+#: src/gs-details-page.ui:394
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr "Uneko banaketak jadanik software hau hau dauka, eta ez litzateke ordeztu behar."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:398
+#: src/gs-details-page.ui:401
 msgid "Software Repository Identified"
 msgstr "Software-biltegia identifikatu da"
 
-#: src/gs-details-page.ui:399
+#: src/gs-details-page.ui:402
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr "Software-biltegi hau gehitzean, beste software batzuk eta bertsio-berritze gehigarriak eskuratuko dituzu."
 
-#: src/gs-details-page.ui:400
+#: src/gs-details-page.ui:403
 msgid "Only use software repositories that you trust."
 msgstr "Erabili zuretzat fidagarriak diren software-biltegiak soilik."
 
-#: src/gs-details-page.ui:410
+#: src/gs-details-page.ui:413
 msgid "_Website"
 msgstr "_Webgunea"
 
-#: src/gs-details-page.ui:419
+#: src/gs-details-page.ui:422
 msgid "_Donate"
 msgstr "_Eman dirua"
 
-#: src/gs-details-page.ui:529
+#: src/gs-details-page.ui:532
 msgid "Localized in your Language"
 msgstr "Zure hizkuntzara itzulita"
 
-#: src/gs-details-page.ui:540
+#: src/gs-details-page.ui:543
 msgid "Documentation"
 msgstr "Dokumentazioa"
 
-#: src/gs-details-page.ui:551
+#: src/gs-details-page.ui:554
 msgid "Release Activity"
 msgstr "Argitalpenaren jarduera"
 
-#: src/gs-details-page.ui:562
+#: src/gs-details-page.ui:565
 msgid "System Integration"
 msgstr "Sistemaren integrazioa"
 
-#: src/gs-details-page.ui:573
+#: src/gs-details-page.ui:576
 msgid "Sandboxed"
 msgstr "Isolatua"
 
-#: src/gs-details-page.ui:593
+#: src/gs-details-page.ui:596
 msgid "Version"
 msgstr "Bertsioa"
 
-#: src/gs-details-page.ui:629
+#: src/gs-details-page.ui:632
 msgid "Age Rating"
 msgstr "Balorazioa adinaren arabera"
 
-#: src/gs-details-page.ui:667 src/gs-details-page.ui:1360
+#: src/gs-details-page.ui:670 src/gs-details-page.ui:1363
 msgid "Permissions"
 msgstr "Baimenak"
 
-#: src/gs-details-page.ui:705
+#: src/gs-details-page.ui:708
 msgid "Updated"
 msgstr "Eguneratuta"
 
-#: src/gs-details-page.ui:739
+#: src/gs-details-page.ui:742
 msgid "Category"
 msgstr "Kategoria"
 
-#: src/gs-details-page.ui:776
+#: src/gs-details-page.ui:779
 msgid "Installed Size"
 msgstr "Instalatutako tamaina"
 
-#: src/gs-details-page.ui:807
+#: src/gs-details-page.ui:810
 msgid "Download Size"
 msgstr "Deskargaren tamaina"
 
-#: src/gs-details-page.ui:869
+#: src/gs-details-page.ui:872
 msgid "Developer"
 msgstr "Garatzailea"
 
-#: src/gs-details-page.ui:915
+#: src/gs-details-page.ui:918
 msgid "License"
 msgstr "Lizentzia"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:934
+#: src/gs-details-page.ui:937
 msgid "Free"
 msgstr "Librea"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:946
+#: src/gs-details-page.ui:949
 msgid "Proprietary"
 msgstr "Pribatua"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:996 src/gs-installed-page.c:478
+#: src/gs-details-page.ui:999 src/gs-installed-page.c:478
 #: plugins/core/gs-desktop-common.c:317
 msgid "Add-ons"
 msgstr "Gehigarriak"
 
-#: src/gs-details-page.ui:1008
+#: src/gs-details-page.ui:1011
 msgid "Selected add-ons will be installed with the application."
 msgstr "Hautatutako gehigarriak aplikazioarekin instalatuko dira."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1046
+#: src/gs-details-page.ui:1049
 msgid "Reviews"
 msgstr "Berrikuspenak"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1064
+#: src/gs-details-page.ui:1067
 msgid "_Write a Review"
 msgstr "_Idatzi berrikuspena"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1085
+#: src/gs-details-page.ui:1088
 msgid "_Show More"
 msgstr "Erakutsi _gehiago"
 
-#: src/gs-details-page.ui:1213
+#: src/gs-details-page.ui:1216
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
 msgstr "Softwarea libreki exekutatu, kopiatu, banatu, ikertu eta eraldatu daitekeela adierazten du."
 
-#: src/gs-details-page.ui:1253
+#: src/gs-details-page.ui:1256
 msgid "Proprietary Software"
 msgstr "Software jabeduna"
 
-#: src/gs-details-page.ui:1264
+#: src/gs-details-page.ui:1267
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
 "accessed."
 msgstr "Horrek esan nahi du softwarearen jabea banakako bat edo enpresa bat dela. Murriztapen asko egon ohi dira hura erabiltzeko, eta bere kode-iturburua ezin ohi da atzitu."
 
-#: src/gs-details-page.ui:1296
+#: src/gs-details-page.ui:1299
 msgid "Unknown Software License"
 msgstr "Softwarearen lizentzia ezezaguna"
 
-#: src/gs-details-page.ui:1307
+#: src/gs-details-page.ui:1310
 msgid "The license terms of this software are unknown."
 msgstr "Software honen lizentziaren terminoak ezezagunak dira."
 
-#: src/gs-details-page.ui:1327
+#: src/gs-details-page.ui:1330
 msgid "The application was rated this way because it features:"
 msgstr "Aplikazioa honela baloratu da, ezaugarri hauek dituelako:"
 
-#: src/gs-details-page.ui:1341
+#: src/gs-details-page.ui:1344
 msgid "No details were available for this rating."
 msgstr "Ez dago balorazio honen xehetasunik eskuragarri."
 
-#: src/gs-editor.c:347
+#. TRANSLATORS: error dialog title
+#: src/gs-editor.c:152
+msgid "Failed to load components"
+msgstr "Huts egin du osagaiak kargatzeak"
+
+#: src/gs-editor.c:378
 msgid "CSS validated OK!"
 msgstr "CSSa egiaztatuta. Ongi!"
 
 #. TRANSLATORS: error dialog title
-#: src/gs-editor.c:550
+#: src/gs-editor.c:645 src/gs-editor.c:660
 msgid "Failed to load file"
 msgstr "Huts egin du fitxategia kargatzean"
 
 #. TRANSLATORS: window title
-#: src/gs-editor.c:584 src/gs-editor.c:860
+#: src/gs-editor.c:704 src/gs-editor.c:1052
 msgid "Unsaved changes"
 msgstr "Gorde gabeko aldaketak"
 
-#: src/gs-editor.c:586
+#: src/gs-editor.c:706
 msgid "The application list is already loaded."
 msgstr "Aplikazioen zerrenda jadanik kargatuta dago."
 
 #. TRANSLATORS: button text
-#: src/gs-editor.c:590
+#: src/gs-editor.c:710
 msgid "Merge documents"
 msgstr "Batu dokumentuak"
 
 #. TRANSLATORS: button text
-#: src/gs-editor.c:594 src/gs-editor.c:865
+#: src/gs-editor.c:714 src/gs-editor.c:1057
 msgid "Throw away changes"
 msgstr "Baztertu aldaketak"
 
 #. import the new file
-#: src/gs-editor.c:606 src/gs-editor.c:638
+#: src/gs-editor.c:726
 msgid "Open AppStream File"
 msgstr "Ireki AppStream fitxategia"
 
-#: src/gs-editor.c:610
+#: src/gs-editor.c:730
 msgid "_Open"
 msgstr "_Ireki"
 
-#: src/gs-editor.c:642
+#: src/gs-editor.c:759
+msgid "Save AppStream File"
+msgstr "Gorde AppStream fitxategia"
+
+#: src/gs-editor.c:763
 msgid "_Save"
 msgstr "_Gorde"
 
 #. TRANSLATORS: error dialog title
-#: src/gs-editor.c:662
+#: src/gs-editor.c:784
 msgid "Failed to save file"
 msgstr "Huts egin du fitxategia gordetzean"
 
 #. TRANSLATORS, the %s is the app name, e.g. 'Inkscape'
-#: src/gs-editor.c:737
+#: src/gs-editor.c:854
 #, c-format
 msgid "%s banner design deleted."
 msgstr "“%s“(r)en iragarkiaren diseinua ezabatuta."
 
 #. TRANSLATORS, this is a notification
-#: src/gs-editor.c:740
+#: src/gs-editor.c:857
 msgid "Banner design deleted."
 msgstr "Iragarkiaren diseinua ezabatuta."
 
-#: src/gs-editor.c:862
+#: src/gs-editor.c:1054
 msgid "The application list has unsaved changes."
 msgstr "Aplikazioen zerrendak gorde gabeko aldaketak ditu."
 
 #. TRANSLATORS: show the program version
-#: src/gs-editor.c:1096
+#: src/gs-editor.c:1285
 msgid "Use verbose logging"
 msgstr "Erabili erregistro xehea"
 
 #. TRANSLATORS: program name, an application to add and remove software repositories
-#: src/gs-editor.c:1104
+#: src/gs-editor.c:1293
 msgid "GNOME Software Banner Designer"
 msgstr "GNOMEko Softwaren iragarkien diseinatzailea"
 
@@ -2501,14 +2514,14 @@ msgstr "_Gaitu"
 #. steps are required
 #: src/gs-repo-row.c:105
 msgid "_Remove…"
-msgstr "_Kendu..."
+msgstr "_Kendu…"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for disabling a repo. The ellipsis indicates that further
 #. steps are required
 #: src/gs-repo-row.c:110
 msgid "_Disable…"
-msgstr "_Desgaitu..."
+msgstr "_Desgaitu…"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being enabled
@@ -3310,7 +3323,7 @@ msgid "View"
 msgstr "Ikusi"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:218
+#: src/gs-update-monitor.c:228
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3318,7 +3331,7 @@ msgstr[0] "Aplikazio %u eguneratu da — Beharrezkoa da berrabiaraztea"
 msgstr[1] "%u aplikazio eguneratu dira — Beharrezkoa da berrabiaraztea"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:224
+#: src/gs-update-monitor.c:234
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3326,24 +3339,24 @@ msgstr[0] "%u aplikazio eguneratu da"
 msgstr[1] "%u aplikazio eguneratu da"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:235
+#: src/gs-update-monitor.c:245
 #, c-format
 msgid "%s has been updated."
 msgstr "%s eguneratu da."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:238
+#: src/gs-update-monitor.c:248
 msgid "Please restart the application."
 msgstr "Berrabiarazi aplikazioa."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:246
+#: src/gs-update-monitor.c:256
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s eta %s eguneratu dira."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:252 src/gs-update-monitor.c:271
+#: src/gs-update-monitor.c:262 src/gs-update-monitor.c:281
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3351,69 +3364,69 @@ msgstr[0] "%u aplikazioak berrabiaraztea behar du."
 msgstr[1] "%u aplikazio instalatuta"
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:264
+#: src/gs-update-monitor.c:274
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "%s, %s eta %s barne hartzen ditu."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:505 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:515 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Sistema Eragilearen eguneraketak eskuragaitz"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:507
+#: src/gs-update-monitor.c:517
 msgid "Upgrade to continue receiving security updates."
 msgstr "Bertsio-berritu segurtasun-eguneraketak jasotzen jarraitzeko."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:562
+#: src/gs-update-monitor.c:572
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s(r)en bertsio berria eskuragarri dago instalatzeko"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:566
+#: src/gs-update-monitor.c:576
 msgid "Software Upgrade Available"
 msgstr "Software-eguneraketak eskuragarri"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:955
+#: src/gs-update-monitor.c:965
 msgid "Software Updates Failed"
 msgstr "Huts egin du softwareak eguneratzean"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:957
+#: src/gs-update-monitor.c:967
 msgid "An important OS update failed to be installed."
 msgstr "Huts egin du SEren eguneraketa garrantzitsu bat instalatzean."
 
-#: src/gs-update-monitor.c:958
+#: src/gs-update-monitor.c:968
 msgid "Show Details"
 msgstr "Erakutsi xehetasunak"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:981
+#: src/gs-update-monitor.c:991
 msgid "System Upgrade Complete"
 msgstr "Sistemaren eguneraketa osatu da"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:986
+#: src/gs-update-monitor.c:996
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Ongi etorri %s %s sistemara!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:992
+#: src/gs-update-monitor.c:1002
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Softwarearen eguneraketa instalatuta"
 msgstr[1] "Software-eguneraketak instalatuta"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:996
+#: src/gs-update-monitor.c:1006
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "SEren eguneraketa garrantzitsu bat instalatu da."
@@ -3424,50 +3437,50 @@ msgstr[1] "SEren eguneraketa garrantzitsuak instalatu dira."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1007
+#: src/gs-update-monitor.c:1017
 msgctxt "updates"
 msgid "Review"
 msgstr "Berrikuspena"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1055
+#: src/gs-update-monitor.c:1065
 msgid "Failed To Update"
 msgstr "Huts egin du eguneratzean"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1061
+#: src/gs-update-monitor.c:1071
 msgid "The system was already up to date."
 msgstr "Sistema jadanik eguneratuta dago."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1066
+#: src/gs-update-monitor.c:1076
 msgid "The update was cancelled."
 msgstr "Eguneraketa bertan behera utzi da."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1072
+#: src/gs-update-monitor.c:1082
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr "Interneteko sarbidea behar da, baina ez dago erabilgarri. Ziurtatu Interneterako sarbidea duzula eta saiatu berriro."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1078
+#: src/gs-update-monitor.c:1088
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr "Segurtasun-arazoak daude eguneraketarekin. Kontsultatu softwarearen hornitzailearekin xehetasun gehiagorako."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1084
+#: src/gs-update-monitor.c:1094
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Ez dago nahikoa leku librerik. Askatu leku pixka bat eta saiatu berriro."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1089
+#: src/gs-update-monitor.c:1099
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3605,7 +3618,7 @@ msgstr "Interneterako sarbidea behar da eguneraketak egiaztatzeko."
 #. This label indicates that the update check is in progress
 #: src/gs-updates-page.c:1340
 msgid "Checking…"
-msgstr "Egiaztatzen..."
+msgstr "Egiaztatzen…"
 
 #: src/gs-updates-page.c:1353
 msgid "Check for updates"
@@ -4239,10 +4252,68 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak Linuxeko mahaigaineko aplikazioen lan-marko bat da"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:830
+#: plugins/flatpak/gs-flatpak.c:832
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Flatpak-eko %s(r)en meta-datuak eskuratzen…"
+
+#. TRANSLATORS: a specific part of hardware,
+#. * the first %s is the device name, e.g. 'Unifying Receiver`
+#: plugins/fwupd/gs-fwupd-app.c:134
+#, c-format
+msgid "%s Device"
+msgstr "%s gailua"
+
+#. TRANSLATORS: the entire system, e.g. all internal devices,
+#. * the first %s is the device name, e.g. 'ThinkPad P50`
+#: plugins/fwupd/gs-fwupd-app.c:139
+#, c-format
+msgid "%s System"
+msgstr "%s sistema"
+
+#. TRANSLATORS: the EC is typically the keyboard controller chip,
+#. * the first %s is the device name, e.g. 'ThinkPad P50`
+#: plugins/fwupd/gs-fwupd-app.c:144
+#, c-format
+msgid "%s Embedded Controller"
+msgstr "%s kontrolagailu kapsulatua"
+
+#. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
+#. * the first %s is the device name, e.g. 'ThinkPad P50`
+#: plugins/fwupd/gs-fwupd-app.c:149
+#, c-format
+msgid "%s ME"
+msgstr "%s kudeaketa-motorra"
+
+#. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
+#. * where the first %s is the device name, e.g. 'ThinkPad P50`
+#: plugins/fwupd/gs-fwupd-app.c:154
+#, c-format
+msgid "%s Corporate ME"
+msgstr "%s kudeakteta-motor korporatiboa"
+
+#. TRANSLATORS: ME stands for Management Engine, where
+#. * the first %s is the device name, e.g. 'ThinkPad P50`
+#: plugins/fwupd/gs-fwupd-app.c:159
+#, c-format
+msgid "%s Consumer ME"
+msgstr "%s kontsumitzaileentzako kudeaketa-motorra"
+
+#. TRANSLATORS: the controller is a device that has other devices
+#. * plugged into it, for example ThunderBolt, FireWire or USB,
+#. * the first %s is the device name, e.g. 'Intel ThunderBolt`
+#: plugins/fwupd/gs-fwupd-app.c:165
+#, c-format
+msgid "%s Controller"
+msgstr "%s kontrolagailua"
+
+#. TRANSLATORS: the Thunderbolt controller is a device that
+#. * has other high speed Thunderbolt devices plugged into it;
+#. * the first %s is the system name, e.g. 'ThinkPad P50`
+#: plugins/fwupd/gs-fwupd-app.c:171
+#, c-format
+msgid "%s Thunderbolt Controller"
+msgstr "%s Thunderbolt kontrolagailua"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:669
@@ -4273,19 +4344,19 @@ msgstr "Mahaigain Irekien Balorazioen Euskarria (ODRS)"
 
 #: plugins/odrs/org.gnome.Software.Plugin.Odrs.metainfo.xml.in:7
 msgid "ODRS is a service providing user reviews of applications"
-msgstr "ODRS-ek erabiltzaileei aplikazioen berrikuspenak egiteko zerbitzua eskaintzen die"
+msgstr "ODRSk erabiltzaileei aplikazioen berrikuspenak egiteko zerbitzua eskaintzen die"
 
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:403
 msgid "GNOME Shell Extensions Repository"
 msgstr "GNOME Shell hedapenen biltegia"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:800
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:803
 msgid "Downloading shell extension metadata…"
 msgstr "Shell hedapenen meta-datuak deskargatzen…"
 
 #. TRANSLATORS: the one-line summary
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:906
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:909
 msgid "GNOME Shell Extension"
 msgstr "GNOME Shell hedapena"
 
@@ -4302,985 +4373,3 @@ msgstr "Snap euskarria"
 msgid "A snap is a universal Linux package"
 msgstr "Snap Linuxeko pakete unibertsal bat da"
 
-#~ msgid "Sign In / Register…"
-#~ msgstr "Hasi saioa / erregistratu..."
-
-#~ msgid "Continue"
-#~ msgstr "Jarraitu"
-
-#~ msgid "Use"
-#~ msgstr "Erabili"
-
-#~ msgid "Add another…"
-#~ msgstr "Gehitu beste bat..."
-
-#~ msgid "Are you sure you want to purchase %s?"
-#~ msgstr "Ziur zaude '%s' erostea nahi duzula?"
-
-#~ msgid "%s will be installed, and you will be charged %s."
-#~ msgstr "“%s“ instalatuko da, eta “%s“ kobratuko zaizu."
-
-#~ msgid "Purchase"
-#~ msgstr "Erosi"
-
-#~ msgid "A$%.2f"
-#~ msgstr "%.2f $ A"
-
-#~ msgid "C$%.2f"
-#~ msgstr "%.2f $ K"
-
-#~ msgid "CN¥%.2f"
-#~ msgstr "TX %.2f ¥"
-
-#~ msgid "€%.2f"
-#~ msgstr "%.2f €"
-
-#~ msgid "£%.2f"
-#~ msgstr "%.2f £"
-
-#~ msgid "¥%.2f"
-#~ msgstr "%.2f ¥"
-
-#~ msgid "NZ$%.2f"
-#~ msgstr "%.2f $ ZB"
-
-#~ msgid "₽%.2f"
-#~ msgstr "%.2f ₽"
-
-#~ msgid "US$%.2f"
-#~ msgstr "%.2f $ AEB"
-
-#~ msgid "%s %f"
-#~ msgstr "%2$f %1$s"
-
-#~ msgid "Signed in as %s"
-#~ msgstr "Hasi saioa %s modura"
-
-#~ msgid "Sign in…"
-#~ msgstr "Hasi saioa..."
-
-#~ msgid "Sign out"
-#~ msgstr "Amaitu saioa"
-
-#~ msgid "Unable to purchase %s: authentication was required"
-#~ msgstr "Ezin da %s erosi: autentifikazioa behar da"
-
-#~ msgid "Unable to purchase %s: authentication was invalid"
-#~ msgstr "Ezin da %s erosi: autentifikazioa baliogabea da"
-
-#~ msgid "Unable to purchase %s: no payment method setup"
-#~ msgstr "Ezin da %s erosi: ez da ordainketa modurik konfiguratu"
-
-#~ msgid "Unable to purchase %s: payment was declined"
-#~ msgstr "Ezin da %s erosi: ordainketa bertan behera geratu da"
-
-#~ msgid "Unable to purchase %s"
-#~ msgstr "Ezin da %s erosi"
-
-#~ msgid "To continue, you need to use an Ubuntu One account."
-#~ msgstr "Jarraitzeko, Ubuntu One kontu bat behar duzu."
-
-#~ msgid "To continue, you need to use your Ubuntu One account."
-#~ msgstr "Jarraitzeko, zure Ubuntu One kontua erabili behar duzu."
-
-#~ msgid "system-software-install"
-#~ msgstr "system-software-install"
-
-#~ msgid "Software catalog is being loaded"
-#~ msgstr "Software-katalogoa kargatzen ari da"
-
-#~ msgid "org.gnome.Software"
-#~ msgstr "org.gnome.Software"
-
-#~ msgid "..."
-#~ msgstr "..."
-
-#~ msgid "The list of extra sources that have been previously enabled"
-#~ msgstr "Aurrez gaitu diren iturburu gehigarrien zerrenda "
-
-#~ msgid ""
-#~ "The list of sources that have been previously enabled when installing "
-#~ "third-party applications."
-#~ msgstr ""
-#~ "Aurrez gaitu diren iturburuen zerrenda hirugarrengoen aplikazioak "
-#~ "instalatzean."
-
-#~ msgid "Show non-free software in search results"
-#~ msgstr "Erakutsi libreak ez diren softwareak bilaketetako emaitzetan"
-
-#~ msgid "A list of non-free sources that can be optionally enabled"
-#~ msgstr "Aukeran gaitu daitezkeen iturburu ez-libreen zerrenda "
-
-#~ msgid "Show profiling information for the service"
-#~ msgstr "Erakutsi zerbitzuaren profilaren informazioa"
-
-#~ msgid "To continue you need to sign in to %s."
-#~ msgstr "Jarraitzeko %s(e)n saioa hasi behar duzu."
-
-#~ msgid "Email address"
-#~ msgstr "Helbide elektronikoa"
-
-#~ msgid "I have an account already"
-#~ msgstr "Jadanik badut kontua "
-
-#~ msgid "Password"
-#~ msgstr "Pasahitza"
-
-#~ msgid "I want to register for an account now"
-#~ msgstr "Kontu bat harpidetzea nahi dut orain"
-
-#~ msgid "I have forgotten my password"
-#~ msgstr "Pasahitza ahaztu zait"
-
-#~ msgid "Sign in automatically next time"
-#~ msgstr "Hasi saioa automatikoki hurrengoan"
-
-#~ msgid "Enter your one-time pin for two-factor authentication."
-#~ msgstr ""
-#~ "Sartu zure erabilpen bakarreko pin-a bi-faktoreko autentifikazioarentzako."
-
-#~ msgid "PIN"
-#~ msgstr "PINa"
-
-#~ msgid "Player-to-player preset interactions without chat functionality"
-#~ msgstr ""
-#~ "Jokalaritik-jokalarira aurre-ezarritako elkarreragiketak berriketaren "
-#~ "eginbiderik gabe"
-
-#~ msgid "_About"
-#~ msgstr "Honi _buruz"
-
-#~ msgid "_Quit"
-#~ msgstr "I_rten"
-
-#~ msgid ""
-#~ "Provides access to additional software, including web browsers and games."
-#~ msgstr ""
-#~ "Software gehigarrientzako atzipena eskaintzen du, web arakatzaile eta "
-#~ "jokoak barne."
-
-#~ msgid "Enable Proprietary Software Sources?"
-#~ msgstr "Gaitu software jabedunen iturburua?"
-
-#~ msgid ""
-#~ "Information about %s, as well as options for how to get a codec that can "
-#~ "play this format can be found on the website."
-#~ msgstr ""
-#~ "Bai '%s' buruzko informazioa bai formatu hau erreproduzi dezakeen kodeka "
-#~ "nola eskurat daitekeen buruzko aukerak webgunean aurki daiteke."
-
-#~ msgid "It is not possible to install software until this has been resolved."
-#~ msgstr "Ez da posible softwarea instalatzea hau ebatzi arte."
-
-#~ msgid "For more information, visit %s."
-#~ msgstr "Ikusi %s informazio gehiagorako."
-
-#~ msgid "Unable to update %s from %s"
-#~ msgstr "Ezin da %2$s(e)ndik %1$s eguneratu"
-
-#~ msgid "No applications or addons installed; other software might still be"
-#~ msgstr ""
-#~ "Ez da aplikazio edo gehigarririk instalatu; baliteke bestelako software "
-#~ "bat egotea"
-
-#~ msgid "Typically has restrictions on use and access to source code."
-#~ msgstr ""
-#~ "Murriztapenak eduki ohi ditu erabilpenean eta kode-iturburua atzitzeko."
-
-#~ msgid "Proprietary Software Sources"
-#~ msgstr "Software jabedunen iturburuak"
-
-#~ msgid "Remove Source"
-#~ msgstr "Kendu iturburua"
-
-#~ msgid ""
-#~ "Software sources can be downloaded from the internet. They give you "
-#~ "access to additional software that is not provided by %s."
-#~ msgstr ""
-#~ "Softwareen iturburuak internetetik deskarga daitezke. '%s'(e)k hornitzen "
-#~ "ez dituen software gehigarriak atzitzea eskaintzen dizkizu."
-
-#~ msgid ""
-#~ "Removing a source will also remove any software you have installed from "
-#~ "it."
-#~ msgstr ""
-#~ "Iturburu bat kentzean hortik instalatutako edozer software kentzen da."
-
-#~ msgid "No software installed from this source"
-#~ msgstr "Ez da iturburu honetako softwarerik instalatu"
-
-#~ msgid "Installed from this Source"
-#~ msgstr "Iturburu honetatik instalatuta"
-
-#~ msgid "Source Details"
-#~ msgstr "Iturburuaren xehetasunak"
-
-#~ msgid "Last Checked"
-#~ msgstr "Azken egiaztaketa"
-
-#~ msgid "Added"
-#~ msgstr "Gehituta"
-
-#~ msgid "Website"
-#~ msgstr "Webgunea"
-
-#~ msgid "Downloading new updates…"
-#~ msgstr "Eguneraketa berriak deskargatzen…"
-
-#~ msgid "_Restart & Update"
-#~ msgstr "_Berrabiarazi eta eguneratu"
-
-#~ msgid "U_pdate All"
-#~ msgstr "Eguneratu _dena"
-
-#~ msgid "Restart & _Install"
-#~ msgstr "_Berrabiarazi eta instalatu"
-
-#~| msgid "Setting up updates…"
-#~ msgid "Getting runtime source…"
-#~ msgstr "Exekuzio-denborako iturburuak eskuratzen…"
-
-#~| msgid "Downloading new updates…"
-#~ msgid "Downloading firmware update…"
-#~ msgstr "Firmwarearen eguneraketa deskargatzen…"
-
-#~ msgid "Limba Support"
-#~ msgstr "Limba euskarria"
-
-#~ msgid "Limba provides developers a way to easily create software bundles"
-#~ msgstr ""
-#~ "Limba-k softwareen paketeak erraz sortzeko modu bat eskaintzen die "
-#~ "garatzaileei"
-
-#~| msgid "Downloading new updates…"
-#~ msgid "Downloading application page…"
-#~ msgstr "Aplikazioaren orria deskargatzen…"
-
-#~ msgid "Steam Support"
-#~ msgstr "Steam euskarria"
-
-#~ msgid "The ultimate entertainment platform from Valve"
-#~ msgstr "Valve-ren denbora-pasako erabateko plataforma"
-
-#~ msgid "“%s” [%s]"
-#~ msgstr "“%s” [%s]"
-
-#~ msgctxt "Menu of AudioVideo"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of AudioVideo"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgctxt "Menu of Development"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of Development"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgctxt "Menu of Education and Science"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of Education and Science"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgctxt "Menu of Graphics"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of Graphics"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgctxt "Menu of Office"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of Office"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgctxt "Menu of Communication"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of Communication"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgctxt "Menu of Utility"
-#~ msgid "All"
-#~ msgstr "Denak"
-
-#~ msgctxt "Menu of Utility"
-#~ msgid "Featured"
-#~ msgstr "Nabarmendua"
-
-#~ msgid "About Software"
-#~ msgstr "Softwareari buruz"
-
-#~ msgid " or "
-#~ msgstr " edo "
-
-#~ msgid "A previous update was unfinished."
-#~ msgstr "Aurreko eguneraketa amaitu gabe dago."
-
-#~ msgid ""
-#~ "The update couldn’t be installed; this is often a problem with the update "
-#~ "itself. Please wait for another update and try again."
-#~ msgstr ""
-#~ "Ezin izan da eguneraketa instalatu. Baliteke arazoa eguneraketa beraren "
-#~ "gain egotea. Itxaro beste eguneraketari eta saiatu berriro."
-
-#~ msgid "_Installing"
-#~ msgstr "_Instalatzen"
-
-#~ msgid "_Removing"
-#~ msgstr "_Kentzen"
-
-#~ msgctxt "license"
-#~ msgid "Unknown"
-#~ msgstr "Ezezaguna"
-
-#~ msgctxt "size"
-#~ msgid "Calculating…"
-#~ msgstr "Kalkulatzen…"
-
-#~ msgctxt "size"
-#~ msgid "Unknown"
-#~ msgstr "Ezezaguna"
-
-#~ msgid "Internet Only Application"
-#~ msgstr "Aplikazioa internetekin soilik"
-
-#~ msgid "_History"
-#~ msgstr "_Historia"
-
-#~ msgid "Size"
-#~ msgstr "Tamaina"
-
-#~ msgid "Recommended Office Applications"
-#~ msgstr "Gomendatutako bulegotikako aplikazioak"
-
-#~ msgid "Software sources give you access to additional software."
-#~ msgstr ""
-#~ "Softwareen iturburuek software gehigarriak atzitzea eskaintzen dizute."
-
-#~ msgid "One Star"
-#~ msgstr "Izar bat"
-
-#~ msgid "Two Stars"
-#~ msgstr "Bi izar"
-
-#~ msgid "Three Stars"
-#~ msgstr "Hiru izar"
-
-#~ msgid "Four Stars"
-#~ msgstr "Lau izar"
-
-#~ msgid "Five Stars"
-#~ msgstr "Bost izar"
-
-#~ msgid "Installation of %s failed."
-#~ msgstr "Huts egin du '%s' instalatzean."
-
-#~ msgid "Removal of %s failed."
-#~ msgstr "Huts egin du '%s' kentzean."
-
-#~ msgid "No AppStream data found"
-#~ msgstr "Ez da AppStream-ren daturik aurkitu"
-
-#~ msgid "Audio"
-#~ msgstr "Audioa"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Databases"
-#~ msgstr "Datu-baseak"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Disc Burning"
-#~ msgstr "Disko grabatzaileak"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Ham Radio"
-#~ msgstr "Irrati-amateurra"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "MIDI"
-#~ msgstr "MIDI"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Mixer"
-#~ msgstr "Nahastailea"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Music"
-#~ msgstr "Musika"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Recorders"
-#~ msgstr "Grabatzaileak"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Sequencers"
-#~ msgstr "Sekuentziadoreak"
-
-#~ msgctxt "Menu subcategory of Audio"
-#~ msgid "Tuners"
-#~ msgstr "Sintonizatzaileak"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Building"
-#~ msgstr "Eraikuntza"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Databases"
-#~ msgstr "Datu-baseak"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "IDE"
-#~ msgstr "IDEak"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Profiling"
-#~ msgstr "Profil-tresnak"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Revision Control"
-#~ msgstr "Berrikuspen kontrola"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Translation"
-#~ msgstr "Itzulpengintza"
-
-#~ msgctxt "Menu subcategory of Development Tools"
-#~ msgid "Web Development"
-#~ msgstr "Web garapena"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Biology"
-#~ msgstr "Biologia"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Computer Science"
-#~ msgstr "Konputazio zientifikoa"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Construction"
-#~ msgstr "Eraikuntza"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Data Visualization"
-#~ msgstr "Datuen bisualizazioa"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Economy"
-#~ msgstr "Ekonomia"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Electricity"
-#~ msgstr "Elektrizitatea"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Electronics"
-#~ msgstr "Elektronika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Engineering"
-#~ msgstr "Ingeniaritza"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Geology"
-#~ msgstr "Geologia"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Geoscience"
-#~ msgstr "Lurraren zientziak"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "History"
-#~ msgstr "Historia"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Humanities"
-#~ msgstr "Humanitateak"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Image Processing"
-#~ msgstr "Irudi prozesamendua"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Literature"
-#~ msgstr "Literatura"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Maps"
-#~ msgstr "Mapak"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Music"
-#~ msgstr "Musika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Numerical Analysis"
-#~ msgstr "Zenbakizko analisiak"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Parallel Computing"
-#~ msgstr "Kalkulu paraleloa"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Physics"
-#~ msgstr "Fisika"
-
-#~ msgctxt "Menu subcategory of Education"
-#~ msgid "Spirituality"
-#~ msgstr "Espiritualtasuna"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Shooter"
-#~ msgstr "Tiroketak"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Simulation"
-#~ msgstr "Simulazio-jokoak"
-
-#~ msgctxt "Menu subcategory of Games"
-#~ msgid "Sports"
-#~ msgstr "Kirolak"
-
-#~ msgid "Graphics"
-#~ msgstr "Grafikoak"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "2D Graphics"
-#~ msgstr "2D grafikoak"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "OCR"
-#~ msgstr "Karaktere-ezagutze optikoa"
-
-#~ msgctxt "Menu subcategory of Graphics"
-#~ msgid "Raster Graphics"
-#~ msgstr "Grafiko gordinak"
-
-#~ msgid "Internet"
-#~ msgstr "Internet"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Dialup"
-#~ msgstr "Modema"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Email"
-#~ msgstr "Posta-tresnak"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Feed"
-#~ msgstr "Albiste-irakurlea"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "File Transfer"
-#~ msgstr "Fitxategi-transferentzia"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Ham Radio"
-#~ msgstr "Irrati-amateurra"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Instant Messaging"
-#~ msgstr "Berehalako mezularitza"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "IRC Clients"
-#~ msgstr "IRC bezeroak"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Monitor"
-#~ msgstr "Monitorea"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "P2P"
-#~ msgstr "P2P"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Remote Access"
-#~ msgstr "Urruneko sarbidetza"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Telephony"
-#~ msgstr "Telefonia"
-
-#~ msgctxt "Menu subcategory of Internet"
-#~ msgid "Web Development"
-#~ msgstr "Web garapena"
-
-#~ msgid "Office"
-#~ msgstr "Bulegoa"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Chart"
-#~ msgstr "Diagrama"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Contact Management"
-#~ msgstr "Kontaktu-kudeaketa"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Dictionary"
-#~ msgstr "Hiztegia"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Email"
-#~ msgstr "Posta"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Flow Chart"
-#~ msgstr "Fluxu-diagrama"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "PDA"
-#~ msgstr "PDA"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Photography"
-#~ msgstr "Argazkigintza"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Project Management"
-#~ msgstr "Proiektu-kudeaketa"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Publishing"
-#~ msgstr "Argitalpena"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Spreadsheet"
-#~ msgstr "Kalkulu-orria"
-
-#~ msgctxt "Menu subcategory of Office"
-#~ msgid "Viewer"
-#~ msgstr "Ikustailea"
-
-#~ msgid "Science"
-#~ msgstr "Zientzia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Art"
-#~ msgstr "Artea"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Artificial Intelligence"
-#~ msgstr "Adimen artifiziala"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Astronomy"
-#~ msgstr "Astronomia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Biology"
-#~ msgstr "Biologia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Chemistry"
-#~ msgstr "Kimika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Computer Science"
-#~ msgstr "Konputazio zientifikoa"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Construction"
-#~ msgstr "Eraikuntza"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Data Visualization"
-#~ msgstr "Datuen bisualizazioa"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Economy"
-#~ msgstr "Ekonomia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Electricity"
-#~ msgstr "Elektrizitatea"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Electronics"
-#~ msgstr "Elektronika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Engineering"
-#~ msgstr "Ingeniaritza"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Geography"
-#~ msgstr "Geografia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Geology"
-#~ msgstr "Geologia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Geoscience"
-#~ msgstr "Lurraren zientziak"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "History"
-#~ msgstr "Historia"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Humanities"
-#~ msgstr "Humanitateak"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Image Processing"
-#~ msgstr "Irudi prozesamendua"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Languages"
-#~ msgstr "Hizkuntzak"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Literature"
-#~ msgstr "Literatura"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Maps"
-#~ msgstr "Mapak"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Math"
-#~ msgstr "Matematikak"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Medical"
-#~ msgstr "Medikuntza"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Numerical Analysis"
-#~ msgstr "Zenbakizko analisiak"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Parallel Computing"
-#~ msgstr "Kalkulu paraleloa"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Physics"
-#~ msgstr "Fisika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Robotics"
-#~ msgstr "Robotika"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Spirituality"
-#~ msgstr "Espiritualtasuna"
-
-#~ msgctxt "Menu subcategory of Science"
-#~ msgid "Sports"
-#~ msgstr "Kirolak"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Emulator"
-#~ msgstr "Emulatzailea"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "File Manager"
-#~ msgstr "Fitxategi-kudeatzailea"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "File Tools"
-#~ msgstr "Fitxategi-tresnak"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Monitor"
-#~ msgstr "Monitorea"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Security"
-#~ msgstr "Segurtasuna"
-
-#~ msgctxt "Menu subcategory of System"
-#~ msgid "Terminal Emulator"
-#~ msgstr "Terminal-emulatzailea"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Accessibility"
-#~ msgstr "Erabilerraztasuna"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Archiving"
-#~ msgstr "Artxibaketa"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Calculator"
-#~ msgstr "Kalkulagailua"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Clock"
-#~ msgstr "Ordularia"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Compression"
-#~ msgstr "Konpresioa"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "File Tools"
-#~ msgstr "Fitxategi-tresnak"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Maps"
-#~ msgstr "Mapak"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Spirituality"
-#~ msgstr "Espiritualtasuna"
-
-#~ msgctxt "Menu subcategory of Utilities"
-#~ msgid "Telephony Tools"
-#~ msgstr "Telefonia-tresnak"
-
-#~ msgid "Video"
-#~ msgstr "Bideoa"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Editing"
-#~ msgstr "Edizioa"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Database"
-#~ msgstr "Datu-basea"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Disc Burning"
-#~ msgstr "Disko grabatzaileak"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Players"
-#~ msgstr "Erreproduzitzaileak"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "Recorders"
-#~ msgstr "Grabatzaileak"
-
-#~ msgctxt "Menu subcategory of Video"
-#~ msgid "TV"
-#~ msgstr "TB"
-
-#~ msgid "Enter GApplication service mode"
-#~ msgstr "Sartu GApplication zerbitzu moduan"
-
-#~ msgid "An update was not signed in the correct way."
-#~ msgstr "Eguneraketa bat ez dago behar bezala sinatuta."
-
-#~ msgid "The update could not be completed."
-#~ msgstr "Ezin izan da eguneraketa osatu."
-
-#~ msgid "An offline update was requested but no packages required updating."
-#~ msgstr ""
-#~ "Lineaz kanpoko eguneraketa eskatu da, baina ez da eguneratzeko paketerik "
-#~ "eskatu."
-
-#~ msgid "No space was left on the drive."
-#~ msgstr "Ez dago lekurik unitatean."
-
-#~ msgid "An update failed to install correctly."
-#~ msgstr "Eguneraketa batek huts egin du zuzen instalatzean."
-
-#~ msgid "The offline update failed in an unexpected way."
-#~ msgstr "Lineaz kanpoko eguneraketak ustekabean huts egin du."
-
-#~ msgid "OK"
-#~ msgstr "Ados"
-
-#~ msgid "No sources found."
-#~ msgstr "Ez da iturbururik aurkitu."
-
-#~ msgid "%i application and %i add-ons installed"
-#~ msgid_plural "%i applications and %i add-ons installed"
-#~ msgstr[0] "Aplikazio %i eta %i gehigarri instalatuta"
-#~ msgstr[1] "%i aplikazio eta %i gehigarri instalatuta"
-
-#~ msgid "%s is not %sfree and open source software%s."
-#~ msgstr "'%s' ez da %ssoftware librea eta iturburu irekikoa%s."
-
-#~ msgid ""
-#~ "Depending on your country of residence, installing it could make you "
-#~ "liable to prosecution."
-#~ msgstr ""
-#~ "Bizi zaren herrialdearen arabera, hori instalatzeak lege aurrean "
-#~ "erantzule izan zaitezke."
-
-#~ msgid "If you are uncertain about this, you should obtain legal advice."
-#~ msgstr ""
-#~ "Honi buruzko zalantzak edukiz gero, eskatu legediari buruzko laguntza."
-
-#~ msgid "Do you want to enable it?"
-#~ msgstr "Hori gaitzea nahi duzu?"
-
-#~ msgid "Web app"
-#~ msgstr "Web aplikazioa"
-
-#~ msgid "Picks"
-#~ msgstr "Gomendioak"
-
-#~ msgid "Set the specified debugging level"
-#~ msgstr "Ezarri zehaztutako arazketa-maila"
-
-#~ msgid "_Pending"
-#~ msgstr "_Zain"
-
-#~ msgid "Complicated!"
-#~ msgstr "Konplikatua!"
-
-#~ msgid "Recent Software Updates"
-#~ msgstr "Eguneratutako azken softwareak"
-
-#~ msgid "January 30, 2014"
-#~ msgstr "2014.eko urtarrilaren 30a"
-
-#~ msgctxt "Menu subcategory of Development"
-#~ msgid "Databases"
-#~ msgstr "Datu-baseak"
-
-#~ msgctxt "Menu subcategory of Network"
-#~ msgid "Ham Radio"
-#~ msgstr "Irrati-amateurra"
-
-#~ msgctxt "Menu subcategory of Network"
-#~ msgid "Web Development"
-#~ msgstr "Web garapena"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "File Tools"
-#~ msgstr "Fitxategi-tresnak"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "Maps"
-#~ msgstr "Mapak"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "Spirituality"
-#~ msgstr "Espiritualtasuna"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Fonts"
-#~ msgstr "Letra-tipoak"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Codecs"
-#~ msgstr "Kodekak"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Input Sources"
-#~ msgstr "Sarrerako iturburuak"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Language Packs"
-#~ msgstr "Hizkuntza-paketeak"
