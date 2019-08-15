@@ -4540,10 +4540,10 @@ gs_app_subsume_metadata (GsApp *app, GsApp *donor)
 	g_autoptr(GList) keys = g_hash_table_get_keys (priv->metadata);
 	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
-		const gchar *value = gs_app_get_metadata_item (donor, key);
-		if (gs_app_get_metadata_item (app, key) != NULL)
+		GVariant *tmp = gs_app_get_metadata_variant (donor, key);
+		if (gs_app_get_metadata_variant (app, key) != NULL)
 			continue;
-		gs_app_set_metadata (app, key, value);
+		gs_app_set_metadata_variant (app, key, tmp);
 	}
 }
 
