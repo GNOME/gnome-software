@@ -69,7 +69,9 @@ gs_plugin_external_appstream_install (const gchar *appstream_file,
 static gchar *
 gs_plugin_external_appstream_get_modification_date (const gchar *file_path)
 {
+#ifndef GLIB_VERSION_2_62
 	GTimeVal time_val;
+#endif
 	g_autoptr(GDateTime) date_time = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GFileInfo) info = NULL;
@@ -82,8 +84,12 @@ gs_plugin_external_appstream_get_modification_date (const gchar *file_path)
 				  NULL);
 	if (info == NULL)
 		return NULL;
+#ifdef GLIB_VERSION_2_62
+	date_time = g_file_info_get_modification_date_time (info);
+#else
 	g_file_info_get_modification_time (info, &time_val);
 	date_time = g_date_time_new_from_timeval_local (&time_val);
+#endif
 	return g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
 }
 

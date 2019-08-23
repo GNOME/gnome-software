@@ -318,7 +318,9 @@ gs_screenshot_get_cachefn_for_url (const gchar *url)
 static void
 gs_screenshot_soup_msg_set_modified_request (SoupMessage *msg, GFile *file)
 {
+#ifndef GLIB_VERSION_2_62
 	GTimeVal time_val;
+#endif
 	g_autoptr(GDateTime) date_time = NULL;
 	g_autoptr(GFileInfo) info = NULL;
 	g_autofree gchar *mod_date = NULL;
@@ -330,8 +332,12 @@ gs_screenshot_soup_msg_set_modified_request (SoupMessage *msg, GFile *file)
 				  NULL);
 	if (info == NULL)
 		return;
+#ifdef GLIB_VERSION_2_62
+	date_time = g_file_info_get_modification_date_time (info);
+#else
 	g_file_info_get_modification_time (info, &time_val);
 	date_time = g_date_time_new_from_timeval_local (&time_val);
+#endif
 	mod_date = g_date_time_format (date_time, "%a, %d %b %Y %H:%M:%S %Z");
 	soup_message_headers_append (msg->request_headers,
 				     "If-Modified-Since",
