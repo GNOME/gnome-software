@@ -1549,6 +1549,7 @@ gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
 			 GError **error)
 {
 	g_autoptr(FlatpakRef) xref = NULL;
+	const gchar *source;
 
 	/* already set */
 	if (gs_flatpak_app_get_ref_name (app) != NULL)
@@ -1558,9 +1559,10 @@ gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return TRUE;
 
+	source = gs_app_get_source_default (app);
 	/* AppStream sets the source to appname/arch/branch, if this isn't set
 	 * we can't break out the fields */
-	if (gs_app_get_source_default (app) == NULL) {
+	if (source == NULL) {
 		g_autofree gchar *tmp = gs_app_to_string (app);
 		g_warning ("no source set by appstream for %s: %s",
 			   gs_plugin_get_name (self->plugin), tmp);
@@ -1568,12 +1570,20 @@ gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
 	}
 
 	/* parse the ref */
-	xref = flatpak_ref_parse (gs_app_get_source_default (app), error);
+	xref = flatpak_ref_parse (source, error);
 	if (xref == NULL) {
-		gs_flatpak_error_convert (error);
-		g_prefix_error (error, "failed to parse '%s': ",
-				gs_app_get_source_default (app));
-		return FALSE;
+		g_autofree gchar *resolved_source =
+				gs_flatpak_app_source_resolve_default_arch (source);
+
+		/* Sources mentioned in external-appstream might use refs without specifying
+		 * the arch. Hence, try to parse the arch-resolved ref and see if it succeeds */
+		xref = flatpak_ref_parse (resolved_source, NULL);
+		if (xref == NULL) {
+			gs_flatpak_error_convert (error);
+			g_prefix_error (error, "failed to parse '%s': ", source);
+			return FALSE;
+		}
+		g_clear_error (error);
 	}
 	gs_flatpak_set_metadata (self, app, xref);
 

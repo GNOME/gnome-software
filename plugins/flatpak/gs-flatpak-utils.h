@@ -16,5 +16,6 @@ GsApp		*gs_flatpak_app_new_from_remote		(FlatpakRemote	*xremote);
 GsApp		*gs_flatpak_app_new_from_repo_file	(GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
+char		*gs_flatpak_app_source_resolve_default_arch (const gchar *source);
 
 G_END_DECLS
