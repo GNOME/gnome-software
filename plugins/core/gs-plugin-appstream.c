@@ -719,6 +719,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 
 	/* look in AppStream then fall back to AppData */
 	xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
+	xb_string_append_union (xpath, "components/component[@type='webapp']/id[text()='%s']/..", id);
 	xb_string_append_union (xpath, "component/id[text()='%s']/../pkgname/..", id);
 	components = xb_silo_query (priv->silo, xpath->str, 0, &error_local);
 	if (components == NULL) {
