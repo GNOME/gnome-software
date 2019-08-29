@@ -353,8 +353,7 @@ gs_plugin_appstream_load_appstream_fn (GsPlugin *plugin,
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file,
-					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE |
-					  XB_BUILDER_SOURCE_FLAG_LITERAL_TEXT,
+					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
 					  cancellable,
 					  error)) {
 		return FALSE;
