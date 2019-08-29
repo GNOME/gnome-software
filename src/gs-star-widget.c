@@ -30,8 +30,6 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
-static const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
-
 static void gs_star_widget_refresh (GsStarWidget *star);
 
 gint
@@ -74,18 +72,12 @@ static void
 gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv = gs_star_widget_get_instance_private (star);
-	guint i;
-	gdouble rating;
+	const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
 
 	/* remove all existing widgets */
 	gs_container_remove_all (GTK_CONTAINER (priv->box1));
 
-	/* add fudge factor so we can actually get 5 stars in reality,
-	 * and round up to nearest power of 10 */
-	rating = priv->rating + 10;
-	rating = 10 * ceil (rating / 10);
-
-	for (i = 0; i < 5; i++) {
+	for (guint i = 0; i < 5; i++) {
 		GtkWidget *w;
 		GtkWidget *im;
 
@@ -109,8 +101,9 @@ gs_star_widget_refresh (GsStarWidget *star)
 		}
 		gtk_widget_set_sensitive (w, priv->interactive);
 		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
+		/* add fudge factor so we can actually get 5 stars in reality */
 		gtk_style_context_add_class (gtk_widget_get_style_context (im),
-					     rating >= rate_to_star[i] ?
+					     priv->rating >= rate_to_star[i] - 10 ?
 					     "star-enabled" : "star-disabled");
 		gtk_widget_set_visible (w, TRUE);
 		gtk_container_add (GTK_CONTAINER (priv->box1), w);
