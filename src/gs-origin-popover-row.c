@@ -93,6 +93,15 @@ refresh_ui (GsOriginPopoverRow *row)
 	} else {
 		gtk_widget_hide (priv->branch_box);
 	}
+
+	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_SNAP) {
+		/* TRANSLATORS: the title for Snap channels */
+		gtk_label_set_text (GTK_LABEL (priv->branch_title), _("Channel"));
+	}
+	else {
+		/* TRANSLATORS: the title for Flatpak branches */
+		gtk_label_set_text (GTK_LABEL (priv->branch_title), _("Branch"));
+	}
 }
 
 static void
