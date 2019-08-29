@@ -4,25 +4,25 @@
 #
 # Alain Lojewski <allomervan@gmail.com>, 2014-2018.
 # Guillaume Bernard <associations@guillaume-bernard.fr>, 2017-2019.
-# Charles Monzat <charles.monzat@numericable.fr>, 2018.
 # William Oprandi <william.oprandi@gmail.com>, 2019.
 # Adrien Plazas <kekun.plazas@laposte.net>, 2019.
+# Charles Monzat <charles.monzat@free.fr>, 2018-2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-08-06 15:36+0000\n"
-"PO-Revision-Date: 2019-08-26 00:03+0300\n"
-"Last-Translator: Adrien Plazas <kekun.plazas@laposte.net>\n"
-"Language-Team: français <>\n"
+"POT-Creation-Date: 2019-08-26 07:24+0000\n"
+"PO-Revision-Date: 2019-08-29 18:54+0200\n"
+"Last-Translator: Charles Monzat <charles.monzat@free.fr>\n"
+"Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-DamnedLies-Scope: partial\n"
-"X-Generator: Gtranslator 3.30.1\n"
+"X-Generator: Gtranslator 3.32.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -206,6 +206,12 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:64
 msgid "The last update timestamp"
 msgstr "L’horodatage de la dernière mise à jour"
+
+#: data/org.gnome.software.gschema.xml:68
+msgid "The last timestamp when the system was online and got any updates"
+msgstr ""
+"L’horodatage du dernier moment où le système était en ligne et a obtenu des "
+"mises à jour"
 
 #: data/org.gnome.software.gschema.xml:72
 msgid "The age in seconds to verify the upstream screenshot is still valid"
@@ -570,7 +576,7 @@ msgstr "Une façon élégante de gérer les applications de votre système."
 #. TRANSLATORS: we tried to show an app that did not exist
 #: src/gs-application.c:567
 msgid "Sorry! There are no details for that application."
-msgstr "Désolé, il n'y a aucune information sur cette application."
+msgstr "Désolé, il n’y a aucune information sur cette application."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
@@ -662,7 +668,7 @@ msgstr "Nom"
 
 #. TRANSLATORS: A label for a button to show the settings for
 #. the selected shell extension.
-#: src/gs-category-page.ui:118 src/gs-details-page.c:885
+#: src/gs-category-page.ui:118 src/gs-details-page.c:919
 msgid "Extension Settings"
 msgstr "Paramètres des extensions"
 
@@ -1455,7 +1461,7 @@ msgid "Pending update…"
 msgstr "Mise à jour en attente…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:665
+#: src/gs-details-page.c:699
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1469,7 +1475,7 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:810 src/gs-details-page.c:827
+#: src/gs-details-page.c:844 src/gs-details-page.c:861
 #: src/gs-details-page.ui:162 src/gs-third-party-repo-row.c:83
 #: src/gs-upgrade-banner.c:70
 msgid "_Install"
@@ -1482,193 +1488,193 @@ msgstr "_Installer"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:841 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:875 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "_Installer…"
 
 #. TRANSLATORS: A label for a button to execute the selected
 #. application.
-#: src/gs-details-page.c:890
+#: src/gs-details-page.c:924
 msgid "_Launch"
 msgstr "_Lancer"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:915 src/gs-details-page.ui:187
+#: src/gs-details-page.c:949 src/gs-details-page.ui:187
 msgid "_Remove"
 msgstr "_Supprimer"
 
-#: src/gs-details-page.c:946 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:980 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "Réseau"
 
-#: src/gs-details-page.c:946 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:980 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "Peut communiquer à travers le réseau"
 
-#: src/gs-details-page.c:947 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:981 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "Services système"
 
-#: src/gs-details-page.c:947 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:981 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "Peut accéder à des services DBus sur le bus système"
 
-#: src/gs-details-page.c:948 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:982 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "Services de session"
 
-#: src/gs-details-page.c:948 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:982 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "Peut accéder aux services DBus sur le bus de session"
 
-#: src/gs-details-page.c:949 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:983 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "Périphériques"
 
-#: src/gs-details-page.c:949 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:983 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "Peut accéder aux fichiers du système"
 
-#: src/gs-details-page.c:950 src/gs-details-page.c:951
+#: src/gs-details-page.c:984 src/gs-details-page.c:985
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "Dossier personnel"
 
-#: src/gs-details-page.c:950 src/gs-details-page.c:952
-#: src/gs-details-page.c:954 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:984 src/gs-details-page.c:986
+#: src/gs-details-page.c:988 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "Peut voir, éditer et créer des fichiers"
 
-#: src/gs-details-page.c:951 src/gs-details-page.c:953
-#: src/gs-details-page.c:955 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:985 src/gs-details-page.c:987
+#: src/gs-details-page.c:989 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "Peut voir les fichiers"
 
-#: src/gs-details-page.c:952 src/gs-details-page.c:953
+#: src/gs-details-page.c:986 src/gs-details-page.c:987
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "Système de fichiers"
 
-#: src/gs-details-page.c:954 src/gs-details-page.c:955
+#: src/gs-details-page.c:988 src/gs-details-page.c:989
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "Dossier de téléchargement"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:990 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "Paramètres"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:990 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "Peut voir et modifier n’importe quel paramètre"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:991 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "Système d’affichage désuet"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:991 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "Utilise un vieux système d’affichage non sécurisé"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:992 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "Fuite du bac à sable"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:992 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
-msgstr "Peut s'échapper du bac à sable et contourner d'autres restrictions"
+msgstr "Peut s’échapper du bac à sable et contourner d’autres restrictions"
 
-#: src/gs-details-page.c:973
+#: src/gs-details-page.c:1007
 msgid "This application is fully sandboxed."
 msgstr "L’application s’exécute dans un bac à sable."
 
-#: src/gs-details-page.c:981
+#: src/gs-details-page.c:1015
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
 msgstr ""
 "Impossible de déterminer à quelle partie du système cette application a "
-"accès. C'est typique des applications anciennes."
+"accès. C’est typique des applications anciennes."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1130
+#: src/gs-details-page.c:1164
 msgctxt "version"
 msgid "Unknown"
 msgstr "Inconnue"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1143
+#: src/gs-details-page.c:1177
 msgctxt "updated"
 msgid "Never"
 msgstr "Jamais"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1196
+#: src/gs-details-page.c:1230
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Inconnue"
 
-#: src/gs-details-page.c:1249
+#: src/gs-details-page.c:1283
 msgid "Low"
 msgstr "Basses"
 
-#: src/gs-details-page.c:1251
+#: src/gs-details-page.c:1285
 msgid "Medium"
 msgstr "Intermédiaires"
 
-#: src/gs-details-page.c:1253
+#: src/gs-details-page.c:1287
 msgid "High"
 msgstr "Élevées"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1255 src/gs-details-page.ui:961 src/gs-review-row.c:57
+#: src/gs-details-page.c:1289 src/gs-details-page.ui:961 src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "Inconnue"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1591
+#: src/gs-details-page.c:1625
 msgid "You need internet access to write a review"
 msgstr "Un accès à Internet est indispensable pour rédiger une évaluation"
 
-#: src/gs-details-page.c:1777 src/gs-details-page.c:1793
+#: src/gs-details-page.c:1811 src/gs-details-page.c:1827
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impossible de trouver « %s »"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2356
+#: src/gs-details-page.c:2390
 msgid "Public domain"
 msgstr "Domaine public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2359
+#: src/gs-details-page.c:2393
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://fr.wikipedia.org/wiki/Domaine_public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2366
+#: src/gs-details-page.c:2400
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2376 src/gs-details-page.ui:1205
+#: src/gs-details-page.c:2410 src/gs-details-page.ui:1205
 msgid "Free Software"
 msgstr "Logiciel libre"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2433
+#: src/gs-details-page.c:2467
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Les utilisateurs sont tenus au respect de cette licence :"
 msgstr[1] "Les utilisateurs sont tenus au respect de ces licences :"
 
-#: src/gs-details-page.c:2460 src/gs-details-page.ui:1277
+#: src/gs-details-page.c:2494 src/gs-details-page.ui:1277
 msgid "More information"
 msgstr "Davantage d’informations"
 
@@ -2863,28 +2869,28 @@ msgstr "Échec de chargement de l’image"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:375
+#: src/gs-screenshot-image.c:381
 msgid "Screenshot size not found"
 msgstr "Taille de capture d’écran introuvable"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:405
+#: src/gs-screenshot-image.c:411
 msgid "Could not create cache"
 msgstr "Impossible de créer le cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:465
+#: src/gs-screenshot-image.c:471
 msgid "Screenshot not valid"
 msgstr "Capture d’écran non valide"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:480
+#: src/gs-screenshot-image.c:486
 msgid "Screenshot not available"
 msgstr "Capture d’écran indisponible"
 
-#: src/gs-screenshot-image.c:532
+#: src/gs-screenshot-image.c:544
 msgid "Screenshot"
 msgstr "Capture d’écran"
 
@@ -3906,7 +3912,7 @@ msgstr "_Redémarrer maintenant"
 
 #: src/gs-upgrade-banner.c:66
 msgid "Updates will be applied when the computer is restarted."
-msgstr "Les mises à jour seront appliquées une fois l'ordinateur redémarré."
+msgstr "Les mises à jour seront appliquées une fois l’ordinateur redémarré."
 
 #: src/gs-upgrade-banner.c:72
 msgid ""
@@ -4398,13 +4404,13 @@ msgstr "Endless OS"
 #: plugins/eos-updater/gs-plugin-eos-updater.c:564
 msgid "An Endless OS update with new features and fixes."
 msgstr ""
-"Une mise à jour d'Endless OS, avec de nouvelles fonctionnalités et "
+"Une mise à jour d’Endless OS, avec de nouvelles fonctionnalités et "
 "corrections."
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:825
 msgid "EOS update service could not fetch and apply the update."
 msgstr ""
-"Le service de mise à jour d'Endless OS n'a pas pu récupérer et appliquer la "
+"Le service de mise à jour d’Endless OS n’a pas pu récupérer et appliquer la "
 "mise à niveau."
 
 #: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
@@ -4447,7 +4453,7 @@ msgid "Failed to copy"
 msgstr "Impossible de copier"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/external-appstream/gs-plugin-external-appstream.c:229
+#: plugins/external-appstream/gs-plugin-external-appstream.c:235
 msgid "Downloading extra metadata files…"
 msgstr "Téléchargement de nouveaux fichiers de métadonnées…"
 
