@@ -218,6 +218,7 @@ gs_shell_change_mode (GsShell *shell,
 	GsApp *app;
 	GsPage *page;
 	GtkWidget *widget;
+	GtkWidget *search_entry;
 	GtkStyleContext *context;
 
 	if (priv->ignore_primary_buttons)
@@ -247,9 +248,12 @@ gs_shell_change_mode (GsShell *shell,
 					mode == GS_SHELL_MODE_SEARCH);
 	/* hide unless we're going to search */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	search_entry = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	g_signal_handler_block (search_entry, priv->search_changed_id);
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget),
 					mode == GS_SHELL_MODE_SEARCH);
 	priv->in_mode_change = FALSE;
+	g_signal_handler_unblock (search_entry, priv->search_changed_id);
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
@@ -495,6 +499,8 @@ gs_shell_go_back (GsShell *shell)
 		/* set the mode directly */
 		gs_shell_change_mode (shell, entry->mode,
 				      (gpointer) entry->search, FALSE);
+		GsPage *page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
+		gs_search_page_block_search (GS_SEARCH_PAGE (page));
 		break;
 	default:
 		g_debug ("popping back entry for %s", page_name[entry->mode]);
@@ -607,6 +613,12 @@ search_changed_handler (GObject *entry, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const gchar *text;
+
+	GsPage *page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
+	if (gs_search_page_is_blocked_search (GS_SEARCH_PAGE (page))) {
+		gs_search_page_unblock_search (GS_SEARCH_PAGE (page));
+		return;
+	}
 
 	text = gtk_entry_get_text (GTK_ENTRY (entry));
 	if (strlen (text) > 2) {

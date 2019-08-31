@@ -22,5 +22,8 @@ void		 gs_search_page_set_appid_to_show	(GsSearchPage		*self,
 const gchar	*gs_search_page_get_text		(GsSearchPage		*self);
 void		 gs_search_page_set_text		(GsSearchPage		*self,
 							 const gchar		*value);
+void		 gs_search_page_block_search		(GsSearchPage		*self);
+void		 gs_search_page_unblock_search		(GsSearchPage		*self);
+gboolean	 gs_search_page_is_blocked_search	(GsSearchPage		*self);
 
 G_END_DECLS
