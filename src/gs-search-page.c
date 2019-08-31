@@ -35,6 +35,7 @@ struct _GsSearchPage
 	gchar			*value;
 	guint			 waiting_id;
 	guint			 max_results;
+	gboolean		 blocked;
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -305,6 +306,24 @@ gs_search_page_set_appid_to_show (GsSearchPage *self, const gchar *appid)
 	self->appid_to_show = g_strdup (appid);
 }
 
+void
+gs_search_page_block_search (GsSearchPage *self)
+{
+	self->blocked = TRUE;
+}
+
+void
+gs_search_page_unblock_search (GsSearchPage *self)
+{
+	self->blocked = FALSE;
+}
+
+gboolean
+gs_search_page_is_blocked_search (GsSearchPage *self)
+{
+	return self->blocked;
+}
+
 const gchar *
 gs_search_page_get_text (GsSearchPage *self)
 {
@@ -492,6 +511,7 @@ gs_search_page_init (GsSearchPage *self)
 	self->sizegroup_button = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	self->max_results = GS_SEARCH_PAGE_MAX_RESULTS;
+	self->blocked = FALSE;
 }
 
 GsSearchPage *
