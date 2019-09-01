@@ -452,6 +452,30 @@ gs_shell_plugin_events_restart_required_cb (GtkWidget *widget, GsShell *shell)
 		g_warning ("failed to restart: %s", error->message);
 }
 
+/* this is basically a workaround for GtkSearchEntry. Due to delayed emission of the search-changed
+ * signal it can't be blocked during insertion of text into the entry. Therefore we block the
+ * precursor of that signal to be able to add text to the entry without firing the handlers
+ * connected to "search-changed"
+ */
+static void
+block_changed (GtkEditable *editable,
+               gpointer     user_data)
+{
+	g_signal_stop_emission_by_name (editable, "changed");
+}
+
+static void
+block_changed_signal (GtkSearchEntry *entry)
+{
+	g_signal_connect (entry, "changed", G_CALLBACK (block_changed), NULL);
+}
+
+static void
+unblock_changed_signal (GtkSearchEntry *entry)
+{
+	g_signal_handlers_disconnect_by_func (entry, G_CALLBACK (block_changed), NULL);
+}
+
 static void
 gs_shell_go_back (GsShell *shell)
 {
@@ -487,10 +511,10 @@ gs_shell_go_back (GsShell *shell)
 
 		/* set the text in the entry and move cursor to the end */
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		g_signal_handler_block (widget, priv->search_changed_id);
+		block_changed_signal (GTK_SEARCH_ENTRY (widget));
 		gtk_entry_set_text (GTK_ENTRY (widget), entry->search);
 		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
-		g_signal_handler_unblock (widget, priv->search_changed_id);
+		unblock_changed_signal (GTK_SEARCH_ENTRY (widget));
 
 		/* set the mode directly */
 		gs_shell_change_mode (shell, entry->mode,
