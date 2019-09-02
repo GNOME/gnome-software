@@ -9,16 +9,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-08-26 06:28+0000\n"
-"PO-Revision-Date: 2019-08-14 15:12+0200\n"
-"Last-Translator: Daniel Rusek <mail@asciiwolf.com>\n"
+"POT-Creation-Date: 2019-09-01 20:56+0000\n"
+"PO-Revision-Date: 2019-09-02 12:48+0200\n"
+"Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: čeština <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Gtranslator 2.91.7\n"
 "X-Project-Style: gnome\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -197,6 +197,7 @@ msgstr "Datum a čas poslední aktualizace"
 #: data/org.gnome.software.gschema.xml:68
 msgid "The last timestamp when the system was online and got any updates"
 msgstr ""
+"Datum a čas, kdy byl systém naposledy on-line a dostal nějaké aktualizace"
 
 #: data/org.gnome.software.gschema.xml:72
 msgid "The age in seconds to verify the upstream screenshot is still valid"
@@ -1321,31 +1322,31 @@ msgstr "Obecné"
 
 #: src/gs-content-rating.c:511
 msgid "ALL"
-msgstr ""
+msgstr "VŠECHNY"
 
 #: src/gs-content-rating.c:515
 msgid "Adults Only"
-msgstr ""
+msgstr "pouze dospělé"
 
 #: src/gs-content-rating.c:517
 msgid "Mature"
-msgstr ""
+msgstr "plnoleté"
 
 #: src/gs-content-rating.c:519
 msgid "Teen"
-msgstr ""
+msgstr "mládež"
 
 #: src/gs-content-rating.c:521
 msgid "Everyone 10+"
-msgstr ""
+msgstr "všechny 10+"
 
 #: src/gs-content-rating.c:523
 msgid "Everyone"
-msgstr ""
+msgstr "všechny"
 
 #: src/gs-content-rating.c:525
 msgid "Early Childhood"
-msgstr ""
+msgstr "malé děti"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: src/gs-dbus-helper.c:281
@@ -1569,32 +1570,32 @@ msgstr ""
 #: src/gs-details-page.c:1164
 msgctxt "version"
 msgid "Unknown"
-msgstr "Neznámá"
+msgstr "neznámá"
 
 #. TRANSLATORS: this is where the updated date is not known
 #: src/gs-details-page.c:1177
 msgctxt "updated"
 msgid "Never"
-msgstr "Nikdy"
+msgstr "nikdy"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
 #: src/gs-details-page.c:1230
 msgctxt "origin"
 msgid "Unknown"
-msgstr "Neznámý"
+msgstr "neznámý"
 
 #: src/gs-details-page.c:1283
 msgid "Low"
-msgstr "Nízké"
+msgstr "nízké"
 
 #: src/gs-details-page.c:1285
 msgid "Medium"
-msgstr "Střední"
+msgstr "střední"
 
 #: src/gs-details-page.c:1287
 msgid "High"
-msgstr "Vysoké"
+msgstr "vysoké"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
@@ -2762,6 +2763,8 @@ msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
 "\">privacy policy</a>."
 msgstr ""
+"Najděte si v našich <a href=\"https://odrs.gnome.org/privacy\">zásadách "
+"soukromí</a>, jaká data jsou odesílána."
 
 #. Translators: A label for the total number of reviews.
 #: src/gs-review-histogram.ui:412
@@ -3029,10 +3032,9 @@ msgstr "Nelze nainstalovat balíček %s: je vyžadováno připojené napájení"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1101
-#, fuzzy, c-format
-#| msgid "Unable to install %s: AC power is required"
+#, c-format
 msgid "Unable to install %s: The battery level is too low"
-msgstr "Nelze nainstalovat balíček %s: je vyžadováno připojené napájení"
+msgstr "Nelze nainstalovat balíček %s: úroveň nabití baterie je příliš nízká"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3150,20 +3152,16 @@ msgstr ""
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1265
-#, fuzzy, c-format
-#| msgid "Unable to update %s: AC power is required"
+#, c-format
 msgid "Unable to update %s: The battery level is too low"
-msgstr ""
-"Nelze aktualizovat balíček %s: je vyžadováno napájení z elektrické sítě"
+msgstr "Nelze aktualizovat balíček %s: úroveň nabití baterie je příliš nízká"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
 #: src/gs-shell.c:1271
-#, fuzzy, c-format
-#| msgid "Unable to install updates: AC power is required"
+#, c-format
 msgid "Unable to install updates: The battery level is too low"
-msgstr ""
-"Nelze nainstalovat aktualizace: je vyžadováno napájení z elektrické sítě"
+msgstr "Nelze nainstalovat aktualizace: úroveň nabití baterie je příliš nízká"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3241,10 +3239,9 @@ msgstr "Nelze povýšit na %s: je vyžadováno připojené napájení"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
 #: src/gs-shell.c:1387
-#, fuzzy, c-format
-#| msgid "Unable to upgrade to %s: AC power is required"
+#, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
-msgstr "Nelze povýšit na %s: je vyžadováno připojené napájení"
+msgstr "Nelze povýšit na %s: úroveň nabití baterie je příliš nízká"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
@@ -3284,10 +3281,9 @@ msgstr "Nelze odstranit balíček %s: je vyžadováno připojené napájení"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
 #: src/gs-shell.c:1460
-#, fuzzy, c-format
-#| msgid "Unable to remove %s: you do not have permission to remove software"
+#, c-format
 msgid "Unable to remove %s: The battery level is too low"
-msgstr "Nelze odstranit balíček %s: nemáte oprávnění k odstranění softwaru"
+msgstr "Nelze odstranit balíček %s: úroveň nabití baterie je příliš nízká"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3367,10 +3363,8 @@ msgstr "Je vyžadováno připojené napájení"
 
 #. TRANSLATORS: not enough juice to do this safely
 #: src/gs-shell.c:1687
-#, fuzzy
-#| msgid "The summary is too long"
 msgid "The battery level is too low"
-msgstr "Celkové hodnocení je příliš dlouhé"
+msgstr "Úroveň nabití baterie je příliš nízká"
 
 #. TRANSLATORS: this refers to where the app came from
 #: src/gs-shell-search-provider.c:256
@@ -4353,7 +4347,7 @@ msgstr "Aktualizace Endless OS s novými funkcemi a vylepšeními."
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:825
 msgid "EOS update service could not fetch and apply the update."
-msgstr ""
+msgstr "Aktualizační služba EOS nemohla stáhnout a nasadit aktualizaci."
 
 #: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
 msgid "Web Apps Support"
@@ -4443,28 +4437,28 @@ msgstr "Systém %s"
 #: plugins/fwupd/gs-fwupd-app.c:144
 #, c-format
 msgid "%s Embedded Controller"
-msgstr ""
+msgstr "Vestavěný řadič %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:149
 #, c-format
 msgid "%s ME"
-msgstr ""
+msgstr "ME %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:154
 #, c-format
 msgid "%s Corporate ME"
-msgstr ""
+msgstr "ME %s pro firmy"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:159
 #, c-format
 msgid "%s Consumer ME"
-msgstr ""
+msgstr "ME %s pro koncové zákazníky"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
@@ -4472,7 +4466,7 @@ msgstr ""
 #: plugins/fwupd/gs-fwupd-app.c:165
 #, c-format
 msgid "%s Controller"
-msgstr ""
+msgstr "Řadič %s"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
@@ -4480,7 +4474,7 @@ msgstr ""
 #: plugins/fwupd/gs-fwupd-app.c:171
 #, c-format
 msgid "%s Thunderbolt Controller"
-msgstr ""
+msgstr "Řadič Thunderbolt %s"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:669
