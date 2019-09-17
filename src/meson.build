@@ -72,6 +72,7 @@ gnome_software_sources = [
 gnome_software_dependencies = [
   appstream_glib,
   gio_unix,
+  glib,
   gmodule,
   goa,
   gtk,
@@ -138,6 +139,7 @@ executable(
   ],
   dependencies : [
     gio_unix,
+    glib,
   ],
   c_args : cargs,
   install : true,
@@ -297,6 +299,7 @@ if get_option('tests')
     dependencies : [
       appstream_glib,
       gio_unix,
+      glib,
       gmodule,
       goa,
       gtk,
