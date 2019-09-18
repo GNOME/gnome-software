@@ -1221,27 +1221,15 @@ gs_flatpak_ref_to_app (GsFlatpak *self, const gchar *ref,
 	return NULL;
 }
 
-gboolean
-gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
-			       GCancellable *cancellable,
-			       GError **error)
+static FlatpakRemote *
+gs_flatpak_create_new_remote (GsFlatpak *self,
+                              GsApp *app,
+                              GCancellable *cancellable,
+                              GError **error)
 {
 	const gchar *gpg_key;
 	const gchar *branch;
 	g_autoptr(FlatpakRemote) xremote = NULL;
-
-	/* does the remote already exist and is disabled */
-	xremote = flatpak_installation_get_remote_by_name (self->installation,
-							   gs_app_get_id (app),
-							   cancellable, NULL);
-	if (xremote != NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "flatpak source %s already exists",
-			     flatpak_remote_get_name (xremote));
-		return FALSE;
-	}
 
 	/* create a new remote */
 	xremote = flatpak_remote_new (gs_app_get_id (app));
@@ -1268,6 +1256,31 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	branch = gs_app_get_branch (app);
 	if (branch != NULL)
 		flatpak_remote_set_default_branch (xremote, branch);
+
+	return g_steal_pointer (&xremote);
+}
+
+gboolean
+gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	g_autoptr(FlatpakRemote) xremote = NULL;
+
+	/* does the remote already exist and is disabled */
+	xremote = flatpak_installation_get_remote_by_name (self->installation,
+							   gs_app_get_id (app),
+							   cancellable, NULL);
+	if (xremote != NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "flatpak source %s already exists",
+			     flatpak_remote_get_name (xremote));
+		return FALSE;
+	}
+
+	xremote = gs_flatpak_create_new_remote (self, app, cancellable, error);
 
 	/* install it */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
