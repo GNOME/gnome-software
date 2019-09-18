@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
  * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2016-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016-2019 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -1267,20 +1267,17 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 {
 	g_autoptr(FlatpakRemote) xremote = NULL;
 
-	/* does the remote already exist and is disabled */
 	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   gs_app_get_id (app),
 							   cancellable, NULL);
 	if (xremote != NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "flatpak source %s already exists",
-			     flatpak_remote_get_name (xremote));
-		return FALSE;
+		/* if the remote already exists, just enable it */
+		g_debug ("enabling existing remote %s", flatpak_remote_get_name (xremote));
+		flatpak_remote_set_disabled (xremote, FALSE);
+	} else {
+		/* create a new remote */
+		xremote = gs_flatpak_create_new_remote (self, app, cancellable, error);
 	}
-
-	xremote = gs_flatpak_create_new_remote (self, app, cancellable, error);
 
 	/* install it */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
