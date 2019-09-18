@@ -712,15 +712,17 @@ static void
 gs_app_is_actual_app_func (void)
 {
 	g_autoptr(XbBuilder) builder = xb_builder_new ();
-	g_autoptr(XbBuilderSource) source1 = xb_builder_source_new();
-	g_autoptr(XbBuilderSource) source2 = xb_builder_source_new();
+	g_autoptr(XbBuilderSource) source1 = xb_builder_source_new ();
+	g_autoptr(XbBuilderSource) source2 = xb_builder_source_new ();
 	g_autoptr(GString) xpath = g_string_new (NULL);
 	g_autoptr(GPtrArray) components = NULL;
 	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GFileIOStream) iostream = NULL;
 	const gchar *appdata;
 	const gchar *appstream;
 	g_autoptr(GFile) xmlb = NULL;
 	g_autoptr(GError) error = NULL;
+	const gchar *tmp;
 
 	appdata = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 		  "<component type=\"desktop\">\n"
@@ -760,9 +762,9 @@ gs_app_is_actual_app_func (void)
 	g_assert_no_error (error);
 	xb_builder_import_source (builder, source2);
 
-	/* create file if it does not exist */
-        xmlb = g_file_new_for_path ("/tmp/temp.xmlb");
-        g_file_delete (xmlb, NULL, NULL);
+        xmlb = g_file_new_tmp ("temp-XXXXXX.xmlb", &iostream, &error);
+        g_assert_no_error (error);
+        g_assert_nonnull (xmlb);
         silo = xb_builder_ensure (builder, xmlb,
                                   XB_BUILDER_COMPILE_FLAG_WATCH_BLOB,
                                   NULL, &error);
@@ -775,6 +777,17 @@ gs_app_is_actual_app_func (void)
 	g_assert_no_error (error);
 
 	g_assert_cmpint (components->len, ==, 3);
+
+        for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		tmp = xb_node_query_text (component, "id", NULL);
+		g_assert_true (g_strcmp0 (tmp, "appA.desktop") == 0 ||
+			       g_strcmp0 (tmp, "appB.desktop") == 0 ||
+			       g_strcmp0 (tmp, "appC.desktop") == 0);
+        }
+
+
+
 }
 
 static void
