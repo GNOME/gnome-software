@@ -451,7 +451,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		if (flatpak != NULL)
 			gs_app_list_add (list_tmp, app);
 	}
-	if (flatpak == NULL)
+	if (gs_app_list_length (list_tmp) == 0)
 		return TRUE;
 
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
