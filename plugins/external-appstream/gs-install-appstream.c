@@ -48,8 +48,7 @@ gs_install_appstream_copy_file (GFile *file, GError **error)
 	 * of the current process (so that should be -rw-r--r--) */
 	return g_file_copy (file, cachefn_file,
 			    G_FILE_COPY_OVERWRITE |
-			    G_FILE_COPY_NOFOLLOW_SYMLINKS |
-			    G_FILE_COPY_TARGET_DEFAULT_PERMS,
+			    G_FILE_COPY_NOFOLLOW_SYMLINKS,
 			    NULL, NULL, NULL, error);
 }
 
