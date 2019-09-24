@@ -488,8 +488,6 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 		GsApp *app = gs_app_list_index (list, i);
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
-			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
@@ -638,8 +636,6 @@ gs_plugin_packagekit_refine_name_to_id (GsPlugin *plugin,
 		GsApp *app = gs_app_list_index (list, i);
 		const gchar *tmp;
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
-			continue;
-		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		tmp = gs_app_get_management_plugin (app);
 		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
