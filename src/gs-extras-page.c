@@ -672,16 +672,25 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 
 	/* start new searches, separate one for each codec */
 	for (i = 0; i < self->array_search_data->len; i++) {
+		GsPluginRefineFlags refine_flags;
 		SearchData *search_data;
+
+		refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+		               GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+		               GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES;
 
 		search_data = g_ptr_array_index (self->array_search_data, i);
 		if (search_data->search_filename != NULL) {
 			g_autoptr(GsPluginJob) plugin_job = NULL;
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_FILES,
 							 "search", search_data->search_filename,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+							 "refine-flags", refine_flags,
 							 NULL);
 			g_debug ("searching filename: '%s'", search_data->search_filename);
 			gs_plugin_loader_job_process_async (self->plugin_loader,
@@ -695,9 +704,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			file = g_file_new_for_path (search_data->package_filename);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 							 "file", file,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+							 "refine-flags", refine_flags,
 							 NULL);
 			g_debug ("resolving filename to app: '%s'", search_data->package_filename);
 			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
@@ -709,14 +716,7 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 			g_debug ("searching what provides: '%s'", search_data->search);
 			plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH_PROVIDES,
 							 "search", search_data->search,
-							 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
-									 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-									 GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+							 "refine-flags", refine_flags,
 							 NULL);
 			gs_plugin_loader_job_process_async (self->plugin_loader, plugin_job,
 							    self->search_cancellable,
