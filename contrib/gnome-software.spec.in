@@ -1,13 +1,14 @@
-%global glib2_version 2.46.0
+%global glib2_version 2.61.1
 %global gtk3_version 3.22.4
 %global json_glib_version 1.2.0
 %global packagekit_version 1.1.1
-%global appstream_glib_version 0.7.11
+%global appstream_glib_version 0.7.15
 %global libsoup_version 2.52.0
 %global gsettings_desktop_schemas_version 3.12.0
 %global gnome_desktop_version 3.18.0
-%global fwupd_version 1.0.7
-%global flatpak_version 0.9.4
+%global fwupd_version 1.2.10
+%global flatpak_version 1.1.3
+%global libxmlb_version 0.1.7
 
 %define alphatag                        #ALPHATAG#
 
@@ -18,7 +19,7 @@ Summary:   A software center for GNOME
 
 License:   GPLv2+
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   https://download.gnome.org/sources/gnome-software/3.31/%{name}-%{version}.tar.xz
+Source0:   https://download.gnome.org/sources/gnome-software/3.34/%{name}-%{version}.tar.xz
 
 BuildRequires: gcc
 BuildRequires: gettext
@@ -28,14 +29,16 @@ BuildRequires: desktop-file-utils
 BuildRequires: fwupd-devel >= %{fwupd_version}
 BuildRequires: glib2-devel >= %{glib2_version}
 BuildRequires: gnome-desktop3-devel
+BuildRequires: gnome-online-accounts-devel
 BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
 BuildRequires: gspell-devel
 BuildRequires: gtk3-devel >= %{gtk3_version}
 BuildRequires: gtk-doc
 BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
-BuildRequires: gnome-online-accounts-devel
+BuildRequires: libdnf-devel
 BuildRequires: libsoup-devel
+BuildRequires: libxmlb-devel >= %{libxmlb_version}
 BuildRequires: meson
 BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
 BuildRequires: polkit-devel
@@ -45,10 +48,6 @@ BuildRequires: rpm-devel
 BuildRequires: rpm-ostree-devel
 BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
-BuildRequires: liboauth-devel
-%if 0%{?fedora}
-BuildRequires: snapd-glib-devel >= 1.49
-%endif
 
 Requires: appstream-data
 %if 0%{?fedora}
@@ -69,7 +68,11 @@ Requires: libappstream-glib%{?_isa} >= %{appstream_glib_version}
 # librsvg2 is needed for gdk-pixbuf svg loader
 Requires: librsvg2%{?_isa}
 Requires: libsoup%{?_isa} >= %{libsoup_version}
-Requires: PackageKit%{?_isa} >= %{packagekit_version}
+Requires: libxmlb%{?_isa} >= %{libxmlb_version}
+
+Recommends: PackageKit%{?_isa} >= %{packagekit_version}
+
+Obsoletes: gnome-software-snap < 3.33.1
 
 # this is not a library version
 %define gs_plugin_version               13
@@ -93,26 +96,24 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description editor
 Editor for designing banners for GNOME Software.
 
-%if 0%{?fedora}
-%package snap
-Summary: Support for Ubuntu Snap packages
+%package rpm-ostree
+Summary: rpm-ostree backend for gnome-software
 Requires: %{name}%{?_isa} = %{version}-%{release}
-Supplements: (gnome-software%{?_isa} and snapd%{?_isa})
+Requires: rpm-ostree%{?_isa}
+Supplements: (gnome-software%{?_isa} and rpm-ostree%{?_isa})
 
-%description snap
-Adds support for Snap packages from the Snap store.
-%endif
+%description rpm-ostree
+gnome-software is an application that makes it easy to add, remove
+and update software in the GNOME desktop.
+
+This package includes the rpm-ostree backend.
 
 %prep
 %autosetup -p1
 
 %build
 %meson \
-%if 0%{?fedora}
-    -Dsnap=true \
-%else
     -Dsnap=false \
-%endif
     -Dgudev=true \
     -Dpackagekit=true \
     -Dexternal_appstream=false \
@@ -123,6 +124,9 @@ Adds support for Snap packages from the Snap store.
 %install
 %meson_install
 
+# remove unneeded dpkg plugin
+rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dpkg.so
+
 # make the software center load faster
 desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.desktop \
     --set-key=X-AppInstall-Package --set-value=%{name}
@@ -130,7 +134,7 @@ desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.deskto
 # set up for Fedora
 cat >> %{buildroot}%{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override << FOE
 [org.gnome.software]
-official-repos = [ 'fedora', 'fedora-debuginfo', 'fedora-source', 'koji-override-0', 'koji-override-1', 'rawhide', 'rawhide-debuginfo', 'rawhide-source', 'updates', 'updates-debuginfo', 'updates-source', 'updates-testing', 'updates-testing-debuginfo', 'updates-testing-source', 'fedora-modular', 'fedora-modular-debuginfo', 'fedora-modular-source', 'rawhide-modular', 'rawhide-modular-debuginfo', 'rawhide-modular-source' ]
+official-repos = [ 'anaconda', 'fedora', 'fedora-debuginfo', 'fedora-source', 'koji-override-0', 'koji-override-1', 'rawhide', 'rawhide-debuginfo', 'rawhide-source', 'updates', 'updates-debuginfo', 'updates-source', 'updates-testing', 'updates-testing-debuginfo', 'updates-testing-source', 'fedora-modular', 'fedora-modular-debuginfo', 'fedora-modular-source', 'rawhide-modular', 'rawhide-modular-debuginfo', 'rawhide-modular-source' ]
 FOE
 
 %find_lang %name --with-gnome
@@ -161,7 +165,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_appstream.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-categories.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-menu-path.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dpkg.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dummy.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_epiphany.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora_langpacks.so
@@ -192,7 +195,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_provenance.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_repos.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rewrite-resource.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm-ostree.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_shell-extensions.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_systemd-updates.so
 %{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
@@ -205,11 +207,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libexecdir}/gnome-software-cmd
 %{_libexecdir}/gnome-software-restarter
 
-%if 0%{?fedora}
-%files snap
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_snap.so
-%{_datadir}/metainfo/org.gnome.Software.Plugin.Snap.metainfo.xml
-%endif
+%files rpm-ostree
+%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_rpm-ostree.so
 
 %files devel
 %{_libdir}/pkgconfig/gnome-software.pc
