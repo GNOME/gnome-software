@@ -932,7 +932,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		} else {
 
 			g_autoptr(GString) xpath = g_string_new (NULL);
-			g_autofree gchar *language;
+			g_autofree gchar *language = NULL;
 
 			xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", tmp);
 
