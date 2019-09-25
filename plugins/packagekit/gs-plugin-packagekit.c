@@ -181,12 +181,22 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	const gchar *repo_id;
+
+	repo_id = gs_app_get_origin (app);
+	if (repo_id == NULL) {
+		g_set_error_literal (error,
+		                     GS_PLUGIN_ERROR,
+		                     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		                     "origin not set");
+		return FALSE;
+	}
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	g_mutex_lock (&priv->task_mutex);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
-	                                 gs_app_get_origin (app),
+	                                 repo_id,
 	                                 TRUE,
 	                                 cancellable,
 	                                 gs_packagekit_helper_cb, helper,
