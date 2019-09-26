@@ -213,4 +213,17 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 		if (tmp != NULL)
 			gs_app_set_update_details (app, tmp);
 	}
+#if FWUPD_CHECK_VERSION(1,3,3)
+	if (fwupd_release_get_detach_image (rel) != NULL) {
+		g_autoptr(AsScreenshot) ss = as_screenshot_new ();
+		g_autoptr(AsImage) im = as_image_new ();
+		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
+		as_image_set_url (im, fwupd_release_get_detach_image (rel));
+		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
+		as_screenshot_add_image (ss, im);
+		if (fwupd_release_get_detach_caption (rel) != NULL)
+			as_screenshot_set_caption (ss, NULL, fwupd_release_get_detach_caption (rel));
+		gs_app_add_screenshot (app, ss);
+	}
+#endif
 }
