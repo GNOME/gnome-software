@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-08-12 08:10+0000\n"
-"PO-Revision-Date: 2019-08-13 22:02+0200\n"
+"POT-Creation-Date: 2019-09-23 15:00+0000\n"
+"PO-Revision-Date: 2019-09-26 16:24+0200\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -67,7 +67,7 @@ msgstr "Panel inzornaments"
 msgid "The update details"
 msgstr "I detais dal inzornament"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1386
+#: data/appdata/org.gnome.Software.appdata.xml.in:1411
 msgid "The GNOME Project"
 msgstr "Il progjet GNOME"
 
@@ -114,12 +114,12 @@ msgid ""
 "background, also installing ones that do not require a reboot."
 msgstr ""
 "Se abilitât, GNOME Software al discjarie in automatic i inzornaments "
-"software in secont plan, e ancje al instale chei che no àn bisugne che si "
-"torni a inviâ il sisteme."
+"software in sotfont, e ancje al instale chei che no àn bisugne che si torni "
+"a inviâ il sisteme."
 
 #: data/org.gnome.software.gschema.xml:20
 msgid "Notify the user about software updated in the background"
-msgstr "Notifiche l'utent sul software inzornât in secont plan"
+msgstr "Notifiche l'utent sul software inzornât in sotfont"
 
 #: data/org.gnome.software.gschema.xml:21
 msgid ""
@@ -520,7 +520,7 @@ msgstr "Mostre informazion detaiadis di debug"
 
 #: src/gs-application.c:126
 msgid "Installs any pending updates in the background"
-msgstr "Al instale in secont plan cualsisei inzornament in spiete"
+msgstr "Al instale in sotfont cualsisei inzornament in spiete"
 
 #: src/gs-application.c:128
 msgid "Show update preferences"
@@ -653,7 +653,7 @@ msgstr "Non"
 
 #. TRANSLATORS: A label for a button to show the settings for
 #. the selected shell extension.
-#: src/gs-category-page.ui:118 src/gs-details-page.c:885
+#: src/gs-category-page.ui:118 src/gs-details-page.c:919
 msgid "Extension Settings"
 msgstr "Impostazions estensions"
 
@@ -1438,7 +1438,7 @@ msgid "Pending update…"
 msgstr "In spiete pal inzornament…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:665
+#: src/gs-details-page.c:699
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1452,7 +1452,7 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:810 src/gs-details-page.c:827
+#: src/gs-details-page.c:844 src/gs-details-page.c:861
 #: src/gs-details-page.ui:162 src/gs-third-party-repo-row.c:83
 #: src/gs-upgrade-banner.c:70
 msgid "_Install"
@@ -1465,110 +1465,110 @@ msgstr "_Instale"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:841 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:875 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "_Instale…"
 
 #. TRANSLATORS: A label for a button to execute the selected
 #. application.
-#: src/gs-details-page.c:890
+#: src/gs-details-page.c:924
 msgid "_Launch"
 msgstr "_Invie"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:915 src/gs-details-page.ui:187
+#: src/gs-details-page.c:949 src/gs-details-page.ui:187
 msgid "_Remove"
 msgstr "_Gjave"
 
-#: src/gs-details-page.c:946 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:980 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "Rêt"
 
-#: src/gs-details-page.c:946 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:980 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "Al pues comunicâ vie rêt"
 
-#: src/gs-details-page.c:947 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:981 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "Servizis di sisteme"
 
-#: src/gs-details-page.c:947 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:981 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "Al pues acedi ai servizis D-Bus sul bus di sisteme"
 
-#: src/gs-details-page.c:948 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:982 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "Servizis di session"
 
-#: src/gs-details-page.c:948 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:982 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "Al pues acedi ai servizis D-Bus sul bus de session"
 
-#: src/gs-details-page.c:949 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:983 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "Dispositîfs"
 
-#: src/gs-details-page.c:949 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:983 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "Al pues acedi ai file dal dispositîf dal sisteme"
 
-#: src/gs-details-page.c:950 src/gs-details-page.c:951
+#: src/gs-details-page.c:984 src/gs-details-page.c:985
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "Cartele cjase"
 
-#: src/gs-details-page.c:950 src/gs-details-page.c:952
-#: src/gs-details-page.c:954 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:984 src/gs-details-page.c:986
+#: src/gs-details-page.c:988 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "Al pues viodi, modificâ e creâ i file"
 
-#: src/gs-details-page.c:951 src/gs-details-page.c:953
-#: src/gs-details-page.c:955 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:985 src/gs-details-page.c:987
+#: src/gs-details-page.c:989 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "Al pues viodi i file"
 
-#: src/gs-details-page.c:952 src/gs-details-page.c:953
+#: src/gs-details-page.c:986 src/gs-details-page.c:987
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "File System"
 
-#: src/gs-details-page.c:954 src/gs-details-page.c:955
+#: src/gs-details-page.c:988 src/gs-details-page.c:989
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "Cartele dai discjariaments"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:990 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "Impostazions"
 
-#: src/gs-details-page.c:956 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:990 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "Al pues viodi e modificâ cualsisei impostazion"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:991 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "Sisteme di visualizazion vecje maniere"
 
-#: src/gs-details-page.c:957 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:991 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "Al dopre un sisteme di visualizazion vieli e no sigûr"
 
 # aplicazion
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:992 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "Jessude dal isolament"
 
-#: src/gs-details-page.c:958 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:992 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Al pues lâ fûr dal isolament e imbroiâ cualsisei altre restrizion"
 
-#: src/gs-details-page.c:973
+#: src/gs-details-page.c:1007
 msgid "This application is fully sandboxed."
 msgstr "Cheste aplicazion e je completamentri isolade."
 
-#: src/gs-details-page.c:981
+#: src/gs-details-page.c:1015
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1577,83 +1577,83 @@ msgstr ""
 "aplicazion. Chest al è solit pes aplicazions vecjis."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1130
+#: src/gs-details-page.c:1164
 msgctxt "version"
 msgid "Unknown"
 msgstr "No cognossude"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1143
+#: src/gs-details-page.c:1177
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1196
+#: src/gs-details-page.c:1230
 msgctxt "origin"
 msgid "Unknown"
 msgstr "No cognossude"
 
-#: src/gs-details-page.c:1249
+#: src/gs-details-page.c:1283
 msgid "Low"
 msgstr "Basse"
 
-#: src/gs-details-page.c:1251
+#: src/gs-details-page.c:1285
 msgid "Medium"
 msgstr "Medie"
 
-#: src/gs-details-page.c:1253
+#: src/gs-details-page.c:1287
 msgid "High"
 msgstr "Alte"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1255 src/gs-details-page.ui:961 src/gs-review-row.c:57
+#: src/gs-details-page.c:1289 src/gs-details-page.ui:961 src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "No cognossude"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1591
+#: src/gs-details-page.c:1625
 msgid "You need internet access to write a review"
 msgstr "Al covente un acès a internet par scrivi une recension"
 
-#: src/gs-details-page.c:1777 src/gs-details-page.c:1793
+#: src/gs-details-page.c:1811 src/gs-details-page.c:1827
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impussibil cjatâ “%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2356
+#: src/gs-details-page.c:2390
 msgid "Public domain"
 msgstr "Domini public"
 
 # fâ pagjine par software proprietari su vikipedie
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2359
+#: src/gs-details-page.c:2393
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://en.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2366
+#: src/gs-details-page.c:2400
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2376 src/gs-details-page.ui:1205
+#: src/gs-details-page.c:2410 src/gs-details-page.ui:1205
 msgid "Free Software"
 msgstr "Software Libar"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2433
+#: src/gs-details-page.c:2467
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "I utents a son limitâts de licence chi daurman:"
 msgstr[1] "I utents a son limitâts des licencis chi daurman:"
 
-#: src/gs-details-page.c:2460 src/gs-details-page.ui:1277
+#: src/gs-details-page.c:2494 src/gs-details-page.ui:1277
 msgid "More information"
 msgstr "Plui informazions"
 
@@ -2848,28 +2848,28 @@ msgstr "Cjariament de imagjin falît"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:375
+#: src/gs-screenshot-image.c:381
 msgid "Screenshot size not found"
 msgstr "Dimension de cature di schermi no cjatade"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:405
+#: src/gs-screenshot-image.c:411
 msgid "Could not create cache"
 msgstr "Impussibil cjariâ la cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:465
+#: src/gs-screenshot-image.c:471
 msgid "Screenshot not valid"
 msgstr "Cature di schermi no valide"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:480
+#: src/gs-screenshot-image.c:486
 msgid "Screenshot not available"
 msgstr "Cature di schermi no disponibile"
 
-#: src/gs-screenshot-image.c:532
+#: src/gs-screenshot-image.c:544
 msgid "Screenshot"
 msgstr "Cature"
 
@@ -4402,7 +4402,7 @@ msgid "Failed to copy"
 msgstr "No si è rivâts a copiâ"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/external-appstream/gs-plugin-external-appstream.c:229
+#: plugins/external-appstream/gs-plugin-external-appstream.c:235
 msgid "Downloading extra metadata files…"
 msgstr "Daûr a discjariâ i file dai metadâts adizionâi…"
 
