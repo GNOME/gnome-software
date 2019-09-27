@@ -405,6 +405,41 @@ _ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin
 	return gs_plugin_flatpak_find_app_by_ref (plugin, ref, NULL, NULL);
 }
 
+/*
+ * Returns: (transfer full) (element-type GsFlatpak GsAppList):
+ *  a map from GsFlatpak to non-empty lists of apps from @list associated
+ *  with that installation.
+ */
+static GHashTable *
+_group_apps_by_installation (GsPlugin *plugin,
+                                              GsAppList *list)
+{
+	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
+
+	/* list of apps to be handled by each flatpak installation */
+	applist_by_flatpaks = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+						     (GDestroyNotify) g_object_unref,
+						     (GDestroyNotify) g_object_unref);
+
+	/* put each app into the correct per-GsFlatpak list */
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
+		if (flatpak != NULL) {
+			GsAppList *list_tmp = g_hash_table_lookup (applist_by_flatpaks, flatpak);
+			if (list_tmp == NULL) {
+				list_tmp = gs_app_list_new ();
+				g_hash_table_insert (applist_by_flatpaks,
+						     g_object_ref (flatpak),
+						     list_tmp);
+			}
+			gs_app_list_add (list_tmp, app);
+		}
+	}
+
+	return g_steal_pointer (&applist_by_flatpaks);
+}
+
 static FlatpakTransaction *
 _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    GCancellable *cancellable, GError **error)
@@ -759,34 +794,21 @@ gs_plugin_update (GsPlugin *plugin,
                   GCancellable *cancellable,
                   GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
-
-	/* list of apps to be handled by each flatpak installation */
-	applist_by_flatpaks = g_hash_table_new_full (g_direct_hash, g_direct_equal,
-						     NULL, (GDestroyNotify) g_object_unref);
-	for (guint i = 0; i < priv->flatpaks->len; i++) {
-		g_hash_table_insert (applist_by_flatpaks,
-				     g_ptr_array_index (priv->flatpaks, i),
-				     gs_app_list_new ());
-	}
-
-	/* put each app into the correct per-GsFlatpak list */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		GsFlatpak *flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-		if (flatpak != NULL) {
-			GsAppList *list_tmp = g_hash_table_lookup (applist_by_flatpaks, flatpak);
-			gs_app_list_add (list_tmp, app);
-		}
-	}
+	GHashTableIter iter;
+	gpointer key, value;
 
 	/* build and run transaction for each flatpak installation */
-	for (guint j = 0; j < priv->flatpaks->len; j++) {
-		GsFlatpak *flatpak = g_ptr_array_index (priv->flatpaks, j);
-		GsAppList *list_tmp = GS_APP_LIST (g_hash_table_lookup (applist_by_flatpaks, flatpak));
-		if (gs_app_list_length (list_tmp) == 0)
-			continue;
+	applist_by_flatpaks = _group_apps_by_installation (plugin, list);
+	g_hash_table_iter_init (&iter, applist_by_flatpaks);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		GsFlatpak *flatpak = GS_FLATPAK (key);
+		GsAppList *list_tmp = GS_APP_LIST (value);
+
+		g_assert (GS_IS_FLATPAK (flatpak));
+		g_assert (list_tmp != NULL);
+		g_assert (gs_app_list_length (list_tmp) > 0);
+
 		if (!gs_plugin_flatpak_update (plugin, flatpak, list_tmp, cancellable, error))
 			return FALSE;
 	}
