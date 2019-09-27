@@ -475,51 +475,55 @@ gboolean
 gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		    GCancellable *cancellable, GError **error)
 {
-	GsFlatpak *flatpak = NULL;
-	g_autoptr(FlatpakTransaction) transaction = NULL;
-	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
+	GHashTableIter iter;
+	gpointer key, value;
 
-	/* not supported */
-	for (guint i = 0; i < gs_app_list_length (list); i++) {
-		GsApp *app = gs_app_list_index (list, i);
-		flatpak = gs_plugin_flatpak_get_handler (plugin, app);
-		if (flatpak != NULL)
-			gs_app_list_add (list_tmp, app);
-	}
-	if (gs_app_list_length (list_tmp) == 0)
-		return TRUE;
+	/* build and run transaction for each flatpak installation */
+	applist_by_flatpaks = _group_apps_by_installation (plugin, list);
+	g_hash_table_iter_init (&iter, applist_by_flatpaks);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		GsFlatpak *flatpak = GS_FLATPAK (key);
+		GsAppList *list_tmp = GS_APP_LIST (value);
+		g_autoptr(FlatpakTransaction) transaction = NULL;
 
-	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
-		g_autoptr(GError) error_local = NULL;
+		g_assert (GS_IS_FLATPAK (flatpak));
+		g_assert (list_tmp != NULL);
+		g_assert (gs_app_list_length (list_tmp) > 0);
 
-		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
-			g_warning ("Failed to block on download scheduler: %s",
-				   error_local->message);
-			g_clear_error (&error_local);
+		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
+			g_autoptr(GError) error_local = NULL;
+
+			if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
+				g_warning ("Failed to block on download scheduler: %s",
+					   error_local->message);
+				g_clear_error (&error_local);
+			}
 		}
-	}
 
-	/* build and run non-deployed transaction */
-	transaction = _build_transaction (plugin, flatpak, cancellable, error);
-	if (transaction == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	flatpak_transaction_set_no_deploy (transaction, TRUE);
-	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
-		GsApp *app = gs_app_list_index (list_tmp, i);
-		g_autofree gchar *ref = NULL;
+		/* build and run non-deployed transaction */
+		transaction = _build_transaction (plugin, flatpak, cancellable, error);
+		if (transaction == NULL) {
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
+		flatpak_transaction_set_no_deploy (transaction, TRUE);
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			g_autofree gchar *ref = NULL;
 
-		ref = gs_flatpak_app_get_ref_display (app);
-		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+			ref = gs_flatpak_app_get_ref_display (app);
+			if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+				gs_flatpak_error_convert (error);
+				return FALSE;
+			}
+		}
+		if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
 	}
-	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
+
 	return TRUE;
 }
 
