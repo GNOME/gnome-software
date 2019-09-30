@@ -86,6 +86,8 @@ gs_plugin_add_langpacks (GsPlugin *plugin,
 		g_autoptr(GsApp) app = gs_app_new (NULL);
 		gs_app_set_metadata (app, "GnomeSoftware::Creator", gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_LOCALIZATION);
+		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_add_source (app, langpack_pkgname);
 		gs_app_list_add (list, app);
 
