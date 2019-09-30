@@ -136,7 +136,7 @@ perms_from_metadata (GKeyFile *keyfile)
 		permissions |= GS_APP_PERMISSIONS_FILESYSTEM_FULL;
 	else if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "host:ro"))
 		permissions |= GS_APP_PERMISSIONS_FILESYSTEM_READ;
-	if (strv != NULL && (g_strv_contains ((const gchar * const *)strv, "xdg-dowwnload") ||
+	if (strv != NULL && (g_strv_contains ((const gchar * const *)strv, "xdg-download") ||
 	                     g_strv_contains ((const gchar * const *)strv, "xdg-download:rw")))
 		permissions |= GS_APP_PERMISSIONS_DOWNLOADS_FULL;
 	else if (strv != NULL && g_strv_contains ((const gchar * const *)strv, "xdg-download:ro"))
