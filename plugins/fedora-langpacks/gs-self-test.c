@@ -52,7 +52,7 @@ main (int argc, char **argv)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	const gchar *whitelist[] = {
-		"fedora_langpacks",
+		"fedora-langpacks",
 		NULL
 	};
 
