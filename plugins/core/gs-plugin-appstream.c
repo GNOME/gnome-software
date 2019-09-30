@@ -94,17 +94,6 @@ gs_plugin_appstream_upgrade_cb (XbBuilderFixup *self,
 }
 
 static gboolean
-gs_plugin_appstream_add_pkgname_cb (XbBuilderFixup *self,
-				    XbBuilderNode *bn,
-				    gpointer user_data,
-				    GError **error)
-{
-	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0)
-		xb_builder_node_insert_text (bn, "pkgname", "", NULL);
-	return TRUE;
-}
-
-static gboolean
 gs_plugin_appstream_add_icons_cb (XbBuilderFixup *self,
 				  XbBuilderNode *bn,
 				  gpointer user_data,
@@ -248,13 +237,6 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 	/* add support for desktop files */
 	xb_builder_source_add_adapter (source, "application/x-desktop",
 				       gs_plugin_appstream_load_desktop_cb, NULL, NULL);
-
-	/* add a dummy package name */
-	fixup = xb_builder_fixup_new ("AddDesktopPackageName",
-				      gs_plugin_appstream_add_pkgname_cb,
-				      plugin, NULL);
-	xb_builder_fixup_set_max_depth (fixup, 2);
-	xb_builder_source_add_fixup (source, fixup);
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file,
@@ -720,7 +702,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	/* look in AppStream then fall back to AppData */
 	xb_string_append_union (xpath, "components/component/id[text()='%s']/../pkgname/..", id);
 	xb_string_append_union (xpath, "components/component[@type='webapp']/id[text()='%s']/..", id);
-	xb_string_append_union (xpath, "component/id[text()='%s']/../pkgname/..", id);
+	xb_string_append_union (xpath, "component/id[text()='%s']/..", id);
 	components = xb_silo_query (priv->silo, xpath->str, 0, &error_local);
 	if (components == NULL) {
 		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
