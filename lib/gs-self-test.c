@@ -11,6 +11,7 @@
 #include "gnome-software-private.h"
 
 #include "gs-test.h"
+#include <xmlb.h>
 
 static gboolean
 gs_app_list_filter_cb (GsApp *app, gpointer user_data)
@@ -705,6 +706,90 @@ gs_app_list_wildcard_dedupe_func (void)
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
 }
 
+/* Tests if an app's appdata, not present in appstream, still makes it to the xmlb silo.
+ * This confirms that the standalone appdata will be eventually converted to be an GsApp. */
+static void
+gs_app_is_actual_app_func (void)
+{
+	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilderSource) source1 = xb_builder_source_new ();
+	g_autoptr(XbBuilderSource) source2 = xb_builder_source_new ();
+	g_autoptr(GString) xpath = g_string_new (NULL);
+	g_autoptr(GPtrArray) components = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(GFileIOStream) iostream = NULL;
+	const gchar *appdata;
+	const gchar *appstream;
+	g_autoptr(GFile) xmlb = NULL;
+	g_autoptr(GError) error = NULL;
+	const gchar *tmp;
+
+	appdata = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		  "<component type=\"desktop\">\n"
+		  "<id>appA.desktop</id>\n"
+		  "<metadata_license>CC0-1.0</metadata_license>\n"
+		  "<project_license>GPL-2.0+</project_license>\n"
+		  "<name>app A</name>\n"
+		  "<summary>app A summary</summary>\n"
+		  "<description>app A description</description>\n"
+		  "</component>\n";
+
+	appstream = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		    "<components version=\"0.8\" origin=\"org\">\n"
+		    "<component type=\"desktop\">\n"
+		    "<id>appB.desktop</id>\n"
+		    "<metadata_license>CC0-1.0</metadata_license>\n"
+		    "<project_license>GPL-2.0+</project_license>\n"
+		    "<name>app B</name>\n"
+		    "<summary>app B summary</summary>\n"
+		    "<description>app B description</description>\n"
+		    "</component>\n"
+		    "<component type=\"desktop\">\n"
+		    "<id>appC.desktop</id>\n"
+		    "<metadata_license>CC0-1.0</metadata_license>\n"
+		    "<project_license>GPL-2.0+</project_license>\n"
+		    "<name>app C</name>\n"
+		    "<summary>app C summary</summary>\n"
+		    "<description>app C description</description>\n"
+		    "</component>\n"
+		    "</components>\n";
+
+	xb_builder_source_load_xml (source1, appstream, XB_BUILDER_SOURCE_FLAG_NONE, &error);
+	g_assert_no_error (error);
+	xb_builder_import_source (builder, source1);
+
+	xb_builder_source_load_xml (source2, appdata, XB_BUILDER_SOURCE_FLAG_NONE, &error);
+	g_assert_no_error (error);
+	xb_builder_import_source (builder, source2);
+
+        xmlb = g_file_new_tmp ("temp-XXXXXX.xmlb", &iostream, &error);
+        g_assert_no_error (error);
+        g_assert_nonnull (xmlb);
+        silo = xb_builder_ensure (builder, xmlb,
+                                  XB_BUILDER_COMPILE_FLAG_WATCH_BLOB,
+                                  NULL, &error);
+	g_assert_no_error (error);
+	g_assert_nonnull (silo);
+
+	xb_string_append_union (xpath, "components/component/id/..");
+	xb_string_append_union (xpath, "component/description/..");
+	components = xb_silo_query (silo, xpath->str, 0, &error);
+	g_assert_no_error (error);
+
+	g_assert_cmpint (components->len, ==, 3);
+
+        for (guint i = 0; i < components->len; i++) {
+		XbNode *component = g_ptr_array_index (components, i);
+		tmp = xb_node_query_text (component, "id", NULL);
+		g_assert_true (g_strcmp0 (tmp, "appA.desktop") == 0 ||
+			       g_strcmp0 (tmp, "appB.desktop") == 0 ||
+			       g_strcmp0 (tmp, "appC.desktop") == 0);
+        }
+
+
+
+}
+
 static void
 gs_app_list_func (void)
 {
@@ -803,6 +888,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/app{list-wildcard-dedupe}", gs_app_list_wildcard_dedupe_func);
 	g_test_add_func ("/gnome-software/lib/app{list-performance}", gs_app_list_performance_func);
 	g_test_add_func ("/gnome-software/lib/app{list-related}", gs_app_list_related_func);
+	g_test_add_func ("/gnome-software/lib/app{actual-app}", gs_app_is_actual_app_func);
 	g_test_add_func ("/gnome-software/lib/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/lib/plugin{download-rewrite}", gs_plugin_download_rewrite_func);
 
