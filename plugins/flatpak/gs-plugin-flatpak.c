@@ -412,7 +412,7 @@ _ref_to_app (FlatpakTransaction *transaction, const gchar *ref, GsPlugin *plugin
  */
 static GHashTable *
 _group_apps_by_installation (GsPlugin *plugin,
-                                              GsAppList *list)
+                             GsAppList *list)
 {
 	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
 
