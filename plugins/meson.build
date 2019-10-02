@@ -27,6 +27,9 @@ endif
 if get_option('gudev')
   subdir('modalias')
 endif
+if get_option('malcontent')
+  subdir('malcontent')
+endif
 if get_option('odrs')
   subdir('odrs')
 endif
