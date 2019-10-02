@@ -98,6 +98,8 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_license_unknown;
 	GtkWidget		*label_details_license_title;
 	GtkWidget		*box_details_license_value;
+	GtkWidget		*label_details_channel_title;
+	GtkWidget		*label_details_channel_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
 	GtkWidget		*label_details_size_installed_title;
@@ -1158,6 +1160,16 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_details_license_free, FALSE);
 		gtk_widget_set_visible (self->button_details_license_nonfree, TRUE);
 		gtk_widget_set_visible (self->button_details_license_unknown, FALSE);
+	}
+
+	/* set channel for snaps */
+	if (gs_app_get_bundle_kind (self->app) == AS_BUNDLE_KIND_SNAP) {
+		gtk_label_set_label (GTK_LABEL (self->label_details_channel_value), gs_app_get_branch (self->app));
+		gtk_widget_set_visible (self->label_details_channel_title, TRUE);
+		gtk_widget_set_visible (self->label_details_channel_value, TRUE);
+	} else {
+		gtk_widget_set_visible (self->label_details_channel_title, FALSE);
+		gtk_widget_set_visible (self->label_details_channel_value, FALSE);
 	}
 
 	/* set version */
@@ -2697,6 +2709,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_license_unknown);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_license_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_channel_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_origin_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_size_download_title);

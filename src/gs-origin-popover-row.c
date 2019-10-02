@@ -27,6 +27,9 @@ typedef struct
 	GtkWidget	*branch_box;
 	GtkWidget	*branch_title;
 	GtkWidget	*branch_label;
+	GtkWidget	*version_box;
+	GtkWidget	*version_title;
+	GtkWidget	*version_label;
 	GtkWidget	*selected_image;
 } GsOriginPopoverRowPrivate;
 
@@ -93,6 +96,17 @@ refresh_ui (GsOriginPopoverRow *row)
 	} else {
 		gtk_widget_hide (priv->branch_box);
 	}
+
+	if (gs_app_get_bundle_kind (priv->app) == AS_BUNDLE_KIND_SNAP) {
+		/* TRANSLATORS: the title for Snap channels */
+		gtk_label_set_text (GTK_LABEL (priv->branch_title), _("Channel"));
+		gtk_label_set_text (GTK_LABEL (priv->version_label), gs_app_get_version (priv->app));
+		gtk_widget_show (priv->version_box);
+	} else {
+		/* TRANSLATORS: the title for Flatpak branches */
+		gtk_label_set_text (GTK_LABEL (priv->branch_title), _("Branch"));
+		gtk_widget_hide (priv->version_box);
+	}
 }
 
 static void
@@ -130,6 +144,7 @@ gs_origin_popover_row_set_size_group (GsOriginPopoverRow *row, GtkSizeGroup *siz
 	gtk_size_group_add_widget (size_group, priv->format_title);
 	gtk_size_group_add_widget (size_group, priv->installation_title);
 	gtk_size_group_add_widget (size_group, priv->branch_title);
+	gtk_size_group_add_widget (size_group, priv->version_title);
 }
 
 static void
@@ -171,6 +186,9 @@ gs_origin_popover_row_class_init (GsOriginPopoverRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, branch_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, version_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, version_title);
+	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, version_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsOriginPopoverRow, selected_image);
 }
 

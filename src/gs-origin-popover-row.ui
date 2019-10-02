@@ -138,6 +138,35 @@
                 </child>
               </object>
             </child>
+            <child>
+              <object class="GtkBox" id="version_box">
+                <property name="visible">True</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">12</property>
+                <child>
+                  <object class="GtkLabel" id="version_title">
+                    <property name="visible">True</property>
+                    <property name="halign">start</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes" comments="Translators: The available version of an app">Version</property>
+                    <style>
+                      <class name="app-row-origin-text"/>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="version_label">
+                    <property name="visible">True</property>
+                    <property name="halign">start</property>
+                    <property name="ellipsize">end</property>
+                    <style>
+                      <class name="app-row-origin-text"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
         <child>
