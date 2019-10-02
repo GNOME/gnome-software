@@ -91,12 +91,16 @@ app_is_expected_to_have_content_rating (GsApp *app)
  * this user to use), return %TRUE; otherwise return %FALSE.
  *
  * The #AsContentRating in @app may be %NULL if no OARS ratings are provided for
- * the app. If so, we have to assume the most restrictive ratings. */
+ * the app. If so, we have to assume the most restrictive ratings. However, if
+ * @rating is provided but is empty, we assume that every section in it has
+ * value %AS_CONTENT_RATING_VALUE_NONE. See
+ * https://github.com/hughsie/oars/blob/master/specification/oars-1.1.md */
 static gboolean
 app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 {
 	AsContentRating *rating = gs_app_get_content_rating (app);  /* (nullable) */
 	g_autofree const gchar **oars_sections = mct_app_filter_get_oars_sections (app_filter);
+	AsContentRatingValue default_rating_value;
 
 	if (rating == NULL && !app_is_expected_to_have_content_rating (app)) {
 		/* Some apps, such as flatpak runtimes, are not expected to have
@@ -105,6 +109,9 @@ app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 	} else if (rating == NULL) {
 		g_debug ("No OARS ratings provided for ‘%s’: assuming most extreme",
 		         gs_app_get_unique_id (app));
+		default_rating_value = AS_CONTENT_RATING_VALUE_INTENSE;
+	} else {
+		default_rating_value = AS_CONTENT_RATING_VALUE_NONE;
 	}
 
 	for (gsize i = 0; oars_sections[i] != NULL; i++) {
@@ -116,10 +123,12 @@ app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 		if (rating != NULL)
 			rating_value = as_content_rating_get_value (rating, oars_sections[i]);
 		else
-			rating_value = AS_CONTENT_RATING_VALUE_INTENSE;
+			rating_value = AS_CONTENT_RATING_VALUE_UNKNOWN;
 
-		if (rating_value == AS_CONTENT_RATING_VALUE_UNKNOWN ||
-		    filter_value == MCT_APP_FILTER_OARS_VALUE_UNKNOWN)
+		if (rating_value == AS_CONTENT_RATING_VALUE_UNKNOWN)
+			rating_value = default_rating_value;
+
+		if (filter_value == MCT_APP_FILTER_OARS_VALUE_UNKNOWN)
 			continue;
 		else if (convert_app_filter_oars_value (filter_value) < rating_value)
 			return FALSE;
