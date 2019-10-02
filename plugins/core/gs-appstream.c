@@ -605,17 +605,23 @@ gs_appstream_refine_app_content_rating (GsPlugin *plugin,
 	/* get kind */
 	as_content_rating_set_kind (cr, xb_node_get_attr (content_rating, "type"));
 
-	/* get attributes */
+	/* get attributes; no attributes being found (i.e.
+	 * `<content_rating type="*"/>`) is OK: it means that all attributes have
+	 * value `none`, as per the
+	 * [OARS semantics](https://github.com/hughsie/oars/blob/master/specification/oars-1.1.md) */
 	content_attributes = xb_node_query (content_rating, "content_attribute", 0, &error_local);
-	if (content_attributes == NULL) {
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
-			return TRUE;
-		if (g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT))
-			return TRUE;
+	if (content_attributes == NULL &&
+	    g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+		g_clear_error (&error_local);
+	} else if (content_attributes == NULL &&
+		 g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT)) {
+		return TRUE;
+	} else if (content_attributes == NULL) {
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
-	for (guint i = 0; i < content_attributes->len; i++) {
+
+	for (guint i = 0; content_attributes != NULL && i < content_attributes->len; i++) {
 		XbNode *content_attribute = g_ptr_array_index (content_attributes, i);
 		as_content_rating_add_attribute (cr,
 						 xb_node_get_attr (content_attribute, "id"),
