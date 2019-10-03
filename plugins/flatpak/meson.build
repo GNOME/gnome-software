@@ -1,5 +1,3 @@
-subdir('tests')
-
 cargs = ['-DG_LOG_DOMAIN="GsPluginFlatpak"']
 deps = [
   plugin_libs,
@@ -45,6 +43,8 @@ i18n.merge_file(
 )
 
 if get_option('tests')
+  subdir('tests')
+
   cargs += ['-DLOCALPLUGINDIR="' + meson.current_build_dir() + '"']
   cargs += ['-DLOCALPLUGINDIR_CORE="' + meson.current_build_dir() + '/../core"']
   cargs += ['-DTESTDATADIR="' + join_paths(meson.current_build_dir(), 'tests') + '"']
