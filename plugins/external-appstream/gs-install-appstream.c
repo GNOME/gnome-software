@@ -23,6 +23,7 @@
 
 #include <locale.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include <xmlb.h>
 #include <glib/gi18n.h>
@@ -162,6 +163,9 @@ main (int argc, char *argv[])
 		g_print ("%s: %s\n", _("Failed to validate content type"), error->message);
 		return EXIT_FAILURE;
 	}
+
+	/* Set the umask to ensure it is read-only to all users except root. */
+	umask (022);
 
 	/* do the copy */
 	if (!gs_install_appstream_copy_file (file, &error)) {
