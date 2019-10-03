@@ -5,6 +5,7 @@ custom_target(
   output : 'done',
   command : [
     tar,
+    '--no-same-owner',
     '--directory=' + meson.current_build_dir(),
     '-xf', '@INPUT@',
   ],
