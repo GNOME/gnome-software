@@ -179,6 +179,7 @@ gs_page_install_app (GsPage *page,
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsProgress) progress = gs_progress_new ();
 
 	/* probably non-free */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
@@ -199,6 +200,7 @@ gs_page_install_app (GsPage *page,
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "interactive", TRUE,
 					 "app", helper->app,
+					 "progress", progress,
 					 NULL);
 	gs_plugin_loader_job_process_async (priv->plugin_loader,
 					    plugin_job,

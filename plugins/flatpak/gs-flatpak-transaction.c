@@ -14,6 +14,7 @@
 struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	GHashTable		*refhash;	/* ref:GsApp */
+	GsProgress		*progress;
 	GError			*first_operation_error;
 #if !FLATPAK_CHECK_VERSION(1,5,1)
 	gboolean		 no_deploy;
@@ -45,6 +46,7 @@ gs_flatpak_transaction_finalize (GObject *object)
 
 	g_assert (self != NULL);
 	g_hash_table_unref (self->refhash);
+	g_clear_object (&self->progress);
 	if (self->first_operation_error != NULL)
 		g_error_free (self->first_operation_error);
 
@@ -194,6 +196,21 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 	gs_app_set_progress (app, percent);
 }
 
+static void
+_transaction_progress_changed_cb2 (FlatpakTransactionProgress *progress,
+				   gpointer user_data)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (user_data);
+	guint percent = flatpak_transaction_progress_get_progress (progress);
+	g_autofree char *status = flatpak_transaction_progress_get_status (progress);
+
+	g_print ("FLATPAK STATUS (%u%%): %s\n", percent, status);
+	if (self->progress != NULL) {
+		gs_progress_set_message (self->progress, status);
+		gs_progress_set_percentage (self->progress, percent);
+	}
+}
+
 static const gchar *
 _flatpak_transaction_operation_type_to_string (FlatpakTransactionOperationType ot)
 {
@@ -230,6 +247,9 @@ _transaction_new_operation (FlatpakTransaction *transaction,
 	g_signal_connect_object (progress, "changed",
 				 G_CALLBACK (_transaction_progress_changed_cb),
 				 app, 0);
+	g_signal_connect_object (progress, "changed",
+				 G_CALLBACK (_transaction_progress_changed_cb2),
+				 transaction, 0);
 	flatpak_transaction_progress_set_update_frequency (progress, 100); /* FIXME? */
 
 	/* set app status */
@@ -446,6 +466,7 @@ gs_flatpak_transaction_init (GsFlatpakTransaction *self)
 
 FlatpakTransaction *
 gs_flatpak_transaction_new (FlatpakInstallation	*installation,
+			    GsProgress *progress,
 			    GCancellable *cancellable,
 			    GError **error)
 {
@@ -456,5 +477,6 @@ gs_flatpak_transaction_new (FlatpakInstallation	*installation,
 			       NULL);
 	if (self == NULL)
 		return NULL;
+	g_set_object (&self->progress, progress);
 	return FLATPAK_TRANSACTION (self);
 }

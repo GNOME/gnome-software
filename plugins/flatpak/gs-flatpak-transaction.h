@@ -17,6 +17,7 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsFlatpakTransaction, gs_flatpak_transaction, GS, FLATPAK_TRANSACTION, FlatpakTransaction)
 
 FlatpakTransaction	*gs_flatpak_transaction_new		(FlatpakInstallation	*installation,
+								 GsProgress		*progress,
 								 GCancellable		*cancellable,
 								 GError			**error);
 GsApp			*gs_flatpak_transaction_get_app_by_ref	(FlatpakTransaction	*transaction,

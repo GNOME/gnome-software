@@ -20,4 +20,5 @@
 #include <gs-os-release.h>
 #include <gs-plugin.h>
 #include <gs-plugin-vfuncs.h>
+#include <gs-progress.h>
 #include <gs-utils.h>

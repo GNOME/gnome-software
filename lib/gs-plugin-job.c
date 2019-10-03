@@ -33,6 +33,7 @@ struct _GsPluginJob
 	GFile			*file;
 	GsCategory		*category;
 	AsReview		*review;
+	GsProgress		*progress;
 	gint64			 time_created;
 };
 
@@ -52,6 +53,7 @@ enum {
 	PROP_REVIEW,
 	PROP_MAX_RESULTS,
 	PROP_TIMEOUT,
+	PROP_PROGRESS,
 	PROP_LAST
 };
 
@@ -399,6 +401,20 @@ gs_plugin_job_get_review (GsPluginJob *self)
 	return self->review;
 }
 
+void
+gs_plugin_job_set_progress (GsPluginJob *self, GsProgress *progress)
+{
+	g_return_if_fail (GS_IS_PLUGIN_JOB (self));
+	g_set_object (&self->progress, progress);
+}
+
+GsProgress *
+gs_plugin_job_get_progress (GsPluginJob *self)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_JOB (self), NULL);
+	return self->progress;
+}
+
 static void
 gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -440,6 +456,9 @@ gs_plugin_job_get_property (GObject *obj, guint prop_id, GValue *value, GParamSp
 		break;
 	case PROP_REVIEW:
 		g_value_set_object (value, self->review);
+		break;
+	case PROP_PROGRESS:
+		g_value_set_object (value, self->progress);
 		break;
 	case PROP_MAX_RESULTS:
 		g_value_set_uint (value, self->max_results);
@@ -501,6 +520,9 @@ gs_plugin_job_set_property (GObject *obj, guint prop_id, const GValue *value, GP
 	case PROP_TIMEOUT:
 		gs_plugin_job_set_timeout (self, g_value_get_uint (value));
 		break;
+	case PROP_PROGRESS:
+		gs_plugin_job_set_progress (self, g_value_get_object (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (obj, prop_id, pspec);
 		break;
@@ -518,6 +540,7 @@ gs_plugin_job_finalize (GObject *obj)
 	g_clear_object (&self->plugin);
 	g_clear_object (&self->category);
 	g_clear_object (&self->review);
+	g_clear_object (&self->progress);
 	G_OBJECT_CLASS (gs_plugin_job_parent_class)->finalize (obj);
 }
 
@@ -602,6 +625,11 @@ gs_plugin_job_class_init (GsPluginJobClass *klass)
 				   0, G_MAXUINT, 60,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_TIMEOUT, pspec);
+
+	pspec = g_param_spec_object ("progress", NULL, NULL,
+				     GS_TYPE_PROGRESS,
+				     G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
 }
 
 static void

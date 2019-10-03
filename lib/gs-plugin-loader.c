@@ -492,6 +492,25 @@ gs_plugin_loader_review_score_sort_cb (gconstpointer a, gconstpointer b)
 }
 
 static gboolean
+gs_plugin_loader_progress_changed_idle (gpointer user_data)
+{
+	GsPluginJob *plugin_job = (GsPluginJob *) user_data;
+
+	g_object_notify (G_OBJECT (plugin_job), "progress");
+	g_print (" --- gs_plugin_loader_progress_changed_idle\n");
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_plugin_loader_progress_changed_cb (GsProgress *progress, GParamSpec *pspec, GsPluginJob *plugin_job)
+{
+	g_print (" --- gs_plugin_loader_progress_changed_cb\n");
+
+	g_idle_add (gs_plugin_loader_progress_changed_idle, plugin_job);
+}
+
+static gboolean
 gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GsPlugin *plugin,
 			     GsApp *app,
@@ -503,6 +522,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	gboolean ret = TRUE;
 	gpointer func = NULL;
+	GsProgress *progress;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
 
@@ -521,6 +541,29 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* set what plugin is running on the job */
 	gs_plugin_job_set_plugin (helper->plugin_job, plugin);
+
+	/* set the data on either the app or the app list as the plugin job isn't passed to the plugins */
+	progress = gs_plugin_job_get_progress (helper->plugin_job);
+	if (progress != NULL) {
+		if (app != NULL)
+			g_object_set_data (G_OBJECT (app), "job-progress", progress);
+		if (list != NULL)
+			g_object_set_data (G_OBJECT (list), "job-progress", progress);
+
+		// XXX: debug
+		g_signal_connect_object (progress, "notify::size-downloaded",
+		                         G_CALLBACK (gs_plugin_loader_progress_changed_cb),
+		                         helper->plugin_job, 0);
+		g_signal_connect_object (progress, "notify::size-total",
+		                         G_CALLBACK (gs_plugin_loader_progress_changed_cb),
+		                         helper->plugin_job, 0);
+		g_signal_connect_object (progress, "notify::message",
+		                         G_CALLBACK (gs_plugin_loader_progress_changed_cb),
+		                         helper->plugin_job, 0);
+		g_signal_connect_object (progress, "notify::percentage",
+		                         G_CALLBACK (gs_plugin_loader_progress_changed_cb),
+		                         helper->plugin_job, 0);
+	}
 
 	/* run the correct vfunc */
 	if (gs_plugin_job_get_interactive (helper->plugin_job))

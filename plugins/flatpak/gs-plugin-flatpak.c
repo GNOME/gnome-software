@@ -441,7 +441,7 @@ _group_apps_by_installation (GsPlugin *plugin,
 }
 
 static FlatpakTransaction *
-_build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
+_build_transaction (GsPlugin *plugin, GsFlatpak *flatpak, GsProgress *job_progress,
 		    GCancellable *cancellable, GError **error)
 {
 	FlatpakInstallation *installation;
@@ -454,7 +454,7 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		flatpak_installation_set_no_interaction (installation, TRUE);
 
 	/* create transaction */
-	transaction = gs_flatpak_transaction_new (installation, cancellable, error);
+	transaction = gs_flatpak_transaction_new (installation, job_progress, cancellable, error);
 	if (transaction == NULL) {
 		g_prefix_error (error, "failed to build transaction: ");
 		gs_flatpak_error_convert (error);
@@ -502,7 +502,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		}
 
 		/* build and run non-deployed transaction */
-		transaction = _build_transaction (plugin, flatpak, cancellable, error);
+		transaction = _build_transaction (plugin, flatpak, NULL, cancellable, error);
 		if (transaction == NULL) {
 			gs_flatpak_error_convert (error);
 			return FALSE;
@@ -551,7 +551,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return gs_flatpak_app_remove_source (flatpak, app, cancellable, error);
 
 	/* build and run transaction */
-	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	transaction = _build_transaction (plugin, flatpak, NULL, cancellable, error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
@@ -600,6 +600,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsFlatpak *flatpak;
+	GsProgress *job_progress;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
 	/* queue for install if installation needs the network */
@@ -648,8 +649,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 	}
 
+	job_progress = g_object_get_data (G_OBJECT (app), "job-progress");
+
 	/* build */
-	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	transaction = _build_transaction (plugin, flatpak, job_progress, cancellable, error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
@@ -743,7 +746,7 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
 	/* build and run transaction */
-	transaction = _build_transaction (plugin, flatpak, cancellable, error);
+	transaction = _build_transaction (plugin, flatpak, NULL, cancellable, error);
 	if (transaction == NULL) {
 		gs_flatpak_error_convert (error);
 		return FALSE;
