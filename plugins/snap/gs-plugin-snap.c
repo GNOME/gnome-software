@@ -365,48 +365,6 @@ is_banner_icon_image (const gchar *filename)
 	return g_regex_match_simple ("^banner-icon(?:_[a-zA-Z0-9]{7})?\\.(?:png|jpg)$", filename, 0, 0);
 }
 
-static const gchar *
-get_media_url (SnapdSnap *snap, gboolean (*match_func)(const gchar *filename))
-{
-	GPtrArray *media, *screenshots;
-	guint i;
-
-	media = snapd_snap_get_media (snap);
-	for (i = 0; i < media->len; i++) {
-		SnapdMedia *m = media->pdata[i];
-
-		/* FIXME: In the future there will be a media type for these */
-
-		/* Fall back to old specially named screenshots */
-		if (g_strcmp0 (snapd_media_get_media_type (m), "screenshot") == 0) {
-			const gchar *url;
-			g_autofree gchar *filename = NULL;
-
-			url = snapd_media_get_url (m);
-			filename = g_path_get_basename (url);
-			if (match_func (filename))
-				return url;
-		}
-	}
-
-	/* Fall back to old screenshots */
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	screenshots = snapd_snap_get_screenshots (snap);
-G_GNUC_END_IGNORE_DEPRECATIONS
-	for (i = 0; i < screenshots->len; i++) {
-		SnapdScreenshot *screenshot = screenshots->pdata[i];
-		const gchar *url;
-		g_autofree gchar *filename = NULL;
-
-		url = snapd_screenshot_get_url (screenshot);
-		filename = g_path_get_basename (url);
-		if (match_func (filename))
-			return url;
-	}
-
-	return NULL;
-}
-
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GsAppList *list,
