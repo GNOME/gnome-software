@@ -26,5 +26,9 @@ void			 gs_flatpak_transaction_add_app		(FlatpakTransaction	*transaction,
 gboolean		 gs_flatpak_transaction_run		(FlatpakTransaction	*transaction,
 								 GCancellable		*cancellable,
 								 GError			**error);
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+void			 gs_flatpak_transaction_set_no_deploy	(FlatpakTransaction	*transaction,
+								 gboolean		 no_deploy);
+#endif
 
 G_END_DECLS

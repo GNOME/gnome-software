@@ -15,7 +15,17 @@ struct _GsFlatpakTransaction {
 	FlatpakTransaction	 parent_instance;
 	GHashTable		*refhash;	/* ref:GsApp */
 	GError			*first_operation_error;
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+	gboolean		 no_deploy;
+#endif
 };
+
+
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+typedef enum {
+  PROP_NO_DEPLOY = 1,
+} GsFlatpakTransactionProperty;
+#endif
 
 enum {
 	SIGNAL_REF_TO_APP,
@@ -40,6 +50,25 @@ gs_flatpak_transaction_finalize (GObject *object)
 
 	G_OBJECT_CLASS (gs_flatpak_transaction_parent_class)->finalize (object);
 }
+
+
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+void
+gs_flatpak_transaction_set_no_deploy (FlatpakTransaction *transaction, gboolean no_deploy)
+{
+	GsFlatpakTransaction *self;
+
+	g_return_if_fail (GS_IS_FLATPAK_TRANSACTION (transaction));
+
+	self = GS_FLATPAK_TRANSACTION (transaction);
+	if (self->no_deploy == no_deploy)
+		return;
+	self->no_deploy = no_deploy;
+	flatpak_transaction_set_no_deploy (transaction, no_deploy);
+
+	g_object_notify (G_OBJECT (self), "no-deploy");
+}
+#endif
 
 GsApp *
 gs_flatpak_transaction_get_app_by_ref (FlatpakTransaction *transaction, const gchar *ref)
@@ -348,9 +377,30 @@ _transaction_add_new_remote (FlatpakTransaction *transaction,
 	return FALSE;
 }
 
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+static void
+gs_flatpak_transaction_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	FlatpakTransaction *transaction = FLATPAK_TRANSACTION (object);
+
+	switch ((GsFlatpakTransactionProperty) prop_id) {
+	case PROP_NO_DEPLOY:
+		gs_flatpak_transaction_set_no_deploy (transaction, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+#endif
+
 static void
 gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 {
+
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+	GParamSpec *pspec;
+#endif
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	FlatpakTransactionClass *transaction_class = FLATPAK_TRANSACTION_CLASS (klass);
 	object_class->finalize = gs_flatpak_transaction_finalize;
@@ -361,6 +411,14 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 	transaction_class->operation_error = _transaction_operation_error;
 	transaction_class->choose_remote_for_ref = _transaction_choose_remote_for_ref;
 	transaction_class->end_of_lifed = _transaction_end_of_lifed;
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+	object_class->set_property = gs_flatpak_transaction_set_property;
+
+	pspec = g_param_spec_boolean ("no-deploy", NULL,
+				      "Whether the current transaction will deploy the downloaded objects",
+				      FALSE, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_NO_DEPLOY, pspec);
+#endif
 
 	signals[SIGNAL_REF_TO_APP] =
 		g_signal_new ("ref-to-app",

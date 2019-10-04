@@ -507,7 +507,11 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+		gs_flatpak_transaction_set_no_deploy (transaction, TRUE);
+#else
 		flatpak_transaction_set_no_deploy (transaction, TRUE);
+#endif
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 			GsApp *app = gs_app_list_index (list_tmp, i);
 			g_autofree gchar *ref = NULL;
