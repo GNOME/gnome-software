@@ -470,7 +470,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
-	flatpak_transaction_set_no_deploy (transaction, TRUE);
+	gs_flatpak_transaction_set_no_deploy (transaction, TRUE);
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 		GsApp *app = gs_app_list_index (list_tmp, i);
 		g_autofree gchar *ref = NULL;
