@@ -263,6 +263,9 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 			     const gchar *commit,
 			     FlatpakTransactionResult details)
 {
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+#endif
 	/* invalidate */
 	GsApp *app = _transaction_operation_get_app (operation);
 	if (app == NULL) {
@@ -282,7 +285,15 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 		gs_app_set_update_version (app, NULL);
 		/* force getting the new runtime */
 		gs_app_remove_kudo (app, GS_APP_KUDO_SANDBOXED);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+                /* downloaded, but not yet installed */
+#if !FLATPAK_CHECK_VERSION(1,5,1)
+		if (self->no_deploy)
+#else
+		if (flatpak_transaction_get_no_deploy (transaction))
+#endif
+			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		else
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UNINSTALL:
 		/* we don't actually know if this app is re-installable */
