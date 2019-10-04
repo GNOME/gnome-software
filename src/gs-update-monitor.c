@@ -193,6 +193,35 @@ _sort_by_rating_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 }
 
 static GNotification *
+_build_requires_new_permissions_notification (GsUpdateMonitor *monitor, GsAppList *list)
+{
+	const gchar *body;
+	g_autoptr(GNotification) n = NULL;
+
+	g_assert (gs_app_list_length (list) > 0);
+
+	if (gs_app_list_length (list) == 1) {
+		GsApp *app = gs_app_list_index (list, 0);
+		/* TRANSLATORS: update requires addition permissions. %s gets replaced by the app name */
+		body = g_strdup_printf (_("%s requires additional permissions"), gs_app_get_name (app));
+	} else {
+		/* TRANSLATORS: updates require addition permissions. %u gets replaced by the actual number of updates */
+		body = g_strdup_printf (ngettext ("%u application requires additional permissions",
+		                                  "%u applications require additional permissions",
+		                                  gs_app_list_length (list)),
+		                        gs_app_list_length (list));
+	}
+
+	n = g_notification_new (_("Software Updates Available"));
+	g_notification_set_body (n, body);
+	g_notification_add_button (n, _("Not Now"), "app.nop");
+	g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+
+	return g_steal_pointer (&n);
+}
+
+static GNotification *
 _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 {
 	guint need_restart_cnt = 0;
@@ -321,13 +350,11 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 }
 
 static gboolean
-_should_auto_update (GsApp *app)
+_can_online_update (GsApp *app)
 {
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
 		return FALSE;
 	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
-		return FALSE;
-	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS))
 		return FALSE;
 	return TRUE;
 }
@@ -340,6 +367,7 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) update_online = NULL;
 	g_autoptr(GsAppList) update_offline = NULL;
+	g_autoptr(GsAppList) requires_new_permissions = NULL;
 
 	/* get result */
 	list = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -351,14 +379,29 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	update_online = gs_app_list_new ();
 	update_offline = gs_app_list_new ();
+	requires_new_permissions = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (_should_auto_update (app)) {
-			g_debug ("auto-updating %s", gs_app_get_unique_id (app));
-			gs_app_list_add (update_online, app);
+		if (_can_online_update (app)) {
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
+				g_debug ("needs new permissions: %s", gs_app_get_unique_id (app));
+				gs_app_list_add (requires_new_permissions, app);
+			} else {
+				g_debug ("auto-updating %s", gs_app_get_unique_id (app));
+				gs_app_list_add (update_online, app);
+			}
 		} else {
 			gs_app_list_add (update_offline, app);
 		}
+	}
+
+	/* show a shell notification for anything where the user needs to review new permissions */
+	if (gs_app_list_length (requires_new_permissions) > 0) {
+		g_autoptr(GNotification) n = NULL;
+		n = _build_requires_new_permissions_notification (monitor,
+		                                                  requires_new_permissions);
+		g_application_send_notification (monitor->application,
+		                                 "updates-require-new-permissions", n);
 	}
 
 	/* install any apps that can be installed LIVE */
