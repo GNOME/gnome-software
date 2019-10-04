@@ -737,6 +737,7 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 			  GError **error)
 {
 	g_autoptr(FlatpakTransaction) transaction = NULL;
+	gboolean is_auto_update = !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE);
 
 	/* build and run transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
@@ -744,6 +745,10 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	/* Update action on auto updates is essentially a deploy operation. */
+	if (is_auto_update)
+		flatpak_transaction_set_no_pull (transaction, TRUE);
 
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 		GsApp *app = gs_app_list_index (list_tmp, i);
