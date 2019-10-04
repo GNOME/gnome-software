@@ -1402,6 +1402,7 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_UPDATE,
 					 "app", app,
+					 "interactive", TRUE,
 					 NULL);
 	gs_plugin_loader_job_process_async (plugin_loader, plugin_job,
 					    NULL,
