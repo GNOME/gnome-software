@@ -6,7 +6,7 @@ git log --format="%s" --cherry-pick --right-only 3.34.0... | grep -i -v trivial 
 Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
 Generate NEWS file:
-appstream-util appdata-to-news ../data/appdata/org.gnome.Software.appdata.xml.in > NEWS
+appstream-util appdata-to-news ../data/appdata/org.gnome.Software.appdata.xml.in > ../NEWS
 
 git commit -a -m "Release version 3.34.1"
 git tag -s 3.34.1 -m "==== Version 3.34.1 ===="
