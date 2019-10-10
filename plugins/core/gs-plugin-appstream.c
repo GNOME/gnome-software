@@ -67,6 +67,36 @@ gs_plugin_appstream_convert_component_kind (const gchar *kind)
 }
 
 static gboolean
+gs_plugin_appstream_override_app_id_cb (XbBuilderFixup *self,
+                                        XbBuilderNode *bn,
+                                        gpointer user_data,
+                                        GError **error)
+{
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0) {
+		g_autoptr(XbBuilderNode) id = xb_builder_node_get_child (bn, "id", NULL);
+		g_autoptr(XbBuilderNode) launchable = xb_builder_node_get_child (bn, "launchable", NULL);
+
+		if (launchable != NULL && id != NULL) {
+			const gchar *type = xb_builder_node_get_attr (launchable, "type");
+
+			if (g_strcmp0 (type, "desktop-id") == 0) {
+				const gchar *app_id = xb_builder_node_get_text (id);
+				const gchar *launchable_id = xb_builder_node_get_text (launchable);
+
+				if (app_id != NULL &&
+				    launchable_id != NULL &&
+				    g_strcmp0 (app_id, launchable_id) != 0) {
+					g_debug ("Overriding appdata app-id %s with <launchable> desktop-id: %s",
+						 app_id, launchable_id);
+					xb_builder_node_set_text (id, launchable_id, -1);
+				}
+			}
+		}
+	}
+	return TRUE;
+}
+
+static gboolean
 gs_plugin_appstream_upgrade_cb (XbBuilderFixup *self,
 				XbBuilderNode *bn,
 				gpointer user_data,
@@ -137,6 +167,7 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 {
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
 	g_autoptr(XbBuilderFixup) fixup = NULL;
+	g_autoptr(XbBuilderFixup) fixup1 = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
@@ -154,6 +185,14 @@ gs_plugin_appstream_load_appdata_fn (GsPlugin *plugin,
 				      plugin, NULL);
 	xb_builder_fixup_set_max_depth (fixup, 3);
 	xb_builder_source_add_fixup (source, fixup);
+
+	/* Override <id> with <launchable type="desktop-id"> to establish
+	 * desktop file <> appdata mapping */
+	fixup1 = xb_builder_fixup_new ("OverrideAppId",
+				       gs_plugin_appstream_override_app_id_cb,
+				       plugin, NULL);
+	xb_builder_fixup_set_max_depth (fixup1, 2);
+	xb_builder_source_add_fixup (source, fixup1);
 
 	/* add metadata */
 	info = xb_builder_node_insert (NULL, "info", NULL);
