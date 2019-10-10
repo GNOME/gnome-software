@@ -384,7 +384,8 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	}
 
 	/* this is only ever informational */
-	if (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED)) {
+	if (g_error_matches (error_local, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_CANCELLED) ||
+	    g_error_matches (error_local, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 		g_debug ("ignoring error cancelled: %s", error_local->message);
 		return TRUE;
 	}
