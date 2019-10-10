@@ -5,6 +5,7 @@ deps = [
   plugin_libs,
   flatpak,
   libxmlb,
+  ostree,
 ]
 
 if get_option('mogwai')
