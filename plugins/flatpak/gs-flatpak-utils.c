@@ -6,6 +6,7 @@
  */
 
 #include <config.h>
+#include <ostree.h>
 
 #include "gs-flatpak-app.h"
 #include "gs-flatpak.h"
@@ -45,6 +46,8 @@ gs_flatpak_error_convert (GError **perror)
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
 		}
+	} else if (error->domain == OSTREE_GPG_ERROR) {
+		error->code = GS_PLUGIN_ERROR_NO_SECURITY;
 	} else {
 		g_warning ("can't reliably fixup error from domain %s: %s",
 			   g_quark_to_string (error->domain),

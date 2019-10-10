@@ -165,6 +165,7 @@ endif
 
 if get_option('flatpak')
   flatpak = dependency('flatpak', version : '>= 1.0.4')
+  ostree = dependency('ostree-1')
 endif
 
 if get_option('malcontent')
