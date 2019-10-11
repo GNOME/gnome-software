@@ -12,6 +12,11 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_FWUPD_APP (gs_fwupd_app_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsFwupdApp, gs_fwupd_app, GS, FWUPD_APP, GsApp)
+
+GsApp			*gs_fwupd_app_new			(const gchar	*id);
 const gchar		*gs_fwupd_app_get_device_id		(GsApp		*app);
 const gchar		*gs_fwupd_app_get_update_uri		(GsApp		*app);
 gboolean		 gs_fwupd_app_get_is_locked		(GsApp		*app);

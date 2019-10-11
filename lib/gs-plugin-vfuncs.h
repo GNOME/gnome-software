@@ -50,6 +50,16 @@ void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
 
 /**
+ * gs_plugin_create_app:
+ * @plugin: a #GsPlugin
+ * @id: (allow-none): an AppStream ID
+ *
+ * Creates a GsApp, which may possibly be a subclassed type.
+ **/
+GsApp		*gs_plugin_create_app			(GsPlugin	*plugin,
+							 const gchar	*id);
+
+/**
  * gs_plugin_adopt_app:
  * @plugin: a #GsPlugin
  * @app: a #GsApp

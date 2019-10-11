@@ -58,6 +58,8 @@ void		 gs_plugin_set_appstream_id		(GsPlugin	*plugin,
 gboolean	 gs_plugin_get_enabled			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
+GsApp		*gs_plugin_app_new			(GsPlugin	*plugin,
+							 const gchar	*id);
 gboolean	 gs_plugin_has_flags			(GsPlugin	*plugin,
 							 GsPluginFlags	 flags);
 void		 gs_plugin_add_flags			(GsPlugin	*plugin,

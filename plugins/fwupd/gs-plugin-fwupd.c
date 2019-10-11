@@ -120,6 +120,12 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->client);
 }
 
+GsApp *
+gs_plugin_create_app (GsPlugin *plugin, const gchar *id)
+{
+	return gs_fwupd_app_new (id);
+}
+
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -225,7 +231,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
-	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_bundle_kind (priv->cached_origin, AS_BUNDLE_KIND_CABINET);
 
 	/* add the source to the plugin cache which allows us to match the
@@ -272,7 +277,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 				       NULL);
 	app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
-		app = gs_app_new (id);
+		app = gs_fwupd_app_new (id);
 		gs_plugin_cache_add (plugin, id, app);
 	}
 
@@ -321,7 +326,7 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 
 	/* create a GsApp based on the device, not the release */
 	id = gs_plugin_fwupd_build_device_id (device);
-	app = gs_app_new (id);
+	app = gs_fwupd_app_new (id);
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -1036,7 +1041,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		/* create something that we can use to enable/disable */
 		id = g_strdup_printf ("org.fwupd.%s.remote", fwupd_remote_get_id (remote));
-		app = gs_app_new (id);
+		app = gs_fwupd_app_new (id);
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?

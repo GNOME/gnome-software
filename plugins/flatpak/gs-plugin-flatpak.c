@@ -69,6 +69,12 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->destdir_for_tests = g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR");
 }
 
+GsApp *
+gs_plugin_create_app (GsPlugin *plugin, const gchar *id)
+{
+	return gs_flatpak_app_new (id);
+}
+
 static gboolean
 _as_app_scope_is_compatible (AsAppScope scope1, AsAppScope scope2)
 {

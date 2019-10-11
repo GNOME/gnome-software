@@ -12,44 +12,82 @@
 
 #include "gs-fwupd-app.h"
 
+struct _GsFwupdApp
+{
+	GsApp			 parent_instance;
+	gchar			*device_id;
+	gchar			*update_uri;
+	gboolean		 is_locked;
+};
+
+G_DEFINE_TYPE (GsFwupdApp, gs_fwupd_app, GS_TYPE_APP)
+
+static gboolean
+_g_set_str (gchar **str_ptr, const gchar *new_str)
+{
+	if (*str_ptr == new_str || g_strcmp0 (*str_ptr, new_str) == 0)
+		return FALSE;
+	g_free (*str_ptr);
+	*str_ptr = g_strdup (new_str);
+	return TRUE;
+}
+
+static void
+gs_fwupd_app_to_string (GsApp *app, GString *str)
+{
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	if (self->device_id != NULL) {
+		gs_utils_append_key_value (str, 20, "fwupd::device-id",
+					   self->device_id);
+	}
+	if (self->update_uri != NULL) {
+		gs_utils_append_key_value (str, 20, "fwupd::update-uri",
+					   self->update_uri);
+	}
+	gs_utils_append_key_value (str, 20, "fwupd::is-locked",
+				   self->is_locked ? "yes" : "no");
+}
+
 const gchar *
 gs_fwupd_app_get_device_id (GsApp *app)
 {
-	return gs_app_get_metadata_item (app, "fwupd::DeviceID");
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	return self->device_id;
 }
 
 const gchar *
 gs_fwupd_app_get_update_uri (GsApp *app)
 {
-	return gs_app_get_metadata_item (app, "fwupd::UpdateID");
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	return self->update_uri;
 }
 
 gboolean
 gs_fwupd_app_get_is_locked (GsApp *app)
 {
-	GVariant *tmp = gs_app_get_metadata_variant (app, "fwupd::IsLocked");
-	if (tmp == NULL)
-		return FALSE;
-	return g_variant_get_boolean (tmp);
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	return self->is_locked;
 }
 
 void
 gs_fwupd_app_set_device_id (GsApp *app, const gchar *device_id)
 {
-	gs_app_set_metadata (app, "fwupd::DeviceID", device_id);
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	_g_set_str (&self->device_id, device_id);
 }
 
 void
 gs_fwupd_app_set_update_uri (GsApp *app, const gchar *update_uri)
 {
-	gs_app_set_metadata (app, "fwupd::UpdateID", update_uri);
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	_g_set_str (&self->update_uri, update_uri);
 }
 
 void
 gs_fwupd_app_set_is_locked (GsApp *app, gboolean is_locked)
 {
-	g_autoptr(GVariant) tmp = g_variant_new_boolean (is_locked);
-	gs_app_set_metadata_variant (app, "fwupd::IsLocked", tmp);
+	GsFwupdApp *self = GS_FWUPD_APP (app);
+	self->is_locked = is_locked;
 }
 
 void
@@ -226,4 +264,33 @@ gs_fwupd_app_set_from_release (GsApp *app, FwupdRelease *rel)
 		gs_app_add_screenshot (app, ss);
 	}
 #endif
+}
+
+static void
+gs_fwupd_app_finalize (GObject *object)
+{
+	GsFwupdApp *self = GS_FWUPD_APP (object);
+	g_free (self->device_id);
+	g_free (self->update_uri);
+	G_OBJECT_CLASS (gs_fwupd_app_parent_class)->finalize (object);
+}
+
+static void
+gs_fwupd_app_class_init (GsFwupdAppClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsAppClass *klass_app = GS_APP_CLASS (klass);
+	klass_app->to_string = gs_fwupd_app_to_string;
+	object_class->finalize = gs_fwupd_app_finalize;
+}
+
+static void
+gs_fwupd_app_init (GsFwupdApp *self)
+{
+}
+
+GsApp *
+gs_fwupd_app_new (const gchar *id)
+{
+	return GS_APP (g_object_new (GS_TYPE_FWUPD_APP, "id", id, NULL));
 }
