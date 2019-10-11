@@ -74,6 +74,7 @@ struct _GsDetailsPage
 	GtkWidget		*button_details_add_shortcut;
 	GtkWidget		*button_details_remove_shortcut;
 	GtkWidget		*button_details_website;
+	GtkWidget		*button_details_contact;
 	GtkWidget		*button_donate;
 	GtkWidget		*button_install;
 	GtkWidget		*button_update;
@@ -658,6 +659,13 @@ gs_details_page_website_cb (GtkWidget *widget, GsDetailsPage *self)
 }
 
 static void
+gs_details_page_contact_cb (GtkWidget *widget, GsDetailsPage *self)
+{
+	gs_shell_show_uri (self->shell,
+	                   gs_app_get_url (self->app, AS_URL_KIND_CONTACT));
+}
+
+static void
 gs_details_page_donate_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	gs_shell_show_uri (self->shell, gs_app_get_url (self->app, AS_URL_KIND_DONATION));
@@ -1122,6 +1130,13 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		show_support_box = TRUE;
 	} else {
 		gtk_widget_set_visible (self->button_details_website, FALSE);
+	}
+	tmp = gs_app_get_url (self->app, AS_URL_KIND_CONTACT);
+	if (tmp != NULL && tmp[0] != '\0') {
+		gtk_widget_set_visible (self->button_details_contact, TRUE);
+		show_support_box = TRUE;
+	} else {
+		gtk_widget_set_visible (self->button_details_contact, FALSE);
 	}
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_DONATION);
 	if (tmp != NULL && tmp[0] != '\0') {
@@ -2597,6 +2612,9 @@ gs_details_page_setup (GsPage *page,
 	g_signal_connect (self->button_details_website, "clicked",
 			  G_CALLBACK (gs_details_page_website_cb),
 			  self);
+	g_signal_connect (self->button_details_contact, "clicked",
+			  G_CALLBACK (gs_details_page_contact_cb),
+			  self);
 	g_signal_connect (self->button_donate, "clicked",
 			  G_CALLBACK (gs_details_page_donate_cb),
 			  self);
@@ -2685,6 +2703,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_remove_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_website);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_contact);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_donate);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_update);
