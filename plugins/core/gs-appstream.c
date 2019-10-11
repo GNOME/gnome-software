@@ -542,7 +542,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 
 /**
  * _gs_utils_locale_has_translations:
- * @locale: A locale, e.g. "en_GB"
+ * @locale: A locale, e.g. `en_GB` or `uz_UZ.utf8@cyrillic`
  *
  * Looks up if the locale is likely to have translations.
  *
@@ -551,11 +551,19 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 static gboolean
 _gs_utils_locale_has_translations (const gchar *locale)
 {
-	if (g_strcmp0 (locale, "C") == 0)
+	g_autofree gchar *locale_copy = g_strdup (locale);
+	gchar *separator;
+
+	/* Strip off the codeset and modifier, if present. */
+	separator = strpbrk (locale_copy, ".@");
+	if (separator != NULL)
+		*separator = '\0';
+
+	if (g_strcmp0 (locale_copy, "C") == 0)
 		return FALSE;
-	if (g_strcmp0 (locale, "en") == 0)
+	if (g_strcmp0 (locale_copy, "en") == 0)
 		return FALSE;
-	if (g_strcmp0 (locale, "en_US") == 0)
+	if (g_strcmp0 (locale_copy, "en_US") == 0)
 		return FALSE;
 	return TRUE;
 }
