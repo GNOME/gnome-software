@@ -2745,11 +2745,14 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
 	gs_plugin_loader_allow_updates_recheck (plugin_loader);
 
-	/* get the language from the locale */
+	/* get the language from the locale (i.e. strip the territory, codeset
+	 * and modifier) */
 	priv->language = g_strdup (priv->locale);
-	match = g_strrstr (priv->language, "_");
+	match = strpbrk (priv->language, "._@");
 	if (match != NULL)
 		*match = '\0';
+
+	g_debug ("Using locale = %s, language = %s", priv->locale, priv->language);
 
 	g_mutex_init (&priv->pending_apps_mutex);
 	g_mutex_init (&priv->events_by_id_mutex);
