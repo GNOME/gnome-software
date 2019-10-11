@@ -568,20 +568,6 @@ _gs_utils_locale_has_translations (const gchar *locale)
 	return TRUE;
 }
 
-static gchar *
-_gs_utils_get_language_from_locale (const gchar *locale)
-{
-	gchar *separator;
-
-	separator = strpbrk (locale, "._");
-
-	if (separator == NULL)
-		return NULL;
-
-	return g_strndup (locale, separator - locale);
-}
-
-
 static gboolean
 gs_appstream_origin_valid (const gchar *origin)
 {
@@ -953,14 +939,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		} else {
 
 			g_autoptr(GString) xpath = g_string_new (NULL);
-			g_autofree gchar *language = NULL;
+			g_auto(GStrv) variants = g_get_locale_variants (tmp);
 
-			xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", tmp);
-
-			language = _gs_utils_get_language_from_locale (tmp);
-			if (language != NULL) {
-				xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", language);
-			}
+			/* @variants includes @tmp */
+			for (gsize i = 0; variants[i] != NULL; i++)
+				xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", variants[i]);
 
 			if (xb_node_query_text (component, xpath->str, NULL) != NULL)
 				gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
