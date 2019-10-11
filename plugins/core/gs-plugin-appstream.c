@@ -206,20 +206,71 @@ gs_plugin_appstream_load_desktop_cb (XbBuilderSource *self,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	GString *xml;
-	g_autoptr(AsApp) app = as_app_new ();
+	g_autofree gchar *icon = NULL;
+	g_autofree gchar *type = NULL;
+	g_autofree gchar *xml = NULL;
+	g_autofree gchar *name = NULL;
 	g_autoptr(GBytes) bytes = NULL;
+	g_autoptr(GKeyFile) kf = g_key_file_new ();
+
+	/* get icon from desktop file */
 	bytes = xb_builder_source_ctx_get_bytes (ctx, cancellable, error);
 	if (bytes == NULL)
 		return NULL;
-	as_app_set_id (app, xb_builder_source_ctx_get_filename (ctx));
-	if (!as_app_parse_data (app, bytes, AS_APP_PARSE_FLAG_USE_FALLBACKS, error))
+	if (!g_key_file_load_from_data (kf,
+					g_bytes_get_data (bytes, NULL),
+					g_bytes_get_size (bytes),
+					G_KEY_FILE_NONE,
+					error))
 		return NULL;
-	xml = as_app_to_xml (app, error);
-	if (xml == NULL)
+	if (g_key_file_get_boolean (kf,
+				    G_KEY_FILE_DESKTOP_GROUP,
+				    G_KEY_FILE_DESKTOP_KEY_NO_DISPLAY,
+				    NULL)) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "NoDisplay=true");
 		return NULL;
-	g_string_prepend (xml, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-	return g_memory_input_stream_new_from_data (g_string_free (xml, FALSE), -1, g_free);
+	}
+	type = g_key_file_get_string (kf,
+				      G_KEY_FILE_DESKTOP_GROUP,
+				      G_KEY_FILE_DESKTOP_KEY_TYPE,
+				      error);
+	if (type == NULL)
+		return NULL;
+	if (g_strcmp0 (type, G_KEY_FILE_DESKTOP_TYPE_APPLICATION) != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "Type=%s", type);
+		return NULL;
+	}
+	icon = g_key_file_get_string (kf,
+				      G_KEY_FILE_DESKTOP_GROUP,
+				      G_KEY_FILE_DESKTOP_KEY_ICON,
+				      error);
+	if (icon == NULL)
+		return NULL;
+
+	name = g_key_file_get_string (kf,
+				      G_KEY_FILE_DESKTOP_GROUP,
+				      G_KEY_FILE_DESKTOP_KEY_NAME,
+				      error);
+	if (name == NULL)
+		return NULL;
+
+	/* build a super-simple fake AppData file */
+	xml = g_strdup_printf ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+			       "<component type=\"desktop\">\n"
+			       "<id>%s</id>\n"
+			       "<name>%s</name>"
+			       "<icon type=\"stock\">%s</icon>\n"
+			       "</component>\n",
+			       xb_builder_source_ctx_get_filename (ctx),
+			       name,
+			       icon);
+	return g_memory_input_stream_new_from_data (g_steal_pointer (&xml), -1, g_free);
 }
 
 static gboolean
@@ -516,6 +567,9 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 			return FALSE;
 		}
 	}
+
+	/* regenerate with each minor release */
+	xb_builder_append_guid (builder, PACKAGE_VERSION);
 
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename ("appstream", "components.xmlb",
@@ -925,7 +979,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* get all installed appdata files (notice no 'components/' prefix...) */
-	components = xb_silo_query (priv->silo, "component", 0, NULL);
+	components = xb_silo_query (priv->silo, "component/description/..", 0, NULL);
 	if (components == NULL)
 		return TRUE;
 	for (guint i = 0; i < components->len; i++) {
