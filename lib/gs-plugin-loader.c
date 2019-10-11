@@ -2732,19 +2732,13 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							    SOUP_SESSION_TIMEOUT, 10,
 							    NULL);
 
-	/* get the locale without the various UTF-8 suffixes */
+	/* get the locale */
 	tmp = g_getenv ("GS_SELF_TEST_LOCALE");
 	if (tmp != NULL) {
 		g_debug ("using self test locale of %s", tmp);
 		priv->locale = g_strdup (tmp);
 	} else {
 		priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
-		match = g_strstr_len (priv->locale, -1, ".UTF-8");
-		if (match != NULL)
-			*match = '\0';
-		match = g_strstr_len (priv->locale, -1, ".utf8");
-		if (match != NULL)
-			*match = '\0';
 	}
 
 	/* the settings key sets the initial override */
