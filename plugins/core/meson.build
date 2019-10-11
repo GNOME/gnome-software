@@ -192,22 +192,6 @@ if get_option('hardcoded_popular')
 endif
 
 shared_module(
-  'gs_plugin_hardcoded-featured',
-  sources : 'gs-plugin-hardcoded-featured.c',
-  include_directories : [
-    include_directories('../..'),
-    include_directories('../../lib'),
-  ],
-  install : true,
-  install_dir: plugin_dir,
-  c_args : cargs,
-  dependencies : plugin_libs,
-  link_with : [
-    libgnomesoftware
-  ]
-)
-
-shared_module(
   'gs_plugin_rewrite-resource',
   sources : 'gs-plugin-rewrite-resource.c',
   include_directories : [
