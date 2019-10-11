@@ -9,13 +9,17 @@
 
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
+#include "gs-shell.h"
+
 G_BEGIN_DECLS
 
 #define GS_TYPE_REVIEW_DIALOG (gs_review_dialog_get_type ())
 
 G_DECLARE_FINAL_TYPE (GsReviewDialog, gs_review_dialog, GS, REVIEW_DIALOG, GtkDialog)
 
-GtkWidget	*gs_review_dialog_new		(void);
+GtkWidget	*gs_review_dialog_new		(GsShell	*shell,
+						 GsApp		*app);
 gint		 gs_review_dialog_get_rating	(GsReviewDialog	*dialog);
 void		 gs_review_dialog_set_rating	(GsReviewDialog	*dialog,
 						 gint		 rating);

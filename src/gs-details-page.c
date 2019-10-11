@@ -1123,8 +1123,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	} else {
 		gtk_widget_set_visible (self->button_details_website, FALSE);
 	}
+
 	tmp = gs_app_get_url (self->app, AS_URL_KIND_DONATION);
-	if (tmp != NULL && tmp[0] != '\0') {
+	if (tmp != NULL && tmp[0] != '\0' &&
+	    g_settings_get_boolean (self->settings, "show-donation-ui")) {
 		gtk_widget_set_visible (self->button_donate, TRUE);
 		show_support_box = TRUE;
 	} else {
@@ -2258,7 +2260,7 @@ gs_details_page_write_review_cb (GtkButton *button,
                                  GsDetailsPage *self)
 {
 	GtkWidget *dialog;
-	dialog = gs_review_dialog_new ();
+	dialog = gs_review_dialog_new (self->shell, self->app);
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_details_page_review_response_cb), self);
 	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
