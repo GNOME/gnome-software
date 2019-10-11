@@ -531,9 +531,18 @@ gs_plugin_set_priority (GsPlugin *plugin, guint priority)
  * gs_plugin_get_locale:
  * @plugin: a #GsPlugin
  *
- * Gets the user locale.
+ * Gets the user locale. This is in the form documented in `man 3 setlocale`:
+ * ```
+ * language[_territory][.codeset][@modifier]
+ * ```
+ * where `language` is an
+ * [ISO 639 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
+ * `territory` is an
+ * [ISO 3166 country code](https://en.wikipedia.org/wiki/ISO_3166-1), and
+ * `codeset` is a character set or encoding identifier like `ISO-8859-1` or
+ * `UTF-8`. For a list of all supported locales, run `locale -a`.
  *
- * Returns: the locale string, e.g. "en_GB"
+ * Returns: the locale string, e.g. `en_GB` or `uz_UZ.utf8@cyrillic`
  *
  * Since: 3.22
  **/
@@ -548,9 +557,13 @@ gs_plugin_get_locale (GsPlugin *plugin)
  * gs_plugin_get_language:
  * @plugin: a #GsPlugin
  *
- * Gets the user language from the locale.
+ * Gets the user language from the locale. This is the first component of the
+ * locale.
  *
- * Returns: the language string, e.g. "fr"
+ * Typically you should use the full locale rather than the language, as the
+ * same language can be used quite differently in different territories.
+ *
+ * Returns: the language string, e.g. `fr`
  *
  * Since: 3.22
  **/

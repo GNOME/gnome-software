@@ -2732,30 +2732,27 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 							    SOUP_SESSION_TIMEOUT, 10,
 							    NULL);
 
-	/* get the locale without the various UTF-8 suffixes */
+	/* get the locale */
 	tmp = g_getenv ("GS_SELF_TEST_LOCALE");
 	if (tmp != NULL) {
 		g_debug ("using self test locale of %s", tmp);
 		priv->locale = g_strdup (tmp);
 	} else {
 		priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
-		match = g_strstr_len (priv->locale, -1, ".UTF-8");
-		if (match != NULL)
-			*match = '\0';
-		match = g_strstr_len (priv->locale, -1, ".utf8");
-		if (match != NULL)
-			*match = '\0';
 	}
 
 	/* the settings key sets the initial override */
 	priv->disallow_updates = g_hash_table_new (g_direct_hash, g_direct_equal);
 	gs_plugin_loader_allow_updates_recheck (plugin_loader);
 
-	/* get the language from the locale */
+	/* get the language from the locale (i.e. strip the territory, codeset
+	 * and modifier) */
 	priv->language = g_strdup (priv->locale);
-	match = g_strrstr (priv->language, "_");
+	match = strpbrk (priv->language, "._@");
 	if (match != NULL)
 		*match = '\0';
+
+	g_debug ("Using locale = %s, language = %s", priv->locale, priv->language);
 
 	g_mutex_init (&priv->pending_apps_mutex);
 	g_mutex_init (&priv->events_by_id_mutex);

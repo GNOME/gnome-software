@@ -542,7 +542,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 
 /**
  * _gs_utils_locale_has_translations:
- * @locale: A locale, e.g. "en_GB"
+ * @locale: A locale, e.g. `en_GB` or `uz_UZ.utf8@cyrillic`
  *
  * Looks up if the locale is likely to have translations.
  *
@@ -551,28 +551,22 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 static gboolean
 _gs_utils_locale_has_translations (const gchar *locale)
 {
-	if (g_strcmp0 (locale, "C") == 0)
+	g_autofree gchar *locale_copy = g_strdup (locale);
+	gchar *separator;
+
+	/* Strip off the codeset and modifier, if present. */
+	separator = strpbrk (locale_copy, ".@");
+	if (separator != NULL)
+		*separator = '\0';
+
+	if (g_strcmp0 (locale_copy, "C") == 0)
 		return FALSE;
-	if (g_strcmp0 (locale, "en") == 0)
+	if (g_strcmp0 (locale_copy, "en") == 0)
 		return FALSE;
-	if (g_strcmp0 (locale, "en_US") == 0)
+	if (g_strcmp0 (locale_copy, "en_US") == 0)
 		return FALSE;
 	return TRUE;
 }
-
-static gchar *
-_gs_utils_get_language_from_locale (const gchar *locale)
-{
-	gchar *separator;
-
-	separator = strpbrk (locale, "._");
-
-	if (separator == NULL)
-		return NULL;
-
-	return g_strndup (locale, separator - locale);
-}
-
 
 static gboolean
 gs_appstream_origin_valid (const gchar *origin)
@@ -938,14 +932,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		} else {
 
 			g_autoptr(GString) xpath = g_string_new (NULL);
-			g_autofree gchar *language = NULL;
+			g_auto(GStrv) variants = g_get_locale_variants (tmp);
 
-			xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", tmp);
-
-			language = _gs_utils_get_language_from_locale (tmp);
-			if (language != NULL) {
-				xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", language);
-			}
+			/* @variants includes @tmp */
+			for (gsize i = 0; variants[i] != NULL; i++)
+				xb_string_append_union (xpath, "languages/lang[text()='%s'][@percentage>50]", variants[i]);
 
 			if (xb_node_query_text (component, xpath->str, NULL) != NULL)
 				gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
