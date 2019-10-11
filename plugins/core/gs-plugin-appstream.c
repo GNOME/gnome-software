@@ -535,6 +535,9 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 		}
 	}
 
+	/* regenerate with each minor release */
+	xb_builder_append_guid (builder, PACKAGE_VERSION);
+
 	/* create per-user cache */
 	blobfn = gs_utils_get_cache_filename ("appstream", "components.xmlb",
 					      GS_UTILS_CACHE_FLAG_WRITEABLE,
@@ -943,7 +946,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	locker = g_rw_lock_reader_locker_new (&priv->silo_lock);
 
 	/* get all installed appdata files (notice no 'components/' prefix...) */
-	components = xb_silo_query (priv->silo, "component", 0, NULL);
+	components = xb_silo_query (priv->silo, "component/description/..", 0, NULL);
 	if (components == NULL)
 		return TRUE;
 	for (guint i = 0; i < components->len; i++) {
