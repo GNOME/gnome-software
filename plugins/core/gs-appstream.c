@@ -601,9 +601,18 @@ gs_appstream_refine_app_content_rating (GsPlugin *plugin,
 	g_autoptr(AsContentRating) cr = as_content_rating_new ();
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) content_attributes = NULL;
+	const gchar *content_rating_kind = NULL;
 
 	/* get kind */
-	as_content_rating_set_kind (cr, xb_node_get_attr (content_rating, "type"));
+	content_rating_kind = xb_node_get_attr (content_rating, "type");
+	/* we only really expect/support OARS 1.0 and 1.1 */
+	if (content_rating_kind == NULL ||
+	    (g_strcmp0 (content_rating_kind, "oars-1.0") != 0 &&
+	     g_strcmp0 (content_rating_kind, "oars-1.1") != 0)) {
+		return TRUE;
+	}
+
+	as_content_rating_set_kind (cr, content_rating_kind);
 
 	/* get attributes; no attributes being found (i.e.
 	 * `<content_rating type="*"/>`) is OK: it means that all attributes have
@@ -628,9 +637,7 @@ gs_appstream_refine_app_content_rating (GsPlugin *plugin,
 						 as_content_rating_value_from_string (xb_node_get_text (content_attribute)));
 	}
 
-	/* we only really expect OARS 1.0 and 1.1 */
-	if (g_str_has_prefix (as_content_rating_get_kind (cr), "oars-1."))
-		gs_app_set_content_rating (app, cr);
+	gs_app_set_content_rating (app, cr);
 	return TRUE;
 }
 
