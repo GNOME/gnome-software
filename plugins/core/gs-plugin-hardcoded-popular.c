@@ -26,7 +26,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	const gchar *apps[] = {
 		"org.gnome.Builder.desktop",
 		"org.gnome.Calculator.desktop",
-		"org.gnome.clocks",
+		"org.gnome.clocks.desktop",
 		"org.gnome.Dictionary.desktop",
 		"org.gnome.Documents.desktop",
 		"org.gnome.Evince",
