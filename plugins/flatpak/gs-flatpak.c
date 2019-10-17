@@ -340,6 +340,20 @@ gs_flatpak_fix_id_desktop_suffix_cb (XbBuilderFixup *self,
 }
 
 static gboolean
+gs_flatpak_fix_metadata_tag_cb (XbBuilderFixup *self,
+				XbBuilderNode *bn,
+				gpointer user_data,
+				GError **error)
+{
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0) {
+		g_autoptr(XbBuilderNode) metadata = xb_builder_node_get_child (bn, "metadata", NULL);
+		if (metadata != NULL)
+			xb_builder_node_set_element (metadata, "custom");
+	}
+	return TRUE;
+}
+
+static gboolean
 gs_flatpak_set_origin_cb (XbBuilderFixup *self,
 			  XbBuilderNode *bn,
 			  gpointer user_data,
@@ -449,6 +463,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(XbBuilderFixup) fixup1 = NULL;
 	g_autoptr(XbBuilderFixup) fixup2 = NULL;
 	g_autoptr(XbBuilderFixup) fixup3 = NULL;
+	g_autoptr(XbBuilderFixup) fixup4 = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
@@ -499,6 +514,13 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				       xremote, NULL);
 	xb_builder_fixup_set_max_depth (fixup3, 1);
 	xb_builder_source_add_fixup (source, fixup3);
+
+	/* Fixup <metadata> to <custom> for appstream versions >= 0.9 */
+	fixup4 = xb_builder_fixup_new ("FixMetadataTag",
+				       gs_flatpak_fix_metadata_tag_cb,
+				       xremote, NULL);
+	xb_builder_fixup_set_max_depth (fixup4, 2);
+	xb_builder_source_add_fixup (source, fixup4);
 
 	/* add metadata */
 	icon_prefix = g_build_filename (appstream_dir_fn, "icons", NULL);
