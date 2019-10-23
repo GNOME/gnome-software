@@ -1313,6 +1313,12 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 		return FALSE;
 	}
 
+	/* invalidate cache */
+	g_rw_lock_reader_lock (&self->silo_lock);
+	if (self->silo != NULL)
+		xb_silo_invalidate (self->silo);
+	g_rw_lock_reader_unlock (&self->silo_lock);
+
 	/* success */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
@@ -2426,6 +2432,13 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
+
+	/* invalidate cache */
+	g_rw_lock_reader_lock (&self->silo_lock);
+	if (self->silo != NULL)
+		xb_silo_invalidate (self->silo);
+	g_rw_lock_reader_unlock (&self->silo_lock);
+
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	return TRUE;
 }
