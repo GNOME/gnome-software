@@ -42,7 +42,7 @@ typedef enum {
  * @GS_APP_LIST_FILTER_FLAG_PREFER_INSTALLED:	Prefer installed applications
  * @GS_APP_LIST_FILTER_FLAG_KEY_ID_PROVIDES:	Filter using the provides ID
  *
- * Flags to use when filtering. The priority of eash #GsApp is used to choose
+ * Flags to use when filtering. The priority of each #GsApp is used to choose
  * which application object to keep.
  **/
 typedef enum {
