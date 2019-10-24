@@ -69,7 +69,7 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_string_append_printf (str, " with filter-flags=%s", tmp);
 	}
 	if (self->dedupe_flags > 0)
-		g_string_append_printf (str, " with dedupe-flags=%x", self->dedupe_flags);
+		g_string_append_printf (str, " with dedupe-flags=%" G_GUINT64_FORMAT, self->dedupe_flags);
 	if (self->refine_flags > 0) {
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->refine_flags);
 		g_string_append_printf (str, " with refine-flags=%s", tmp);
