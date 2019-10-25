@@ -343,6 +343,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 	for (i = 0; i < json_array_get_length (json_reviews); i++) {
 		JsonNode *json_review;
 		JsonObject *json_item;
+		const gchar *reviewer_id;
 		g_autoptr(AsReview) review = NULL;
 
 		/* extract the data */
@@ -367,13 +368,16 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 		review = gs_plugin_odrs_parse_review_object (plugin,
 							     json_item);
 
+		reviewer_id = as_review_get_reviewer_id (review);
+		if (reviewer_id == NULL)
+			continue;
+
 		/* dedupe each on the user_hash */
-		if (g_hash_table_lookup (reviewer_ids, as_review_get_reviewer_id (review)) != NULL) {
-			g_debug ("duplicate review %s, skipping",
-				 as_review_get_reviewer_id (review));
+		if (g_hash_table_lookup (reviewer_ids, reviewer_id) != NULL) {
+			g_debug ("duplicate review %s, skipping", reviewer_id);
 			continue;
 		}
-		g_hash_table_add (reviewer_ids, g_strdup (as_review_get_reviewer_id (review)));
+		g_hash_table_add (reviewer_ids, g_strdup (reviewer_id));
 		g_ptr_array_add (reviews, g_object_ref (review));
 	}
 	return g_steal_pointer (&reviews);
