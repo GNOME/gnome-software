@@ -27,6 +27,7 @@ main (int argc, char **argv)
 	g_autoptr(GsApplication) application = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new ();
 
+	g_set_prgname ("org.gnome.Software");
 	setlocale (LC_ALL, "");
 
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
