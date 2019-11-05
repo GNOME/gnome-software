@@ -1348,6 +1348,10 @@ gs_appstream_add_alternates (GsPlugin *plugin,
 	g_autoptr(GPtrArray) ids = NULL;
 	g_autoptr(GString) xpath = g_string_new (NULL);
 
+	/* probably a package we know nothing about */
+	if (gs_app_get_id (app) == NULL)
+		return TRUE;
+
 	/* actual ID */
 	xb_string_append_union (xpath, "components/component/id[text()='%s']",
 				gs_app_get_id (app));
