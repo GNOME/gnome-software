@@ -43,5 +43,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-shell-extensions', e, env: test_env)
+  test('gs-self-test-shell-extensions', e, suite: ['plugins', 'shell-extensions'], env: test_env)
 endif

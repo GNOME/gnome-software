@@ -246,5 +246,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-core', e, env: test_env)
+  test('gs-self-test-core', e, suite: ['plugins', 'core'], env: test_env)
 endif

@@ -56,5 +56,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-fwupd', e, env: test_env)
+  test('gs-self-test-fwupd', e, suite: ['plugins', 'fwupd'], env: test_env)
 endif

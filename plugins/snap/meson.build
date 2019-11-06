@@ -50,5 +50,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-snap', e, env: test_env)
+  test('gs-self-test-snap', e, suite: ['plugins', 'snap'], env: test_env)
 endif

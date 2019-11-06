@@ -65,5 +65,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-flatpak', e, env: test_env, timeout : 120)
+  test('gs-self-test-flatpak', e, suite: ['plugins', 'flatpak'], env: test_env, timeout : 120)
 endif

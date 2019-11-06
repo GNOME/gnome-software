@@ -38,5 +38,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-modalias', e, env: test_env)
+  test('gs-self-test-modalias', e, suite: ['plugins', 'modalias'], env: test_env)
 endif

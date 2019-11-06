@@ -48,5 +48,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-epiphany', e, env: test_env)
+  test('gs-self-test-epiphany', e, suite: ['plugins', 'epiphany'], env: test_env)
 endif

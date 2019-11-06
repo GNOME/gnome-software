@@ -37,5 +37,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-dpkg', e, env: test_env)
+  test('gs-self-test-dpkg', e, suite: ['plugins', 'dpkg'], env: test_env)
 endif

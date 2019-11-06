@@ -37,5 +37,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-repos', e, env: test_env)
+  test('gs-self-test-repos', e, suite: ['plugins', 'repos'], env: test_env)
 endif

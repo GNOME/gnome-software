@@ -311,5 +311,5 @@ if get_option('tests')
     ],
     c_args : cargs
   )
-  test('gs-self-test-src', e, env: test_env)
+  test('gs-self-test-src', e, suite: ['plugins', 'src'], env: test_env)
 endif

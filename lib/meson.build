@@ -153,5 +153,5 @@ if get_option('tests')
     ],
     c_args : cargs
   )
-  test('gs-self-test-lib', e, env: test_env, timeout : 120)
+  test('gs-self-test-lib', e, suite: ['lib'], env: test_env, timeout : 120)
 endif

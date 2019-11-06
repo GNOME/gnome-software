@@ -245,5 +245,5 @@ if get_option('tests')
     ],
     c_args : cargs,
   )
-  test('gs-self-test-packagekit', e, env: test_env)
+  test('gs-self-test-packagekit', e, suite: ['plugins', 'packagekit'], env: test_env)
 endif
