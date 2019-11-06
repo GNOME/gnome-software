@@ -18,6 +18,15 @@ if ! [ $(id -u) = 0 ]; then
     exit 1
 fi
 
+# FIXME: The tests should be isolated and use mock services so they do not
+# require a functioning system bus. This will have to do for now though.
+mkdir -p /run/dbus
+mkdir -p /var
+ln -s /var/run /run
+dbus-daemon --system --fork
+/usr/lib/polkit-1/polkitd --no-debug &
+/usr/libexec/fwupd/fwupd --verbose &
+
 meson test \
         -C _build \
         --timeout-multiplier ${MESON_TEST_TIMEOUT_MULTIPLIER} \
