@@ -136,6 +136,8 @@ enum {
 	PROP_LAST
 };
 
+static GParamSpec *obj_props[PROP_LAST] = { NULL, };
+
 G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
 static gboolean
@@ -4186,7 +4188,6 @@ gs_app_finalize (GObject *object)
 static void
 gs_app_class_init (GsAppClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->dispose = gs_app_dispose;
 	object_class->finalize = gs_app_finalize;
@@ -4196,115 +4197,105 @@ gs_app_class_init (GsAppClass *klass)
 	/**
 	 * GsApp:id:
 	 */
-	pspec = g_param_spec_string ("id", NULL, NULL,
+	obj_props[PROP_ID] = g_param_spec_string ("id", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_ID, pspec);
 
 	/**
 	 * GsApp:name:
 	 */
-	pspec = g_param_spec_string ("name", NULL, NULL,
+	obj_props[PROP_NAME] = g_param_spec_string ("name", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_NAME, pspec);
 
 	/**
 	 * GsApp:version:
 	 */
-	pspec = g_param_spec_string ("version", NULL, NULL,
+	obj_props[PROP_VERSION] = g_param_spec_string ("version", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_VERSION, pspec);
 
 	/**
 	 * GsApp:summary:
 	 */
-	pspec = g_param_spec_string ("summary", NULL, NULL,
+	obj_props[PROP_SUMMARY] = g_param_spec_string ("summary", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_SUMMARY, pspec);
 
 	/**
 	 * GsApp:description:
 	 */
-	pspec = g_param_spec_string ("description", NULL, NULL,
+	obj_props[PROP_DESCRIPTION] = g_param_spec_string ("description", NULL, NULL,
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_DESCRIPTION, pspec);
 
 	/**
 	 * GsApp:rating:
 	 */
-	pspec = g_param_spec_int ("rating", NULL, NULL,
+	obj_props[PROP_RATING] = g_param_spec_int ("rating", NULL, NULL,
 				  -1, 100, -1,
 				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_RATING, pspec);
 
 	/**
 	 * GsApp:kind:
 	 */
-	pspec = g_param_spec_uint ("kind", NULL, NULL,
+	obj_props[PROP_KIND] = g_param_spec_uint ("kind", NULL, NULL,
 				   AS_APP_KIND_UNKNOWN,
 				   AS_APP_KIND_LAST,
 				   AS_APP_KIND_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_KIND, pspec);
 
 	/**
 	 * GsApp:state:
 	 */
-	pspec = g_param_spec_uint ("state", NULL, NULL,
+	obj_props[PROP_STATE] = g_param_spec_uint ("state", NULL, NULL,
 				   AS_APP_STATE_UNKNOWN,
 				   AS_APP_STATE_LAST,
 				   AS_APP_STATE_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_STATE, pspec);
 
 	/**
 	 * GsApp:progress:
 	 */
-	pspec = g_param_spec_uint ("progress", NULL, NULL, 0, 100, 0,
+	obj_props[PROP_PROGRESS] = g_param_spec_uint ("progress", NULL, NULL,
+				   0, 100, 0,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
 
 	/**
 	 * GsApp:allow-cancel:
 	 */
-	pspec = g_param_spec_boolean ("allow-cancel", NULL, NULL, TRUE,
+	obj_props[PROP_CAN_CANCEL_INSTALLATION] =
+		g_param_spec_boolean ("allow-cancel", NULL, NULL, TRUE,
 				      G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_CAN_CANCEL_INSTALLATION, pspec);
 
 	/**
 	 * GsApp:install-date:
 	 */
-	pspec = g_param_spec_uint64 ("install-date", NULL, NULL,
+	obj_props[PROP_INSTALL_DATE] = g_param_spec_uint64 ("install-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_INSTALL_DATE, pspec);
 
 	/**
 	 * GsApp:quirk:
 	 */
-	pspec = g_param_spec_uint64 ("quirk", NULL, NULL,
+	obj_props[PROP_QUIRK] = g_param_spec_uint64 ("quirk", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_QUIRK, pspec);
 
 	/**
 	 * GsApp:pending-action:
 	 */
-	pspec = g_param_spec_uint64 ("pending-action", NULL, NULL,
+	obj_props[PROP_PENDING_ACTION] = g_param_spec_uint64 ("pending-action", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READABLE);
-	g_object_class_install_property (object_class, PROP_PENDING_ACTION, pspec);
 
 	/**
 	 * GsApp:key-colors:
 	 */
-	pspec = g_param_spec_boxed ("key-colors", NULL, NULL,
+	obj_props[PROP_KEY_COLORS] = g_param_spec_boxed ("key-colors", NULL, NULL,
 				    G_TYPE_PTR_ARRAY, G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_KEY_COLORS, pspec);
+
+	g_object_class_install_properties (object_class, PROP_LAST, obj_props);
 }
 
 static void
