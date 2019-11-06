@@ -23,6 +23,7 @@ fedora-x86_64:
     - ninja -C _build
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
+            --no-suite fwupd
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"
@@ -46,6 +47,7 @@ debian-stable-x86_64:
     - ninja -C _build
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
+            --no-suite fwupd
             --no-suite fedora-langpacks
   artifacts:
     reports:
