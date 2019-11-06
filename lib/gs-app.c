@@ -652,7 +652,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 
 typedef struct {
 	GsApp *app;
-	gchar *property_name;
+	GParamSpec *pspec;
 } AppNotifyData;
 
 static gboolean
@@ -660,24 +660,22 @@ notify_idle_cb (gpointer data)
 {
 	AppNotifyData *notify_data = data;
 
-	g_object_notify (G_OBJECT (notify_data->app),
-			 notify_data->property_name);
+	g_object_notify_by_pspec (G_OBJECT (notify_data->app), notify_data->pspec);
 
 	g_object_unref (notify_data->app);
-	g_free (notify_data->property_name);
 	g_free (notify_data);
 
 	return G_SOURCE_REMOVE;
 }
 
 static void
-gs_app_queue_notify (GsApp *app, const gchar *property_name)
+gs_app_queue_notify (GsApp *app, GParamSpec *pspec)
 {
 	AppNotifyData *notify_data;
 
 	notify_data = g_new (AppNotifyData, 1);
 	notify_data->app = g_object_ref (app);
-	notify_data->property_name = g_strdup (property_name);
+	notify_data->pspec = pspec;
 
 	g_idle_add (notify_idle_cb, notify_data);
 }
@@ -888,7 +886,7 @@ gs_app_set_state_recover (GsApp *app)
 	gs_app_set_progress (app, 0);
 
 	priv->state = priv->state_recover;
-	gs_app_queue_notify (app, "state");
+	gs_app_queue_notify (app, obj_props[PROP_STATE]);
 }
 
 /* mutex must be held */
@@ -1042,7 +1040,7 @@ gs_app_set_progress (GsApp *app, guint percentage)
 		percentage = 100;
 	}
 	priv->progress = percentage;
-	gs_app_queue_notify (app, "progress");
+	gs_app_queue_notify (app, obj_props[PROP_PROGRESS]);
 }
 
 /**
@@ -1066,7 +1064,7 @@ gs_app_set_allow_cancel (GsApp *app, gboolean allow_cancel)
 	if (priv->allow_cancel == allow_cancel)
 		return;
 	priv->allow_cancel = allow_cancel;
-	gs_app_queue_notify (app, "allow-cancel");
+	gs_app_queue_notify (app, obj_props[PROP_CAN_CANCEL_INSTALLATION]);
 }
 
 static void
@@ -1078,7 +1076,7 @@ gs_app_set_pending_action_internal (GsApp *app,
 		return;
 
 	priv->pending_action = action;
-	gs_app_queue_notify (app, "pending-action");
+	gs_app_queue_notify (app, obj_props[PROP_PENDING_ACTION]);
 }
 
 /**
@@ -1123,7 +1121,7 @@ gs_app_set_state (GsApp *app, AsAppState state)
 			action = GS_PLUGIN_ACTION_INSTALL;
 		gs_app_set_pending_action_internal (app, action);
 
-		gs_app_queue_notify (app, "state");
+		gs_app_queue_notify (app, obj_props[PROP_STATE]);
 	}
 }
 
@@ -1215,7 +1213,7 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 	}
 
 	priv->kind = kind;
-	gs_app_queue_notify (app, "kind");
+	gs_app_queue_notify (app, obj_props[PROP_KIND]);
 
 	/* no longer valid */
 	priv->unique_id_valid = FALSE;
@@ -1311,7 +1309,7 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 		return;
 	priv->name_quality = quality;
 	if (_g_set_str (&priv->name, name))
-		g_object_notify (G_OBJECT (app), "name");
+		g_object_notify_by_pspec (G_OBJECT (app), obj_props[PROP_NAME]);
 }
 
 /**
@@ -1972,7 +1970,7 @@ gs_app_ui_versions_populate (GsApp *app)
 		priv->version_ui = gs_app_get_ui_version (priv->version, flags[i]);
 		priv->update_version_ui = gs_app_get_ui_version (priv->update_version, flags[i]);
 		if (g_strcmp0 (priv->version_ui, priv->update_version_ui) != 0) {
-			gs_app_queue_notify (app, "version");
+			gs_app_queue_notify (app, obj_props[PROP_VERSION]);
 			return;
 		}
 		gs_app_ui_versions_invalidate (app);
@@ -2047,7 +2045,7 @@ gs_app_set_version (GsApp *app, const gchar *version)
 
 	if (_g_set_str (&priv->version, version)) {
 		gs_app_ui_versions_invalidate (app);
-		gs_app_queue_notify (app, "version");
+		gs_app_queue_notify (app, obj_props[PROP_VERSION]);
 	}
 }
 
@@ -2093,7 +2091,7 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 		return;
 	priv->summary_quality = quality;
 	if (_g_set_str (&priv->summary, summary))
-		g_object_notify (G_OBJECT (app), "summary");
+		g_object_notify_by_pspec (G_OBJECT (app), obj_props[PROP_SUMMARY]);
 }
 
 /**
@@ -2678,7 +2676,7 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 	gs_app_set_update_version_internal (app, update_version);
-	gs_app_queue_notify (app, "version");
+	gs_app_queue_notify (app, obj_props[PROP_VERSION]);
 }
 
 /**
@@ -2865,7 +2863,7 @@ gs_app_set_rating (GsApp *app, gint rating)
 	if (rating == priv->rating)
 		return;
 	priv->rating = rating;
-	gs_app_queue_notify (app, "rating");
+	gs_app_queue_notify (app, obj_props[PROP_RATING]);
 }
 
 /**
@@ -3611,7 +3609,7 @@ gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 	g_return_if_fail (key_colors != NULL);
 	locker = g_mutex_locker_new (&priv->mutex);
 	if (_g_set_ptr_array (&priv->key_colors, key_colors))
-		gs_app_queue_notify (app, "key-colors");
+		gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
 
 /**
@@ -3630,7 +3628,7 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (key_color != NULL);
 	g_ptr_array_add (priv->key_colors, gdk_rgba_copy (key_color));
-	gs_app_queue_notify (app, "key-colors");
+	gs_app_queue_notify (app, obj_props[PROP_KEY_COLORS]);
 }
 
 /**
@@ -3843,7 +3841,7 @@ gs_app_add_quirk (GsApp *app, GsAppQuirk quirk)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->quirk |= quirk;
-	gs_app_queue_notify (app, "quirk");
+	gs_app_queue_notify (app, obj_props[PROP_QUIRK]);
 }
 
 /**
@@ -3868,7 +3866,7 @@ gs_app_remove_quirk (GsApp *app, GsAppQuirk quirk)
 
 	locker = g_mutex_locker_new (&priv->mutex);
 	priv->quirk &= ~quirk;
-	gs_app_queue_notify (app, "quirk");
+	gs_app_queue_notify (app, obj_props[PROP_QUIRK]);
 }
 
 /**
