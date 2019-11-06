@@ -758,6 +758,9 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
+
+		/* Add the update applist for easier lookup */
+		gs_flatpak_transaction_add_app (transaction, app);
 	}
 
 	/* run transaction */

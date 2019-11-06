@@ -70,6 +70,41 @@ gs_flatpak_transaction_set_no_deploy (FlatpakTransaction *transaction, gboolean 
 }
 #endif
 
+/* Checks if a ref is a related ref to one of the installed ref.
+ * If yes, return the GsApp corresponding to the installed ref,
+ * NULL otherwise.
+ */
+static GsApp *
+get_installed_main_app_of_related_ref (FlatpakTransaction          *transaction,
+                                       FlatpakTransactionOperation *operation)
+{
+	FlatpakInstallation *installation = flatpak_transaction_get_installation (transaction);
+	const gchar *remote = flatpak_transaction_operation_get_remote (operation);
+	const gchar *op_ref = flatpak_transaction_operation_get_ref (operation);
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	g_autoptr(GList) keys = NULL;
+
+	if (g_str_has_prefix (op_ref, "app/"))
+		return NULL;
+
+	keys = g_hash_table_get_keys (self->refhash);
+	for (GList *l = keys; l != NULL; l = l->next) {
+		g_autoptr(GPtrArray) related_refs = NULL;
+		related_refs = flatpak_installation_list_installed_related_refs_sync (installation, remote,
+										      l->data, NULL, NULL);
+		if (related_refs == NULL)
+			continue;
+
+		for (guint i = 0; i < related_refs->len; i++) {
+			g_autofree gchar *rref = flatpak_ref_format_ref (g_ptr_array_index (related_refs, i));
+			if (g_strcmp0 (rref, op_ref) == 0) {
+				return g_hash_table_lookup (self->refhash, l->data);
+			}
+		}
+	}
+	return NULL;
+}
+
 GsApp *
 gs_flatpak_transaction_get_app_by_ref (FlatpakTransaction *transaction, const gchar *ref)
 {
@@ -266,6 +301,8 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 #if !FLATPAK_CHECK_VERSION(1,5,1)
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
 #endif
+	GsApp *main_app = NULL;
+
 	/* invalidate */
 	GsApp *app = _transaction_operation_get_app (operation);
 	if (app == NULL) {
@@ -275,6 +312,28 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 	}
 	switch (flatpak_transaction_operation_get_operation_type (operation)) {
 	case FLATPAK_TRANSACTION_OPERATION_INSTALL:
+#if FLATPAK_CHECK_VERSION(1,5,1)
+		/* Handle special snowflake where "should-download" related refs for an installed ref
+		 * goes missing. In that case, libflatpak marks the main app ref as updatable
+		 * and then FlatpakTransaction resolves one of its ops to install the related ref(s).
+		 *
+		 * We can depend on libflatpak till here. Since, libflatpak returns the main app
+		 * ref as updatable (instead of the related ref), we need to sync the main app's
+		 * state for UI/UX.
+		 *
+		 * Map the current op's ref (which is related ref) to its main app ref (which is
+		 * currently shown in the UI) and set the state of the main GsApp object back
+		 * to INSTALLED here.
+		 *
+		 * This detection whether a related ref belongs to a main ref is quite sub-optimal as
+		 * of now.
+		 */
+		main_app = get_installed_main_app_of_related_ref (transaction, operation);
+		if (main_app != NULL)
+			gs_app_set_state (main_app, AS_APP_STATE_INSTALLED);
+#endif
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		break;
 	case FLATPAK_TRANSACTION_OPERATION_INSTALL_BUNDLE:
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		break;
