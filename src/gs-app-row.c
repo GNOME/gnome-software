@@ -35,7 +35,6 @@ typedef struct
 	GtkWidget	*button;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
-	GtkWidget	*checkbox;
 	GtkWidget	*label_warning;
 	GtkWidget	*label_origin;
 	GtkWidget	*label_installed;
@@ -47,17 +46,11 @@ typedef struct
 	gboolean	 show_source;
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
-	gboolean	 selectable;
 	guint		 pending_refresh_id;
 	GSettings	*settings;
 } GsAppRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
-
-enum {
-	PROP_ZERO,
-	PROP_SELECTED
-};
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
@@ -226,18 +219,14 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 	}
 
 	/* always insensitive when in selection mode */
-	if (priv->selectable) {
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_REMOVING:
 		gtk_widget_set_sensitive (priv->button, FALSE);
-	} else {
-		switch (gs_app_get_state (priv->app)) {
-		case AS_APP_STATE_INSTALLING:
-		case AS_APP_STATE_REMOVING:
-			gtk_widget_set_sensitive (priv->button, FALSE);
-			break;
-		default:
-			gtk_widget_set_sensitive (priv->button, TRUE);
-			break;
-		}
+		break;
+	default:
+		gtk_widget_set_sensitive (priv->button, TRUE);
+		break;
 	}
 }
 
@@ -452,16 +441,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	}
 
-	/* checkbox */
-	if (priv->selectable) {
-		if (gs_app_get_kind (priv->app) == AS_APP_KIND_DESKTOP ||
-		    gs_app_get_kind (priv->app) == AS_APP_KIND_RUNTIME ||
-		    gs_app_get_kind (priv->app) == AS_APP_KIND_WEB_APP)
-			gtk_widget_set_visible (priv->checkbox, TRUE);
-	} else {
-		gtk_widget_set_visible (priv->checkbox, FALSE);
-	}
-
 	/* show the right size */
 	if (priv->show_installed_size) {
 		size = gs_app_get_size_installed (priv->app);
@@ -610,50 +589,12 @@ gs_app_row_destroy (GtkWidget *object)
 }
 
 static void
-gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
-{
-	GsAppRow *app_row = GS_APP_ROW (object);
-
-	switch (prop_id) {
-	case PROP_SELECTED:
-		gs_app_row_set_selected (app_row, g_value_get_boolean (value));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
-{
-	GsAppRow *app_row = GS_APP_ROW (object);
-
-	switch (prop_id) {
-	case PROP_SELECTED:
-		g_value_set_boolean (value, gs_app_row_get_selected (app_row));
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-       		break;
-	}
-}
-
-static void
 gs_app_row_class_init (GsAppRowClass *klass)
 {
-	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->set_property = gs_app_row_set_property;
-	object_class->get_property = gs_app_row_get_property;
-
 	widget_class->destroy = gs_app_row_destroy;
-
-	pspec = g_param_spec_boolean ("selected", NULL, NULL,
-				      FALSE, G_PARAM_READWRITE);
-	g_object_class_install_property (object_class, PROP_SELECTED, pspec);
 
 	signals [SIGNAL_BUTTON_CLICKED] =
 		g_signal_new ("button-clicked",
@@ -686,7 +627,6 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, checkbox);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_warning);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_origin);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_installed);
@@ -697,12 +637,6 @@ static void
 button_clicked (GtkWidget *widget, GsAppRow *app_row)
 {
 	g_signal_emit (app_row, signals[SIGNAL_BUTTON_CLICKED], 0);
-}
-
-static void
-checkbox_toggled (GtkWidget *widget, GsAppRow *app_row)
-{
-	g_object_notify (G_OBJECT (app_row), "selected");
 }
 
 static void
@@ -718,8 +652,6 @@ gs_app_row_init (GsAppRow *app_row)
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_row);
-	g_signal_connect (priv->checkbox, "toggled",
-			  G_CALLBACK (checkbox_toggled), app_row);
 	g_signal_connect_swapped (priv->settings, "changed",
 				  G_CALLBACK (settings_changed_cb),
 				  app_row);
@@ -805,41 +737,6 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 
 	priv->show_update = show_update;
 	gs_app_row_refresh (app_row);
-}
-
-void
-gs_app_row_set_selectable (GsAppRow *app_row, gboolean selectable)
-{
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	priv->selectable = selectable;
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->checkbox), FALSE);
-	gs_app_row_refresh (app_row);
-}
-
-void
-gs_app_row_set_selected (GsAppRow *app_row, gboolean selected)
-{
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	if (!priv->selectable)
-		return;
-
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->checkbox)) != selected) {
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->checkbox), selected);
-		g_object_notify (G_OBJECT (app_row), "selected");
-	}
-}
-
-gboolean
-gs_app_row_get_selected (GsAppRow *app_row)
-{
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	if (!priv->selectable)
-		return FALSE;
-
-	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->checkbox));
 }
 
 GtkWidget *

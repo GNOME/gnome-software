@@ -51,41 +51,6 @@
                 </child>
               </object>
             </child>
-            <child>
-              <object class="GtkRevealer" id="bottom_install">
-                <property name="visible">True</property>
-                <property name="transition-type">slide-up</property>
-                <child>
-                  <object class="GtkActionBar" id="action_bar">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkButton" id="button_folder_add">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">_Add to Folder…</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_folder_move">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">_Move to Folder…</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="button_folder_remove">
-                        <property name="visible">True</property>
-                        <property name="sensitive">False</property>
-                        <property name="label" translatable="yes">_Remove from Folder</property>
-                        <property name="use_underline">True</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
           </object>
           <packing>
             <property name="name">view</property>
@@ -94,13 +59,4 @@
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup" id="sizegroup_folder_buttons">
-    <property name="ignore-hidden">False</property>
-    <property name="mode">vertical</property>
-    <widgets>
-      <widget name="button_folder_add"/>
-      <widget name="button_folder_move"/>
-      <widget name="button_folder_remove"/>
-    </widgets>
-  </object>
 </interface>

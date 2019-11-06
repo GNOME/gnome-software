@@ -17,7 +17,6 @@ gdbus_src = gnome.gdbus_codegen(
 
 gnome_software_sources = [
   'gs-app-addon-row.c',
-  'gs-app-folder-dialog.c',
   'gs-application.c',
   'gs-app-row.c',
   'gs-app-tile.c',

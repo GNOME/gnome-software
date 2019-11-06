@@ -40,11 +40,6 @@ void		 gs_app_row_set_show_source		(GsAppRow	*app_row,
 							 gboolean	 show_source);
 void		 gs_app_row_set_show_update		(GsAppRow	*app_row,
 							 gboolean	 show_update);
-void		 gs_app_row_set_selectable 		(GsAppRow	*app_row,
-							 gboolean        selectable);
-void		 gs_app_row_set_selected		(GsAppRow	*app_row,
-							 gboolean        selected);
-gboolean	 gs_app_row_get_selected		(GsAppRow	*app_row);
 GsApp		*gs_app_row_get_app			(GsAppRow	*app_row);
 void		 gs_app_row_set_size_groups		(GsAppRow	*app_row,
 							 GtkSizeGroup	*image,
