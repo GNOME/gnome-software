@@ -71,6 +71,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
 	gs_app_set_origin_hostname (priv->cached_origin, SHELL_EXTENSIONS_API_URI);
+	gs_app_set_origin (priv->cached_origin, _("GNOME"));
 
 	priv->settings = g_settings_new ("org.gnome.software");
 
@@ -145,6 +146,8 @@ gs_plugin_shell_extensions_parse_installed (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "GNOME Shell Extension");
+	gs_app_set_origin_hostname (app, SHELL_EXTENSIONS_API_URI);
+	gs_app_set_origin (app, _("GNOME"));
 	while (g_variant_iter_loop (iter, "{sv}", &str, &val)) {
 		if (g_strcmp0 (str, "description") == 0) {
 			g_autofree gchar *tmp1 = NULL;
@@ -903,6 +906,8 @@ _claim_components (GsPlugin *plugin, GsAppList *list)
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
+		gs_app_set_origin_hostname (app, SHELL_EXTENSIONS_API_URI);
+		gs_app_set_origin (app, _("GNOME"));
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 				    /* TRANSLATORS: the one-line summary */
