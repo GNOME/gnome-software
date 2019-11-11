@@ -48,6 +48,7 @@ struct _GsDetailsPage
 	GsApp			*app;
 	GsApp			*app_local_file;
 	GsShell			*shell;
+	GsProgress		*progress;
 	SoupSession		*session;
 	gboolean		 enable_reviews;
 	gboolean		 show_all_reviews;
@@ -356,7 +357,8 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	/* percentage bar */
 	switch (state) {
 	case AS_APP_STATE_INSTALLING:
-		percentage = gs_app_get_progress (self->app);
+		percentage = gs_progress_get_percentage (self->progress);
+//		percentage = gs_app_get_progress (self->app);
 		if (percentage <= 100) {
 			g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
 			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
@@ -1750,9 +1752,9 @@ _set_app (GsDetailsPage *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::quirk",
 				 G_CALLBACK (gs_details_page_notify_state_changed_cb),
 				 self, 0);
-	g_signal_connect_object (self->app, "notify::progress",
-				 G_CALLBACK (gs_details_page_progress_changed_cb),
-				 self, 0);
+//	g_signal_connect_object (self->app, "notify::progress",
+//				 G_CALLBACK (gs_details_page_progress_changed_cb),
+//				 self, 0);
 	g_signal_connect_object (self->app, "notify::allow-cancel",
 				 G_CALLBACK (gs_details_page_allow_cancel_changed_cb),
 				 self, 0);
@@ -2111,7 +2113,6 @@ static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GList) addons = NULL;
-	g_autoptr(GsProgress) progress = gs_progress_new ();
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
@@ -2131,7 +2132,18 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 		return;
 	}
 
-	gs_page_install_app (GS_PAGE (self), self->app, progress, GS_SHELL_INTERACTION_FULL,
+	/* disconnect the old handlers */
+	if (self->progress != NULL) {
+		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_progress_changed_cb, self);
+		g_clear_object (&self->progress);
+	}
+
+	self->progress = gs_progress_new (); // XXX: release in dispose as well
+	g_signal_connect_object (self->progress, "notify::percentage",
+	                         G_CALLBACK (gs_details_page_progress_changed_cb),
+	                         self, 0);
+
+	gs_page_install_app (GS_PAGE (self), self->app, self->progress, GS_SHELL_INTERACTION_FULL,
 			     self->app_cancellable);
 }
 
