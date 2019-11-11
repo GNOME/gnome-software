@@ -526,6 +526,13 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 			gs_flatpak_error_convert (error);
 			return FALSE;
 		}
+
+		/* Traverse over the GsAppList again and set that the update has been already downloaded
+		 * for the apps. */
+		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
+			GsApp *app = gs_app_list_index (list_tmp, i);
+			gs_app_set_is_update_downloaded (app, TRUE);
+		}
 	}
 
 	return TRUE;
@@ -741,6 +748,7 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 			  GError **error)
 {
 	g_autoptr(FlatpakTransaction) transaction = NULL;
+	gboolean is_update_downloaded = TRUE;
 
 	/* build and run transaction */
 	transaction = _build_transaction (plugin, flatpak, cancellable, error);
@@ -764,7 +772,16 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 		GsApp *app = gs_app_list_index (list_tmp, i);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+		/* If all apps' update are previously downloaded and available locally,
+		 * FlatpakTransaction should run with no-pull flag. This is the case
+		 * for apps' autoupdates. */
+		is_update_downloaded &= gs_app_get_is_update_downloaded (app);
 	}
+
+	if (is_update_downloaded)
+		flatpak_transaction_set_no_pull (transaction, TRUE);
+
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 			GsApp *app = gs_app_list_index (list_tmp, i);

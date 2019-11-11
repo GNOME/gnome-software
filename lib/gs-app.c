@@ -115,6 +115,7 @@ typedef struct
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
+	gboolean		 is_update_downloaded;
 } GsAppPrivate;
 
 enum {
@@ -133,6 +134,7 @@ enum {
 	PROP_QUIRK,
 	PROP_PENDING_ACTION,
 	PROP_KEY_COLORS,
+	PROP_IS_UPDATE_DOWNLOADED,
 	PROP_LAST
 };
 
@@ -3579,6 +3581,42 @@ gs_app_remove_category (GsApp *app, const gchar *category)
 }
 
 /**
+ * gs_app_set_is_update_downloaded:
+ * @app: a #GsApp
+ * @is_update_downloaded: Whether a new update is already downloaded locally
+ *
+ * Sets if the new update is already downloaded for the app.
+ *
+ * Since: 3.36
+ **/
+void
+gs_app_set_is_update_downloaded (GsApp *app, gboolean is_update_downloaded)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+	priv->is_update_downloaded = is_update_downloaded;
+}
+
+/**
+ * gs_app_get_is_update_downloaded:
+ * @app: a #GsApp
+ *
+ * Gets if the new update is already downloaded for the app and
+ * is locally available.
+ *
+ * Returns: (element-type gboolean): Whether a new update for the #GsApp is already downloaded.
+ *
+ * Since: 3.36
+ **/
+gboolean
+gs_app_get_is_update_downloaded (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return priv->is_update_downloaded;
+}
+
+/**
  * gs_app_get_key_colors:
  * @app: a #GsApp
  *
@@ -4058,6 +4096,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_KEY_COLORS:
 		g_value_set_boxed (value, priv->key_colors);
 		break;
+	case PROP_IS_UPDATE_DOWNLOADED:
+		g_value_set_boolean (value, priv->is_update_downloaded);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4115,6 +4156,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_KEY_COLORS:
 		gs_app_set_key_colors (app, g_value_get_boxed (value));
+		break;
+	case PROP_IS_UPDATE_DOWNLOADED:
+		gs_app_set_is_update_downloaded (app, g_value_get_boolean (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -4297,6 +4341,13 @@ gs_app_class_init (GsAppClass *klass)
 	 */
 	obj_props[PROP_KEY_COLORS] = g_param_spec_boxed ("key-colors", NULL, NULL,
 				    G_TYPE_PTR_ARRAY, G_PARAM_READWRITE);
+
+	/**
+	 * GsApp:is-update-downloaded:
+	 */
+	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
+					       FALSE,
+					       G_PARAM_READWRITE);
 
 	g_object_class_install_properties (object_class, PROP_LAST, obj_props);
 }
