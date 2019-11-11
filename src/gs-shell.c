@@ -2085,7 +2085,7 @@ gs_shell_install (GsShell *shell, GsApp *app, GsShellInteraction interaction)
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
 			      (gpointer) app, TRUE);
 	page = GS_PAGE (g_hash_table_lookup (priv->pages, "details"));
-	gs_page_install_app (page, app, interaction, priv->cancellable);
+	gs_page_install_app (page, app, NULL, interaction, priv->cancellable);
 }
 
 void

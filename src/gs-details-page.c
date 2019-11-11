@@ -2111,6 +2111,7 @@ static void
 gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	g_autoptr(GList) addons = NULL;
+	g_autoptr(GsProgress) progress = gs_progress_new ();
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
@@ -2130,7 +2131,7 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 		return;
 	}
 
-	gs_page_install_app (GS_PAGE (self), self->app, GS_SHELL_INTERACTION_FULL,
+	gs_page_install_app (GS_PAGE (self), self->app, progress, GS_SHELL_INTERACTION_FULL,
 			     self->app_cancellable);
 }
 
@@ -2159,7 +2160,7 @@ gs_details_page_addon_selected_cb (GsAppAddonRow *row,
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_addon_row_get_selected (row)) {
 			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
-			gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL,
+			gs_page_install_app (GS_PAGE (self), addon, NULL, GS_SHELL_INTERACTION_FULL,
 					     self->app_cancellable);
 		} else {
 			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));

@@ -173,13 +173,13 @@ gs_page_set_header_end_widget (GsPage *page, GtkWidget *widget)
 void
 gs_page_install_app (GsPage *page,
 		     GsApp *app,
+		     GsProgress *progress,
 		     GsShellInteraction interaction,
 		     GCancellable *cancellable)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GsPageHelper *helper;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
-	g_autoptr(GsProgress) progress = gs_progress_new ();
 
 	/* probably non-free */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {

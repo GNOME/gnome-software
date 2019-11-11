@@ -890,6 +890,7 @@ third_party_response_cb (GtkInfoBar *info_bar,
 
 	if (gs_app_get_state (priv->third_party_repo) == AS_APP_STATE_AVAILABLE) {
 		gs_page_install_app (GS_PAGE (self), priv->third_party_repo,
+		                     NULL,
 		                     GS_SHELL_INTERACTION_FULL,
 		                     priv->cancellable);
 	}
