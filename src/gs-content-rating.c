@@ -128,7 +128,8 @@ static const struct {
 	},
 	{
 		"drugs-tobacco",
-		NULL,
+		/* TRANSLATORS: content rating description */
+		N_("No references to tobacco products"),
 		/* TRANSLATORS: content rating description */
 		N_("References to tobacco products"),
 		/* TRANSLATORS: content rating description */
@@ -374,6 +375,11 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 			return _(oars_descriptions[i].desc_none);
 		g_assert_not_reached ();
 	}
+
+	/* This means the requested @id is missing from @oars_descriptions, so
+	 * presumably the OARS spec has been updated but gnome-software hasn’t. */
+	g_warn_if_reached ();
+
 	return NULL;
 }
 
