@@ -37,7 +37,7 @@ enum {
  *
  * Gets the bytes downloaded.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 guint64
 gs_progress_get_size_downloaded (GsProgress *self)
@@ -57,7 +57,7 @@ gs_progress_get_size_downloaded (GsProgress *self)
  *
  * Sets the size in bytes that have been downloaded.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 void
 gs_progress_set_size_downloaded (GsProgress *self, guint64 size_downloaded)
@@ -80,7 +80,7 @@ gs_progress_set_size_downloaded (GsProgress *self, guint64 size_downloaded)
  *
  * Gets the total size of the download in bytes.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 guint64
 gs_progress_get_size_total (GsProgress *self)
@@ -100,7 +100,7 @@ gs_progress_get_size_total (GsProgress *self)
  *
  * Sets the size in bytes that need to be downloaded.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 void
 gs_progress_set_size_total (GsProgress *self, guint64 size_total)
@@ -123,7 +123,7 @@ gs_progress_set_size_total (GsProgress *self, guint64 size_total)
  *
  * Gets the progress message.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 gchar *
 gs_progress_get_message (GsProgress *self)
@@ -143,7 +143,7 @@ gs_progress_get_message (GsProgress *self)
  *
  * Sets a custom progress message to show in the UI.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 void
 gs_progress_set_message (GsProgress *self, const gchar *message)
@@ -167,7 +167,7 @@ gs_progress_set_message (GsProgress *self, const gchar *message)
  *
  * Gets the percentage completed.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 guint
 gs_progress_get_percentage (GsProgress *self)
@@ -187,7 +187,7 @@ gs_progress_get_percentage (GsProgress *self)
  *
  * Sets the percentage that has been completed.
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 void
 gs_progress_set_percentage (GsProgress *self, guint percentage)
@@ -290,7 +290,7 @@ gs_progress_init (GsProgress *self)
  *
  * Returns: A newly allocated #GsProgress
  *
- * Since: 3.32
+ * Since: 3.36
  **/
 GsProgress *
 gs_progress_new (void)
