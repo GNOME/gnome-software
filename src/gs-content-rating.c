@@ -12,40 +12,34 @@
 #include <string.h>
 #include "gs-content-rating.h"
 
+static const gchar *rating_system_names[] = {
+	[GS_CONTENT_RATING_SYSTEM_UNKNOWN] = NULL,
+	[GS_CONTENT_RATING_SYSTEM_INCAA] = "INCAA",
+	[GS_CONTENT_RATING_SYSTEM_ACB] = "ACB",
+	[GS_CONTENT_RATING_SYSTEM_DJCTQ] = "DJCTQ",
+	[GS_CONTENT_RATING_SYSTEM_GSRR] = "GSRR",
+	[GS_CONTENT_RATING_SYSTEM_PEGI] = "PEGI",
+	[GS_CONTENT_RATING_SYSTEM_KAVI] = "KAVI",
+	[GS_CONTENT_RATING_SYSTEM_USK] = "USK",
+	[GS_CONTENT_RATING_SYSTEM_ESRA] = "ESRA",
+	[GS_CONTENT_RATING_SYSTEM_CERO] = "CERO",
+	[GS_CONTENT_RATING_SYSTEM_OFLCNZ] = "OFLCNZ",
+	[GS_CONTENT_RATING_SYSTEM_RUSSIA] = "RUSSIA",
+	[GS_CONTENT_RATING_SYSTEM_MDA] = "MDA",
+	[GS_CONTENT_RATING_SYSTEM_GRAC] = "GRAC",
+	[GS_CONTENT_RATING_SYSTEM_ESRB] = "ESRB",
+	[GS_CONTENT_RATING_SYSTEM_IARC] = "IARC",
+};
+G_STATIC_ASSERT (G_N_ELEMENTS (rating_system_names) == GS_CONTENT_RATING_SYSTEM_LAST);
+
 const gchar *
 gs_content_rating_system_to_str (GsContentRatingSystem system)
 {
-	if (system == GS_CONTENT_RATING_SYSTEM_INCAA)
-		return "INCAA";
-	if (system == GS_CONTENT_RATING_SYSTEM_ACB)
-		return "ACB";
-	if (system == GS_CONTENT_RATING_SYSTEM_DJCTQ)
-		return "DJCTQ";
-	if (system == GS_CONTENT_RATING_SYSTEM_GSRR)
-		return "GSRR";
-	if (system == GS_CONTENT_RATING_SYSTEM_PEGI)
-		return "PEGI";
-	if (system == GS_CONTENT_RATING_SYSTEM_KAVI)
-		return "KAVI";
-	if (system == GS_CONTENT_RATING_SYSTEM_USK)
-		return "USK";
-	if (system == GS_CONTENT_RATING_SYSTEM_ESRA)
-		return "ESRA";
-	if (system == GS_CONTENT_RATING_SYSTEM_CERO)
-		return "CERO";
-	if (system == GS_CONTENT_RATING_SYSTEM_OFLCNZ)
-		return "OFLCNZ";
-	if (system == GS_CONTENT_RATING_SYSTEM_RUSSIA)
-		return "RUSSIA";
-	if (system == GS_CONTENT_RATING_SYSTEM_MDA)
-		return "MDA";
-	if (system == GS_CONTENT_RATING_SYSTEM_GRAC)
-		return "GRAC";
-	if (system == GS_CONTENT_RATING_SYSTEM_ESRB)
-		return "ESRB";
-	if (system == GS_CONTENT_RATING_SYSTEM_IARC)
-		return "IARC";
-	return NULL;
+	if ((gint) system < GS_CONTENT_RATING_SYSTEM_UNKNOWN ||
+	    (gint) system >= GS_CONTENT_RATING_SYSTEM_LAST)
+		return NULL;
+
+	return rating_system_names[system];
 }
 
 const gchar *
