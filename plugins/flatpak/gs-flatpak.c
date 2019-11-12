@@ -27,7 +27,8 @@ struct _GsFlatpak {
 	GObject			 parent_instance;
 	GsFlatpakFlags		 flags;
 	FlatpakInstallation	*installation;
-	GPtrArray		*installed_refs;
+	GPtrArray		*installed_refs;  /* must be entirely replaced rather than updated internally */
+	GMutex			 installed_refs_mutex;
 	GHashTable		*broken_remotes;
 	GMutex			 broken_remotes_mutex;
 	GFileMonitor		*monitor;
@@ -295,6 +296,7 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GsFlatpak *self)
 {
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* manually drop the cache */
 	if (!flatpak_installation_drop_caches (self->installation,
@@ -304,6 +306,7 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	}
 
 	/* drop the installed refs cache */
+	locker = g_mutex_locker_new (&self->installed_refs_mutex);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
 }
 
@@ -1491,7 +1494,9 @@ gs_flatpak_refresh (GsFlatpak *self,
 	}
 
 	/* drop the installed refs cache */
+	g_mutex_lock (&self->installed_refs_mutex);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
+	g_mutex_unlock (&self->installed_refs_mutex);
 
 	/* manually do this in case we created the first appstream file */
 	g_rw_lock_reader_lock (&self->silo_lock);
@@ -1696,6 +1701,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
                                       GError **error)
 {
 	g_autoptr(FlatpakInstalledRef) ref = NULL;
+	g_autoptr(GPtrArray) installed_refs = NULL;
 
 	/* already found */
 	if (gs_app_get_state (app) != AS_APP_STATE_UNKNOWN)
@@ -1706,17 +1712,24 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		return FALSE;
 
 	/* find the app using the origin and the ID */
+	g_mutex_lock (&self->installed_refs_mutex);
+
 	if (self->installed_refs == NULL) {
 		self->installed_refs = flatpak_installation_list_installed_refs (self->installation,
 								 cancellable, error);
+
+		if (self->installed_refs == NULL) {
+			g_mutex_unlock (&self->installed_refs_mutex);
+			gs_flatpak_error_convert (error);
+			return FALSE;
+		}
 	}
 
-	if (self->installed_refs == NULL) {
-		gs_flatpak_error_convert (error);
-		return FALSE;
-	}
-	for (guint i = 0; i < self->installed_refs->len; i++) {
-		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (self->installed_refs, i);
+	installed_refs = g_ptr_array_ref (self->installed_refs);
+	g_mutex_unlock (&self->installed_refs_mutex);
+
+	for (guint i = 0; i < installed_refs->len; i++) {
+		FlatpakInstalledRef *ref_tmp = g_ptr_array_index (installed_refs, i);
 		const gchar *origin = flatpak_installed_ref_get_origin (ref_tmp);
 		const gchar *name = flatpak_ref_get_name (FLATPAK_REF (ref_tmp));
 		const gchar *arch = flatpak_ref_get_arch (FLATPAK_REF (ref_tmp));
@@ -2957,6 +2970,7 @@ gs_flatpak_finalize (GObject *object)
 	g_free (self->id);
 	g_object_unref (self->installation);
 	g_clear_pointer (&self->installed_refs, g_ptr_array_unref);
+	g_mutex_clear (&self->installed_refs_mutex);
 	g_object_unref (self->plugin);
 	g_hash_table_unref (self->broken_remotes);
 	g_mutex_clear (&self->broken_remotes_mutex);
@@ -2979,6 +2993,8 @@ gs_flatpak_init (GsFlatpak *self)
 	 * one when something changes */
 	g_rw_lock_init (&self->silo_lock);
 
+	g_mutex_init (&self->installed_refs_mutex);
+	self->installed_refs = NULL;
 	g_mutex_init (&self->broken_remotes_mutex);
 	self->broken_remotes = g_hash_table_new_full (g_str_hash, g_str_equal,
 						      g_free, NULL);
