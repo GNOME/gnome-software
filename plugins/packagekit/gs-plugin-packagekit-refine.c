@@ -753,6 +753,7 @@ gs_plugin_packagekit_refine_update_details (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsAppList *list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
@@ -800,6 +801,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,

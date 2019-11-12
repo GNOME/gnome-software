@@ -70,6 +70,7 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsAppList *list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,

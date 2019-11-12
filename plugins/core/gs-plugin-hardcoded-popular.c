@@ -18,6 +18,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)

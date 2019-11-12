@@ -170,6 +170,7 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 
 gboolean
 gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsAppList *list,
 		      const gchar *url,
 		      GCancellable *cancellable,
@@ -254,6 +255,7 @@ gs_plugin_dummy_timeout_add (guint timeout_ms, GCancellable *cancellable)
 
 gboolean
 gs_plugin_add_alternates (GsPlugin *plugin,
+			  GsPluginJob *job,
 			  GsApp *app,
 			  GsAppList *list,
 			  GCancellable *cancellable,
@@ -268,6 +270,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      gchar **values,
 		      GsAppList *list,
 		      GCancellable *cancellable,
@@ -330,6 +333,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -434,6 +438,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
@@ -467,6 +472,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -493,6 +499,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -524,6 +531,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -557,6 +565,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 gboolean
 gs_plugin_update_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -591,6 +600,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,
@@ -714,6 +724,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsPluginJob *job,
 			     GsCategory *category,
 			     GsAppList *list,
 			     GCancellable *cancellable,
@@ -734,6 +745,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_recent (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsAppList *list,
 		      guint64 age,
 		      GCancellable *cancellable,
@@ -754,6 +766,7 @@ gs_plugin_add_recent (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
+			       GsPluginJob *job,
 			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
@@ -804,6 +817,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 gboolean
 gs_plugin_download_app (GsPlugin *plugin,
+			GsPluginJob *job,
 			GsApp *app,
 			GCancellable *cancellable,
 			GError **error)
@@ -813,6 +827,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
+		   GsPluginJob *job,
 		   guint cache_age,
 		   GCancellable *cancellable,
 		   GError **error)
@@ -822,7 +837,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
+gs_plugin_app_upgrade_download (GsPlugin *plugin,
+			        GsPluginJob *job,
+			        GsApp *app,
 			        GCancellable *cancellable, GError **error)
 {
 	/* only process this app if was created by this plugin */
@@ -841,7 +858,9 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 }
 
 gboolean
-gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
+gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
+			       GsPluginJob *job,
+			       GsApp *app,
 			       GCancellable *cancellable, GError **error)
 {
 	/* only process this app if was created by this plugin */
@@ -854,7 +873,9 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
 }
 
 gboolean
-gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
+gs_plugin_update_cancel (GsPlugin *plugin,
+			 GsPluginJob *job,
+			 GsApp *app,
 			 GCancellable *cancellable, GError **error)
 {
 	return TRUE;
@@ -862,6 +883,7 @@ gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 
 gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -873,6 +895,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_report (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -885,6 +908,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_upvote (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -897,6 +921,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_downvote (GsPlugin *plugin,
+			   GsPluginJob *job,
 			   GsApp *app,
 			   AsReview *review,
 			   GCancellable *cancellable,
@@ -909,6 +934,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_remove (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,

@@ -91,6 +91,7 @@ gs_plugin_packagekit_refine_repo_from_filename (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
+                  GsPluginJob *job,
                   GsAppList *list,
                   GsPluginRefineFlags flags,
                   GCancellable *cancellable,

@@ -117,6 +117,7 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,

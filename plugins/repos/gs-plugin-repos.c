@@ -166,6 +166,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,

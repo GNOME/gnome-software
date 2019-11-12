@@ -159,6 +159,7 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
+		   GsPluginJob *job,
 		   guint cache_age,
 		   GCancellable *cancellable,
 		   GError **error)
@@ -722,6 +723,7 @@ gs_plugin_odrs_refine_reviews (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,
@@ -806,6 +808,7 @@ gs_plugin_odrs_invalidate_cache (AsReview *review, GError **error)
 
 gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -929,6 +932,7 @@ gs_plugin_odrs_vote (GsPlugin *plugin, AsReview *review,
 
 gboolean
 gs_plugin_review_report (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -942,6 +946,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_upvote (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -955,6 +960,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_downvote (GsPlugin *plugin,
+			   GsPluginJob *job,
 			   GsApp *app,
 			   AsReview *review,
 			   GCancellable *cancellable,
@@ -968,6 +974,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_dismiss (GsPlugin *plugin,
+			  GsPluginJob *job,
 			  GsApp *app,
 			  AsReview *review,
 			  GCancellable *cancellable,
@@ -981,6 +988,7 @@ gs_plugin_review_dismiss (GsPlugin *plugin,
 
 gboolean
 gs_plugin_review_remove (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 AsReview *review,
 			 GCancellable *cancellable,
@@ -1008,6 +1016,7 @@ gs_plugin_create_app_dummy (const gchar *id)
 
 gboolean
 gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
+			       GsPluginJob *job,
 			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)

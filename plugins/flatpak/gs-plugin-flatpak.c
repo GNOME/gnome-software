@@ -178,6 +178,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
@@ -193,6 +194,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -208,6 +210,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -223,6 +226,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
+		   GsPluginJob *job,
 		   guint cache_age,
 		   GCancellable *cancellable,
 		   GError **error)
@@ -308,6 +312,7 @@ gs_plugin_flatpak_refine_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,
@@ -340,6 +345,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine_wildcard (GsPlugin *plugin,
+			   GsPluginJob *job,
 			   GsApp *app,
 			   GsAppList *list,
 			   GsPluginRefineFlags flags,
@@ -359,6 +365,7 @@ gs_plugin_refine_wildcard (GsPlugin *plugin,
 
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsApp *app,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -472,7 +479,9 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak, GsProgress *job_progre
 }
 
 gboolean
-gs_plugin_download (GsPlugin *plugin, GsAppList *list,
+gs_plugin_download (GsPlugin *plugin,
+		    GsPluginJob *job,
+		    GsAppList *list,
 		    GCancellable *cancellable, GError **error)
 {
 	g_autoptr(GHashTable) applist_by_flatpaks = NULL;
@@ -533,6 +542,7 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -594,6 +604,7 @@ app_has_local_source (GsApp *app)
 
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -801,6 +812,7 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 
 gboolean
 gs_plugin_update (GsPlugin *plugin,
+                  GsPluginJob *job,
                   GsAppList *list,
                   GCancellable *cancellable,
                   GError **error)
@@ -976,6 +988,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,
@@ -1020,6 +1033,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      gchar **values,
 		      GsAppList *list,
 		      GCancellable *cancellable,
@@ -1038,6 +1052,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
+			  GsPluginJob *job,
 			  GPtrArray *list,
 			  GCancellable *cancellable,
 			  GError **error)
@@ -1053,6 +1068,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsPluginJob *job,
 			     GsCategory *category,
 			     GsAppList *list,
 			     GCancellable *cancellable,
@@ -1074,6 +1090,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -1089,6 +1106,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_alternates (GsPlugin *plugin,
+			  GsPluginJob *job,
 			  GsApp *app,
 			  GsAppList *list,
 			  GCancellable *cancellable,
@@ -1105,6 +1123,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_featured (GsPlugin *plugin,
+			GsPluginJob *job,
 			GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
@@ -1120,6 +1139,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_recent (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsAppList *list,
 		      guint64 age,
 		      GCancellable *cancellable,

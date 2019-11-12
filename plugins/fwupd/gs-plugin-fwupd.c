@@ -469,6 +469,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 
 gboolean
 gs_plugin_add_updates_historical (GsPlugin *plugin,
+				  GsPluginJob *job,
 				  GsAppList *list,
 				  GCancellable *cancellable,
 				  GError **error)
@@ -513,6 +514,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -730,6 +732,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
+		   GsPluginJob *job,
 		   guint cache_age,
 		   GCancellable *cancellable,
 		   GError **error)
@@ -845,6 +848,7 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -865,7 +869,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
+gs_plugin_app_remove (GsPlugin *plugin,
+		      GsPluginJob *job,
+		      GsApp *app,
 		      GCancellable *cancellable, GError **error)
 {
 	/* only process this app if was created by this plugin */
@@ -879,6 +885,7 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 
 gboolean
 gs_plugin_download_app (GsPlugin *plugin,
+			GsPluginJob *job,
 			GsApp *app,
 			GCancellable *cancellable,
 			GError **error)
@@ -927,6 +934,7 @@ gs_plugin_download_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_update_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -966,6 +974,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,
@@ -1014,6 +1023,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)

@@ -24,6 +24,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,

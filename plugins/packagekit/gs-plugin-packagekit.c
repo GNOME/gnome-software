@@ -114,6 +114,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -250,6 +251,7 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -483,6 +485,7 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -582,6 +585,7 @@ gs_plugin_packagekit_build_update_app (GsPlugin *plugin, PkPackage *package)
 
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
+		       GsPluginJob *job,
 		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -616,6 +620,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_search_files (GsPlugin *plugin,
+                            GsPluginJob *job,
                             gchar **search,
                             GsAppList *list,
                             GCancellable *cancellable,
@@ -648,6 +653,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 
 gboolean
 gs_plugin_add_search_what_provides (GsPlugin *plugin,
+                                    GsPluginJob *job,
                                     gchar **search,
                                     GsAppList *list,
                                     GCancellable *cancellable,
@@ -680,6 +686,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsApp *app,
 		  GCancellable *cancellable,
 		  GError **error)

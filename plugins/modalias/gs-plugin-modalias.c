@@ -100,6 +100,7 @@ gs_plugin_modalias_matches (GsPlugin *plugin, const gchar *modalias)
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,

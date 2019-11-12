@@ -153,6 +153,7 @@ gs_plugin_systemd_refine_app (GsPlugin *plugin, GsApp *app)
 
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
+                  GsPluginJob *job,
                   GsAppList *list,
                   GsPluginRefineFlags flags,
                   GCancellable *cancellable,
@@ -261,6 +262,7 @@ _systemd_trigger_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_update (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsAppList *list,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -291,6 +293,7 @@ gs_plugin_update (GsPlugin *plugin,
 
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,
+			 GsPluginJob *job,
 			 GsApp *app,
 			 GCancellable *cancellable,
 			 GError **error)
@@ -318,6 +321,7 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 
 gboolean
 gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
+                               GsPluginJob *job,
                                GsApp *app,
                                GCancellable *cancellable,
                                GError **error)

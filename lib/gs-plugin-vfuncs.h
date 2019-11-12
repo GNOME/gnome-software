@@ -24,6 +24,7 @@
 #include "gs-app.h"
 #include "gs-app-list.h"
 #include "gs-category.h"
+#include "gs-plugin-job.h"
 
 G_BEGIN_DECLS
 
@@ -82,6 +83,7 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 gchar		**values,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -103,6 +105,7 @@ gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_search_files		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 gchar		**values,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -124,6 +127,7 @@ gboolean	 gs_plugin_add_search_files		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 gchar		**values,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -145,6 +149,7 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_alternates		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -185,6 +190,7 @@ gboolean	 gs_plugin_setup			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -206,6 +212,7 @@ gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -226,6 +233,7 @@ gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_distro_upgrades		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -246,6 +254,7 @@ gboolean	 gs_plugin_add_distro_upgrades		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_sources			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -265,6 +274,7 @@ gboolean	 gs_plugin_add_sources			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -283,6 +293,7 @@ gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GPtrArray	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -302,6 +313,7 @@ gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsCategory	*category,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
@@ -322,6 +334,7 @@ gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_recent			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 guint64	 age,
 							 GCancellable	*cancellable,
@@ -349,6 +362,7 @@ gboolean	 gs_plugin_add_recent			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -376,6 +390,7 @@ gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -397,6 +412,7 @@ gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -420,6 +436,7 @@ gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
@@ -448,6 +465,7 @@ gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_refine_app			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
@@ -471,6 +489,7 @@ gboolean	 gs_plugin_refine_app			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_refine_wildcard		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GsAppList	*list,
 							 GsPluginRefineFlags flags,
@@ -493,6 +512,7 @@ gboolean	 gs_plugin_refine_wildcard		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -509,6 +529,7 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_shortcut			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -525,6 +546,7 @@ gboolean	 gs_plugin_add_shortcut			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_remove_shortcut		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -541,6 +563,7 @@ gboolean	 gs_plugin_remove_shortcut		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -570,6 +593,7 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -599,6 +623,7 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -617,6 +642,7 @@ gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -650,6 +676,7 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -684,6 +711,7 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_download_app			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -705,6 +733,7 @@ gboolean	 gs_plugin_download_app			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_download			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -725,6 +754,7 @@ gboolean	 gs_plugin_download			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -741,6 +771,7 @@ gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -758,6 +789,7 @@ gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
@@ -776,6 +808,7 @@ gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_upvote		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
@@ -796,6 +829,7 @@ gboolean	 gs_plugin_review_upvote		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_downvote		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
@@ -816,6 +850,7 @@ gboolean	 gs_plugin_review_downvote		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_report		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
@@ -835,6 +870,7 @@ gboolean	 gs_plugin_review_report		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
@@ -855,6 +891,7 @@ gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
@@ -878,6 +915,7 @@ gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 guint		 cache_age,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -904,6 +942,7 @@ gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GFile		*file,
 							 GCancellable	*cancellable,
@@ -928,6 +967,7 @@ gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_url_to_app			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 const gchar	*url,
 							 GCancellable	*cancellable,
@@ -945,6 +985,7 @@ gboolean	 gs_plugin_url_to_app			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_update			(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -962,6 +1003,7 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
  * Returns: %TRUE for success or if not relevant
  **/
 gboolean	 gs_plugin_add_langpacks		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 const gchar    *locale,
 							 GCancellable	*cancellable,

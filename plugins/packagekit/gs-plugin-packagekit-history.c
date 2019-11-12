@@ -221,6 +221,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsAppList *list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,

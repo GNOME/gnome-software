@@ -106,6 +106,7 @@ _download_only (GsPlugin *plugin, GsAppList *list,
 
 gboolean
 gs_plugin_download (GsPlugin *plugin,
+                    GsPluginJob *job,
                     GsAppList *list,
                     GCancellable *cancellable,
                     GError **error)
@@ -150,6 +151,7 @@ gs_plugin_download (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
+		   GsPluginJob *job,
 		   guint cache_age,
 		   GCancellable *cancellable,
 		   GError **error)

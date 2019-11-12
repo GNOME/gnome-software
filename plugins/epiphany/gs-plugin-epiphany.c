@@ -62,7 +62,9 @@ _gs_app_get_id_nonfull (GsApp *app)
 }
 
 gboolean
-gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
+gs_plugin_app_install (GsPlugin *plugin,
+		       GsPluginJob *job,
+		       GsApp *app,
 		       GCancellable *cancellable, GError **error)
 {
 	AsIcon *icon;
@@ -213,7 +215,9 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 }
 
 gboolean
-gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
+gs_plugin_app_remove (GsPlugin *plugin,
+		      GsPluginJob *job,
+		      GsApp *app,
 		      GCancellable *cancellable, GError **error)
 {
 	const gchar *epi_desktop;
@@ -249,6 +253,7 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,
@@ -310,6 +315,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
+		  GsPluginJob *job,
 		  GsApp *app,
 		  GCancellable *cancellable,
 		  GError **error)

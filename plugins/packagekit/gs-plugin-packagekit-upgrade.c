@@ -49,6 +49,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 
 gboolean
 gs_plugin_app_upgrade_download (GsPlugin *plugin,
+				GsPluginJob *job,
 				GsApp *app,
 				GCancellable *cancellable,
 				GError **error)

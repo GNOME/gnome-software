@@ -206,6 +206,7 @@ _refresh_cache (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
+		   GsPluginJob *job,
 		   guint cache_age,
 		   GCancellable *cancellable,
 		   GError **error)
@@ -468,6 +469,7 @@ _get_item_by_cpe_name (GsPlugin *plugin, const gchar *cpe_name)
 
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
+			       GsPluginJob *job,
 			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
@@ -494,6 +496,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,

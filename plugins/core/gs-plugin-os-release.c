@@ -85,6 +85,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 gboolean
 gs_plugin_refine_wildcard (GsPlugin *plugin,
+			   GsPluginJob *job,
 			   GsApp *app,
 			   GsAppList *list,
 			   GsPluginRefineFlags flags,

@@ -254,6 +254,7 @@ gs_plugin_icons_load_cached (GsPlugin *plugin, AsIcon *icon, GError **error)
 
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsApp *app,
 		      GsPluginRefineFlags flags,
 		      GCancellable *cancellable,

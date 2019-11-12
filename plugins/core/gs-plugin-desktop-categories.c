@@ -28,6 +28,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
+			  GsPluginJob *job,
 			  GPtrArray *list,
 			  GCancellable *cancellable,
 			  GError **error)
@@ -71,6 +72,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
  * overview page or `gnome-software-cmd get-category-apps games/featured` */
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsPluginJob *job,
 			     GsCategory *category,
 			     GsAppList *list,
 			     GCancellable *cancellable,

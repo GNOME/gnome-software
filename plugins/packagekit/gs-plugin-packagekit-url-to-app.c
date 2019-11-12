@@ -40,6 +40,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 
 gboolean
 gs_plugin_url_to_app (GsPlugin *plugin,
+		      GsPluginJob *job,
 		      GsAppList *list,
 		      const gchar *url,
 		      GCancellable *cancellable,

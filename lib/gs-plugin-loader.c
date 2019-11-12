@@ -90,79 +90,95 @@ typedef gboolean	 (*GsPluginSetupFunc)		(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 gchar		**value,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginAlternatesFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginCategoryFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsCategory	*category,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginGetRecentFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 guint64	 age,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginResultsFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginCategoriesFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GPtrArray	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 AsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineWildcardFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsApp		*app,
 							 GsAppList	*list,
 							 GsPluginRefineFlags refine_flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 guint		 cache_age,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginFileToAppFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginUrlToAppFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 const gchar	*url,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
 							 GsApp		*app);
 typedef gboolean	 (*GsPluginGetLangPacksFunc)	(GsPlugin	*plugin,
+							 GsPluginJob	*job,
 							 GsAppList	*list,
 							 const gchar    *locale,
 							 GCancellable	*cancellable,
@@ -585,13 +601,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_REFINE:
 		if (g_strcmp0 (helper->function_name, "gs_plugin_refine_wildcard") == 0) {
 			GsPluginRefineWildcardFunc plugin_func = func;
-			ret = plugin_func (plugin, app, list, refine_flags, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, app, list, refine_flags, cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine_app") == 0) {
 			GsPluginRefineAppFunc plugin_func = func;
-			ret = plugin_func (plugin, app, refine_flags, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, app, refine_flags, cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine") == 0) {
 			GsPluginRefineFunc plugin_func = func;
-			ret = plugin_func (plugin, list, refine_flags, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, list, refine_flags, cancellable, &error_local);
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
@@ -601,10 +617,10 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_UPDATE:
 		if (g_strcmp0 (helper->function_name, "gs_plugin_update_app") == 0) {
 			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, app, cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_update") == 0) {
 			GsPluginUpdateFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, list, cancellable, &error_local);
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
@@ -614,10 +630,10 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_DOWNLOAD:
 		if (g_strcmp0 (helper->function_name, "gs_plugin_download_app") == 0) {
 			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, app, cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_download") == 0) {
 			GsPluginUpdateFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, list, cancellable, &error_local);
 		} else {
 			g_critical ("function_name %s invalid for %s",
 				    helper->function_name,
@@ -635,7 +651,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_REMOVE_SHORTCUT:
 		{
 			GsPluginActionFunc plugin_func = func;
-			ret = plugin_func (plugin, app, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, app, cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_REVIEW_SUBMIT:
@@ -646,7 +662,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_REVIEW_DISMISS:
 		{
 			GsPluginReviewFunc plugin_func = func;
-			ret = plugin_func (plugin, app,
+			ret = plugin_func (plugin, helper->plugin_job, app,
 					   gs_plugin_job_get_review (helper->plugin_job),
 					   cancellable, &error_local);
 		}
@@ -654,7 +670,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_RECENT:
 		{
 			GsPluginGetRecentFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
+			ret = plugin_func (plugin, helper->plugin_job, list,
 					   gs_plugin_job_get_age (helper->plugin_job),
 					   cancellable, &error_local);
 		}
@@ -669,13 +685,13 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_FEATURED:
 		{
 			GsPluginResultsFunc plugin_func = func;
-			ret = plugin_func (plugin, list, cancellable, &error_local);
+			ret = plugin_func (plugin, helper->plugin_job, list, cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_SEARCH:
 		{
 			GsPluginSearchFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->tokens, list,
+			ret = plugin_func (plugin, helper->plugin_job, helper->tokens, list,
 					   cancellable, &error_local);
 		}
 		break;
@@ -684,21 +700,21 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		{
 			GsPluginSearchFunc plugin_func = func;
 			gchar *search[2] = { gs_plugin_job_get_search (helper->plugin_job), NULL };
-			ret = plugin_func (plugin, search, list,
+			ret = plugin_func (plugin, helper->plugin_job, search, list,
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_ALTERNATES:
 		{
 			GsPluginAlternatesFunc plugin_func = func;
-			ret = plugin_func (plugin, app, list,
+			ret = plugin_func (plugin, helper->plugin_job, app, list,
 					   cancellable, &error_local);
 		}
 		break;
 	case GS_PLUGIN_ACTION_GET_CATEGORIES:
 		{
 			GsPluginCategoriesFunc plugin_func = func;
-			ret = plugin_func (plugin, helper->catlist,
+			ret = plugin_func (plugin, helper->plugin_job, helper->catlist,
 					   cancellable, &error_local);
 		}
 		break;
@@ -706,6 +722,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		{
 			GsPluginCategoryFunc plugin_func = func;
 			ret = plugin_func (plugin,
+					   helper->plugin_job,
 					   gs_plugin_job_get_category (helper->plugin_job),
 					   list,
 					   cancellable, &error_local);
@@ -715,6 +732,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		{
 			GsPluginRefreshFunc plugin_func = func;
 			ret = plugin_func (plugin,
+					   helper->plugin_job,
 					   gs_plugin_job_get_age (helper->plugin_job),
 					   cancellable, &error_local);
 		}
@@ -722,7 +740,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_FILE_TO_APP:
 		{
 			GsPluginFileToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
+			ret = plugin_func (plugin, helper->plugin_job, list,
 					   gs_plugin_job_get_file (helper->plugin_job),
 					   cancellable, &error_local);
 		}
@@ -730,7 +748,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_URL_TO_APP:
 		{
 			GsPluginUrlToAppFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
+			ret = plugin_func (plugin, helper->plugin_job, list,
 					   gs_plugin_job_get_search (helper->plugin_job),
 					   cancellable, &error_local);
 		}
@@ -738,7 +756,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_GET_LANGPACKS:
 		{
 			GsPluginGetLangPacksFunc plugin_func = func;
-			ret = plugin_func (plugin, list,
+			ret = plugin_func (plugin, helper->plugin_job, list,
 					   gs_plugin_job_get_search (helper->plugin_job),
 					   cancellable, &error_local);
 		}
@@ -3024,7 +3042,7 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 								   g_object_unref);
 
 			gs_plugin_job_set_app (helper->plugin_job, app);
-			ret = plugin_app_func (plugin, app, app_cancellable, &error_local);
+			ret = plugin_app_func (plugin, helper->plugin_job, app, app_cancellable, &error_local);
 			g_cancellable_disconnect (cancellable, cancel_handler_id);
 
 			if (!ret) {
