@@ -2297,59 +2297,73 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 	AsContentRating *cr;
 	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
 	const gchar *tmp;
-	guint i, j;
+	g_autofree const gchar **ids = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
-	struct {
-		const gchar *ids[5];	/* ordered inside from worst to best */
-	} id_map[] = {
-		{{"violence-bloodshed",
-		  "violence-realistic",
-		  "violence-fantasy",
-		  "violence-cartoon", NULL }},
-		{{"violence-sexual", NULL }},
-		{{"drugs-alcohol", NULL }},
-		{{"drugs-narcotics", NULL }},
-		{{"sex-nudity", NULL }},
-		{{"sex-themes", NULL }},
-		{{"language-profanity", NULL }},
-		{{"language-humor", NULL }},
-		{{"language-discrimination", NULL }},
-		{{"money-advertising", NULL }},
-		{{"money-gambling", NULL }},
-		{{"money-purchasing", NULL }},
-		{{"social-audio",
-		  "social-chat",
-		  "social-contacts",
-		  "social-info", NULL }},
-		{{"social-location", NULL }},
-		{{ NULL }}
+
+	/* Ordered from worst to best */
+	const gchar *violence_group[] = {
+		"violence-bloodshed",
+		"violence-realistic",
+		"violence-fantasy",
+		"violence-cartoon",
+		NULL
+	};
+	const gchar *social_group[] = {
+		"social-audio",
+		"social-chat",
+		"social-contacts",
+		"social-info",
+		NULL
 	};
 
-	/* get the worst thing */
 	cr = gs_app_get_content_rating (self->app);
 	if (cr == NULL)
 		return;
-	for (j = 0; id_map[j].ids[0] != NULL; j++) {
-		for (i = 0; id_map[j].ids[i] != NULL; i++) {
+
+	ids = gs_content_rating_get_all_rating_ids ();
+
+	/* get the worst thing */
+	for (gsize i = 0; ids[i] != NULL; i++) {
+		AsContentRatingValue value;
+		value = as_content_rating_get_value (cr, ids[i]);
+		if (value > value_bad)
+			value_bad = value;
+	}
+
+	/* get the content rating description for the worst things about the app;
+	 * handle the groups separately*/
+	for (gsize i = 0; ids[i] != NULL; i++) {
+		if (!g_strv_contains (violence_group, ids[i]) &&
+		    !g_strv_contains (social_group, ids[i])) {
 			AsContentRatingValue value;
-			value = as_content_rating_get_value (cr, id_map[j].ids[i]);
-			if (value > value_bad)
-				value_bad = value;
+			value = as_content_rating_get_value (cr, ids[i]);
+			if (value < value_bad)
+				continue;
+			tmp = gs_content_rating_key_value_to_str (ids[i], value);
+			g_string_append_printf (str, "• %s\n", tmp);
 		}
 	}
 
-	/* get the content rating description for the worst things about the app */
-	for (j = 0; id_map[j].ids[0] != NULL; j++) {
-		for (i = 0; id_map[j].ids[i] != NULL; i++) {
-			AsContentRatingValue value;
-			value = as_content_rating_get_value (cr, id_map[j].ids[i]);
-			if (value < value_bad)
-				continue;
-			tmp = gs_content_rating_key_value_to_str (id_map[j].ids[i], value);
-			g_string_append_printf (str, "• %s\n", tmp);
-			break;
-		}
+	for (gsize i = 0; violence_group[i] != NULL; i++) {
+		AsContentRatingValue value;
+		value = as_content_rating_get_value (cr, violence_group[i]);
+		if (value < value_bad)
+			continue;
+		tmp = gs_content_rating_key_value_to_str (violence_group[i], value);
+		g_string_append_printf (str, "• %s\n", tmp);
+		break;
 	}
+
+	for (gsize i = 0; social_group[i] != NULL; i++) {
+		AsContentRatingValue value;
+		value = as_content_rating_get_value (cr, social_group[i]);
+		if (value < value_bad)
+			continue;
+		tmp = gs_content_rating_key_value_to_str (social_group[i], value);
+		g_string_append_printf (str, "• %s\n", tmp);
+		break;
+	}
+
 	if (str->len > 0)
 		g_string_truncate (str, str->len - 1);
 
