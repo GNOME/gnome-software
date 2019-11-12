@@ -383,6 +383,19 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	return NULL;
 }
 
+/* Equivalent to as_content_rating_get_all_rating_ids() */
+const gchar **
+gs_content_rating_get_all_rating_ids (void)
+{
+	g_autoptr(GPtrArray) ids = g_ptr_array_new_with_free_func (NULL);
+
+	for (gsize i = 0; i < G_N_ELEMENTS (oars_descriptions); i++)
+		g_ptr_array_add (ids, (gpointer) oars_descriptions[i].id);
+	g_ptr_array_add (ids, NULL);
+
+	return (const gchar **) g_ptr_array_free (g_steal_pointer (&ids), FALSE);
+}
+
 static char *
 get_esrb_string (gchar *source, gchar *translate)
 {
