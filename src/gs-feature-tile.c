@@ -49,11 +49,11 @@ gs_feature_tile_refresh (GsAppTile *self)
 	css = gs_css_new ();
 	if (markup != NULL)
 		gs_css_parse (css, markup, NULL);
-	gs_utils_widget_set_css (GTK_WIDGET (tile),
+	gs_utils_widget_set_css (GTK_WIDGET (tile), "feature-tile",
 				 gs_css_get_markup_for_id (css, "tile"));
-	gs_utils_widget_set_css (tile->title,
+	gs_utils_widget_set_css (tile->title, "feature-tile-name",
 				 gs_css_get_markup_for_id (css, "name"));
-	gs_utils_widget_set_css (tile->subtitle,
+	gs_utils_widget_set_css (tile->subtitle, "feature-tile-subtitle",
 				 gs_css_get_markup_for_id (css, "summary"));
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));

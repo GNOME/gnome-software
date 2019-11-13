@@ -84,7 +84,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::AppTile-css");
-	gs_utils_widget_set_css (GTK_WIDGET (tile), css);
+	gs_utils_widget_set_css (GTK_WIDGET (tile), "summary-tile", css);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 

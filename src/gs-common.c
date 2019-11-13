@@ -360,24 +360,33 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
 	provider = gtk_css_provider_new ();
 	g_signal_connect (provider, "parsing-error",
 			  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	gtk_css_provider_load_from_data (provider, css, -1, NULL);
 	g_object_set_data_full (G_OBJECT (widget),
 				"GnomeSoftware::provider",
 				g_object_ref (provider),
 				g_object_unref);
+	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider),
+					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
+/**
+ * gs_utils_widget_set_css:
+ * @widget: a widget
+ * @class_name: class name to use, without the leading `.`
+ * @css: (nullable): CSS to set on the widget, or %NULL to clear custom CSS
+ *
+ * Set custom CSS on the given @widget instance. This doesn’t affect any other
+ * instances of the same widget. The @class_name must be a static string to be
+ * used as a name for the @css. It doesn’t need to vary with @widget, but
+ * multiple values of @class_name can be used with the same @widget to control
+ * several independent snippets of custom CSS.
+ */
 void
-gs_utils_widget_set_css (GtkWidget *widget, const gchar *css)
+gs_utils_widget_set_css (GtkWidget *widget, const gchar *class_name, const gchar *css)
 {
-	g_autofree gchar *class_name = NULL;
 	g_autoptr(GString) str = NULL;
 
-	/* remove custom class if NULL */
-	class_name = g_strdup_printf ("themed-widget_%p", widget);
+	/* remove custom class if NULL; we don’t currently bother to remove the custom #GtkCssProvider */
 	if (css == NULL) {
 		GtkStyleContext *context = gtk_widget_get_style_context (widget);
 		gtk_style_context_remove_class (context, class_name);

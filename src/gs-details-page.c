@@ -1680,7 +1680,7 @@ gs_details_page_content_rating_set_css (GtkWidget *widget, guint age)
 	}
 	g_string_append_printf (css, "color: %s;\n", color_fg);
 	g_string_append_printf (css, "background-color: %s;\n", color_bg);
-	gs_utils_widget_set_css (widget, css->str);
+	gs_utils_widget_set_css (widget, "content-rating-custom", css->str);
 }
 
 static void
