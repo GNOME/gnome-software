@@ -105,7 +105,9 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		if (timestamp == GS_APP_INSTALL_DATE_UNKNOWN) {
 			date_str = g_strdup ("");
 		} else {
-			date_str = g_date_time_format (datetime, "%e %B %Y");
+			/* TRANSLATORS: This is the date string with: day number, month name, year.
+			i.e. "25 May 2012" */
+			date_str = g_date_time_format (datetime, _("%e %B %Y"));
 		}
 		widget = gtk_label_new (date_str);
 		g_object_set (widget,

@@ -59,7 +59,9 @@ gs_review_row_refresh (GsReviewRow *row)
 	gtk_label_set_text (GTK_LABEL (priv->author_label), reviewer);
 	date = as_review_get_date (priv->review);
 	if (date != NULL)
-		text = g_date_time_format (date, "%e %B %Y");
+		/* TRANSLATORS: This is the date string with: day number, month name, year.
+		i.e. "25 May 2012" */
+		text = g_date_time_format (date, _("%e %B %Y"));
 	else
 		text = g_strdup ("");
 	gtk_label_set_text (GTK_LABEL (priv->date_label), text);
