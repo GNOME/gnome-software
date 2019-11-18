@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2019-10-03 06:09+0000\n"
-"PO-Revision-Date: 2019-10-16 17:42+0200\n"
+"POT-Creation-Date: 2019-11-08 17:19+0000\n"
+"PO-Revision-Date: 2019-11-18 09:17+0100\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -261,43 +261,39 @@ msgstr ""
 "è pussibil"
 
 #: data/org.gnome.software.gschema.xml:107
-msgid "Show the folder management UI"
-msgstr "Mostre la IU de gjestion des cartelis"
-
-#: data/org.gnome.software.gschema.xml:111
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Permet l'acès al dialic dai dipuesits software"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:111
 msgid "Offer upgrades for pre-releases"
 msgstr "Ufrìs avanzaments par distribuzions preliminaris"
 
-#: data/org.gnome.software.gschema.xml:119
+#: data/org.gnome.software.gschema.xml:115
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Mostre cualchi element te IU par informâ l'utent che une aplicazion no je "
 "libare"
 
-#: data/org.gnome.software.gschema.xml:123
+#: data/org.gnome.software.gschema.xml:119
 msgid "Show the prompt to install nonfree software repositories"
 msgstr "Mostre la domande par instalâ i dipuesits software no libars"
 
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:123
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
 "Mostre la dimension instalade pes apps inte liste des aplicazions instaladis"
 
 # fâ pagjine par software proprietari su vikipedie
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:131
+#: data/org.gnome.software.gschema.xml:127
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://it.wikipedia.org/wiki/Software_proprietario'"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:128
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "Il URI che al spieghe il software proprietari e no libar"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:132
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -305,17 +301,17 @@ msgstr ""
 "Une liste di file che a pontin a file “appstream” che a vignaran discjariâts "
 "intune cartele di informazion de aplicazion"
 
-#: data/org.gnome.software.gschema.xml:140
+#: data/org.gnome.software.gschema.xml:136
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "Instale i file “AppStream” suntune posizion a nivel di sisteme par ducj i "
 "utents"
 
-#: data/org.gnome.software.gschema.xml:144
+#: data/org.gnome.software.gschema.xml:140
 msgid "Enable GNOME Shell extensions repository"
 msgstr "Abilite il dipuesit des estensions di GNOME Shell"
 
-#: data/org.gnome.software.gschema.xml:151
+#: data/org.gnome.software.gschema.xml:147
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Une stringhe che e memorize il ID par jentrâ tal account online di gnome"
@@ -373,7 +369,7 @@ msgstr "Ricercje"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:276 src/gs-app-row.c:298 src/gs-details-page.ui:877
+#: src/gnome-software.ui:276 src/gs-app-row.c:287 src/gs-details-page.ui:877
 msgid "Source"
 msgstr "Sorzint"
 
@@ -413,11 +409,11 @@ msgstr "File locâl"
 msgid "Package"
 msgstr "Pachet"
 
-#: src/gs-app-addon-row.c:82 src/gs-app-row.c:423
+#: src/gs-app-addon-row.c:82 src/gs-app-row.c:412
 msgid "Pending"
 msgstr "In spiete"
 
-#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:182 src/gs-app-tile.ui:51
+#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:175 src/gs-app-tile.ui:51
 #: src/gs-feature-tile.c:68
 msgid "Installed"
 msgstr "Instalât"
@@ -426,7 +422,7 @@ msgstr "Instalât"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:172 src/gs-details-page.c:327
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:165 src/gs-details-page.c:327
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "Instalazion"
@@ -435,29 +431,10 @@ msgstr "Instalazion"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:178 src/gs-repo-row.c:126
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:171 src/gs-repo-row.c:126
 #: src/gs-third-party-repo-row.c:106
 msgid "Removing"
 msgstr "Rimozion"
-
-#: src/gs-app-folder-dialog.c:296
-msgid "Folder Name"
-msgstr "Non de cartele"
-
-#: src/gs-app-folder-dialog.c:307 src/gs-app-folder-dialog.ui:16
-#: src/gs-details-page.ui:243 src/gs-editor.c:729 src/gs-editor.c:762
-#: src/gs-installed-page.c:598 src/gs-removal-dialog.ui:32
-#: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
-msgid "_Cancel"
-msgstr "_Anule"
-
-#: src/gs-app-folder-dialog.c:312 src/gs-app-folder-dialog.ui:24
-msgid "_Add"
-msgstr "_Zonte"
-
-#: src/gs-app-folder-dialog.ui:5
-msgid "Add to Application Folder"
-msgstr "Zonte ae cartele aplicazions"
 
 #. TRANSLATORS: this is a command line option
 #: src/gs-application.c:109
@@ -565,20 +542,20 @@ msgstr "Scuse! No son detais par cheste la aplicazion."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:127
+#: src/gs-app-row.c:120
 msgid "Visit website"
 msgstr "Visite il sît web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:132
+#: src/gs-app-row.c:125
 msgid "Install…"
 msgstr "Instale…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:139 src/gs-updates-section.c:472
+#: src/gs-app-row.c:132 src/gs-updates-section.c:472
 msgid "Cancel"
 msgstr "Anule"
 
@@ -586,13 +563,13 @@ msgstr "Anule"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:287 src/gs-page.c:273
+#: src/gs-app-row.c:139 src/gs-common.c:287 src/gs-page.c:273
 msgid "Install"
 msgstr "Instale"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:153
+#: src/gs-app-row.c:146
 msgid "Update"
 msgstr "Inzorne"
 
@@ -600,18 +577,18 @@ msgstr "Inzorne"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:432
+#: src/gs-app-row.c:150 src/gs-app-row.c:159 src/gs-page.c:432
 #: src/gs-repos-dialog.c:323
 msgid "Remove"
 msgstr "Gjave"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:288
+#: src/gs-app-row.c:277
 msgid "Device cannot be used during update."
 msgstr "Il dispositîf nol pues jessi doprât intant che si inzorne."
 
-#: src/gs-app-row.c:491 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:470 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "Al à bisugne di permès adizionâi"
 
@@ -1665,6 +1642,12 @@ msgstr "Pagjine di detais"
 msgid "Downloading"
 msgstr "Daûr a discjariâ"
 
+#: src/gs-details-page.ui:243 src/gs-editor.c:729 src/gs-editor.c:762
+#: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
+#: src/gs-upgrade-banner.ui:112
+msgid "_Cancel"
+msgstr "_Anule"
+
 #: src/gs-details-page.ui:253
 msgid "_Update"
 msgstr "_Inzorne"
@@ -1817,7 +1800,7 @@ msgstr "Proprietarie"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1035 src/gs-installed-page.c:478
+#: src/gs-details-page.ui:1035 src/gs-installed-page.c:441
 #: plugins/core/gs-desktop-common.c:317
 msgid "Add-ons"
 msgstr "Estensions"
@@ -2278,33 +2261,13 @@ msgstr "Cronologjie"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:474
+#: src/gs-installed-page.c:437
 msgid "System Applications"
 msgstr "Aplicazions di sisteme"
-
-#: src/gs-installed-page.c:608
-msgid "Click on items to select them"
-msgstr "Fâs clic sui elements par selezionâju"
-
-#: src/gs-installed-page.c:812
-msgid "Select"
-msgstr "Selezione"
 
 #: src/gs-installed-page.ui:7
 msgid "Installed page"
 msgstr "Pagjine instalade"
-
-#: src/gs-installed-page.ui:65
-msgid "_Add to Folder…"
-msgstr "_Zonte ae cartele…"
-
-#: src/gs-installed-page.ui:73
-msgid "_Move to Folder…"
-msgstr "_Sposte te cartele…"
-
-#: src/gs-installed-page.ui:81
-msgid "_Remove from Folder"
-msgstr "_Gjave de cartele"
 
 #. TRANSLATORS: initial start
 #: src/gs-loading-page.c:61 src/gs-loading-page.c:65
@@ -4376,31 +4339,31 @@ msgid "Run popular web applications in a browser"
 msgstr "Eseguìs lis aplicazions web popolârs intun browser"
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:138
+#: plugins/external-appstream/gs-install-appstream.c:139
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "Instaladôr a nivel di sisteme di AppStream di GNOME Software"
 
-#: plugins/external-appstream/gs-install-appstream.c:140
+#: plugins/external-appstream/gs-install-appstream.c:141
 msgid "Failed to parse command line arguments"
 msgstr "No si è rivâts a analizâ i argoments de rie di comant"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:147
+#: plugins/external-appstream/gs-install-appstream.c:148
 msgid "You need to specify exactly one filename"
 msgstr "Si scugne specificâ juste un non di file"
 
 #. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:154
+#: plugins/external-appstream/gs-install-appstream.c:155
 msgid "This program can only be used by the root user"
 msgstr "Chest program al pues jessi doprât nome dal utent «root»"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:162
+#: plugins/external-appstream/gs-install-appstream.c:163
 msgid "Failed to validate content type"
 msgstr "No si è rivâts a validâ il gjenar di contignût"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:169
+#: plugins/external-appstream/gs-install-appstream.c:173
 msgid "Failed to copy"
 msgstr "No si è rivâts a copiâ"
 
@@ -4431,7 +4394,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak al è un ambient di svilup par aplicazions di scritori su Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:832
+#: plugins/flatpak/gs-flatpak.c:858
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Daûr a otignî i metadâts flatpak par %s…"
@@ -4527,18 +4490,24 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr ""
 "ODRS al è un servizi che al furnìs recensions dai utents des aplicazions"
 
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:403
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:74
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:150
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:910
+msgid "GNOME"
+msgstr "GNOME"
+
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:406
 msgid "GNOME Shell Extensions Repository"
 msgstr "Dipuesit des estensions di GNOME Shell"
 
 # delle estensioni o della estensione?
 #. TRANSLATORS: status text when downloading
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:803
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:806
 msgid "Downloading shell extension metadata…"
 msgstr "Daûr a discjariâ i metadâts de estension de shell…"
 
 #. TRANSLATORS: the one-line summary
-#: plugins/shell-extensions/gs-plugin-shell-extensions.c:909
+#: plugins/shell-extensions/gs-plugin-shell-extensions.c:914
 msgid "GNOME Shell Extension"
 msgstr "Estensions de Shell di GNOME"
 
@@ -4554,6 +4523,33 @@ msgstr "Supuart Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Un snap al è un pachet universâl par Linux"
+
+#~ msgid "Show the folder management UI"
+#~ msgstr "Mostre la IU de gjestion des cartelis"
+
+#~ msgid "Folder Name"
+#~ msgstr "Non de cartele"
+
+#~ msgid "_Add"
+#~ msgstr "_Zonte"
+
+#~ msgid "Add to Application Folder"
+#~ msgstr "Zonte ae cartele aplicazions"
+
+#~ msgid "Click on items to select them"
+#~ msgstr "Fâs clic sui elements par selezionâju"
+
+#~ msgid "Select"
+#~ msgstr "Selezione"
+
+#~ msgid "_Add to Folder…"
+#~ msgstr "_Zonte ae cartele…"
+
+#~ msgid "_Move to Folder…"
+#~ msgstr "_Sposte te cartele…"
+
+#~ msgid "_Remove from Folder"
+#~ msgstr "_Gjave de cartele"
 
 #~ msgid "Top Rated"
 #~ msgstr "I miôr valutâts"
