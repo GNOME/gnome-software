@@ -73,6 +73,7 @@ Requires: libxmlb%{?_isa} >= %{libxmlb_version}
 Recommends: PackageKit%{?_isa} >= %{packagekit_version}
 
 Obsoletes: gnome-software-snap < 3.33.1
+Obsoletes: gnome-software-editor < 3.35.1
 
 # this is not a library version
 %define gs_plugin_version               13
@@ -88,13 +89,6 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 %description devel
 These development files are for building gnome-software plugins outside
 the source tree. Most users do not need this subpackage installed.
-
-%package editor
-Summary: Banner designer for GNOME Software
-Requires: %{name}%{?_isa} = %{version}-%{release}
-
-%description editor
-Editor for designing banners for GNOME Software.
 
 %package rpm-ostree
 Summary: rpm-ostree backend for gnome-software
@@ -214,11 +208,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %dir %{_includedir}/gnome-software
 %{_includedir}/gnome-software/*.h
 %{_datadir}/gtk-doc/html/gnome-software
-
-%files editor
-%{_bindir}/gnome-software-editor
-%{_datadir}/applications/org.gnome.Software.Editor.desktop
-%{_mandir}/man1/gnome-software-editor.1*
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
