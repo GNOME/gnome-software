@@ -124,6 +124,7 @@ static gchar *
 gs_fwupd_release_get_name (FwupdRelease *release)
 {
 	const gchar *name = fwupd_release_get_name (release);
+#if FWUPD_CHECK_VERSION(1,2,7)
 	GPtrArray *cats = fwupd_release_get_categories (release);
 
 	for (guint i = 0; i < cats->len; i++) {
@@ -171,6 +172,7 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			return g_strdup_printf (_("%s Thunderbolt Controller"), name);
 		}
 	}
+#endif
 
 	/* default fallback */
 	return g_strdup (name);
