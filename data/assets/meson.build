@@ -7,6 +7,7 @@ install_data([
   'featured-dropbox.png',
   'featured-FeedReader.svg',
   'featured-foliate.svg',
+  'featured-foliate-bg.jpg',
   'featured-fondo-bg.jpg',
   'featured-gimp.png',
   'featured-gnome-sudoku.png',

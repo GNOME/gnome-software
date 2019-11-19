@@ -103,8 +103,11 @@ text-shadow: 0 1px rgba(255,255,255,0.3);</value>
     </categories>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #00aaaa;
-background: #00cccc url('file://@datadir@/gnome-software/featured-foliate.svg') 
- 10% 40% / 50% auto no-repeat;
+background: #00cccc, 
+ url('file://@datadir@/gnome-software/featured-foliate.svg')
+ 10% 40% / 50% auto no-repeat,
+  url('file://@datadir@/gnome-software/featured-foliate-bg.jpg')
+ center bottom / cover no-repeat;
 color: #004444;
 text-shadow: none;
 </value>
