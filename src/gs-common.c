@@ -361,10 +361,6 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
 	g_signal_connect (provider, "parsing-error",
 			  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
 	gtk_css_provider_load_from_data (provider, css, -1, NULL);
-	g_object_set_data_full (G_OBJECT (widget),
-				"GnomeSoftware::provider",
-				g_object_ref (provider),
-				g_object_unref);
 	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider),
 					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
