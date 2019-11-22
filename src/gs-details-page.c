@@ -381,8 +381,10 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	/* spinner */
 	switch (state) {
 	case AS_APP_STATE_REMOVING:
-		gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
-		gtk_widget_set_visible (self->spinner_remove, TRUE);
+		if (!gtk_widget_get_visible (self->spinner_remove)) {
+			gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
+			gtk_widget_set_visible (self->spinner_remove, TRUE);
+		}
 		/* align text together with the spinner if we're showing it */
 		gtk_widget_set_halign (self->box_progress2, GTK_ALIGN_START);
 		break;
