@@ -195,6 +195,7 @@
                             <child>
                               <object class="GtkSpinner" id="spinner_remove">
                                 <property name="visible">False</property>
+                                <property name="valign">center</property>
                               </object>
                             </child>
                             <child>
@@ -203,6 +204,7 @@
                                 <property name="spacing">3</property>
                                 <property name="orientation">vertical</property>
                                 <property name="hexpand">True</property>
+                                <property name="valign">center</property>
                                 <child>
                                   <object class="GtkBox" id="box_progress2">
                                     <property name="visible">True</property>
@@ -211,12 +213,14 @@
                                     <child>
                                       <object class="GtkLabel" id="label_progress_status">
                                         <property name="visible">True</property>
+                                        <property name="valign">start</property>
                                         <property name="label" translatable="yes">Downloading</property>
                                       </object>
                                     </child>
                                     <child>
                                       <object class="GtkLabel" id="label_progress_percentage">
                                         <property name="visible">True</property>
+                                        <property name="valign">start</property>
                                         <property name="label">50%</property>
                                       </object>
                                     </child>
