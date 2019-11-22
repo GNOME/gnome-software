@@ -70,6 +70,58 @@ gs_flatpak_transaction_set_no_deploy (FlatpakTransaction *transaction, gboolean 
 }
 #endif
 
+/* Sets installed app(s) back to installed state. Flatpak can return apps as updatable
+ * (for installing a missing runtime); if it is detected that the runtime was missing
+ * at the first place.
+ *
+ * We can determine whether a GsApp is only being updated due to a missing runtime, by checking
+ * if the current operation's ref is the GsApp's runtime and also the GsApp is already deployed.
+ */
+static void
+set_installed_app_state_if_missing_runtime_is_installed (FlatpakTransaction          *transaction,
+							  FlatpakTransactionOperation *operation)
+{
+	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
+	FlatpakInstallation *installation = flatpak_transaction_get_installation (transaction);
+	const gchar *op_ref = flatpak_transaction_operation_get_ref (operation);
+	g_autoptr(GList) apps = NULL;
+
+	if (g_str_has_prefix (op_ref, "app/"))
+		return;
+
+	apps = g_hash_table_get_values (self->refhash);
+	for (GList *l = apps; l != NULL; l = l->next) {
+		GsApp *app = l->data;
+		GsApp *app_runtime;
+		g_autofree gchar *app_runtime_ref = NULL;
+
+		app_runtime = gs_app_get_runtime (app);
+		if (app_runtime == NULL)
+			continue;
+
+		app_runtime_ref = gs_flatpak_app_get_ref_display (app_runtime);
+		if (app_runtime_ref != NULL &&
+		    g_strcmp0 (app_runtime_ref, op_ref) == 0) {
+			g_autoptr(FlatpakInstalledRef) app_ref = NULL;
+			g_autoptr(GBytes) metadata = NULL;
+
+			app_ref = flatpak_installation_get_installed_ref (installation,
+									  FLATPAK_REF_KIND_APP,
+									  gs_flatpak_app_get_ref_name (app),
+									  gs_flatpak_app_get_ref_arch (app),
+									  gs_app_get_branch (app),
+									  NULL, NULL);
+			if (app_ref == NULL)
+				return;
+
+			metadata = flatpak_installed_ref_load_metadata (app_ref, NULL, NULL);
+			/* This makes sure that the app is already deployed. */
+			if (metadata != NULL)
+				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		}
+	}
+}
+
 /* Checks if a ref is a related ref to one of the installed ref.
  * If yes, return the GsApp corresponding to the installed ref,
  * NULL otherwise.
@@ -331,7 +383,14 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 		main_app = get_installed_main_app_of_related_ref (transaction, operation);
 		if (main_app != NULL)
 			gs_app_set_state (main_app, AS_APP_STATE_INSTALLED);
+
+		/* Do the same as above but if the main app is missing its runtime.
+		 * Multiple GsApp can depend on one (missing) runtime, hence set state to "installed"
+		 * state for all those apps too.
+		 */
+		set_installed_app_state_if_missing_runtime_is_installed (transaction, operation);
 #endif
+		/* For all other trivial cases. */
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_INSTALL_BUNDLE:
