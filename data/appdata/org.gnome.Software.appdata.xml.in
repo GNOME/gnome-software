@@ -46,6 +46,44 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-11-25" version="3.35.2">
+      <description>
+        <p>
+          This is an unstable stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add missing OARS content rating descriptions</li>
+          <li>Add new plugin for restricting access to apps</li>
+          <li>Avoid a UI crash when switching modes</li>
+          <li>Build libmalcontent dependency on Fedora CI</li>
+          <li>Correctly distinguish empty content ratings from missing ones</li>
+          <li>Correctly set the application state if autoupdate is in progress</li>
+          <li>Do not show a crazy error when installing packages</li>
+          <li>Do not show non-applications in the installed panel</li>
+          <li>Download Flatpak updates in the correct installation</li>
+          <li>Expose snap channels as app alternates</li>
+          <li>Fix a crash on 32-bit systems</li>
+          <li>Fix langpacks autoinstall on Fedora SilverBlue</li>
+          <li>Fix manual detach when updating removable device firmware</li>
+          <li>Fix third party repo enabling not working</li>
+          <li>Hide add/remove shortcut buttons for parentally filtered apps</li>
+          <li>Improve some front page banners</li>
+          <li>Invalidate caches when adding or removing remotes</li>
+          <li>Make flatpak more thread-safe to fix some crashes</li>
+          <li>Match the exact ID when refining a wildcard</li>
+          <li>Only set the app row's buttons as destructive when they remove an app</li>
+          <li>Remove hardcoded-featured plugin</li>
+          <li>Remove the app folder functionality as this is now built-in to the shell</li>
+          <li>Remove the banner editor as this is now an app on it's own</li>
+          <li>Rework age ratings handling to avoid hard-coded list</li>
+          <li>Set the shell extension origin correctly in all cases</li>
+          <li>Show the channel for snaps</li>
+          <li>Speed up the flatpak plugin in some situations</li>
+          <li>Use plugin API to launch apps from install notification.</li>
+        </ul>
+        <p>This release also adds and updates existing translations.</p>
+      </description>
+    </release>
     <release date="2019-09-09" version="3.34.0">
       <description>
         <p>
