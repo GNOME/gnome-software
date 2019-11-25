@@ -46,6 +46,23 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2019-11-25" version="3.34.2">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Do not show a crazy error when installing packages</li>
+          <li>Do not show non-applications in the installed panel</li>
+          <li>Download Flatpak updates in the correct installation</li>
+          <li>Fix a potential threading crash when using flatpak</li>
+          <li>Fix a small memory leaks</li>
+          <li>Set the shell extension origin correctly in all cases</li>
+          <li>Speed up flatpak loading in some situations</li>
+        </ul>
+        <p>This release also updates existing translations.</p>
+      </description>
+    </release>
     <release date="2019-10-07" version="3.34.1">
       <description>
         <p>
