@@ -8,6 +8,7 @@
 #include "config.h"
 
 #include "gs-removal-dialog.h"
+#include "gs-utils.h"
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
@@ -64,7 +65,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 
 	g_object_set_data_full (G_OBJECT (box),
 	                        "sort",
-	                        g_utf8_casefold (gs_app_get_name (app), -1),
+	                        gs_utils_sort_key (gs_app_get_name (app)),
 	                        g_free);
 
 	gtk_list_box_prepend (listbox, box);

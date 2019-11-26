@@ -18,6 +18,7 @@
 #include "gs-progress-button.h"
 #include "gs-update-dialog.h"
 #include "gs-updates-section.h"
+#include "gs-utils.h"
 
 struct _GsUpdatesSection
 {
@@ -131,6 +132,7 @@ static gchar *
 _get_app_sort_key (GsApp *app)
 {
 	GString *key;
+	g_autofree gchar *sort_name = NULL;
 
 	key = g_string_sized_new (64);
 
@@ -169,7 +171,9 @@ _get_app_sort_key (GsApp *app)
 	}
 
 	/* finally, sort by short name */
-	g_string_append (key, gs_app_get_name (app));
+	sort_name = gs_utils_sort_key (gs_app_get_name (app));
+	g_string_append (key, sort_name);
+
 	return g_string_free (key, FALSE);
 }
 

@@ -14,6 +14,7 @@
 #include "gs-language.h"
 #include "gs-shell.h"
 #include "gs-common.h"
+#include "gs-utils.h"
 #include "gs-vendor.h"
 
 #include <glib/gi18n.h>
@@ -1055,7 +1056,8 @@ row_activated_cb (GtkListBox *list_box,
 static gchar *
 get_app_sort_key (GsApp *app)
 {
-	g_autoptr(GString) key = NULL;
+	GString *key = NULL;
+	g_autofree gchar *sort_name = NULL;
 
 	key = g_string_sized_new (64);
 
@@ -1070,9 +1072,10 @@ get_app_sort_key (GsApp *app)
 	}
 
 	/* finally, sort by short name */
-	g_string_append (key, gs_app_get_name (app));
+	sort_name = gs_utils_sort_key (gs_app_get_name (app));
+	g_string_append (key, sort_name);
 
-	return g_utf8_casefold (key->str, (gssize) key->len);
+	return g_string_free (key, FALSE);
 }
 
 static gint

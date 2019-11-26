@@ -15,6 +15,7 @@
 
 #include "gs-common.h"
 #include "gs-content-rating.h"
+#include "gs-utils.h"
 
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
@@ -1415,8 +1416,8 @@ list_sort_func (GtkListBoxRow *a,
 	GsApp *a1 = gs_app_addon_row_get_addon (GS_APP_ADDON_ROW (a));
 	GsApp *a2 = gs_app_addon_row_get_addon (GS_APP_ADDON_ROW (b));
 
-	return g_strcmp0 (gs_app_get_name (a1),
-			  gs_app_get_name (a2));
+	return gs_utils_sort_strcmp (gs_app_get_name (a1),
+				     gs_app_get_name (a2));
 }
 
 static void gs_details_page_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsDetailsPage *self);
@@ -2027,7 +2028,7 @@ origin_popover_list_sort_func (GtkListBoxRow *a,
 	g_autofree gchar *a1_origin = gs_app_get_origin_ui (a1);
 	g_autofree gchar *a2_origin = gs_app_get_origin_ui (a2);
 
-	return g_strcmp0 (a1_origin, a2_origin);
+	return gs_utils_sort_strcmp (a1_origin, a2_origin);
 }
 
 static void

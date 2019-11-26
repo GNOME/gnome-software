@@ -17,6 +17,7 @@
 #include "gs-summary-tile.h"
 #include "gs-popular-tile.h"
 #include "gs-category-page.h"
+#include "gs-utils.h"
 
 typedef enum {
 	SUBCATEGORY_SORT_TYPE_RATING,
@@ -182,8 +183,6 @@ gs_category_page_sort_flow_box_sort_func (GtkFlowBoxChild *child1,
 	GsApp *app1 = gs_app_tile_get_app (GS_APP_TILE (gtk_bin_get_child (GTK_BIN (child1))));
 	GsApp *app2 = gs_app_tile_get_app (GS_APP_TILE (gtk_bin_get_child (GTK_BIN (child2))));
 	SubcategorySortType sort_type;
-	g_autofree gchar *casefolded_name1 = NULL;
-	g_autofree gchar *casefolded_name2 = NULL;
 
 	if (!GS_IS_APP (app1) || !GS_IS_APP (app2))
 		return 0;
@@ -199,11 +198,7 @@ gs_category_page_sort_flow_box_sort_func (GtkFlowBoxChild *child1,
 			return 1;
 	}
 
-	if (gs_app_get_name (app1) != NULL)
-		casefolded_name1 = g_utf8_casefold (gs_app_get_name (app1), -1);
-	if (gs_app_get_name (app2) != NULL)
-		casefolded_name2 = g_utf8_casefold (gs_app_get_name (app2), -1);
-	return g_strcmp0 (casefolded_name1, casefolded_name2);
+	return gs_utils_sort_strcmp (gs_app_get_name (app1), gs_app_get_name (app2));
 }
 
 static void

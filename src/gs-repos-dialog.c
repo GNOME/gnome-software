@@ -16,6 +16,7 @@
 #include "gs-os-release.h"
 #include "gs-repo-row.h"
 #include "gs-third-party-repo-row.h"
+#include "gs-utils.h"
 #include <glib/gi18n.h>
 
 struct _GsReposDialog
@@ -682,7 +683,7 @@ get_row_sort_key (GtkListBoxRow *row)
 		app = gs_repo_row_get_repo (GS_REPO_ROW (row));
 	}
 
-	sort_key = g_utf8_casefold (gs_app_get_name (app), -1);
+	sort_key = gs_utils_sort_key (gs_app_get_name (app));
 	return g_strdup_printf ("%u:%s", sort_order, sort_key);
 }
 

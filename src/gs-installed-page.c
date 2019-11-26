@@ -16,6 +16,7 @@
 #include "gs-installed-page.h"
 #include "gs-common.h"
 #include "gs-app-row.h"
+#include "gs-utils.h"
 
 struct _GsInstalledPage
 {
@@ -315,7 +316,7 @@ static gchar *
 gs_installed_page_get_app_sort_key (GsApp *app)
 {
 	GString *key;
-	g_autofree gchar *casefolded_name = NULL;
+	g_autofree gchar *sort_name = NULL;
 
 	key = g_string_sized_new (64);
 
@@ -376,10 +377,9 @@ gs_installed_page_get_app_sort_key (GsApp *app)
 		g_string_append (key, "2:");
 
 	/* finally, sort by short name */
-	if (gs_app_get_name (app) != NULL) {
-		casefolded_name = g_utf8_casefold (gs_app_get_name (app), -1);
-		g_string_append (key, casefolded_name);
-	}
+	sort_name = gs_utils_sort_key (gs_app_get_name (app));
+	g_string_append (key, sort_name);
+
 	return g_string_free (key, FALSE);
 }
 

@@ -54,6 +54,9 @@ GPermission	*gs_utils_get_permission	(const gchar	*id,
 						 GError		**error);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
+gchar           *gs_utils_sort_key		(const gchar    *str);
+gint             gs_utils_sort_strcmp		(const gchar    *str1,
+						 const gchar	*str2);
 GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
 gboolean	 gs_utils_rmtree		(const gchar	*directory,
 						 GError		**error);
