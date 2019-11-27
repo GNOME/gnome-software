@@ -183,8 +183,18 @@ _transaction_progress_changed_cb (FlatpakTransactionProgress *progress,
 {
 	GsApp *app = GS_APP (user_data);
 	guint percent = flatpak_transaction_progress_get_progress (progress);
-	if (flatpak_transaction_progress_get_is_estimating (progress))
-		return;
+	if (flatpak_transaction_progress_get_is_estimating (progress)) {
+		/* "Estimating" happens while fetching the metadata, which
+		 * flatpak arbitrarily decides happens during the first 5% of
+		 * each operation. Often there are two install operations,
+		 * for the flatpak and its locale data.
+		 * However, "estimating" may also mean bogus values. We have to
+		 * arbitrarily decide whether to show this value to the user. */
+		if (percent > 10) {
+			g_debug ("Ignoring estimated progress of %u%%", percent);
+			return;
+		}
+	}
 	if (gs_app_get_progress (app) != 100 &&
 	    gs_app_get_progress (app) > percent) {
 		g_warning ("ignoring percentage %u%% -> %u%% as going down...",
