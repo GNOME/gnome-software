@@ -776,7 +776,7 @@ gs_plugin_snap_get_description_safe (SnapdSnap *snap)
 static void
 refine_screenshots (GsApp *app, SnapdSnap *snap)
 {
-	GPtrArray *media, *screenshots;
+	GPtrArray *media;
 	guint i;
 
 	media = snapd_snap_get_media (snap);
@@ -803,37 +803,6 @@ refine_screenshots (GsApp *app, SnapdSnap *snap)
 		as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
 		as_image_set_width (image, snapd_media_get_width (m));
 		as_image_set_height (image, snapd_media_get_height (m));
-		as_screenshot_add_image (ss, image);
-		gs_app_add_screenshot (app, ss);
-	}
-
-	if (gs_app_get_screenshots (app)->len > 0)
-		return;
-
-	/* fallback to old screenshots data */
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-	screenshots = snapd_snap_get_screenshots (snap);
-G_GNUC_END_IGNORE_DEPRECATIONS
-	for (i = 0; i < screenshots->len; i++) {
-		SnapdScreenshot *screenshot = screenshots->pdata[i];
-		const gchar *url;
-		g_autofree gchar *filename = NULL;
-		g_autoptr(AsScreenshot) ss = NULL;
-		g_autoptr(AsImage) image = NULL;
-
-		/* skip screenshots used for banner when app is featured */
-		url = snapd_screenshot_get_url (screenshot);
-		filename = g_path_get_basename (url);
-		if (is_banner_image (filename) || is_banner_icon_image (filename))
-			continue;
-
-		ss = as_screenshot_new ();
-		as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_NORMAL);
-		image = as_image_new ();
-		as_image_set_url (image, snapd_screenshot_get_url (screenshot));
-		as_image_set_kind (image, AS_IMAGE_KIND_SOURCE);
-		as_image_set_width (image, snapd_screenshot_get_width (screenshot));
-		as_image_set_height (image, snapd_screenshot_get_height (screenshot));
 		as_screenshot_add_image (ss, image);
 		gs_app_add_screenshot (app, ss);
 	}
