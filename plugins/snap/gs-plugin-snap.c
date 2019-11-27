@@ -584,6 +584,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
+	const gchar *snap_name;
 	g_autoptr(SnapdSnap) snap = NULL;
 	GStrv tracks;
 	GPtrArray *channels;
@@ -593,9 +594,11 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
 
-	snap = get_store_snap (plugin, gs_app_get_metadata_item (app, "snap::name"), TRUE, cancellable, NULL);
+	snap_name = gs_app_get_metadata_item (app, "snap::name");
+
+	snap = get_store_snap (plugin, snap_name, TRUE, cancellable, NULL);
 	if (snap == NULL) {
-		g_warning ("Failed to get store snap %s\n", gs_app_get_metadata_item (app, "snap::name"));
+		g_warning ("Failed to get store snap %s\n", snap_name);
 		return TRUE;
 	}
 
@@ -612,7 +615,7 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 		SnapdChannel *channel = g_ptr_array_index (sorted_channels, i);
 		g_autoptr(GsApp) a = gs_app_new (NULL);
 		gs_app_set_bundle_kind (a, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_metadata (a, "snap::name", gs_app_get_metadata_item (app, "snap::name"));
+		gs_app_set_metadata (a, "snap::name", snap_name);
 		gs_app_set_branch (a, snapd_channel_get_name (channel));
 		gs_app_list_add (list, a);
 	}
