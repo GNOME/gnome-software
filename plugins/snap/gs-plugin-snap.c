@@ -95,7 +95,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_SNAP)
 		gs_app_set_management_plugin (app, "snap");
 
-	if (g_str_has_prefix (gs_app_get_id (app), "io.snapcraft.")) {
+	if (gs_app_get_id (app) != NULL && g_str_has_prefix (gs_app_get_id (app), "io.snapcraft.")) {
 		g_autofree gchar *name_and_id = NULL;
 		gchar *divider, *snap_name;/*, *id;*/
 
