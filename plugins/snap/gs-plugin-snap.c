@@ -589,6 +589,10 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 	GPtrArray *channels;
 	g_autoptr(GPtrArray) sorted_channels = NULL;
 
+	/* not us */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+		return TRUE;
+
 	snap = get_store_snap (plugin, gs_app_get_metadata_item (app, "snap::name"), TRUE, cancellable, NULL);
 	if (snap == NULL) {
 		g_warning ("Failed to get store snap %s\n", gs_app_get_metadata_item (app, "snap::name"));
