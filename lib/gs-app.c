@@ -215,39 +215,42 @@ gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
 static const gchar *
 _as_app_quirk_flag_to_string (GsAppQuirk quirk)
 {
-	if (quirk == GS_APP_QUIRK_PROVENANCE)
+	switch (quirk) {
+	case GS_APP_QUIRK_PROVENANCE:
 		return "provenance";
-	if (quirk == GS_APP_QUIRK_COMPULSORY)
+	case GS_APP_QUIRK_COMPULSORY:
 		return "compulsory";
-	if (quirk == GS_APP_QUIRK_HAS_SOURCE)
+	case GS_APP_QUIRK_HAS_SOURCE:
 		return "has-source";
-	if (quirk == GS_APP_QUIRK_IS_WILDCARD)
+	case GS_APP_QUIRK_IS_WILDCARD:
 		return "is-wildcard";
-	if (quirk == GS_APP_QUIRK_NEEDS_REBOOT)
+	case GS_APP_QUIRK_NEEDS_REBOOT:
 		return "needs-reboot";
-	if (quirk == GS_APP_QUIRK_NOT_REVIEWABLE)
+	case GS_APP_QUIRK_NOT_REVIEWABLE:
 		return "not-reviewable";
-	if (quirk == GS_APP_QUIRK_HAS_SHORTCUT)
+	case GS_APP_QUIRK_HAS_SHORTCUT:
 		return "has-shortcut";
-	if (quirk == GS_APP_QUIRK_NOT_LAUNCHABLE)
+	case GS_APP_QUIRK_NOT_LAUNCHABLE:
 		return "not-launchable";
-	if (quirk == GS_APP_QUIRK_NEEDS_USER_ACTION)
+	case GS_APP_QUIRK_NEEDS_USER_ACTION:
 		return "needs-user-action";
-	if (quirk == GS_APP_QUIRK_IS_PROXY)
+	case GS_APP_QUIRK_IS_PROXY:
 		return "is-proxy";
-	if (quirk == GS_APP_QUIRK_REMOVABLE_HARDWARE)
+	case GS_APP_QUIRK_REMOVABLE_HARDWARE:
 		return "removable-hardware";
-	if (quirk == GS_APP_QUIRK_DEVELOPER_VERIFIED)
+	case GS_APP_QUIRK_DEVELOPER_VERIFIED:
 		return "developer-verified";
-	if (quirk == GS_APP_QUIRK_PARENTAL_FILTER)
+	case GS_APP_QUIRK_PARENTAL_FILTER:
 		return "parental-filter";
-	if (quirk == GS_APP_QUIRK_NEW_PERMISSIONS)
+	case GS_APP_QUIRK_NEW_PERMISSIONS:
 		return "new-permissions";
-	if (quirk == GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE)
+	case GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE:
 		return "parental-not-launchable";
-	if (quirk == GS_APP_QUIRK_HIDE_FROM_SEARCH)
+	case GS_APP_QUIRK_HIDE_FROM_SEARCH:
 		return "hide-from-search";
-	return NULL;
+	default:
+		return NULL;
+	}
 }
 
 /* mutex must be held */
