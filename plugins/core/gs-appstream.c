@@ -726,6 +726,14 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			gs_app_remove_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	}
 
+	tmp = gs_app_get_metadata_item (app, "GnomeSoftware::quirks::hide-everywhere");
+	if (tmp != NULL) {
+		if (g_strcmp0 (tmp, "true") == 0)
+			gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
+		else if (g_strcmp0 (tmp, "false") == 0)
+			gs_app_remove_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
+	}
+
 	/* set id */
 	tmp = xb_node_query_text (component, "id", NULL);
 	if (tmp != NULL && gs_app_get_id (app) == NULL)
@@ -830,6 +838,16 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			for (guint i = 0; i < categories->len; i++) {
 				XbNode *category = g_ptr_array_index (categories, i);
 				gs_app_add_category (app, xb_node_get_text (category));
+
+				/* Special case: We used to use the `Blacklisted`
+				 * category to hide apps from their .desktop
+				 * file or appdata. We now use a quirk for that.
+				 * This special case can be removed when all
+				 * appstream files no longer use the `Blacklisted`
+				 * category (including external-appstream files
+				 * put together by distributions). */
+				if (g_strcmp0 (xb_node_get_text (category), "Blacklisted") == 0)
+					gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
 			}
 		}
 	}

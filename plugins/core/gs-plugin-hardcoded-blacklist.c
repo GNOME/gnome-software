@@ -52,7 +52,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* search */
 	for (i = 0; app_globs[i] != NULL; i++) {
 		if (fnmatch (app_globs[i], gs_app_get_id (app), 0) == 0) {
-			gs_app_add_category (app, "Blacklisted");
+			gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
 			break;
 		}
 	}

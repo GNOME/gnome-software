@@ -1197,7 +1197,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show blacklisted apps */
-	if (gs_app_has_category (app, "Blacklisted")) {
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE)) {
 		g_debug ("app invalid as blacklisted %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
