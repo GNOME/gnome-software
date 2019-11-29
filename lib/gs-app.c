@@ -248,6 +248,8 @@ _as_app_quirk_flag_to_string (GsAppQuirk quirk)
 		return "parental-not-launchable";
 	case GS_APP_QUIRK_HIDE_FROM_SEARCH:
 		return "hide-from-search";
+	case GS_APP_QUIRK_HIDE_EVERYWHERE:
+		return "hide-everywhere";
 	default:
 		return NULL;
 	}
