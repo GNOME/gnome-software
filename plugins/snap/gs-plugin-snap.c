@@ -15,6 +15,7 @@
 struct GsPluginData {
 	SnapdAuthData		*auth_data;
 	gchar			*store_name;
+	gchar			*store_hostname;
 	SnapdSystemConfinement	 system_confinement;
 
 	GMutex			 store_snaps_lock;
@@ -185,9 +186,11 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (system_information == NULL)
 		return FALSE;
 	priv->store_name = g_strdup (snapd_system_information_get_store (system_information));
-	if (priv->store_name == NULL)
+	if (priv->store_name == NULL) {
 		priv->store_name = g_strdup (/* TRANSLATORS: default snap store name */
 					     _("Snap Store"));
+		priv->store_hostname = g_strdup ("snapcraft.io");
+	}
 	priv->system_confinement = snapd_system_information_get_confinement (system_information);
 
 	/* success */
@@ -335,6 +338,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_free (priv->store_name);
+	g_free (priv->store_hostname);
 	g_clear_pointer (&priv->store_snaps, g_hash_table_unref);
 	g_mutex_clear (&priv->store_snaps_lock);
 }
@@ -937,6 +941,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* add information specific to store snaps */
 	if (store_snap != NULL) {
 		gs_app_set_origin (app, priv->store_name);
+		gs_app_set_origin_hostname (app, priv->store_hostname);
 		gs_app_set_size_download (app, snapd_snap_get_download_size (store_snap));
 
 		if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS && gs_app_get_screenshots (app)->len == 0)
