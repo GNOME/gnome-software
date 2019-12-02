@@ -22,6 +22,8 @@ custom_target(
     'app-update/repo/',
     'app-with-runtime/repo/',
     'only-runtime/repo/',
+    'app-extension/repo',
+    'app-extension-update/repo',
   ],
 )
 
