@@ -848,7 +848,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
-	const gchar *snap_name, *channel, *name;
+	const gchar *snap_name, *channel, *name, *version;
 	SnapdConfinement confinement = SNAPD_CONFINEMENT_UNKNOWN;
 	g_autoptr(SnapdSnap) local_snap = NULL;
 	g_autoptr(SnapdSnap) store_snap = NULL;
@@ -908,8 +908,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
 
 	snap = local_snap != NULL ? local_snap : store_snap;
+	version = snapd_snap_get_version (snap);
 	confinement = snapd_snap_get_confinement (snap);
-	gs_app_set_version (app, snapd_snap_get_version (snap));
 
 	if (channel != NULL && store_snap != NULL) {
 		GPtrArray *channels = snapd_snap_get_channels (store_snap);
@@ -920,10 +920,12 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			if (g_strcmp0 (snapd_channel_get_name (c), channel) == 0)
 				continue;
 
-			gs_app_set_version (app, snapd_channel_get_version (c));
+			version = snapd_channel_get_version (c);
 			confinement = snapd_channel_get_confinement (c);
 		}
 	}
+
+	gs_app_set_version (app, version);
 
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS &&
 	    priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT &&
