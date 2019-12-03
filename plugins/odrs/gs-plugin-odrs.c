@@ -190,6 +190,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* download the complete file */
 	uri = g_strdup_printf ("%s/ratings", priv->review_server);
+	g_debug ("Updating ODRS cache from %s to %s", uri, cache_filename);
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading application ratings…"));
@@ -457,15 +458,16 @@ gs_plugin_odrs_json_post (SoupSession *session,
 	g_autoptr(SoupMessage) msg = NULL;
 
 	/* create the GET data */
-	g_debug ("odrs sending: %s", data);
+	g_debug ("Sending ODRS request to %s: %s", uri, data);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
 	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
 
 	/* set sync request */
 	status_code = soup_session_send_message (session, msg);
+	g_debug ("ODRS server returned status %u: %s", status_code, msg->response_body->data);
 	if (status_code != SOUP_STATUS_OK) {
-		g_warning ("Failed to set rating on odrs: %s",
+		g_warning ("Failed to set rating on ODRS: %s",
 			   soup_status_get_phrase (status_code));
 		g_set_error (error,
                              GS_PLUGIN_ERROR,
@@ -475,7 +477,6 @@ gs_plugin_odrs_json_post (SoupSession *session,
 	}
 
 	/* process returned JSON */
-	g_debug ("odrs returned: %s", msg->response_body->data);
 	return gs_plugin_odrs_parse_success (msg->response_body->data,
 					     msg->response_body->length,
 					     error);
@@ -647,6 +648,8 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	if (data == NULL)
 		return NULL;
 	uri = g_strdup_printf ("%s/fetch", priv->review_server);
+	g_debug ("Updating ODRS cache for %s from %s to %s; request %s", gs_app_get_id (app),
+		 uri, cachefn, data);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
 	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
