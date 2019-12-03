@@ -1558,10 +1558,10 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 
 	/* set the star rating */
 	if (show_reviews) {
-		if (gs_app_get_rating (self->app) >= 0) {
-			gs_star_widget_set_rating (GS_STAR_WIDGET (self->star),
-						   gs_app_get_rating (self->app));
-		}
+		gtk_widget_set_sensitive (self->star, gs_app_get_rating (self->app) >= 0);
+		gs_star_widget_set_rating (GS_STAR_WIDGET (self->star),
+					   gs_app_get_rating (self->app));
+
 		review_ratings = gs_app_get_review_ratings (self->app);
 		if (review_ratings != NULL) {
 			gs_review_histogram_set_ratings (GS_REVIEW_HISTOGRAM (self->histogram),
