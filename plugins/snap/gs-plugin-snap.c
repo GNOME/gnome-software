@@ -248,7 +248,6 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 static GsApp *
 snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GStrv common_ids;
 	g_autofree gchar *appstream_id = NULL;
 	g_autofree gchar *unique_id = NULL;
@@ -298,9 +297,6 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 		gs_app_set_metadata (app, "snap::confinement", g_enum_get_value (enum_class, confinement)->value_nick);
 		g_type_class_unref (enum_class);
 	}
-
-	if (priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT && confinement == SNAPD_CONFINEMENT_STRICT)
-		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	return g_steal_pointer (&app);
 }
@@ -853,6 +849,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	const gchar *snap_name, *channel, *name;
+	SnapdConfinement confinement = SNAPD_CONFINEMENT_UNKNOWN;
 	g_autoptr(SnapdSnap) local_snap = NULL;
 	g_autoptr(SnapdSnap) store_snap = NULL;
 	SnapdSnap *snap;
@@ -911,6 +908,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_add_quirk (app, GS_APP_QUIRK_DEVELOPER_VERIFIED);
 
 	snap = local_snap != NULL ? local_snap : store_snap;
+	confinement = snapd_snap_get_confinement (snap);
 	gs_app_set_version (app, snapd_snap_get_version (snap));
 
 	if (channel != NULL && store_snap != NULL) {
@@ -918,10 +916,19 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		guint i;
 		for (i = 0; i < channels->len; i++) {
 			SnapdChannel *c = channels->pdata[i];
-			if (g_strcmp0 (snapd_channel_get_name (c), channel) != 0)
-				gs_app_set_version (app, snapd_channel_get_version (c));
+
+			if (g_strcmp0 (snapd_channel_get_name (c), channel) == 0)
+				continue;
+
+			gs_app_set_version (app, snapd_channel_get_version (c));
+			confinement = snapd_channel_get_confinement (c);
 		}
 	}
+
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS &&
+	    priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT &&
+	    confinement == SNAPD_CONFINEMENT_STRICT)
+		gs_app_add_kudo (app, GS_APP_KUDO_SANDBOXED);
 
 	switch (snapd_snap_get_snap_type (snap)) {
 	case SNAPD_SNAP_TYPE_APP:
