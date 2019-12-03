@@ -164,27 +164,27 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autofree gchar *fn = NULL;
+	g_autofree gchar *cache_filename = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* check cache age */
-	fn = gs_utils_get_cache_filename ("odrs",
-					  "ratings.json",
-					  GS_UTILS_CACHE_FLAG_WRITEABLE,
-					  error);
-	if (fn == NULL)
+	cache_filename = gs_utils_get_cache_filename ("odrs",
+						      "ratings.json",
+						      GS_UTILS_CACHE_FLAG_WRITEABLE,
+						      error);
+	if (cache_filename == NULL)
 		return FALSE;
 	if (cache_age > 0) {
 		guint tmp;
 		g_autoptr(GFile) file = NULL;
-		file = g_file_new_for_path (fn);
+		file = g_file_new_for_path (cache_filename);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
 			g_debug ("%s is only %u seconds old, so ignoring refresh",
-				 fn, tmp);
-			return gs_plugin_odrs_load_ratings (plugin, fn, error);
+				 cache_filename, tmp);
+			return gs_plugin_odrs_load_ratings (plugin, cache_filename, error);
 		}
 	}
 
@@ -193,7 +193,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	gs_app_set_summary_missing (app_dl,
 				    /* TRANSLATORS: status text when downloading */
 				    _("Downloading application ratings…"));
-	if (!gs_plugin_download_file (plugin, app_dl, uri, fn, cancellable, &error_local)) {
+	if (!gs_plugin_download_file (plugin, app_dl, uri, cache_filename, cancellable, &error_local)) {
 		g_autoptr(GsPluginEvent) event = gs_plugin_event_new ();
 
 		gs_plugin_event_set_error (event, error_local);
@@ -208,7 +208,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		/* don't fail updates if the ratings server is unavailable */
 		return TRUE;
 	}
-	return gs_plugin_odrs_load_ratings (plugin, fn, error);
+	return gs_plugin_odrs_load_ratings (plugin, cache_filename, error);
 }
 
 void
