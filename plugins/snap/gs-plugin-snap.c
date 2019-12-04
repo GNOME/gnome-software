@@ -631,7 +631,8 @@ load_snap_icon (GsApp *app, SnapdClient *client, SnapdSnap *snap, GCancellable *
 
 	icon = snapd_client_get_icon_sync (client, gs_app_get_metadata_item (app, "snap::name"), cancellable, &error);
 	if (icon == NULL) {
-		g_warning ("Failed to load snap icon: %s", error->message);
+		if (!g_error_matches (error, SNAPD_ERROR, SNAPD_ERROR_NOT_FOUND))
+			g_warning ("Failed to load snap icon: %s", error->message);
 		return FALSE;
 	}
 
