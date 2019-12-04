@@ -457,6 +457,8 @@ gs_overview_page_get_featured_cb (GObject *source_object,
 
 	gtk_widget_hide (priv->featured_heading);
 	gs_container_remove_all (GTK_CONTAINER (priv->stack_featured));
+	gtk_widget_set_visible (priv->button_featured_back, gs_app_list_length (list) > 1);
+	gtk_widget_set_visible (priv->button_featured_forwards, gs_app_list_length (list) > 1);
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s",
 			   error->message);
