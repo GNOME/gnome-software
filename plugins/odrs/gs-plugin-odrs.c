@@ -820,6 +820,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	g_autoptr(JsonNode) json_root = NULL;
 
 	/* save as we don't re-request the review from the server */
+	as_review_add_flags (review, AS_REVIEW_FLAG_SELF);
 	as_review_set_reviewer_name (review, g_get_real_name ());
 	as_review_add_metadata (review, "app_id", gs_app_get_id (app));
 	as_review_add_metadata (review, "user_skey",
