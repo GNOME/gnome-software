@@ -34,6 +34,8 @@ install_data([
   install_dir : 'share/gnome-software'
 )
 
-install_data('org.gnome.Software.Featured.xml',
-  install_dir : 'share/app-info/xmls'
-)
+if get_option('default_featured_apps')
+  install_data('org.gnome.Software.Featured.xml',
+    install_dir : 'share/app-info/xmls'
+  )
+endif
