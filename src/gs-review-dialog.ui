@@ -5,7 +5,7 @@
   <template class="GsReviewDialog" parent="GtkDialog">
     <action-widgets>
       <action-widget response="cancel">cancel_button</action-widget>
-      <action-widget response="ok">post_button</action-widget>
+      <action-widget response="ok" default="true">post_button</action-widget>
     </action-widgets>
     <property name="title" translatable="yes" comments="Translators: Title of the dialog box where the users can write and publish their opinions about the apps.">Post Review</property>
     <property name="modal">True</property>
@@ -34,11 +34,10 @@
             <property name="label" translatable="yes" comments="Translators: A button to publish the user&apos;s opinion about the app.">_Post</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="can_default">True</property>
             <property name="receives_default">True</property>
             <property name="use_underline">True</property>
-            <style>
-              <class name="suggested-action"/>
-            </style>
+            <property name="sensitive">False</property>
           </object>
           <packing>
             <property name="pack-type">end</property>

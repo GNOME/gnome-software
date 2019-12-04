@@ -144,7 +144,7 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 	gtk_widget_set_tooltip_text (dialog->post_button, msg);
 
 	/* can the user submit this? */
-	gtk_widget_set_sensitive (dialog->post_button, all_okay);
+	gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, all_okay);
 }
 
 static gboolean
@@ -192,8 +192,7 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 	g_signal_connect_swapped (buffer, "changed",
 				  G_CALLBACK (gs_review_dialog_changed_cb), dialog);
 
-	gtk_widget_set_sensitive (dialog->post_button, FALSE);
-
+	gtk_dialog_set_response_sensitive (GTK_DIALOG (dialog), GTK_RESPONSE_OK, FALSE);
 }
 
 static void
