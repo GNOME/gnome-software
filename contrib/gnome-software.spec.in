@@ -50,9 +50,6 @@ BuildRequires: libgudev1-devel
 BuildRequires: valgrind-devel
 
 Requires: appstream-data
-%if 0%{?fedora}
-Requires: epiphany-runtime
-%endif
 Requires: flatpak%{?_isa} >= %{flatpak_version}
 Requires: flatpak-libs%{?_isa} >= %{flatpak_version}
 Requires: fwupd%{?_isa} >= %{fwupd_version}
@@ -151,7 +148,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/gnome-software/featured-*.svg
 %{_datadir}/gnome-software/featured-*.jpg
 %{_datadir}/metainfo/org.gnome.Software.appdata.xml
-%{_datadir}/metainfo/org.gnome.Software.Plugin.Epiphany.metainfo.xml
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Flatpak.metainfo.xml
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Fwupd.metainfo.xml
 %{_datadir}/metainfo/org.gnome.Software.Plugin.Odrs.metainfo.xml
@@ -160,7 +156,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-categories.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_desktop-menu-path.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_dummy.so
-%{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_epiphany.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora-langpacks.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_fedora-pkgdb-collections.so
 %{_libdir}/gs-plugins-%{gs_plugin_version}/libgs_plugin_flatpak.so
