@@ -288,6 +288,8 @@ remove_confirm_repo (GsReposDialog *dialog, GsApp *repo)
 	GtkWidget *confirm_dialog;
 	g_autofree gchar *message = NULL;
 	g_autofree gchar *title = NULL;
+	GtkWidget *button;
+	GtkStyleContext *context;
 
 	remove_data = g_slice_new0 (InstallRemoveData);
 	remove_data->action = GS_PLUGIN_ACTION_REMOVE;
@@ -321,11 +323,14 @@ remove_confirm_repo (GsReposDialog *dialog, GsApp *repo)
 
 	if (repo_supports_removal (repo)) {
 		/* TRANSLATORS: this is button text to remove the repo */
-		gtk_dialog_add_button (GTK_DIALOG (confirm_dialog), _("Remove"), GTK_RESPONSE_OK);
+		button = gtk_dialog_add_button (GTK_DIALOG (confirm_dialog), _("Remove"), GTK_RESPONSE_OK);
 	} else {
 		/* TRANSLATORS: this is button text to remove the repo */
-		gtk_dialog_add_button (GTK_DIALOG (confirm_dialog), _("Disable"), GTK_RESPONSE_OK);
+		button = gtk_dialog_add_button (GTK_DIALOG (confirm_dialog), _("Disable"), GTK_RESPONSE_OK);
 	}
+
+	context = gtk_widget_get_style_context (button);
+	gtk_style_context_add_class (context, "destructive-action");
 
 	/* handle this async */
 	g_signal_connect (confirm_dialog, "response",
