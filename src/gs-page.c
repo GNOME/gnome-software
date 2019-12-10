@@ -372,6 +372,8 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	GtkWidget *dialog;
 	g_autofree gchar *message = NULL;
 	g_autofree gchar *title = NULL;
+	GtkWidget *remove_button;
+	GtkStyleContext *context;
 
 	/* pending install */
 	helper = g_slice_new0 (GsPageHelper);
@@ -429,7 +431,9 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 						  "%s", message);
 
 	/* TRANSLATORS: this is button text to remove the application */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
+	remove_button = gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
+	context = gtk_widget_get_style_context (remove_button);
+	gtk_style_context_add_class (context, "destructive-action");
 
 	/* handle this async */
 	g_signal_connect (dialog, "response",
