@@ -361,19 +361,20 @@ gs_utils_sort_key (const gchar *str)
 
 /**
  * gs_utils_sort_strcmp:
- * @str1: A string to compare
- * @str2: A string to compare
+ * @str1: (nullable): A string to compare
+ * @str2: (nullable): A string to compare
  *
  * Compares two strings in a locale-sensitive, presentational way.
- * Case is ignored and utf8 collation is used (e.g. accents are ignored).
+ * Case is ignored and utf8 collation is used (e.g. accents are ignored). %NULL
+ * is sorted before all non-%NULL strings, and %NULLs compare equal.
  *
  * Returns: < 0 if str1 is before str2, 0 if equal, > 0 if str1 is after str2
  */
 gint
 gs_utils_sort_strcmp (const gchar *str1, const gchar *str2)
 {
-	g_autofree gchar *key1 = gs_utils_sort_key (str1);
-	g_autofree gchar *key2 = gs_utils_sort_key (str2);
+	g_autofree gchar *key1 = (str1 != NULL) ? gs_utils_sort_key (str1) : NULL;
+	g_autofree gchar *key2 = (str2 != NULL) ? gs_utils_sort_key (str2) : NULL;
 	return g_strcmp0 (key1, key2);
 }
 
