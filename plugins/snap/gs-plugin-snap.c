@@ -821,7 +821,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
-	const gchar *snap_name, *channel, *name, *version;
+	const gchar *snap_name, *channel, *store_channel = NULL, *name, *version;
+	gboolean need_details = FALSE;
 	SnapdConfinement confinement = SNAPD_CONFINEMENT_UNKNOWN;
 	g_autoptr(SnapdSnap) local_snap = NULL;
 	g_autoptr(SnapdSnap) store_snap = NULL;
@@ -840,10 +841,23 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	snap_name = gs_app_get_metadata_item (app, "snap::name");
 	channel = gs_app_get_branch (app);
 
-	/* get information from local snaps and store */
+	/* get information from locally installed snaps and information we already have */
 	local_snap = snapd_client_get_snap_sync (client, snap_name, cancellable, NULL);
-	if (local_snap == NULL || (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS) != 0 || channel != NULL)
-		store_snap = get_store_snap (plugin, snap_name, channel != NULL, cancellable, NULL);
+	store_snap = store_snap_cache_lookup (plugin, snap_name, FALSE);
+	if (store_snap != NULL)
+		store_channel = snapd_snap_get_channel (store_snap);
+
+	/* check if requested information requires us to go to the Snap Store */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS)
+		need_details = TRUE;
+	if (channel != NULL && g_strcmp0 (store_channel, channel) != 0)
+		need_details = TRUE;
+	if (need_details) {
+		g_clear_object (&store_snap);
+		store_snap = get_store_snap (plugin, snap_name, need_details, cancellable, NULL);
+	}
+
+	/* we don't know anything about this snap */
 	if (local_snap == NULL && store_snap == NULL)
 		return TRUE;
 
