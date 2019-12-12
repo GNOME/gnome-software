@@ -727,12 +727,18 @@ static gboolean
 main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 {
 	GsShell *shell = user_data;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *widget;
 
 	/* hide any notifications */
 	g_application_withdraw_notification (g_application_get_default (),
 					     "installed");
 	g_application_withdraw_notification (g_application_get_default (),
 					     "install-resources");
+
+	/* clear any in-app notification */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notification_event"));
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 
 	gs_shell_clean_back_entry_stack (shell);
 	gtk_widget_hide (dialog);
