@@ -916,7 +916,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		for (i = 0; i < channels->len; i++) {
 			SnapdChannel *c = channels->pdata[i];
 
-			if (g_strcmp0 (snapd_channel_get_name (c), channel) == 0)
+			if (g_strcmp0 (snapd_channel_get_name (c), channel) != 0)
 				continue;
 
 			gs_app_set_version (app, snapd_channel_get_version (c));
