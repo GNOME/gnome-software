@@ -878,9 +878,12 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_set_branch (app, channel);
 	}
 
-	if (local_snap != NULL && g_strcmp0 (snapd_snap_get_tracking_channel (local_snap), channel) == 0)
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	else
+	if (local_snap != NULL && g_strcmp0 (snapd_snap_get_tracking_channel (local_snap), channel) == 0) {
+		/* Do not set to installed state if app is updatable */
+		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		}
+	} else
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
 	/* use store information for basic metadata over local information */
@@ -1147,5 +1150,72 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_updates (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autoptr(GPtrArray) apps = NULL;
+	g_autoptr(SnapdClient) client = NULL;
+
+	client = get_client (plugin, error);
+	if (client == NULL)
+		return FALSE;
+
+	/* Get the list of refreshable snaps */
+	apps = snapd_client_find_refreshable_sync (client, cancellable, error);
+
+	for (guint i = 0; i < apps->len; i++) {
+		SnapdSnap *snap = g_ptr_array_index (apps, i);
+		g_autoptr(GsApp) app = NULL;
+
+		/* Convert SnapdSnap to a GsApp */
+		app = snap_to_app (plugin, snap);
+
+		/* If for some reason the app is already getting updated, then
+		 * don't change its state */
+		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLING)
+			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+
+		/* Add GsApp to updatable GsAppList */
+		gs_app_list_add (list, app);
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_update (GsPlugin *plugin,
+                  GsAppList *list,
+                  GCancellable *cancellable,
+                  GError **error)
+{
+	g_autoptr(SnapdClient) client = NULL;
+
+	client = get_client (plugin, error);
+	if (client == NULL)
+		return FALSE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		/* Get the name of the snap to refresh */
+		GsApp *app = gs_app_list_index (list, i);
+		gchar *name = gs_app_get_metadata_item (app, "snap::name");
+
+		/* Refresh the snap */
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+		if (!snapd_client_refresh_sync (client, name, NULL, progress_cb, app, cancellable, error)) {
+			gs_app_set_state_recover (app);
+			snapd_error_convert (error);
+			return FALSE;
+		}
+
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	}
+
 	return TRUE;
 }
