@@ -567,7 +567,9 @@ gs_folders_convert (void)
 			"org.gnome.Screenshot.desktop",
 			"org.gnome.Terminal.desktop",
 			"org.gnome.tweaks.desktop",
+			"org.gnome.Usage.desktop",
 			"seahorse.desktop",
+			"simple-scan.desktop",
 			"vinagre.desktop",
 			"yelp.desktop",
 			NULL
