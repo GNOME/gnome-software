@@ -59,6 +59,7 @@ typedef struct
 
 	GNetworkMonitor		*network_monitor;
 	gulong			 network_changed_handler;
+	gulong			 network_available_notify_handler;
 } GsPluginLoaderPrivate;
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -2606,6 +2607,11 @@ gs_plugin_loader_dispose (GObject *object)
 					     priv->network_changed_handler);
 		priv->network_changed_handler = 0;
 	}
+	if (priv->network_available_notify_handler != 0) {
+		g_signal_handler_disconnect (priv->network_monitor,
+					     priv->network_available_notify_handler);
+		priv->network_available_notify_handler = 0;
+	}
 	if (priv->queued_ops_pool != NULL) {
 		/* stop accepting more requests and wait until any currently
 		 * running ones are finished */
@@ -2888,6 +2894,17 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 }
 
 static void
+gs_plugin_loader_network_available_notify_cb (GObject    *obj,
+					      GParamSpec *pspec,
+					      gpointer    user_data)
+{
+	GNetworkMonitor *monitor = G_NETWORK_MONITOR (obj);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	gs_plugin_loader_network_changed_cb (monitor, g_network_monitor_get_network_available (monitor), plugin_loader);
+}
+
+static void
 gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -2901,6 +2918,9 @@ gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 	priv->network_changed_handler =
 		g_signal_connect (priv->network_monitor, "network-changed",
 				  G_CALLBACK (gs_plugin_loader_network_changed_cb), plugin_loader);
+	priv->network_available_notify_handler =
+		g_signal_connect (priv->network_monitor, "notify::network-available",
+				  G_CALLBACK (gs_plugin_loader_network_available_notify_cb), plugin_loader);
 
 	gs_plugin_loader_network_changed_cb (priv->network_monitor,
 			    g_network_monitor_get_network_available (priv->network_monitor),
