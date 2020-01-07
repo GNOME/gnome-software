@@ -362,10 +362,8 @@ gs_hiding_box_class_init (GsHidingBoxClass *class)
 	g_object_class_install_property (object_class,
 		PROP_SPACING,
 		g_param_spec_int ("spacing",
-				/* TRANSLATORS: Here are 2 strings the same as in gtk/gtkbox.c
-				   in GTK+ project. Please use the same translation. */
-				_("Spacing"),
-				_("The amount of space between children"),
+				  "Spacing",
+				  "The amount of space between children",
 				0, G_MAXINT, 0,
 				G_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY));
 }
