@@ -60,6 +60,7 @@ typedef struct
 	GNetworkMonitor		*network_monitor;
 	gulong			 network_changed_handler;
 	gulong			 network_available_notify_handler;
+	gulong			 network_metered_notify_handler;
 } GsPluginLoaderPrivate;
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -81,6 +82,7 @@ enum {
 	PROP_EVENTS,
 	PROP_ALLOW_UPDATES,
 	PROP_NETWORK_AVAILABLE,
+	PROP_NETWORK_METERED,
 	PROP_LAST
 };
 
@@ -2567,6 +2569,9 @@ gs_plugin_loader_get_property (GObject *object, guint prop_id,
 	case PROP_NETWORK_AVAILABLE:
 		g_value_set_boolean (value, gs_plugin_loader_get_network_available (plugin_loader));
 		break;
+	case PROP_NETWORK_METERED:
+		g_value_set_boolean (value, gs_plugin_loader_get_network_metered (plugin_loader));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2611,6 +2616,11 @@ gs_plugin_loader_dispose (GObject *object)
 		g_signal_handler_disconnect (priv->network_monitor,
 					     priv->network_available_notify_handler);
 		priv->network_available_notify_handler = 0;
+	}
+	if (priv->network_metered_notify_handler != 0) {
+		g_signal_handler_disconnect (priv->network_monitor,
+					     priv->network_metered_notify_handler);
+		priv->network_metered_notify_handler = 0;
 	}
 	if (priv->queued_ops_pool != NULL) {
 		/* stop accepting more requests and wait until any currently
@@ -2671,6 +2681,11 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 				      FALSE,
 				      G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_NETWORK_AVAILABLE, pspec);
+
+	pspec = g_param_spec_boolean ("network-metered", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READABLE);
+	g_object_class_install_property (object_class, PROP_NETWORK_METERED, pspec);
 
 	signals [SIGNAL_STATUS_CHANGED] =
 		g_signal_new ("status-changed",
@@ -2868,6 +2883,7 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		 metered ? "metered" : "unmetered");
 
 	g_object_notify (G_OBJECT (plugin_loader), "network-available");
+	g_object_notify (G_OBJECT (plugin_loader), "network-metered");
 
 	if (available && !metered) {
 		g_autoptr(GsAppList) queue = NULL;
@@ -2905,6 +2921,17 @@ gs_plugin_loader_network_available_notify_cb (GObject    *obj,
 }
 
 static void
+gs_plugin_loader_network_metered_notify_cb (GObject    *obj,
+					    GParamSpec *pspec,
+					    gpointer    user_data)
+{
+	GNetworkMonitor *monitor = G_NETWORK_MONITOR (obj);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	gs_plugin_loader_network_changed_cb (monitor, g_network_monitor_get_network_available (monitor), plugin_loader);
+}
+
+static void
 gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -2921,6 +2948,9 @@ gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader)
 	priv->network_available_notify_handler =
 		g_signal_connect (priv->network_monitor, "notify::network-available",
 				  G_CALLBACK (gs_plugin_loader_network_available_notify_cb), plugin_loader);
+	priv->network_metered_notify_handler =
+		g_signal_connect (priv->network_monitor, "notify::network-metered",
+				  G_CALLBACK (gs_plugin_loader_network_metered_notify_cb), plugin_loader);
 
 	gs_plugin_loader_network_changed_cb (priv->network_monitor,
 			    g_network_monitor_get_network_available (priv->network_monitor),
