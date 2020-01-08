@@ -127,10 +127,15 @@
                                 <property name="visible">True</property>
                                 <property name="valign">start</property>
                                 <child>
+                                  <object class="GtkEventBox" id="star_eventbox">
+                                    <property name="visible">True</property>
+                                      <child>
                                   <object class="GsStarWidget" id="star">
                                     <property name="visible">True</property>
                                     <property name="halign">start</property>
                                     <property name="valign">center</property>
+                                  </object>
+                                </child>
                                   </object>
                                 </child>
                                 <child>

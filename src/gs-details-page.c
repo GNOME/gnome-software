@@ -149,6 +149,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_rating_title;
 	GtkWidget		*popover_permissions;
 	GtkWidget		*box_permissions_details;
+	GtkWidget		*star_eventbox;
 };
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
@@ -1637,9 +1638,11 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	gtk_widget_set_visible (self->button_review, show_review_button);
 	if (gs_plugin_loader_get_network_available (self->plugin_loader)) {
 		gtk_widget_set_sensitive (self->button_review, TRUE);
+		gtk_widget_set_sensitive (self->star_eventbox, TRUE);
 		gtk_widget_set_tooltip_text (self->button_review, NULL);
 	} else {
 		gtk_widget_set_sensitive (self->button_review, FALSE);
+		gtk_widget_set_sensitive (self->star_eventbox, FALSE);
 		gtk_widget_set_tooltip_text (self->button_review,
 					     /* TRANSLATORS: we need a remote server to process */
 					     _("You need internet access to write a review"));
@@ -2545,6 +2548,12 @@ gs_details_page_network_available_notify_cb (GsPluginLoader *plugin_loader,
 	gs_details_page_refresh_reviews (self);
 }
 
+static void
+gs_details_page_star_pressed_cb(GtkWidget *widget, GdkEventButton *event, GsDetailsPage *self)
+{
+	gs_details_page_write_review_cb(GTK_BUTTON (self->button_review), self);
+}
+
 static gboolean
 gs_details_page_setup (GsPage *page,
                        GsShell *shell,
@@ -2571,6 +2580,9 @@ gs_details_page_setup (GsPage *page,
 						       "gs_plugin_review_submit");
 	g_signal_connect (self->button_review, "clicked",
 			  G_CALLBACK (gs_details_page_write_review_cb),
+			  self);
+	g_signal_connect (self->star_eventbox, "button-press-event",
+			  G_CALLBACK (gs_details_page_star_pressed_cb),
 			  self);
 
 	/* hide some UI when offline */
@@ -2777,6 +2789,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_rating_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, popover_permissions);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_permissions_details);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star_eventbox);
 }
 
 static void
