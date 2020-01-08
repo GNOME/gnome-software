@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2017-2019 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2017-2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -1412,7 +1412,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	                               gs_app_get_version (app));
 
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
-	                                          FALSE,  /* allow-downgrade */
+	                                          TRUE,   /* allow-downgrade */
 	                                          FALSE,  /* cache-only */
 	                                          TRUE,   /* download-only */
 	                                          FALSE,  /* skip-purge */
