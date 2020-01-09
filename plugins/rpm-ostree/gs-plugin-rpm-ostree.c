@@ -928,6 +928,67 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+gboolean
+gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
+                               GsApp *app,
+                               GCancellable *cancellable,
+                               GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const char *packages[] = { NULL };
+	g_autofree gchar *new_refspec = NULL;
+	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GVariant) options = NULL;
+	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
+	/* check is distro-upgrade */
+	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
+		return TRUE;
+
+	/* construct new refspec based on the distro version we're upgrading to */
+	new_refspec = g_strdup_printf ("ostree://fedora/%s/x86_64/silverblue",
+	                               gs_app_get_version (app));
+
+	/* trigger the upgrade */
+	options = make_rpmostree_options_variant (FALSE,  /* reboot */
+	                                          TRUE,   /* allow-downgrade */
+	                                          TRUE,   /* cache-only */
+	                                          FALSE,  /* download-only */
+	                                          FALSE,  /* skip-purge */
+	                                          FALSE,  /* no-pull-base */
+	                                          FALSE,  /* dry-run */
+	                                          FALSE); /* no-overrides */
+
+	if (!gs_rpmostree_os_call_rebase_sync (priv->os_proxy,
+	                                       options,
+	                                       new_refspec,
+	                                       packages,
+	                                       NULL /* fd list */,
+	                                       &transaction_address,
+	                                       NULL /* fd list out */,
+	                                       cancellable,
+	                                       error)) {
+		gs_rpmostree_error_convert (error);
+		return FALSE;
+	}
+
+	if (!gs_rpmostree_transaction_get_response_sync (priv->sysroot_proxy,
+	                                                 transaction_address,
+	                                                 tp,
+	                                                 cancellable,
+	                                                 error)) {
+		gs_rpmostree_error_convert (error);
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
 static gboolean
 gs_plugin_repo_enable (GsPlugin *plugin,
                        GsApp *app,
