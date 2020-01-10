@@ -577,6 +577,24 @@ compare_channel (gconstpointer a, gconstpointer b, gpointer user_data)
 	return g_strcmp0 (snapd_channel_get_branch (channel_a), snapd_channel_get_branch (channel_b));
 }
 
+static gchar *
+expand_channel_name (const gchar *name)
+{
+	g_auto(GStrv) tokens = NULL;
+	const gchar *risks[] = { "stable", "candidate", "beta", "edge", NULL };
+
+	if (name == NULL)
+		return NULL;
+
+	tokens = g_strsplit (name, "/", -1);
+	for (int i = 0; risks[i] != NULL; i++) {
+		if (strcmp (tokens[0], risks[i]) == 0)
+			return g_strconcat ("latest/", name, NULL);
+	}
+
+	return g_strdup (name);
+}
+
 gboolean
 gs_plugin_add_alternates (GsPlugin *plugin,
 			  GsApp *app,
@@ -613,10 +631,14 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 
 	for (guint i = 0; i < sorted_channels->len; i++) {
 		SnapdChannel *channel = g_ptr_array_index (sorted_channels, i);
-		g_autoptr(GsApp) a = gs_app_new (NULL);
+		g_autoptr(GsApp) a;
+		g_autofree gchar *expanded_name = NULL;
+
+		a = gs_app_new (NULL);
 		gs_app_set_bundle_kind (a, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_metadata (a, "snap::name", snap_name);
-		gs_app_set_branch (a, snapd_channel_get_name (channel));
+		expanded_name = expand_channel_name (snapd_channel_get_name (channel));
+		gs_app_set_branch (a, expanded_name);
 		gs_app_list_add (list, a);
 	}
 
@@ -828,7 +850,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
-	const gchar *snap_name, *channel, *store_channel = NULL, *name, *version;
+	const gchar *snap_name, *name, *version;
+	g_autofree gchar *channel = NULL;
+	g_autofree gchar *store_channel = NULL;
+	g_autofree gchar *tracking_channel = NULL;
 	gboolean need_details = FALSE;
 	SnapdConfinement confinement = SNAPD_CONFINEMENT_UNKNOWN;
 	g_autoptr(SnapdSnap) local_snap = NULL;
@@ -846,13 +871,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return FALSE;
 
 	snap_name = gs_app_get_metadata_item (app, "snap::name");
-	channel = gs_app_get_branch (app);
+	channel = g_strdup (gs_app_get_branch (app));
 
 	/* get information from locally installed snaps and information we already have */
 	local_snap = snapd_client_get_snap_sync (client, snap_name, cancellable, NULL);
 	store_snap = store_snap_cache_lookup (plugin, snap_name, FALSE);
 	if (store_snap != NULL)
-		store_channel = snapd_snap_get_channel (store_snap);
+		store_channel = expand_channel_name (snapd_snap_get_channel (store_snap));
 
 	/* check if requested information requires us to go to the Snap Store */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SCREENSHOTS)
@@ -868,17 +893,20 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (local_snap == NULL && store_snap == NULL)
 		return TRUE;
 
+	if (local_snap != NULL)
+		tracking_channel = expand_channel_name (snapd_snap_get_tracking_channel (local_snap));
+
 	/* Get default channel to install */
 	if (channel == NULL) {
 		if (local_snap != NULL)
-			channel = snapd_snap_get_tracking_channel (local_snap);
+			channel = g_strdup (tracking_channel);
 		else
-			channel = snapd_snap_get_channel (store_snap);
+			channel = expand_channel_name (snapd_snap_get_channel (store_snap));
 
 		gs_app_set_branch (app, channel);
 	}
 
-	if (local_snap != NULL && g_strcmp0 (snapd_snap_get_tracking_channel (local_snap), channel) == 0) {
+	if (local_snap != NULL && g_strcmp0 (tracking_channel, channel) == 0) {
 		/* Do not set to installed state if app is updatable */
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -913,8 +941,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		guint i;
 		for (i = 0; i < channels->len; i++) {
 			SnapdChannel *c = channels->pdata[i];
+			g_autofree gchar *expanded_name = NULL;
 
-			if (g_strcmp0 (snapd_channel_get_name (c), channel) != 0)
+			expanded_name = expand_channel_name (snapd_channel_get_name (c));
+			if (g_strcmp0 (expanded_name, channel) != 0)
 				continue;
 
 			version = snapd_channel_get_version (c);
