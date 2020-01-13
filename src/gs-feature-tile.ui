@@ -33,21 +33,23 @@
             <child>
               <object class="GtkBox" id="box2">
                 <property name="visible">True</property>
-                <property name="halign">end</property>
+                <property name="halign">center</property>
                 <property name="orientation">vertical</property>
                 <property name="margin">40</property>
                 <child>
                   <object class="GtkLabel" id="title">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="halign">start</property>
+                    <property name="halign">center</property>
                     <property name="valign">end</property>
                     <property name="vexpand">True</property>
                     <property name="ellipsize">end</property>
                     <attributes>
                       <attribute name="scale" value="2.5"/>
-                      <attribute name="weight" value="700"/>
                     </attributes>
+                    <style>
+                      <class name="title-1"/>
+                    </style>
                   </object>
                 </child>
                 <child>
@@ -55,8 +57,11 @@
                     <property name="visible">True</property>
                     <property name="ellipsize">end</property>
                     <property name="xalign">0</property>
-                    <property name="halign">start</property>
+                    <property name="halign">center</property>
                     <property name="valign">start</property>
+                    <style>
+                      <class name="caption"/>
+                    </style>
                   </object>
                 </child>
               </object>

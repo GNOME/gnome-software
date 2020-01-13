@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <components>
-  <component merge="append">
+  <component>
     <id>inkscape.desktop</id>
     <custom>
-      <value key="GnomeSoftware::FeatureTile-css">border-color: #ccc;
+      <value key="GnomeSoftware::FeatureTile-css">border-color: #aaa;
 text-shadow: none;
-color: #606060;
+color: #333;
 background:
+ linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(200,200,200,0.9)),
  url('file://@datadir@/gnome-software/featured-inkscape.svg')
- 20% / 60% auto no-repeat,
- linear-gradient(to bottom, #ffffff, #e2e2e2);
+ left 40% / 80% auto no-repeat;
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>mypaint.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #888;
-color: #000;
-text-shadow: none;
+color: #333;
+text-shadow: 0 1px 12px rgba(255,255,255,0.05),
+      0 -1px rgba(255,255,255,0.05),
+      1px 0 rgba(255,255,255,0.1),
+      0 1px rgba(255,255,255,0.3),
+      -1px 0 rgba(255,255,255,0.1);
 background:
  url('file://@datadir@/gnome-software/featured-mypaint.svg')
  left 90% / 300px auto no-repeat,
@@ -27,7 +31,7 @@ box-shadow: none;
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.Maps.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #deddda;
@@ -42,22 +46,23 @@ background: #f6f5f4,
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.Polari.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #4e9a06;
-color: #53f1aa;
+color: #fff;
 text-shadow: 0 1px #317e54, 
 -1px 0 #317e54;
 box-shadow: none;
 outline: none;
 background:
+ linear-gradient(to bottom, rgba(105,108,116,0.3)),
  url('file://@datadir@/gnome-software/featured-polari.svg')
- left 65% / 70% auto no-repeat, #43a570;
+ center / 90% auto no-repeat, #43a570;
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>transmission-gtk.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #d65100;
@@ -66,13 +71,13 @@ color: #ffffff;
 box-shadow: none;
 background:
  url('file://@datadir@/gnome-software/featured-transmission.svg')
- 10% center / 50% auto no-repeat, -gtk-gradient (radial,
+ -20% center / 40% auto no-repeat, -gtk-gradient (radial,
  center bottom, 0, center center, 0.8,
  from(#ffa348), to(#e66100));
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.Podcasts</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #d7430a;
@@ -80,10 +85,14 @@ background: #f7632a,
  url('file://@datadir@/gnome-software/featured-podcasts.svg')
  10% 20% / 50% auto no-repeat;
 color: #fff;
-text-shadow: none;</value>
+text-shadow: 0 1px 12px rgba(0,0,0,0.05),
+      0 -1px rgba(0,0,0,0.05),
+      1px 0 rgba(0,0,0,0.1),
+      0 1px rgba(0,0,0,0.3),
+      -1px 0 rgba(0,0,0,0.1);</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.Boxes.desktop</id>
     <categories>
       <category>Featured</category>
@@ -91,12 +100,16 @@ text-shadow: none;</value>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #ed8254;
 background: #fca937 url('file://@datadir@/gnome-software/featured-boxes.svg') 
- 10% 40% / 60% auto no-repeat;
-color: #cd6234;
-text-shadow: 0 1px rgba(255,255,255,0.3);</value>
+ 150% center / 60% auto no-repeat;
+color: #fff;
+text-shadow: 0 1px 12px rgba(0,0,0,0.05),
+      0 -1px rgba(0,0,0,0.05),
+      1px 0 rgba(0,0,0,0.1),
+      0 1px rgba(0,0,0,0.3),
+      -1px 0 rgba(0,0,0,0.1);</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.github.johnfactotum.Foliate</id>
     <categories>
       <category>Featured</category>
@@ -113,30 +126,29 @@ text-shadow: none;
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.SoundRecorder.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #bbb;
-/* background: #f6f5f4 url('file://@datadir@/gnome-software/featured-sound-recorder.svg') 
- 10% 40% / 50% auto no-repeat; */
 background: #443f51 url('file://@datadir@/gnome-software/featured-sound-recorder.svg') 
- 10% 40% / 50% auto no-repeat;
+ 130% 40% / 50% auto no-repeat;
 color: #fff;
 text-shadow: none;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.kde.kdenlive</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #df321e;
-background: #ffd6ac url('file://@datadir@/gnome-software/featured-kdenlive-bg.jpg')
- left 20% / 60% auto no-repeat;
+background: linear-gradient(to bottom, rgba(255,214,172,0.8), rgba(255,214,172,0.8)),
+            url('file://@datadir@/gnome-software/featured-kdenlive-bg.jpg')
+ center / cover no-repeat;
 color: #df321e;
 box-shadow: none;
 text-shadow: none;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gimp.GIMP</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #4a8c30;
@@ -144,12 +156,12 @@ text-shadow: none;
 color: rgba(255,255,255,0.9);
 background:
  url('file://@datadir@/gnome-software/featured-gimp.png')
- left 50% / 50% auto no-repeat,
+ -20% 50% / 50% auto no-repeat,
  linear-gradient(to bottom, #8ac674, #cbddc3);
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.videolan.VLC</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #df321e;
@@ -161,7 +173,7 @@ box-shadow: none;
 text-shadow: 0 0 2px #fff;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.spotify.Client</id>
     <categories>
       <category>Featured</category>
@@ -175,17 +187,20 @@ background: url('http://people.gnome.org/~jimmac/gnome-software/spotify-logo.svg
  10% / 200px auto no-repeat, -gtk-gradient (linear, left top, left bottom, from(#b47fba), to(#000));</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.slack.Slack</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #eee;
-background: url('http://people.gnome.org/~jimmac/gnome-software/slack-logo.svg') 10% 48px / 200px auto no-repeat, url('file://@datadir@/gnome-software/featured-slack-bg.jpg')
+background:
+   url('http://people.gnome.org/~jimmac/gnome-software/slack-logo.svg') 10% 48px / 200px auto no-repeat,
+   linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+   url('file://@datadir@/gnome-software/featured-slack-bg.jpg')
  center / cover no-repeat;
 color: #fff;
 text-shadow: none;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.FeedReader</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #d65100;
@@ -198,19 +213,19 @@ background: #f5c211
 </value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.bitwarden.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #1c6d8c;
 box-shadow: none;
 background: #2ec27e
  url('file://@datadir@/gnome-software/featured-bitwarden.svg')
- 0 50% / 60% auto no-repeat;
+ 150% 80% / 60% auto no-repeat;
 color: #fff;
 text-shadow: 0 0 2px #26a269;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.dropbox.Client</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #a8c3d6;
@@ -221,7 +236,7 @@ background: #b8d3e6 url('file://@datadir@/gnome-software/featured-dropbox.png')
 color: #47525d;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.github.calo001.fondo</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
@@ -233,7 +248,7 @@ box-shadow: none;
 text-shadow: 0 1px 2px #000;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.darktable.Darktable</id>
     <categories>
       <category>Featured</category>
@@ -247,7 +262,7 @@ box-shadow: none;
 text-shadow: 0 1px 2px #000;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.calibre_ebook.calibre</id>
     <categories>
       <category>Featured</category>
@@ -261,7 +276,7 @@ box-shadow: none;
 text-shadow: 0 1px 2px #000;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>fr.free.Homebank</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
@@ -272,7 +287,7 @@ box-shadow: none;
 text-shadow: 0 1px 2px #000;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>de.wolfvollprecht.UberWriter</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #0554c4;
@@ -284,7 +299,7 @@ text-shadow: 0 0 3px #3584e4;
 box-shadow: none;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>net.sourceforge.Klavaro</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
@@ -295,7 +310,7 @@ box-shadow: none;
 text-shadow: 0 0 4px #fff;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.github.junrrein.PDFSlicer</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid #1c6d8c;
@@ -307,7 +322,7 @@ color: #fff;
 text-shadow: none;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.Todo.desktop</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
@@ -318,7 +333,7 @@ box-shadow: none;
 text-shadow: 0 1px 2px #000;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.github.fabiocolacio.marker</id>
     <categories>
       <category>Featured</category>
@@ -332,7 +347,7 @@ box-shadow: none;
 text-shadow: 0 1px 2px #000;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>com.valvesoftware.Steam</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border-color: #1b2838;
@@ -343,7 +358,7 @@ background: #1b2838 url('http://people.gnome.org/~jimmac/gnome-software/steam-lo
  10% / 200px auto no-repeat;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.gnome.Tetravex</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
@@ -354,7 +369,7 @@ box-shadow: none;
 text-shadow: 0 0 2px #fff;</value>
     </custom>
   </component>
-  <component merge="append">
+  <component>
     <id>org.stellarium.Stellarium</id>
     <custom>
       <value key="GnomeSoftware::FeatureTile-css">border: 1px solid transparent;
