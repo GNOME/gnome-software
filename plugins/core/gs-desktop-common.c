@@ -297,34 +297,34 @@ static const GsDesktopMap map_reference[] = {
 static const GsDesktopData msdata[] = {
 	/* TRANSLATORS: this is the menu spec main category for Audio & Video */
 	{ "audio-video",	map_audiovisual,	N_("Audio & Video"),
-				"folder-music-symbolic", "#215d9c", 100 },
+				"folder-music-symbolic", 100 },
 	/* TRANSLATORS: this is the menu spec main category for Development */
 	{ "developer-tools",	map_developertools,	N_("Developer Tools"),
-				"applications-engineering-symbolic", "#d3d7c7", 40 },
+				"applications-engineering-symbolic", 40 },
 	/* TRANSLATORS: this is the menu spec main category for Education & Science */
 	{ "education-science",		map_education_science,	N_("Education & Science"),
-				"system-help-symbolic", "#d3d7c7", 30 },
+				"system-help-symbolic", 30 },
 	/* TRANSLATORS: this is the menu spec main category for Game */
 	{ "games",		map_games,		N_("Games"),
-				"applications-games-symbolic", "#c4a000", 70 },
+				"applications-games-symbolic", 70 },
 	/* TRANSLATORS: this is the menu spec main category for Graphics */
 	{ "graphics",		map_graphics,		N_("Graphics & Photography"),
-				"applications-graphics-symbolic", "#75507b", 60 },
+				"applications-graphics-symbolic", 60 },
 	/* TRANSLATORS: this is the menu spec main category for Office */
 	{ "productivity",	map_productivity,	N_("Productivity"),
-				"text-editor-symbolic", "#cc0000", 80 },
+				"text-editor-symbolic", 80 },
 	/* TRANSLATORS: this is the menu spec main category for Add-ons */
 	{ "addons",		map_addons,		N_("Add-ons"),
-				"application-x-addon-symbolic", "#4e9a06", 50 },
+				"application-x-addon-symbolic", 50 },
 	/* TRANSLATORS: this is the menu spec main category for Communication */
 	{ "communication",	map_communication,	N_("Communication & News"),
-				"user-available-symbolic", "#729fcf", 90 },
+				"user-available-symbolic", 90 },
 	/* TRANSLATORS: this is the menu spec main category for Reference */
 	{ "reference",		map_reference,		N_("Reference"),
-				"view-dual-symbolic", "#d3d7c7", 0 },
+				"view-dual-symbolic", 0 },
 	/* TRANSLATORS: this is the menu spec main category for Utilities */
 	{ "utilities",		map_utilities,		N_("Utilities"),
-				"applications-utilities-symbolic", "#d3d7c7", 10 },
+				"applications-utilities-symbolic", 10 },
 	{ NULL }
 };
 

@@ -29,7 +29,6 @@ struct _GsCategory
 	gchar		*name;
 	gchar		*icon;
 	gint		 score;
-	GPtrArray	*key_colors;
 	GPtrArray	*desktop_groups;
 	GsCategory	*parent;
 	guint		 size;
@@ -66,8 +65,6 @@ gs_category_to_string (GsCategory *category)
 	}
 	g_string_append_printf (str, "  size: %u\n",
 				category->size);
-	g_string_append_printf (str, "  key-colors: %u\n",
-				category->key_colors->len);
 	g_string_append_printf (str, "  desktop-groups: %u\n",
 				category->desktop_groups->len);
 	if (category->parent != NULL) {
@@ -289,40 +286,6 @@ gs_category_set_score (GsCategory *category, gint score)
 }
 
 /**
- * gs_category_get_key_colors:
- * @category: a #GsCategory
- *
- * Gets the list of key colors for the category.
- *
- * Returns: (element-type GdkRGBA) (transfer none): An array
- *
- * Since: 3.22
- **/
-GPtrArray *
-gs_category_get_key_colors (GsCategory *category)
-{
-	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
-	return category->key_colors;
-}
-
-/**
- * gs_category_add_key_color:
- * @category: a #GsCategory
- * @key_color: a #GdkRGBA
- *
- * Adds a key color to the category.
- *
- * Since: 3.22
- **/
-void
-gs_category_add_key_color (GsCategory *category, const GdkRGBA *key_color)
-{
-	g_return_if_fail (GS_IS_CATEGORY (category));
-	g_return_if_fail (key_color != NULL);
-	g_ptr_array_add (category->key_colors, gdk_rgba_copy (key_color));
-}
-
-/**
  * gs_category_get_desktop_groups:
  * @category: a #GsCategory
  *
@@ -521,7 +484,6 @@ gs_category_finalize (GObject *object)
 		g_object_remove_weak_pointer (G_OBJECT (category->parent),
 		                              (gpointer *) &category->parent);
 	g_ptr_array_unref (category->children);
-	g_ptr_array_unref (category->key_colors);
 	g_ptr_array_unref (category->desktop_groups);
 	g_free (category->id);
 	g_free (category->name);
@@ -541,7 +503,6 @@ static void
 gs_category_init (GsCategory *category)
 {
 	category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	category->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
 	category->desktop_groups = g_ptr_array_new_with_free_func (g_free);
 }
 

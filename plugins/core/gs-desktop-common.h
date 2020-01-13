@@ -22,7 +22,6 @@ typedef struct {
 	const GsDesktopMap *mapping;
 	const gchar	*name;
 	const gchar	*icon;
-	const gchar	*key_colors;
 	gint		 score;
 } GsDesktopData;
 

@@ -537,7 +537,6 @@ gs_overview_page_get_categories_cb (GObject *source_object,
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), self);
-		gs_category_tile_set_colorful (GS_CATEGORY_TILE (tile), TRUE);
 		flowbox = GTK_FLOW_BOX (priv->flowbox_categories);
 		gtk_flow_box_insert (flowbox, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);

@@ -37,7 +37,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	msdata = gs_desktop_get_data ();
 	for (i = 0; msdata[i].id != NULL; i++) {
-		GdkRGBA key_color;
 		GsCategory *category;
 		g_autofree gchar *msgctxt = NULL;
 
@@ -46,8 +45,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		gs_category_set_icon (category, msdata[i].icon);
 		gs_category_set_name (category, gettext (msdata[i].name));
 		gs_category_set_score (category, msdata[i].score);
-		if (gdk_rgba_parse (&key_color, msdata[i].key_colors))
-			gs_category_add_key_color (category, &key_color);
 		g_ptr_array_add (list, category);
 		msgctxt = g_strdup_printf ("Menu of %s", msdata[i].name);
 
