@@ -455,6 +455,35 @@ gs_flatpak_get_xremote_main_ref (GsFlatpak *self, FlatpakRemote *xremote, GError
 }
 #endif
 
+static void
+fixup_flatpak_appstream_xml (XbBuilderSource *source)
+{
+	g_autoptr(XbBuilderFixup) fixup1 = NULL;
+	g_autoptr(XbBuilderFixup) fixup2 = NULL;
+	g_autoptr(XbBuilderFixup) fixup3 = NULL;
+
+	/* add the flatpak search keyword */
+	fixup1 = xb_builder_fixup_new ("AddKeywordFlatpak",
+				       gs_flatpak_add_flatpak_keyword_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup1, 2);
+	xb_builder_source_add_fixup (source, fixup1);
+
+	/* ensure the <id> matches the flatpak ref ID  */
+	fixup2 = xb_builder_fixup_new ("FixIdDesktopSuffix",
+				       gs_flatpak_fix_id_desktop_suffix_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup2, 2);
+	xb_builder_source_add_fixup (source, fixup2);
+
+	/* Fixup <metadata> to <custom> for appstream versions >= 0.9 */
+	fixup3 = xb_builder_fixup_new ("FixMetadataTag",
+				       gs_flatpak_fix_metadata_tag_cb,
+				       NULL, NULL);
+	xb_builder_fixup_set_max_depth (fixup3, 2);
+	xb_builder_source_add_fixup (source, fixup3);
+}
+
 static gboolean
 gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 				  XbBuilder *builder,
@@ -469,10 +498,7 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 	g_autoptr(GFile) appstream_dir = NULL;
 	g_autoptr(GFile) file_xml = NULL;
 	g_autoptr(GSettings) settings = NULL;
-	g_autoptr(XbBuilderFixup) fixup1 = NULL;
-	g_autoptr(XbBuilderFixup) fixup2 = NULL;
-	g_autoptr(XbBuilderFixup) fixup3 = NULL;
-	g_autoptr(XbBuilderFixup) fixup4 = NULL;
+	g_autoptr(XbBuilderFixup) origin_fixup = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
@@ -503,33 +529,16 @@ gs_flatpak_add_apps_from_xremote (GsFlatpak *self,
 					  error))
 		return FALSE;
 
-	/* add the flatpak search keyword */
-	fixup1 = xb_builder_fixup_new ("AddKeywordFlatpak",
-				       gs_flatpak_add_flatpak_keyword_cb,
-				       self, NULL);
-	xb_builder_fixup_set_max_depth (fixup1, 2);
-	xb_builder_source_add_fixup (source, fixup1);
-
-	/* ensure the <id> matches the flatpak ref ID  */
-	fixup2 = xb_builder_fixup_new ("FixIdDesktopSuffix",
-				       gs_flatpak_fix_id_desktop_suffix_cb,
-				       self, NULL);
-	xb_builder_fixup_set_max_depth (fixup2, 2);
-	xb_builder_source_add_fixup (source, fixup2);
+	fixup_flatpak_appstream_xml (source);
 
 	/* override the *AppStream* origin */
-	fixup3 = xb_builder_fixup_new ("SetOrigin",
+    /* TODO: Make this fixup work for bundles so it can go in
+     * fixup_flatpak_appstream_xml() */
+	origin_fixup = xb_builder_fixup_new ("SetOrigin",
 				       gs_flatpak_set_origin_cb,
 				       xremote, NULL);
-	xb_builder_fixup_set_max_depth (fixup3, 1);
-	xb_builder_source_add_fixup (source, fixup3);
-
-	/* Fixup <metadata> to <custom> for appstream versions >= 0.9 */
-	fixup4 = xb_builder_fixup_new ("FixMetadataTag",
-				       gs_flatpak_fix_metadata_tag_cb,
-				       xremote, NULL);
-	xb_builder_fixup_set_max_depth (fixup4, 2);
-	xb_builder_source_add_fixup (source, fixup4);
+	xb_builder_fixup_set_max_depth (origin_fixup, 1);
+	xb_builder_source_add_fixup (source, origin_fixup);
 
 	/* add metadata */
 	icon_prefix = g_build_filename (appstream_dir_fn, "icons", NULL);
@@ -2514,6 +2523,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	/* load AppStream */
 	appstream_gz = flatpak_bundle_ref_get_appstream (xref_bundle);
 	if (appstream_gz != NULL) {
+		const gchar *const *locales = g_get_language_names ();
 		g_autofree gchar *xpath = NULL;
 		g_autoptr(GBytes) appstream = NULL;
 		g_autoptr(GInputStream) stream_data = NULL;
@@ -2521,7 +2531,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		g_autoptr(GZlibDecompressor) decompressor = NULL;
 		g_autoptr(XbBuilder) builder = xb_builder_new ();
 		g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
-		g_autoptr(XbNode) component = NULL;
+		g_autoptr(XbNode) id_node = NULL;
+		g_autoptr(XbNode) component_node = NULL;
 		g_autoptr(XbNode) n = NULL;
 		g_autoptr(XbSilo) silo = NULL;
 
@@ -2542,11 +2553,18 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			return NULL;
 		}
 
+		/* add current locales */
+		for (guint i = 0; locales[i] != NULL; i++)
+			xb_builder_add_locale (builder, locales[i]);
+
 		/* build silo */
 		if (!xb_builder_source_load_bytes (source, appstream,
 						   XB_BUILDER_SOURCE_FLAG_NONE,
 						   error))
 			return NULL;
+
+		fixup_flatpak_appstream_xml (source);
+
 		xb_builder_import_source (builder, source);
 		silo = xb_builder_compile (builder,
 #if LIBXMLB_CHECK_VERSION(0, 2, 0)
@@ -2579,8 +2597,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		/* find app */
 		xpath = g_strdup_printf ("components/component/id[text()='%s']",
 					 gs_flatpak_app_get_ref_name (app));
-		component = xb_silo_query_first (silo, xpath, NULL);
-		if (component == NULL) {
+		id_node = xb_silo_query_first (silo, xpath, NULL);
+		if (id_node == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_INVALID_FORMAT,
@@ -2590,7 +2608,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		}
 
 		/* copy details from AppStream to app */
-		if (!gs_appstream_refine_app (self->plugin, app, silo, component,
+		component_node = xb_node_get_parent (id_node);
+		if (!gs_appstream_refine_app (self->plugin, app, silo, component_node,
 					      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					      error))
 			return NULL;
