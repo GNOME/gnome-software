@@ -812,7 +812,7 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 	}
 
 
-	/* filter any MATCH_ANY_PREFIX apps left in the list */
+	/* filter any wildcard apps left in the list */
 	gs_app_list_filter (list, gs_plugin_loader_app_is_non_wildcard, NULL);
 	return TRUE;
 }
