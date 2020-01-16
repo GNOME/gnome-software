@@ -1585,8 +1585,8 @@ gs_plugin_refine_item_origin_hostname (GsFlatpak *self, GsApp *app,
 							   &error_local);
 	if (xremote == NULL) {
 		if (g_error_matches (error_local,
-				     G_IO_ERROR,
-				     G_IO_ERROR_NOT_FOUND)) {
+				     FLATPAK_ERROR,
+				     FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
 			/* if the user deletes the -origin remote for a locally
 			 * installed flatpakref file then we should just show
 			 * 'localhost' and not return an error */
