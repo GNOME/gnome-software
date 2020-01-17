@@ -954,6 +954,13 @@ gs_utils_error_convert_appstream (GError **perror)
 			error->code = GS_PLUGIN_ERROR_FAILED;
 			break;
 		}
+	} else if (error->domain == AS_ICON_ERROR) {
+		switch (error->code) {
+		case AS_ICON_ERROR_FAILED:
+		default:
+			error->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
 	} else if (error->domain == G_FILE_ERROR) {
 		switch (error->code) {
 		case G_FILE_ERROR_EXIST:
