@@ -24,3 +24,9 @@ custom_target(
     'only-runtime/repo/',
   ],
 )
+
+configure_file(
+  input : 'chiron.flatpak',
+  output : 'chiron.flatpak',
+  copy : true,
+)

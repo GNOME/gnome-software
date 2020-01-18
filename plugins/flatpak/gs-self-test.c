@@ -1020,14 +1020,14 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
+flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
+                              gboolean        is_bundle)
 {
 	GsApp *app_tmp;
 	GsApp *runtime;
 	gboolean ret;
-	const gchar *fn = "test.flatpakref";
-	g_autofree gchar *testdir2 = NULL;
-	g_autofree gchar *testdir2_repourl = NULL;
+	GsPluginRefineFlags refine_flags;
+	g_autofree gchar *fn = NULL;
 	g_autofree gchar *testdir = NULL;
 	g_autofree gchar *testdir_repourl = NULL;
 	g_autoptr(GError) error = NULL;
@@ -1103,23 +1103,37 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
 
-	/* write a flatpakref file */
-	testdir2 = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
-	if (testdir2 == NULL)
-		return;
-	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &file, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
+	if (is_bundle) {
+		/* find the flatpak bundle file */
+		fn = gs_test_get_filename (TESTDATADIR, "chiron.flatpak");
+		g_assert (fn != NULL);
+		file = g_file_new_for_path (fn);
+		refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+	} else {
+		g_autofree gchar *testdir2 = NULL;
+		g_autofree gchar *testdir2_repourl = NULL;
+
+		/* write a flatpakref file */
+		testdir2 = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
+		if (testdir2 == NULL)
+			return;
+		testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
+		fn = g_strdup ("test.flatpakref");
+		ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &file, &error);
+		g_assert_no_error (error);
+		g_assert (ret);
+
+		refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME;
+	}
 
 	/* convert it to a GsApp */
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
+					 "refine-flags", refine_flags,
 					 NULL);
 	app = gs_plugin_loader_job_process_app (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
@@ -1127,19 +1141,29 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE_LOCAL);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron");
-#if FLATPAK_CHECK_VERSION(1,1,2)
-	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
-			"user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
-#else
-	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
-			"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
-#endif
-	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
-	g_assert_cmpstr (gs_app_get_description (app), ==, "Long description.");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert (gs_app_get_local_file (app) != NULL);
+	if (is_bundle) {
+		/* Note: The origin is set to "flatpak" here because an origin remote
+		 * won't be created until the app is installed.
+		 */
+		g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+				"user/flatpak/flatpak/desktop/org.test.Chiron/master"));
+		g_assert (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE);
+	} else {
+#if FLATPAK_CHECK_VERSION(1,1,2)
+		g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+				"user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
+#else
+		g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app),
+				"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
+#endif
+		g_assert (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF);
+		g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
+		g_assert_cmpstr (gs_app_get_description (app), ==, "Long description.");
+	}
 
 	/* get runtime */
 	runtime = gs_app_get_runtime (app);
@@ -1163,7 +1187,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "chiron",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "refine-flags", is_bundle ? GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME : GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	search1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -1231,13 +1255,25 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "chiron",
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "refine-flags", is_bundle ? GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME : GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	search2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (search2 != NULL);
 	g_assert_cmpint (gs_app_list_length (search2), ==, 0);
+}
+
+static void
+gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
+{
+	flatpak_bundle_or_ref_helper (plugin_loader, FALSE);
+}
+
+static void
+gs_plugins_flatpak_bundle_func (GsPluginLoader *plugin_loader)
+{
+	flatpak_bundle_or_ref_helper (plugin_loader, TRUE);
 }
 
 static void
@@ -1813,6 +1849,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/ref",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_ref_func);
+	g_test_add_data_func ("/gnome-software/plugins/flatpak/bundle",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugins_flatpak_bundle_func);
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/broken-remote",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_broken_remote_func);

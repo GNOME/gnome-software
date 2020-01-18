@@ -55,6 +55,14 @@ def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
         argv.append('--runtime')
     subprocess.call(argv)
 
+def build_flatpak_bundle(appid, srcdir, repodir, filename, branch='master'):
+    argv = ['flatpak', 'build-bundle']
+    argv.append(repodir)
+    argv.append(filename)
+    argv.append(appid)
+    argv.append(branch)
+    subprocess.call(argv)
+
 def copy_repo(srcdir, destdir):
     srcdir_repo = os.path.join(srcdir, 'repo')
     destdir_repo = os.path.join(destdir, 'repo')
@@ -71,6 +79,12 @@ build_flatpak('org.test.Runtime',
               'app-with-runtime',
               'app-with-runtime/repo',
               cleanrepodir=False)
+
+# build a flatpak bundle for the app
+build_flatpak_bundle('org.test.Chiron',
+                     'app-with-runtime',
+                     'app-with-runtime/repo',
+                     'chiron.flatpak')
 
 # app referencing remote that cannot be found
 build_flatpak('org.test.Chiron',
