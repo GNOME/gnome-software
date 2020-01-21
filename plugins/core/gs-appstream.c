@@ -121,7 +121,7 @@ gs_appstream_build_icon_prefix (XbNode *component)
 	/* check format */
 	path = g_strsplit (tmp, "/", -1);
 	npath = g_strv_length (path);
-	if (npath < 3 || g_strcmp0 (path[npath-2], "xmls") != 0)
+	if (npath < 3 || !(g_strcmp0 (path[npath-2], "xmls") == 0 || g_strcmp0 (path[npath-2], "yaml") == 0))
 		return NULL;
 
 	/* fix the new path */
