@@ -19,13 +19,6 @@ def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
         print("Deleting %s" % exportdir)
         shutil.rmtree(exportdir)
 
-    # use git master where available
-    local_checkout = '/home/hughsie/Code/flatpak'
-    if os.path.exists(local_checkout):
-        flatpak_cmd = os.path.join(local_checkout, 'flatpak')
-    else:
-        flatpak_cmd = 'flatpak'
-
     metadata_path = os.path.join(srcdir, appid, 'metadata')
     metadata = configparser.ConfigParser()
     metadata.read(metadata_path)
@@ -38,7 +31,7 @@ def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
         prefix = 'files'
 
     # finish the build
-    argv = [flatpak_cmd, 'build-finish']
+    argv = ['flatpak', 'build-finish']
     argv.append(os.path.join(srcdir, appid))
     subprocess.call(argv)
 
@@ -52,7 +45,7 @@ def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
     subprocess.call(argv)
 
     # export into repo
-    argv = [flatpak_cmd, 'build-export']
+    argv = ['flatpak', 'build-export']
     argv.append(repodir)
     argv.append(os.path.join(srcdir, appid))
     argv.append(branch)
