@@ -1,20 +1,21 @@
 # Japanese translation for gnome-software.
-# Copyright (C) 2013-2019 gnome-software's COPYRIGHT HOLDER
+# Copyright (C) 2013-2020 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # Jiro Matsuzawa <jmatsuzawa@gnome.org>, 2013-2016, 2017-2018.
 # Hajime Taira <htaira@redhat.com>, 2015.
 # Kentaro KAZUHAMA <kazken3@gmail.com>, 2015.
 # Rockworld <sumoisrock@gmail.com>, 2016.
+# Takashi Oshie <>, 2016.
 # sujiniku <sujinikusityuu@gmail.com>, 2018.
 # Shinichirou Yamada <yamada_strong_yamada_nice_64bit@yahoo.co.jp >, 2018.
-# sicklylife <translation@sicklylife.jp>, 2019.
+# sicklylife <translation@sicklylife.jp>, 2019-2020.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2020-01-22 01:20+0000\n"
-"PO-Revision-Date: 2019-09-22 17:00+0900\n"
+"PO-Revision-Date: 2020-01-23 00:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -61,7 +62,7 @@ msgstr "詳細パネル"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:33
 msgid "Installed panel"
-msgstr "インストールパネル"
+msgstr "インストール済みパネル"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:37
 msgid "Updates panel"
@@ -511,7 +512,8 @@ msgstr ""
 "Rockworld <sumoisrock@gmail.com>\n"
 "Shinichirou Yamada <yamada_strong_yamada_nice_64bit@yahoo.co.jp >\n"
 "sicklylife <translation@sicklylife.jp>\n"
-"sujiniku <sujinikusityuu@gmail.com>"
+"sujiniku <sujinikusityuu@gmail.com>\n"
+"Takashi Oshie <>"
 
 #. TRANSLATORS: this is the title of the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
@@ -729,7 +731,7 @@ msgid ""
 "source_software\">free and open source software</a>, and is provided by “%s”."
 msgstr ""
 "%s は<a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">"
-"自由でオープンソースのソフトウェア</a>ではなく、“%s”で提供されます"
+"自由でオープンソースのソフトウェア</a>ではなく、“%s”によって提供されています。"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -737,7 +739,7 @@ msgstr ""
 #: src/gs-common.c:251
 #, c-format
 msgid "%s is provided by “%s”."
-msgstr "%s は“%s”で提供されています。"
+msgstr "%s は“%s”によって提供されています。"
 
 #: src/gs-common.c:260
 msgid "This software repository must be enabled to continue installation."
@@ -1384,7 +1386,7 @@ msgstr "追加のパッケージが必要です"
 #. TRANSLATORS: this is a button that launches gnome-software
 #: src/gs-dbus-helper.c:322
 msgid "Find in Software"
-msgstr "ソフトウェアで探す"
+msgstr "“ソフトウェア”で探す"
 
 #: src/gs-details-page.c:320
 msgid "Removing…"
@@ -1626,7 +1628,7 @@ msgstr "詳細ページ"
 
 #: src/gs-details-page.ui:214
 msgid "Downloading"
-msgstr ""
+msgstr "ダウンロード中"
 
 #: src/gs-details-page.ui:253
 msgid "_Update"
@@ -2060,7 +2062,7 @@ msgstr ""
 #: src/gs-extras-page.c:372
 #, c-format
 msgid "No fonts are available for the %s script support."
-msgstr "%sスクリプトをサポートする利用可能なフォントがありません。"
+msgstr "%s スクリプトをサポートする利用可能なフォントがありません。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -2172,7 +2174,7 @@ msgid ""
 "our recommendations, browse the categories, or search for the applications "
 "you want."
 msgstr ""
-"ソフトウェアを使って、必要なアプリケーションをすべてインストールすることがで"
+"“ソフトウェア”で、必要なアプリケーションをすべてインストールすることがで"
 "きます。おすすめのアプリケーションをチェックしたり、カテゴリーから探してみて"
 "ください。欲しいアプリケーションを検索することもできます。"
 
@@ -2369,7 +2371,7 @@ msgstr "サードパーティーのソフトウェアリポジトリを有効に
 
 #: src/gs-overview-page.ui:83
 msgid "Featured Applications"
-msgstr "注目アプリケーション"
+msgstr "注目のアプリケーション"
 
 #: src/gs-overview-page.ui:116
 msgid "Previous"
@@ -2450,7 +2452,7 @@ msgstr "自動アップデート"
 
 #: src/gs-prefs-dialog.ui:70
 msgid "Automatic updates are disabled when on mobile or metered connections."
-msgstr "モバイル接続や従量制課金接続では、自動アップデートは無効化されます。"
+msgstr "モバイル接続や従量制課金接続では、自動アップデートは無効になります。"
 
 #: src/gs-prefs-dialog.ui:88
 msgid "Automatic Update Notifications"
@@ -2468,6 +2470,8 @@ msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
 "continue, the following will be automatically removed during the upgrade:"
 msgstr ""
+"現在インストールされているソフトウェアの一部は %s と互換性がありません。"
+"続行する場合、アップグレード中に次のソフトウェアが自動的に削除されます:"
 
 #: src/gs-removal-dialog.ui:26
 msgid "Incompatible Software"
@@ -2541,6 +2545,8 @@ msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
 msgstr ""
+"このリポジトリからインストールしたソフトウェアは、脆弱性の修正などのアップデ"
+"ートが提供されません。"
 
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-repos-dialog.c:326
@@ -2714,11 +2720,13 @@ msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
 "\">privacy policy</a>."
 msgstr ""
+"どのようなデータが送信されるかは<a href=\"https://odrs.gnome.org/privacy\">"
+"プライバシーポリシー</a>のページで確認できます。"
 
 #. Translators: A label for the total number of reviews.
 #: src/gs-review-histogram.ui:412
 msgid "ratings in total"
-msgstr "回の評価(合計)"
+msgstr "回の評価 (合計)"
 
 #. TRANSLATORS: we explain what the action is going to do
 #: src/gs-review-row.c:220
@@ -3274,7 +3282,7 @@ msgstr "ファイルのインストールに失敗しました: サポートし�
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1593
 msgid "Failed to install file: authentication failed"
-msgstr "ファイルのインストールに失敗しました: 認証に失敗しました"
+msgstr "ファイルのインストールに失敗しました: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1630
@@ -3284,7 +3292,7 @@ msgstr "インストールに失敗しました: サポートしていません"
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1634
 msgid "Failed to install: authentication failed"
-msgstr "インストールに失敗しました: 認証に失敗しました"
+msgstr "インストールに失敗しました: 認証できませんでした"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
@@ -3418,20 +3426,20 @@ msgstr "表示"
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
-msgstr[0] "%u 個のアプリケーションがアップデートされました — 再起動が必要です"
+msgstr[0] "%u 個のアプリケーションをアップデートしました — 再起動が必要です"
 
 #. TRANSLATORS: apps were auto-updated
 #: src/gs-update-monitor.c:234
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
-msgstr[0] "%u 個のアプリケーションがアップデートされました"
+msgstr[0] "%u 個のアプリケーションをアップデートしました"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
 #: src/gs-update-monitor.c:245
 #, c-format
 msgid "%s has been updated."
-msgstr "%s がアップデートされました。"
+msgstr "%s をアップデートしました。"
 
 #. TRANSLATORS: the app needs restarting
 #: src/gs-update-monitor.c:248
@@ -3442,7 +3450,7 @@ msgstr "アプリケーションを再起動してください。"
 #: src/gs-update-monitor.c:256
 #, c-format
 msgid "%s and %s have been updated."
-msgstr "%s と %s がアップデートされました。"
+msgstr "%s と %s をアップデートしました。"
 
 #. TRANSLATORS: at least one application needs restarting
 #: src/gs-update-monitor.c:262 src/gs-update-monitor.c:281
@@ -3516,7 +3524,7 @@ msgstr[0] "ソフトウェアのアップデートをインストールしまし
 #: src/gs-update-monitor.c:1006
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
-msgstr[0] "重要な OS アップデートがインストールされました。"
+msgstr[0] "重要な OS アップデートをインストールしました。"
 
 #. TRANSLATORS: Button to look at the updates that were installed.
 #. * Note that it has nothing to do with the application reviews, the
@@ -3542,7 +3550,7 @@ msgstr "システムは最新です。"
 #. TRANSLATORS: the user aborted the update manually
 #: src/gs-update-monitor.c:1076
 msgid "The update was cancelled."
-msgstr "このアップデートはキャンセルされました。"
+msgstr "このアップデートをキャンセルしました。"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
@@ -3583,7 +3591,7 @@ msgstr ""
 #. TRANSLATORS: Time in 24h format
 #: src/gs-updates-page.c:225
 msgid "%R"
-msgstr "%R"
+msgstr "%H:%M"
 
 #. TRANSLATORS: Time in 12h format
 #: src/gs-updates-page.c:228
@@ -3594,7 +3602,7 @@ msgstr "%p %l:%M"
 #. time string in 24h format. i.e. "Yesterday, 14:30"
 #: src/gs-updates-page.c:234
 msgid "Yesterday, %R"
-msgstr "昨日 %R"
+msgstr "昨日 %H:%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
@@ -3677,7 +3685,7 @@ msgstr "セキュリティアップデートを受け取ることはできませ
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
 #: src/gs-updates-page.c:631
 msgid "It is recommended that you upgrade to a more recent version."
-msgstr "より新しいバージョンへアップグレードすることをお勧めします"
+msgstr "より新しいバージョンへアップグレードすることをお勧めします。"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
 #: src/gs-updates-page.c:889
@@ -3765,7 +3773,7 @@ msgstr "すべてアップデート"
 #. * requires a reboot to apply
 #: src/gs-updates-section.c:411
 msgid "Integrated Firmware"
-msgstr ""
+msgstr "統合ファームウェア"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
@@ -3826,7 +3834,7 @@ msgstr "%s %s のダウンロードを待っています"
 #: src/gs-upgrade-banner.c:107
 #, c-format
 msgid "Downloading %s %s"
-msgstr "%s %s のダウンロード中"
+msgstr "%s %s をダウンロード中"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade has been downloaded and is ready to be installed.
@@ -4207,7 +4215,7 @@ msgstr "ライフスタイル"
 #: plugins/core/gs-desktop-common.c:286
 msgctxt "Menu of Reference"
 msgid "Politics"
-msgstr ""
+msgstr "政治"
 
 #: plugins/core/gs-desktop-common.c:289
 msgctxt "Menu of Reference"
@@ -4280,16 +4288,18 @@ msgstr ""
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
 #: plugins/eos-updater/gs-plugin-eos-updater.c:561
 msgid "Endless OS"
-msgstr ""
+msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
 #: plugins/eos-updater/gs-plugin-eos-updater.c:564
 msgid "An Endless OS update with new features and fixes."
 msgstr ""
+"新機能やバグ修正を含んだ Endless OS のアップデートです。"
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:825
 msgid "EOS update service could not fetch and apply the update."
 msgstr ""
+"EOS アップデートサービスのアップデート取得と適用ができませんでした。"
 
 #: plugins/epiphany/org.gnome.Software.Plugin.Epiphany.metainfo.xml.in:6
 msgid "Web Apps Support"
@@ -4302,7 +4312,7 @@ msgstr ""
 #. TRANSLATORS: tool that is used when copying profiles system-wide
 #: plugins/external-appstream/gs-install-appstream.c:138
 msgid "GNOME Software AppStream system-wide installer"
-msgstr ""
+msgstr "GNOME Software AppStream システムワイドインストーラー"
 
 #: plugins/external-appstream/gs-install-appstream.c:140
 msgid "Failed to parse command line arguments"
@@ -4311,7 +4321,7 @@ msgstr "コマンドライン引数の解析に失敗しました"
 #. TRANSLATORS: user did not specify a valid filename
 #: plugins/external-appstream/gs-install-appstream.c:147
 msgid "You need to specify exactly one filename"
-msgstr "ひとつのファイル名を指定する必要があります。"
+msgstr "ひとつのファイル名を指定する必要があります"
 
 #. TRANSLATORS: only able to install files as root
 #: plugins/external-appstream/gs-install-appstream.c:154
@@ -4331,7 +4341,7 @@ msgstr "コピーに失敗しました"
 #. TRANSLATORS: status text when downloading
 #: plugins/external-appstream/gs-plugin-external-appstream.c:235
 msgid "Downloading extra metadata files…"
-msgstr "追加のメタデータをダウンロードしています…"
+msgstr "追加のメタデータをダウンロード中…"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:192
@@ -4371,35 +4381,35 @@ msgstr "%s デバイス"
 #: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
 msgid "%s System"
-msgstr ""
+msgstr "%s システム"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
 msgid "%s Embedded Controller"
-msgstr ""
+msgstr "%s Embedded Controller"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
 msgid "%s ME"
-msgstr ""
+msgstr "%s ME"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
 msgid "%s Corporate ME"
-msgstr ""
+msgstr "%s Corporate ME"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
 msgid "%s Consumer ME"
-msgstr ""
+msgstr "%s Consumer ME"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
@@ -4407,7 +4417,7 @@ msgstr ""
 #: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
 msgid "%s Controller"
-msgstr ""
+msgstr "%s コントローラー"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
@@ -4415,7 +4425,7 @@ msgstr ""
 #: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
 msgid "%s Thunderbolt Controller"
-msgstr ""
+msgstr "%s Thunderbolt コントローラー"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:669
@@ -4452,7 +4462,7 @@ msgstr "ODRS はアプリケーションのユーザーレビューを提供す�
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:150
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:910
 msgid "GNOME"
-msgstr ""
+msgstr "GNOME"
 
 #: plugins/shell-extensions/gs-plugin-shell-extensions.c:406
 msgid "GNOME Shell Extensions Repository"
@@ -4588,7 +4598,7 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgstr "パスワード"
 
 #~ msgid "I want to register for an account now"
-#~ msgstr "アカウントの登録する"
+#~ msgstr "アカウントを登録する"
 
 #~ msgid "I have forgotten my password"
 #~ msgstr "パスワードを忘れました"
