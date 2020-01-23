@@ -2674,6 +2674,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	g_autoptr(GBytes) metadata = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakBundleRef) xref_bundle = NULL;
+	g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
+	const char *origin = NULL;
 
 	/* load bundle */
 	xref_bundle = flatpak_bundle_ref_new (file, error);
@@ -2683,8 +2685,18 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 		return NULL;
 	}
 
+	/* get the origin if it's already installed */
+	installed_ref = flatpak_installation_get_installed_ref (self->installation,
+								flatpak_ref_get_kind (FLATPAK_REF (xref_bundle)),
+								flatpak_ref_get_name (FLATPAK_REF (xref_bundle)),
+								flatpak_ref_get_arch (FLATPAK_REF (xref_bundle)),
+								flatpak_ref_get_branch (FLATPAK_REF (xref_bundle)),
+								NULL, NULL);
+	if (installed_ref != NULL)
+		origin = flatpak_installed_ref_get_origin (installed_ref);
+
 	/* load metadata */
-	app = gs_flatpak_create_app (self, NULL /* origin */, FLATPAK_REF (xref_bundle));
+	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref_bundle));
 	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 		if (gs_flatpak_app_get_ref_name (app) == NULL)
 			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
@@ -2704,7 +2716,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	/* load AppStream */
 	appstream_gz = flatpak_bundle_ref_get_appstream (xref_bundle);
 	if (appstream_gz != NULL) {
-		if (!gs_flatpak_refine_appstream_from_bytes (self, app, NULL, appstream_gz,
+		if (!gs_flatpak_refine_appstream_from_bytes (self, app, origin, appstream_gz,
 							     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 							     cancellable, error))
 			return NULL;
