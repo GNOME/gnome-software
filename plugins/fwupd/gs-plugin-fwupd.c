@@ -649,8 +649,8 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 		guint64 age = fwupd_remote_get_age (remote);
 		guint tmp = age < G_MAXUINT ? (guint) age : G_MAXUINT;
 		if (tmp < cache_age) {
-			g_debug ("%s is only %u seconds old, so ignoring refresh",
-				 filename_sig, tmp);
+			g_debug ("fwupd remote is only %u seconds old, so ignoring refresh",
+				 tmp);
 			return TRUE;
 		}
 	}
