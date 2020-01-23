@@ -9,11 +9,11 @@
 
 #include <gio/gdesktopappinfo.h>
 #include <glib/gi18n.h>
+#include <json-glib/json-glib.h>
 #include <snapd-glib/snapd-glib.h>
 #include <gnome-software.h>
 
 struct GsPluginData {
-	SnapdAuthData		*auth_data;
 	gchar			*store_name;
 	gchar			*store_hostname;
 	SnapdSystemConfinement	 system_confinement;
@@ -43,20 +43,57 @@ cache_entry_free (CacheEntry *entry)
 	g_slice_free (CacheEntry, entry);
 }
 
+static SnapdAuthData *
+get_auth_data (GsPlugin *plugin)
+{
+	g_autofree gchar *path = NULL;
+	g_autoptr(JsonParser) parser = NULL;
+	JsonNode *root;
+	JsonObject *object;
+	const gchar *macaroon;
+	g_autoptr(GPtrArray) discharges = NULL;
+	g_autoptr(GError) error = NULL;
+
+	path = g_build_filename (g_get_home_dir (), ".snap", "auth.json", NULL);
+	parser = json_parser_new ();
+	if (!json_parser_load_from_file (parser, path, &error)) {
+		if (!g_error_matches (error, G_FILE_ERROR, G_FILE_ERROR_NOENT))
+			g_warning ("Failed to load snap auth data: %s", error->message);
+		return NULL;
+	}
+
+	root = json_parser_get_root (parser);
+	object = json_node_get_object (root);
+	macaroon = json_object_get_string_member (object, "macaroon");
+	discharges = g_ptr_array_new ();
+	if (json_object_has_member (object, "discharges")) {
+		JsonArray *discharge_array;
+
+		discharge_array = json_object_get_array_member (object, "discharges");
+		for (guint i = 0; i < json_array_get_length (discharge_array); i++)
+			g_ptr_array_add (discharges, json_array_get_string_element (discharge_array, i));
+	}
+	g_ptr_array_add (discharges, NULL);
+
+	return snapd_auth_data_new (macaroon, (GStrv) discharges->pdata);
+}
+
 static SnapdClient *
 get_client (GsPlugin *plugin, GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(SnapdClient) client = NULL;
 	const gchar *old_user_agent;
 	g_autofree gchar *user_agent = NULL;
+	g_autoptr(SnapdAuthData) auth_data = NULL;
 
 	client = snapd_client_new ();
 	snapd_client_set_allow_interaction (client, TRUE);
 	old_user_agent = snapd_client_get_user_agent (client);
 	user_agent = g_strdup_printf ("%s %s", gs_user_agent (), old_user_agent);
 	snapd_client_set_user_agent (client, user_agent);
-	snapd_client_set_auth_data (client, priv->auth_data);
+
+	auth_data = get_auth_data (plugin);
+	snapd_client_set_auth_data (client, auth_data);
 
 	return g_steal_pointer (&client);
 }
