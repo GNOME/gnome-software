@@ -2726,6 +2726,7 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 				 gs_flatpak_app_get_ref_name (app));
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 				    "A flatpak application");
+		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, "");
 	}
 
 	/* load icon */
