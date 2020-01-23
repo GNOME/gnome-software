@@ -349,6 +349,24 @@ gs_flatpak_fix_id_desktop_suffix_cb (XbBuilderFixup *self,
 }
 
 static gboolean
+gs_flatpak_add_bundle_tag_cb (XbBuilderFixup *self,
+			      XbBuilderNode *bn,
+			      gpointer user_data,
+			      GError **error)
+{
+	const char *app_ref = (char *)user_data;
+	if (g_strcmp0 (xb_builder_node_get_element (bn), "component") == 0) {
+		g_autoptr(XbBuilderNode) id = xb_builder_node_get_child (bn, "id", NULL);
+		g_autoptr(XbBuilderNode) bundle = xb_builder_node_get_child (bn, "bundle", NULL);
+		if (id == NULL || bundle != NULL)
+			return TRUE;
+		g_debug ("adding <bundle> tag for %s", app_ref);
+		xb_builder_node_insert_text (bn, "bundle", app_ref, "type", "flatpak", NULL);
+	}
+	return TRUE;
+}
+
+static gboolean
 gs_flatpak_fix_metadata_tag_cb (XbBuilderFixup *self,
 				XbBuilderNode *bn,
 				gpointer user_data,
@@ -2214,11 +2232,132 @@ gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 	}
 }
 
+/* This function is like gs_flatpak_refine_appstream(), but takes gzip
+ * compressed appstream data as a GBytes and assumes they are already uniquely
+ * tied to the app (and therefore app ID alone can be used to find the right
+ * component).
+ */
+static gboolean
+gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
+					GsApp *app,
+					GBytes *appstream_gz,
+					GsPluginRefineFlags flags,
+					GCancellable *cancellable,
+					GError **error)
+{
+	const gchar *const *locales = g_get_language_names ();
+	g_autofree gchar *xpath = NULL;
+	g_autoptr(XbBuilder) builder = xb_builder_new ();
+	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
+	g_autoptr(XbNode) component_node = NULL;
+	g_autoptr(XbNode) n = NULL;
+	g_autoptr(XbSilo) silo = NULL;
+	g_autoptr(XbBuilderFixup) bundle_fixup = NULL;
+	g_autoptr(GBytes) appstream = NULL;
+	g_autoptr(GInputStream) stream_data = NULL;
+	g_autoptr(GInputStream) stream_gz = NULL;
+	g_autoptr(GZlibDecompressor) decompressor = NULL;
+
+	/* add current locales */
+	for (guint i = 0; locales[i] != NULL; i++)
+		xb_builder_add_locale (builder, locales[i]);
+
+	/* decompress data */
+	decompressor = g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP);
+	stream_gz = g_memory_input_stream_new_from_bytes (appstream_gz);
+	if (stream_gz == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "unable to decompress appstream data");
+		return FALSE;
+	}
+	stream_data = g_converter_input_stream_new (stream_gz,
+						    G_CONVERTER (decompressor));
+
+	appstream = g_input_stream_read_bytes (stream_data,
+					       0x100000, /* 1Mb */
+					       cancellable,
+					       error);
+	if (appstream == NULL) {
+		gs_flatpak_error_convert (error);
+		return FALSE;
+	}
+
+	/* build silo */
+	if (!xb_builder_source_load_bytes (source, appstream,
+					   XB_BUILDER_SOURCE_FLAG_NONE,
+					   error))
+		return FALSE;
+
+	/* Appdata from flatpak_installed_ref_load_appdata() may be missing the
+	 * <bundle> tag but for this function we know it's the right component.
+	 */
+	bundle_fixup = xb_builder_fixup_new ("AddBundle",
+				       gs_flatpak_add_bundle_tag_cb,
+				       gs_flatpak_app_get_ref_display (app), g_free);
+	xb_builder_fixup_set_max_depth (bundle_fixup, 2);
+	xb_builder_source_add_fixup (source, bundle_fixup);
+
+	fixup_flatpak_appstream_xml (source);
+
+	xb_builder_import_source (builder, source);
+	silo = xb_builder_compile (builder,
+#if LIBXMLB_CHECK_VERSION(0, 2, 0)
+				   XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
+#endif
+				   XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
+				   cancellable,
+				   error);
+	if (silo == NULL)
+		return FALSE;
+	if (g_getenv ("GS_XMLB_VERBOSE") != NULL) {
+		g_autofree gchar *xml = NULL;
+		xml = xb_silo_export (silo,
+				      XB_NODE_EXPORT_FLAG_FORMAT_INDENT |
+				      XB_NODE_EXPORT_FLAG_FORMAT_MULTILINE,
+				      NULL);
+		g_debug ("showing AppStream data: %s", xml);
+	}
+
+	/* check for sanity */
+	n = xb_silo_query_first (silo, "components/component", NULL);
+	if (n == NULL) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no apps found in AppStream data");
+		return FALSE;
+	}
+
+	/* find app */
+	xpath = g_strdup_printf ("components/component/id[text()='%s']/..",
+				 gs_flatpak_app_get_ref_name (app));
+	component_node = xb_silo_query_first (silo, xpath, NULL);
+	if (component_node == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_INVALID_FORMAT,
+			     "application %s not found",
+			     gs_flatpak_app_get_ref_name (app));
+		return FALSE;
+	}
+
+	/* copy details from AppStream to app */
+	if (!gs_appstream_refine_app (self->plugin, app, silo, component_node, flags, error))
+		return FALSE;
+
+	/* use the default release as the version number */
+	gs_flatpak_refine_appstream_release (component_node, app);
+	return TRUE;
+}
+
 static gboolean
 gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GsApp *app,
 			     XbSilo *silo,
 			     GsPluginRefineFlags flags,
+			     GCancellable *cancellable,
 			     GError **error)
 {
 	const gchar *origin = gs_app_get_origin (app);
@@ -2237,10 +2376,33 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, &error_local);
 	if (component == NULL) {
-		g_debug ("no match for %s, cannot fall back to %s: %s",
-			 xpath, gs_app_get_id (app), error_local->message);
-		return TRUE;
+		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
+		g_autoptr(GBytes) appstream_gz = NULL;
+
+		g_debug ("no match for %s: %s", xpath, error_local->message);
+		/* For apps installed from .flatpak bundles there may not be any remote
+		 * appstream data in @silo for it, so use the appstream data from
+		 * within the app.
+		 */
+		installed_ref = flatpak_installation_get_installed_ref (self->installation,
+									gs_flatpak_app_get_ref_kind (app),
+									gs_flatpak_app_get_ref_name (app),
+									gs_flatpak_app_get_ref_arch (app),
+									gs_app_get_branch (app),
+									NULL, NULL);
+		if (installed_ref == NULL)
+			return TRUE; /* the app may not be installed */
+
+#if FLATPAK_CHECK_VERSION(1,1,2)
+		appstream_gz = flatpak_installed_ref_load_appdata (installed_ref, NULL, NULL);
+#endif
+		if (appstream_gz == NULL)
+			return TRUE;
+
+		g_debug ("using installed appdata for %s", gs_flatpak_app_get_ref_name (app));
+		return gs_flatpak_refine_appstream_from_bytes (self, app, appstream_gz, flags, cancellable, error);
 	}
+
 	if (!gs_appstream_refine_app (self->plugin, app, silo, component, flags, error))
 		return FALSE;
 
@@ -2268,7 +2430,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	locker = g_rw_lock_reader_locker_new (&self->silo_lock);
 
 	/* always do AppStream properties */
-	if (!gs_flatpak_refine_appstream (self, app, self->silo, flags, error))
+	if (!gs_flatpak_refine_appstream (self, app, self->silo, flags, cancellable, error))
 		return FALSE;
 
 	/* AppStream sets the source to appname/arch/branch */
@@ -2289,7 +2451,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 
 	/* if the state was changed, perhaps set the version from the release */
 	if (old_state != gs_app_get_state (app)) {
-		if (!gs_flatpak_refine_appstream (self, app, self->silo, flags, error))
+		if (!gs_flatpak_refine_appstream (self, app, self->silo, flags, cancellable, error))
 			return FALSE;
 	}
 
@@ -2523,97 +2685,10 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	/* load AppStream */
 	appstream_gz = flatpak_bundle_ref_get_appstream (xref_bundle);
 	if (appstream_gz != NULL) {
-		const gchar *const *locales = g_get_language_names ();
-		g_autofree gchar *xpath = NULL;
-		g_autoptr(GBytes) appstream = NULL;
-		g_autoptr(GInputStream) stream_data = NULL;
-		g_autoptr(GInputStream) stream_gz = NULL;
-		g_autoptr(GZlibDecompressor) decompressor = NULL;
-		g_autoptr(XbBuilder) builder = xb_builder_new ();
-		g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
-		g_autoptr(XbNode) id_node = NULL;
-		g_autoptr(XbNode) component_node = NULL;
-		g_autoptr(XbNode) n = NULL;
-		g_autoptr(XbSilo) silo = NULL;
-
-		/* decompress data */
-		decompressor = g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP);
-		stream_gz = g_memory_input_stream_new_from_bytes (appstream_gz);
-		if (stream_gz == NULL)
+		if (!gs_flatpak_refine_appstream_from_bytes (self, app, appstream_gz,
+							     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+							     cancellable, error))
 			return NULL;
-		stream_data = g_converter_input_stream_new (stream_gz,
-							    G_CONVERTER (decompressor));
-
-		appstream = g_input_stream_read_bytes (stream_data,
-						       0x100000, /* 1Mb */
-						       cancellable,
-						       error);
-		if (appstream == NULL) {
-			gs_flatpak_error_convert (error);
-			return NULL;
-		}
-
-		/* add current locales */
-		for (guint i = 0; locales[i] != NULL; i++)
-			xb_builder_add_locale (builder, locales[i]);
-
-		/* build silo */
-		if (!xb_builder_source_load_bytes (source, appstream,
-						   XB_BUILDER_SOURCE_FLAG_NONE,
-						   error))
-			return NULL;
-
-		fixup_flatpak_appstream_xml (source);
-
-		xb_builder_import_source (builder, source);
-		silo = xb_builder_compile (builder,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					   XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
-#endif
-					   XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
-					   cancellable,
-					   error);
-		if (silo == NULL)
-			return NULL;
-		if (g_getenv ("GS_XMLB_VERBOSE") != NULL) {
-			g_autofree gchar *xml = NULL;
-			xml = xb_silo_export (silo,
-					      XB_NODE_EXPORT_FLAG_FORMAT_INDENT |
-					      XB_NODE_EXPORT_FLAG_FORMAT_MULTILINE,
-					      NULL);
-			g_debug ("showing AppStream data: %s", xml);
-		}
-
-		/* check for sanity */
-		n = xb_silo_query_first (silo, "components/component", NULL);
-		if (n == NULL) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					     "no apps found in AppStream data");
-			return NULL;
-		}
-
-		/* find app */
-		xpath = g_strdup_printf ("components/component/id[text()='%s']",
-					 gs_flatpak_app_get_ref_name (app));
-		id_node = xb_silo_query_first (silo, xpath, NULL);
-		if (id_node == NULL) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_INVALID_FORMAT,
-				     "application %s not found",
-				     gs_flatpak_app_get_ref_name (app));
-			return NULL;
-		}
-
-		/* copy details from AppStream to app */
-		component_node = xb_node_get_parent (id_node);
-		if (!gs_appstream_refine_app (self->plugin, app, silo, component_node,
-					      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					      error))
-			return NULL;
-
 	} else {
 		g_warning ("no appstream metadata in file");
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
@@ -2838,6 +2913,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 	/* get extra AppStream data if available */
 	if (!gs_flatpak_refine_appstream (self, app, silo,
 					  G_MAXUINT64,
+					  cancellable,
 					  error))
 		return NULL;
 
