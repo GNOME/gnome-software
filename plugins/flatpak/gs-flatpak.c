@@ -1066,6 +1066,8 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	/* create new object */
 	origin = flatpak_installed_ref_get_origin (xref);
 	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref));
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	gs_flatpak_set_metadata_installed (self, app, xref);
 	return g_steal_pointer (&app);
 }
@@ -1087,8 +1089,6 @@ gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 	for (guint i = 0; i < xrefs->len; i++) {
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		g_autoptr(GsApp) app = gs_flatpak_create_installed (self, xref);
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_list_add (list, app);
 	}
 
@@ -1149,8 +1149,6 @@ gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 				       flatpak_remote_get_name (xremote)) != 0)
 				continue;
 			related = gs_flatpak_create_installed (self, xref);
-			if (gs_app_get_state (related) == AS_APP_STATE_UNKNOWN)
-				gs_app_set_state (related, AS_APP_STATE_INSTALLED);
 			gs_app_add_related (app, related);
 		}
 	}
