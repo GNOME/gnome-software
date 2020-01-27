@@ -265,8 +265,15 @@ gs_flatpak_create_app (GsFlatpak *self, const gchar *origin, FlatpakRef *xref)
 		gs_app_add_icon (app, icon);
 	}
 
+	/* Don't add NULL origin apps to the cache. If the app is later set to
+	 * origin x the cache may return it as a match for origin y since the cache
+	 * hash table uses as_utils_unique_id_equal() as the equal func and a NULL
+	 * origin becomes a "*" in as_utils_unique_id_build().
+	 */
+	if (origin != NULL)
+		gs_plugin_cache_add (self->plugin, NULL, app);
+
 	/* no existing match, just steal the temp object */
-	gs_plugin_cache_add (self->plugin, NULL, app);
 	return g_steal_pointer (&app);
 }
 
