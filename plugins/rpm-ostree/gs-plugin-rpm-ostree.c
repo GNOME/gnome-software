@@ -1482,6 +1482,8 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	                                          FALSE); /* no-overrides */
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	tp->app = g_object_ref (app);
+
 	if (!gs_rpmostree_os_call_rebase_sync (priv->os_proxy,
 	                                       options,
 	                                       new_refspec,
