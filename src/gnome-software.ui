@@ -275,7 +275,6 @@
                   <object class="GtkLabel">
                     <property name="label" translatable="yes" comments="Translators: This is a label in the header bar, followed by a drop down to choose between different source repos">Source</property>
                     <property name="valign">GTK_ALIGN_CENTER</property>
-                    <property name="vexpand">1</property>
                     <property name="visible">1</property>
                     <style>
                       <class name="dim-label"/>
@@ -292,11 +291,11 @@
                       <object class="GtkGrid">
                         <property name="column-spacing">12</property>
                         <property name="visible">1</property>
+                        <property name="valign">GTK_ALIGN_CENTER</property>
                         <child>
                           <object class="GtkLabel" id="origin_button_label">
                             <property name="label"></property>
                             <property name="valign">GTK_ALIGN_CENTER</property>
-                            <property name="vexpand">1</property>
                             <property name="visible">1</property>
                             <property name="xalign">0</property>
                             <property name="width_chars">10</property>
@@ -307,7 +306,6 @@
                             <property name="icon-name">pan-down-symbolic</property>
                             <property name="pixel-size">16</property>
                             <property name="valign">GTK_ALIGN_CENTER</property>
-                            <property name="vexpand">1</property>
                             <property name="visible">1</property>
                           </object>
                         </child>
