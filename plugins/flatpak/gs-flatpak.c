@@ -2250,6 +2250,7 @@ static gboolean
 gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 					GsApp *app,
 					const char *origin, /* (nullable) */
+					FlatpakInstalledRef *installed_ref, /* (nullable) */
 					GBytes *appstream_gz,
 					GsPluginRefineFlags flags,
 					GCancellable *cancellable,
@@ -2310,6 +2311,19 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	xb_builder_source_add_fixup (source, bundle_fixup);
 
 	fixup_flatpak_appstream_xml (source, origin);
+
+	/* add metadata */
+	if (installed_ref != NULL) {
+		g_autoptr(XbBuilderNode) info = NULL;
+		g_autofree char *icon_prefix = NULL;
+
+		info = xb_builder_node_insert (NULL, "info", NULL);
+		xb_builder_node_insert_text (info, "scope", as_app_scope_to_string (self->scope), NULL);
+		icon_prefix = g_build_filename (flatpak_installed_ref_get_deploy_dir (installed_ref),
+						"files", "share", "app-info", "icons", "flatpak", NULL);
+		xb_builder_node_insert_text (info, "icon-prefix", icon_prefix, NULL);
+		xb_builder_source_set_info (source, info);
+	}
 
 	xb_builder_import_source (builder, source);
 	silo = xb_builder_compile (builder,
@@ -2422,6 +2436,7 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 		return gs_flatpak_refine_appstream_from_bytes (self,
 				                               app,
 							       flatpak_installed_ref_get_origin (installed_ref),
+							       installed_ref,
 							       appstream_gz,
 							       flags,
 							       cancellable, error);
@@ -2721,7 +2736,8 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 	/* load AppStream */
 	appstream_gz = flatpak_bundle_ref_get_appstream (xref_bundle);
 	if (appstream_gz != NULL) {
-		if (!gs_flatpak_refine_appstream_from_bytes (self, app, origin, appstream_gz,
+		if (!gs_flatpak_refine_appstream_from_bytes (self, app, origin, installed_ref,
+							     appstream_gz,
 							     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 							     cancellable, error))
 			return NULL;

@@ -1187,7 +1187,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "chiron",
-					 "refine-flags", is_bundle ? GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME : GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	search1 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
@@ -1255,7 +1255,7 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
 					 "search", "chiron",
-					 "refine-flags", is_bundle ? GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME : GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	search2 = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
 	gs_test_flush_main_context ();
