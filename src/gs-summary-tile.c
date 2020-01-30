@@ -41,7 +41,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	const GdkPixbuf *pixbuf;
 	gboolean installed;
 	g_autofree gchar *name = NULL;
-	g_autofree gchar *summary = NULL;
+	const gchar *summary;
 	const gchar *css;
 
 	if (app == NULL)
@@ -53,18 +53,7 @@ gs_summary_tile_refresh (GsAppTile *self)
 	/* set name */
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
 
-	/* some kinds have boring summaries */
-	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_SHELL_EXTENSION:
-		summary = g_strdup (gs_app_get_description (app));
-		if (summary != NULL)
-			g_strdelimit (summary, "\n\t", ' ');
-		break;
-	default:
-		summary = g_strdup (gs_app_get_summary (app));
-		break;
-	}
-
+	summary = gs_app_get_summary (app);
 	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
 	gtk_widget_set_visible (tile->summary, summary && summary[0]);
 

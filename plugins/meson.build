@@ -39,9 +39,6 @@ subdir('repos')
 if get_option('rpm_ostree')
   subdir('rpm-ostree')
 endif
-if get_option('shell_extensions')
-  subdir('shell-extensions')
-endif
 if get_option('snap')
   subdir('snap')
 endif

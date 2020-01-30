@@ -923,17 +923,9 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		break;
 	}
 
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION) {
-		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
-		                      /* TRANSLATORS: A label for a button to show the settings for
-		                         the selected shell extension. */
-		                      _("Extension Settings"));
-	} else {
-		gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
-		                      /* TRANSLATORS: A label for a button to execute the selected
-		                         application. */
-		                      _("_Launch"));
-	}
+	gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
+			      /* TRANSLATORS: A label for a button to execute the selected application. */
+			      _("_Launch"));
 
 	/* don't show the launch and shortcut buttons if the app doesn't have a desktop ID */
 	if (gs_app_get_id (self->app) == NULL) {
