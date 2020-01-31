@@ -70,165 +70,171 @@
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <child>
-                      <object class="GtkBox" id="box_overview">
+                      <object class="HdyClamp">
                         <property name="visible">True</property>
-                        <property name="halign">center</property>
-                        <property name="hexpand">False</property>
-                        <property name="border_width">12</property>
-                        <property name="orientation">vertical</property>
+                        <property name="maximum-size">1000</property>
                         <child>
-                          <object class="GtkOverlay" id="overlay">
+                          <object class="GtkBox" id="box_overview">
                             <property name="visible">True</property>
-                            <property name="halign">fill</property>
-                            <property name="valign">fill</property>
-                            <property name="height-request">150</property>
-                            <child type="overlay">
-                              <object class="GtkStack" id="stack_featured">
+                            <property name="halign">center</property>
+                            <property name="hexpand">False</property>
+                            <property name="border_width">12</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkOverlay" id="overlay">
                                 <property name="visible">True</property>
                                 <property name="halign">fill</property>
-                                <property name="transition-type">crossfade</property>
-                              </object>
-                            </child>
-                            <child type="overlay">
-                              <object class="GtkButton" id="button_featured_back">
-                                <property name="visible">True</property>
-                                <property name="use_underline">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="halign">start</property>
-                                <property name="valign">center</property>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject" id="button_featured_back_accessible">
-                                    <property name="accessible-name" translatable="yes">Previous</property>
-                                  </object>
-                                </child>
-                                <style>
-                                  <class name="osd"/>
-                                  <class name="featured-button-left"/>
-                                </style>
-                                <child>
-                                  <object class="GtkImage" id="back_image">
+                                <property name="valign">fill</property>
+                                <property name="height-request">150</property>
+                                <child type="overlay">
+                                  <object class="GtkStack" id="stack_featured">
                                     <property name="visible">True</property>
-                                    <property name="icon_name">go-previous-symbolic</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="halign">fill</property>
+                                    <property name="transition-type">crossfade</property>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                            <child type="overlay">
-                              <object class="GtkButton" id="button_featured_forwards">
-                                <property name="visible">True</property>
-                                <property name="use_underline">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="halign">end</property>
-                                <property name="valign">center</property>
-                                <child internal-child="accessible">
-                                  <object class="AtkObject" id="button_featured_forwards_accessible">
-                                    <property name="accessible-name" translatable="yes">Next</property>
-                                  </object>
-                                </child>
-                                <style>
-                                  <class name="osd"/>
-                                  <class name="featured-button-right"/>
-                                </style>
-                                <child>
-                                  <object class="GtkImage" id="forwards_image">
+                                <child type="overlay">
+                                  <object class="GtkButton" id="button_featured_back">
                                     <property name="visible">True</property>
-                                    <property name="icon_name">go-next-symbolic</property>
-                                    <property name="icon_size">1</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <child internal-child="accessible">
+                                      <object class="AtkObject" id="button_featured_back_accessible">
+                                        <property name="accessible-name" translatable="yes">Previous</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="osd"/>
+                                      <class name="featured-button-left"/>
+                                    </style>
+                                    <child>
+                                      <object class="GtkImage" id="back_image">
+                                        <property name="visible">True</property>
+                                        <property name="icon_name">go-previous-symbolic</property>
+                                        <property name="icon_size">1</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child type="overlay">
+                                  <object class="GtkButton" id="button_featured_forwards">
+                                    <property name="visible">True</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="halign">end</property>
+                                    <property name="valign">center</property>
+                                    <child internal-child="accessible">
+                                      <object class="AtkObject" id="button_featured_forwards_accessible">
+                                        <property name="accessible-name" translatable="yes">Next</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="osd"/>
+                                      <class name="featured-button-right"/>
+                                    </style>
+                                    <child>
+                                      <object class="GtkImage" id="forwards_image">
+                                        <property name="visible">True</property>
+                                        <property name="icon_name">go-next-symbolic</property>
+                                        <property name="icon_size">1</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
 
-                        <child>
-                          <object class="GtkLabel" id="popular_heading">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Picks</property>
-                            <property name="margin-top">21</property>
-                            <property name="margin-bottom">6</property>
-                            <accessibility>
-                              <relation target="box_popular" type="label-for"/>
-                            </accessibility>
-                            <style>
-                              <class name="index-title-alignment-software"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GsHidingBox" id="box_popular">
-                            <property name="visible">True</property>
-                            <property name="spacing">14</property>
-                            <property name="valign">start</property>
-                            <accessibility>
-                              <relation target="popular_heading" type="labelled-by"/>
-                            </accessibility>
-                          </object>
-                        </child>
+                            <child>
+                              <object class="GtkLabel" id="popular_heading">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor’s Picks</property>
+                                <property name="margin-top">21</property>
+                                <property name="margin-bottom">6</property>
+                                <accessibility>
+                                  <relation target="box_popular" type="label-for"/>
+                                </accessibility>
+                                <style>
+                                  <class name="index-title-alignment-software"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GsHidingBox" id="box_popular">
+                                <property name="visible">True</property>
+                                <property name="spacing">14</property>
+                                <property name="valign">start</property>
+                                <accessibility>
+                                  <relation target="popular_heading" type="labelled-by"/>
+                                </accessibility>
+                              </object>
+                            </child>
 
-                        <child>
-                          <object class="GtkLabel" id="recent_heading">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been recently released upstream.">Recent Releases</property>
-                            <property name="margin-top">21</property>
-                            <property name="margin-bottom">6</property>
-                            <accessibility>
-                              <relation target="box_recent" type="label-for"/>
-                            </accessibility>
-                            <style>
-                              <class name="index-title-alignment-software"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GsHidingBox" id="box_recent">
-                            <property name="visible">True</property>
-                            <property name="spacing">14</property>
-                            <property name="valign">start</property>
-                            <accessibility>
-                              <relation target="recent_heading" type="labelled-by"/>
-                            </accessibility>
-                          </object>
-                        </child>
+                            <child>
+                              <object class="GtkLabel" id="recent_heading">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been recently released upstream.">Recent Releases</property>
+                                <property name="margin-top">21</property>
+                                <property name="margin-bottom">6</property>
+                                <accessibility>
+                                  <relation target="box_recent" type="label-for"/>
+                                </accessibility>
+                                <style>
+                                  <class name="index-title-alignment-software"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GsHidingBox" id="box_recent">
+                                <property name="visible">True</property>
+                                <property name="spacing">14</property>
+                                <property name="valign">start</property>
+                                <accessibility>
+                                  <relation target="recent_heading" type="labelled-by"/>
+                                </accessibility>
+                              </object>
+                            </child>
 
-                        <child>
-                          <object class="GtkBox" id="box_popular_rotating">
-                            <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="valign">start</property>
-                          </object>
-                        </child>
+                            <child>
+                              <object class="GtkBox" id="box_popular_rotating">
+                                <property name="visible">True</property>
+                                <property name="orientation">vertical</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
 
-                        <child>
-                          <object class="GtkLabel" id="category_heading">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Categories</property>
-                            <property name="margin-top">24</property>
-                            <property name="margin-bottom">6</property>
-                            <accessibility>
-                              <relation target="flowbox_categories" type="label-for"/>
-                            </accessibility>
-                            <style>
-                              <class name="index-title-alignment-software"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkFlowBox" id="flowbox_categories">
-                            <property name="visible">True</property>
-                            <property name="margin-bottom">6</property>
-                            <property name="row_spacing">14</property>
-                            <property name="column_spacing">14</property>
-                            <property name="homogeneous">True</property>
-                            <property name="max_children_per_line">3</property>
-                            <property name="selection_mode">none</property>
-                            <accessibility>
-                              <relation target="category_heading" type="labelled-by"/>
-                            </accessibility>
+                            <child>
+                              <object class="GtkLabel" id="category_heading">
+                                <property name="visible">True</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Categories</property>
+                                <property name="margin-top">24</property>
+                                <property name="margin-bottom">6</property>
+                                <accessibility>
+                                  <relation target="flowbox_categories" type="label-for"/>
+                                </accessibility>
+                                <style>
+                                  <class name="index-title-alignment-software"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkFlowBox" id="flowbox_categories">
+                                <property name="visible">True</property>
+                                <property name="margin-bottom">6</property>
+                                <property name="row_spacing">14</property>
+                                <property name="column_spacing">14</property>
+                                <property name="homogeneous">True</property>
+                                <property name="max_children_per_line">3</property>
+                                <property name="selection_mode">none</property>
+                                <accessibility>
+                                  <relation target="category_heading" type="labelled-by"/>
+                                </accessibility>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
