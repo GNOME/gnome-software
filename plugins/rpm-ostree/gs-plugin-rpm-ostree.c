@@ -982,7 +982,14 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
-		return FALSE;
+
+		if (g_strrstr ((*error)->message, "Old and new refs are equal")) {
+			/* don't error out if the correct tree is already deployed */
+			g_debug ("ignoring rpm-ostree error: %s", (*error)->message);
+			g_clear_error (error);
+		} else {
+			return FALSE;
+		}
 	}
 
 	/* success */
@@ -1504,8 +1511,15 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	                                                 cancellable,
 	                                                 error)) {
 		gs_rpmostree_error_convert (error);
-		gs_app_set_state_recover (app);
-		return FALSE;
+
+		if (g_strrstr ((*error)->message, "Old and new refs are equal")) {
+			/* don't error out if the correct tree is already deployed */
+			g_debug ("ignoring rpm-ostree error: %s", (*error)->message);
+			g_clear_error (error);
+		} else {
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
 	}
 
 	/* state is known */
