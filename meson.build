@@ -109,6 +109,18 @@ glib = dependency('glib-2.0', version : '>= 2.55.0')
 json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
+libhandy = dependency('libhandy-1',
+  version: '>=0.90.0',
+  fallback: ['libhandy', 'libhandy_dep'],
+  default_options: [
+      'examples=false',
+      'glade_catalog=disabled',
+      'introspection=disabled',
+      'static=true',
+      'tests=false',
+      'vapi=false',
+    ]
+  )
 
 libsysprof_capture_dep = dependency('sysprof-capture-4',
   required: get_option('sysprof'),

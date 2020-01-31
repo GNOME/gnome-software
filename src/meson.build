@@ -81,6 +81,7 @@ gnome_software_dependencies = [
   libm,
   libsoup,
   libxmlb,
+  libhandy,
 ]
 
 if get_option('packagekit')
