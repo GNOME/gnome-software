@@ -35,6 +35,8 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					 NULL);
 	list = gs_plugin_loader_job_process (plugin_loader, plugin_job, NULL, &error);
+	g_assert_nonnull (list);
+	g_assert_no_error (error);
 
 	/* check if we have just one app in the list */
 	g_assert_cmpint (gs_app_list_length (list), ==, 1);
