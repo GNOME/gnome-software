@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2020-02-01 12:49+0000\n"
-"PO-Revision-Date: 2020-01-29 18:00+0900\n"
+"PO-Revision-Date: 2020-02-08 00:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -294,11 +294,11 @@ msgstr "選択したソフトウェアをシステムにインストールしま
 
 #: src/gnome-software.ui:10
 msgid "Select All"
-msgstr "すべて選択する"
+msgstr "すべて選択"
 
 #: src/gnome-software.ui:16
 msgid "Select None"
-msgstr "すべて解除する"
+msgstr "すべて解除"
 
 #: src/gnome-software.ui:38
 msgid "_Software Repositories"
@@ -306,7 +306,7 @@ msgstr "ソフトウェアリポジトリ(_S)"
 
 #: src/gnome-software.ui:43
 msgid "_Update Preferences"
-msgstr "アップデートの設定(_U)"
+msgstr "アップデート設定(_U)"
 
 #: src/gnome-software.ui:52 src/org.gnome.Software.desktop.in:3
 msgid "Software"
@@ -370,16 +370,12 @@ msgstr "詳細情報"
 
 #: src/gnome-software.ui:465 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
-#, fuzzy
-#| msgid "Automatic Updates"
 msgid "Automatic Updates Paused"
-msgstr "自動アップデート"
+msgstr "自動アップデート一時停止中"
 
 #: src/gnome-software.ui:484
-#, fuzzy
-#| msgid "Find out more…"
 msgid "Find Out _More"
-msgstr "もっと探す…"
+msgstr "詳細を確認(_M)"
 
 #. TRANSLATORS: this is a locally downloaded package
 #: lib/gs-app.c:4504
@@ -2107,12 +2103,19 @@ msgid ""
 "Alternatively, if the current network has been in­correctly identified as "
 "being metered, this setting can be changed."
 msgstr ""
+"現在のネットワークは従量制です。従量制課金接続にはデータ量の制限があり、"
+"超過すると追加料金が発生する場合があります。データ量の消費を抑えるため、"
+"自動アップデートを一時的に停止しています。\n"
+"\n"
+"制限のないネットワークが利用可能になると、自動アップデートを再開します。"
+"それまでの間、手動でアップデートをインストールすることは可能です。\n"
+"\n"
+"現在のネットワークが従量制に誤認識されてしまっている場合は、設定を変更し"
+"てみてください。"
 
 #: src/gs-metered-data-dialog.ui:53
-#, fuzzy
-#| msgid "Network Settings"
 msgid "Open Network _Settings"
-msgstr "ネットワーク設定"
+msgstr "ネットワーク設定を開く(_S)"
 
 #: src/gs-moderate-page.ui:7
 msgid "Moderate page"
