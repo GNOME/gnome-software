@@ -1129,7 +1129,9 @@ gs_utils_get_memory_total (void)
 #if defined(__linux__)
 	struct sysinfo si = { 0 };
 	sysinfo (&si);
-	return si.totalram / MB_IN_BYTES / si.mem_unit;
+	if (si.mem_unit > 0)
+		return si.totalram / MB_IN_BYTES / si.mem_unit;
+	return 0;
 #elif defined(__FreeBSD__)
 	unsigned long physmem;
 	sysctl ((int[]){ CTL_HW, HW_PHYSMEM }, 2, &physmem, &(size_t){ sizeof (physmem) }, NULL, 0);
