@@ -329,6 +329,8 @@ _should_auto_update (GsApp *app)
 		return FALSE;
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS))
 		return FALSE;
+	if (gs_app_has_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE))
+		return FALSE;
 	return TRUE;
 }
 

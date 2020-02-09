@@ -252,6 +252,8 @@ _as_app_quirk_flag_to_string (GsAppQuirk quirk)
 		return "hide-from-search";
 	case GS_APP_QUIRK_HIDE_EVERYWHERE:
 		return "hide-everywhere";
+	case GS_APP_QUIRK_DO_NOT_AUTO_UPDATE:
+		return "do-not-auto-update";
 	default:
 		return NULL;
 	}
