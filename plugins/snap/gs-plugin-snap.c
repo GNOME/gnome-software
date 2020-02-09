@@ -1230,13 +1230,18 @@ gs_plugin_add_updates (GsPlugin *plugin,
 {
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autoptr(SnapdClient) client = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	client = get_client (plugin, error);
 	if (client == NULL)
 		return FALSE;
 
 	/* Get the list of refreshable snaps */
-	apps = snapd_client_find_refreshable_sync (client, cancellable, error);
+	apps = snapd_client_find_refreshable_sync (client, cancellable, &error_local);
+	if (apps == NULL) {
+		g_warning ("Failed to find refreshable snaps: %s", error_local->message);
+		return TRUE;
+	}
 
 	for (guint i = 0; i < apps->len; i++) {
 		SnapdSnap *snap = g_ptr_array_index (apps, i);
