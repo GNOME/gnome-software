@@ -280,6 +280,7 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_CABINET);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_add_category (app, "System");
 	gs_fwupd_app_set_device_id (app, fwupd_device_get_id (dev));
@@ -326,6 +327,7 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	gs_app_set_version (app, fwupd_device_get_version (device));
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_name (device));
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, fwupd_device_get_summary (device));

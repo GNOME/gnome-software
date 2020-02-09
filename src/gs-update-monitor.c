@@ -325,8 +325,6 @@ _should_auto_update (GsApp *app)
 {
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
 		return FALSE;
-	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
-		return FALSE;
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS))
 		return FALSE;
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE))
