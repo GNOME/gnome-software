@@ -326,6 +326,7 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	}
 
 	gs_app_set_management_plugin (app, "snap");
+	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	if (gs_app_get_kind (app) != AS_APP_KIND_DESKTOP)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
@@ -950,6 +951,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		}
 	} else
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 
 	/* use store information for basic metadata over local information */
 	snap = store_snap != NULL ? store_snap : local_snap;
