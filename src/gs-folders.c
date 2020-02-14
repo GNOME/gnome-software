@@ -550,7 +550,6 @@ gs_folders_convert (void)
 			NULL
 		};
 		const gchar * const utilities_apps[] = {
-			"eog.desktop",
 			"gnome-abrt.desktop",
 			"gnome-system-log.desktop",
 			"gnome-system-monitor.desktop",
@@ -561,6 +560,7 @@ gs_folders_convert (void)
 			"org.gnome.DejaDup.desktop",
 			"org.gnome.Dictionary.desktop",
 			"org.gnome.DiskUtility.desktop",
+			"org.gnome.eog.desktop",
 			"org.gnome.Evince.desktop",
 			"org.gnome.FileRoller.desktop",
 			"org.gnome.fonts.desktop",
