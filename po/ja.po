@@ -7,7 +7,7 @@
 # Rockworld <sumoisrock@gmail.com>, 2016.
 # Takashi Oshie <>, 2016.
 # sujiniku <sujinikusityuu@gmail.com>, 2018.
-# Shinichirou Yamada <yamada_strong_yamada_nice_64bit@yahoo.co.jp >, 2018.
+# Shinichirou Yamada <yamada_strong_yamada_nice_64bit@yahoo.co.jp>, 2018.
 # sicklylife <translation@sicklylife.jp>, 2019-2020.
 #
 msgid ""
@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2020-02-12 09:33+0000\n"
-"PO-Revision-Date: 2020-02-08 00:00+0900\n"
+"PO-Revision-Date: 2020-02-16 00:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -417,7 +417,7 @@ msgstr "削除中"
 #: src/gs-application.c:109
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"起動モード 指定可能な値: ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+"起動モード (指定可能な値): ‘updates’, ‘updated’, ‘installed’, ‘overview’"
 
 #: src/gs-application.c:109
 msgid "MODE"
@@ -453,7 +453,7 @@ msgstr "アプリケーションをインストールする (アプリケーシ�
 
 #: src/gs-application.c:119
 msgid "Open a local package file"
-msgstr "ローカルパッケージファイルを開く"
+msgstr "ローカルのパッケージファイルを開く"
 
 #: src/gs-application.c:119
 msgid "FILENAME"
@@ -475,11 +475,11 @@ msgstr "保留中のアップデートをバックグラウンドでインスト
 
 #: src/gs-application.c:128
 msgid "Show update preferences"
-msgstr "アップデートの設定を表示する"
+msgstr "アップデート設定を表示する"
 
 #: src/gs-application.c:130
 msgid "Quit the running instance"
-msgstr "起動中のインスタンスを終了する"
+msgstr "実行中のインスタンスを終了する"
 
 #: src/gs-application.c:132
 msgid "Prefer local file sources to AppStream"
@@ -589,7 +589,7 @@ msgstr "すべて"
 #. TRANSLATORS: this is a subcategory of featured apps
 #: lib/gs-category.c:186
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
@@ -616,12 +616,12 @@ msgstr "表示"
 
 #: src/gs-category-page.ui:128
 msgid "Subcategories filter menu"
-msgstr "サブカテゴリーのフィルターメニュー"
+msgstr "サブカテゴリーの絞り込みメニュー"
 
 #. TRANSLATORS: This is a label for the category sort drop down, which all together can read e.g. 'Sort Top Rated'.
 #: src/gs-category-page.ui:159
 msgid "Sort"
-msgstr "並び替え"
+msgstr "並べ替え"
 
 #: src/gs-category-page.ui:175
 msgid "Subcategories sorting menu"
@@ -1648,7 +1648,7 @@ msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
 msgstr ""
-"このアプリケーションはソフトウェアリポジトリが含まれていません。新しいバー"
+"このアプリケーションにはソフトウェアリポジトリが含まれていません。新しいバー"
 "ジョンへのアップデートは行われません。"
 
 #: src/gs-details-page.ui:403
@@ -1656,8 +1656,8 @@ msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
-"このソフトウェアはお使いのディストリビューションで既に提供されているため、置"
-"き換えないほうがよいでしょう。"
+"このソフトウェアはお使いのディストリビューションですでに提供されているため、"
+"置き換えないほうがよいでしょう。"
 
 #. Translators: a repository file used for installing software has been discovered.
 #: src/gs-details-page.ui:410
@@ -1674,7 +1674,7 @@ msgstr ""
 
 #: src/gs-details-page.ui:412
 msgid "Only use software repositories that you trust."
-msgstr "信頼するソフトウェアリポジトリだけを利用しましょう。"
+msgstr "信頼できるソフトウェアリポジトリのみを利用しましょう。"
 
 #: src/gs-details-page.ui:422
 msgid "_Website"
@@ -1724,7 +1724,7 @@ msgstr "権限"
 
 #: src/gs-details-page.ui:753
 msgid "Updated"
-msgstr "更新"
+msgstr "アップデート"
 
 #: src/gs-details-page.ui:787
 msgid "Category"
@@ -1749,7 +1749,7 @@ msgstr "ライセンス"
 #. This refers to the license of the application
 #: src/gs-details-page.ui:982
 msgid "Free"
-msgstr "フリー(自由)"
+msgstr "フリー (自由)"
 
 #. This refers to the license of the application
 #: src/gs-details-page.ui:994
@@ -1781,7 +1781,7 @@ msgstr "レビューを書く(_W)"
 #. Translators: Button to return more application-submitted reviews.
 #: src/gs-details-page.ui:1133
 msgid "_Show More"
-msgstr "もっと表示(_S)"
+msgstr "さらに表示(_S)"
 
 #: src/gs-details-page.ui:1261
 msgid ""
@@ -1854,7 +1854,7 @@ msgstr "要求されたソフトウェアが見つかりません"
 #: src/gs-extras-page.c:318
 #, c-format
 msgid "%s not found"
-msgstr "%sは見つかりませんでした"
+msgstr "%s は見つかりませんでした"
 
 #. TRANSLATORS: hyperlink title
 #: src/gs-extras-page.c:322
@@ -1884,14 +1884,14 @@ msgstr ""
 #: src/gs-extras-page.c:340 src/gs-extras-page.c:362
 #, c-format
 msgid "No applications are available for %s support."
-msgstr "%sをサポートする利用可能なアプリケーションはありません。"
+msgstr "%s をサポートする利用可能なアプリケーションはありません。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
 #: src/gs-extras-page.c:351
 #, c-format
 msgid "%s is not available."
-msgstr "%sは利用できません。"
+msgstr "%s は利用できません。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -1945,7 +1945,7 @@ msgstr ""
 #: src/gs-extras-page.c:395
 #, c-format
 msgid "No Plasma resources are available for %s support."
-msgstr "%s をサポートする利用可能なPlasmaリソースはありません。"
+msgstr "%s をサポートする利用可能な Plasma リソースはありません。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -1955,7 +1955,7 @@ msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
 "resources might be found %s."
 msgstr ""
-"%s についての情報および、追加のPlasmaリソースの入手方法は %s で確認できるかも"
+"%s についての情報および、追加の Plasma リソースの入手方法は %s で確認できるかも"
 "しれません。"
 
 #. TRANSLATORS: this is when we know about an application or
@@ -1963,7 +1963,7 @@ msgstr ""
 #: src/gs-extras-page.c:406
 #, c-format
 msgid "No printer drivers are available for %s."
-msgstr "%sを利用可能なプリンタードライバーはありません。"
+msgstr "%s を利用可能なプリンタードライバーはありません。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -2013,7 +2013,7 @@ msgstr "ようこそ"
 
 #: src/gs-first-run-dialog.ui:43
 msgid "Welcome to Software"
-msgstr "ようこそソフトウェアへ"
+msgstr "“ソフトウェア”へようこそ"
 
 #: src/gs-first-run-dialog.ui:53
 msgid ""
@@ -2048,7 +2048,7 @@ msgstr "インストール"
 #: src/gs-history-dialog.c:81
 msgctxt "app status"
 msgid "Updated"
-msgstr "更新"
+msgstr "アップデート"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
@@ -2239,7 +2239,7 @@ msgstr "最近のリリース"
 
 #: src/gs-overview-page.ui:209
 msgid "Categories"
-msgstr "カテゴリ"
+msgstr "カテゴリー"
 
 #: src/gs-overview-page.ui:274
 msgid "No Application Data Found"
@@ -2290,7 +2290,7 @@ msgstr "%s (インストール済み)"
 
 #: src/gs-prefs-dialog.ui:5 src/gs-prefs-dialog.ui:17
 msgid "Update Preferences"
-msgstr "アップデートの設定"
+msgstr "アップデート設定"
 
 #: src/gs-prefs-dialog.ui:43
 msgid "Automatic Updates"
@@ -2306,7 +2306,7 @@ msgstr "自動アップデートの通知"
 
 #: src/gs-prefs-dialog.ui:102
 msgid "Show notifications when updates have been automatically installed."
-msgstr "アップデートが自動的にインストールされた際に通知を表示します。"
+msgstr "アップデートが自動的にインストールされたときに通知を表示します。"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
@@ -2530,7 +2530,7 @@ msgstr "レビュー内容が長すぎます"
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: src/gs-review-dialog.ui:10
 msgid "Post Review"
-msgstr "レビューの投稿"
+msgstr "レビューを投稿"
 
 #. Translators: A button to publish the user's opinion about the app.
 #: src/gs-review-dialog.ui:34
@@ -2619,11 +2619,11 @@ msgstr "どうでもいい"
 
 #: src/gs-review-row.ui:162
 msgid "Report…"
-msgstr "報告する…"
+msgstr "報告…"
 
 #: src/gs-review-row.ui:172
 msgid "Remove…"
-msgstr "削除する…"
+msgstr "削除…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
@@ -2726,12 +2726,12 @@ msgstr ""
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
-"%s からアップデートをダウンロードできません: 充分なディスク領域がありません"
+"%s からアップデートをダウンロードできません: 十分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1194
 msgid "Unable to download updates: not enough disk space"
-msgstr "アップデートをダウンロードできません: 充分なディスク領域がありません"
+msgstr "アップデートをダウンロードできません: 十分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1201
@@ -2805,7 +2805,7 @@ msgstr "インストールできません: アプリケーションのフォー�
 #: src/gs-shell.c:1308
 #, c-format
 msgid "Unable to install %s: not enough disk space"
-msgstr "%s をインストールできません: 充分なディスク領域がありません"
+msgstr "%s をインストールできません: 十分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1315
@@ -2892,13 +2892,13 @@ msgstr ""
 #: src/gs-shell.c:1434
 #, c-format
 msgid "Unable to update %s: not enough disk space"
-msgstr "%s をアップデートできません: 充分なディスク領域がありません"
+msgstr "%s をアップデートできません: 十分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1439
 #, c-format
 msgid "Unable to install updates: not enough disk space"
-msgstr "アップデートをインストールできません: 充分なディスク領域がありません"
+msgstr "アップデートをインストールできません: 十分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3014,7 +3014,7 @@ msgstr ""
 #: src/gs-shell.c:1594
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
-msgstr "%s にアップグレードできません: 充分なディスク領域がありません"
+msgstr "%s にアップグレードできません: 十分なディスク領域がありません"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
@@ -3113,7 +3113,7 @@ msgstr "%s を起動できません: %s はインストールされていませ�
 #: src/gs-shell.c:1765 src/gs-shell.c:1816 src/gs-shell.c:1857
 #: src/gs-shell.c:1905
 msgid "Not enough disk space — free up some space and try again"
-msgstr "充分なディスク領域がありません — 空き領域を確保して再実行してください"
+msgstr "十分なディスク領域がありません — 空き領域を確保して再実行してください"
 
 #. TRANSLATORS: we failed to get a proper error code
 #: src/gs-shell.c:1776 src/gs-shell.c:1827 src/gs-shell.c:1868
@@ -3245,11 +3245,11 @@ msgstr "このシステムにインストールされたアップデートはあ
 
 #: src/gs-update-monitor.c:107
 msgid "Security Updates Pending"
-msgstr "セキュリティアップデートが未適用"
+msgstr "セキュリティアップデートが未適用です"
 
 #: src/gs-update-monitor.c:108
 msgid "It is recommended that you install important updates now"
-msgstr "重要なアップデートはすぐに適用することをお勧めします"
+msgstr "重要なアップデートはすぐにインストールすることをお勧めします"
 
 #: src/gs-update-monitor.c:111
 msgid "Restart & Install"
@@ -3257,7 +3257,7 @@ msgstr "再起動してインストール"
 
 #: src/gs-update-monitor.c:115
 msgid "Software Updates Available"
-msgstr "ソフトウェアのアップデートが利用できます"
+msgstr "ソフトウェアのアップデートが利用可能です"
 
 #: src/gs-update-monitor.c:116
 msgid "Important OS and application updates are ready to be installed"
@@ -3327,12 +3327,12 @@ msgstr "セキュリティアップデートを受け取るにはアップグレ
 #: src/gs-update-monitor.c:572
 #, c-format
 msgid "A new version of %s is available to install"
-msgstr "%s の新バージョンが利用可能です"
+msgstr "%s の新しいバージョンが利用可能です"
 
 #. TRANSLATORS: this is a distro upgrade
 #: src/gs-update-monitor.c:576
 msgid "Software Upgrade Available"
-msgstr "アップグレードが利用可能"
+msgstr "アップグレードが利用可能です"
 
 #. TRANSLATORS: title when we offline updates have failed
 #: src/gs-update-monitor.c:965
@@ -3423,7 +3423,7 @@ msgstr ""
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
-"充分なディスク領域がありませんでした。空き領域を確保して再実行してください。"
+"十分なディスク領域がありませんでした。空き領域を確保して再実行してください。"
 
 #. TRANSLATORS: We didn't handle the error type
 #: src/gs-update-monitor.c:1099
@@ -3431,9 +3431,9 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
-"残念ながら、アップデートの適用に失敗しました。次のアップデートを待って再度試"
-"してください。それでも問題が解決しない場合、ソフトウェアの提供元に問い合わせ"
-"てください。"
+"残念ながら、アップデートのインストールに失敗しました。次のアップデートを待っ"
+"て再実行してください。それでも問題が解決しない場合は、ソフトウェアの提供元に"
+"問い合わせてください。"
 
 #. TRANSLATORS: Time in 24h format
 #: src/gs-updates-page.c:225
@@ -3488,7 +3488,7 @@ msgstr "2 週間前"
 #. TRANSLATORS: the update panel is doing *something* vague
 #: src/gs-updates-page.c:269
 msgid "Looking for new updates…"
-msgstr "新しいアップデートを確認しています…"
+msgstr "新しいアップデートを確認中…"
 
 #. TRANSLATORS: the updates panel is starting up
 #: src/gs-updates-page.c:338
@@ -3539,7 +3539,8 @@ msgstr "料金が掛かる可能性があります"
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
-msgstr "モバイル接続を利用した更新の確認は費用が発生する場合があります。"
+msgstr 
+"モバイル接続の利用中にアップデートを確認すると費用が発生する場合があります。"
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
@@ -3565,11 +3566,11 @@ msgstr "確認中…"
 
 #: src/gs-updates-page.c:1353
 msgid "Check for updates"
-msgstr "アップデートを確認する"
+msgstr "アップデートを確認"
 
 #: src/gs-updates-page.ui:7
 msgid "Updates page"
-msgstr "更新ページ"
+msgstr "アップデートページ"
 
 #. TRANSLATORS: This means all software (plural) installed on this system is up to date.
 #: src/gs-updates-page.ui:177
@@ -3580,7 +3581,7 @@ msgstr "ソフトウェアは最新です"
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
-msgstr "モバイル接続を利用した更新の確認は費用が発生する場合があります"
+msgstr "モバイル接続でのアップデートの確認は費用が発生する場合があります"
 
 #: src/gs-updates-page.ui:237
 msgid "_Check Anyway"
@@ -3588,7 +3589,7 @@ msgstr "確認する(_C)"
 
 #: src/gs-updates-page.ui:273
 msgid "Go online to check for updates"
-msgstr "更新を確認するためオンラインにする"
+msgstr "アップデートの確認のためにオンライン接続してください"
 
 #: src/gs-updates-page.ui:284
 msgid "_Network Settings"
@@ -3644,7 +3645,7 @@ msgstr "再起動(_R)"
 
 #: src/gs-upgrade-banner.c:66
 msgid "Updates will be applied when the computer is restarted."
-msgstr "アップデートの適用はコンピューターを再起動したときに行います。"
+msgstr "アップデートはコンピューターを再起動したときに適用されます。"
 
 #: src/gs-upgrade-banner.c:72
 msgid ""
@@ -3659,7 +3660,7 @@ msgstr ""
 #: src/gs-upgrade-banner.c:87
 #, c-format
 msgid "%s %s Now Available"
-msgstr "%s %s が利用可能"
+msgstr "%s %s が利用可能です"
 
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
@@ -3717,7 +3718,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:19
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:22
 msgctxt "Menu of Audio & Video"
@@ -3727,7 +3728,7 @@ msgstr "オーディオ作成 & 編集"
 #: plugins/core/gs-desktop-common.c:28
 msgctxt "Menu of Audio & Video"
 msgid "Music Players"
-msgstr "音楽プレイヤー"
+msgstr "音楽プレーヤー"
 
 #: plugins/core/gs-desktop-common.c:37
 msgctxt "Menu of Developer Tools"
@@ -3737,7 +3738,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:40
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:43
 msgctxt "Menu of Developer Tools"
@@ -3757,7 +3758,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:59
 msgctxt "Menu of Education & Science"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:63
 msgctxt "Menu of Education & Science"
@@ -3797,7 +3798,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:97
 msgctxt "Menu of Games"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:100
 msgctxt "Menu of Games"
@@ -3867,7 +3868,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:145
 msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:148
 msgctxt "Menu of Graphics & Photography"
@@ -3902,7 +3903,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:171
 msgctxt "Menu of Productivity"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:174
 msgctxt "Menu of Productivity"
@@ -3962,7 +3963,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:220
 msgctxt "Menu of Communication & News"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:223
 msgctxt "Menu of Communication & News"
@@ -3987,7 +3988,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:245
 msgctxt "Menu of Utilities"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:248
 msgctxt "Menu of Utilities"
@@ -4002,7 +4003,7 @@ msgstr "すべて"
 #: plugins/core/gs-desktop-common.c:259
 msgctxt "Menu of Reference"
 msgid "Featured"
-msgstr "注目ソフト"
+msgstr "注目のソフト"
 
 #: plugins/core/gs-desktop-common.c:262
 msgctxt "Menu of Art"
@@ -4138,7 +4139,7 @@ msgstr "コマンドライン引数の解析に失敗しました"
 #. TRANSLATORS: user did not specify a valid filename
 #: plugins/external-appstream/gs-install-appstream.c:148
 msgid "You need to specify exactly one filename"
-msgstr "ひとつのファイル名を指定する必要があります"
+msgstr "ファイル名を一つ指定する必要があります"
 
 #. TRANSLATORS: only able to install files as root
 #: plugins/external-appstream/gs-install-appstream.c:155
@@ -4288,9 +4289,6 @@ msgstr "Snap サポート"
 msgid "A snap is a universal Linux package"
 msgstr "Snap は汎用的な Linux パッケージです"
 
-#~ msgid "Extension Settings"
-#~ msgstr "拡張機能の設定"
-
 #~ msgid ""
 #~ "Extensions are used at your own risk. If you have any system problems, it "
 #~ "is recommended to disable them."
@@ -4302,9 +4300,6 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgid "Shell Extensions"
 #~ msgstr "Shell 拡張機能"
 
-#~ msgid "GNOME"
-#~ msgstr "GNOME"
-
 #~ msgid "GNOME Shell Extensions Repository"
 #~ msgstr "GNOME Shell 拡張機能リポジトリ"
 
@@ -4314,50 +4309,20 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgid "GNOME Shell Extension"
 #~ msgstr "GNOME Shell 拡張機能"
 
-#~ msgid "Folder Name"
-#~ msgstr "フォルダー名"
-
-#~ msgid "_Add"
-#~ msgstr "追加(_A)"
-
 #~ msgid "Add to Application Folder"
 #~ msgstr "アプリケーションフォルダーに追加"
 
 #~ msgid "Top Rated"
 #~ msgstr "高評価"
 
-#~ msgid "Failed to load file"
-#~ msgstr "ファイルの読み込みに失敗しました"
-
 #~ msgid "Unsaved changes"
 #~ msgstr "未保存の変更"
-
-#~ msgid "The application list is already loaded."
-#~ msgstr "アプリケーション一覧はすでに読み込まれています。"
 
 #~ msgid "Merge documents"
 #~ msgstr "ドキュメントをマージ"
 
 #~ msgid "Throw away changes"
 #~ msgstr "変更を破棄"
-
-#~ msgid "Open AppStream File"
-#~ msgstr "AppStream ファイルを開く"
-
-#~ msgid "_Open"
-#~ msgstr "開く(_O)"
-
-#~ msgid "_Save"
-#~ msgstr "保存(_S)"
-
-#~ msgid "Failed to save file"
-#~ msgstr "ファイルの保存に失敗しました"
-
-#~ msgid "%s banner design deleted."
-#~ msgstr "%s のバナーデザインを削除しました。"
-
-#~ msgid "Banner design deleted."
-#~ msgstr "バナーデザインを削除しました。"
 
 #~ msgid "The application list has unsaved changes."
 #~ msgstr "アプリケーション一覧に未保存の変更があります。"
@@ -4371,65 +4336,11 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgid "Editor’s Pick"
 #~ msgstr "編集者のおすすめ"
 
-#~ msgid "Category Featured"
-#~ msgstr "カテゴリーの注目ソフト"
-
-#~ msgid "Undo"
-#~ msgstr "元に戻す"
-
-#~ msgid "New Banner"
-#~ msgstr "新しいバナー"
-
-#~ msgid "Import from file"
-#~ msgstr "ファイルからインポート"
-
-#~ msgid "Export to file"
-#~ msgstr "ファイルにエクスポート"
-
-#~ msgid "Delete Design"
-#~ msgstr "デザインを削除"
-
-#~ msgid "Featured App"
-#~ msgstr "注目ソフト"
-
 #~ msgid "OS Upgrade"
 #~ msgstr "OS アップグレード"
 
-#~ msgid "Spacing"
-#~ msgstr "Spacing"
-
-#~ msgid "The amount of space between children"
-#~ msgstr "子ウィジェットと子ウィジェットの間に入れる空白の大きさを指定します"
-
-#~ msgid "Click on items to select them"
-#~ msgstr "アイテムをクリックして選択"
-
-#~ msgid "Select"
-#~ msgstr "選択"
-
-#~ msgid "_Add to Folder…"
-#~ msgstr "フォルダーに追加(_A)…"
-
-#~ msgid "_Move to Folder…"
-#~ msgstr "フォルダーに移動(_M)…"
-
-#~ msgid "_Remove from Folder"
-#~ msgstr "フォルダーから削除(_R)"
-
 #~ msgid "Featured Applications"
 #~ msgstr "注目のアプリケーション"
-
-#~ msgid "AppStream;Software;App;"
-#~ msgstr "AppStream;Software;App;ソフトウェア;アプリ;"
-
-#~ msgid "Web Apps Support"
-#~ msgstr "Web アプリのサポート"
-
-#~ msgid "system-software-install"
-#~ msgstr "system-software-install"
-
-#~ msgid "_All"
-#~ msgstr "すべて(_A)"
 
 #~ msgid "Sign In / Register…"
 #~ msgstr "サインイン / 登録…"
@@ -4440,56 +4351,11 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgid "Use"
 #~ msgstr "使用"
 
-#~ msgid "..."
-#~ msgstr "..."
-
-#~ msgid "Software catalog is being loaded"
-#~ msgstr "ソフトウェアカタログをロードしています"
-
 #~ msgid "Are you sure you want to purchase %s?"
 #~ msgstr "%s を購入しますか?"
 
-#~ msgid "%s will be installed, and you will be charged %s."
-#~ msgstr "%s をインストールします。あなたは %s 課金されます。"
-
 #~ msgid "Purchase"
 #~ msgstr "購入"
-
-#~ msgid "A$%.2f"
-#~ msgstr "A$%.2f"
-
-#~ msgid "C$%.2f"
-#~ msgstr "C$%.2f"
-
-#~ msgid "CN¥%.2f"
-#~ msgstr "CN¥%.2f"
-
-#~ msgid "€%.2f"
-#~ msgstr "€%.2f"
-
-#~ msgid "£%.2f"
-#~ msgstr "£%.2f"
-
-#~ msgid "¥%.2f"
-#~ msgstr "¥%.2f"
-
-#~ msgid "NZ$%.2f"
-#~ msgstr "NZ$%.2f"
-
-#~ msgid "₽%.2f"
-#~ msgstr "₽%.2f"
-
-#~ msgid "US$%.2f"
-#~ msgstr "US$%.2f"
-
-#~ msgid "%s %f"
-#~ msgstr "%s %f"
-
-#~ msgid "Sign in…"
-#~ msgstr "サインイン…"
-
-#~ msgid "Sign out"
-#~ msgstr "サインアウト"
 
 #~ msgid "Unable to purchase %s: authentication was required"
 #~ msgstr "%s を購入できません: 認証が必要です"
@@ -4506,51 +4372,14 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgid "Unable to purchase %s"
 #~ msgstr "%s を購入できません"
 
-#~ msgid "org.gnome.Software"
-#~ msgstr "org.gnome.Software"
-
-#~ msgid "To continue, you need to use an Ubuntu One account."
-#~ msgstr "続行するには Ubuntu One アカウントを使用する必要があります。"
-
-#~ msgid "To continue, you need to use your Ubuntu One account."
-#~ msgstr ""
-#~ "続行するには、あなたの Ubuntu One アカウントを使用する必要があります。"
-
 #~ msgid "Show profiling information for the service"
 #~ msgstr "サービス用のプロファイル情報を表示する"
-
-#~ msgid "To continue you need to sign in to %s."
-#~ msgstr "続行するには %s へサインインする必要があります。"
-
-#~ msgid "Email address"
-#~ msgstr "メールアドレス"
-
-#~ msgid "I have an account already"
-#~ msgstr "既にアカウントを持っています"
-
-#~ msgid "Password"
-#~ msgstr "パスワード"
-
-#~ msgid "I want to register for an account now"
-#~ msgstr "アカウントを登録する"
-
-#~ msgid "I have forgotten my password"
-#~ msgstr "パスワードを忘れました"
 
 #~ msgid "Sign in automatically next time"
 #~ msgstr "次は自動的にサインインする"
 
 #~ msgid "Enter your one-time pin for two-factor authentication."
 #~ msgstr "二要素認証用のワンタイム PIN を入力してください。"
-
-#~ msgid "PIN"
-#~ msgstr "PIN"
-
-#~ msgid "_About"
-#~ msgstr "このアプリケーションについて(_A)"
-
-#~ msgid "_Quit"
-#~ msgstr "終了(_Q)"
 
 #~ msgid ""
 #~ "Information about %s, as well as options for how to get a codec that can "
@@ -4559,41 +4388,9 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ "%s についての情報および、このフォーマットを再生できるコーデックの入手方法"
 #~ "はウェブサイト上で確認できます。"
 
-#, fuzzy
-#~| msgid "Show verbose debugging information"
-#~ msgid "For more information, visit %s."
-#~ msgstr "詳細なデバッグ情報を表示する"
-
-#~ msgid "Downloading new updates…"
-#~ msgstr "新しい更新をダウンロードしています…"
-
-#~ msgid "_Restart & Update"
-#~ msgstr "再起動して更新(_R)"
-
-#~ msgid "U_pdate All"
-#~ msgstr "すべて更新(_P)"
-
-#~ msgid "Restart & _Install"
-#~ msgstr "再起動してインストール(_I)"
-
-#~ msgid "Getting runtime source…"
-#~ msgstr "ランタイムソースを取得中…"
-
-#~ msgid "Downloading firmware update…"
-#~ msgstr "ファームウェア更新をダウンロード中…"
-
-#~ msgid "Limba Support"
-#~ msgstr "Limba サポート"
-
 #~ msgid "Limba provides developers a way to easily create software bundles"
 #~ msgstr ""
 #~ "Limba は開発者がソフトウェアバンドルを簡単に作成できる方法を提供します"
-
-#~ msgid "Downloading application page…"
-#~ msgstr "アプリケーションページをダウンロード中…"
-
-#~ msgid "Steam Support"
-#~ msgstr "Steam サポート"
 
 #~ msgid "The ultimate entertainment platform from Valve"
 #~ msgstr "Valve による究極のエンターテイメントプラットフォーム"
@@ -4608,16 +4405,6 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ "サードパーティーのアプリケーションをインストールする時に有効化したソースの"
 #~ "リストです。"
 
-#, fuzzy
-#~| msgid "The list of extra sources that have been previously enabled"
-#~ msgid "A list of non-free sources that can be optionally enabled"
-#~ msgstr "以前に有効化された追加ソースの一覧"
-
-#~ msgid ""
-#~ "Provides access to additional software, including web browsers and games."
-#~ msgstr ""
-#~ "ウェブブラウザーやゲームなど追加のソフトウェアへのアクセスを提供します。"
-
 #~ msgid "Enable Proprietary Software Sources?"
 #~ msgstr "プロプライエタリのソフトウェアソースを有効にしますか?"
 
@@ -4625,9 +4412,6 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgstr ""
 #~ "アプリケーションやアドオンはインストールされていません。他のソフトウェアも"
 #~ "まだそうかもしれません"
-
-#~ msgid "Proprietary Software Sources"
-#~ msgstr "プロプライエタリソフトウェアソース"
 
 #~ msgid ""
 #~ "Software sources can be downloaded from the internet. They give you "
@@ -4643,24 +4427,3 @@ msgstr "Snap は汎用的な Linux パッケージです"
 #~ msgstr ""
 #~ "ソースを削除すると、そのソースからインストールしたソフトウェアもすべて削除"
 #~ "することになります。"
-
-#~ msgid "No software installed from this source"
-#~ msgstr "このソースからインストールしたソフトウェアはありません"
-
-#~ msgid "Installed from this Source"
-#~ msgstr "このソースからインストールしました"
-
-#~ msgid "Source Details"
-#~ msgstr "ソースの詳細"
-
-#~ msgid "Last Checked"
-#~ msgstr "最終確認"
-
-#~ msgid "Added"
-#~ msgstr "追加しました"
-
-#~ msgid "Website"
-#~ msgstr "ウェブサイト"
-
-#~ msgid "Remove Source"
-#~ msgstr "ソースを削除する"
