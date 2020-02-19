@@ -46,6 +46,30 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2020-02-19" version="3.35.91">
+      <description>
+        <p>
+          This is an unstable stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add an info bar about automatic updates</li>
+          <li>Avoid rpm-ostree downgrade error when doing distro upgrade</li>
+          <li>Click on stars to open review dialog in the details view</li>
+          <li>Fix loading of icons from AppStream YAML</li>
+          <li>Fix weird font sizes in the batter</li>
+          <li>Hide any in-app notifications when closing the main window</li>
+          <li>Integrate better with snapd</li>
+          <li>Only ignore flatpak estimated progress if >10%</li>
+          <li>Remove color stripes on categories in the Explore page</li>
+          <li>Remove support for Shell extensions</li>
+          <li>Remove webapp support</li>
+          <li>Reset star rating when loading an unrated app</li>
+          <li>Sort applications using locale based algorithms</li>
+          <li>Stop snaps from being automatically updated</li>
+        </ul>
+        <p>This release also adds and updates existing translations.</p>
+      </description>
+    </release>
     <release date="2019-11-25" version="3.35.2">
       <description>
         <p>
