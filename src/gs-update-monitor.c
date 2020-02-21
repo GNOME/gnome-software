@@ -16,6 +16,9 @@
 #include "gs-update-monitor.h"
 #include "gs-common.h"
 
+#define SECONDS_IN_AN_HOUR (60 * 60)
+#define SECONDS_IN_A_DAY (SECONDS_IN_AN_HOUR * 24)
+
 struct _GsUpdateMonitor {
 	GObject		 parent;
 
@@ -90,7 +93,7 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 		return;
 
 	/* rate limit update notifications to once per hour */
-	monitor->notification_blocked_id = g_timeout_add_seconds (3600, reenable_offline_update_notification, monitor);
+	monitor->notification_blocked_id = g_timeout_add_seconds (SECONDS_IN_AN_HOUR, reenable_offline_update_notification, monitor);
 
 	/* get time in days since we saw the first unapplied security update */
 	g_settings_get (monitor->settings,
@@ -883,7 +886,7 @@ restart_upgrades_check (GsUpdateMonitor *monitor)
 	stop_upgrades_check (monitor);
 	get_upgrades (monitor);
 
-	monitor->check_daily_id = g_timeout_add_seconds (3 * 86400,
+	monitor->check_daily_id = g_timeout_add_seconds (3 * SECONDS_IN_A_DAY,
 							 check_thrice_daily_cb,
 							 monitor);
 }
@@ -904,7 +907,7 @@ restart_updates_check (GsUpdateMonitor *monitor)
 	stop_updates_check (monitor);
 	check_updates (monitor);
 
-	monitor->check_hourly_id = g_timeout_add_seconds (3600, check_hourly_cb,
+	monitor->check_hourly_id = g_timeout_add_seconds (SECONDS_IN_AN_HOUR, check_hourly_cb,
 							  monitor);
 }
 
