@@ -886,7 +886,7 @@ restart_upgrades_check (GsUpdateMonitor *monitor)
 	stop_upgrades_check (monitor);
 	get_upgrades (monitor);
 
-	monitor->check_daily_id = g_timeout_add_seconds (3 * SECONDS_IN_A_DAY,
+	monitor->check_daily_id = g_timeout_add_seconds (SECONDS_IN_A_DAY / 3,
 							 check_thrice_daily_cb,
 							 monitor);
 }
