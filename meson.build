@@ -116,15 +116,8 @@ if get_option('mogwai')
 endif
 
 if get_option('valgrind')
-  message(meson.version())
-  # urgh, meson is broken
-  if meson.version().version_compare('>0.41.0')
-    valgrind = dependency('valgrind')
-    conf.set('USE_VALGRIND', 1)
-  else
-    message('Valgrind integration disabled to work around a meson bug')
-    valgrind = []
-  endif
+  valgrind = dependency('valgrind')
+  conf.set('USE_VALGRIND', 1)
 else
   message('Valgrind integration disabled')
   valgrind = []
@@ -236,25 +229,6 @@ subdir('plugins')
 subdir('src')
 subdir('po')
 subdir('doc')
-
-if meson.version().version_compare('<0.41.0')
-  archiver = find_program('git', required : false)
-  if archiver.found()
-    run_target('dist',
-      # git config tar.tar.xz.command "xz -c"
-      command: [
-        'git', 'archive',
-        '--prefix=' + meson.project_name() + '-' + meson.project_version() + '/',
-        'HEAD',
-        '--format=tar.xz',
-        '--output',
-        meson.project_name() + '-' + meson.project_version() + '.tar.xz'
-      ]
-    )
-  else
-    message('git not found, you will not be able to run `ninja dist`')
-  endif
-endif
 
 # FIXME: remove when https://github.com/mesonbuild/meson/issues/837 fixed
 meson.add_install_script('meson_post_install.sh')
