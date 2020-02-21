@@ -1565,7 +1565,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 		}
 		if (review_ratings != NULL) {
 			for (i = 0; i < review_ratings->len; i++)
-				n_reviews += (guint) g_array_index (review_ratings, gint, i);
+				n_reviews += (guint) g_array_index (review_ratings, guint32, i);
 		} else if (gs_app_get_reviews (self->app) != NULL) {
 			n_reviews = gs_app_get_reviews (self->app)->len;
 		}
@@ -1574,7 +1574,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	/* enable appropriate widgets */
 	gtk_widget_set_visible (self->star, show_reviews);
 	gtk_widget_set_visible (self->box_reviews, show_reviews);
-	gtk_widget_set_visible (self->histogram, review_ratings != NULL);
+	gtk_widget_set_visible (self->histogram, review_ratings != NULL && review_ratings->len > 0);
 	gtk_widget_set_visible (self->label_review_count, n_reviews > 0);
 
 	/* update the review label next to the star widget */

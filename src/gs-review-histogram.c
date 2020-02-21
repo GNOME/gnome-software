@@ -39,36 +39,41 @@ void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 				 GArray *review_ratings)
 {
-	GsReviewHistogramPrivate *priv;
-	gdouble max;
-	gint count[5] = { 0, 0, 0, 0, 0 };
-	guint i;
+	GsReviewHistogramPrivate *priv = gs_review_histogram_get_instance_private (histogram);
+	gdouble fraction[6] = { 0.0f };
+	guint32 max = 0;
+	guint32 total = 0;
 
 	g_return_if_fail (GS_IS_REVIEW_HISTOGRAM (histogram));
-	priv = gs_review_histogram_get_instance_private (histogram);
 
-	/* Scale to maximum value */
-	for (max = 0, i = 0; i < review_ratings->len; i++) {
-		gint c;
-
-		c = g_array_index (review_ratings, gint, i);
-		if (c > max)
-			max = c;
-		if (i > 0 && i < 6)
-			count[i - 1] = c;
+	/* sanity check */
+	if (review_ratings->len != 6) {
+		g_warning ("ratings data incorrect expected 012345");
+		return;
 	}
 
-	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar5), count[4] / max);
-	set_label (priv->label_count5, count[4]);
-	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar4), count[3] / max);
-	set_label (priv->label_count4, count[3]);
-	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar3), count[2] / max);
-	set_label (priv->label_count3, count[2]);
-	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar2), count[1] / max);
-	set_label (priv->label_count2, count[1]);
-	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar1), count[0] / max);
-	set_label (priv->label_count1, count[0]);
-	set_label (priv->label_total, count[0] + count[1] + count[2] + count[3] + count[4]);
+	/* idx 0 is '0 stars' which we don't support in the UI */
+	for (guint i = 1; i < review_ratings->len; i++) {
+		guint32 c = g_array_index (review_ratings, guint32, i);
+		max = MAX (c, max);
+	}
+	for (guint i = 1; i < review_ratings->len; i++) {
+		guint32 c = g_array_index (review_ratings, guint32, i);
+		fraction[i] = max > 0 ? (gdouble) c / (gdouble) max : 0.f;
+		total += c;
+	}
+
+	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar5), fraction[5]);
+	set_label (priv->label_count5, g_array_index (review_ratings, guint, 5));
+	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar4), fraction[4]);
+	set_label (priv->label_count4, g_array_index (review_ratings, guint, 4));
+	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar3), fraction[3]);
+	set_label (priv->label_count3, g_array_index (review_ratings, guint, 3));
+	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar2), fraction[2]);
+	set_label (priv->label_count2, g_array_index (review_ratings, guint, 2));
+	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar1), fraction[1]);
+	set_label (priv->label_count1, g_array_index (review_ratings, guint, 1));
+	set_label (priv->label_total, total);
 }
 
 static void

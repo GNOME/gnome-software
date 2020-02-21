@@ -580,8 +580,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_printf (str, "rating", "%i", priv->rating);
 	if (priv->review_ratings != NULL) {
 		for (i = 0; i < priv->review_ratings->len; i++) {
-			gint rat = g_array_index (priv->review_ratings, gint, i);
-			gs_app_kv_printf (str, "review-rating", "[%u:%i]",
+			guint32 rat = g_array_index (priv->review_ratings, guint32, i);
+			gs_app_kv_printf (str, "review-rating", "[%u:%u]",
 					  i, rat);
 		}
 	}
@@ -2881,7 +2881,7 @@ gs_app_set_rating (GsApp *app, gint rating)
  *
  * Gets the review ratings.
  *
- * Returns: (element-type gint) (transfer none): a list
+ * Returns: (element-type guint32) (transfer none): a list
  *
  * Since: 3.22
  **/
@@ -2896,7 +2896,7 @@ gs_app_get_review_ratings (GsApp *app)
 /**
  * gs_app_set_review_ratings:
  * @app: a #GsApp
- * @review_ratings: (element-type gint): a list
+ * @review_ratings: (element-type guint32): a list
  *
  * Sets the review ratings.
  *
