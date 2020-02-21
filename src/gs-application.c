@@ -1057,8 +1057,10 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 						NULL);
 	}
 	if (g_variant_dict_contains (options, "quit")) {
+		/* The 'quit' command-line option shuts down everything,
+		 * including the backend service */
 		g_action_group_activate_action (G_ACTION_GROUP (app),
-						"quit",
+						"shutdown",
 						NULL);
 		return 0;
 	}
