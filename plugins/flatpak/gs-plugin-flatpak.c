@@ -602,6 +602,11 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		gs_flatpak_error_convert (error);
 		return FALSE;
 	}
+
+	/* add to the transaction cache for quick look up -- other unrelated
+	 * refs will be matched using gs_plugin_flatpak_find_app_by_ref() */
+	gs_flatpak_transaction_add_app (transaction, app);
+
 	ref = gs_flatpak_app_get_ref_display (app);
 	if (!flatpak_transaction_add_uninstall (transaction, ref, error)) {
 		gs_flatpak_error_convert (error);
