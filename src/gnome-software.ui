@@ -31,19 +31,15 @@
     </child>
   </object>
   <menu id="primary_menu">
-    <section id="accounts_menu">
-    </section>
-    <section>
-      <item>
-        <attribute name="label" translatable="yes">_Software Repositories</attribute>
-        <attribute name="action">app.sources</attribute>
-        <attribute name="hidden-when">action-disabled</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Update Preferences</attribute>
-        <attribute name="action">app.prefs</attribute>
-      </item>
-    </section>
+    <item>
+      <attribute name="label" translatable="yes">_Software Repositories</attribute>
+      <attribute name="action">app.sources</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">_Update Preferences</attribute>
+      <attribute name="action">app.prefs</attribute>
+    </item>
   </menu>
   <object class="GtkApplicationWindow" id="window_software">
     <property name="visible">False</property>
