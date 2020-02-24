@@ -511,16 +511,17 @@ flowboxchild {
 	opacity: 0.5;
 }
 
-.featured-button-left {
-	border-radius: 60px;
-	margin-left: -25px;
-	padding: 10px 5px 10px 20px;
+.featured-button-left,
+.featured-button-right {
+	padding: 2px 5px;
+	margin: 6px;
 }
 
-.featured-button-right {
-	border-radius: 60px;
-	margin-right: -25px;
-	padding: 10px 20px 10px 5px;
+.featured-button-left:not(:hover),
+.featured-button-right:not(:hover) {
+	background: transparent;
+	border:transparent;
+	box-shadow: none;
 }
 
 /* these typographical classes will be provided in gtk eventually */
