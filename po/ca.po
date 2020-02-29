@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-02-12 09:33+0000\n"
-"PO-Revision-Date: 2020-01-16 21:49+0100\n"
+"POT-Creation-Date: 2020-02-24 18:38+0000\n"
+"PO-Revision-Date: 2020-02-29 21:14+0100\n"
 "Last-Translator: Jordi Mas <jmas@softcatala.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "Language: ca\n"
@@ -70,7 +70,7 @@ msgstr "Quadre d'actualitzacions"
 msgid "The update details"
 msgstr "Detalls de l'actualització"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1449
+#: data/appdata/org.gnome.Software.appdata.xml.in:1473
 msgid "The GNOME Project"
 msgstr "El projecte GNOME"
 
@@ -226,11 +226,11 @@ msgstr ""
 
 #: data/org.gnome.software.gschema.xml:82
 msgid "The server to use for application reviews"
-msgstr "El servidor a utilitzar per les ressenyes d'aplicacions"
+msgstr "El servidor a utilitzar per a les ressenyes d'aplicacions"
 
 #: data/org.gnome.software.gschema.xml:86
 msgid "The minimum karma score for reviews"
-msgstr "La puntuació de karma mínima per les ressenyes"
+msgstr "La puntuació de karma mínima per a les ressenyes"
 
 #: data/org.gnome.software.gschema.xml:87
 msgid "Reviews with karma less than this number will not be shown."
@@ -259,7 +259,7 @@ msgstr ""
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Instal·la paquets d'aplicacions per a tots els usuaris del sistema quan "
-"sigui possible "
+"sigui possible"
 
 #: data/org.gnome.software.gschema.xml:107
 msgid "Allow access to the Software Repositories dialog"
@@ -335,82 +335,82 @@ msgstr "Selecciona-ho tot"
 msgid "Select None"
 msgstr "No seleccionis res"
 
-#: src/gnome-software.ui:38
+#: src/gnome-software.ui:35
 msgid "_Software Repositories"
 msgstr "_Dipòsits de programari"
 
-#: src/gnome-software.ui:43
+#: src/gnome-software.ui:40
 msgid "_Update Preferences"
 msgstr "_Preferències d'actualització"
 
-#: src/gnome-software.ui:52 src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:48 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Programari"
 
-#: src/gnome-software.ui:68 src/gs-update-dialog.ui:20
+#: src/gnome-software.ui:64 src/gs-update-dialog.ui:20
 msgid "Go back"
 msgstr "Vés enrere"
 
 #. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:100
+#: src/gnome-software.ui:96
 msgid "_Explore"
 msgstr "_Explora"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:123
+#: src/gnome-software.ui:119
 msgid "_Installed"
 msgstr "_Instal·lat"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:163
+#: src/gnome-software.ui:159
 msgid "_Updates"
 msgstr "Act_ualitzacions"
 
-#: src/gnome-software.ui:232
+#: src/gnome-software.ui:228
 msgid "Search"
 msgstr "Cerca"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:276 src/gs-app-row.c:287 src/gs-details-page.ui:886
+#: src/gnome-software.ui:272 src/gs-app-row.c:287 src/gs-details-page.ui:886
 msgid "Source"
 msgstr "Font"
 
 #. button in the info bar
-#: src/gnome-software.ui:381 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
+#: src/gnome-software.ui:377 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
 msgid "Software Repositories"
 msgstr "Dipòsits de programari"
 
 #. button in the info bar
-#: src/gnome-software.ui:389
+#: src/gnome-software.ui:385
 msgid "Examine Disk"
 msgstr "Examina el disc"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:397 src/gs-updates-page.c:921
+#: src/gnome-software.ui:393 src/gs-updates-page.c:921
 msgid "Network Settings"
 msgstr "Paràmetres de xarxa"
 
 #. button in the info bar
-#: src/gnome-software.ui:405
+#: src/gnome-software.ui:401
 msgid "Restart Now"
 msgstr "Reinicia ara"
 
 #. button in the info bar
-#: src/gnome-software.ui:413
+#: src/gnome-software.ui:409
 msgid "More Information"
 msgstr "Més informació"
 
-#: src/gnome-software.ui:465 src/gs-metered-data-dialog.ui:5
+#: src/gnome-software.ui:461 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
 msgid "Automatic Updates Paused"
 msgstr "S'ha posat en pausa les actualitzacions automàtiques"
 
-#: src/gnome-software.ui:484
+#: src/gnome-software.ui:480
 msgid "Find Out _More"
-msgstr "_Descobriu-ne més..."
+msgstr "_Descobriu-ne més"
 
 #. TRANSLATORS: this is a locally downloaded package
 #: lib/gs-app.c:4506
@@ -2157,6 +2157,15 @@ msgid ""
 "Alternatively, if the current network has been in­correctly identified as "
 "being metered, this setting can be changed."
 msgstr ""
+"La xarxa actual està limitada. Les connexions limitades tenen límits de dades o "
+"càrrecs associats amb ells. Per a estalviar dades, les actualitzacions automàtiques s'han "
+"posat en pausa.\n"
+"\n"
+"Les actualitzacions automàtiques es reprendran quan una xarxa no limitada estigui "
+"disponible. Fins llavors, encara és possible instal·lar actualitzacions manuals.\n"
+"\n"
+"Alternativament, si la xarxa actual ha estat identificada incorrectament com a "
+"limitada, es pot canviar aquesta configuració."
 
 #: src/gs-metered-data-dialog.ui:53
 msgid "Open Network _Settings"
@@ -2263,7 +2272,7 @@ msgstr "Pàgina de resum"
 
 #: src/gs-overview-page.ui:39
 msgid "Enable Third Party Software Repositories?"
-msgstr "Habilita la font de programari de tercers"
+msgstr "Voleu habilitar la font de programari de tercers?"
 
 #: src/gs-overview-page.ui:101
 msgid "Previous"
@@ -3509,7 +3518,7 @@ msgstr ""
 #. TRANSLATORS: Time in 24h format
 #: src/gs-updates-page.c:225
 msgid "%R"
-msgstr "%R"
+msgstr "%-H:%M"
 
 #. TRANSLATORS: Time in 12h format
 #: src/gs-updates-page.c:228
