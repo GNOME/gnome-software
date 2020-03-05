@@ -28,7 +28,6 @@ typedef struct
 	GtkWidget	*version_arrow_label;
 	GtkWidget	*version_update_label;
 	GtkWidget	*star;
-	GtkWidget	*folder_label;
 	GtkWidget	*description_box;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
@@ -40,7 +39,6 @@ typedef struct
 	GtkWidget	*label_installed;
 	GtkWidget	*label_app_size;
 	gboolean	 colorful;
-	gboolean	 show_folders;
 	gboolean	 show_buttons;
 	gboolean	 show_rating;
 	gboolean	 show_source;
@@ -366,24 +364,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 		}
 	}
 
-	/* folders */
-	if (priv->show_folders &&
-	    gs_utils_is_current_desktop ("GNOME") &&
-	    g_settings_get_boolean (priv->settings, "show-folder-management")) {
-		g_autoptr(GsFolders) folders = NULL;
-		const gchar *folder;
-		folders = gs_folders_get ();
-		folder = gs_folders_get_app_folder (folders,
-						    gs_app_get_id (priv->app),
-						    gs_app_get_categories (priv->app));
-		if (folder != NULL)
-			folder = gs_folders_get_folder_name (folders, folder);
-		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
-		gtk_widget_set_visible (priv->folder_label, folder != NULL);
-	} else {
-		gtk_widget_hide (priv->folder_label);
-	}
-
 	/* pixbuf */
 	if (gs_app_get_pixbuf (priv->app) == NULL) {
 		gtk_image_set_from_icon_name (GTK_IMAGE (priv->image),
@@ -620,7 +600,6 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_arrow_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, version_update_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, star);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, folder_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, button_box);
@@ -678,15 +657,6 @@ gs_app_row_set_colorful (GsAppRow *app_row, gboolean colorful)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->colorful = colorful;
-	gs_app_row_refresh (app_row);
-}
-
-void
-gs_app_row_set_show_folders (GsAppRow *app_row, gboolean show_folders)
-{
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	priv->show_folders = show_folders;
 	gs_app_row_refresh (app_row);
 }
 
