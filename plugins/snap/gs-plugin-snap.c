@@ -63,7 +63,18 @@ get_auth_data (GsPlugin *plugin)
 	}
 
 	root = json_parser_get_root (parser);
+	if (root == NULL)
+		return NULL;
+
+	if (json_node_get_node_type (root) != JSON_NODE_OBJECT) {
+		g_warning ("Ignoring invalid snap auth data in %s", path);
+		return NULL;
+	}
 	object = json_node_get_object (root);
+	if (!json_object_has_member (object, "macaroon")) {
+		g_warning ("Ignoring invalid snap auth data in %s", path);
+		return NULL;
+	}
 	macaroon = json_object_get_string_member (object, "macaroon");
 	discharges = g_ptr_array_new ();
 	if (json_object_has_member (object, "discharges")) {
