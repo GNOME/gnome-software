@@ -227,14 +227,19 @@ app_filter_changed_cb (MctManager *manager,
                        gpointer    user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
+	g_autoptr(GError) error_local = NULL;
 
-	if (user_id == getuid ()) {
-		/* The user’s app filter has changed, which means that different
-		 * apps could be filtered from before. Reload everything to be
-		 * sure of re-filtering correctly. */
-		g_debug ("Reloading due to app filter changing for user %" G_GUINT64_FORMAT, user_id);
+	if (user_id != getuid ())
+		return;
+
+	/* The user’s app filter has changed, which means that different
+	 * apps could be filtered from before. Reload everything to be
+	 * sure of re-filtering correctly. */
+	g_debug ("Reloading due to app filter changing for user %" G_GUINT64_FORMAT, user_id);
+	if (reload_app_filter (plugin, NULL, &error_local))
 		gs_plugin_reload (plugin);
-	}
+	else
+		g_warning ("Failed to reload changed app filter: %s", error_local->message);
 }
 
 void
