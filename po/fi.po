@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-02-15 19:11+0000\n"
-"PO-Revision-Date: 2020-02-22 17:53+0200\n"
+"POT-Creation-Date: 2020-03-26 15:09+0000\n"
+"PO-Revision-Date: 2020-04-01 17:26+0300\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -67,7 +67,7 @@ msgstr "Päivityssivu"
 msgid "The update details"
 msgstr "Päivityksen tiedot"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1449
+#: data/appdata/org.gnome.Software.appdata.xml.in:1494
 msgid "The GNOME Project"
 msgstr "Gnome-projekti"
 
@@ -306,80 +306,80 @@ msgstr "Valitse kaikki"
 msgid "Select None"
 msgstr "Älä valitse mitään"
 
-#: src/gnome-software.ui:38
+#: src/gnome-software.ui:35
 msgid "_Software Repositories"
 msgstr "_Ohjelmistolähteet"
 
-#: src/gnome-software.ui:43
+#: src/gnome-software.ui:40
 msgid "_Update Preferences"
 msgstr "_Päivitysvalinnat"
 
-#: src/gnome-software.ui:52 src/org.gnome.Software.desktop.in:3
+#: src/gnome-software.ui:48 src/org.gnome.Software.desktop.in:3
 msgid "Software"
 msgstr "Ohjelmistot"
 
-#: src/gnome-software.ui:68 src/gs-update-dialog.ui:20
+#: src/gnome-software.ui:64 src/gs-update-dialog.ui:20
 msgid "Go back"
 msgstr "Takaisin"
 
 #. Translators: A label for a button to show all available software.
-#: src/gnome-software.ui:100
+#: src/gnome-software.ui:96
 msgid "_Explore"
 msgstr "_Selaa"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: src/gnome-software.ui:123
+#: src/gnome-software.ui:119
 msgid "_Installed"
 msgstr "_Asennetut"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: src/gnome-software.ui:163
+#: src/gnome-software.ui:159
 msgid "_Updates"
 msgstr "_Päivitykset"
 
-#: src/gnome-software.ui:232
+#: src/gnome-software.ui:228
 msgid "Search"
 msgstr "Etsi"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:276 src/gs-app-row.c:287 src/gs-details-page.ui:886
+#: src/gnome-software.ui:272 src/gs-app-row.c:285 src/gs-details-page.ui:886
 msgid "Source"
 msgstr "Lähde"
 
 #. button in the info bar
-#: src/gnome-software.ui:381 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
+#: src/gnome-software.ui:377 src/gs-repos-dialog.ui:5 src/gs-repos-dialog.ui:18
 msgid "Software Repositories"
 msgstr "Ohjelmistolähteet"
 
 #. button in the info bar
-#: src/gnome-software.ui:389
+#: src/gnome-software.ui:385
 msgid "Examine Disk"
 msgstr "Tutki levy"
 
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:397 src/gs-updates-page.c:921
+#: src/gnome-software.ui:393 src/gs-updates-page.c:921
 msgid "Network Settings"
 msgstr "Verkkoasetukset"
 
 #. button in the info bar
-#: src/gnome-software.ui:405
+#: src/gnome-software.ui:401
 msgid "Restart Now"
 msgstr "Käynnistä uudelleen nyt"
 
 #. button in the info bar
-#: src/gnome-software.ui:413
+#: src/gnome-software.ui:409
 msgid "More Information"
 msgstr "Lisätietoja"
 
-#: src/gnome-software.ui:465 src/gs-metered-data-dialog.ui:5
+#: src/gnome-software.ui:461 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
 msgid "Automatic Updates Paused"
 msgstr "Automaattiset päivitykset keskeytetty"
 
-#: src/gnome-software.ui:484
+#: src/gnome-software.ui:480
 msgid "Find Out _More"
 msgstr "Lue lisä_ä"
 
@@ -392,11 +392,11 @@ msgstr "Paikallinen tiedosto"
 msgid "Package"
 msgstr "Paketti"
 
-#: src/gs-app-addon-row.c:82 src/gs-app-row.c:412
+#: src/gs-app-addon-row.c:82 src/gs-app-row.c:392
 msgid "Pending"
 msgstr "Odottaa"
 
-#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:175 src/gs-app-tile.ui:51
+#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:162 src/gs-app-tile.ui:51
 #: src/gs-feature-tile.c:68
 msgid "Installed"
 msgstr "Asennettu"
@@ -405,7 +405,7 @@ msgstr "Asennettu"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:165 src/gs-details-page.c:329
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:329
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "Asennetaan"
@@ -414,7 +414,7 @@ msgstr "Asennetaan"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:171 src/gs-repo-row.c:125
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:169 src/gs-repo-row.c:125
 #: src/gs-third-party-repo-row.c:106
 msgid "Removing"
 msgstr "Poistetaan"
@@ -522,20 +522,20 @@ msgstr "Valitettavasti tästä sovelluksesta ei ole tarkempia tietoja."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:120
+#: src/gs-app-row.c:118
 msgid "Visit website"
 msgstr "Käy verkkosivustolla"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:125
+#: src/gs-app-row.c:123
 msgid "Install…"
 msgstr "Asenna…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:132 src/gs-updates-section.c:476
+#: src/gs-app-row.c:130 src/gs-updates-section.c:476
 msgid "Cancel"
 msgstr "Peru"
 
@@ -543,13 +543,13 @@ msgstr "Peru"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:139 src/gs-common.c:287 src/gs-page.c:273
+#: src/gs-app-row.c:137 src/gs-common.c:287 src/gs-page.c:273
 msgid "Install"
 msgstr "Asenna"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:146
+#: src/gs-app-row.c:144
 msgid "Update"
 msgstr "Päivitä"
 
@@ -557,18 +557,18 @@ msgstr "Päivitä"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:150 src/gs-app-row.c:159 src/gs-page.c:434
+#: src/gs-app-row.c:148 src/gs-app-row.c:157 src/gs-page.c:434
 #: src/gs-repos-dialog.c:325
 msgid "Remove"
 msgstr "Poista"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:277
+#: src/gs-app-row.c:275
 msgid "Device cannot be used during update."
 msgstr "Laitetta ei voi käyttää päivityksen aikana."
 
-#: src/gs-app-row.c:470 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:450 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "Vaatii lisäoikeuksia"
 
@@ -764,7 +764,7 @@ msgstr[0] "Muutoksen voimaan tulemiseksi vaaditaan uudelleenkäynnistys."
 msgstr[1] "Muutosten voimaan tulemiseksi vaaditaan uudelleenkäynnistys."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:636 src/gs-update-monitor.c:119
+#: src/gs-common.c:636 src/gs-update-monitor.c:122
 msgid "Not Now"
 msgstr "Ei nyt"
 
@@ -1400,7 +1400,7 @@ msgstr ""
 #. dialog for installing a repo
 #: src/gs-details-page.c:855 src/gs-details-page.c:872
 #: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:70
+#: src/gs-upgrade-banner.c:63
 msgid "_Install"
 msgstr "_Asenna"
 
@@ -1762,7 +1762,7 @@ msgstr "Suljettu"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:441
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "Lisäosat"
@@ -2076,7 +2076,7 @@ msgstr "Historia"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:437
+#: src/gs-installed-page.c:436
 msgid "System Applications"
 msgstr "Järjestelmäsovellukset"
 
@@ -2805,7 +2805,7 @@ msgstr ""
 #: src/gs-shell.c:1290
 #, c-format
 msgid "Unable to install %s as not supported"
-msgstr "Sovelluksen %s asennus epäonnistui, koska ei se ei ole tuettu"
+msgstr "Sovelluksen %s asennus epäonnistui, koska se ei ole tuettu"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1297
@@ -3273,33 +3273,33 @@ msgstr "Version muutokset alempaan"
 msgid "No updates have been installed on this system."
 msgstr "Tähän järjestelmään ei ole asennettu päivityksiä."
 
-#: src/gs-update-monitor.c:107
+#: src/gs-update-monitor.c:110
 msgid "Security Updates Pending"
 msgstr "Tietoturvapäivitykset odottavat"
 
-#: src/gs-update-monitor.c:108
+#: src/gs-update-monitor.c:111
 msgid "It is recommended that you install important updates now"
 msgstr "On suositeltavaa asentaa tärkeät päivitykset heti"
 
-#: src/gs-update-monitor.c:111
+#: src/gs-update-monitor.c:114
 msgid "Restart & Install"
 msgstr "Käynnistä uudelleen ja asenna"
 
-#: src/gs-update-monitor.c:115
+#: src/gs-update-monitor.c:118
 msgid "Software Updates Available"
 msgstr "Ohjelmistopäivityksiä saatavilla"
 
-#: src/gs-update-monitor.c:116
+#: src/gs-update-monitor.c:119
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Tärkeitä järjestelmä- ja sovelluspäivityksiä on valmiina asennettavaksi"
 
-#: src/gs-update-monitor.c:120
+#: src/gs-update-monitor.c:123
 msgid "View"
 msgstr "Näytä"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:228
+#: src/gs-update-monitor.c:231
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3307,7 +3307,7 @@ msgstr[0] "%u sovellus päivitetty — Uudelleenkäynnistys vaaditaan"
 msgstr[1] "%u sovellusta päivitetty — Uudelleenkäynnistys vaaditaan"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:234
+#: src/gs-update-monitor.c:237
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3315,24 +3315,24 @@ msgstr[0] "%u sovellus päivitetty"
 msgstr[1] "%u sovellusta päivitetty"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:245
+#: src/gs-update-monitor.c:248
 #, c-format
 msgid "%s has been updated."
 msgstr "%s on päivitetty."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:248
+#: src/gs-update-monitor.c:251
 msgid "Please restart the application."
 msgstr "Käynnistä sovellus uudelleen."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:256
+#: src/gs-update-monitor.c:259
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s ja %s on päivitetty."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:262 src/gs-update-monitor.c:281
+#: src/gs-update-monitor.c:265 src/gs-update-monitor.c:284
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3340,18 +3340,18 @@ msgstr[0] "%u sovellus vaatii uudelleenkäynnistyksen."
 msgstr[1] "%u sovellusta vaatii uudelleenkäynnistyksen."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:274
+#: src/gs-update-monitor.c:277
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Mukaan lukien %s, %s ja %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:515 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:518 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Käyttöjärjestemän päivitykset eivät ole saatavilla"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:517
+#: src/gs-update-monitor.c:520
 msgid "Upgrade to continue receiving security updates."
 msgstr ""
 "Päivitä käyttöjärjestelmä uudempaan versioon saadaksesi "
@@ -3359,52 +3359,52 @@ msgstr ""
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:572
+#: src/gs-update-monitor.c:575
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Uusi \"%s\"-versio on saatavilla asennusta varten"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:576
+#: src/gs-update-monitor.c:579
 msgid "Software Upgrade Available"
 msgstr "Ohjelmistopäivitys saatavilla"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:965
+#: src/gs-update-monitor.c:968
 msgid "Software Updates Failed"
 msgstr "Ohjelmistopäivitykset epäonnistuivat"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:967
+#: src/gs-update-monitor.c:970
 msgid "An important OS update failed to be installed."
 msgstr "Tärkeän järjestelmäpäivityksen asennus epäonnistui."
 
-#: src/gs-update-monitor.c:968
+#: src/gs-update-monitor.c:971
 msgid "Show Details"
 msgstr "Näytä tiedot"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:991
+#: src/gs-update-monitor.c:994
 msgid "System Upgrade Complete"
 msgstr "Järjestelmän versiopäivitys valmistui"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:996
+#: src/gs-update-monitor.c:999
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Tervetuloa, käytössäsi on %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1002
+#: src/gs-update-monitor.c:1005
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Ohjelmistopäivitys asennettu"
 msgstr[1] "Ohjelmistopäivitykset asennettu"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1006
+#: src/gs-update-monitor.c:1009
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tärkeä järjestelmäpäivitys asennettiin."
@@ -3415,30 +3415,30 @@ msgstr[1] "Tärkeitä järjestelmäpäivityksiä asennettiin."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1017
+#: src/gs-update-monitor.c:1020
 msgctxt "updates"
 msgid "Review"
 msgstr "Tarkastele"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1065
+#: src/gs-update-monitor.c:1068
 msgid "Failed To Update"
 msgstr "Päivitys epäonnistui"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1071
+#: src/gs-update-monitor.c:1074
 msgid "The system was already up to date."
 msgstr "Järjestelmä oli jo ajan tasalla."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1076
+#: src/gs-update-monitor.c:1079
 msgid "The update was cancelled."
 msgstr "Päivitys peruttiin."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1082
+#: src/gs-update-monitor.c:1085
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3447,7 +3447,7 @@ msgstr ""
 "yhteys toimii ja yritä uudelleen."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1088
+#: src/gs-update-monitor.c:1091
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3456,13 +3456,13 @@ msgstr ""
 "tarjoajaan saadaksesi lisätietoja."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1094
+#: src/gs-update-monitor.c:1097
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Levytilaa ei ollut riittävästi. Vapauta levytilaa ja yritä uudelleen."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1099
+#: src/gs-update-monitor.c:1102
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3679,24 +3679,24 @@ msgstr "Laitteen laiteohjelmisto"
 msgid "_Download"
 msgstr "_Lataa"
 
-#: src/gs-upgrade-banner.c:64
-msgid "_Restart Now"
-msgstr "_Käynnistä uudelleen nyt"
-
-#: src/gs-upgrade-banner.c:66
-msgid "Updates will be applied when the computer is restarted."
-msgstr "Päivitykset otetaan käyttöön, kun tietokone käynnistetään uudelleen."
-
-#: src/gs-upgrade-banner.c:72
+#: src/gs-upgrade-banner.c:65
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
 "On suositeltavaa varmuuskopioida tärkeät tiedostot ennen päivittämistä."
 
+#: src/gs-upgrade-banner.c:69
+msgid "_Restart Now"
+msgstr "_Käynnistä uudelleen nyt"
+
+#: src/gs-upgrade-banner.c:71
+msgid "Updates will be applied when the computer is restarted."
+msgstr "Päivitykset otetaan käyttöön, kun tietokone käynnistetään uudelleen."
+
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:87
+#: src/gs-upgrade-banner.c:86
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s nyt saatavilla"
@@ -3704,7 +3704,7 @@ msgstr "%s %s nyt saatavilla"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:97
+#: src/gs-upgrade-banner.c:96
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "Odotetaan, että %s %s ladataan"
@@ -3712,7 +3712,7 @@ msgstr "Odotetaan, että %s %s ladataan"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:107
+#: src/gs-upgrade-banner.c:106
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Ladataan %s %s"
@@ -3721,7 +3721,7 @@ msgstr "Ladataan %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:118
+#: src/gs-upgrade-banner.c:117
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s valmiina asennettavaksi"
@@ -4317,7 +4317,7 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr "ODRS on sovellusten käyttäjäarvioihin keskittynyt palvelu"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:228
+#: plugins/snap/gs-plugin-snap.c:239
 msgid "Snap Store"
 msgstr "Snap-kauppa"
 
