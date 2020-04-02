@@ -2389,7 +2389,6 @@ gs_flatpak_refine_wildcard (GsFlatpak *self, GsApp *app,
 	for (guint i = 0; i < components->len; i++) {
 		XbNode *component = g_ptr_array_index (components, i);
 		g_autoptr(GsApp) new = NULL;
-		g_debug ("found component for wildcard %s", id);
 		new = gs_appstream_create_app (self->plugin, self->silo, component, error);
 		if (new == NULL)
 			return FALSE;
