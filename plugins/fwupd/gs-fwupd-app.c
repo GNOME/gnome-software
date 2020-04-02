@@ -171,6 +171,11 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			 * the first %s is the system name, e.g. 'ThinkPad P50` */
 			return g_strdup_printf (_("%s Thunderbolt Controller"), name);
 		}
+		if (g_strcmp0 (cat, "X-CpuMicrocode") == 0) {
+			/* TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
+			 * at system bootup */
+			return g_strdup_printf (_("%s CPU Microcode"), name);
+		}
 	}
 #endif
 
