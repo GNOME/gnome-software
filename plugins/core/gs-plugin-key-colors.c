@@ -48,7 +48,7 @@ gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
 }
 
 /* convert range of 0..255 to 0..1 */
-static gdouble
+static inline gdouble
 _convert_from_rgb8 (guchar val)
 {
 	return (gdouble) val / 255.f;
