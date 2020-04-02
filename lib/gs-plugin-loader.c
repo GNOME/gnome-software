@@ -790,20 +790,24 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 			return FALSE;
 		}
 
-		/* use a copy of the list for the loop because a function called
-		 * on the plugin may affect the list which can lead to problems
-		 * (e.g. inserting an app in the list on every call results in
-		 * an infinite loop) */
-		helper->function_name = "gs_plugin_refine_wildcard";
-		app_list = gs_app_list_copy (list);
-		for (guint j = 0; j < gs_app_list_length (app_list); j++) {
-			GsApp *app = gs_app_list_index (app_list, j);
-			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
-			    !gs_plugin_loader_call_vfunc (helper, plugin, app, NULL,
-							  refine_flags, cancellable, error)) {
-				return FALSE;
+		if (gs_plugin_get_symbol (plugin, "gs_plugin_refine_wildcard") != NULL) {
+			/* use a copy of the list for the loop because a function called
+			 * on the plugin may affect the list which can lead to problems
+			 * (e.g. inserting an app in the list on every call results in
+			 * an infinite loop) */
+			app_list = gs_app_list_copy (list);
+			helper->function_name = "gs_plugin_refine_wildcard";
+
+			for (guint j = 0; j < gs_app_list_length (app_list); j++) {
+				GsApp *app = gs_app_list_index (app_list, j);
+				if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
+				    !gs_plugin_loader_call_vfunc (helper, plugin, app, NULL,
+								  refine_flags, cancellable, error)) {
+					return FALSE;
+				}
 			}
 		}
+
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
