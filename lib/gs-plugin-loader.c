@@ -1823,16 +1823,17 @@ gboolean
 gs_plugin_loader_get_allow_updates (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GList) list = NULL;
+	GHashTableIter iter;
+	gpointer value;
 
 	/* nothing */
 	if (g_hash_table_size (priv->disallow_updates) == 0)
 		return TRUE;
 
 	/* list */
-	list = g_hash_table_get_values (priv->disallow_updates);
-	for (GList *l = list; l != NULL; l = l->next) {
-		const gchar *reason = l->data;
+	g_hash_table_iter_init (&iter, priv->disallow_updates);
+	while (g_hash_table_iter_next (&iter, NULL, &value)) {
+		const gchar *reason = value;
 		g_debug ("managed updates inhibited by %s", reason);
 	}
 	return FALSE;
@@ -1880,16 +1881,17 @@ gs_plugin_loader_get_events (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *events = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	g_autoptr(GList) keys = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
+	GHashTableIter iter;
+	gpointer key, value;
 
 	/* just add everything */
-	keys = g_hash_table_get_keys (priv->events_by_id);
-	for (GList *l = keys; l != NULL; l = l->next) {
-		const gchar *key = l->data;
-		GsPluginEvent *event = g_hash_table_lookup (priv->events_by_id, key);
+	g_hash_table_iter_init (&iter, priv->events_by_id);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		const gchar *id = key;
+		GsPluginEvent *event = value;
 		if (event == NULL) {
-			g_warning ("failed to get event for '%s'", key);
+			g_warning ("failed to get event for '%s'", id);
 			continue;
 		}
 		g_ptr_array_add (events, g_object_ref (event));
@@ -1910,16 +1912,17 @@ GsPluginEvent *
 gs_plugin_loader_get_event_default (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	g_autoptr(GList) keys = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->events_by_id_mutex);
+	GHashTableIter iter;
+	gpointer key, value;
 
 	/* just add everything */
-	keys = g_hash_table_get_keys (priv->events_by_id);
-	for (GList *l = keys; l != NULL; l = l->next) {
-		const gchar *key = l->data;
-		GsPluginEvent *event = g_hash_table_lookup (priv->events_by_id, key);
+	g_hash_table_iter_init (&iter, priv->events_by_id);
+	while (g_hash_table_iter_next (&iter, &key, &value)) {
+		const gchar *id = key;
+		GsPluginEvent *event = value;
 		if (event == NULL) {
-			g_warning ("failed to get event for '%s'", key);
+			g_warning ("failed to get event for '%s'", id);
 			continue;
 		}
 		if (!gs_plugin_event_has_flag (event, GS_PLUGIN_EVENT_FLAG_INVALID))
