@@ -1962,30 +1962,30 @@ gs_plugin_loader_allow_updates_cb (GsPlugin *plugin,
 				   GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gpointer exists;
+	gboolean changed = FALSE;
 
 	/* plugin now allowing gnome-software to show updates panel */
-	exists = g_hash_table_lookup (priv->disallow_updates, plugin);
 	if (allow_updates) {
-		if (exists == NULL)
-			return;
-		g_debug ("plugin %s no longer inhibited managed updates",
-			 gs_plugin_get_name (plugin));
-		g_hash_table_remove (priv->disallow_updates, plugin);
+		if (g_hash_table_remove (priv->disallow_updates, plugin)) {
+			g_debug ("plugin %s no longer inhibited managed updates",
+				 gs_plugin_get_name (plugin));
+			changed = TRUE;
+		}
 
 	/* plugin preventing the updates panel from being shown */
 	} else {
-		if (exists != NULL)
-			return;
-		g_debug ("plugin %s inhibited managed updates",
-			 gs_plugin_get_name (plugin));
-		g_hash_table_insert (priv->disallow_updates,
-				     (gpointer) plugin,
-				     (gpointer) gs_plugin_get_name (plugin));
+		if (g_hash_table_replace (priv->disallow_updates,
+					  (gpointer) plugin,
+					  (gpointer) gs_plugin_get_name (plugin))) {
+			g_debug ("plugin %s inhibited managed updates",
+				 gs_plugin_get_name (plugin));
+			changed = TRUE;
+		}
 	}
 
-	/* something possibly changed, so notify display layer */
-	g_object_notify (G_OBJECT (plugin_loader), "allow-updates");
+	/* notify display layer */
+	if (changed)
+		g_object_notify (G_OBJECT (plugin_loader), "allow-updates");
 }
 
 static void
