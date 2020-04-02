@@ -3062,6 +3062,7 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	GsPluginRefineFlags filter_flags;
 	GsPluginRefineFlags refine_flags;
 	gboolean add_to_pending_array = FALSE;
+	guint max_results;
 
 	/* these change the pending count on the installed panel */
 	switch (action) {
@@ -3173,9 +3174,11 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 		break;
 	}
 
-	/* refine with enough data so that the sort_func can do what it needs */
+	/* refine with enough data so that the sort_func in
+	 * gs_plugin_loader_job_sorted_truncation() can do what it needs */
 	filter_flags = gs_plugin_job_get_filter_flags (helper->plugin_job);
-	if (filter_flags > 0) {
+	max_results = gs_plugin_job_get_max_results (helper->plugin_job);
+	if (filter_flags > 0 && max_results > 0) {
 		g_autoptr(GsPluginLoaderHelper) helper2 = NULL;
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
