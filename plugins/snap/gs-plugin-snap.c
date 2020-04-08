@@ -890,15 +890,15 @@ refine_screenshots (GsApp *app, SnapdSnap *snap)
 	}
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app_with_client (GsPlugin             *plugin,
+			SnapdClient          *client,
+			GsApp                *app,
+			GsPluginRefineFlags   flags,
+			GCancellable         *cancellable,
+			GError              **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_autoptr(SnapdClient) client = NULL;
 	const gchar *snap_name, *name, *version;
 	g_autofree gchar *channel = NULL;
 	g_autofree gchar *store_channel = NULL;
@@ -914,10 +914,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
 		return TRUE;
-
-	client = get_client (plugin, error);
-	if (client == NULL)
-		return FALSE;
 
 	snap_name = gs_app_get_metadata_item (app, "snap::name");
 	channel = g_strdup (gs_app_get_branch (app));
@@ -1055,6 +1051,28 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* load icon if requested */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON && gs_app_get_pixbuf (app) == NULL)
 		load_icon (plugin, client, app, snap_name, local_snap, store_snap, cancellable);
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	g_autoptr(SnapdClient) client = NULL;
+
+	client = get_client (plugin, error);
+	if (client == NULL)
+		return FALSE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app_with_client (plugin, client, app, flags, cancellable, error))
+			return FALSE;
+	}
 
 	return TRUE;
 }
