@@ -22,12 +22,12 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app (GsPlugin             *plugin,
+	    GsApp                *app,
+	    GsPluginRefineFlags   flags,
+	    GCancellable         *cancellable,
+	    GError              **error)
 {
 	guint i;
 	const gchar *app_globs[] = {
@@ -55,6 +55,22 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			gs_app_add_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE);
 			break;
 		}
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app (plugin, app, flags, cancellable, error))
+			return FALSE;
 	}
 
 	return TRUE;

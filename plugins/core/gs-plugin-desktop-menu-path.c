@@ -40,12 +40,12 @@ _gs_app_has_desktop_group (GsApp *app, const gchar *desktop_group)
 }
 
 /* adds the menu-path for applications */
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app (GsPlugin             *plugin,
+	    GsApp                *app,
+	    GsPluginRefineFlags   flags,
+	    GCancellable         *cancellable,
+	    GError              **error)
 {
 	const gchar *strv[] = { "", NULL, NULL };
 	const GsDesktopData *msdata;
@@ -86,5 +86,25 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* always set something to avoid keep searching for this */
 	gs_app_set_menu_path (app, (gchar **) strv);
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
+		return TRUE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app (plugin, app, flags, cancellable, error))
+			return FALSE;
+	}
+
 	return TRUE;
 }

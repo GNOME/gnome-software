@@ -95,12 +95,12 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->settings);
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app (GsPlugin             *plugin,
+	    GsApp                *app,
+	    GsPluginRefineFlags   flags,
+	    GCancellable         *cancellable,
+	    GError              **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *origin;
@@ -121,6 +121,31 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	origin = gs_app_get_origin (app);
 	if (origin != NULL && gs_utils_strv_fnmatch (priv->sources, origin))
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL, priv->license_id);
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0)
+		return TRUE;
+	/* nothing to search */
+	if (priv->sources == NULL || priv->sources[0] == NULL)
+		return TRUE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app (plugin, app, flags, cancellable, error))
+			return FALSE;
+	}
 
 	return TRUE;
 }

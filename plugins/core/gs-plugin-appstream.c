@@ -786,29 +786,33 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 }
 
 gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+gs_plugin_refine (GsPlugin *plugin,
+		  GsAppList *list,
+		  GsPluginRefineFlags flags,
+		  GCancellable *cancellable,
+		  GError **error)
 {
 	gboolean found = FALSE;
-
-	/* not us */
-	if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE &&
-	    gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_UNKNOWN)
-		return TRUE;
 
 	/* check silo is valid */
 	if (!gs_plugin_appstream_check_silo (plugin, cancellable, error))
 		return FALSE;
 
-	/* find by ID then fall back to package name */
-	if (!gs_plugin_refine_from_id (plugin, app, flags, &found, error))
-		return FALSE;
-	if (!found) {
-		if (!gs_plugin_refine_from_pkgname (plugin, app, flags, error))
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		/* not us */
+		if (gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_PACKAGE &&
+		    gs_app_get_bundle_kind (app) != AS_BUNDLE_KIND_UNKNOWN)
+			return TRUE;
+
+		/* find by ID then fall back to package name */
+		if (!gs_plugin_refine_from_id (plugin, app, flags, &found, error))
 			return FALSE;
+		if (!found) {
+			if (!gs_plugin_refine_from_pkgname (plugin, app, flags, error))
+				return FALSE;
+		}
 	}
 
 	/* success */

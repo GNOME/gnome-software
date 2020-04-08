@@ -252,12 +252,12 @@ gs_plugin_icons_load_cached (GsPlugin *plugin, AsIcon *icon, GError **error)
 	return g_object_ref (as_icon_get_pixbuf (icon));
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app (GsPlugin             *plugin,
+	    GsApp                *app,
+	    GsPluginRefineFlags   flags,
+	    GCancellable         *cancellable,
+	    GError              **error)
 {
 	GPtrArray *icons;
 	guint i;
@@ -308,6 +308,26 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		g_debug ("failed to load icon for %s: %s",
 			 gs_app_get_id (app),
 			 error_local->message);
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) == 0)
+		return TRUE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app (plugin, app, flags, cancellable, error))
+			return FALSE;
 	}
 
 	return TRUE;
