@@ -723,12 +723,12 @@ gs_plugin_odrs_refine_reviews (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app (GsPlugin             *plugin,
+	    GsApp                *app,
+	    GsPluginRefineFlags   flags,
+	    GCancellable         *cancellable,
+	    GError              **error)
 {
 	/* not valid */
 	if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
@@ -752,6 +752,28 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			return TRUE;
 		if (!gs_plugin_odrs_refine_ratings (plugin, app,
 						    cancellable, error))
+			return FALSE;
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	/* nothing to do here */
+	if ((flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS |
+		      GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS |
+		      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING)) == 0)
+		return TRUE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app (plugin, app, flags, cancellable, error))
 			return FALSE;
 	}
 
