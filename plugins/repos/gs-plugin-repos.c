@@ -164,16 +164,15 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return gs_plugin_repos_setup (plugin, cancellable, error);
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app_locked (GsPlugin             *plugin,
+		   GsApp                *app,
+		   GsPluginRefineFlags   flags,
+		   GCancellable         *cancellable,
+		   GError              **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
@@ -218,6 +217,29 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		break;
 	default:
 		break;
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN_HOSTNAME) == 0)
+		return TRUE;
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app_locked (plugin, app, flags, cancellable, error))
+			return FALSE;
 	}
 
 	return TRUE;
