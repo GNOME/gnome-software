@@ -794,26 +794,20 @@ gs_plugin_refine (GsPlugin *plugin,
 	if (!gs_plugin_packagekit_refine_update_urgency (plugin, list, flags, cancellable, error))
 		return FALSE;
 
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		/* only process this app if was created by this plugin */
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+			continue;
+
+		/* the scope is always system-wide */
+		if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN)
+			gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
+		if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN)
+			gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
+	}
+
 	/* success */
-	return TRUE;
-}
-
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
-		return TRUE;
-
-	/* the scope is always system-wide */
-	if (gs_app_get_scope (app) == AS_APP_SCOPE_UNKNOWN)
-		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_UNKNOWN)
-		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-
 	return TRUE;
 }
