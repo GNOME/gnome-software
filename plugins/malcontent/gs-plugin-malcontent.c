@@ -245,12 +245,12 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return (priv->app_filter != NULL);
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app_locked (GsPlugin             *plugin,
+		   GsApp                *app,
+		   GsPluginRefineFlags   flags,
+		   GCancellable         *cancellable,
+		   GError              **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
@@ -261,14 +261,30 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* Filter by various parental filters. The filter can’t be %NULL,
 	 * otherwise setup() would have failed and the plugin would have been
 	 * disabled. */
-	{
-		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
-		g_assert (priv->app_filter != NULL);
+	g_assert (priv->app_filter != NULL);
 
-		app_set_parental_quirks (plugin, app, priv->app_filter);
+	app_set_parental_quirks (plugin, app, priv->app_filter);
 
-		return TRUE;
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app_locked (plugin, app, flags, cancellable, error))
+			return FALSE;
 	}
+
+	return TRUE;
 }
 
 gboolean
