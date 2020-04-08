@@ -98,12 +98,12 @@ gs_plugin_modalias_matches (GsPlugin *plugin, const gchar *modalias)
 	return FALSE;
 }
 
-gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-		      GsApp *app,
-		      GsPluginRefineFlags flags,
-		      GCancellable *cancellable,
-		      GError **error)
+static gboolean
+refine_app (GsPlugin             *plugin,
+	    GsApp                *app,
+	    GsPluginRefineFlags   flags,
+	    GCancellable         *cancellable,
+	    GError              **error)
 {
 	GPtrArray *provides;
 	guint i;
@@ -130,5 +130,21 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			break;
 		}
 	}
+	return TRUE;
+}
+
+gboolean
+gs_plugin_refine (GsPlugin             *plugin,
+		  GsAppList            *list,
+		  GsPluginRefineFlags   flags,
+		  GCancellable         *cancellable,
+		  GError              **error)
+{
+	for (guint i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!refine_app (plugin, app, flags, cancellable, error))
+			return FALSE;
+	}
+
 	return TRUE;
 }
