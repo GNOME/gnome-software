@@ -788,8 +788,6 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 typedef struct {
 	GsPlugin	*plugin;
 	GsApp		*app;
-	guint		 job_max;
-	guint		 job_now;
 } GsFlatpakProgressHelper;
 
 static void
@@ -823,14 +821,8 @@ gs_flatpak_progress_cb (const gchar *status,
 	GsFlatpakProgressHelper *phelper = (GsFlatpakProgressHelper *) user_data;
 	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
 
-	/* fix up */
-	if (phelper->job_max == 0)
-		phelper->job_max = 1;
-
 	if (phelper->app != NULL) {
-		gdouble job_factor = 1.f / phelper->job_max;
-		gdouble offset = 100.f * job_factor * phelper->job_now;
-		gs_app_set_progress (phelper->app, offset + (progress * job_factor));
+		gs_app_set_progress (phelper->app, progress);
 
 		switch (gs_app_get_state (phelper->app)) {
 		case AS_APP_STATE_INSTALLING:
