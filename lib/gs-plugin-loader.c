@@ -3417,7 +3417,9 @@ gs_plugin_loader_job_timeout_cb (gpointer user_data)
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
 
 	/* call the cancellable */
-	g_debug ("cancelling job as it took too long");
+	g_debug ("cancelling job %s as it took longer than %u seconds",
+		 helper->function_name,
+		 gs_plugin_job_get_timeout (helper->plugin_job));
 	g_cancellable_cancel (helper->cancellable);
 
 	/* failed */
