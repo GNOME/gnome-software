@@ -409,9 +409,9 @@ gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Adds required information to a list of #GsApp's.
- * This function is only really required when "batching up" requests, and most
- * plugins are better using the per-app gs_plugin_refine_app() function.
+ * Adds required information to a list of #GsApp's. It allows requests to be
+ * batched up, which allows better performance than individual calls to
+ * gs_plugin_refine_app(). It should be used in preference wherever possible.
  *
  * An example for when this is useful would be in the PackageKit plugin where
  * we want to do one transaction of GetDetails with multiple source-ids rather
