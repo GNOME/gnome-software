@@ -4,12 +4,18 @@ cargs += ['-DLOCALPLUGINDIR=""']
 install_headers([
     'gnome-software.h',
     'gs-app.h',
+    'gs-app-collation.h',
     'gs-app-list.h',
+    'gs-autocleanups.h',
     'gs-category.h',
+    'gs-ioprio.h',
     'gs-metered.h',
     'gs-os-release.h',
     'gs-plugin.h',
     'gs-plugin-event.h',
+    'gs-plugin-job.h',
+    'gs-plugin-loader.h',
+    'gs-plugin-loader-sync.h',
     'gs-plugin-types.h',
     'gs-plugin-vfuncs.h',
     'gs-utils.h'
