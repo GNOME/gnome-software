@@ -62,6 +62,7 @@ libgnomesoftware = static_library(
   ],
   dependencies : librarydeps,
   c_args : cargs,
+  install: true,
 )
 
 pkg = import('pkgconfig')
