@@ -1,40 +1,6 @@
 cargs = ['-DG_LOG_DOMAIN="Gs"']
 cargs += ['-DLOCALPLUGINDIR=""']
 
-# we can't use conf as this is set_quoted()
-
-pkconf = configuration_data()
-pkconf.set('prefix', get_option('prefix'))
-pkconf.set('libdir',
-           join_paths(get_option('prefix'),
-                      get_option('libdir')))
-pkconf.set('includedir',
-           join_paths(get_option('prefix'),
-                      get_option('includedir')))
-pkconf.set('GS_PLUGIN_API_VERSION', gs_plugin_api_version)
-pkconf.set('VERSION', meson.project_version())
-configure_file(
-  input : 'gnome-software.pc.in',
-  output : 'gnome-software.pc',
-  install_dir: join_paths(get_option('libdir'), 'pkgconfig'),
-  configuration : pkconf
-)
-
-# XXX: This can probably be used (after testing), once
-# https://github.com/mesonbuild/meson/pull/1688 is merged
-#pkg = import('pkgconfig')
-#
-#pkg.generate(
-#    description : 'GNOME Software is a software center for GNOME',
-#    filebase : 'gnome-software',
-#    name : 'gnome-software',
-#    requires: [ 'gobject-2.0', 'gdk-3.0', 'appstream-glib', 'libsoup-2.4', 'gio-unix-2.0'],
-#    requires_private : [ 'gthread-2.0', 'atk' ],
-#    subdirs : [ 'gnome-software' ],
-#    variables : [ 'plugindir=${libdir}/lib/gs-plugins-' + gs_plugin_api_version ]
-#    version : meson.project_version()
-#)
-
 install_headers([
     'gnome-software.h',
     'gs-app.h',
@@ -96,6 +62,17 @@ libgnomesoftware = static_library(
   ],
   dependencies : librarydeps,
   c_args : cargs,
+)
+
+pkg = import('pkgconfig')
+
+pkg.generate(
+    libgnomesoftware,
+    description : 'GNOME Software is a software center for GNOME',
+    filebase : 'gnome-software',
+    name : 'gnome-software',
+    subdirs : 'gnome-software',
+    variables : 'plugindir=${libdir}/gs-plugins-' + gs_plugin_api_version,
 )
 
 executable(
