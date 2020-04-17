@@ -45,7 +45,7 @@ if get_option('polkit')
 endif
 
 libgnomesoftware = static_library(
-  'libgnomesoftware',
+  'gnomesoftware',
   sources : [
     'gs-app.c',
     'gs-app-list.c',
