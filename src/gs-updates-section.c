@@ -171,8 +171,10 @@ _get_app_sort_key (GsApp *app)
 	}
 
 	/* finally, sort by short name */
-	sort_name = gs_utils_sort_key (gs_app_get_name (app));
-	g_string_append (key, sort_name);
+	if (gs_app_get_name (app) != NULL) {
+		sort_name = gs_utils_sort_key (gs_app_get_name (app));
+		g_string_append (key, sort_name);
+	}
 
 	return g_string_free (key, FALSE);
 }
