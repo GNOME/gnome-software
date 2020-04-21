@@ -38,8 +38,7 @@ struct _GsAppList
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
 
 enum {
-	PROP_0,
-	PROP_STATE,
+	PROP_STATE = 1,
 	PROP_PROGRESS,
 	PROP_LAST
 };
