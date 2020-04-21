@@ -51,6 +51,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 	GtkWidget *box;
 	GtkWidget *widget;
 	GtkWidget *row;
+	g_autofree gchar *sort_key = NULL;
 
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 	gtk_widget_set_margin_top (box, 12);
@@ -63,9 +64,13 @@ add_app (GtkListBox *listbox, GsApp *app)
 	gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
 	gtk_container_add (GTK_CONTAINER (box), widget);
 
+	if (gs_app_get_name (app) != NULL) {
+		sort_key = gs_utils_sort_key (gs_app_get_name (app));
+	}
+
 	g_object_set_data_full (G_OBJECT (box),
 	                        "sort",
-	                        gs_utils_sort_key (gs_app_get_name (app)),
+	                        g_steal_pointer (&sort_key),
 	                        g_free);
 
 	gtk_list_box_prepend (listbox, box);

@@ -687,8 +687,12 @@ get_row_sort_key (GtkListBoxRow *row)
 		app = gs_repo_row_get_repo (GS_REPO_ROW (row));
 	}
 
-	sort_key = gs_utils_sort_key (gs_app_get_name (app));
-	return g_strdup_printf ("%u:%s", sort_order, sort_key);
+	if (gs_app_get_name (app) != NULL) {
+		sort_key = gs_utils_sort_key (gs_app_get_name (app));
+		return g_strdup_printf ("%u:%s", sort_order, sort_key);
+	} else {
+		return g_strdup_printf ("%u:", sort_order);
+	}
 }
 
 static gint
