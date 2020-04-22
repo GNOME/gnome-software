@@ -540,9 +540,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 		if (g_strcmp0 (helper->function_name, "gs_plugin_refine_wildcard") == 0) {
 			GsPluginRefineWildcardFunc plugin_func = func;
 			ret = plugin_func (plugin, app, list, refine_flags, cancellable, &error_local);
-		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine_app") == 0) {
-			GsPluginRefineAppFunc plugin_func = func;
-			ret = plugin_func (plugin, app, refine_flags, cancellable, &error_local);
 		} else if (g_strcmp0 (helper->function_name, "gs_plugin_refine") == 0) {
 			GsPluginRefineFunc plugin_func = func;
 			ret = plugin_func (plugin, list, refine_flags, cancellable, &error_local);
@@ -786,7 +783,7 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
 		g_autoptr(GsAppList) app_list = NULL;
 
-		/* run the batched plugin symbol then the per-app plugin */
+		/* run the batched plugin symbol then refine wildcards per-app */
 		helper->function_name = "gs_plugin_refine";
 		if (!gs_plugin_loader_call_vfunc (helper, plugin, NULL, list,
 						  refine_flags, cancellable, error)) {
@@ -797,15 +794,12 @@ gs_plugin_loader_run_refine_filter (GsPluginLoaderHelper *helper,
 		 * on the plugin may affect the list which can lead to problems
 		 * (e.g. inserting an app in the list on every call results in
 		 * an infinite loop) */
+		helper->function_name = "gs_plugin_refine_wildcard";
 		app_list = gs_app_list_copy (list);
 		for (guint j = 0; j < gs_app_list_length (app_list); j++) {
 			GsApp *app = gs_app_list_index (app_list, j);
-			if (!gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD)) {
-				helper->function_name = "gs_plugin_refine_app";
-			} else {
-				helper->function_name = "gs_plugin_refine_wildcard";
-			}
-			if (!gs_plugin_loader_call_vfunc (helper, plugin, app, NULL,
+			if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD) &&
+			    !gs_plugin_loader_call_vfunc (helper, plugin, app, NULL,
 							  refine_flags, cancellable, error)) {
 				return FALSE;
 			}

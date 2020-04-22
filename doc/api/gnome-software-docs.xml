@@ -293,7 +293,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
         <para>
           By filling in the optional details (which can also be filled in using
-          <code>gs_plugin_refine_app()</code> you can also make the details
+          <code>gs_plugin_refine()</code> you can also make the details
           page a much more exciting place.
           Adding a set of screenshots is left as an exercise to the reader.
         </para>
@@ -421,23 +421,27 @@ gs_plugin_refresh (GsPlugin *plugin,
           <title>Refine example</title>
           <programlisting>
 gboolean
-gs_plugin_refine_app (GsPlugin *plugin,
-                      GsApp *app,
-                      GsPluginRefineFlags flags,
-                      GCancellable *cancellable,
-                      GError **error)
+gs_plugin_refine (GsPlugin *plugin,
+                  GsAppList *list,
+                  GsPluginRefineFlags flags,
+                  GCancellable *cancellable,
+                  GError **error)
 {
   /* not required */
   if ((flags &amp; GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0)
     return TRUE;
 
-  /* already set */
-  if (gs_app_get_license (app) != NULL)
-    return TRUE;
+  for (guint i = 0; i &lt; gs_app_list_length (list); i++) {
+    GsApp *app = gs_app_list_index (list, i);
 
-  /* FIXME, not just hardcoded! */
-  if (g_strcmp0 (gs_app_get_id (app, "chiron.desktop") == 0))
-    gs_app_set_license (app, "GPL-2.0 and LGPL-2.0+");
+    /* already set */
+    if (gs_app_get_license (app) != NULL)
+      return TRUE;
+
+    /* FIXME, not just hardcoded! */
+    if (g_strcmp0 (gs_app_get_id (app, "chiron.desktop") == 0))
+      gs_app_set_license (app, "GPL-2.0 and LGPL-2.0+");
+  }
 
   return TRUE;
 }

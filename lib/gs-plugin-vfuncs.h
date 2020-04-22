@@ -410,8 +410,7 @@ gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
  * @error: a #GError, or %NULL
  *
  * Adds required information to a list of #GsApp's. It allows requests to be
- * batched up, which allows better performance than individual calls to
- * gs_plugin_refine_app(). It should be used in preference wherever possible.
+ * batched up, which allows better performance than individual calls per app.
  *
  * An example for when this is useful would be in the PackageKit plugin where
  * we want to do one transaction of GetDetails with multiple source-ids rather
@@ -421,34 +420,6 @@ gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
  **/
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
 							 GsAppList	*list,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-
-/**
- * gs_plugin_refine_app:
- * @plugin: a #GsPlugin
- * @app: a #GsApp
- * @flags: a #GsPluginRefineFlags, e.g. %GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE
- * @cancellable: a #GCancellable, or %NULL
- * @error: a #GError, or %NULL
- *
- * Adds required information to @app.
- *
- * The general idea for @flags is that this indicates what the UI needs at the
- * moment. This doesn't mean you can't add more information if you have it,
- * for example, if we requested %GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE and had
- * to do some IO to get a blob of data, we can use gs_app_set_license() *and*
- * gs_app_set_origin() even though only the first thing was specified.
- *
- * If the plugin can't handle applications of the specific kind, or if the
- * plugin knows not of the #GsApp ID then it should just ignore the request and
- * return FALSE.
- *
- * Returns: %TRUE for success or if not relevant
- **/
-gboolean	 gs_plugin_refine_app			(GsPlugin	*plugin,
-							 GsApp		*app,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
