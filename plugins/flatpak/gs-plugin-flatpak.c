@@ -445,16 +445,27 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    GCancellable *cancellable, GError **error)
 {
 	FlatpakInstallation *installation;
+	g_autoptr(GFile) installation_path = NULL;
+	g_autoptr(FlatpakInstallation) installation_clone = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
 	installation = gs_flatpak_get_installation (flatpak);
 
+	/* Operate on a copy of the installation so we can set the interactive
+	 * flag for the duration of this transaction. */
+	installation_path = flatpak_installation_get_path (installation);
+	installation_clone = flatpak_installation_new_for_path (installation_path,
+								flatpak_installation_get_is_user (installation),
+								cancellable, error);
+	if (installation_clone == NULL)
+		return NULL;
+
 	/* Let flatpak know if it is a background operation */
-	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
-		flatpak_installation_set_no_interaction (installation, TRUE);
+	flatpak_installation_set_no_interaction (installation_clone,
+						 !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
 
 	/* create transaction */
-	transaction = gs_flatpak_transaction_new (installation, cancellable, error);
+	transaction = gs_flatpak_transaction_new (installation_clone, cancellable, error);
 	if (transaction == NULL) {
 		g_prefix_error (error, "failed to build transaction: ");
 		gs_flatpak_error_convert (error);
