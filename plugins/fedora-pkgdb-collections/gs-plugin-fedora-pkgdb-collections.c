@@ -298,9 +298,9 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 	background = _get_upgrade_css_background (item->version);
 	if (background != NULL) {
 		css = g_strdup_printf ("background: %s;"
-				       "background-position: center;"
+				       "background-position: top;"
 				       "background-size: cover;"
-				       "color: black;",
+				       "color: white; text-shadow: 0 2px 2px rgba(0,0,0,0.5);",
 				       background);
 		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 	}
