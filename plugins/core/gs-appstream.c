@@ -203,8 +203,14 @@ gs_appstream_refine_icon (GsPlugin *plugin, GsApp *app, XbNode *component)
 	/* try a stock icon first */
 	icon = gs_appstream_get_icon_by_kind (component, AS_ICON_KIND_STOCK);
 	if (icon != NULL) {
-		gs_app_add_icon (app, icon);
-		return;
+		/* the icon referenced by the AppStream data may not be present in the current theme
+		 * (usually more stock icon entries are added to permit huge themes like Papirus
+		 * to style all apps in the software center), so we need to check for that here */
+		if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (),
+					     as_icon_get_name (icon))) {
+			gs_app_add_icon (app, icon);
+			return;
+		}
 	}
 
 	/* if HiDPI get a 128px cached icon */
