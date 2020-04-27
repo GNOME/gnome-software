@@ -693,10 +693,10 @@ gs_plugin_packagekit_refine_filename_to_id (GsPlugin *plugin,
 			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
 			break;
 		case AS_APP_KIND_ADDON:
-			fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
+			fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
 			if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
 				g_free (fn);
-				fn = g_strdup_printf ("/usr/share/metainfo/%s.metainfo.xml", tmp);
+				fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
 			}
 			break;
 		default:
