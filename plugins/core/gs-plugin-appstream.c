@@ -173,12 +173,15 @@ gs_plugin_appstream_load_appdata (GsPlugin *plugin,
 				  GError **error)
 {
 	const gchar *fn;
-	g_autoptr(GDir) dir = g_dir_open (path, 0, error);
+	g_autoptr(GDir) dir = NULL;
 	g_autoptr(GFile) parent = g_file_new_for_path (path);
 	if (!g_file_query_exists (parent, cancellable))
 		return TRUE;
+
+	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
+
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		if (g_str_has_suffix (fn, ".appdata.xml") ||
 		    g_str_has_suffix (fn, ".metainfo.xml")) {
@@ -265,15 +268,13 @@ gs_plugin_appstream_load_desktop (GsPlugin *plugin,
 {
 	const gchar *fn;
 	g_autoptr(GDir) dir = NULL;
-	g_autoptr(GFile) parent = NULL;
+	g_autoptr(GFile) parent = g_file_new_for_path (path);
+	if (!g_file_query_exists (parent, cancellable))
+		return TRUE;
 
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
-
-	parent = g_file_new_for_path (path);
-	if (!g_file_query_exists (parent, cancellable))
-		return TRUE;
 
 	while ((fn = g_dir_read_name (dir)) != NULL) {
 		if (g_str_has_suffix (fn, ".desktop")) {
