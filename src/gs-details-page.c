@@ -138,6 +138,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_kudo_translated;
 	GtkWidget		*label_details_kudo_updated;
 	GtkWidget		*progressbar_top;
+	guint			 progress_pulse_id;
 	GtkWidget		*popover_license_free;
 	GtkWidget		*popover_license_nonfree;
 	GtkWidget		*popover_license_unknown;
@@ -285,6 +286,25 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 	gs_grab_focus_when_mapped (self->scrolledwindow_details);
 }
 
+static gboolean
+_pulse_cb (gpointer user_data)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
+
+	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (self->progressbar_top));
+
+	return G_SOURCE_CONTINUE;
+}
+
+static void
+stop_progress_pulsing (GsDetailsPage *self)
+{
+	if (self->progress_pulse_id != 0) {
+		g_source_remove (self->progress_pulse_id);
+		self->progress_pulse_id = 0;
+	}
+}
+
 static void
 gs_details_page_refresh_progress (GsDetailsPage *self)
 {
@@ -359,10 +379,22 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	switch (state) {
 	case AS_APP_STATE_INSTALLING:
 		percentage = gs_app_get_progress (self->app);
-		if (percentage <= 100) {
+		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
+			/* Translators: This string is shown when preparing to download and install an app. */
+			gtk_label_set_label (GTK_LABEL (self->label_progress_status), _("Preparing…"));
+			gtk_widget_set_visible (self->label_progress_status, TRUE);
+			gtk_widget_set_visible (self->label_progress_percentage, FALSE);
+
+			if (self->progress_pulse_id == 0)
+				self->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
+
+			gtk_widget_set_visible (self->progressbar_top, TRUE);
+			break;
+		} else if (percentage <= 100) {
 			g_autofree gchar *str = g_strdup_printf ("%u%%", percentage);
 			gtk_label_set_label (GTK_LABEL (self->label_progress_percentage), str);
 			gtk_widget_set_visible (self->label_progress_percentage, TRUE);
+			stop_progress_pulsing (self);
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (self->progressbar_top),
 						       (gdouble) percentage / 100.f);
 			gtk_widget_set_visible (self->progressbar_top, TRUE);
@@ -372,6 +404,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 	default:
 		gtk_widget_set_visible (self->label_progress_percentage, FALSE);
 		gtk_widget_set_visible (self->progressbar_top, FALSE);
+		stop_progress_pulsing (self);
 		break;
 	}
 	if (app_has_pending_action (self->app)) {
@@ -2654,6 +2687,8 @@ static void
 gs_details_page_dispose (GObject *object)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (object);
+
+	stop_progress_pulsing (self);
 
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_details_page_notify_state_changed_cb, self);
