@@ -205,15 +205,15 @@ reset_app_progress (GsApp *app)
 	GsAppList *addons = gs_app_get_addons (app);
 	GsAppList *related = gs_app_get_related (app);
 
-	gs_app_set_progress (app, 0);
+	gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 
 	for (guint i = 0; i < gs_app_list_length (addons); i++) {
 		GsApp *app_addons = gs_app_list_index (addons, i);
-		gs_app_set_progress (app_addons, 0);
+		gs_app_set_progress (app_addons, GS_APP_PROGRESS_UNKNOWN);
 	}
 	for (guint i = 0; i < gs_app_list_length (related); i++) {
 		GsApp *app_related = gs_app_list_index (related, i);
-		gs_app_set_progress (app_related, 0);
+		gs_app_set_progress (app_related, GS_APP_PROGRESS_UNKNOWN);
 	}
 }
 
@@ -1626,7 +1626,7 @@ gs_plugin_loader_pending_apps_add (GsPluginLoader *plugin_loader,
 		GsApp *app = gs_app_list_index (list, i);
 		g_ptr_array_add (priv->pending_apps, g_object_ref (app));
 		/* make sure the progress is properly initialized */
-		gs_app_set_progress (app, 0);
+		gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 	}
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }

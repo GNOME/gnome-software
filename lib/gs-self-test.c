@@ -678,8 +678,11 @@ gs_app_func (void)
 	/* check setting the progress */
 	gs_app_set_progress (app, 42);
 	g_assert_cmpuint (gs_app_get_progress (app), ==, 42);
-	gs_app_set_progress (app, 142);
-	g_assert_cmpuint (gs_app_get_progress (app), ==, 100);
+	gs_app_set_progress (app, 0);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, 0);
+	gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
+	g_assert_cmpuint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
+	g_assert_false ((gint) 0 <= (gint) GS_APP_PROGRESS_UNKNOWN && GS_APP_PROGRESS_UNKNOWN <= 100);
 
 	/* check pending action */
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
@@ -689,6 +692,22 @@ gs_app_func (void)
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
 	gs_app_set_state_recover (app);
+}
+
+static void
+gs_app_progress_clamping_func (void)
+{
+	g_autoptr(GsApp) app = NULL;
+
+	if (g_test_subprocess ()) {
+		app = gs_app_new ("gnome-software.desktop");
+		gs_app_set_progress (app, 142);
+		g_assert_cmpuint (gs_app_get_progress (app), ==, 100);
+	} else {
+		g_test_trap_subprocess (NULL, 0, 0);
+		g_test_trap_assert_failed ();
+		g_test_trap_assert_stderr ("*WARNING*cannot set 142% for *, setting instead: 100%*");
+	}
 }
 
 static void
@@ -796,6 +815,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/lib/utils{parse-evr}", gs_utils_parse_evr_func);
 	g_test_add_func ("/gnome-software/lib/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/lib/app", gs_app_func);
+	g_test_add_func ("/gnome-software/lib/app/progress-clamping", gs_app_progress_clamping_func);
 	g_test_add_func ("/gnome-software/lib/app{addons}", gs_app_addons_func);
 	g_test_add_func ("/gnome-software/lib/app{unique-id}", gs_app_unique_id_func);
 	g_test_add_func ("/gnome-software/lib/app{thread}", gs_app_thread_func);
