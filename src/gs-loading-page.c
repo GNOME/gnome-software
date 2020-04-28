@@ -74,7 +74,8 @@ gs_loading_page_status_changed_cb (GsPluginLoader *plugin_loader,
 			g_source_remove (priv->progress_pulse_id);
 			priv->progress_pulse_id = 0;
 		}
-		if (gs_app_get_progress (app) == 0) {
+
+		if (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN) {
 			priv->progress_pulse_id = g_timeout_add (50, _pulse_cb, self);
 		} else {
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (priv->progressbar),
