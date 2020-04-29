@@ -767,6 +767,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	FwupdInstallFlags install_flags = 0;
 	GFile *local_file;
 	g_autofree gchar *filename = NULL;
+	gboolean downloaded_to_cache = FALSE;
 
 	/* not set */
 	local_file = gs_app_get_local_file (app);
@@ -787,6 +788,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
+		downloaded_to_cache = TRUE;
 	}
 
 	/* limit to single device? */
@@ -812,7 +814,13 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 
 	/* delete the file from the cache */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	return g_file_delete (local_file, cancellable, error);
+	if (downloaded_to_cache) {
+		if (!g_file_delete (local_file, cancellable, error))
+			return FALSE;
+	}
+
+	/* success */
+	return TRUE;
 }
 
 static gboolean
