@@ -173,6 +173,28 @@ _transaction_ready (FlatpakTransaction *transaction)
 					FLATPAK_TRANSACTION_OPERATION_UPDATE)
 				gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		}
+
+#if FLATPAK_CHECK_VERSION(1, 7, 3)
+		/* Debug dump. */
+		{
+			GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (op);
+			g_autoptr(GString) debug_message = g_string_new ("");
+
+			g_string_append_printf (debug_message,
+						"%s: op %p, app %s (%p), download size %" G_GUINT64_FORMAT ", related-to:",
+						G_STRFUNC, op,
+						app ? gs_app_get_unique_id (app) : "?",
+						app,
+						flatpak_transaction_operation_get_download_size (op));
+			for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
+				FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
+				g_string_append_printf (debug_message,
+							"\n ├ %p", related_to_op);
+			}
+			g_string_append (debug_message, "\n └ (end)");
+			g_debug ("%s", debug_message->str);
+		}
+#endif  /* flatpak ≥ 1.7.3 */
 	}
 	return TRUE;
 }
