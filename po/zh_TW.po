@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-04-23 12:40+0000\n"
-"PO-Revision-Date: 2020-05-01 01:40+0800\n"
+"POT-Creation-Date: 2020-04-30 17:43+0000\n"
+"PO-Revision-Date: 2020-05-02 15:32+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
@@ -524,7 +524,7 @@ msgstr "安裝…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:130 src/gs-updates-section.c:476
+#: src/gs-app-row.c:130 src/gs-updates-section.c:478
 msgid "Cancel"
 msgstr "取消"
 
@@ -580,7 +580,7 @@ msgstr "特選"
 
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:467
+#: src/gs-category-page.c:452
 #, c-format
 msgid "Featured %s"
 msgstr "%s特選"
@@ -1730,7 +1730,7 @@ msgstr "專有授權"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:442
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "附加元件"
@@ -2026,7 +2026,7 @@ msgstr "歷史"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:436
+#: src/gs-installed-page.c:438
 msgid "System Applications"
 msgstr "系統應用程式"
 
@@ -2138,12 +2138,12 @@ msgid "Recommended Productivity Applications"
 msgstr "推薦的生產力應用程式"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:827
+#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:831
 msgid "Access additional software from selected third party sources."
 msgstr "從選取的第三方來源存取更多軟體。"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:831
+#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:835
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2151,7 +2151,7 @@ msgstr "此軟體有部分是專有授權，因此對於使用、分享、存取
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:840
 msgid "Find out more…"
 msgstr "深入瞭解…"
 
@@ -2258,7 +2258,7 @@ msgstr "當更新已經自動安裝完成時顯示通知。"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:114
+#: src/gs-removal-dialog.c:119
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -2347,19 +2347,19 @@ msgstr "停用"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:740
+#: src/gs-repos-dialog.c:744
 msgid "the operating system"
 msgstr "作業系統"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:806 src/gs-repos-dialog.c:842
+#: src/gs-repos-dialog.c:810 src/gs-repos-dialog.c:846
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "這些軟體庫可補充 %s 提供的預設軟體。"
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:824
+#: src/gs-repos-dialog.c:828
 msgid "Third Party Repositories"
 msgstr "第三方軟體庫"
 
@@ -3514,41 +3514,41 @@ msgstr "更新為自動管理"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:278
+#: src/gs-updates-section.c:280
 msgid "Restart & Update"
 msgstr "重新啟動並更新"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:284
+#: src/gs-updates-section.c:286
 msgid "Update All"
 msgstr "全部更新"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:415
+#: src/gs-updates-section.c:417
 msgid "Integrated Firmware"
 msgstr "整合的韌體"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:419
+#: src/gs-updates-section.c:421
 msgid "Requires Restart"
 msgstr "必須重新啟動"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:423
+#: src/gs-updates-section.c:425
 msgid "Application Updates"
 msgstr "應用程式更新"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:427
+#: src/gs-updates-section.c:429
 msgid "Device Firmware"
 msgstr "裝置韌體"
 
-#: src/gs-updates-section.c:455 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:457 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "下載(_D)"
 
@@ -4090,7 +4090,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak 是一個用於 Linux 桌面應用程式框架"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:861
+#: plugins/flatpak/gs-flatpak.c:853
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "取得 %s 的 flatpak 中介資料…"
@@ -4152,6 +4152,13 @@ msgstr "%s 控制器"
 #, c-format
 msgid "%s Thunderbolt Controller"
 msgstr "%s Thunderbolt 控制器"
+
+#. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
+#. * at system bootup
+#: plugins/fwupd/gs-fwupd-app.c:177
+#, c-format
+msgid "%s CPU Microcode"
+msgstr "%s CPU 微碼"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:671
