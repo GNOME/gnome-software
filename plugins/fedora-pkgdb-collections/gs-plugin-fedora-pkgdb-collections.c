@@ -248,6 +248,7 @@ _sort_items_cb (gconstpointer a, gconstpointer b)
 static GsApp *
 _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app;
 	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *app_version = NULL;
@@ -294,9 +295,14 @@ _create_upgrade_from_info (GsPlugin *plugin, PkgdbItem *item)
 			       item->version);
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 
-	/* use a fancy background if possible */
 	background = _get_upgrade_css_background (item->version);
-	if (background != NULL) {
+	if (background == NULL) {
+		/* require fancy background for upgrades, except for when
+		 * testing pre-releases with show-upgrade-prerelease key set */
+		if (!g_settings_get_boolean (priv->settings, "show-upgrade-prerelease"))
+			return NULL;
+	} else {
+		/* use a fancy background */
 		css = g_strdup_printf ("background: %s;"
 				       "background-position: top;"
 				       "background-size: cover;"
