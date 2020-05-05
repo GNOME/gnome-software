@@ -118,6 +118,38 @@ add_quirks_from_package_name (GsApp *app, const gchar *package_name)
 		gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 }
 
+static gboolean
+gs_plugin_packagekit_local_check_installed (GsPlugin *plugin,
+					    GsApp *app,
+					    GCancellable *cancellable,
+					    GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	PkBitfield filter;
+	const gchar *names[] = { gs_app_get_source_default (app), NULL };
+	g_autoptr(GPtrArray) packages = NULL;
+	g_autoptr(PkResults) results = NULL;
+
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+					 PK_FILTER_ENUM_ARCH,
+					 PK_FILTER_ENUM_INSTALLED,
+					 -1);
+	results = pk_client_resolve (PK_CLIENT (priv->task), filter, (gchar **) names,
+				     cancellable, NULL, NULL, error);
+	if (results == NULL)
+		return FALSE;
+	packages = pk_results_get_package_array (results);
+	if (packages->len > 0) {
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		for (guint i = 0; i < packages->len; i++){
+			PkPackage *pkg = g_ptr_array_index (packages, i);
+			gs_app_add_source_id (app, pk_package_get_id (pkg));
+		}
+	}
+	return TRUE;
+}
+
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,
@@ -217,6 +249,13 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	license_spdx = as_utils_license_to_spdx (pk_details_get_license (item));
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
 	add_quirks_from_package_name (app, split[PK_PACKAGE_ID_NAME]);
+
+	/* is already installed? */
+	if (!gs_plugin_packagekit_local_check_installed (plugin,
+							 app,
+							 cancellable,
+							 error))
+		return FALSE;
 
 	/* look for a desktop file so we can use a valid application id */
 	if (!gs_plugin_packagekit_refresh_guess_app_id (plugin,
