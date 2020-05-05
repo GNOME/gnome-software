@@ -47,14 +47,11 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	PkFiles *item;
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
-	guint i;
-	guint j;
-	gchar **fns;
 	g_auto(GStrv) files = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GString) basename_best = g_string_new (NULL);
 
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
@@ -79,11 +76,12 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* find the first desktop file */
-	for (i = 0; i < array->len; i++) {
-		item = g_ptr_array_index (array, i);
-		fns = pk_files_get_files (item);
-		for (j = 0; fns[j] != NULL; j++) {
+	/* find the smallest length desktop file, on the logic that
+	 * ${app}.desktop is going to be better than ${app}-${action}.desktop */
+	for (guint i = 0; i < array->len; i++) {
+		PkFiles *item = g_ptr_array_index (array, i);
+		gchar **fns = pk_files_get_files (item);
+		for (guint j = 0; fns[j] != NULL; j++) {
 			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
 			    g_str_has_suffix (fns[j], ".repo")) {
 				gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
@@ -91,12 +89,17 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
 			    g_str_has_suffix (fns[j], ".desktop")) {
 				g_autofree gchar *basename = g_path_get_basename (fns[j]);
-				gs_app_set_id (app, basename);
-				gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-				break;
+				if (basename_best->len == 0 ||
+				    strlen (basename) < basename_best->len)
+					g_string_assign (basename_best, basename);
 			}
 		}
 	}
+	if (basename_best->len > 0) {
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+		gs_app_set_id (app, basename_best->str);
+	}
+
 	return TRUE;
 }
 
