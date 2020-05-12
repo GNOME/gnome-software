@@ -255,8 +255,9 @@ transaction_progress_new (void)
 static void
 transaction_progress_free (TransactionProgress *self)
 {
-	g_main_loop_unref (self->loop);
+	g_clear_object (&self->plugin);
 	g_clear_error (&self->error);
+	g_main_loop_unref (self->loop);
 	g_clear_object (&self->app);
 	g_slice_free (TransactionProgress, self);
 }
@@ -281,11 +282,30 @@ on_transaction_progress (GDBusProxy *proxy,
 	if (g_strcmp0 (signal_name, "PercentProgress") == 0) {
 		const gchar *message = NULL;
 		guint32 percentage;
+
 		g_variant_get_child (parameters, 0, "&s", &message);
 		g_variant_get_child (parameters, 1, "u", &percentage);
 		g_debug ("PercentProgress: %u, %s\n", percentage, message);
+
 		if (tp->app != NULL)
 			gs_app_set_progress (tp->app, (guint) percentage);
+
+		if (tp->app != NULL && tp->plugin != NULL) {
+			GsPluginStatus plugin_status;
+
+			switch (gs_app_get_state (tp->app)) {
+			case AS_APP_STATE_INSTALLING:
+				plugin_status = GS_PLUGIN_STATUS_INSTALLING;
+				break;
+			case AS_APP_STATE_REMOVING:
+				plugin_status = GS_PLUGIN_STATUS_REMOVING;
+				break;
+			default:
+				plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
+				break;
+			}
+			gs_plugin_status_update (tp->plugin, tp->app, plugin_status);
+		}
 	} else if (g_strcmp0 (signal_name, "Finished") == 0) {
 		if (tp->error == NULL) {
 			g_autofree gchar *error_message = NULL;
@@ -603,6 +623,7 @@ ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GErro
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *transaction_address = NULL;
+	g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 	g_autoptr(DnfContext) context = dnf_context_new ();
 	g_autoptr(DnfState) state = dnf_state_new ();
 	g_autoptr(GVariant) options = NULL;
@@ -610,6 +631,9 @@ ensure_rpmostree_dnf_context (GsPlugin *plugin, GCancellable *cancellable, GErro
 
 	if (priv->dnf_context != NULL)
 		return TRUE;
+
+	tp->app = g_object_ref (progress_app);
+	tp->plugin = g_object_ref (plugin);
 
 	dnf_context_set_repo_dir (context, "/etc/yum.repos.d");
 	dnf_context_set_cache_dir (context, RPMOSTREE_CORE_CACHEDIR RPMOSTREE_DIR_CACHE_REPOMD);
@@ -669,8 +693,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	{
 		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		g_autoptr(GVariant) options = NULL;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+
+		tp->app = g_object_ref (progress_app);
+		tp->plugin = g_object_ref (plugin);
 
 		options = make_rpmostree_options_variant (FALSE,  /* reboot */
 		                                          FALSE,  /* allow-downgrade */
@@ -703,9 +731,13 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	{
 		g_autofree gchar *transaction_address = NULL;
+		g_autoptr(GsApp) progress_app = gs_app_new (gs_plugin_get_name (plugin));
 		g_autoptr(GVariant) options = NULL;
 		GVariantDict dict;
 		g_autoptr(TransactionProgress) tp = transaction_progress_new ();
+
+		tp->app = g_object_ref (progress_app);
+		tp->plugin = g_object_ref (plugin);
 
 		g_variant_dict_init (&dict, NULL);
 		g_variant_dict_insert (&dict, "mode", "s", "check");
