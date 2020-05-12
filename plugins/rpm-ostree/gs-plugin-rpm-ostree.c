@@ -657,6 +657,9 @@ gs_plugin_refresh (GsPlugin *plugin,
                    GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	locker = g_mutex_locker_new (&priv->mutex);
 
 	if (!ensure_rpmostree_dnf_context (plugin, cancellable, error))
 		return FALSE;
