@@ -1251,6 +1251,7 @@ static gboolean
 resolve_installed_packages_app (GsPlugin *plugin,
                                 GPtrArray *pkglist,
                                 gchar **layered_packages,
+                                gchar **layered_local_packages,
                                 GsApp *app)
 {
 	for (guint i = 0; i < pkglist->len; i++) {
@@ -1260,7 +1261,9 @@ resolve_installed_packages_app (GsPlugin *plugin,
 			if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			if (g_strv_contains ((const gchar * const *) layered_packages,
-			                     rpm_ostree_package_get_name (pkg))) {
+			                     rpm_ostree_package_get_name (pkg)) ||
+			    g_strv_contains ((const gchar * const *) layered_local_packages,
+			                     rpm_ostree_package_get_nevra (pkg))) {
 				/* layered packages can always be removed */
 				gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
 			} else {
@@ -1389,6 +1392,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	g_autoptr(GPtrArray) pkglist = NULL;
 	g_autoptr(GVariant) default_deployment = NULL;
 	g_auto(GStrv) layered_packages = NULL;
+	g_auto(GStrv) layered_local_packages = NULL;
 	g_autofree gchar *checksum = NULL;
 
 	locker = g_mutex_locker_new (&priv->mutex);
@@ -1403,6 +1407,9 @@ gs_plugin_refine (GsPlugin *plugin,
 	g_assert (g_variant_lookup (default_deployment,
 	                            "packages", "^as",
 	                            &layered_packages));
+	g_assert (g_variant_lookup (default_deployment,
+	                            "requested-local-packages", "^as",
+	                            &layered_local_packages));
 	g_assert (g_variant_lookup (default_deployment,
 	                            "checksum", "s",
 	                            &checksum));
@@ -1442,7 +1449,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 
 		/* first try to resolve from installed packages */
-		found = resolve_installed_packages_app (plugin, pkglist, layered_packages, app);
+		found = resolve_installed_packages_app (plugin, pkglist, layered_packages, layered_local_packages, app);
 
 		/* if we didn't find anything, try resolving from available packages */
 		if (!found && priv->dnf_context != NULL)
