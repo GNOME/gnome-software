@@ -113,7 +113,9 @@ perms_from_metadata (GKeyFile *keyfile)
 		permissions |= GS_APP_PERMISSIONS_SYSTEM_BUS;
 	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "session-bus"))
 		permissions |= GS_APP_PERMISSIONS_SESSION_BUS;
-	if (strv != NULL && g_strv_contains ((const gchar * const*)strv, "x11"))
+	if (strv != NULL &&
+	    !g_strv_contains ((const gchar * const*)strv, "fallback-x11") &&
+	    g_strv_contains ((const gchar * const*)strv, "x11"))
 		permissions |= GS_APP_PERMISSIONS_X11;
 	g_strfreev (strv);
 
