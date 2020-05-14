@@ -162,6 +162,17 @@ typedef enum {
 #define MEDIUM_PERMISSIONS (LIMITED_PERMISSIONS | \
 			GS_APP_PERMISSIONS_X11)
 
+/**
+ * GS_APP_PROGRESS_UNKNOWN:
+ *
+ * A value returned by gs_app_get_progress() if the app’s progress is unknown
+ * or has a wide confidence interval. Typically this would be represented in the
+ * UI using a pulsing progress bar or spinner.
+ *
+ * Since: 3.38
+ */
+#define GS_APP_PROGRESS_UNKNOWN G_MAXUINT
+
 GsApp		*gs_app_new			(const gchar	*id);
 G_DEPRECATED_FOR(gs_app_set_from_unique_id)
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);

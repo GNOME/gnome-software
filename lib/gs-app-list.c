@@ -32,7 +32,7 @@ struct _GsAppList
 	guint			 size_peak;
 	GsAppListFlags		 flags;
 	AsAppState		 state;
-	guint			 progress;
+	guint			 progress;  /* 0–100 inclusive, or %GS_APP_PROGRESS_UNKNOWN */
 };
 
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
@@ -67,19 +67,21 @@ gs_app_list_get_state (GsAppList *list)
  * gs_app_list_get_progress:
  * @list: A #GsAppList
  *
- * Gets the average percentage completion of all apps in the list.
+ * Gets the average percentage completion of all apps in the list. If any of the
+ * apps in the list has progress %GS_APP_PROGRESS_UNKNOWN, or if the app list
+ * is empty, %GS_APP_PROGRESS_UNKNOWN will be returned.
  *
  * This method will only return a valid result if gs_app_list_add_flag() has
  * been called with %GS_APP_LIST_FLAG_WATCH_APPS.
  *
- * Returns: the percentage completion, or 0 for unknown
+ * Returns: the percentage completion (0–100 inclusive), or %GS_APP_PROGRESS_UNKNOWN for unknown
  *
  * Since: 3.30
  **/
 guint
 gs_app_list_get_progress (GsAppList *list)
 {
-	g_return_val_if_fail (GS_IS_APP_LIST (list), 0);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), GS_APP_PROGRESS_UNKNOWN);
 	return list->progress;
 }
 
@@ -132,12 +134,24 @@ gs_app_list_invalidate_progress (GsAppList *self)
 	/* find the average percentage complete of the list */
 	if (apps->len > 0) {
 		guint64 pc_cnt = 0;
+		gboolean unknown_seen = FALSE;
+
 		for (guint i = 0; i < apps->len; i++) {
 			GsApp *app_tmp = g_ptr_array_index (apps, i);
+			guint app_progress = gs_app_get_progress (app_tmp);
+
+			if (app_progress == GS_APP_PROGRESS_UNKNOWN) {
+				unknown_seen = TRUE;
+				break;
+			}
 			pc_cnt += gs_app_get_progress (app_tmp);
 		}
-		progress = pc_cnt / apps->len;
+
+		progress = (!unknown_seen) ? pc_cnt / apps->len : GS_APP_PROGRESS_UNKNOWN;
+	} else {
+		progress = GS_APP_PROGRESS_UNKNOWN;
 	}
+
 	if (self->progress != progress) {
 		self->progress = progress;
 		g_object_notify (G_OBJECT (self), "progress");
@@ -911,8 +925,14 @@ gs_app_list_class_init (GsAppListClass *klass)
 
 	/**
 	 * GsAppList:progress:
+	 *
+	 * A percentage (0–100, inclusive) indicating the progress through the
+	 * current task on this app list. The value may otherwise be
+	 * %GS_APP_PROGRESS_UNKNOWN if the progress is unknown or has a wide
+	 * confidence interval on any app, or if the app list is empty.
 	 */
-	pspec = g_param_spec_uint ("progress", NULL, NULL, 0, 100, 0,
+	pspec = g_param_spec_uint ("progress", NULL, NULL,
+				   0, GS_APP_PROGRESS_UNKNOWN, GS_APP_PROGRESS_UNKNOWN,
 				   G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
 }

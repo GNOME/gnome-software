@@ -97,7 +97,7 @@ typedef struct
 	AsAppState		 state_recover;
 	AsAppScope		 scope;
 	AsBundleKind		 bundle_kind;
-	guint			 progress;
+	guint			 progress;  /* integer 0–100 (inclusive), or %GS_APP_PROGRESS_UNKNOWN */
 	gboolean		 allow_cancel;
 	GHashTable		*metadata;
 	GsAppList		*addons;
@@ -442,7 +442,9 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		g_autofree gchar *qstr = gs_app_quirk_to_string (priv->quirk);
 		gs_app_kv_lpad (str, "quirk", qstr);
 	}
-	if (priv->progress > 0)
+	if (priv->progress == GS_APP_PROGRESS_UNKNOWN)
+		gs_app_kv_printf (str, "progress", "unknown");
+	else
 		gs_app_kv_printf (str, "progress", "%u%%", priv->progress);
 	if (priv->id != NULL)
 		gs_app_kv_lpad (str, "id", priv->id);
@@ -837,7 +839,7 @@ gs_app_get_state (GsApp *app)
  *
  * Gets the percentage completion.
  *
- * Returns: the percentage completion, or 0 for unknown
+ * Returns: the percentage completion (0–100 inclusive), or %GS_APP_PROGRESS_UNKNOWN for unknown
  *
  * Since: 3.22
  **/
@@ -845,7 +847,7 @@ guint
 gs_app_get_progress (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), 0);
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PROGRESS_UNKNOWN);
 	return priv->progress;
 }
 
@@ -892,7 +894,7 @@ gs_app_set_state_recover (GsApp *app)
 
 	/* make sure progress gets reset when recovering state, to prevent
 	 * confusing initial states when going through more than one attempt */
-	gs_app_set_progress (app, 0);
+	gs_app_set_progress (app, GS_APP_PROGRESS_UNKNOWN);
 
 	priv->state = priv->state_recover;
 	gs_app_queue_notify (app, obj_props[PROP_STATE]);
@@ -1026,9 +1028,12 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 /**
  * gs_app_set_progress:
  * @app: a #GsApp
- * @percentage: a percentage progress
+ * @percentage: a percentage progress (0–100 inclusive), or %GS_APP_PROGRESS_UNKNOWN
  *
- * This sets the progress completion of the application.
+ * This sets the progress completion of the application. Use
+ * %GS_APP_PROGRESS_UNKNOWN if the progress is unknown or has a wide confidence
+ * interval.
+ *
  * If called more than once with the same value then subsequent calls
  * will be ignored.
  *
@@ -1043,9 +1048,9 @@ gs_app_set_progress (GsApp *app, guint percentage)
 	locker = g_mutex_locker_new (&priv->mutex);
 	if (priv->progress == percentage)
 		return;
-	if (percentage > 100) {
-		g_debug ("cannot set %u%% for %s, setting instead: 100%%",
-			 percentage, gs_app_get_unique_id_unlocked (app));
+	if (percentage != GS_APP_PROGRESS_UNKNOWN && percentage > 100) {
+		g_warning ("cannot set %u%% for %s, setting instead: 100%%",
+			   percentage, gs_app_get_unique_id_unlocked (app));
 		percentage = 100;
 	}
 	priv->progress = percentage;
@@ -4145,7 +4150,7 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_state_internal (app, g_value_get_uint (value));
 		break;
 	case PROP_PROGRESS:
-		priv->progress = g_value_get_uint (value);
+		gs_app_set_progress (app, g_value_get_uint (value));
 		break;
 	case PROP_CAN_CANCEL_INSTALLATION:
 		priv->allow_cancel = g_value_get_boolean (value);
@@ -4305,9 +4310,14 @@ gs_app_class_init (GsAppClass *klass)
 
 	/**
 	 * GsApp:progress:
+	 *
+	 * A percentage (0–100, inclusive) indicating the progress through the
+	 * current task on this app. The value may otherwise be
+	 * %GS_APP_PROGRESS_UNKNOWN if the progress is unknown or has a wide
+	 * confidence interval.
 	 */
 	obj_props[PROP_PROGRESS] = g_param_spec_uint ("progress", NULL, NULL,
-				   0, 100, 0,
+				   0, GS_APP_PROGRESS_UNKNOWN, GS_APP_PROGRESS_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	/**
