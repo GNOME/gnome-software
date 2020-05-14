@@ -201,6 +201,16 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+progress_notify_cb (GObject *obj, GParamSpec *pspec, gpointer user_data)
+{
+	gboolean *seen_unknown = user_data;
+	GsApp *app = GS_APP (obj);
+
+	if (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN)
+		*seen_unknown = TRUE;
+}
+
+static void
 gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -225,6 +235,8 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsAppList) sources = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	gulong signal_id;
+	gboolean seen_unknown;
 
 	/* drop all caches */
 	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
@@ -418,7 +430,13 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert (!g_file_test (metadata_fn, G_FILE_TEST_IS_REGULAR));
 	g_assert (!g_file_test (desktop_fn, G_FILE_TEST_IS_REGULAR));
 
-	/* install again, to check whether the progress gets initialized */
+	/* install again, to check whether the progress gets initialized;
+	 * since installation happens in another thread, we have to monitor all
+	 * changes to the progress and see if we see the one we want */
+	seen_unknown = (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN);
+	signal_id = g_signal_connect (app, "notify::progress",
+				      G_CALLBACK (progress_notify_cb), &seen_unknown);
+
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app,
@@ -426,13 +444,15 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 
 	/* progress should be set to unknown right before installing */
-	gs_test_flush_main_context ();
-	g_assert_cmpint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
+	while (!seen_unknown)
+		g_main_context_iteration (NULL, TRUE);
+	g_assert_true (seen_unknown);
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
 	g_assert_cmpint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
+	g_signal_handler_disconnect (app, signal_id);
 
 	/* remove the application */
 	g_object_unref (plugin_job);
