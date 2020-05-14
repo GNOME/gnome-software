@@ -14,5 +14,6 @@ G_BEGIN_DECLS
 void	 gs_test_flush_main_context		(void);
 gchar	*gs_test_get_filename			(const gchar	*testdatadir,
 						 const gchar	*filename);
+void	 gs_test_expose_icon_theme_paths	(void);
 
 G_END_DECLS

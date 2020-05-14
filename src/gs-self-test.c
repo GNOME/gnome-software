@@ -94,7 +94,11 @@ gs_content_rating_from_locale (void)
 int
 main (int argc, char **argv)
 {
-	g_test_init (&argc, &argv, NULL);
+	g_test_init (&argc, &argv,
+#if GLIB_CHECK_VERSION(2, 60, 0)
+		     G_TEST_OPTION_ISOLATE_DIRS,
+#endif
+		     NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* only critical and error are fatal */

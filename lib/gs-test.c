@@ -35,3 +35,36 @@ gs_test_flush_main_context (void)
 	if (cnt > 0)
 		g_debug ("cleared %u events", cnt);
 }
+
+/**
+ * gs_test_expose_icon_theme_paths:
+ *
+ * Calculate and set the `GS_SELF_TEST_ICON_THEME_PATH` environment variable
+ * to include the current system icon theme paths. This is designed to be called
+ * before calling `g_test_init()` with `G_TEST_OPTION_ISOLATE_DIRS`, which will
+ * clear the system icon theme paths.
+ *
+ * As this function calls `g_setenv()`, it must not be called after threads have
+ * been spawned.
+ *
+ * Calling this function is an explicit acknowledgement that the code under test
+ * should be accessing the icon theme.
+ *
+ * Since: 3.38
+ */
+void
+gs_test_expose_icon_theme_paths (void)
+{
+	const gchar * const *data_dirs;
+	g_autoptr(GString) data_dirs_str = NULL;
+	g_autofree gchar *data_dirs_joined = NULL;
+
+	data_dirs = g_get_system_data_dirs ();
+	data_dirs_str = g_string_new ("");
+	for (gsize i = 0; data_dirs[i] != NULL; i++)
+		g_string_append_printf (data_dirs_str, "%s%s/icons",
+					(data_dirs_str->len > 0) ? ":" : "",
+					data_dirs[i]);
+	data_dirs_joined = g_string_free (g_steal_pointer (&data_dirs_str), FALSE);
+	g_setenv ("GS_SELF_TEST_ICON_THEME_PATH", data_dirs_joined, TRUE);
+}

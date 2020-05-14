@@ -193,7 +193,22 @@ main (int argc, char **argv)
 		NULL
 	};
 
-	g_test_init (&argc, &argv, NULL);
+	/* While we use %G_TEST_OPTION_ISOLATE_DIRS to create temporary directories
+	 * for each of the tests, we want to use the system MIME registry, assuming
+	 * that it exists and correctly has shared-mime-info installed. */
+#if GLIB_CHECK_VERSION(2, 60, 0)
+	g_content_type_set_mime_dirs (NULL);
+#endif
+
+	/* Similarly, add the system-wide icon theme path before it’s
+	 * overwritten by %G_TEST_OPTION_ISOLATE_DIRS. */
+	gs_test_expose_icon_theme_paths ();
+
+	g_test_init (&argc, &argv,
+#if GLIB_CHECK_VERSION(2, 60, 0)
+		     G_TEST_OPTION_ISOLATE_DIRS,
+#endif
+		     NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* Use a common cache directory for all tests, since the appstream

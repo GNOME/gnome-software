@@ -54,7 +54,11 @@ main (int argc, char **argv)
 		NULL
 	};
 
-	g_test_init (&argc, &argv, NULL);
+	g_test_init (&argc, &argv,
+#if GLIB_CHECK_VERSION(2, 60, 0)
+		     G_TEST_OPTION_ISOLATE_DIRS,
+#endif
+		     NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
 
