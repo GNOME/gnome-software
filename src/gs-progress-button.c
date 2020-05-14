@@ -8,6 +8,7 @@
 
 #include "config.h"
 
+#include "gs-app.h"
 #include "gs-progress-button.h"
 
 struct _GsProgressButton
@@ -23,6 +24,11 @@ void
 gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 {
 	g_autofree gchar *css = NULL;
+
+	if (percentage == GS_APP_PROGRESS_UNKNOWN) {
+		g_warning ("FIXME: Unknown progress handling is not yet implemented for GsProgressButton");
+		percentage = 0;
+	}
 
 	if (percentage == 0)
 		css = g_strdup (".install-progress { background-size: 0; }");
