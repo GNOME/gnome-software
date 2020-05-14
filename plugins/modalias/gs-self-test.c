@@ -41,8 +41,9 @@ gs_plugins_modalias_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
-	const gchar *tmp_root = "/var/tmp/self-test";
+	g_autofree gchar *tmp_root = NULL;
 	gboolean ret;
+	int retval;
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
@@ -73,6 +74,11 @@ main (int argc, char **argv)
 		"  </info>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+
+	/* Use a common cache directory for all tests, since the appstream
+	 * plugin uses it and cannot be reinitialised for each test. */
+	tmp_root = g_dir_make_tmp ("gnome-software-modalias-test-XXXXXX", NULL);
+	g_assert (tmp_root != NULL);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
 
 	/* only critical and error are fatal */
@@ -96,5 +102,10 @@ main (int argc, char **argv)
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_modalias_func);
 
-	return g_test_run ();
+	retval = g_test_run ();
+
+	/* Clean up. */
+	gs_utils_rmtree (tmp_root, NULL);
+
+	return retval;
 }

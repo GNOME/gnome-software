@@ -17,10 +17,11 @@
 #include "gs-test.h"
 
 static gboolean
-gs_flatpak_test_write_repo_file (const gchar *fn, const gchar *testdir, GError **error)
+gs_flatpak_test_write_repo_file (const gchar *fn, const gchar *testdir, GFile **file_out, GError **error)
 {
 	g_autofree gchar *testdir_repourl = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
+	g_autofree gchar *path = NULL;
 
 	/* create file */
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
@@ -32,13 +33,19 @@ gs_flatpak_test_write_repo_file (const gchar *fn, const gchar *testdir, GError *
 	g_string_append (str, "DefaultBranch=master\n");
 	g_string_append_printf (str, "Url=%s\n", testdir_repourl);
 	g_string_append (str, "Homepage=http://foo.bar\n");
-	return g_file_set_contents (fn, str->str, -1, error);
+
+	path = g_build_filename (g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR"), fn, NULL);
+	*file_out = g_file_new_for_path (path);
+
+	return g_file_set_contents (path, str->str, -1, error);
 }
 
 static gboolean
-gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const gchar *runtimerepo, GError **error)
+gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const gchar *runtimerepo, GFile **file_out, GError **error)
 {
 	g_autoptr(GString) str = g_string_new (NULL);
+	g_autofree gchar *path = NULL;
+
 	g_string_append (str, "[Flatpak Ref]\n");
 	g_string_append (str, "Title=Chiron\n");
 	g_string_append (str, "Name=org.test.Chiron\n");
@@ -50,14 +57,18 @@ gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const g
 	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
 	if (runtimerepo != NULL)
 		g_string_append_printf (str, "RuntimeRepo=%s\n", runtimerepo);
-	return g_file_set_contents (filename, str->str, -1, error);
+
+	path = g_build_filename (g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR"), filename, NULL);
+	*file_out = g_file_new_for_path (path);
+
+	return g_file_set_contents (path, str->str, -1, error);
 }
 
 /* create duplicate file as if downloaded in firefox */
 static void
 gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
 {
-	const gchar *fn = "/var/tmp/self-test/example (1)….flatpakrepo";
+	const gchar *fn = "example (1)….flatpakrepo";
 	gboolean ret;
 	g_autofree gchar *testdir = NULL;
 	g_autoptr(GError) error = NULL;
@@ -70,10 +81,9 @@ gs_plugins_flatpak_repo_non_ascii_func (GsPluginLoader *plugin_loader)
 	if (testdir == NULL)
 		return;
 
-	ret = gs_flatpak_test_write_repo_file (fn, testdir, &error);
+	ret = gs_flatpak_test_write_repo_file (fn, testdir, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
-	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 NULL);
@@ -89,7 +99,7 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 {
 	const gchar *group_name = "remote \"example\"";
 	const gchar *root = NULL;
-	const gchar *fn = "/var/tmp/self-test/example.flatpakrepo";
+	const gchar *fn = "example.flatpakrepo";
 	gboolean ret;
 	g_autofree gchar *config_fn = NULL;
 	g_autofree gchar *remote_url = NULL;
@@ -113,12 +123,11 @@ gs_plugins_flatpak_repo_func (GsPluginLoader *plugin_loader)
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 
 	/* create file */
-	ret = gs_flatpak_test_write_repo_file (fn, testdir, &error);
+	ret = gs_flatpak_test_write_repo_file (fn, testdir, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* load local file */
-	file = g_file_new_for_path (fn);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 NULL);
@@ -218,8 +227,7 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* no flatpak, abort */
@@ -487,8 +495,7 @@ gs_plugins_flatpak_app_missing_runtime_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* no flatpak, abort */
@@ -619,9 +626,10 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app_source;
 	GsApp *runtime;
-	const gchar *fn_ref = "/var/tmp/self-test/test.flatpakref";
-	const gchar *fn_repo = "/var/tmp/self-test/test.flatpakrepo";
+	const gchar *fn_ref = "test.flatpakref";
+	const gchar *fn_repo = "test.flatpakrepo";
 	gboolean ret;
+	g_autoptr(GFile) fn_repo_file = NULL;
 	g_autofree gchar *fn_repourl = NULL;
 	g_autofree gchar *testdir2 = NULL;
 	g_autofree gchar *testdir2_repourl = NULL;
@@ -635,30 +643,28 @@ gs_plugins_flatpak_runtime_repo_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* write a flatpakrepo file */
 	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
 	if (testdir == NULL)
 		return;
-	ret = gs_flatpak_test_write_repo_file (fn_repo, testdir, &error);
+	ret = gs_flatpak_test_write_repo_file (fn_repo, testdir, &fn_repo_file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* write a flatpakref file */
-	fn_repourl = g_strdup_printf ("file://%s", fn_repo);
+	fn_repourl = g_file_get_uri (fn_repo_file);
 	testdir2 = gs_test_get_filename (TESTDATADIR, "app-missing-runtime");
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	ret = gs_flatpak_test_write_ref_file (fn_ref, testdir2_repourl, fn_repourl, &error);
+	ret = gs_flatpak_test_write_ref_file (fn_ref, testdir2_repourl, fn_repourl, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* convert it to a GsApp */
-	file = g_file_new_for_path (fn_ref);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
@@ -755,8 +761,8 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app_source;
 	GsApp *runtime;
-	const gchar *fn_ref = "/var/tmp/self-test/test.flatpakref";
-	const gchar *fn_repo = "/var/tmp/self-test/test.flatpakrepo";
+	const gchar *fn_ref = "test.flatpakref";
+	const gchar *fn_repo = "test.flatpakrepo";
 	gboolean ret;
 	g_autofree gchar *fn_repourl = NULL;
 	g_autofree gchar *testdir2 = NULL;
@@ -772,20 +778,18 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* write a flatpakrepo file */
 	testdir = gs_test_get_filename (TESTDATADIR, "only-runtime");
 	if (testdir == NULL)
 		return;
-	ret = gs_flatpak_test_write_repo_file (fn_repo, testdir, &error);
+	ret = gs_flatpak_test_write_repo_file (fn_repo, testdir, &file_repo, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* convert it to a GsApp */
-	file_repo = g_file_new_for_path (fn_repo);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file_repo,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
@@ -813,17 +817,16 @@ gs_plugins_flatpak_runtime_repo_redundant_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (app_src), ==, AS_APP_STATE_INSTALLED);
 
 	/* write a flatpakref file */
-	fn_repourl = g_strdup_printf ("file://%s", fn_repo);
+	fn_repourl = g_file_get_uri (file_repo);
 	testdir2 = gs_test_get_filename (TESTDATADIR, "app-missing-runtime");
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	ret = gs_flatpak_test_write_ref_file (fn_ref, testdir2_repourl, fn_repourl, &error);
+	ret = gs_flatpak_test_write_ref_file (fn_ref, testdir2_repourl, fn_repourl, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* convert it to a GsApp */
-	file = g_file_new_for_path (fn_ref);
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -916,7 +919,7 @@ static void
 gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
-	const gchar *fn = "/tmp/test.flatpakref";
+	const gchar *fn = "test.flatpakref";
 	g_autofree gchar *testdir2 = NULL;
 	g_autofree gchar *testdir2_repourl = NULL;
 	g_autofree gchar *testdir = NULL;
@@ -927,8 +930,7 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* no flatpak, abort */
@@ -957,12 +959,11 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &error);
+	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* convert it to a GsApp */
-	file = g_file_new_for_path (fn);
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -1004,7 +1005,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	GsApp *app_tmp;
 	GsApp *runtime;
 	gboolean ret;
-	const gchar *fn = "/tmp/test.flatpakref";
+	const gchar *fn = "test.flatpakref";
 	g_autofree gchar *testdir2 = NULL;
 	g_autofree gchar *testdir2_repourl = NULL;
 	g_autofree gchar *testdir = NULL;
@@ -1021,8 +1022,7 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* no flatpak, abort */
@@ -1088,12 +1088,11 @@ gs_plugins_flatpak_ref_func (GsPluginLoader *plugin_loader)
 	if (testdir2 == NULL)
 		return;
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &error);
+	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
 	/* convert it to a GsApp */
-	file = g_file_new_for_path (fn);
 	g_object_unref (plugin_job);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
@@ -1252,10 +1251,11 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list_updates = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
+	g_autofree gchar *repo_path = NULL;
+	g_autofree gchar *repo_url = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* no flatpak, abort */
@@ -1277,15 +1277,17 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* add indirection so we can switch this after install */
-	unlink ("/var/tmp/self-test/repo");
-	g_assert (symlink (repodir1_fn, "/var/tmp/self-test/repo") == 0);
+	repo_path = g_build_filename (g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR"), "repo", NULL);
+	unlink (repo_path);
+	g_assert (symlink (repodir1_fn, repo_path) == 0);
 
 	/* add a remote */
 	app_source = gs_flatpak_app_new ("test");
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_flatpak_app_set_repo_url (app_source, "file:///var/tmp/self-test/repo");
+	repo_url = g_strdup_printf ("file://%s", repo_path);
+	gs_flatpak_app_set_repo_url (app_source, repo_url);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app_source,
 					 NULL);
@@ -1338,8 +1340,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
 
 	/* switch to the new repo */
-	g_assert (unlink ("/var/tmp/self-test/repo") == 0);
-	g_assert (symlink (repodir2_fn, "/var/tmp/self-test/repo") == 0);
+	g_assert (unlink (repo_path) == 0);
+	g_assert (symlink (repodir2_fn, repo_path) == 0);
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
@@ -1500,10 +1502,11 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) list_updates = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
+	g_autofree gchar *repo_path = NULL;
+	g_autofree gchar *repo_url = NULL;
 
 	/* drop all caches */
-	g_unlink ("/var/tmp/self-test/flatpak-user/components.xmlb");
-	g_unlink ("/var/tmp/self-test/appstream/components.xmlb");
+	gs_utils_rmtree (g_getenv ("GS_SELF_TEST_CACHEDIR"), NULL);
 	gs_plugin_loader_setup_again (plugin_loader);
 
 	/* no flatpak, abort */
@@ -1524,14 +1527,16 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	}
 
 	/* add indirection so we can switch this after install */
-	g_assert_cmpint (symlink (repodir1_fn, "/var/tmp/self-test/repo"), ==, 0);
+	repo_path = g_build_filename (g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR"), "repo", NULL);
+	g_assert_cmpint (symlink (repodir1_fn, repo_path), ==, 0);
 
 	/* add a remote */
 	app_source = gs_flatpak_app_new ("test");
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
 	gs_app_set_management_plugin (app_source, "flatpak");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
-	gs_flatpak_app_set_repo_url (app_source, "file:///var/tmp/self-test/repo");
+	repo_url = g_strdup_printf ("file://%s", repo_path);
+	gs_flatpak_app_set_repo_url (app_source, repo_url);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_INSTALL,
 					 "app", app_source,
 					 NULL);
@@ -1587,8 +1592,8 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (extension), ==, AS_APP_STATE_INSTALLED);
 
 	/* switch to the new repo (to get the update) */
-	g_assert_cmpint (unlink ("/var/tmp/self-test/repo"), ==, 0);
-	g_assert_cmpint (symlink (repodir2_fn, "/var/tmp/self-test/repo"), ==, 0);
+	g_assert_cmpint (unlink (repo_path), ==, 0);
+	g_assert_cmpint (symlink (repodir2_fn, repo_path), ==, 0);
 
 	/* refresh the appstream metadata */
 	g_object_unref (plugin_job);
@@ -1709,8 +1714,9 @@ gs_plugins_flatpak_runtime_extension_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
-	const gchar *tmp_root = "/var/tmp/self-test";
+	g_autofree gchar *tmp_root = NULL;
 	gboolean ret;
+	int retval;
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
@@ -1724,21 +1730,18 @@ main (int argc, char **argv)
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 	g_setenv ("GS_XMLB_VERBOSE", "1", TRUE);
+	g_setenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD", "1", TRUE);
+
+	/* Use a common cache directory for all tests, since the appstream
+	 * plugin uses it and cannot be reinitialised for each test. */
+	tmp_root = g_dir_make_tmp ("gnome-software-flatpak-test-XXXXXX", NULL);
+	g_assert (tmp_root != NULL);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
 	g_setenv ("GS_SELF_TEST_FLATPAK_DATADIR", tmp_root, TRUE);
-	g_setenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD", "1", TRUE);
 
 	/* allow dist'ing with no gnome-software installed */
 	if (g_getenv ("GS_SELF_TEST_SKIP_ALL") != NULL)
 		return 0;
-
-	/* ensure test root does not exist */
-	if (g_file_test (tmp_root, G_FILE_TEST_EXISTS)) {
-		ret = gs_utils_rmtree (tmp_root, &error);
-		g_assert_no_error (error);
-		g_assert (ret);
-		g_assert (!g_file_test (tmp_root, G_FILE_TEST_EXISTS));
-	}
 
 	xml = g_strdup ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
@@ -1796,5 +1799,10 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugins/flatpak/repo{non-ascii}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugins_flatpak_repo_non_ascii_func);
-	return g_test_run ();
+	retval = g_test_run ();
+
+	/* Clean up. */
+	gs_utils_rmtree (tmp_root, NULL);
+
+	return retval;
 }
