@@ -1749,8 +1749,6 @@ main (int argc, char **argv)
 		"  </component>\n"
 		"</components>\n");
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
-	g_setenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT",
-		  "/var/tmp/self-test/flatpak/appstream/test/x86_64/active/", TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);

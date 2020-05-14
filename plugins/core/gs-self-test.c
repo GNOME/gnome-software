@@ -208,10 +208,6 @@ main (int argc, char **argv)
 		g_assert (!g_file_test (tmp_root, G_FILE_TEST_EXISTS));
 	}
 
-	//g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
-	g_setenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT",
-		  "/var/tmp/self-test/flatpak/appstream/test/x86_64/active/", TRUE);
-
 	/* fake some data */
 	xml = "<?xml version=\"1.0\"?>\n"
 		"<components origin=\"yellow\" version=\"0.9\">\n"
