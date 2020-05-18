@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2007-2017 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2015 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2015-2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -31,6 +31,11 @@ struct _GsPluginLoaderClass
 	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*reload)		(GsPluginLoader	*plugin_loader);
+	void			(*basic_auth_start)	(GsPluginLoader	*plugin_loader,
+							 const gchar	*remote,
+							 const gchar	*realm,
+							 GCallback	 callback,
+							 gpointer	 user_data);
 };
 
 GsPluginLoader	*gs_plugin_loader_new			(void);

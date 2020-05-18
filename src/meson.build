@@ -20,6 +20,7 @@ gnome_software_sources = [
   'gs-application.c',
   'gs-app-row.c',
   'gs-app-tile.c',
+  'gs-basic-auth-dialog.c',
   'gs-category-page.c',
   'gs-category-tile.c',
   'gs-common.c',

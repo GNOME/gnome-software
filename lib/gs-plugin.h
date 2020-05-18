@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2012-2016 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -37,7 +38,12 @@ struct _GsPluginClass
 							 GsPluginEvent	*event);
 	void			(*allow_updates)	(GsPlugin	*plugin,
 							 gboolean	 allow_updates);
-	gpointer		 padding[26];
+	void			(*basic_auth_start)	(GsPlugin	*plugin,
+							 const gchar	*remote,
+							 const gchar	*realm,
+							 GCallback	 callback,
+							 gpointer	 user_data);
+	gpointer		 padding[25];
 };
 
 typedef struct	GsPluginData	GsPluginData;
@@ -116,5 +122,10 @@ void		 gs_plugin_report_event			(GsPlugin	*plugin,
 void		 gs_plugin_set_allow_updates		(GsPlugin	*plugin,
 							 gboolean	 allow_updates);
 gboolean	 gs_plugin_get_network_available	(GsPlugin	*plugin);
+void		 gs_plugin_basic_auth_start		(GsPlugin	*plugin,
+							 const gchar	*remote,
+							 const gchar	*realm,
+							 GCallback	 callback,
+							 gpointer	 user_data);
 
 G_END_DECLS

@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2013-2017 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
- * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2014-2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -18,6 +18,7 @@
 
 #include "gs-common.h"
 #include "gs-shell.h"
+#include "gs-basic-auth-dialog.h"
 #include "gs-details-page.h"
 #include "gs-installed-page.h"
 #include "gs-metered-data-dialog.h"
@@ -361,6 +362,25 @@ scheduler_ready_cb (GObject *source_object,
 				   g_object_ref (shell));
 }
 #endif  /* HAVE_MOGWAI */
+
+static void
+gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
+                              const gchar *remote,
+                              const gchar *realm,
+                              GsBasicAuthCallback callback,
+                              gpointer callback_data,
+                              GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *dialog;
+
+	dialog = gs_basic_auth_dialog_new (priv->main_window, remote, realm, callback, callback_data);
+	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
+}
 
 static void
 free_back_entry (BackEntry *entry)
@@ -2125,6 +2145,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				 shell, 0);
 	g_signal_connect_object (priv->plugin_loader, "notify::network-metered",
 				 G_CALLBACK (gs_shell_network_metered_notify_cb),
+				 shell, 0);
+	g_signal_connect_object (priv->plugin_loader, "basic-auth-start",
+				 G_CALLBACK (gs_shell_basic_auth_start_cb),
 				 shell, 0);
 	priv->cancellable = g_object_ref (cancellable);
 

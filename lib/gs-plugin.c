@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2014-2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -87,6 +87,7 @@ enum {
 	SIGNAL_RELOAD,
 	SIGNAL_REPORT_EVENT,
 	SIGNAL_ALLOW_UPDATES,
+	SIGNAL_BASIC_AUTH_START,
 	SIGNAL_LAST
 };
 
@@ -848,6 +849,64 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 		helper->app = g_object_ref (app);
 	idle_source = g_idle_source_new ();
 	g_source_set_callback (idle_source, gs_plugin_status_update_cb, helper, NULL);
+	g_source_attach (idle_source, NULL);
+}
+
+typedef struct {
+	GsPlugin	*plugin;
+	gchar		*remote;
+	gchar		*realm;
+	GCallback	 callback;
+	gpointer	 user_data;
+} GsPluginBasicAuthHelper;
+
+static gboolean
+gs_plugin_basic_auth_start_cb (gpointer user_data)
+{
+	GsPluginBasicAuthHelper *helper = user_data;
+	g_signal_emit (helper->plugin,
+		       signals[SIGNAL_BASIC_AUTH_START], 0,
+		       helper->remote,
+		       helper->realm,
+		       helper->callback,
+		       helper->user_data);
+	g_free (helper->remote);
+	g_free (helper->realm);
+	g_slice_free (GsPluginBasicAuthHelper, helper);
+	return FALSE;
+}
+
+/**
+ * gs_plugin_basic_auth_start:
+ * @plugin: a #GsPlugin
+ * @remote: a string
+ * @realm: a string
+ * @callback: callback to invoke to submit the user/password
+ * @user_data: callback data to pass to the callback
+ *
+ * Emit the basic-auth-start signal in the main thread.
+ *
+ * Since: 3.38
+ **/
+void
+gs_plugin_basic_auth_start (GsPlugin *plugin,
+                            const gchar *remote,
+                            const gchar *realm,
+                            GCallback callback,
+                            gpointer user_data)
+{
+	GsPluginBasicAuthHelper *helper;
+	g_autoptr(GSource) idle_source = NULL;
+
+	helper = g_slice_new0 (GsPluginBasicAuthHelper);
+	helper->plugin = plugin;
+	helper->remote = g_strdup (remote);
+	helper->realm = g_strdup (realm);
+	helper->callback = callback;
+	helper->user_data = user_data;
+
+	idle_source = g_idle_source_new ();
+	g_source_set_callback (idle_source, gs_plugin_basic_auth_start_cb, helper, NULL);
 	g_source_attach (idle_source, NULL);
 }
 
@@ -1959,6 +2018,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, allow_updates),
 			      NULL, NULL, g_cclosure_marshal_VOID__BOOLEAN,
 			      G_TYPE_NONE, 1, G_TYPE_BOOLEAN);
+
+	signals [SIGNAL_BASIC_AUTH_START] =
+		g_signal_new ("basic-auth-start",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, basic_auth_start),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 }
 
 static void

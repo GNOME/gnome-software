@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
  * Copyright (C) 2016-2018 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2017-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2017-2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -456,6 +456,55 @@ _group_apps_by_installation (GsPlugin *plugin,
 	return g_steal_pointer (&applist_by_flatpaks);
 }
 
+#if FLATPAK_CHECK_VERSION(1,6,0)
+typedef struct {
+	FlatpakTransaction *transaction;
+	guint id;
+} BasicAuthData;
+
+static void
+basic_auth_data_free (BasicAuthData *data)
+{
+	g_object_unref (data->transaction);
+	g_slice_free (BasicAuthData, data);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(BasicAuthData, basic_auth_data_free)
+
+static void
+_basic_auth_cb (const gchar *user, const gchar *password, gpointer user_data)
+{
+	g_autoptr(BasicAuthData) data = user_data;
+
+	g_debug ("Submitting basic auth data");
+
+	/* NULL user aborts the basic auth request */
+	flatpak_transaction_complete_basic_auth (data->transaction, data->id, user, password, NULL /* options */);
+}
+
+static gboolean
+_basic_auth_start (FlatpakTransaction *transaction,
+                   const char *remote,
+                   const char *realm,
+                   GVariant *options,
+                   guint id,
+                   GsPlugin *plugin)
+{
+	BasicAuthData *data;
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		return FALSE;
+
+	data = g_slice_new0 (BasicAuthData);
+	data->transaction = g_object_ref (transaction);
+	data->id = id;
+
+	g_debug ("Login required remote %s (realm %s)\n", remote, realm);
+	gs_plugin_basic_auth_start (plugin, remote, realm, G_CALLBACK (_basic_auth_cb), data);
+	return TRUE;
+}
+#endif
+
 static FlatpakTransaction *
 _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    GCancellable *cancellable, GError **error)
@@ -503,6 +552,10 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	/* connect up signals */
 	g_signal_connect (transaction, "ref-to-app",
 			  G_CALLBACK (_ref_to_app), plugin);
+#if FLATPAK_CHECK_VERSION(1,6,0)
+	g_signal_connect (transaction, "basic-auth-start",
+			  G_CALLBACK (_basic_auth_start), plugin);
+#endif
 
 	/* use system installations as dependency sources for user installations */
 	flatpak_transaction_add_default_dependency_sources (transaction);

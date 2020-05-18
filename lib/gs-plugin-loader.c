@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2007-2018 Richard Hughes <richard@hughsie.com>
- * Copyright (C) 2014-2018 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2014-2020 Kalev Lember <klember@redhat.com>
  *
  * SPDX-License-Identifier: GPL-2.0+
  */
@@ -74,6 +74,7 @@ enum {
 	SIGNAL_PENDING_APPS_CHANGED,
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_RELOAD,
+	SIGNAL_BASIC_AUTH_START,
 	SIGNAL_LAST
 };
 
@@ -2016,6 +2017,23 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 		       0, app, status);
 }
 
+static void
+gs_plugin_loader_basic_auth_start_cb (GsPlugin *plugin,
+                                      const gchar *remote,
+                                      const gchar *realm,
+                                      GCallback callback,
+                                      gpointer user_data,
+                                      GsPluginLoader *plugin_loader)
+{
+	g_debug ("emitting basic-auth-start %s", realm);
+	g_signal_emit (plugin_loader,
+		       signals[SIGNAL_BASIC_AUTH_START], 0,
+		       remote,
+		       realm,
+		       callback,
+		       user_data);
+}
+
 static gboolean
 gs_plugin_loader_job_actions_changed_delay_cb (gpointer user_data)
 {
@@ -2101,6 +2119,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  plugin_loader);
 	g_signal_connect (plugin, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "basic-auth-start",
+			  G_CALLBACK (gs_plugin_loader_basic_auth_start_cb),
 			  plugin_loader);
 	g_signal_connect (plugin, "report-event",
 			  G_CALLBACK (gs_plugin_loader_report_event_cb),
@@ -2712,6 +2733,12 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_STRUCT_OFFSET (GsPluginLoaderClass, reload),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+	signals [SIGNAL_BASIC_AUTH_START] =
+		g_signal_new ("basic-auth-start",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginLoaderClass, basic_auth_start),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 }
 
 static void
