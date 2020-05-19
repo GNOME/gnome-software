@@ -503,6 +503,71 @@ _basic_auth_start (FlatpakTransaction *transaction,
 	gs_plugin_basic_auth_start (plugin, remote, realm, G_CALLBACK (_basic_auth_cb), data);
 	return TRUE;
 }
+
+static gboolean
+_webflow_start (FlatpakTransaction *transaction,
+                const char *remote,
+                const char *url,
+                GVariant *options,
+                guint id,
+                GsPlugin *plugin)
+{
+	const char *browser;
+	g_autoptr(GError) error_local = NULL;
+
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE))
+		return FALSE;
+
+	g_debug ("Authentication required for remote '%s'", remote);
+
+	/* Allow hard overrides with $BROWSER */
+	browser = g_getenv ("BROWSER");
+	if (browser != NULL) {
+		const char *args[3] = { NULL, url, NULL };
+		args[0] = browser;
+		if (!g_spawn_async (NULL, (char **)args, NULL, G_SPAWN_SEARCH_PATH,
+		                    NULL, NULL, NULL, &error_local)) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			g_warning ("Failed to start browser %s: %s", browser, error_local->message);
+
+			event = gs_plugin_event_new ();
+			gs_flatpak_error_convert (&error_local);
+			gs_plugin_event_set_error (event, error_local);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (plugin, event);
+
+			return FALSE;
+		}
+	} else {
+		if (!g_app_info_launch_default_for_uri (url, NULL, &error_local)) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			g_warning ("Failed to show url: %s", error_local->message);
+
+			event = gs_plugin_event_new ();
+			gs_flatpak_error_convert (&error_local);
+			gs_plugin_event_set_error (event, error_local);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (plugin, event);
+
+			return FALSE;
+		}
+	}
+
+	g_debug ("Waiting for browser...");
+
+	return TRUE;
+}
+
+static void
+_webflow_done (FlatpakTransaction *transaction,
+               GVariant *options,
+               guint id,
+               GsPlugin *plugin)
+{
+	g_debug ("Browser done");
+}
 #endif
 
 static FlatpakTransaction *
@@ -555,6 +620,10 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 #if FLATPAK_CHECK_VERSION(1,6,0)
 	g_signal_connect (transaction, "basic-auth-start",
 			  G_CALLBACK (_basic_auth_start), plugin);
+	g_signal_connect (transaction, "webflow-start",
+			  G_CALLBACK (_webflow_start), plugin);
+	g_signal_connect (transaction, "webflow-done",
+			  G_CALLBACK (_webflow_done), plugin);
 #endif
 
 	/* use system installations as dependency sources for user installations */
