@@ -12,6 +12,7 @@
 #include <string.h>
 #include "gs-content-rating.h"
 
+#if !AS_CHECK_VERSION(0, 7, 18)
 static const gchar *rating_system_names[] = {
 	[GS_CONTENT_RATING_SYSTEM_UNKNOWN] = NULL,
 	[GS_CONTENT_RATING_SYSTEM_INCAA] = "INCAA",
@@ -382,6 +383,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 
 	return NULL;
 }
+#endif  /* appstream-glib < 0.7.18 */
 
 #if !AS_CHECK_VERSION(0, 7, 15)
 /* Equivalent to as_content_rating_get_all_rating_ids() */
@@ -398,6 +400,7 @@ gs_content_rating_get_all_rating_ids (void)
 }
 #endif  /* appstream-glib < 0.7.15 */
 
+#if !AS_CHECK_VERSION(0, 7, 18)
 static char *
 get_esrb_string (gchar *source, gchar *translate)
 {
@@ -777,3 +780,4 @@ gs_utils_content_rating_system_from_locale (const gchar *locale)
 	/* everything else is IARC */
 	return GS_CONTENT_RATING_SYSTEM_IARC;
 }
+#endif  /* appstream-glib < 0.7.18 */
