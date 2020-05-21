@@ -38,7 +38,12 @@ gchar *gs_utils_content_rating_age_to_str (GsContentRatingSystem system,
 GsContentRatingSystem gs_utils_content_rating_system_from_locale (const gchar *locale);
 const gchar *gs_content_rating_key_value_to_str (const gchar *id,
 						 AsContentRatingValue value);
-const gchar **gs_content_rating_get_all_rating_ids (void);
 const gchar *gs_content_rating_system_to_str (GsContentRatingSystem system);
+
+#if AS_CHECK_VERSION(0, 7, 15)
+#define gs_content_rating_get_all_rating_ids as_content_rating_get_all_rating_ids
+#else
+const gchar **gs_content_rating_get_all_rating_ids (void);
+#endif
 
 G_END_DECLS

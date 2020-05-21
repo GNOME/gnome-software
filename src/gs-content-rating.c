@@ -383,6 +383,7 @@ gs_content_rating_key_value_to_str (const gchar *id, AsContentRatingValue value)
 	return NULL;
 }
 
+#if !AS_CHECK_VERSION(0, 7, 15)
 /* Equivalent to as_content_rating_get_all_rating_ids() */
 const gchar **
 gs_content_rating_get_all_rating_ids (void)
@@ -395,6 +396,7 @@ gs_content_rating_get_all_rating_ids (void)
 
 	return (const gchar **) g_ptr_array_free (g_steal_pointer (&ids), FALSE);
 }
+#endif  /* appstream-glib < 0.7.15 */
 
 static char *
 get_esrb_string (gchar *source, gchar *translate)
