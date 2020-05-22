@@ -112,6 +112,9 @@ gs_plugin_download (GsPlugin *plugin,
                     GError **error)
 {
 	g_autoptr(GsAppList) list_tmp = gs_app_list_new ();
+	g_autoptr(GError) error_local = NULL;
+	gboolean retval;
+	gpointer schedule_entry_handle = NULL;
 
 	/* add any packages */
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
@@ -139,14 +142,19 @@ gs_plugin_download (GsPlugin *plugin,
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
 		g_autoptr(GError) error_local = NULL;
 
-		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, cancellable, &error_local)) {
+		if (!gs_metered_block_app_list_on_download_scheduler (list_tmp, &schedule_entry_handle, cancellable, &error_local)) {
 			g_warning ("Failed to block on download scheduler: %s",
 				   error_local->message);
 			g_clear_error (&error_local);
 		}
 	}
 
-	return _download_only (plugin, list_tmp, cancellable, error);
+	retval = _download_only (plugin, list_tmp, cancellable, error);
+
+	if (!gs_metered_remove_from_download_scheduler (schedule_entry_handle, NULL, &error_local))
+		g_warning ("Failed to remove schedule entry: %s", error_local->message);
+
+	return retval;
 }
 
 gboolean
