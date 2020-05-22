@@ -77,6 +77,7 @@ typedef struct
 
 #ifdef HAVE_MOGWAI
 	MwscScheduler		*scheduler;
+	gboolean		 scheduler_held;
 	gulong			 scheduler_invalidated_handler;
 #endif  /* HAVE_MOGWAI */
 } GsShellPrivate;
@@ -279,6 +280,7 @@ scheduler_invalidated_cb (GsShell *shell)
 	g_signal_handler_disconnect (priv->scheduler,
 				     priv->scheduler_invalidated_handler);
 	priv->scheduler_invalidated_handler = 0;
+	priv->scheduler_held = FALSE;
 
 	g_clear_object (&priv->scheduler);
 }
@@ -299,11 +301,14 @@ scheduler_hold_cb (GObject *source_object,
 	g_autoptr(GsShell) shell = data;  /* reference added when starting the async operation */
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
-	if (!mwsc_scheduler_hold_finish (scheduler, result, &error_local)) {
+	if (mwsc_scheduler_hold_finish (scheduler, result, &error_local)) {
+		priv->scheduler_held = TRUE;
+	} else if (!g_error_matches (error_local, G_DBUS_ERROR, G_DBUS_ERROR_FAILED)) {
 		g_warning ("Couldn't hold the Mogwai Scheduler daemon: %s",
 			   error_local->message);
-		return;
 	}
+
+	g_clear_error (&error_local);
 
 	priv->scheduler_invalidated_handler =
 		g_signal_connect_swapped (scheduler, "invalidated",
@@ -336,6 +341,7 @@ scheduler_release_cb (GObject *source_object,
 		g_warning ("Couldn't release the Mogwai Scheduler daemon: %s",
 			   error_local->message);
 
+	priv->scheduler_held = FALSE;
 	g_clear_object (&priv->scheduler);
 }
 
@@ -972,10 +978,13 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 						     priv->scheduler_invalidated_handler);
 		priv->scheduler_invalidated_handler = 0;
 
-		mwsc_scheduler_release_async (priv->scheduler,
-					      NULL,
-					      scheduler_release_cb,
-					      g_object_ref (shell));
+		if (priv->scheduler_held)
+			mwsc_scheduler_release_async (priv->scheduler,
+						      NULL,
+						      scheduler_release_cb,
+						      g_object_ref (shell));
+		else
+			g_clear_object (&priv->scheduler);
 	}
 #endif  /* HAVE_MOGWAI */
 
@@ -2514,10 +2523,13 @@ gs_shell_dispose (GObject *object)
 			g_signal_handler_disconnect (priv->scheduler,
 						     priv->scheduler_invalidated_handler);
 
-		mwsc_scheduler_release_async (priv->scheduler,
-					      NULL,
-					      scheduler_release_cb,
-					      g_object_ref (shell));
+		if (priv->scheduler_held)
+			mwsc_scheduler_release_async (priv->scheduler,
+						      NULL,
+						      scheduler_release_cb,
+						      g_object_ref (shell));
+		else
+			g_clear_object (&priv->scheduler);
 	}
 #endif  /* HAVE_MOGWAI */
 
