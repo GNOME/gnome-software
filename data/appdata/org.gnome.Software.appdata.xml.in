@@ -46,6 +46,27 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release date="2020-05-22" version="3.36.1">
+      <description>
+        <p>
+          This is a stable release with the following changes:
+        </p>
+        <ul>
+          <li>Add distro upgrade css for the HC theme</li>
+          <li>Check if a stock icon actually exists in the theme</li>
+          <li>Correctly mark layered local packages as removable</li>
+          <li>Fine-tune F32 upgrade banner position and font</li>
+          <li>Fix loading if applications directory does not exist</li>
+          <li>Fix the progress info required for the loading page</li>
+          <li>Handle invalid snap auth data</li>
+          <li>Improve performance when showing lots of applications</li>
+          <li>Only delete the installed firmware archive if we downloaded it</li>
+          <li>Properly check if an flatpak application is a runtime</li>
+          <li>Show the correct state for local packages without AppData</li>
+        </ul>
+        <p>This release also adds and updates existing translations.</p>
+      </description>
+    </release>
     <release date="2020-03-11" version="3.36.0">
       <description>
         <p>
