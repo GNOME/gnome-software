@@ -7,10 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-04-24 02:25+0000\n"
-"PO-Revision-Date: 2020-05-02 15:31+0300\n"
-"Last-Translator: Florentina Mușat <florentina.musat.28 [at] gmail [dot] "
-"com>\n"
+"POT-Creation-Date: 2020-05-14 17:34+0000\n"
+"PO-Revision-Date: 2020-05-22 15:25+0300\n"
+"Last-Translator: Florentina Mușat <emryslokadottir [at] gmail [dot] com>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
 "sourceforge.net>\n"
 "Language: ro\n"
@@ -19,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.3.1\n"
 "X-Project-Style: gnome\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -404,11 +403,11 @@ msgid "Find Out _More"
 msgstr "Aflați mai _multe"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4506
+#: lib/gs-app.c:4516
 msgid "Local file"
 msgstr "Fișier local"
 
-#: lib/gs-app.c:4558
+#: lib/gs-app.c:4568
 msgid "Package"
 msgstr "Pachet"
 
@@ -425,7 +424,7 @@ msgstr "Instalat"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:329
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:349
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "Se instalează"
@@ -1397,24 +1396,29 @@ msgstr "Sunt necesare pachete adiționale"
 msgid "Find in Software"
 msgstr "Caută în Aplicații"
 
-#: src/gs-details-page.c:324
+#: src/gs-details-page.c:344
 msgid "Removing…"
 msgstr "Se elimină…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:343
+#: src/gs-details-page.c:363
 msgid "Pending installation…"
 msgstr "Instalare în așteptare…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:350
+#: src/gs-details-page.c:370
 msgid "Pending update…"
 msgstr "Actualizare în așteptare…"
 
+#. Translators: This string is shown when preparing to download and install an app.
+#: src/gs-details-page.c:384
+msgid "Preparing…"
+msgstr "Se pregătește…"
+
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:710
+#: src/gs-details-page.c:743
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1428,9 +1432,9 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:855 src/gs-details-page.c:872
+#: src/gs-details-page.c:888 src/gs-details-page.c:905
 #: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:63
+#: src/gs-upgrade-banner.c:87
 msgid "_Install"
 msgstr "_Instalează"
 
@@ -1441,108 +1445,108 @@ msgstr "_Instalează"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:886 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:919 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "_Instalează…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:928
+#: src/gs-details-page.c:961
 msgid "_Launch"
 msgstr "_Lansează"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:952 src/gs-details-page.ui:192
+#: src/gs-details-page.c:985 src/gs-details-page.ui:192
 msgid "_Remove"
 msgstr "_Elimină"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "Rețea"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "Pot comunica prin rețea"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "Servicii ale sistemului"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "Poate accesa serviciile D-Bus pe magistrala sistemului"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "Servicii de sesiune"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "Poate accesa serviciile D-Bus pe magistrala sesiunilor"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "Dispozitive"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "Pot accesa fișierele de sistem ale dispozitivelor"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:988
+#: src/gs-details-page.c:1020 src/gs-details-page.c:1021
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "Dosar personal"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:989
-#: src/gs-details-page.c:991 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1020 src/gs-details-page.c:1022
+#: src/gs-details-page.c:1024 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "Poate vedea, edita și crea fișiere"
 
-#: src/gs-details-page.c:988 src/gs-details-page.c:990
-#: src/gs-details-page.c:992 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1025 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "Poate vedea fișiere"
 
-#: src/gs-details-page.c:989 src/gs-details-page.c:990
+#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "Sistem de fișiere"
 
-#: src/gs-details-page.c:991 src/gs-details-page.c:992
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "Dosar descărcări"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "Configurări"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "Poate vedea și modifica orice configurare"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "Sistem moștenit de afișare"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "Folosește un sistem de afișare vechi și nesigur"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "Evadare din modul sandbox"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Poate evada din modul sandbox și împiedica orice alte restricții"
 
-#: src/gs-details-page.c:1010
+#: src/gs-details-page.c:1043
 msgid "This application is fully sandboxed."
 msgstr "Această aplicație este izolată complet."
 
-#: src/gs-details-page.c:1018
+#: src/gs-details-page.c:1051
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1551,84 +1555,84 @@ msgstr ""
 "aplicație. Aceasta este tipic aplicațiilor mai vechi."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1210
 msgctxt "version"
 msgid "Unknown"
 msgstr "Necunoscută"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1190
+#: src/gs-details-page.c:1223
 msgctxt "updated"
 msgid "Never"
 msgstr "Niciodată"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1243
+#: src/gs-details-page.c:1276
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Necunoscută"
 
-#: src/gs-details-page.c:1296
+#: src/gs-details-page.c:1329
 msgid "Low"
 msgstr "Redus"
 
-#: src/gs-details-page.c:1298
+#: src/gs-details-page.c:1331
 msgid "Medium"
 msgstr "Mediu"
 
-#: src/gs-details-page.c:1300
+#: src/gs-details-page.c:1333
 msgid "High"
 msgstr "Ridicat"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1302 src/gs-details-page.ui:1006
+#: src/gs-details-page.c:1335 src/gs-details-page.ui:1006
 #: src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "Necunoscut"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1640
+#: src/gs-details-page.c:1673
 msgid "You need internet access to write a review"
 msgstr "Aveți nevoie de acces la internet pentru a scrie o recenzie"
 
-#: src/gs-details-page.c:1826 src/gs-details-page.c:1842
+#: src/gs-details-page.c:1859 src/gs-details-page.c:1875
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nu s-a putut găsi „%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2420
+#: src/gs-details-page.c:2453
 msgid "Public domain"
 msgstr "Domeniul public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2423
+#: src/gs-details-page.c:2456
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://ro.wikipedia.org/wiki/Domeniul_public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2430
+#: src/gs-details-page.c:2463
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.ro"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2440 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2473 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "Aplicații libere"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2497
+#: src/gs-details-page.c:2530
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Utilizatorii sunt limitați de următoarea licență:"
 msgstr[1] "Utilizatorii sunt limitați de următoarele licențe:"
 msgstr[2] "Utilizatorii sunt limitați de următoarele licențe:"
 
-#: src/gs-details-page.c:2524 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2557 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "Mai multe informații"
 
@@ -3713,25 +3717,25 @@ msgstr "Microcod pentru dispozitive"
 msgid "_Download"
 msgstr "_Descarcă"
 
-#: src/gs-upgrade-banner.c:65
+#: src/gs-upgrade-banner.c:89
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
 "Se recomandă să faceți o copie de siguranță a datelor și fișierelor înaintea "
 "înnoirii."
 
-#: src/gs-upgrade-banner.c:69
+#: src/gs-upgrade-banner.c:93
 msgid "_Restart Now"
 msgstr "_Repornește acum"
 
-#: src/gs-upgrade-banner.c:71
+#: src/gs-upgrade-banner.c:95
 msgid "Updates will be applied when the computer is restarted."
 msgstr "Actualizările vor fi aplicate când calculatorul este repornit."
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:86
+#: src/gs-upgrade-banner.c:110
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s este acum disponibilă"
@@ -3739,7 +3743,7 @@ msgstr "%s %s este acum disponibilă"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:96
+#: src/gs-upgrade-banner.c:120
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "Se așteaptă să se descarce %s %s"
@@ -3747,7 +3751,7 @@ msgstr "Se așteaptă să se descarce %s %s"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:106
+#: src/gs-upgrade-banner.c:130
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Se descarcă %s %s"
@@ -3756,7 +3760,7 @@ msgstr "Se descarcă %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:117
+#: src/gs-upgrade-banner.c:141
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s gata de instalare"
@@ -4255,7 +4259,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak este o platformă pentru aplicații desktop în Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:853
+#: plugins/flatpak/gs-flatpak.c:856
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Se obține metadatele pentru flatpak pentru %s…"
