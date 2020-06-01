@@ -111,7 +111,7 @@ typedef struct
 	GsApp			*runtime;
 	GFile			*local_file;
 	AsContentRating		*content_rating;
-	GdkPixbuf		*pixbuf;
+	GdkPixbuf		*pixbuf;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
@@ -1640,7 +1640,7 @@ gs_app_set_developer_name (GsApp *app, const gchar *developer_name)
  *
  * Gets a pixbuf to represent the application.
  *
- * Returns: (transfer none): a #GdkPixbuf, or %NULL
+ * Returns: (transfer none) (nullable): a #GdkPixbuf, or %NULL
  *
  * Since: 3.22
  **/
@@ -1698,7 +1698,7 @@ gs_app_add_icon (GsApp *app, AsIcon *icon)
  * gs_app_get_use_drop_shadow:
  * @app: a #GsApp
  *
- * Uses a heuristic to work out if the application  pixbuf should have a drop
+ * Uses a heuristic to work out if the application pixbuf should have a drop
  * shadow applied.
  *
  * Returns: %TRUE if a drop shadow should be applied
@@ -1876,7 +1876,7 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 /**
  * gs_app_set_pixbuf:
  * @app: a #GsApp
- * @pixbuf: a #GdkPixbuf, or %NULL
+ * @pixbuf: (transfer none) (nullable): a #GdkPixbuf, or %NULL
  *
  * Sets a pixbuf used to represent the application.
  *
