@@ -27,7 +27,7 @@ struct GsPluginData {
 	gchar			*distro;
 	gchar			*user_hash;
 	gchar			*review_server;
-	GHashTable		*ratings;
+	GHashTable		*ratings;  /* (mutex ratings_mutex) (owned) (nullable) */
 	GMutex			 ratings_mutex;
 	GsApp			*cached_origin;
 };
@@ -43,8 +43,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->settings = g_settings_new ("org.gnome.software");
 	priv->review_server = g_settings_get_string (priv->settings,
 						     "review-server");
-	priv->ratings = g_hash_table_new_full (g_str_hash, g_str_equal,
-					       g_free, (GDestroyNotify) g_array_unref);
+	priv->ratings = NULL;  /* until first refreshed */
 
 	/* get the machine+user ID hash value */
 	priv->user_hash = gs_utils_get_user_hash (&error);
@@ -113,10 +112,11 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	JsonObject *json_item;
 	g_autoptr(GList) apps = NULL;
 	g_autoptr(JsonParser) json_parser = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->ratings_mutex);
+	g_autoptr(GHashTable) new_ratings = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
-	/* remove all existing */
-	g_hash_table_remove_all (priv->ratings);
+	new_ratings = g_hash_table_new_full (g_str_hash, g_str_equal,
+					     g_free, (GDestroyNotify) g_array_unref);
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new ();
@@ -149,11 +149,17 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 		g_autoptr(GArray) ratings = NULL;;
 		ratings = gs_plugin_odrs_load_ratings_for_app (json_app);
 		if (ratings->len == 6) {
-			g_hash_table_insert (priv->ratings,
+			g_hash_table_insert (new_ratings,
 					     g_strdup (app_id),
 					     g_array_ref (ratings));
 		}
 	}
+
+	/* Update the shared state */
+	locker = g_mutex_locker_new (&priv->ratings_mutex);
+	g_clear_pointer (&priv->ratings, g_hash_table_unref);
+	priv->ratings = g_steal_pointer (&new_ratings);
+
 	return TRUE;
 }
 
@@ -219,7 +225,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (priv->user_hash);
 	g_free (priv->distro);
 	g_free (priv->review_server);
-	g_hash_table_unref (priv->ratings);
+	g_clear_pointer (&priv->ratings, g_hash_table_unref);
 	g_object_unref (priv->settings);
 	g_object_unref (priv->cached_origin);
 	g_mutex_clear (&priv->ratings_mutex);
@@ -514,12 +520,18 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 	guint cnt = 0;
 	g_autoptr(GArray) review_ratings = NULL;
 	g_autoptr(GPtrArray) reviewable_ids = NULL;
+	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* get ratings for each reviewable ID */
 	reviewable_ids = _gs_app_get_reviewable_ids (app);
+
+	locker = g_mutex_locker_new (&priv->ratings_mutex);
+
+	if (priv->ratings == NULL)
+		return TRUE;
+
 	for (guint i = 0; i < reviewable_ids->len; i++) {
 		const gchar *id = g_ptr_array_index (reviewable_ids, i);
-		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->ratings_mutex);
 		GArray *ratings_tmp = g_hash_table_lookup (priv->ratings, id);
 		if (ratings_tmp == NULL)
 			continue;
@@ -530,6 +542,9 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 	}
 	if (cnt == 0)
 		return TRUE;
+
+	/* Done with priv->ratings now */
+	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* merge to accumulator array back to one GArray blob */
 	review_ratings = g_array_sized_new (FALSE, TRUE, sizeof(guint32), 6);
