@@ -185,8 +185,10 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	JsonNode *json_root;
 	JsonObject *json_item;
-	g_autoptr(GList) apps = NULL;
 	g_autoptr(JsonParser) json_parser = NULL;
+	const gchar *app_id;
+	JsonNode *json_app_node;
+	JsonObjectIter iter;
 	g_autoptr(GArray) new_ratings = NULL;
 	g_autoptr(GMutexLocker) locker = NULL;
 
@@ -221,11 +223,14 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	g_array_set_clear_func (new_ratings, (GDestroyNotify) rating_clear);
 
 	/* parse each app */
-	apps = json_object_get_members (json_item);
-	for (GList *l = apps; l != NULL; l = l->next) {
-		const gchar *app_id = (const gchar *) l->data;
-		JsonObject *json_app = json_object_get_object_member (json_item, app_id);
+	json_object_iter_init (&iter, json_item);
+	while (json_object_iter_next (&iter, &app_id, &json_app_node)) {
 		GsOdrsRating rating;
+		JsonObject *json_app;
+
+		if (!JSON_NODE_HOLDS_OBJECT (json_app_node))
+			continue;
+		json_app = json_node_get_object (json_app_node);
 
 		if (gs_plugin_odrs_load_ratings_for_app (json_app, app_id, &rating))
 			g_array_append_val (new_ratings, rating);
