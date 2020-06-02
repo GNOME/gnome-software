@@ -87,6 +87,9 @@ gs_star_widget_refresh (GsStarWidget *star)
 	GsStarWidgetPrivate *priv = gs_star_widget_get_instance_private (star);
 	const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
 
+	if (!gtk_widget_get_realized (GTK_WIDGET (star)))
+		return;
+
 	/* remove all existing widgets */
 	gs_container_remove_all (GTK_CONTAINER (priv->box1));
 
@@ -210,6 +213,15 @@ gs_star_widget_destroy (GtkWidget *widget)
 }
 
 static void
+gs_star_widget_realize (GtkWidget *widget)
+{
+	GTK_WIDGET_CLASS (gs_star_widget_parent_class)->realize (widget);
+
+	/* Create child widgets. */
+	gs_star_widget_refresh (GS_STAR_WIDGET (widget));
+}
+
+static void
 gs_star_widget_init (GsStarWidget *star)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (star), FALSE);
@@ -223,6 +235,7 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	widget_class->destroy = gs_star_widget_destroy;
+	widget_class->realize = gs_star_widget_realize;
 	object_class->get_property = gs_star_widget_get_property;
 	object_class->set_property = gs_star_widget_set_property;
 
