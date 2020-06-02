@@ -193,7 +193,7 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 	g_autoptr(GMutexLocker) locker = NULL;
 
 	/* parse the data and find the success */
-	json_parser = json_parser_new ();
+	json_parser = json_parser_new_immutable ();
 	if (!json_parser_load_from_file (json_parser, fn, error)) {
 		gs_utils_error_convert_json_glib (error);
 		return FALSE;
@@ -406,7 +406,7 @@ gs_plugin_odrs_parse_reviews (GsPlugin *plugin,
 	}
 
 	/* parse the data and find the array or ratings */
-	json_parser = json_parser_new ();
+	json_parser = json_parser_new_immutable ();
 	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
 		gs_utils_error_convert_json_glib (error);
 		return NULL;
@@ -492,7 +492,7 @@ gs_plugin_odrs_parse_success (const gchar *data, gssize data_len, GError **error
 	}
 
 	/* parse the data and find the success */
-	json_parser = json_parser_new ();
+	json_parser = json_parser_new_immutable ();
 	if (!json_parser_load_from_data (json_parser, data, data_len, error)) {
 		gs_utils_error_convert_json_glib (error);
 		return FALSE;
