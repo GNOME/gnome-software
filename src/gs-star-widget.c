@@ -19,6 +19,7 @@ typedef struct
 	gint		 rating;
 	guint		 icon_size;
 	GtkWidget	*box1;
+	GtkImage	*images[5];
 } GsStarWidgetPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
@@ -36,6 +37,8 @@ enum {
 
 static GParamSpec *properties[PROP_RATING + 1] = { 0, };
 static guint signals [SIGNAL_LAST] = { 0 };
+
+const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
 
 static void gs_star_widget_refresh (GsStarWidget *star);
 
@@ -79,11 +82,33 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
 }
 
+/* Update the star styles to display the new rating */
+static void
+gs_star_widget_refresh_rating (GsStarWidget *star)
+{
+	GsStarWidgetPrivate *priv = gs_star_widget_get_instance_private (star);
+
+	if (!gtk_widget_get_realized (GTK_WIDGET (star)))
+		return;
+
+	for (guint i = 0; i < G_N_ELEMENTS (priv->images); i++) {
+		GtkWidget *im = GTK_WIDGET (priv->images[i]);
+		gboolean enabled;
+
+		/* add fudge factor so we can actually get 5 stars in reality */
+		enabled = priv->rating >= rate_to_star[i] - 10;
+
+		gtk_style_context_add_class (gtk_widget_get_style_context (im),
+					     enabled ? "star-enabled" : "star-disabled");
+		gtk_style_context_remove_class (gtk_widget_get_style_context (im),
+						enabled ? "star-disabled" : "star-enabled");
+	}
+}
+
 static void
 gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv = gs_star_widget_get_instance_private (star);
-	const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
 
 	if (!gtk_widget_get_realized (GTK_WIDGET (star)))
 		return;
@@ -91,7 +116,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 	/* remove all existing widgets */
 	gs_container_remove_all (GTK_CONTAINER (priv->box1));
 
-	for (guint i = 0; i < 5; i++) {
+	for (guint i = 0; i < G_N_ELEMENTS (priv->images); i++) {
 		GtkWidget *w;
 		GtkWidget *im;
 
@@ -99,6 +124,7 @@ gs_star_widget_refresh (GsStarWidget *star)
 		im = gtk_image_new_from_icon_name ("starred-symbolic",
 						   GTK_ICON_SIZE_DIALOG);
 		gtk_image_set_pixel_size (GTK_IMAGE (im), (gint) priv->icon_size);
+		priv->images[i] = GTK_IMAGE (im);
 
 		/* create button */
 		if (priv->interactive) {
@@ -115,13 +141,11 @@ gs_star_widget_refresh (GsStarWidget *star)
 		}
 		gtk_widget_set_sensitive (w, priv->interactive);
 		gtk_style_context_add_class (gtk_widget_get_style_context (w), "star");
-		/* add fudge factor so we can actually get 5 stars in reality */
-		gtk_style_context_add_class (gtk_widget_get_style_context (im),
-					     priv->rating >= rate_to_star[i] - 10 ?
-					     "star-enabled" : "star-disabled");
 		gtk_widget_set_visible (w, TRUE);
 		gtk_container_add (GTK_CONTAINER (priv->box1), w);
 	}
+
+	gs_star_widget_refresh_rating (star);
 }
 
 void
@@ -152,7 +176,7 @@ gs_star_widget_set_rating (GsStarWidget *star,
 
 	priv->rating = rating;
 	g_object_notify_by_pspec (G_OBJECT (star), properties[PROP_RATING]);
-	gs_star_widget_refresh (star);
+	gs_star_widget_refresh_rating (star);
 }
 
 static void
