@@ -103,7 +103,6 @@ gs_popular_tile_init (GsPopularTile *tile)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
-	gs_star_widget_set_icon_size (GS_STAR_WIDGET (tile->stars), 12);
 }
 
 static void
