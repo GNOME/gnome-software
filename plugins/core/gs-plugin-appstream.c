@@ -499,21 +499,46 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	} else {
 		/* add search paths */
 		g_ptr_array_add (parent_appstream,
-				 g_build_filename ("/usr/share", "app-info", "xmls", NULL));
+				 g_build_filename (DATADIR, "app-info", "xmls", NULL));
 		g_ptr_array_add (parent_appstream,
-				 g_build_filename ("/usr/share", "app-info", "yaml", NULL));
+				 g_build_filename (DATADIR, "app-info", "yaml", NULL));
 		g_ptr_array_add (parent_appdata,
-				 g_build_filename ("/usr/share", "appdata", NULL));
+				 g_build_filename (DATADIR, "appdata", NULL));
 		g_ptr_array_add (parent_appdata,
-				 g_build_filename ("/usr/share", "metainfo", NULL));
+				 g_build_filename (DATADIR, "metainfo", NULL));
 		g_ptr_array_add (parent_appstream,
-				 g_build_filename ("/var/cache", "app-info", "xmls", NULL));
+				 g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL));
 		g_ptr_array_add (parent_appstream,
-				 g_build_filename ("/var/cache", "app-info", "yaml", NULL));
+				 g_build_filename (LOCALSTATEDIR, "cache", "app-info", "yaml", NULL));
 		g_ptr_array_add (parent_appstream,
-				 g_build_filename ("/var/lib", "app-info", "xmls", NULL));
+				 g_build_filename (LOCALSTATEDIR, "lib", "app-info", "xmls", NULL));
 		g_ptr_array_add (parent_appstream,
-				 g_build_filename ("/var/lib", "app-info", "yaml", NULL));
+				 g_build_filename (LOCALSTATEDIR, "lib", "app-info", "yaml", NULL));
+
+		/* Add the normal system directories if the installation prefix
+		 * is different from normal — typically this happens when doing
+		 * development builds. It’s useful to still list the system apps
+		 * during development. */
+		if (g_strcmp0 (DATADIR, "/usr/share") != 0) {
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename ("/usr/share", "app-info", "xmls", NULL));
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename ("/usr/share", "app-info", "yaml", NULL));
+			g_ptr_array_add (parent_appdata,
+					 g_build_filename ("/usr/share", "appdata", NULL));
+			g_ptr_array_add (parent_appdata,
+					 g_build_filename ("/usr/share", "metainfo", NULL));
+		}
+		if (g_strcmp0 (LOCALSTATEDIR, "/var") != 0) {
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename ("/var", "cache", "app-info", "xmls", NULL));
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename ("/var", "cache", "app-info", "yaml", NULL));
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename ("/var", "lib", "app-info", "xmls", NULL));
+			g_ptr_array_add (parent_appstream,
+					 g_build_filename ("/var", "lib", "app-info", "yaml", NULL));
+		}
 
 		/* import all files */
 		for (guint i = 0; i < parent_appstream->len; i++) {
@@ -529,6 +554,12 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 				return FALSE;
 		}
 		if (!gs_plugin_appstream_load_desktop (plugin, builder,
+						       DATADIR "/applications",
+						       cancellable, error)) {
+			return FALSE;
+		}
+		if (g_strcmp0 (DATADIR, "/usr/share") != 0 &&
+		    !gs_plugin_appstream_load_desktop (plugin, builder,
 						       "/usr/share/applications",
 						       cancellable, error)) {
 			return FALSE;
