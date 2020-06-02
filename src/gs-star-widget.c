@@ -75,10 +75,8 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 
 	rating = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
 						     "GsStarWidget::value"));
-	priv->rating = rating;
-	g_object_notify_by_pspec (G_OBJECT (star), properties[PROP_RATING]);
+	gs_star_widget_set_rating (star, rating);
 	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
-	gs_star_widget_refresh (star);
 }
 
 static void
