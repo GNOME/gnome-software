@@ -636,7 +636,11 @@ gs_flatpak_load_desktop_fn (GsFlatpak *self,
 
 	/* add source */
 	if (!xb_builder_source_load_file (source, file,
+#if LIBXMLB_CHECK_VERSION(0, 2, 0)
+					  XB_BUILDER_SOURCE_FLAG_WATCH_DIRECTORY,
+#else
 					  XB_BUILDER_SOURCE_FLAG_WATCH_FILE,
+#endif
 					  cancellable,
 					  error)) {
 		return FALSE;
