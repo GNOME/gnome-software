@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-05-14 17:34+0000\n"
-"PO-Revision-Date: 2020-05-14 20:38+0300\n"
+"POT-Creation-Date: 2020-06-04 08:27+0000\n"
+"PO-Revision-Date: 2020-06-04 12:17+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
 "%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Lokalize 20.07.70\n"
+"X-Generator: Lokalize 20.03.70\n"
 "X-Project-Style: gnome\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
@@ -1404,7 +1404,6 @@ msgstr "Оновлення у черзі…"
 
 #. Translators: This string is shown when preparing to download and install an app.
 #: src/gs-details-page.c:384
-#| msgid "Removing…"
 msgid "Preparing…"
 msgstr "Приготування…"
 
@@ -4239,7 +4238,7 @@ msgstr ""
 "станцій на Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:856
+#: plugins/flatpak/gs-flatpak.c:858
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Отримуємо метадані flatpak для %s…"
@@ -4248,66 +4247,75 @@ msgstr "Отримуємо метадані flatpak для %s…"
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
 #: plugins/fwupd/gs-fwupd-app.c:135
 #, c-format
-msgid "%s Device"
-msgstr "Пристрій %s"
+#| msgid "%s Device"
+msgid "%s Device Update"
+msgstr "Оновлення для пристрою %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
-msgid "%s System"
-msgstr "Система %s"
+#| msgid "%s System"
+msgid "%s System Update"
+msgstr "Оновлення системи для %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
-msgid "%s Embedded Controller"
-msgstr "Вбудований контролер %s"
+#| msgid "%s Embedded Controller"
+msgid "%s Embedded Controller Update"
+msgstr "Оновлення для вбудованого контролера %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
-msgid "%s ME"
-msgstr "ME %s"
+#| msgid "Update"
+msgid "%s ME Update"
+msgstr "Оновлення ME для %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
-msgid "%s Corporate ME"
-msgstr "Корпоративний ME %s"
+#| msgid "%s Corporate ME"
+msgid "%s Corporate ME Update"
+msgstr "Оновлення корпоративного ME для %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
-msgid "%s Consumer ME"
-msgstr "Споживацький ME %s"
+#| msgid "%s Consumer ME"
+msgid "%s Consumer ME Update"
+msgstr "Оновлення клієнтського ME для %s"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
 #: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
-msgid "%s Controller"
-msgstr "Контролер %s"
+#| msgid "%s Controller"
+msgid "%s Controller Update"
+msgstr "Оновлення для контролера %s"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
-msgid "%s Thunderbolt Controller"
-msgstr "Контролер Thunderbolt %s"
+#| msgid "%s Thunderbolt Controller"
+msgid "%s Thunderbolt Controller Update"
+msgstr "Оновлення для контролера Thunderbolt %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
 #: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
-msgid "%s CPU Microcode"
-msgstr "Мікропрограма процесора %s"
+#| msgid "%s CPU Microcode"
+msgid "%s CPU Microcode Update"
+msgstr "Оновлення для мікропрограми процесора %s"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:671
@@ -4352,3 +4360,6 @@ msgstr "Підтримка Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
+
+#~ msgid "%s ME"
+#~ msgstr "ME %s"
