@@ -93,7 +93,11 @@ gs_install_appstream_check_content_type (GFile *file, GError **error)
 		return FALSE;
 	}
 	xb_builder_import_source (builder, source);
-	silo = xb_builder_compile (builder, XB_BUILDER_COMPILE_FLAG_NONE,
+	silo = xb_builder_compile (builder,
+#if LIBXMLB_CHECK_VERSION(0, 2, 0)
+				   XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
+#endif
+				   XB_BUILDER_COMPILE_FLAG_NONE,
 				   NULL, &error_local);
 	if (silo == NULL) {
 		g_set_error (error,
