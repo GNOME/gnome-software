@@ -132,49 +132,49 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 		if (g_strcmp0 (cat, "X-Device") == 0) {
 			/* TRANSLATORS: a specific part of hardware,
 			 * the first %s is the device name, e.g. 'Unifying Receiver` */
-			return g_strdup_printf (_("%s Device"), name);
+			return g_strdup_printf (_("%s Device Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-System") == 0) {
 			/* TRANSLATORS: the entire system, e.g. all internal devices,
 			 * the first %s is the device name, e.g. 'ThinkPad P50` */
-			return g_strdup_printf (_("%s System"), name);
+			return g_strdup_printf (_("%s System Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-EmbeddedController") == 0) {
 			/* TRANSLATORS: the EC is typically the keyboard controller chip,
 			 * the first %s is the device name, e.g. 'ThinkPad P50` */
-			return g_strdup_printf (_("%s Embedded Controller"), name);
+			return g_strdup_printf (_("%s Embedded Controller Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-ManagementEngine") == 0) {
 			/* TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 			 * the first %s is the device name, e.g. 'ThinkPad P50` */
-			return g_strdup_printf (_("%s ME"), name);
+			return g_strdup_printf (_("%s ME Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-CorporateManagementEngine") == 0) {
 			/* TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 			 * where the first %s is the device name, e.g. 'ThinkPad P50` */
-			return g_strdup_printf (_("%s Corporate ME"), name);
+			return g_strdup_printf (_("%s Corporate ME Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-ConsumerManagementEngine") == 0) {
 			/* TRANSLATORS: ME stands for Management Engine, where
 			 * the first %s is the device name, e.g. 'ThinkPad P50` */
-			return g_strdup_printf (_("%s Consumer ME"), name);
+			return g_strdup_printf (_("%s Consumer ME Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-Controller") == 0) {
 			/* TRANSLATORS: the controller is a device that has other devices
 			 * plugged into it, for example ThunderBolt, FireWire or USB,
 			 * the first %s is the device name, e.g. 'Intel ThunderBolt` */
-			return g_strdup_printf (_("%s Controller"), name);
+			return g_strdup_printf (_("%s Controller Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-ThunderboltController") == 0) {
 			/* TRANSLATORS: the Thunderbolt controller is a device that
 			 * has other high speed Thunderbolt devices plugged into it;
 			 * the first %s is the system name, e.g. 'ThinkPad P50` */
-			return g_strdup_printf (_("%s Thunderbolt Controller"), name);
+			return g_strdup_printf (_("%s Thunderbolt Controller Update"), name);
 		}
 		if (g_strcmp0 (cat, "X-CpuMicrocode") == 0) {
 			/* TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 			 * at system bootup */
-			return g_strdup_printf (_("%s CPU Microcode"), name);
+			return g_strdup_printf (_("%s CPU Microcode Update"), name);
 		}
 	}
 #endif
