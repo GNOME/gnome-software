@@ -19,16 +19,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-04-17 14:46+0000\n"
-"PO-Revision-Date: 2019-09-13 01:01+0800\n"
-"Last-Translator: Dingzhong Chen <wsxy162@gmail.com>\n"
+"POT-Creation-Date: 2020-06-05 10:45+0000\n"
+"PO-Revision-Date: 2020-06-05 10:10-0400\n"
+"Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Gtranslator 3.32.1\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -368,23 +368,19 @@ msgstr "更多信息"
 
 #: src/gnome-software.ui:461 src/gs-metered-data-dialog.ui:5
 #: src/gs-metered-data-dialog.ui:17
-#, fuzzy
-#| msgid "Automatic Updates"
 msgid "Automatic Updates Paused"
-msgstr "自动更新"
+msgstr "自动更新已暂停"
 
 #: src/gnome-software.ui:480
-#, fuzzy
-#| msgid "Find out more…"
 msgid "Find Out _More"
-msgstr "了解更多…"
+msgstr "了解更多(_M)"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4506
+#: lib/gs-app.c:4516
 msgid "Local file"
 msgstr "本地文件"
 
-#: lib/gs-app.c:4558
+#: lib/gs-app.c:4568
 msgid "Package"
 msgstr "软件包"
 
@@ -401,7 +397,7 @@ msgstr "已安装"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:329
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:349
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "安装中"
@@ -494,7 +490,7 @@ msgstr "显示版本号"
 msgid "translator-credits"
 msgstr ""
 "eternalhui <www.eternalhui@gmail.com>, 2013\n"
-"tuhaihe <1132321739qq@gmail.com>, 2013\n"
+"tuhaihe <1132321739qq@gmail.com>, 2013, 2020\n"
 "Wylmer Wang <wantinghard@gmail.com>, 2013\n"
 "YunQiang Su <wzssyqa@gmail.com>, 2014\n"
 "Sphinx Jiang <yishanj13@gmail.com>, 2014\n"
@@ -542,7 +538,7 @@ msgstr "安装…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:130 src/gs-updates-section.c:476
+#: src/gs-app-row.c:130 src/gs-updates-section.c:478
 msgid "Cancel"
 msgstr "取消"
 
@@ -636,7 +632,7 @@ msgstr "子分类排序菜单"
 #: lib/gs-cmd.c:190
 #, c-format
 msgid "Please enter a number from 1 to %u: "
-msgstr "请输入 1-%u 的数字："
+msgstr "请输入 1-%u 的任一数字: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
 #: lib/gs-cmd.c:253
@@ -892,10 +888,8 @@ msgstr "吸食非法药物"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:132
-#, fuzzy
-#| msgid "References to tobacco products"
 msgid "No references to tobacco products"
-msgstr "对烟草产品的暗示"
+msgstr "无烟草产品暗示"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:134
@@ -1366,24 +1360,29 @@ msgstr "需要额外的软件包"
 msgid "Find in Software"
 msgstr "在“软件”中查找"
 
-#: src/gs-details-page.c:324
+#: src/gs-details-page.c:344
 msgid "Removing…"
 msgstr "正在移除…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:343
+#: src/gs-details-page.c:363
 msgid "Pending installation…"
 msgstr "等待安装…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:350
+#: src/gs-details-page.c:370
 msgid "Pending update…"
 msgstr "等待更新…"
 
+#. Translators: This string is shown when preparing to download and install an app.
+#: src/gs-details-page.c:384
+msgid "Preparing…"
+msgstr "正在准备…"
+
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:710
+#: src/gs-details-page.c:743
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1395,9 +1394,9 @@ msgstr "这个应用只能在联网情况下使用。"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:855 src/gs-details-page.c:872
+#: src/gs-details-page.c:888 src/gs-details-page.c:905
 #: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:63
+#: src/gs-upgrade-banner.c:87
 msgid "_Install"
 msgstr "安装(_I)"
 
@@ -1408,190 +1407,190 @@ msgstr "安装(_I)"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:886 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:919 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "安装(_I)…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:928
+#: src/gs-details-page.c:961
 msgid "_Launch"
 msgstr "启动(_L)"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:952 src/gs-details-page.ui:192
+#: src/gs-details-page.c:985 src/gs-details-page.ui:192
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "网络"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "可以通过网络进行通信"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "系统服务"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "可以访问在系统总线上访问 D-Bus 服务"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "会话服务"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "可以在会话总线上访问 D-Bus 服务"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "设备"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "可以访问系统设备文件"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:988
+#: src/gs-details-page.c:1020 src/gs-details-page.c:1021
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "主目录"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:989
-#: src/gs-details-page.c:991 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1020 src/gs-details-page.c:1022
+#: src/gs-details-page.c:1024 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "可以查看、编辑和创建文件"
 
-#: src/gs-details-page.c:988 src/gs-details-page.c:990
-#: src/gs-details-page.c:992 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1025 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "可以查看文件"
 
-#: src/gs-details-page.c:989 src/gs-details-page.c:990
+#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "文件系统"
 
-#: src/gs-details-page.c:991 src/gs-details-page.c:992
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "下载文件夹"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "设置"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "可以查看和更改任意设置"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "传统显示系统"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "使用旧式、不安全的显示系统"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "沙箱逃逸"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "可以逃脱沙箱并绕过任何其他限制"
 
-#: src/gs-details-page.c:1010
+#: src/gs-details-page.c:1043
 msgid "This application is fully sandboxed."
 msgstr "此应用程序已完全沙盒化。"
 
-#: src/gs-details-page.c:1018
+#: src/gs-details-page.c:1051
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
 msgstr "无法确认此应用程序可以访问系统的哪一部分。这是旧版应用程序的特征。"
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1210
 msgctxt "version"
 msgid "Unknown"
 msgstr "未知"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1190
+#: src/gs-details-page.c:1223
 msgctxt "updated"
 msgid "Never"
 msgstr "未知"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1243
+#: src/gs-details-page.c:1276
 msgctxt "origin"
 msgid "Unknown"
 msgstr "未知"
 
-#: src/gs-details-page.c:1296
+#: src/gs-details-page.c:1329
 msgid "Low"
 msgstr "低"
 
-#: src/gs-details-page.c:1298
+#: src/gs-details-page.c:1331
 msgid "Medium"
 msgstr "中"
 
-#: src/gs-details-page.c:1300
+#: src/gs-details-page.c:1333
 msgid "High"
 msgstr "高"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1302 src/gs-details-page.ui:1006
+#: src/gs-details-page.c:1335 src/gs-details-page.ui:1006
 #: src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "未知"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1640
+#: src/gs-details-page.c:1673
 msgid "You need internet access to write a review"
 msgstr "您需要互联网连接以编写评论"
 
-#: src/gs-details-page.c:1826 src/gs-details-page.c:1842
+#: src/gs-details-page.c:1859 src/gs-details-page.c:1875
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "无法找到“%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2420
+#: src/gs-details-page.c:2453
 msgid "Public domain"
 msgstr "公有领域"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2423
+#: src/gs-details-page.c:2456
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://zh.wikipedia.org/wiki/公有领域"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2430
+#: src/gs-details-page.c:2463
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.zh-cn"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2440 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2473 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "自由软件"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2497
+#: src/gs-details-page.c:2530
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "用户受以下许可证的约束："
 
-#: src/gs-details-page.c:2524 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2557 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "更多信息"
 
@@ -1698,7 +1697,7 @@ msgstr "隔离环境"
 #. TRANSLATORS: the title for Snap channels
 #: src/gs-details-page.ui:605 src/gs-origin-popover-row.c:102
 msgid "Channel"
-msgstr ""
+msgstr "频道"
 
 #. Translators: The available version of an app
 #: src/gs-details-page.ui:641 src/gs-origin-popover-row.ui:151
@@ -1750,7 +1749,7 @@ msgstr "专有软件"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:442
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "附加组件"
@@ -1812,7 +1811,7 @@ msgstr "没有对应此分级可用的详细信息。"
 #. TRANSLATORS: separator for a list of items
 #: src/gs-extras-page.c:134
 msgid " and "
-msgstr " 且 "
+msgstr "和"
 
 #. TRANSLATORS: separator for a list of items
 #: src/gs-extras-page.c:137
@@ -2045,7 +2044,7 @@ msgstr "历史"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:436
+#: src/gs-installed-page.c:438
 msgid "System Applications"
 msgstr "系统应用程序"
 
@@ -2078,12 +2077,14 @@ msgid ""
 "Alternatively, if the current network has been in­correctly identified as "
 "being metered, this setting can be changed."
 msgstr ""
+"当前网络为计费流量。计费连接有流量限制或产生相关费用。为了节省流量，自动更新"
+"已暂停。\n"
+"当可使用非计费网络时，自动更新将恢复。届时，仍可能需要手动安装更新。\n"
+"另外情形，如果当前网络被错误识别为计费流量，该设置也会发生改动。"
 
 #: src/gs-metered-data-dialog.ui:53
-#, fuzzy
-#| msgid "Network Settings"
 msgid "Open Network _Settings"
-msgstr "网络设置"
+msgstr "打开网络设置(_S)"
 
 #: src/gs-moderate-page.ui:7
 msgid "Moderate page"
@@ -2153,12 +2154,12 @@ msgid "Recommended Productivity Applications"
 msgstr "推荐的生产力应用"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:827
+#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:831
 msgid "Access additional software from selected third party sources."
 msgstr "从选中的第三方软件源获取更多软件。"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:831
+#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:835
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2166,7 +2167,7 @@ msgstr "某些软件使用专有协议，因而对使用、分享及源代码访
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:840
 msgid "Find out more…"
 msgstr "了解更多…"
 
@@ -2273,7 +2274,7 @@ msgstr "当更新被自动安装时显示通知。"
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:114
+#: src/gs-removal-dialog.c:119
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -2362,19 +2363,19 @@ msgstr "禁用"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:740
+#: src/gs-repos-dialog.c:744
 msgid "the operating system"
 msgstr "操作系统"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:806 src/gs-repos-dialog.c:842
+#: src/gs-repos-dialog.c:810 src/gs-repos-dialog.c:846
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "该软件源内的软件可替代 %s 提供的默认软件。"
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:824
+#: src/gs-repos-dialog.c:828
 msgid "Third Party Repositories"
 msgstr "第三方软件源"
 
@@ -3529,61 +3530,61 @@ msgstr "更新将被自动管理"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:278
+#: src/gs-updates-section.c:280
 msgid "Restart & Update"
 msgstr "重启并更新"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:284
+#: src/gs-updates-section.c:286
 msgid "Update All"
 msgstr "全部更新"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:415
+#: src/gs-updates-section.c:417
 msgid "Integrated Firmware"
 msgstr "集成固件"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:419
+#: src/gs-updates-section.c:421
 msgid "Requires Restart"
 msgstr "重新启动"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:423
+#: src/gs-updates-section.c:425
 msgid "Application Updates"
 msgstr "应用程序更新"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:427
+#: src/gs-updates-section.c:429
 msgid "Device Firmware"
 msgstr "设备固件"
 
-#: src/gs-updates-section.c:455 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:457 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "下载(_D)"
 
-#: src/gs-upgrade-banner.c:65
+#: src/gs-upgrade-banner.c:89
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr "建议您在更新前备份数据和文件。"
 
-#: src/gs-upgrade-banner.c:69
+#: src/gs-upgrade-banner.c:93
 msgid "_Restart Now"
 msgstr "立即重启(_R)"
 
-#: src/gs-upgrade-banner.c:71
+#: src/gs-upgrade-banner.c:95
 msgid "Updates will be applied when the computer is restarted."
 msgstr "更新将在计算机重启后应用。"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:86
+#: src/gs-upgrade-banner.c:110
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s 现在可用"
@@ -3591,7 +3592,7 @@ msgstr "%s %s 现在可用"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:96
+#: src/gs-upgrade-banner.c:120
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "正在等待下载 %s %s"
@@ -3599,7 +3600,7 @@ msgstr "正在等待下载 %s %s"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:106
+#: src/gs-upgrade-banner.c:130
 #, c-format
 msgid "Downloading %s %s"
 msgstr "正在下载 %s %s"
@@ -3608,7 +3609,7 @@ msgstr "正在下载 %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:117
+#: src/gs-upgrade-banner.c:141
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s 已经可以安装"
@@ -4051,31 +4052,31 @@ msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS 更新服务无法获取和应用更新。"
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:139
+#: plugins/external-appstream/gs-install-appstream.c:143
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "GNOME 软件 AppStream 系统级安装器"
 
-#: plugins/external-appstream/gs-install-appstream.c:141
+#: plugins/external-appstream/gs-install-appstream.c:145
 msgid "Failed to parse command line arguments"
 msgstr "解析命令行参数失败"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:148
+#: plugins/external-appstream/gs-install-appstream.c:152
 msgid "You need to specify exactly one filename"
 msgstr "您需要指定正好一个文件名"
 
 #. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:155
+#: plugins/external-appstream/gs-install-appstream.c:159
 msgid "This program can only be used by the root user"
 msgstr "该程序只能被 root 用户使用"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:163
+#: plugins/external-appstream/gs-install-appstream.c:167
 msgid "Failed to validate content type"
 msgstr "验证内容类型失败"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:173
+#: plugins/external-appstream/gs-install-appstream.c:177
 msgid "Failed to copy"
 msgstr "复制失败"
 
@@ -4104,7 +4105,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak 是用于 Linux 上桌面应用程序的框架"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:853
+#: plugins/flatpak/gs-flatpak.c:865
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "正在获取 %s 的 flatpak 元数据…"
@@ -4113,66 +4114,66 @@ msgstr "正在获取 %s 的 flatpak 元数据…"
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
 #: plugins/fwupd/gs-fwupd-app.c:135
 #, c-format
-msgid "%s Device"
-msgstr "%s 设备"
+msgid "%s Device Update"
+msgstr "%s 设备更新"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
-msgid "%s System"
-msgstr "%s 系统"
+msgid "%s System Update"
+msgstr "%s 系统更新"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
-msgid "%s Embedded Controller"
-msgstr "%s 嵌入式控制器"
+msgid "%s Embedded Controller Update"
+msgstr "%s 嵌入式控制器更新"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
-msgid "%s ME"
-msgstr "%s 管理引擎（ME）"
+msgid "%s ME Update"
+msgstr "%s 管理引擎（ME）更新"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
-msgid "%s Corporate ME"
-msgstr "%s 企业管理引擎（ME）"
+msgid "%s Corporate ME Update"
+msgstr "%s 企业级管理引擎（ME）更新"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
-msgid "%s Consumer ME"
-msgstr "%s 消费者管理引擎（ME）"
+msgid "%s Consumer ME Update"
+msgstr "%s 消费级管理引擎（ME）更新"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
 #: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
-msgid "%s Controller"
-msgstr "%s 控制器"
+msgid "%s Controller Update"
+msgstr "%s 控制器更新"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
-msgid "%s Thunderbolt Controller"
-msgstr "%s Thunderbolt 控制器"
+msgid "%s Thunderbolt Controller Update"
+msgstr "%s Thunderbolt 控制器更新"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
 #: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
-msgid "%s CPU Microcode"
-msgstr ""
+msgid "%s CPU Microcode Update"
+msgstr "%s CPU微码更新"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:671
@@ -4217,6 +4218,9 @@ msgstr "Snap 支持"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap 是个通用的 Linux 程序包"
+
+#~ msgid "%s ME"
+#~ msgstr "%s 管理引擎（ME）"
 
 #~ msgid "Show the folder management UI"
 #~ msgstr "显示文件夹管理界面"
