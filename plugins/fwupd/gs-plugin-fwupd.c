@@ -290,8 +290,8 @@ gs_plugin_fwupd_new_app_from_device (GsPlugin *plugin, FwupdDevice *dev)
 	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 	as_icon_set_name (icon, "application-x-firmware");
 	gs_app_add_icon (app, icon);
-	gs_fwupd_app_set_from_release (app, rel);
 	gs_fwupd_app_set_from_device (app, dev);
+	gs_fwupd_app_set_from_release (app, rel);
 
 	if (fwupd_release_get_appstream_id (rel) != NULL)
 		gs_app_set_id (app, fwupd_release_get_appstream_id (rel));
