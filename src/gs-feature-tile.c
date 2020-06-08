@@ -21,6 +21,7 @@ struct _GsFeatureTile
 	GtkWidget	*stack;
 	GtkWidget	*title;
 	GtkWidget	*subtitle;
+	const gchar	*markup_cache;  /* (unowned) (nullable) */
 };
 
 G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
@@ -33,7 +34,6 @@ gs_feature_tile_refresh (GsAppTile *self)
 	AtkObject *accessible;
 	const gchar *markup;
 	g_autofree gchar *name = NULL;
-	g_autoptr(GsCss) css = NULL;
 
 	if (app == NULL)
 		return;
@@ -44,17 +44,21 @@ gs_feature_tile_refresh (GsAppTile *self)
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
-	/* perhaps set custom css */
+	/* perhaps set custom css; cache it so that images don’t get reloaded
+	 * unnecessarily */
 	markup = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css");
-	css = gs_css_new ();
-	if (markup != NULL)
-		gs_css_parse (css, markup, NULL);
-	gs_utils_widget_set_css (GTK_WIDGET (tile), "feature-tile",
-				 gs_css_get_markup_for_id (css, "tile"));
-	gs_utils_widget_set_css (tile->title, "feature-tile-name",
-				 gs_css_get_markup_for_id (css, "name"));
-	gs_utils_widget_set_css (tile->subtitle, "feature-tile-subtitle",
-				 gs_css_get_markup_for_id (css, "summary"));
+	if (tile->markup_cache != markup) {
+		g_autoptr(GsCss) css = gs_css_new ();
+		if (markup != NULL)
+			gs_css_parse (css, markup, NULL);
+		gs_utils_widget_set_css (GTK_WIDGET (tile), "feature-tile",
+					 gs_css_get_markup_for_id (css, "tile"));
+		gs_utils_widget_set_css (tile->title, "feature-tile-name",
+					 gs_css_get_markup_for_id (css, "name"));
+		gs_utils_widget_set_css (tile->subtitle, "feature-tile-subtitle",
+					 gs_css_get_markup_for_id (css, "summary"));
+		tile->markup_cache = markup;
+	}
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
