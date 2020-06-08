@@ -28,6 +28,7 @@ typedef struct
 	GtkWidget	*label_upgrades_warning;
 	GtkWidget	*progressbar;
 	guint		 progress_pulse_id;
+	GtkCssProvider	*banner_provider;  /* (owned) (nullable) */
 } GsUpgradeBannerPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsUpgradeBanner, gs_upgrade_banner, GTK_TYPE_BIN)
@@ -283,7 +284,7 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 
 	/* perhaps set custom css */
 	css = gs_app_get_metadata_item (app, "GnomeSoftware::UpgradeBanner-css");
-	gs_utils_widget_set_css (priv->box_upgrades, "upgrade-banner-custom", css);
+	gs_utils_widget_set_css (priv->box_upgrades, &priv->banner_provider, "upgrade-banner-custom", css);
 
 	gs_upgrade_banner_refresh (self);
 }
@@ -296,6 +297,17 @@ gs_upgrade_banner_get_app (GsUpgradeBanner *self)
 	g_return_val_if_fail (GS_IS_UPGRADE_BANNER (self), NULL);
 
 	return priv->app;
+}
+
+static void
+gs_upgrade_banner_dispose (GObject *object)
+{
+	GsUpgradeBanner *self = GS_UPGRADE_BANNER (object);
+	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
+
+	g_clear_object (&priv->banner_provider);
+
+	G_OBJECT_CLASS (gs_upgrade_banner_parent_class)->dispose (object);
 }
 
 static void
@@ -343,6 +355,7 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->dispose = gs_upgrade_banner_dispose;
 	widget_class->destroy = gs_upgrade_banner_destroy;
 
 	signals [SIGNAL_DOWNLOAD_CLICKED] =

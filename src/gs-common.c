@@ -344,30 +344,11 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 		   error->message);
 }
 
-static void
-gs_utils_widget_set_css_internal (GtkWidget *widget,
-				  const gchar *class_name,
-				  const gchar *css)
-{
-	GtkStyleContext *context;
-	g_autoptr(GtkCssProvider) provider = NULL;
-
-	/* set the custom CSS class */
-	context = gtk_widget_get_style_context (widget);
-	gtk_style_context_add_class (context, class_name);
-
-	/* set up custom provider and store on the widget */
-	provider = gtk_css_provider_new ();
-	g_signal_connect (provider, "parsing-error",
-			  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
-	gtk_css_provider_load_from_data (provider, css, -1, NULL);
-	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-}
-
 /**
  * gs_utils_widget_set_css:
  * @widget: a widget
+ * @provider: (inout) (transfer full) (not optional) (nullable): pointer to a
+ *    #GtkCssProvider to use
  * @class_name: class name to use, without the leading `.`
  * @css: (nullable): CSS to set on the widget, or %NULL to clear custom CSS
  *
@@ -376,24 +357,54 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
  * used as a name for the @css. It doesn’t need to vary with @widget, but
  * multiple values of @class_name can be used with the same @widget to control
  * several independent snippets of custom CSS.
+ *
+ * @provider must be a pointer to a #GtkCssProvider pointer, typically within
+ * your widget’s private data struct. This function will return a
+ * #GtkCssProvider in the provided pointer, reusing any old @provider if
+ * possible. When your widget is destroyed, you must destroy the returned
+ * @provider. If @css is %NULL, this function will destroy the @provider.
  */
 void
-gs_utils_widget_set_css (GtkWidget *widget, const gchar *class_name, const gchar *css)
+gs_utils_widget_set_css (GtkWidget *widget, GtkCssProvider **provider, const gchar *class_name, const gchar *css)
 {
+	GtkStyleContext *context;
 	g_autoptr(GString) str = NULL;
 
-	/* remove custom class if NULL; we don’t currently bother to remove the custom #GtkCssProvider */
+	g_return_if_fail (GTK_IS_WIDGET (widget));
+	g_return_if_fail (provider != NULL);
+	g_return_if_fail (provider == NULL || *provider == NULL || GTK_IS_STYLE_PROVIDER (*provider));
+	g_return_if_fail (class_name != NULL);
+
+	context = gtk_widget_get_style_context (widget);
+
+	/* remove custom class if NULL */
 	if (css == NULL) {
-		GtkStyleContext *context = gtk_widget_get_style_context (widget);
+		if (*provider != NULL)
+			gtk_style_context_remove_provider (context, GTK_STYLE_PROVIDER (*provider));
+		g_clear_object (provider);
 		gtk_style_context_remove_class (context, class_name);
 		return;
 	}
+
 	str = g_string_sized_new (1024);
 	g_string_append_printf (str, ".%s {\n", class_name);
 	g_string_append_printf (str, "%s\n", css);
 	g_string_append (str, "}");
 
-	gs_utils_widget_set_css_internal (widget, class_name, str->str);
+	/* create a new provider if needed */
+	if (*provider == NULL) {
+		*provider = gtk_css_provider_new ();
+		g_signal_connect (*provider, "parsing-error",
+				  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
+	}
+
+	/* set the custom CSS class */
+	gtk_style_context_add_class (context, class_name);
+
+	/* set up custom provider and store on the widget */
+	gtk_css_provider_load_from_data (*provider, str->str, -1, NULL);
+	gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER (*provider),
+					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void

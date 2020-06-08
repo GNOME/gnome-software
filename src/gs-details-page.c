@@ -147,6 +147,7 @@ struct _GsDetailsPage
 	GtkWidget		*label_content_rating_message;
 	GtkWidget		*label_content_rating_none;
 	GtkWidget		*button_details_rating_value;
+	GtkStyleProvider	*button_details_rating_style_provider;
 	GtkWidget		*label_details_rating_title;
 	GtkWidget		*popover_permissions;
 	GtkWidget		*box_permissions_details;
@@ -1693,7 +1694,7 @@ gs_details_page_app_refine_cb (GObject *source,
 }
 
 static void
-gs_details_page_content_rating_set_css (GtkWidget *widget, guint age)
+gs_details_page_content_rating_set_css (GsDetailsPage *page, guint age)
 {
 	g_autoptr(GString) css = g_string_new (NULL);
 	const gchar *color_bg = NULL;
@@ -1711,7 +1712,9 @@ gs_details_page_content_rating_set_css (GtkWidget *widget, guint age)
 	}
 	g_string_append_printf (css, "color: %s;\n", color_fg);
 	g_string_append_printf (css, "background-color: %s;\n", color_bg);
-	gs_utils_widget_set_css (widget, "content-rating-custom", css->str);
+
+	gs_utils_widget_set_css (page->button_details_rating_value, &page->button_details_rating_style_provider,
+				 "content-rating-custom", css->str);
 }
 
 static void
@@ -1740,7 +1743,7 @@ gs_details_page_refresh_content_rating (GsDetailsPage *self)
 		gtk_button_set_label (GTK_BUTTON (self->button_details_rating_value), display);
 		gtk_widget_set_visible (self->button_details_rating_value, TRUE);
 		gtk_widget_set_visible (self->label_details_rating_title, TRUE);
-		gs_details_page_content_rating_set_css (self->button_details_rating_value, age);
+		gs_details_page_content_rating_set_css (self, age);
 	} else {
 		gtk_widget_set_visible (self->button_details_rating_value, FALSE);
 		gtk_widget_set_visible (self->label_details_rating_title, FALSE);
@@ -2702,6 +2705,7 @@ gs_details_page_dispose (GObject *object)
 	g_clear_object (&self->app_cancellable);
 	g_clear_object (&self->session);
 	g_clear_object (&self->size_group_origin_popover);
+	g_clear_object (&self->button_details_rating_style_provider);
 
 	G_OBJECT_CLASS (gs_details_page_parent_class)->dispose (object);
 }
