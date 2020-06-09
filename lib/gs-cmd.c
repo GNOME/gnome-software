@@ -288,14 +288,14 @@ main (int argc, char **argv)
 	gint i;
 	guint cache_age = 0;
 	gint repeat = 1;
-	g_auto(GStrv) plugin_blacklist = NULL;
-	g_auto(GStrv) plugin_whitelist = NULL;
+	g_auto(GStrv) plugin_blocklist = NULL;
+	g_auto(GStrv) plugin_allowlist = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GPtrArray) categories = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new ();
-	g_autofree gchar *plugin_blacklist_str = NULL;
-	g_autofree gchar *plugin_whitelist_str = NULL;
+	g_autofree gchar *plugin_blocklist_str = NULL;
+	g_autofree gchar *plugin_allowlist_str = NULL;
 	g_autofree gchar *refine_flags_str = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GFile) file = NULL;
@@ -313,9 +313,9 @@ main (int argc, char **argv)
 		  "Return a maximum number of results", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
-		{ "plugin-blacklist", '\0', 0, G_OPTION_ARG_STRING, &plugin_blacklist_str,
+		{ "plugin-blocklist", '\0', 0, G_OPTION_ARG_STRING, &plugin_blocklist_str,
 		  "Do not load specific plugins", NULL },
-		{ "plugin-whitelist", '\0', 0, G_OPTION_ARG_STRING, &plugin_whitelist_str,
+		{ "plugin-allowlist", '\0', 0, G_OPTION_ARG_STRING, &plugin_allowlist_str,
 		  "Only load specific plugins", NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  "Show verbose debugging information", NULL },
@@ -358,13 +358,13 @@ main (int argc, char **argv)
 	self->plugin_loader = gs_plugin_loader_new ();
 	if (g_file_test (LOCALPLUGINDIR, G_FILE_TEST_EXISTS))
 		gs_plugin_loader_add_location (self->plugin_loader, LOCALPLUGINDIR);
-	if (plugin_whitelist_str != NULL)
-		plugin_whitelist = g_strsplit (plugin_whitelist_str, ",", -1);
-	if (plugin_blacklist_str != NULL)
-		plugin_blacklist = g_strsplit (plugin_blacklist_str, ",", -1);
+	if (plugin_allowlist_str != NULL)
+		plugin_allowlist = g_strsplit (plugin_allowlist_str, ",", -1);
+	if (plugin_blocklist_str != NULL)
+		plugin_blocklist = g_strsplit (plugin_blocklist_str, ",", -1);
 	ret = gs_plugin_loader_setup (self->plugin_loader,
-				      plugin_whitelist,
-				      plugin_blacklist,
+				      plugin_allowlist,
+				      plugin_blocklist,
 				      NULL,
 				      &error);
 	if (!ret) {

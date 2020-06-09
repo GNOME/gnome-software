@@ -54,8 +54,8 @@ GPtrArray	*gs_plugin_loader_job_get_categories_finish (GsPluginLoader *plugin_lo
 							 GAsyncResult	*res,
 							 GError		**error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
-							 gchar		**whitelist,
-							 gchar		**blacklist,
+							 gchar		**allowlist,
+							 gchar		**blocklist,
 							 GCancellable	*cancellable,
 							 GError		**error);
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);

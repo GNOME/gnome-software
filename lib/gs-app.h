@@ -84,7 +84,7 @@ typedef enum {
  * @GS_APP_QUIRK_NEW_PERMISSIONS:	The update requires new permissions
  * @GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE:	The app cannot be run by the current user due to parental controls, and should not be launchable
  * @GS_APP_QUIRK_HIDE_FROM_SEARCH:	The app should not be shown in search results
- * @GS_APP_QUIRK_HIDE_EVERYWHERE:	The app should not be shown anywhere (it’s blacklisted)
+ * @GS_APP_QUIRK_HIDE_EVERYWHERE:	The app should not be shown anywhere (it’s blocklisted)
  * @GS_APP_QUIRK_DO_NOT_AUTO_UPDATE:	The app should not be automatically updated
  *
  * The application attributes.

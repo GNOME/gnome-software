@@ -1198,9 +1198,9 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 
-	/* don't show blacklisted apps */
+	/* don't show blocklisted apps */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_HIDE_EVERYWHERE)) {
-		g_debug ("app invalid as blacklisted %s",
+		g_debug ("app invalid as blocklisted %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
@@ -2284,8 +2284,8 @@ gs_plugin_loader_find_plugins (const gchar *path, GError **error)
 /**
  * gs_plugin_loader_setup:
  * @plugin_loader: a #GsPluginLoader
- * @whitelist: list of plugin names, or %NULL
- * @blacklist: list of plugin names, or %NULL
+ * @allowlist: list of plugin names, or %NULL
+ * @blocklist: list of plugin names, or %NULL
  * @cancellable: A #GCancellable, or %NULL
  * @error: A #GError, or %NULL
  *
@@ -2295,8 +2295,8 @@ gs_plugin_loader_find_plugins (const gchar *path, GError **error)
  */
 gboolean
 gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
-			gchar **whitelist,
-			gchar **blacklist,
+			gchar **allowlist,
+			gchar **blocklist,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -2350,31 +2350,31 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	/* optional whitelist */
-	if (whitelist != NULL) {
+	/* optional allowlist */
+	if (allowlist != NULL) {
 		for (i = 0; i < priv->plugins->len; i++) {
 			gboolean ret;
 			plugin = g_ptr_array_index (priv->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
-			ret = g_strv_contains ((const gchar * const *) whitelist,
+			ret = g_strv_contains ((const gchar * const *) allowlist,
 					       gs_plugin_get_name (plugin));
 			if (!ret) {
-				g_debug ("%s not in whitelist, disabling",
+				g_debug ("%s not in allowlist, disabling",
 					 gs_plugin_get_name (plugin));
 			}
 			gs_plugin_set_enabled (plugin, ret);
 		}
 	}
 
-	/* optional blacklist */
-	if (blacklist != NULL) {
+	/* optional blocklist */
+	if (blocklist != NULL) {
 		for (i = 0; i < priv->plugins->len; i++) {
 			gboolean ret;
 			plugin = g_ptr_array_index (priv->plugins, i);
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
-			ret = g_strv_contains ((const gchar * const *) blacklist,
+			ret = g_strv_contains ((const gchar * const *) blocklist,
 					       gs_plugin_get_name (plugin));
 			if (ret)
 				gs_plugin_set_enabled (plugin, FALSE);

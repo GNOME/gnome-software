@@ -158,8 +158,8 @@ shared_module(
 )
 
 shared_module(
-  'gs_plugin_hardcoded-blacklist',
-  sources : 'gs-plugin-hardcoded-blacklist.c',
+  'gs_plugin_hardcoded-blocklist',
+  sources : 'gs-plugin-hardcoded-blocklist.c',
   include_directories : [
     include_directories('../..'),
     include_directories('../../lib'),

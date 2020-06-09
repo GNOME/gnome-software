@@ -22,7 +22,7 @@
  * Specifically, %GS_APP_QUIRK_PARENTAL_FILTER will be added if an app’s OARS
  * rating is too extreme for the current parental controls OARS policy.
  * %GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE will be added if the app is listed on
- * the current parental controls blacklist.
+ * the current parental controls blocklist.
  *
  * Parental controls policy is loaded using libmalcontent.
  *
@@ -138,7 +138,7 @@ app_is_content_rating_appropriate (GsApp *app, MctAppFilter *app_filter)
 }
 
 static gboolean
-app_is_parentally_blacklisted (GsApp *app, MctAppFilter *app_filter)
+app_is_parentally_blocklisted (GsApp *app, MctAppFilter *app_filter)
 {
 	const gchar *desktop_id;
 	g_autoptr(GAppInfo) appinfo = NULL;
@@ -170,9 +170,9 @@ app_set_parental_quirks (GsPlugin *plugin, GsApp *app, MctAppFilter *app_filter)
 		gs_app_remove_quirk (app, GS_APP_QUIRK_PARENTAL_FILTER);
 	}
 
-	/* check the app blacklist to see if this app should be launchable */
-	if (app_is_parentally_blacklisted (app, app_filter)) {
-		g_debug ("Filtering ‘%s’: app is blacklisted for this user",
+	/* check the app blocklist to see if this app should be launchable */
+	if (app_is_parentally_blocklisted (app, app_filter)) {
+		g_debug ("Filtering ‘%s’: app is blocklisted for this user",
 		         gs_app_get_unique_id (app));
 		gs_app_add_quirk (app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE);
 		filtered = TRUE;

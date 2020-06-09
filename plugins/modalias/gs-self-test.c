@@ -47,7 +47,7 @@ main (int argc, char **argv)
 	g_autofree gchar *xml = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
-	const gchar *whitelist[] = {
+	const gchar *allowlist[] = {
 		"appstream",
 		"dummy",
 		"modalias",
@@ -94,7 +94,7 @@ main (int argc, char **argv)
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR_CORE);
 	gs_plugin_loader_add_location (plugin_loader, LOCALPLUGINDIR_DUMMY);
 	ret = gs_plugin_loader_setup (plugin_loader,
-				      (gchar**) whitelist,
+				      (gchar**) allowlist,
 				      NULL,
 				      NULL,
 				      &error);

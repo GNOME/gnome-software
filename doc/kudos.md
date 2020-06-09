@@ -62,7 +62,7 @@ To do this, just add something like:
 
 Although, please bear in mind any application that is found cheating, i.e.
 adding kudos artificially will have **all** the kudos manually removed
-with a blacklist rule in the AppStream builder.
+with a blocklist rule in the AppStream builder.
 
 If you are a vendor, or a system distributor and just want to increase the
 number of kudos for your pet proprietary application that's essential to

@@ -12,7 +12,7 @@
 
 /*
  * SECTION:
- * Blacklists some applications based on a hardcoded list.
+ * Blocklists some applications based on a hardcoded list.
  */
 
 void
