@@ -387,78 +387,127 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 			    pk_package_get_summary (package));
 }
 
-/*
- * gs_pk_compare_ids:
+/* Hash functions which compare PkPackageIds on NAME, VERSION and ARCH, but not DATA.
+ * This is because some backends do not append the origin.
  *
- * Do not compare the repo. Some backends do not append the origin.
- */
-static gboolean
-gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
+ * Borrowing some implementation details from pk-package-id.c, a package
+ * ID is a semicolon-separated list of NAME;[VERSION];[ARCH];[DATA],
+ * so a comparison which ignores DATA is just a strncmp() up to and
+ * including the final semicolon.
+ *
+ * Doing it this way means zero allocations, which allows the hash and
+ * equality functions to be fast. This is important when dealing with
+ * large refine() package lists.
+ *
+ * The hash and equality functions assume that the IDs they are passed are
+ * valid. */
+static guint
+package_id_hash (gconstpointer key)
 {
-	gboolean ret;
-	g_auto(GStrv) split1 = NULL;
-	g_auto(GStrv) split2 = NULL;
+	const gchar *package_id = key;
+	gchar *no_data;
+	gsize i, last_semicolon = 0;
 
-	split1 = pk_package_id_split (package_id1);
-	if (split1 == NULL)
-		return FALSE;
-	split2 = pk_package_id_split (package_id2);
-	if (split2 == NULL)
-		return FALSE;
-	ret = (g_strcmp0 (split1[PK_PACKAGE_ID_NAME],
-			  split2[PK_PACKAGE_ID_NAME]) == 0 &&
-	       g_strcmp0 (split1[PK_PACKAGE_ID_VERSION],
-			  split2[PK_PACKAGE_ID_VERSION]) == 0 &&
-	       g_strcmp0 (split1[PK_PACKAGE_ID_ARCH],
-			  split2[PK_PACKAGE_ID_ARCH]) == 0);
-	return ret;
+	/* find the last semicolon, which starts the DATA section */
+	for (i = 0; package_id[i] != '\0'; i++) {
+		if (package_id[i] == ';')
+			last_semicolon = i;
+	}
+
+	/* exit early if the DATA section was empty */
+	if (last_semicolon + 1 == i)
+		return g_str_hash (package_id);
+
+	/* extract up to (and including) the last semicolon into a local string */
+	no_data = g_alloca (last_semicolon + 2);
+	memcpy (no_data, package_id, last_semicolon + 1);
+	no_data[last_semicolon + 1] = '\0';
+
+	return g_str_hash (no_data);
 }
 
+static gboolean
+package_id_equal (gconstpointer a,
+                  gconstpointer b)
+{
+	const gchar *package_id_a = a;
+	const gchar *package_id_b = b;
+	gsize n_semicolons = 0;
+
+	/* compare up to and including the last semicolon */
+	for (gsize i = 0; package_id_a[i] != '\0' && package_id_b[i] != '\0'; i++) {
+		if (package_id_a[i] != package_id_b[i])
+			return FALSE;
+		if (package_id_a[i] == ';')
+			n_semicolons++;
+		if (n_semicolons == 4)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+GHashTable *
+gs_plugin_packagekit_details_array_to_hash (GPtrArray *array)
+{
+	g_autoptr(GHashTable) details_collection = NULL;
+
+	details_collection = g_hash_table_new_full (package_id_hash, package_id_equal,
+						    NULL, NULL);
+
+	for (gsize i = 0; i < array->len; i++) {
+		PkDetails *details = g_ptr_array_index (array, i);
+		g_hash_table_insert (details_collection,
+				     pk_details_get_package_id (details),
+				     details);
+	}
+
+	return g_steal_pointer (&details_collection);
+}
 
 void
 gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
-					 GPtrArray *array,
+					 GHashTable *details_collection,
 					 GsApp *app)
 {
 	GPtrArray *source_ids;
 	PkDetails *details;
 	const gchar *package_id;
-	guint i;
 	guint j;
 	guint64 size = 0;
 
+	/* @source_ids can have as many as 200 elements (google-noto); typically
+	 * it has 1 or 2
+	 *
+	 * @details_collection is typically a large list of apps in the
+	 * repository, on the order of 400 or 700 apps */
 	source_ids = gs_app_get_source_ids (app);
 	for (j = 0; j < source_ids->len; j++) {
 		package_id = g_ptr_array_index (source_ids, j);
-		for (i = 0; i < array->len; i++) {
-			/* right package? */
-			details = g_ptr_array_index (array, i);
-			if (!gs_pk_compare_ids (package_id,
-						pk_details_get_package_id (details))) {
-				continue;
+		details = g_hash_table_lookup (details_collection, package_id);
+		if (details == NULL)
+			continue;
+
+		if (gs_app_get_license (app) == NULL) {
+			g_autofree gchar *license_spdx = NULL;
+			license_spdx = as_utils_license_to_spdx (pk_details_get_license (details));
+			if (license_spdx != NULL) {
+				gs_app_set_license (app,
+						    GS_APP_QUALITY_LOWEST,
+						    license_spdx);
 			}
-			if (gs_app_get_license (app) == NULL) {
-				g_autofree gchar *license_spdx = NULL;
-				license_spdx = as_utils_license_to_spdx (pk_details_get_license (details));
-				if (license_spdx != NULL) {
-					gs_app_set_license (app,
-							    GS_APP_QUALITY_LOWEST,
-							    license_spdx);
-				}
-			}
-			if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
-				gs_app_set_url (app,
-						AS_URL_KIND_HOMEPAGE,
-						pk_details_get_url (details));
-			}
-			if (gs_app_get_description (app) == NULL) {
-				gs_app_set_description (app,
-				                        GS_APP_QUALITY_LOWEST,
-				                        pk_details_get_description (details));
-			}
-			size += pk_details_get_size (details);
-			break;
 		}
+		if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
+			gs_app_set_url (app,
+					AS_URL_KIND_HOMEPAGE,
+					pk_details_get_url (details));
+		}
+		if (gs_app_get_description (app) == NULL) {
+			gs_app_set_description (app,
+			                        GS_APP_QUALITY_LOWEST,
+			                        pk_details_get_description (details));
+		}
+		size += pk_details_get_size (details);
 	}
 
 	/* the size is the size of all sources */

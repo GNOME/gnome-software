@@ -29,8 +29,9 @@ void		gs_plugin_packagekit_resolve_packages_app	(GsPlugin *plugin,
 void		gs_plugin_packagekit_set_metadata_from_package	(GsPlugin *plugin,
 								 GsApp *app,
 								 PkPackage *package);
+GHashTable *	gs_plugin_packagekit_details_array_to_hash	(GPtrArray *array);
 void		gs_plugin_packagekit_refine_details_app		(GsPlugin *plugin,
-								 GPtrArray *array,
+								 GHashTable *details_collection,
 								 GsApp *app);
 void		gs_plugin_packagekit_set_packaging_format	(GsPlugin *plugin,
 								 GsApp *app);
