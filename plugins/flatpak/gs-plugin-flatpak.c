@@ -461,12 +461,15 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		    GCancellable *cancellable, GError **error)
 {
 	FlatpakInstallation *installation;
+#if !FLATPAK_CHECK_VERSION(1, 7, 3)
 	g_autoptr(GFile) installation_path = NULL;
+#endif  /* flatpak < 1.7.3 */
 	g_autoptr(FlatpakInstallation) installation_clone = NULL;
 	g_autoptr(FlatpakTransaction) transaction = NULL;
 
 	installation = gs_flatpak_get_installation (flatpak);
 
+#if !FLATPAK_CHECK_VERSION(1, 7, 3)
 	/* Operate on a copy of the installation so we can set the interactive
 	 * flag for the duration of this transaction. */
 	installation_path = flatpak_installation_get_path (installation);
@@ -479,6 +482,9 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 	/* Let flatpak know if it is a background operation */
 	flatpak_installation_set_no_interaction (installation_clone,
 						 !gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+#else  /* if flatpak ≥ 1.7.3 */
+	installation_clone = g_object_ref (installation);
+#endif  /* flatpak ≥ 1.7.3 */
 
 	/* create transaction */
 	transaction = gs_flatpak_transaction_new (installation_clone, cancellable, error);
@@ -487,6 +493,12 @@ _build_transaction (GsPlugin *plugin, GsFlatpak *flatpak,
 		gs_flatpak_error_convert (error);
 		return NULL;
 	}
+
+#if FLATPAK_CHECK_VERSION(1, 7, 3)
+	/* Let flatpak know if it is a background operation */
+	flatpak_transaction_set_no_interaction (transaction,
+						!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE));
+#endif  /* flatpak ≥ 1.7.3 */
 
 	/* connect up signals */
 	g_signal_connect (transaction, "ref-to-app",
