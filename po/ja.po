@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-03-09 14:11+0000\n"
+"POT-Creation-Date: 2020-06-04 08:27+0000\n"
 "PO-Revision-Date: 2020-03-22 16:50+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
@@ -72,7 +72,7 @@ msgstr "アップデートパネル"
 msgid "The update details"
 msgstr "アップデートの詳細"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1487
+#: data/appdata/org.gnome.Software.appdata.xml.in:1494
 msgid "The GNOME Project"
 msgstr "The GNOME Project"
 
@@ -378,11 +378,11 @@ msgid "Find Out _More"
 msgstr "詳細を確認(_M)"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4506
+#: lib/gs-app.c:4516
 msgid "Local file"
 msgstr "ローカルファイル"
 
-#: lib/gs-app.c:4558
+#: lib/gs-app.c:4568
 msgid "Package"
 msgstr "パッケージ"
 
@@ -399,7 +399,7 @@ msgstr "インストール済み"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:329
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:349
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "インストール中"
@@ -537,7 +537,7 @@ msgstr "インストール…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:130 src/gs-updates-section.c:476
+#: src/gs-app-row.c:130 src/gs-updates-section.c:478
 msgid "Cancel"
 msgstr "キャンセル"
 
@@ -593,7 +593,7 @@ msgstr "注目のソフト"
 
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:467
+#: src/gs-category-page.c:452
 #, c-format
 msgid "Featured %s"
 msgstr "注目の%s"
@@ -1362,24 +1362,31 @@ msgstr "追加のパッケージが必要です"
 msgid "Find in Software"
 msgstr "“ソフトウェア”で探す"
 
-#: src/gs-details-page.c:324
+#: src/gs-details-page.c:344
 msgid "Removing…"
 msgstr "削除中…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:343
+#: src/gs-details-page.c:363
 msgid "Pending installation…"
 msgstr "インストール保留中…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:350
+#: src/gs-details-page.c:370
 msgid "Pending update…"
 msgstr "アップデート保留中…"
 
+#. Translators: This string is shown when preparing to download and install an app.
+#: src/gs-details-page.c:384
+#, fuzzy
+#| msgid "Removing…"
+msgid "Preparing…"
+msgstr "削除中…"
+
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:710
+#: src/gs-details-page.c:743
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1392,9 +1399,9 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:855 src/gs-details-page.c:872
+#: src/gs-details-page.c:888 src/gs-details-page.c:905
 #: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:63
+#: src/gs-upgrade-banner.c:87
 msgid "_Install"
 msgstr "インストール(_I)"
 
@@ -1405,108 +1412,108 @@ msgstr "インストール(_I)"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:886 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:919 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "インストール(_I)…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:928
+#: src/gs-details-page.c:961
 msgid "_Launch"
 msgstr "起動(_L)"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:952 src/gs-details-page.ui:192
+#: src/gs-details-page.c:985 src/gs-details-page.ui:192
 msgid "_Remove"
 msgstr "削除(_R)"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "ネットワーク"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "ネットワークを介して通信できます"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "システムサービス"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "システムバスの D-Bus サービスにアクセスできます"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "セッションサービス"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "セッションバスの D-Bus サービスにアクセスできます"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "デバイス"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "システムのデバイスファイルにアクセスできます"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:988
+#: src/gs-details-page.c:1020 src/gs-details-page.c:1021
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "ホームフォルダー"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:989
-#: src/gs-details-page.c:991 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1020 src/gs-details-page.c:1022
+#: src/gs-details-page.c:1024 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "ファイルを作成、表示、編集できます"
 
-#: src/gs-details-page.c:988 src/gs-details-page.c:990
-#: src/gs-details-page.c:992 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1025 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "ファイルを表示できます"
 
-#: src/gs-details-page.c:989 src/gs-details-page.c:990
+#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "ファイルシステム"
 
-#: src/gs-details-page.c:991 src/gs-details-page.c:992
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "ダウンロードフォルダー"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "設定"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "設定を表示、変更できます"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "レガシーなディスプレイシステム"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "古くてセキュアではないディスプレイシステムを使用します"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "サンドボックス回避"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "サンドボックスから抜け出して色々な制限を回避できます"
 
-#: src/gs-details-page.c:1010
+#: src/gs-details-page.c:1043
 msgid "This application is fully sandboxed."
 msgstr "このアプリケーションは完全にサンドボックス化されています。"
 
-#: src/gs-details-page.c:1018
+#: src/gs-details-page.c:1051
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1515,61 +1522,61 @@ msgstr ""
 "の部分にアクセスするか確認できません。"
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1210
 msgctxt "version"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1190
+#: src/gs-details-page.c:1223
 msgctxt "updated"
 msgid "Never"
 msgstr "なし"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1243
+#: src/gs-details-page.c:1276
 msgctxt "origin"
 msgid "Unknown"
 msgstr "不明"
 
-#: src/gs-details-page.c:1296
+#: src/gs-details-page.c:1329
 msgid "Low"
 msgstr "低"
 
-#: src/gs-details-page.c:1298
+#: src/gs-details-page.c:1331
 msgid "Medium"
 msgstr "中"
 
-#: src/gs-details-page.c:1300
+#: src/gs-details-page.c:1333
 msgid "High"
 msgstr "高"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1302 src/gs-details-page.ui:1006
+#: src/gs-details-page.c:1335 src/gs-details-page.ui:1006
 #: src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1640
+#: src/gs-details-page.c:1673
 msgid "You need internet access to write a review"
 msgstr "レビューを書くにはインターネットへの接続が必要です"
 
-#: src/gs-details-page.c:1826 src/gs-details-page.c:1842
+#: src/gs-details-page.c:1859 src/gs-details-page.c:1875
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "“%s”が見つかりません"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2420
+#: src/gs-details-page.c:2453
 msgid "Public domain"
 msgstr "パブリックドメイン"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2423
+#: src/gs-details-page.c:2456
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr ""
 "https://ja.wikipedia.org/wiki/%E3%83%91%E3%83%96%E3%83%AA%E3%83%83%E3%82%AF"
@@ -1577,22 +1584,22 @@ msgstr ""
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2430
+#: src/gs-details-page.c:2463
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.ja"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2440 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2473 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "自由ソフトウェア"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2497
+#: src/gs-details-page.c:2530
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "ユーザーは下記のライセンスによる拘束を受けることになります:"
 
-#: src/gs-details-page.c:2524 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2557 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "詳細情報"
 
@@ -1759,7 +1766,7 @@ msgstr "プロプライエタリ"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:442
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "アドオン"
@@ -2070,7 +2077,7 @@ msgstr "履歴"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:436
+#: src/gs-installed-page.c:438
 msgid "System Applications"
 msgstr "システムアプリケーション"
 
@@ -2185,13 +2192,13 @@ msgid "Recommended Productivity Applications"
 msgstr "おすすめのプロダクティビティアプリケーション"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:827
+#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:831
 msgid "Access additional software from selected third party sources."
 msgstr ""
 "選択したサードパーティーソースにある追加のソフトウェアにアクセスします。"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:831
+#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:835
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2201,7 +2208,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:840
 msgid "Find out more…"
 msgstr "もっと探す…"
 
@@ -2310,7 +2317,7 @@ msgstr "アップデートが自動的にインストールされたときに通
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:114
+#: src/gs-removal-dialog.c:119
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -2401,13 +2408,13 @@ msgstr "無効"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:740
+#: src/gs-repos-dialog.c:744
 msgid "the operating system"
 msgstr "オペレーティングシステム"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:806 src/gs-repos-dialog.c:842
+#: src/gs-repos-dialog.c:810 src/gs-repos-dialog.c:846
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -2415,7 +2422,7 @@ msgstr ""
 "す。"
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:824
+#: src/gs-repos-dialog.c:828
 msgid "Third Party Repositories"
 msgstr "サードパーティーリポジトリ"
 
@@ -3601,63 +3608,63 @@ msgstr "アップデートは自動的に管理されます"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:278
+#: src/gs-updates-section.c:280
 msgid "Restart & Update"
 msgstr "再起動してアップデート"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:284
+#: src/gs-updates-section.c:286
 msgid "Update All"
 msgstr "すべてアップデート"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:415
+#: src/gs-updates-section.c:417
 msgid "Integrated Firmware"
 msgstr "統合ファームウェア"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:419
+#: src/gs-updates-section.c:421
 msgid "Requires Restart"
 msgstr "再起動が必要です"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:423
+#: src/gs-updates-section.c:425
 msgid "Application Updates"
 msgstr "アプリケーションのアップデート"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:427
+#: src/gs-updates-section.c:429
 msgid "Device Firmware"
 msgstr "デバイスファームウェア"
 
-#: src/gs-updates-section.c:455 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:457 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "ダウンロード(_D)"
 
-#: src/gs-upgrade-banner.c:65
+#: src/gs-upgrade-banner.c:89
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
 "アップグレードの前に必要なデータやファイルのバックアップを取っておくことをお"
 "勧めします。"
 
-#: src/gs-upgrade-banner.c:69
+#: src/gs-upgrade-banner.c:93
 msgid "_Restart Now"
 msgstr "再起動(_R)"
 
-#: src/gs-upgrade-banner.c:71
+#: src/gs-upgrade-banner.c:95
 msgid "Updates will be applied when the computer is restarted."
 msgstr "アップデートはコンピューターを再起動したときに適用されます。"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:86
+#: src/gs-upgrade-banner.c:110
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s が利用可能です"
@@ -3665,7 +3672,7 @@ msgstr "%s %s が利用可能です"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:96
+#: src/gs-upgrade-banner.c:120
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "%s %s のダウンロードを待っています"
@@ -3673,7 +3680,7 @@ msgstr "%s %s のダウンロードを待っています"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:106
+#: src/gs-upgrade-banner.c:130
 #, c-format
 msgid "Downloading %s %s"
 msgstr "%s %s をダウンロード中"
@@ -3682,7 +3689,7 @@ msgstr "%s %s をダウンロード中"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:117
+#: src/gs-upgrade-banner.c:141
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s のインストール準備完了"
@@ -4167,7 +4174,7 @@ msgid "Downloading upgrade information…"
 msgstr "アップグレード情報をダウンロード中…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:283
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:282
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4182,7 +4189,7 @@ msgstr ""
 "Flatpak は Linux 上のデスクトップアプリケーション向けフレームワークです"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:861
+#: plugins/flatpak/gs-flatpak.c:858
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "%s の Flatpak メタデータを取得中…"
@@ -4190,60 +4197,75 @@ msgstr "%s の Flatpak メタデータを取得中…"
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
 #: plugins/fwupd/gs-fwupd-app.c:135
-#, c-format
-msgid "%s Device"
+#, fuzzy, c-format
+#| msgid "%s Device"
+msgid "%s Device Update"
 msgstr "%s デバイス"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:140
-#, c-format
-msgid "%s System"
+#, fuzzy, c-format
+#| msgid "%s System"
+msgid "%s System Update"
 msgstr "%s システム"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:145
-#, c-format
-msgid "%s Embedded Controller"
+#, fuzzy, c-format
+#| msgid "%s Embedded Controller"
+msgid "%s Embedded Controller Update"
 msgstr "%s Embedded Controller"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:150
-#, c-format
-msgid "%s ME"
-msgstr "%s ME"
+#, fuzzy, c-format
+#| msgid "Update"
+msgid "%s ME Update"
+msgstr "アップデート"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:155
-#, c-format
-msgid "%s Corporate ME"
+#, fuzzy, c-format
+#| msgid "%s Corporate ME"
+msgid "%s Corporate ME Update"
 msgstr "%s Corporate ME"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:160
-#, c-format
-msgid "%s Consumer ME"
+#, fuzzy, c-format
+#| msgid "%s Consumer ME"
+msgid "%s Consumer ME Update"
 msgstr "%s Consumer ME"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
 #: plugins/fwupd/gs-fwupd-app.c:166
-#, c-format
-msgid "%s Controller"
+#, fuzzy, c-format
+#| msgid "%s Controller"
+msgid "%s Controller Update"
 msgstr "%s コントローラー"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:172
-#, c-format
-msgid "%s Thunderbolt Controller"
+#, fuzzy, c-format
+#| msgid "%s Thunderbolt Controller"
+msgid "%s Thunderbolt Controller Update"
 msgstr "%s Thunderbolt コントローラー"
+
+#. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
+#. * at system bootup
+#: plugins/fwupd/gs-fwupd-app.c:177
+#, c-format
+msgid "%s CPU Microcode Update"
+msgstr ""
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:671
@@ -4277,7 +4299,7 @@ msgid "ODRS is a service providing user reviews of applications"
 msgstr "ODRS はアプリケーションのユーザーレビューを提供するサービスです"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:228
+#: plugins/snap/gs-plugin-snap.c:239
 msgid "Snap Store"
 msgstr "Snap ストア"
 
@@ -4288,6 +4310,9 @@ msgstr "Snap サポート"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap は汎用的な Linux パッケージです"
+
+#~ msgid "%s ME"
+#~ msgstr "%s ME"
 
 #~ msgid ""
 #~ "Extensions are used at your own risk. If you have any system problems, it "
