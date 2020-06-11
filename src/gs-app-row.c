@@ -45,7 +45,6 @@ typedef struct
 	gboolean	 show_update;
 	gboolean	 show_installed_size;
 	guint		 pending_refresh_id;
-	GSettings	*settings;
 } GsAppRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
@@ -486,17 +485,6 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
 }
 
-static void
-settings_changed_cb (GsAppRow *self,
-		     const gchar *key,
-		     gpointer data)
-{
-	if (g_strcmp0 (key, "show-nonfree-ui") == 0 ||
-	    g_strcmp0 (key, "show-folder-management") == 0) {
-		gs_app_row_refresh (self);
-	}
-}
-
 GsApp *
 gs_app_row_get_app (GsAppRow *app_row)
 {
@@ -553,8 +541,6 @@ gs_app_row_destroy (GtkWidget *object)
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-
-	g_clear_object (&priv->settings);
 
 	if (priv->app)
 		g_signal_handlers_disconnect_by_func (priv->app, gs_app_row_notify_props_changed_cb, app_row);
@@ -626,13 +612,8 @@ gs_app_row_init (GsAppRow *app_row)
 	gtk_widget_set_has_window (GTK_WIDGET (app_row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
-	priv->settings = g_settings_new ("org.gnome.software");
-
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_row);
-	g_signal_connect_swapped (priv->settings, "changed",
-				  G_CALLBACK (settings_changed_cb),
-				  app_row);
 }
 
 void
