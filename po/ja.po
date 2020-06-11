@@ -1,7 +1,7 @@
 # Japanese translation for gnome-software.
 # Copyright (C) 2013-2020 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# Jiro Matsuzawa <jmatsuzawa@gnome.org>, 2013-2016, 2017-2018.
+# Jiro Matsuzawa <jmatsuzawa@gnome.org>, 2013-2018.
 # Hajime Taira <htaira@redhat.com>, 2015.
 # Kentaro KAZUHAMA <kazken3@gmail.com>, 2015.
 # Rockworld <sumoisrock@gmail.com>, 2016.
@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2020-06-04 08:27+0000\n"
-"PO-Revision-Date: 2020-03-22 16:50+0900\n"
+"PO-Revision-Date: 2020-06-11 19:00+0900\n"
 "Last-Translator: sicklylife <translation@sicklylife.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "Language: ja\n"
@@ -1380,10 +1380,8 @@ msgstr "アップデート保留中…"
 
 #. Translators: This string is shown when preparing to download and install an app.
 #: src/gs-details-page.c:384
-#, fuzzy
-#| msgid "Removing…"
 msgid "Preparing…"
-msgstr "削除中…"
+msgstr "準備中…"
 
 #. TRANSLATORS: this is the warning box
 #: src/gs-details-page.c:743
@@ -1676,8 +1674,8 @@ msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
 msgstr ""
-"このソフトウェアリポジトリを追加することで、他のソフトウェアやアップグレード"
-"を利用できるようになります。"
+"このソフトウェアリポジトリを追加することで、追加のソフトウェアやアップグレー"
+"ドを利用できるようになります。"
 
 #: src/gs-details-page.ui:412
 msgid "Only use software repositories that you trust."
@@ -4197,75 +4195,67 @@ msgstr "%s の Flatpak メタデータを取得中…"
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
 #: plugins/fwupd/gs-fwupd-app.c:135
-#, fuzzy, c-format
-#| msgid "%s Device"
+#, c-format
 msgid "%s Device Update"
-msgstr "%s デバイス"
+msgstr "%s デバイスのアップデート"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:140
-#, fuzzy, c-format
-#| msgid "%s System"
+#, c-format
 msgid "%s System Update"
-msgstr "%s システム"
+msgstr "%s システムのアップデート"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:145
-#, fuzzy, c-format
-#| msgid "%s Embedded Controller"
+#, c-format
 msgid "%s Embedded Controller Update"
-msgstr "%s Embedded Controller"
+msgstr "%s Embedded Controller のアップデート"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:150
-#, fuzzy, c-format
-#| msgid "Update"
+#, c-format
 msgid "%s ME Update"
-msgstr "アップデート"
+msgstr "%s ME のアップデート"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:155
-#, fuzzy, c-format
-#| msgid "%s Corporate ME"
+#, c-format
 msgid "%s Corporate ME Update"
-msgstr "%s Corporate ME"
+msgstr "%s Corporate ME のアップデート"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:160
-#, fuzzy, c-format
-#| msgid "%s Consumer ME"
+#, c-format
 msgid "%s Consumer ME Update"
-msgstr "%s Consumer ME"
+msgstr "%s Consumer ME のアップデート"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
 #: plugins/fwupd/gs-fwupd-app.c:166
-#, fuzzy, c-format
-#| msgid "%s Controller"
+#, c-format
 msgid "%s Controller Update"
-msgstr "%s コントローラー"
+msgstr "%s コントローラーのアップデート"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:172
-#, fuzzy, c-format
-#| msgid "%s Thunderbolt Controller"
+#, c-format
 msgid "%s Thunderbolt Controller Update"
-msgstr "%s Thunderbolt コントローラー"
+msgstr "%s Thunderbolt コントローラーのアップデート"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
 #: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
 msgid "%s CPU Microcode Update"
-msgstr ""
+msgstr "%s CPU マイクロコードのアップデート"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:671
