@@ -236,8 +236,8 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 	}
 }
 
-void
-gs_app_row_refresh (GsAppRow *app_row)
+static void
+gs_app_row_actually_refresh (GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	GtkStyleContext *context;
@@ -508,8 +508,19 @@ gs_app_row_refresh_idle_cb (gpointer user_data)
 	GsAppRow *app_row = GS_APP_ROW (user_data);
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	priv->pending_refresh_id = 0;
-	gs_app_row_refresh (app_row);
-	return FALSE;
+	gs_app_row_actually_refresh (app_row);
+	return G_SOURCE_REMOVE;
+}
+
+/* Schedule an idle call to gs_app_row_actually_refresh() unless one’s already pending. */
+static void
+gs_app_row_schedule_refresh (GsAppRow *app_row)
+{
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	if (priv->pending_refresh_id > 0)
+		return;
+	priv->pending_refresh_id = g_idle_add (gs_app_row_refresh_idle_cb, app_row);
 }
 
 static void
@@ -517,10 +528,7 @@ gs_app_row_notify_props_changed_cb (GsApp *app,
 				    GParamSpec *pspec,
 				    GsAppRow *app_row)
 {
-	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-	if (priv->pending_refresh_id > 0)
-		return;
-	priv->pending_refresh_id = g_idle_add (gs_app_row_refresh_idle_cb, app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 static void
@@ -545,7 +553,7 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 
 	g_object_notify (G_OBJECT (app_row), "app");
 
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 static void
@@ -750,7 +758,7 @@ gs_app_row_set_colorful (GsAppRow *app_row, gboolean colorful)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->colorful = colorful;
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 void
@@ -760,7 +768,7 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 
 	priv->show_buttons = show_buttons;
 	g_object_notify (G_OBJECT (app_row), "show-buttons");
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 void
@@ -769,7 +777,7 @@ gs_app_row_set_show_rating (GsAppRow *app_row, gboolean show_rating)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_rating = show_rating;
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 void
@@ -779,7 +787,7 @@ gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 
 	priv->show_source = show_source;
 	g_object_notify (G_OBJECT (app_row), "show-source");
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 void
@@ -788,7 +796,7 @@ gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	priv->show_installed_size = show_size;
 	g_object_notify (G_OBJECT (app_row), "show-installed-size");
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 /**

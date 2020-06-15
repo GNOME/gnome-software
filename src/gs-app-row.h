@@ -26,7 +26,6 @@ struct _GsAppRowClass
 };
 
 GtkWidget	*gs_app_row_new				(GsApp		*app);
-void		 gs_app_row_refresh			(GsAppRow	*app_row);
 void		 gs_app_row_unreveal			(GsAppRow	*app_row);
 void		 gs_app_row_set_colorful		(GsAppRow	*app_row,
 							 gboolean	 colorful);
