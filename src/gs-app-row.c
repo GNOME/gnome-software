@@ -57,6 +57,15 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
+typedef enum {
+	PROP_APP = 1,
+	PROP_SHOW_SOURCE,
+	PROP_SHOW_BUTTONS,
+	PROP_SHOW_INSTALLED_SIZE,
+} GsAppRowProperty;
+
+static GParamSpec *obj_props[PROP_SHOW_INSTALLED_SIZE + 1] = { NULL, };
+
 /**
  * gs_app_row_get_description:
  *
@@ -533,7 +542,59 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 	g_signal_connect_object (priv->app, "notify::allow-cancel",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
+
+	g_object_notify (G_OBJECT (app_row), "app");
+
 	gs_app_row_refresh (app_row);
+}
+
+static void
+gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsAppRow *app_row = GS_APP_ROW (object);
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	switch (prop_id) {
+	case PROP_APP:
+		g_value_set_object (value, priv->app);
+		break;
+	case PROP_SHOW_SOURCE:
+		g_value_set_boolean (value, priv->show_source);
+		break;
+	case PROP_SHOW_BUTTONS:
+		g_value_set_boolean (value, priv->show_buttons);
+		break;
+	case PROP_SHOW_INSTALLED_SIZE:
+		g_value_set_boolean (value, priv->show_installed_size);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	GsAppRow *app_row = GS_APP_ROW (object);
+
+	switch (prop_id) {
+	case PROP_APP:
+		gs_app_row_set_app (app_row, g_value_get_object (value));
+		break;
+	case PROP_SHOW_SOURCE:
+		gs_app_row_set_show_source (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_BUTTONS:
+		gs_app_row_set_show_buttons (app_row, g_value_get_boolean (value));
+		break;
+	case PROP_SHOW_INSTALLED_SIZE:
+		gs_app_row_set_show_installed_size (app_row, g_value_get_boolean (value));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -560,7 +621,59 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_app_row_get_property;
+	object_class->set_property = gs_app_row_set_property;
 	widget_class->destroy = gs_app_row_destroy;
+
+	/**
+	 * GsAppRow:app:
+	 *
+	 * The #GsApp to show in this row.
+	 *
+	 * Since: 3.38
+	 */
+	obj_props[PROP_APP] =
+		g_param_spec_object ("app", NULL, NULL,
+				     GS_TYPE_APP,
+				     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsAppRow:show-source:
+	 *
+	 * Show the source of the app in the row.
+	 *
+	 * Since: 3.38
+	 */
+	obj_props[PROP_SHOW_SOURCE] =
+		g_param_spec_boolean ("show-source", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsAppRow:show-buttons:
+	 *
+	 * Show buttons (such as Install, Cancel or Update) in the app row.
+	 *
+	 * Since: 3.38
+	 */
+	obj_props[PROP_SHOW_BUTTONS] =
+		g_param_spec_boolean ("show-buttons", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	/**
+	 * GsAppRow:show-installed-size:
+	 *
+	 * Show the installed size of the app in the row.
+	 *
+	 * Since: 3.38
+	 */
+	obj_props[PROP_SHOW_INSTALLED_SIZE] =
+		g_param_spec_boolean ("show-installed-size", NULL, NULL,
+				      FALSE,
+				      G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 
 	signals [SIGNAL_BUTTON_CLICKED] =
 		g_signal_new ("button-clicked",
@@ -646,6 +759,7 @@ gs_app_row_set_show_buttons (GsAppRow *app_row, gboolean show_buttons)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_buttons = show_buttons;
+	g_object_notify (G_OBJECT (app_row), "show-buttons");
 	gs_app_row_refresh (app_row);
 }
 
@@ -664,6 +778,7 @@ gs_app_row_set_show_source (GsAppRow *app_row, gboolean show_source)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_source = show_source;
+	g_object_notify (G_OBJECT (app_row), "show-source");
 	gs_app_row_refresh (app_row);
 }
 
@@ -672,6 +787,7 @@ gs_app_row_set_show_installed_size (GsAppRow *app_row, gboolean show_size)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	priv->show_installed_size = show_size;
+	g_object_notify (G_OBJECT (app_row), "show-installed-size");
 	gs_app_row_refresh (app_row);
 }
 
@@ -686,17 +802,15 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_update = show_update;
-	gs_app_row_refresh (app_row);
+	gs_app_row_schedule_refresh (app_row);
 }
 
 GtkWidget *
 gs_app_row_new (GsApp *app)
 {
-	GtkWidget *app_row;
-
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	app_row = g_object_new (GS_TYPE_APP_ROW, NULL);
-	gs_app_row_set_app (GS_APP_ROW (app_row), app);
-	return app_row;
+	return g_object_new (GS_TYPE_APP_ROW,
+			     "app", app,
+			     NULL);
 }
