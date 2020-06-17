@@ -194,7 +194,11 @@ gs_plugin_odrs_load_ratings (GsPlugin *plugin, const gchar *fn, GError **error)
 
 	/* parse the data and find the success */
 	json_parser = json_parser_new_immutable ();
+#if JSON_CHECK_VERSION(1, 6, 0)
+	if (!json_parser_load_from_mapped_file (json_parser, fn, error)) {
+#else
 	if (!json_parser_load_from_file (json_parser, fn, error)) {
+#endif
 		gs_utils_error_convert_json_glib (error);
 		return FALSE;
 	}
@@ -708,13 +712,17 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 		return NULL;
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < ODRS_REVIEW_CACHE_AGE_MAX) {
-		g_autofree gchar *json_data = NULL;
-		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
+		g_autoptr(GMappedFile) mapped_file = NULL;
+
+		mapped_file = g_mapped_file_new (cachefn, FALSE, error);
+		if (mapped_file == NULL)
 			return NULL;
+
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id (app), cachefn);
 		return gs_plugin_odrs_parse_reviews (plugin,
-						     json_data, -1,
+						     g_mapped_file_get_contents (mapped_file),
+						     g_mapped_file_get_length (mapped_file),
 						     error);
 	}
 
