@@ -342,8 +342,10 @@ _ensure_cache (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	JsonArray *collections;
 	JsonObject *root;
+#if !JSON_CHECK_VERSION(1, 6, 0)
 	gsize len;
 	g_autofree gchar *data = NULL;
+#endif  /* json-glib < 1.6.0 */
 	g_autoptr(JsonParser) parser = NULL;
 
 	/* already done */
@@ -354,6 +356,11 @@ _ensure_cache (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (!_refresh_cache (plugin, G_MAXUINT, cancellable, error))
 		return FALSE;
 
+#if JSON_CHECK_VERSION(1, 6, 0)
+	parser = json_parser_new_immutable ();
+	if (!json_parser_load_from_mapped_file (parser, priv->cachefn, error))
+		return FALSE;
+#else  /* if json-glib < 1.6.0 */
 	/* get cached file */
 	if (!g_file_get_contents (priv->cachefn, &data, &len, error)) {
 		gs_utils_error_convert_gio (error);
@@ -364,6 +371,7 @@ _ensure_cache (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	parser = json_parser_new ();
 	if (!json_parser_load_from_data (parser, data, len, error))
 		return FALSE;
+#endif  /* json-glib < 1.6.0 */
 
 	root = json_node_get_object (json_parser_get_root (parser));
 	if (root == NULL) {
