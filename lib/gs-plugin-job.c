@@ -64,6 +64,10 @@ gs_plugin_job_to_string (GsPluginJob *self)
 	gint64 time_now = g_get_monotonic_time ();
 	g_string_append_printf (str, "running %s",
 				gs_plugin_action_to_string (self->action));
+	if (self->plugin != NULL) {
+		g_string_append_printf (str, " on plugin=%s",
+					gs_plugin_get_name (self->plugin));
+	}
 	if (self->filter_flags > 0) {
 		g_autofree gchar *tmp = gs_plugin_refine_flags_to_string (self->filter_flags);
 		g_string_append_printf (str, " with filter-flags=%s", tmp);
@@ -111,10 +115,6 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_autofree gchar *path = g_file_get_path (self->file);
 		g_string_append_printf (str, " with file=%s", path);
 	}
-	if (self->plugin != NULL) {
-		g_string_append_printf (str, " on plugin=%s",
-					gs_plugin_get_name (self->plugin));
-	}
 	if (self->list != NULL && gs_app_list_length (self->list) > 0) {
 		g_autofree const gchar **unique_ids = NULL;
 		g_autofree gchar *unique_ids_str = NULL;
@@ -127,7 +127,7 @@ gs_plugin_job_to_string (GsPluginJob *self)
 		g_string_append_printf (str, " on apps %s", unique_ids_str);
 	}
 	if (time_now - self->time_created > 1000) {
-		g_string_append_printf (str, " took %" G_GINT64_FORMAT "ms",
+		g_string_append_printf (str, ", elapsed time since creation %" G_GINT64_FORMAT "ms",
 					(time_now - self->time_created) / 1000);
 	}
 	return g_string_free (str, FALSE);
