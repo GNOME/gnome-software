@@ -756,14 +756,12 @@ gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 	}
 }
 
-static void
-overview_page_refresh_done (GsOverviewPage *overview_page, gpointer data)
+static gboolean
+change_mode_idle (gpointer user_data)
 {
-	GsShell *shell = data;
+	GsShell *shell = user_data;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GsPage *page;
-
-	g_signal_handlers_disconnect_by_func (overview_page, overview_page_refresh_done, data);
 
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "updates_page"));
 	gs_page_reload (page);
@@ -772,9 +770,25 @@ overview_page_refresh_done (GsOverviewPage *overview_page, gpointer data)
 
 	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 
+	return G_SOURCE_REMOVE;
+}
+
+static void
+overview_page_refresh_done (GsOverviewPage *overview_page, gpointer data)
+{
+	GsShell *shell = data;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	g_signal_handlers_disconnect_by_func (overview_page, overview_page_refresh_done, data);
+
 	/* now that we're finished with the loading page, connect the reload signal handler */
 	g_signal_connect (priv->plugin_loader, "reload",
 	                  G_CALLBACK (gs_shell_reload_cb), shell);
+
+	/* schedule to change the mode in an idle callback, since it can take a
+	 * while and this callback handler is typically called at the end of a
+	 * long main context iteration already */
+	g_idle_add (change_mode_idle, shell);
 }
 
 static void
