@@ -33,6 +33,7 @@ librarydeps = [
   json_glib,
   libm,
   libsoup,
+  sysprof,
   valgrind,
 ]
 

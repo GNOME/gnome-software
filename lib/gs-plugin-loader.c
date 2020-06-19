@@ -13,6 +13,10 @@
 #include <appstream-glib.h>
 #include <math.h>
 
+#ifdef HAVE_SYSPROF
+#include <sysprof-capture.h>
+#endif
+
 #include "gs-app-collation.h"
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
@@ -61,6 +65,10 @@ typedef struct
 	gulong			 network_changed_handler;
 	gulong			 network_available_notify_handler;
 	gulong			 network_metered_notify_handler;
+
+#ifdef HAVE_SYSPROF
+	SysprofCaptureWriter	*sysprof_writer;  /* (owned) (nullable) */
+#endif
 } GsPluginLoaderPrivate;
 
 static void gs_plugin_loader_monitor_network (GsPluginLoader *plugin_loader);
@@ -498,11 +506,17 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+#ifdef HAVE_SYSPROF
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+#endif
 	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 	gboolean ret = TRUE;
 	gpointer func = NULL;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GTimer) timer = g_timer_new ();
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	/* load the possible symbol */
 	func = gs_plugin_get_symbol (plugin, helper->function_name);
@@ -736,6 +750,24 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	    app != NULL && gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
 	        add_app_to_install_queue (helper->plugin_loader, app);
 	}
+
+#ifdef HAVE_SYSPROF
+	if (priv->sysprof_writer != NULL) {
+		g_autofree gchar *sysprof_name = NULL;
+		g_autofree gchar *sysprof_message = NULL;
+
+		sysprof_name = g_strconcat ("vfunc:", gs_plugin_action_to_string (action), NULL);
+		sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 sysprof_name,
+						 sysprof_message);
+	}
+#endif  /* HAVE_SYSPROF */
 
 	/* check the plugin didn't take too long */
 	switch (action) {
@@ -1069,6 +1101,9 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 			      GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	/* run each plugin */
 	for (guint i = 0; i < priv->plugins->len; i++) {
@@ -1084,6 +1119,27 @@ gs_plugin_loader_run_results (GsPluginLoaderHelper *helper,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
+
+#ifdef HAVE_SYSPROF
+	if (priv->sysprof_writer != NULL) {
+		g_autofree gchar *sysprof_name = NULL;
+		g_autofree gchar *sysprof_message = NULL;
+
+		sysprof_name = g_strconcat ("run-results:",
+					    gs_plugin_action_to_string (gs_plugin_job_get_action (helper->plugin_job)),
+					    NULL);
+		sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 sysprof_name,
+						 sysprof_message);
+	}
+#endif  /* HAVE_SYSPROF */
+
 	return TRUE;
 }
 
@@ -1511,6 +1567,10 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 {
 	GError *error = NULL;
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
+#ifdef HAVE_SYSPROF
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
+	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	/* run each plugin */
 	if (!gs_plugin_loader_run_results (helper, cancellable, &error)) {
@@ -1531,20 +1591,31 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 		gs_category_sort_children (cat);
 	}
 
-	/* success */
-	if (helper->catlist->len == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_ERROR,
-					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
-					 "no categories to show");
-		return;
+#ifdef HAVE_SYSPROF
+	if (priv->sysprof_writer != NULL) {
+		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 "get-categories",
+						 sysprof_message);
 	}
+#endif  /* HAVE_SYSPROF */
 
 	/* show elapsed time */
 	gs_plugin_loader_job_debug (helper);
 
 	/* success */
-	g_task_return_pointer (task, g_ptr_array_ref (helper->catlist), (GDestroyNotify) g_ptr_array_unref);
+	if (helper->catlist->len == 0)
+		g_task_return_new_error (task,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					 "no categories to show");
+	else
+		g_task_return_pointer (task, g_ptr_array_ref (helper->catlist), (GDestroyNotify) g_ptr_array_unref);
 }
 
 /**
@@ -2244,6 +2315,9 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 		GS_PLUGIN_ACTION_INITIALIZE,
 		GS_PLUGIN_ACTION_SETUP,
 		GS_PLUGIN_ACTION_UNKNOWN };
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	/* clear global cache */
 	gs_plugin_loader_clear_caches (plugin_loader);
@@ -2275,6 +2349,19 @@ gs_plugin_loader_setup_again (GsPluginLoader *plugin_loader)
 				gs_plugin_clear_data (plugin);
 		}
 	}
+
+#ifdef HAVE_SYSPROF
+	if (priv->sysprof_writer != NULL) {
+		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 "setup-again",
+						 NULL);
+	}
+#endif  /* HAVE_SYSPROF */
 }
 
 static gint
@@ -2332,6 +2419,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	guint j;
 	g_autoptr(GsPluginLoaderHelper) helper = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	/* use the default, but this requires a 'make install' */
 	if (priv->locations->len == 0) {
@@ -2546,6 +2636,20 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	/* now we can load the install-queue */
 	if (!load_install_queue (plugin_loader, error))
 		return FALSE;
+
+#ifdef HAVE_SYSPROF
+	if (priv->sysprof_writer != NULL) {
+		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 "setup",
+						 NULL);
+	}
+#endif  /* HAVE_SYSPROF */
+
 	return TRUE;
 }
 
@@ -2654,6 +2758,9 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->settings);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
+#ifdef HAVE_SYSPROF
+	g_clear_pointer (&priv->sysprof_writer, sysprof_capture_writer_unref);
+#endif
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
 }
@@ -2781,6 +2888,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar *match;
 	gchar **projects;
 	guint i;
+
+#ifdef HAVE_SYSPROF
+	priv->sysprof_writer = sysprof_capture_writer_new_from_env (0);
+#endif  /* HAVE_SYSPROF */
 
 	priv->scale = 1;
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -3094,6 +3205,9 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	gboolean add_to_pending_array = FALSE;
 	guint max_results;
 	GsAppListSortFunc sort_func;
+#ifdef HAVE_SYSPROF
+	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
+#endif
 
 	/* these change the pending count on the installed panel */
 	switch (action) {
@@ -3388,6 +3502,21 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	/* if the plugin used updates-changed actually schedule it now */
 	if (priv->updates_changed_cnt > 0)
 		gs_plugin_loader_updates_changed (plugin_loader);
+
+#ifdef HAVE_SYSPROF
+	if (priv->sysprof_writer != NULL) {
+		g_autofree gchar *sysprof_name = g_strconcat ("process-thread:", gs_plugin_action_to_string (action), NULL);
+		g_autofree gchar *sysprof_message = gs_plugin_job_to_string (helper->plugin_job);
+		sysprof_capture_writer_add_mark (priv->sysprof_writer,
+						 begin_time_nsec,
+						 sched_getcpu (),
+						 getpid (),
+						 SYSPROF_CAPTURE_CURRENT_TIME - begin_time_nsec,
+						 "gnome-software",
+						 sysprof_name,
+						 sysprof_message);
+	}
+#endif  /* HAVE_SYSPROF */
 
 	/* show elapsed time */
 	gs_plugin_loader_job_debug (helper);
