@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-20\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-04-03 13:19+0000\n"
-"PO-Revision-Date: 2020-04-04 13:42+0200\n"
+"POT-Creation-Date: 2020-06-11 10:35+0000\n"
+"PO-Revision-Date: 2020-06-21 10:52+0200\n"
 "Last-Translator: Fabio Tomat <f.t.public@gmail.com>\n"
 "Language-Team: Friulian <f.t.public@gmail.com>\n"
 "Language: fur\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.3.1\n"
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:7
 msgid "GNOME Software"
@@ -410,11 +410,11 @@ msgid "Find Out _More"
 msgstr "Par savê di _plui"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4506
+#: lib/gs-app.c:4516
 msgid "Local file"
 msgstr "File locâl"
 
-#: lib/gs-app.c:4558
+#: lib/gs-app.c:4568
 msgid "Package"
 msgstr "Pachet"
 
@@ -423,7 +423,7 @@ msgid "Pending"
 msgstr "In spiete"
 
 #: src/gs-app-addon-row.c:88 src/gs-app-row.ui:162 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:68
+#: src/gs-feature-tile.c:87
 msgid "Installed"
 msgstr "Instalât"
 
@@ -431,7 +431,7 @@ msgstr "Instalât"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:329
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:350
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "Instalazion"
@@ -564,7 +564,7 @@ msgstr "Instale…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:130 src/gs-updates-section.c:476
+#: src/gs-app-row.c:130 src/gs-updates-section.c:478
 msgid "Cancel"
 msgstr "Anule"
 
@@ -620,7 +620,7 @@ msgstr "In risalt"
 
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:467
+#: src/gs-category-page.c:452
 #, c-format
 msgid "Featured %s"
 msgstr "In risalt par %s"
@@ -700,7 +700,7 @@ msgid "Application is ready to be used."
 msgstr "La aplicazion e je pronte par jessi doprade."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:159 src/gs-common.c:638
+#: src/gs-common.c:159 src/gs-common.c:649
 msgid "Restart"
 msgstr "Torne invie"
 
@@ -769,30 +769,30 @@ msgstr "Abilite e instale"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:440
+#: src/gs-common.c:451
 msgid "Detailed errors from the package manager follow:"
 msgstr "Chi daspò i erôrs in detai dal gjestôr dai pachets:"
 
-#: src/gs-common.c:459 src/gs-details-page.ui:447
+#: src/gs-common.c:470 src/gs-details-page.ui:447
 msgid "Details"
 msgstr "Detais"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:624
+#: src/gs-common.c:635
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Al è stât instalât un inzornament"
 msgstr[1] "I inzornaments a son stâts instalâts"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:629
+#: src/gs-common.c:640
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Al è necessari tornâ a inviâ par rindilu efetîf."
 msgstr[1] "Al è necessari tornâ a inviâ par rindiju efetîfs."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:636 src/gs-update-monitor.c:122
+#: src/gs-common.c:647 src/gs-update-monitor.c:122
 msgid "Not Now"
 msgstr "No cumò"
 
@@ -1394,24 +1394,29 @@ msgstr "Pachets adizionâi domandâts"
 msgid "Find in Software"
 msgstr "Cjate in Software"
 
-#: src/gs-details-page.c:324
+#: src/gs-details-page.c:345
 msgid "Removing…"
 msgstr "Daûr a gjavâ…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:343
+#: src/gs-details-page.c:364
 msgid "Pending installation…"
 msgstr "In spiete pe instalazion…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:350
+#: src/gs-details-page.c:371
 msgid "Pending update…"
 msgstr "In spiete pal inzornament…"
 
+#. Translators: This string is shown when preparing to download and install an app.
+#: src/gs-details-page.c:385
+msgid "Preparing…"
+msgstr "Daûr a prontâ…"
+
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:710
+#: src/gs-details-page.c:744
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1425,9 +1430,9 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:855 src/gs-details-page.c:872
+#: src/gs-details-page.c:889 src/gs-details-page.c:906
 #: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:63
+#: src/gs-upgrade-banner.c:88
 msgid "_Install"
 msgstr "_Instale"
 
@@ -1438,109 +1443,109 @@ msgstr "_Instale"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:886 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:920 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "_Instale…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:928
+#: src/gs-details-page.c:962
 msgid "_Launch"
 msgstr "_Invie"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:952 src/gs-details-page.ui:192
+#: src/gs-details-page.c:986 src/gs-details-page.ui:192
 msgid "_Remove"
 msgstr "_Gjave"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "Rêt"
 
-#: src/gs-details-page.c:983 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "Al pues comunicâ vie rêt"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "Servizis di sisteme"
 
-#: src/gs-details-page.c:984 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "Al pues acedi ai servizis D-Bus sul bus di sisteme"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "Servizis di session"
 
-#: src/gs-details-page.c:985 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "Al pues acedi ai servizis D-Bus sul bus de session"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "Dispositîfs"
 
-#: src/gs-details-page.c:986 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "Al pues acedi ai file dal dispositîf dal sisteme"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:988
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1022
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "Cartele cjase"
 
-#: src/gs-details-page.c:987 src/gs-details-page.c:989
-#: src/gs-details-page.c:991 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1025 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "Al pues viodi, modificâ e creâ i file"
 
-#: src/gs-details-page.c:988 src/gs-details-page.c:990
-#: src/gs-details-page.c:992 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1022 src/gs-details-page.c:1024
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "Al pues viodi i file"
 
-#: src/gs-details-page.c:989 src/gs-details-page.c:990
+#: src/gs-details-page.c:1023 src/gs-details-page.c:1024
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "File System"
 
-#: src/gs-details-page.c:991 src/gs-details-page.c:992
+#: src/gs-details-page.c:1025 src/gs-details-page.c:1026
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "Cartele dai discjariaments"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "Impostazions"
 
-#: src/gs-details-page.c:993 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "Al pues viodi e modificâ cualsisei impostazion"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "Sisteme di visualizazion vecje maniere"
 
-#: src/gs-details-page.c:994 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "Al dopre un sisteme di visualizazion vieli e no sigûr"
 
 # aplicazion
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "Jessude dal isolament"
 
-#: src/gs-details-page.c:995 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Al pues lâ fûr dal isolament e imbroiâ cualsisei altre restrizion"
 
-#: src/gs-details-page.c:1010
+#: src/gs-details-page.c:1044
 msgid "This application is fully sandboxed."
 msgstr "Cheste aplicazion e je completamentri isolade."
 
-#: src/gs-details-page.c:1018
+#: src/gs-details-page.c:1052
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1549,84 +1554,84 @@ msgstr ""
 "aplicazion. Chest al è solit pes aplicazions vecjis."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1177
+#: src/gs-details-page.c:1211
 msgctxt "version"
 msgid "Unknown"
 msgstr "No cognossude"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1190
+#: src/gs-details-page.c:1224
 msgctxt "updated"
 msgid "Never"
 msgstr "Mai"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1243
+#: src/gs-details-page.c:1277
 msgctxt "origin"
 msgid "Unknown"
 msgstr "No cognossude"
 
-#: src/gs-details-page.c:1296
+#: src/gs-details-page.c:1330
 msgid "Low"
 msgstr "Basse"
 
-#: src/gs-details-page.c:1298
+#: src/gs-details-page.c:1332
 msgid "Medium"
 msgstr "Medie"
 
-#: src/gs-details-page.c:1300
+#: src/gs-details-page.c:1334
 msgid "High"
 msgstr "Alte"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1302 src/gs-details-page.ui:1006
+#: src/gs-details-page.c:1336 src/gs-details-page.ui:1006
 #: src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "No cognossude"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1640
+#: src/gs-details-page.c:1674
 msgid "You need internet access to write a review"
 msgstr "Al covente un acès a internet par scrivi une recension"
 
-#: src/gs-details-page.c:1826 src/gs-details-page.c:1842
+#: src/gs-details-page.c:1862 src/gs-details-page.c:1878
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Impussibil cjatâ “%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2420
+#: src/gs-details-page.c:2456
 msgid "Public domain"
 msgstr "Domini public"
 
 # fâ pagjine par software proprietari su vikipedie
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2423
+#: src/gs-details-page.c:2459
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://en.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2430
+#: src/gs-details-page.c:2466
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2440 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2476 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "Software Libar"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2497
+#: src/gs-details-page.c:2533
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "I utents a son limitâts de licence chi daurman:"
 msgstr[1] "I utents a son limitâts des licencis chi daurman:"
 
-#: src/gs-details-page.c:2524 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2560 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "Plui informazions"
 
@@ -1795,7 +1800,7 @@ msgstr "Proprietarie"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:442
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "Estensions"
@@ -2113,7 +2118,7 @@ msgstr "Cronologjie"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:436
+#: src/gs-installed-page.c:438
 msgid "System Applications"
 msgstr "Aplicazions di sisteme"
 
@@ -2229,14 +2234,14 @@ msgid "Recommended Productivity Applications"
 msgstr "Aplicazions di produtivitât conseadis"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:827
+#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:831
 msgid "Access additional software from selected third party sources."
 msgstr ""
 "Rive a doprâ software adizionâl che al ven di sorzints di tiercis parts "
 "selezionadis."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:831
+#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:835
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2246,7 +2251,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:840
 msgid "Find out more…"
 msgstr "Par savê di plui…"
 
@@ -2328,7 +2333,7 @@ msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s e vegnarà gjavade e par podêle doprâ di gnûf tu varâs di instalâle."
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:52 src/gs-summary-tile.c:85
+#: src/gs-popular-tile.c:63 src/gs-summary-tile.c:86
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (Instalât)"
@@ -2359,7 +2364,7 @@ msgstr ""
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:114
+#: src/gs-removal-dialog.c:119
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -2456,19 +2461,19 @@ msgstr "Disabilite"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:740
+#: src/gs-repos-dialog.c:744
 msgid "the operating system"
 msgstr "il sisteme operatîf"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:806 src/gs-repos-dialog.c:842
+#: src/gs-repos-dialog.c:810 src/gs-repos-dialog.c:846
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Chescj dipuesits a integrin il software predefinît furnît di %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:824
+#: src/gs-repos-dialog.c:828
 msgid "Third Party Repositories"
 msgstr "Dipuesits di tiercis parts"
 
@@ -3231,12 +3236,12 @@ msgstr "Il nivel de batarie al è masse bas"
 msgid "Source: %s"
 msgstr "Sorzint: %s"
 
-#: src/gs-summary-tile.c:90
+#: src/gs-summary-tile.c:91
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (Instalazion)"
 
-#: src/gs-summary-tile.c:95
+#: src/gs-summary-tile.c:96
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (Rimozion)"
@@ -3664,56 +3669,56 @@ msgstr "I inzornaments a son gjestîts in automatic"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:278
+#: src/gs-updates-section.c:280
 msgid "Restart & Update"
 msgstr "Torne invie e inzorne"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:284
+#: src/gs-updates-section.c:286
 msgid "Update All"
 msgstr "Inzorne dut"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:415
+#: src/gs-updates-section.c:417
 msgid "Integrated Firmware"
 msgstr "Firmware integrât"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:419
+#: src/gs-updates-section.c:421
 msgid "Requires Restart"
 msgstr "Al covente tornâ a inviâ"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:423
+#: src/gs-updates-section.c:425
 msgid "Application Updates"
 msgstr "Inzornaments aplicazion"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:427
+#: src/gs-updates-section.c:429
 msgid "Device Firmware"
 msgstr "Firmware dispositîf"
 
-#: src/gs-updates-section.c:455 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:457 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "_Discjarie"
 
-#: src/gs-upgrade-banner.c:65
+#: src/gs-upgrade-banner.c:90
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
 "Si consee di fâ il backup dai tiei dâts e dai tiei file prime di fâ "
 "l'avanzament."
 
-#: src/gs-upgrade-banner.c:69
+#: src/gs-upgrade-banner.c:94
 msgid "_Restart Now"
 msgstr "_Torne invie cumò"
 
-#: src/gs-upgrade-banner.c:71
+#: src/gs-upgrade-banner.c:96
 msgid "Updates will be applied when the computer is restarted."
 msgstr ""
 "I inzornaments a vignaran aplicâts cuant che si tornarà a inviâ il computer."
@@ -3721,7 +3726,7 @@ msgstr ""
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:86
+#: src/gs-upgrade-banner.c:111
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s e je cumò disponibile"
@@ -3729,7 +3734,7 @@ msgstr "%s %s e je cumò disponibile"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:96
+#: src/gs-upgrade-banner.c:121
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "In spiete di discjariâ %s %s"
@@ -3737,7 +3742,7 @@ msgstr "In spiete di discjariâ %s %s"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:106
+#: src/gs-upgrade-banner.c:131
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Daûr a discjariâ %s %s"
@@ -3746,7 +3751,7 @@ msgstr "Daûr a discjariâ %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:117
+#: src/gs-upgrade-banner.c:142
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s pronte par jessi instalade"
@@ -4191,31 +4196,31 @@ msgstr ""
 "l'inzornament."
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:139
+#: plugins/external-appstream/gs-install-appstream.c:143
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "Instaladôr a nivel di sisteme di AppStream di GNOME Software"
 
-#: plugins/external-appstream/gs-install-appstream.c:141
+#: plugins/external-appstream/gs-install-appstream.c:145
 msgid "Failed to parse command line arguments"
 msgstr "No si è rivâts a analizâ i argoments de rie di comant"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:148
+#: plugins/external-appstream/gs-install-appstream.c:152
 msgid "You need to specify exactly one filename"
 msgstr "Si scugne specificâ juste un non di file"
 
 #. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:155
+#: plugins/external-appstream/gs-install-appstream.c:159
 msgid "This program can only be used by the root user"
 msgstr "Chest program al pues jessi doprât nome dal utent «root»"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:163
+#: plugins/external-appstream/gs-install-appstream.c:167
 msgid "Failed to validate content type"
 msgstr "No si è rivâts a validâ il gjenar di contignût"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:173
+#: plugins/external-appstream/gs-install-appstream.c:177
 msgid "Failed to copy"
 msgstr "No si è rivâts a copiâ"
 
@@ -4230,7 +4235,7 @@ msgid "Downloading upgrade information…"
 msgstr "Daûr a discjariâ lis informazions di avanzament…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:283
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:282
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4246,7 +4251,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak al è un ambient di svilup par aplicazions di scritori su Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:861
+#: plugins/flatpak/gs-flatpak.c:865
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Daûr a otignî i metadâts flatpak par %s…"
@@ -4255,66 +4260,66 @@ msgstr "Daûr a otignî i metadâts flatpak par %s…"
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
 #: plugins/fwupd/gs-fwupd-app.c:135
 #, c-format
-msgid "%s Device"
-msgstr "Dispositîf %s"
+msgid "%s Device Update"
+msgstr "Inzornament dispositîf %s"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:140
 #, c-format
-msgid "%s System"
-msgstr "Sisteme %s"
+msgid "%s System Update"
+msgstr "Inzornament sisteme %s"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:145
 #, c-format
-msgid "%s Embedded Controller"
-msgstr "Controlôr incorporât di %s"
+msgid "%s Embedded Controller Update"
+msgstr "Inzornament dal controlôr incorporât %s"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:150
 #, c-format
-msgid "%s ME"
-msgstr "Motôr di gjestion (ME) di %s"
+msgid "%s ME Update"
+msgstr "Inzornament motôr di gjestion %s"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:155
 #, c-format
-msgid "%s Corporate ME"
-msgstr "Motôr di gjestion (ME) aziendâl di %s"
+msgid "%s Corporate ME Update"
+msgstr "Inzornament motôr di gjestion (ME) aziendâl di %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:160
 #, c-format
-msgid "%s Consumer ME"
-msgstr "Motôr di gjestion (ME) utent di %s"
+msgid "%s Consumer ME Update"
+msgstr "Inzornament motôr di gjestion (ME) utent di %s"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
 #: plugins/fwupd/gs-fwupd-app.c:166
 #, c-format
-msgid "%s Controller"
-msgstr "Controlôr %s"
+msgid "%s Controller Update"
+msgstr "Inzornament dal controlôr %s"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:172
 #, c-format
-msgid "%s Thunderbolt Controller"
-msgstr "Controlôr Thunderbolt di %s"
+msgid "%s Thunderbolt Controller Update"
+msgstr "Inzornament dal controlôr Thunderbolt di %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
 #: plugins/fwupd/gs-fwupd-app.c:177
 #, c-format
-msgid "%s CPU Microcode"
-msgstr "CPU Microcode di %s"
+msgid "%s CPU Microcode Update"
+msgstr "Inzornament dal Microcode de CPU %s"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:671
@@ -4361,6 +4366,9 @@ msgstr "Supuart Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Un snap al è un pachet universâl par Linux"
+
+#~ msgid "%s ME"
+#~ msgstr "Motôr di gjestion (ME) di %s"
 
 #~ msgid "Extension Settings"
 #~ msgstr "Impostazions estensions"
