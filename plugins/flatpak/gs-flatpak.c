@@ -801,9 +801,6 @@ gs_flatpak_rescan_appstream_store (GsFlatpak *self,
 	g_debug ("ensuring %s", blobfn);
 	self->silo = xb_builder_ensure (builder, file,
 					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
-#endif
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 					NULL, error);
 	if (self->silo == NULL)
@@ -2327,9 +2324,6 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 
 	xb_builder_import_source (builder, source);
 	silo = xb_builder_compile (builder,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-				   XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
-#endif
 				   XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 				   cancellable,
 				   error);
@@ -2946,9 +2940,6 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* build silo */
 	silo = xb_builder_compile (builder,
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-				   XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
-#endif
 				   XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 				   cancellable,
 				   error);

@@ -579,9 +579,6 @@ gs_plugin_appstream_check_silo (GsPlugin *plugin,
 	g_debug ("ensuring %s", blobfn);
 	priv->silo = xb_builder_ensure (builder, file,
 					XB_BUILDER_COMPILE_FLAG_IGNORE_INVALID |
-#if LIBXMLB_CHECK_VERSION(0, 2, 0)
-					XB_BUILDER_COMPILE_FLAG_NO_NODE_CACHE |
-#endif
 					XB_BUILDER_COMPILE_FLAG_SINGLE_LANG,
 					NULL, error);
 	if (priv->silo == NULL)
