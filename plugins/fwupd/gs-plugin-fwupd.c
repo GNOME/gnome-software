@@ -223,6 +223,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
+#if FWUPD_CHECK_VERSION(1,4,5)
+	/* send our implemented feature set */
+	if (!fwupd_client_set_feature_flags (priv->client,
+					     FWUPD_FEATURE_FLAG_DETACH_ACTION,
+					     cancellable, error)) {
+		g_prefix_error (error, "Failed to set front-end features: ");
+		return FALSE;
+	}
+#endif
+
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
 	gs_app_set_kind (priv->cached_origin, AS_APP_KIND_SOURCE);
