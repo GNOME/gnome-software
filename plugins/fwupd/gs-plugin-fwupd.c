@@ -226,6 +226,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 #if FWUPD_CHECK_VERSION(1,4,5)
 	/* send our implemented feature set */
 	if (!fwupd_client_set_feature_flags (priv->client,
+					     FWUPD_FEATURE_FLAG_UPDATE_ACTION |
 					     FWUPD_FEATURE_FLAG_DETACH_ACTION,
 					     cancellable, error)) {
 		g_prefix_error (error, "Failed to set front-end features: ");
@@ -778,6 +779,8 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	GFile *local_file;
 	g_autofree gchar *filename = NULL;
 	gboolean downloaded_to_cache = FALSE;
+	g_autoptr(FwupdDevice) dev = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	/* not set */
 	local_file = gs_app_get_local_file (app);
@@ -827,6 +830,39 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	if (downloaded_to_cache) {
 		if (!g_file_delete (local_file, cancellable, error))
 			return FALSE;
+	}
+
+	/* does the device have an update message */
+	dev = fwupd_client_get_device_by_id (priv->client, device_id,
+					     cancellable, &error_local);
+	if (dev == NULL) {
+		/* NOTE: this is probably entirely fine; some devices do not
+		 * re-enumerate until replugged manually or the machine is
+		 * rebooted -- and the metadata to know that is only available
+		 * in a too-new-to-depend-on fwupd version */
+		g_debug ("failed to find device after install: %s", error_local->message);
+	} else {
+		if (fwupd_device_get_update_message (dev) != NULL) {
+			g_autoptr(AsScreenshot) ss = as_screenshot_new ();
+
+#if FWUPD_CHECK_VERSION(1,4,5)
+			/* image is optional */
+			if (fwupd_device_get_update_image (dev) != NULL) {
+				g_autoptr(AsImage) im = as_image_new ();
+				as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
+				as_image_set_url (im, fwupd_device_get_update_image (dev));
+				as_screenshot_add_image (ss, im);
+			}
+#endif
+
+			/* caption is required */
+			as_screenshot_set_kind (ss, AS_SCREENSHOT_KIND_DEFAULT);
+			as_screenshot_set_caption (ss, NULL, fwupd_device_get_update_message (dev));
+			gs_app_set_action_screenshot (app, ss);
+
+			/* require the dialog */
+			gs_app_add_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION);
+		}
 	}
 
 	/* success */

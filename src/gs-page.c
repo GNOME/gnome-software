@@ -60,6 +60,58 @@ gs_page_helper_free (GsPageHelper *helper)
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
 
 static void
+gs_page_update_app_response_close_cb (GtkDialog *dialog, gint response, gpointer user_data)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+static void
+gs_page_show_update_message (GsPageHelper *helper, AsScreenshot *ss)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+	GPtrArray *images;
+	GtkWidget *dialog;
+	g_autofree gchar *escaped = NULL;
+
+	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+					 GTK_DIALOG_MODAL |
+					 GTK_DIALOG_USE_HEADER_BAR,
+					 GTK_MESSAGE_INFO,
+					 GTK_BUTTONS_OK,
+					 "%s", gs_app_get_name (helper->app));
+	escaped = g_markup_escape_text (as_screenshot_get_caption (ss, NULL), -1);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  "%s", escaped);
+
+	/* image is optional */
+	images = as_screenshot_get_images (ss);
+	if (images->len) {
+		GtkWidget *content_area;
+		GtkWidget *ssimg;
+		g_autoptr(SoupSession) soup_session = NULL;
+
+		/* load screenshot */
+		soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+							      gs_user_agent (), NULL);
+		ssimg = gs_screenshot_image_new (soup_session);
+		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg), 400, 225);
+		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg),
+						helper->cancellable);
+		gtk_widget_set_margin_start (ssimg, 24);
+		gtk_widget_set_margin_end (ssimg, 24);
+		content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+		gtk_container_add (GTK_CONTAINER (content_area), ssimg);
+		gtk_container_child_set (GTK_CONTAINER (content_area), ssimg, "pack-type", GTK_PACK_END, NULL);
+	}
+
+	/* handle this async */
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_page_update_app_response_close_cb), helper);
+	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+}
+
+static void
 gs_page_app_installed_cb (GObject *source,
                           GAsyncResult *res,
                           gpointer user_data)
@@ -92,6 +144,14 @@ gs_page_app_installed_cb (GObject *source,
 		g_autoptr(GsAppList) list = gs_app_list_new ();
 		gs_app_list_add (list, helper->app);
 		gs_utils_reboot_notify (list);
+	}
+
+	/* tell the user what they have to do */
+	if (gs_app_get_kind (helper->app) == AS_APP_KIND_FIRMWARE &&
+	    gs_app_has_quirk (helper->app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
+		AsScreenshot *ss = gs_app_get_action_screenshot (helper->app);
+		if (ss != NULL && as_screenshot_get_caption (ss, NULL) != NULL)
+			gs_page_show_update_message (helper, ss);
 	}
 
 	/* only show this if the window is not active */
