@@ -1713,7 +1713,8 @@ gs_details_page_content_rating_set_css (GsDetailsPage *page, guint age)
 	g_string_append_printf (css, "color: %s;\n", color_fg);
 	g_string_append_printf (css, "background-color: %s;\n", color_bg);
 
-	gs_utils_widget_set_css (page->button_details_rating_value, &page->button_details_rating_style_provider,
+	gs_utils_widget_set_css (page->button_details_rating_value,
+				 (GtkCssProvider **) &page->button_details_rating_style_provider,
 				 "content-rating-custom", css->str);
 }
 
