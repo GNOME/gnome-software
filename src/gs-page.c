@@ -315,13 +315,10 @@ gs_page_update_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	/* tell the user what they have to do */
 	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE &&
 	    gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_USER_ACTION)) {
-		GPtrArray *screenshots = gs_app_get_screenshots (app);
-		if (screenshots->len > 0) {
-			AsScreenshot *ss = g_ptr_array_index (screenshots, 0);
-			if (as_screenshot_get_caption (ss, NULL) != NULL) {
-				gs_page_needs_user_action (helper, ss);
-				return;
-			}
+		AsScreenshot *ss = gs_app_get_action_screenshot (app);
+		if (ss != NULL && as_screenshot_get_caption (ss, NULL) != NULL) {
+			gs_page_needs_user_action (helper, ss);
+			return;
 		}
 	}
 

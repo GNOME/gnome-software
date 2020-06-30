@@ -279,6 +279,9 @@ void		 gs_app_set_origin_hostname	(GsApp		*app,
 GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
 void		 gs_app_add_screenshot		(GsApp		*app,
 						 AsScreenshot	*screenshot);
+AsScreenshot	*gs_app_get_action_screenshot	(GsApp		*app);
+void		 gs_app_set_action_screenshot	(GsApp		*app,
+						 AsScreenshot	*screenshot);
 const gchar	*gs_app_get_update_version	(GsApp		*app);
 const gchar	*gs_app_get_update_version_ui	(GsApp		*app);
 void		 gs_app_set_update_version	(GsApp		*app,

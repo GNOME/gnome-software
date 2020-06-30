@@ -112,6 +112,7 @@ typedef struct
 	GFile			*local_file;
 	AsContentRating		*content_rating;
 	GdkPixbuf		*pixbuf;  /* (nullable) (owned) */
+	AsScreenshot		*action_screenshot;  /* (nullable) (owned) */
 	GCancellable		*cancellable;
 	GsPluginAction		 pending_action;
 	GsAppPermissions         permissions;
@@ -467,6 +468,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "name", priv->name);
 	if (priv->pixbuf != NULL)
 		gs_app_kv_printf (str, "pixbuf", "%p", priv->pixbuf);
+	if (priv->action_screenshot != NULL)
+		gs_app_kv_printf (str, "action-screenshot", "%p", priv->action_screenshot);
 	for (i = 0; i < priv->icons->len; i++) {
 		AsIcon *icon = g_ptr_array_index (priv->icons, i);
 		gs_app_kv_lpad (str, "icon-kind",
@@ -1653,6 +1656,24 @@ gs_app_get_pixbuf (GsApp *app)
 }
 
 /**
+ * gs_app_get_action_screenshot:
+ * @app: a #GsApp
+ *
+ * Gets a screenshot for the pending user action.
+ *
+ * Returns: (transfer none) (nullable): a #AsScreenshot, or %NULL
+ *
+ * Since: 3.38
+ **/
+AsScreenshot *
+gs_app_get_action_screenshot (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->action_screenshot;
+}
+
+/**
  * gs_app_get_icons:
  * @app: a #GsApp
  *
@@ -1890,6 +1911,25 @@ gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 	g_return_if_fail (GS_IS_APP (app));
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->pixbuf, pixbuf);
+}
+
+/**
+ * gs_app_set_action_screenshot:
+ * @app: a #GsApp
+ * @action_screenshot: (transfer none) (nullable): a #AsScreenshot, or %NULL
+ *
+ * Sets a screenshot used to represent the action.
+ *
+ * Since: 3.38
+ **/
+void
+gs_app_set_action_screenshot (GsApp *app, AsScreenshot *action_screenshot)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+	g_set_object (&priv->action_screenshot, action_screenshot);
 }
 
 typedef enum {
@@ -4235,6 +4275,8 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->content_rating);
 	if (priv->pixbuf != NULL)
 		g_object_unref (priv->pixbuf);
+	if (priv->action_screenshot != NULL)
+		g_object_unref (priv->action_screenshot);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
