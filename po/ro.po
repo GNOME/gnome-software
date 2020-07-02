@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-06-16 14:09+0000\n"
-"PO-Revision-Date: 2020-06-17 18:53+0300\n"
+"POT-Creation-Date: 2020-06-30 16:49+0000\n"
+"PO-Revision-Date: 2020-07-02 11:39+0200\n"
 "Last-Translator: Florentina Mușat <florentina [dot] musat [dot] 28 [at] "
 "gmail [dot] com>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
@@ -532,7 +532,7 @@ msgstr ""
 #. TRANSLATORS: this is the menu item that opens the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:335 src/gs-shell.c:2104
+#: src/gs-application.c:335 src/gs-shell.c:2124
 #, c-format
 msgid "About %s"
 msgstr "Despre %s"
@@ -598,6 +598,34 @@ msgstr "Dispozitivul nu poate fi folosit în timpul actualizării."
 #: src/gs-app-row.c:458 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "Necesită permisiuni adiționale"
+
+#. TRANSLATORS: This is a description for entering user/password
+#: src/gs-basic-auth-dialog.c:81
+#, c-format
+msgid "Login required remote %s (realm %s)"
+msgstr "Autentificare la distanță necesară %s (realm %s)"
+
+#: src/gs-basic-auth-dialog.ui:10
+msgid "Login Required"
+msgstr "Autentificare necesară"
+
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:252
+#: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
+#: src/gs-upgrade-banner.ui:112
+msgid "_Cancel"
+msgstr "_Anulează"
+
+#: src/gs-basic-auth-dialog.ui:39
+msgid "_Login"
+msgstr "_Autentificare"
+
+#: src/gs-basic-auth-dialog.ui:99
+msgid "_User"
+msgstr "_Utilizator"
+
+#: src/gs-basic-auth-dialog.ui:119
+msgid "_Password"
+msgstr "_Parolă"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -798,537 +826,537 @@ msgid "Not Now"
 msgstr "Nu acum"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:59
+#: src/gs-content-rating.c:60
 msgid "No cartoon violence"
 msgstr "Fără violență animată"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:61
+#: src/gs-content-rating.c:62
 msgid "Cartoon characters in unsafe situations"
 msgstr "Caractere animate în siutații nesigure"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:63
+#: src/gs-content-rating.c:64
 msgid "Cartoon characters in aggressive conflict"
 msgstr "Caractere animate în conflict agresiv"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:65
+#: src/gs-content-rating.c:66
 msgid "Graphic violence involving cartoon characters"
 msgstr "Violență grafică incluzând caractere animate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:70
+#: src/gs-content-rating.c:71
 msgid "No fantasy violence"
 msgstr "Fără violență fantastică"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:72
+#: src/gs-content-rating.c:73
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr "Caractere în situații nesigure recunoscute ușor din realitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:74
+#: src/gs-content-rating.c:75
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr "Caractere în conflict agresiv recunoscute ușor din realitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:76
+#: src/gs-content-rating.c:77
 msgid "Graphic violence easily distinguishable from reality"
 msgstr "Violență grafică recunoscută ușor din realitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:81
+#: src/gs-content-rating.c:82
 msgid "No realistic violence"
 msgstr "Fără violență reală"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:83
+#: src/gs-content-rating.c:84
 msgid "Mildly realistic characters in unsafe situations"
 msgstr "Caractere realistice moderate în situații nesigure"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:85
+#: src/gs-content-rating.c:86
 msgid "Depictions of realistic characters in aggressive conflict"
 msgstr "Descrieri ale unor caractere realistice în conflict agresiv"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:87
+#: src/gs-content-rating.c:88
 msgid "Graphic violence involving realistic characters"
 msgstr "Violență grafică incluzând caractere realistice"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:92
+#: src/gs-content-rating.c:93
 msgid "No bloodshed"
 msgstr "Fără vărsare de sânge"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:94
+#: src/gs-content-rating.c:95
 msgid "Unrealistic bloodshed"
 msgstr "Vărsare de sânge nerealistică"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:96
+#: src/gs-content-rating.c:97
 msgid "Realistic bloodshed"
 msgstr "Vărsare de sânge realistică"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:98
+#: src/gs-content-rating.c:99
 msgid "Depictions of bloodshed and the mutilation of body parts"
 msgstr "Descrieri de vărsare de sânge și mutilarea părților de corp"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:103
+#: src/gs-content-rating.c:104
 msgid "No sexual violence"
 msgstr "Fără violență sexuală"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:105
+#: src/gs-content-rating.c:106
 msgid "Rape or other violent sexual behavior"
 msgstr "Viol sau alt comportament sexual"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:112
+#: src/gs-content-rating.c:113
 msgid "No references to alcohol"
 msgstr "Fără referințe la băuturi alcoolice"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:114
+#: src/gs-content-rating.c:115
 msgid "References to alcoholic beverages"
 msgstr "Referințe la băuturi alcoolice"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:116
+#: src/gs-content-rating.c:117
 msgid "Use of alcoholic beverages"
 msgstr "Uz de băuturi alcoolice"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:122
+#: src/gs-content-rating.c:123
 msgid "No references to illicit drugs"
 msgstr "Fără referințe la droguri ilegale"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:124
+#: src/gs-content-rating.c:125
 msgid "References to illicit drugs"
 msgstr "Referințe la droguri ilegale"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:126
+#: src/gs-content-rating.c:127
 msgid "Use of illicit drugs"
 msgstr "Uz de droguri ilegale"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:132
+#: src/gs-content-rating.c:133
 msgid "No references to tobacco products"
 msgstr "Fără referințe la produse cu tutun"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:134
+#: src/gs-content-rating.c:135
 msgid "References to tobacco products"
 msgstr "Referințe la produse de tutun"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:136
+#: src/gs-content-rating.c:137
 msgid "Use of tobacco products"
 msgstr "Uz de produse de tutun"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:142
+#: src/gs-content-rating.c:143
 msgid "No nudity of any sort"
 msgstr "Fără nuditate de orice tip"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:144
+#: src/gs-content-rating.c:145
 msgid "Brief artistic nudity"
 msgstr "Scurtă nuditate artistică"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:146
+#: src/gs-content-rating.c:147
 msgid "Prolonged nudity"
 msgstr "Nuditate prelungită"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:152
+#: src/gs-content-rating.c:153
 msgid "No references to or depictions of sexual nature"
 msgstr "Fără referințe la sau descrieri de natură sexuală"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:154
+#: src/gs-content-rating.c:155
 msgid "Provocative references or depictions"
 msgstr "Referințe sau descrieri provocative"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:156
+#: src/gs-content-rating.c:157
 msgid "Sexual references or depictions"
 msgstr "Referințe sexuale sau descrieri"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:158
+#: src/gs-content-rating.c:159
 msgid "Graphic sexual behavior"
 msgstr "Comportament sexual grafic"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:163
+#: src/gs-content-rating.c:164
 msgid "No profanity of any kind"
 msgstr "Fără profanitate de orice tip"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:165
+#: src/gs-content-rating.c:166
 msgid "Mild or infrequent use of profanity"
 msgstr "Uz moderat sau nefrecvent de obscenitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:167
+#: src/gs-content-rating.c:168
 msgid "Moderate use of profanity"
 msgstr "Uz moderat de obscenitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:169
+#: src/gs-content-rating.c:170
 msgid "Strong or frequent use of profanity"
 msgstr "Uz puternic sau frecvent de obscenitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:174
+#: src/gs-content-rating.c:175
 msgid "No inappropriate humor"
 msgstr "Fără umor inapropriat"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:176
+#: src/gs-content-rating.c:177
 msgid "Slapstick humor"
 msgstr "Umor ieftin"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:178
+#: src/gs-content-rating.c:179
 msgid "Vulgar or bathroom humor"
 msgstr "Umor vulgar"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:180
+#: src/gs-content-rating.c:181
 msgid "Mature or sexual humor"
 msgstr "Umor pentru adulți sau sexual"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:185
+#: src/gs-content-rating.c:186
 msgid "No discriminatory language of any kind"
 msgstr "Fără limbaj discriminator de orice tip"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:187
+#: src/gs-content-rating.c:188
 msgid "Negativity towards a specific group of people"
 msgstr "Negativitate referitor la un grup specific de oameni"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:189
+#: src/gs-content-rating.c:190
 msgid "Discrimination designed to cause emotional harm"
 msgstr "Discriminare destinată să cauzeze ofensă emoțională"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:191
+#: src/gs-content-rating.c:192
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr "Discriminare explicită bazată pe sex, sexualitate, rasă sau religie"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:196
+#: src/gs-content-rating.c:197
 msgid "No advertising of any kind"
 msgstr "Fără reclame de orice tip"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:198
+#: src/gs-content-rating.c:199
 msgid "Product placement"
 msgstr "Plasarea de produse"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:200
+#: src/gs-content-rating.c:201
 msgid "Explicit references to specific brands or trademarked products"
 msgstr ""
 "Referințe explicite la mărci specifice sau produse de mărci înregistrate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:202
+#: src/gs-content-rating.c:203
 msgid "Users are encouraged to purchase specific real-world items"
 msgstr ""
 "Utilizatorii sunt încurajați să cumpere obiecte specifice din lumea reală"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:207
+#: src/gs-content-rating.c:208
 msgid "No gambling of any kind"
 msgstr "Fără jocuri de noroc de orice tip"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:209
+#: src/gs-content-rating.c:210
 msgid "Gambling on random events using tokens or credits"
 msgstr "Jocuri de noroc la evenimente aleatorii folosind jetoane sau credite"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:211
+#: src/gs-content-rating.c:212
 msgid "Gambling using “play” money"
 msgstr "Jocuri de noroc folosind bani virtuali"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:213
+#: src/gs-content-rating.c:214
 msgid "Gambling using real money"
 msgstr "Jocuri de noroc folosind bani adevărați"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:218
+#: src/gs-content-rating.c:219
 msgid "No ability to spend money"
 msgstr "Fără abilitatea de a cheltui bani"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:220
+#: src/gs-content-rating.c:221
 msgid "Users are encouraged to donate real money"
 msgstr "Utilizatorii sunt încurajați să doneze bani adevărați"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:223
+#: src/gs-content-rating.c:224
 msgid "Ability to spend real money in-app"
 msgstr "Abilitatea de a cheltui bani reali în aplicație"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:228
+#: src/gs-content-rating.c:229
 msgid "No way to chat with other users"
 msgstr "Fără abilitatea de a discuta cu alți utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:230
+#: src/gs-content-rating.c:231
 msgid "User-to-user interactions without chat functionality"
 msgstr "Interacțiuni utilizator-la-utilizator fără funcționalitate de chat"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:232
+#: src/gs-content-rating.c:233
 msgid "Moderated chat functionality between users"
 msgstr "Funcționalitate de chat moderat între utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:234
+#: src/gs-content-rating.c:235
 msgid "Uncontrolled chat functionality between users"
 msgstr "Funcționalitate de chat necontrolat între utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:239
+#: src/gs-content-rating.c:240
 msgid "No way to talk with other users"
 msgstr "Fără abilitatea de a vorbi cu alți utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:241
+#: src/gs-content-rating.c:242
 msgid "Uncontrolled audio or video chat functionality between users"
 msgstr "Funcționalitate de chat necontrolat audio sau video între utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:248
+#: src/gs-content-rating.c:249
 msgid "No sharing of social network usernames or email addresses"
 msgstr ""
 "Fără partajare de nume de utilizatori de rețele sociale sau adrese de email"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:250
+#: src/gs-content-rating.c:251
 msgid "Sharing social network usernames or email addresses"
 msgstr "Partajare de nume de utilizatori de rețele sociale sau adrese de email"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:257
+#: src/gs-content-rating.c:258
 msgid "No sharing of user information with third parties"
 msgstr "Fără partajarea informațiilor despre utilizatori cu părți terțe"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:259
+#: src/gs-content-rating.c:260
 msgid "Checking for the latest application version"
 msgstr "Verificare după ultima versiune de aplicație"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
+#: src/gs-content-rating.c:262
 msgid "Sharing diagnostic data that does not let others identify the user"
 msgstr ""
 "Partajare de date diagnostice care nu permit altora identificarea "
 "utilizatorului"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:263
+#: src/gs-content-rating.c:264
 msgid "Sharing information that lets others identify the user"
 msgstr ""
 "Partajare de informații care permit altora identificarea utilizatorului"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:268
+#: src/gs-content-rating.c:269
 msgid "No sharing of physical location with other users"
 msgstr "Fără partajarea locației fizice cu alți utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:270
+#: src/gs-content-rating.c:271
 msgid "Sharing physical location with other users"
 msgstr "Partajarea locației fizice cu alți utilizatori"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:279
+#: src/gs-content-rating.c:280
 msgid "No references to homosexuality"
 msgstr "Fără referințe la homosexualitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:281
+#: src/gs-content-rating.c:282
 msgid "Indirect references to homosexuality"
 msgstr "Referințe indirecte la homosexualitate"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:283
+#: src/gs-content-rating.c:284
 msgid "Kissing between people of the same gender"
 msgstr "Sărutarea între oameni de același sex"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:285
+#: src/gs-content-rating.c:286
 msgid "Graphic sexual behavior between people of the same gender"
 msgstr "Comportament sexual grafic între oameni de același sex"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:290
+#: src/gs-content-rating.c:291
 msgid "No references to prostitution"
 msgstr "Fără referințe la prostituție"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:292
+#: src/gs-content-rating.c:293
 msgid "Indirect references to prostitution"
 msgstr "Referințe indirecte la prostituție"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:294
+#: src/gs-content-rating.c:295
 msgid "Direct references to prostitution"
 msgstr "Referințe directe la prostituție"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:296
+#: src/gs-content-rating.c:297
 msgid "Graphic depictions of the act of prostitution"
 msgstr "Descrieri grafice ale actului de prostituție"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:301
+#: src/gs-content-rating.c:302
 msgid "No references to adultery"
 msgstr "Fără referințe la adulter"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:303
+#: src/gs-content-rating.c:304
 msgid "Indirect references to adultery"
 msgstr "Referințe indirecte la adulter"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:305
+#: src/gs-content-rating.c:306
 msgid "Direct references to adultery"
 msgstr "Referințe directe de adulter"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:307
+#: src/gs-content-rating.c:308
 msgid "Graphic depictions of the act of adultery"
 msgstr "Descrieri grafice ale actului de adulter"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:312
+#: src/gs-content-rating.c:313
 msgid "No sexualized characters"
 msgstr "Fără caractere sexuale"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:315
+#: src/gs-content-rating.c:316
 msgid "Scantily clad human characters"
 msgstr "Caractere umane îmbrăcate sumar"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:317
+#: src/gs-content-rating.c:318
 msgid "Overtly sexualized human characters"
 msgstr "Caractere umane sexualizate deschis"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:322
+#: src/gs-content-rating.c:323
 msgid "No references to desecration"
 msgstr "Fără referințe la profanare"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:324
+#: src/gs-content-rating.c:325
 msgid "Depictions of or references to historical desecration"
 msgstr "Descrieri de sau referințe la profanare istorică"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:326
+#: src/gs-content-rating.c:327
 msgid "Depictions of modern-day human desecration"
 msgstr "Descrieri de profanare umană modernă"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:328
+#: src/gs-content-rating.c:329
 msgid "Graphic depictions of modern-day desecration"
 msgstr "Descrieri grafice de profanare modernă"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:333
+#: src/gs-content-rating.c:334
 msgid "No visible dead human remains"
 msgstr "Fără rămășițe umane vizibile"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:335
+#: src/gs-content-rating.c:336
 msgid "Visible dead human remains"
 msgstr "Rămășițe umane vizibile"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:337
+#: src/gs-content-rating.c:338
 msgid "Dead human remains that are exposed to the elements"
 msgstr "Rămășițe umane are expuse elementelor"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:339
+#: src/gs-content-rating.c:340
 msgid "Graphic depictions of desecration of human bodies"
 msgstr "Descrieri grafice ale profanării corpurilor umane"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:344
+#: src/gs-content-rating.c:345
 msgid "No references to slavery"
 msgstr "Fără referințe la sclavagism"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:346
+#: src/gs-content-rating.c:347
 msgid "Depictions of or references to historical slavery"
 msgstr "Descrieri de sau referințe la sclavagismul istoric"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:348
+#: src/gs-content-rating.c:349
 msgid "Depictions of modern-day slavery"
 msgstr "Descrieri ale sclavagismului modern"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:350
+#: src/gs-content-rating.c:351
 msgid "Graphic depictions of modern-day slavery"
 msgstr "Descrieri grafice ale sclavagismului modern"
 
 #. TRANSLATORS: This is the formatting of English and localized name
 #. of the rating e.g. "Adults Only (solo adultos)"
-#: src/gs-content-rating.c:406
+#: src/gs-content-rating.c:411
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: src/gs-content-rating.c:540
+#: src/gs-content-rating.c:545
 msgid "General"
 msgstr "Generale"
 
-#: src/gs-content-rating.c:549
+#: src/gs-content-rating.c:554
 msgid "ALL"
 msgstr "TOATE"
 
-#: src/gs-content-rating.c:553
+#: src/gs-content-rating.c:558
 msgid "Adults Only"
 msgstr "Doar pentru adulți"
 
-#: src/gs-content-rating.c:555
+#: src/gs-content-rating.c:560
 msgid "Mature"
 msgstr "Maturi"
 
-#: src/gs-content-rating.c:557
+#: src/gs-content-rating.c:562
 msgid "Teen"
 msgstr "Adolescenți"
 
-#: src/gs-content-rating.c:559
+#: src/gs-content-rating.c:564
 msgid "Everyone 10+"
 msgstr "Toată lumea 10+"
 
-#: src/gs-content-rating.c:561
+#: src/gs-content-rating.c:566
 msgid "Everyone"
 msgstr "Toată lumea"
 
-#: src/gs-content-rating.c:563
+#: src/gs-content-rating.c:568
 msgid "Early Childhood"
 msgstr "Copilărie timpurie"
 
@@ -1598,42 +1626,42 @@ msgstr "Necunoscut"
 msgid "You need internet access to write a review"
 msgstr "Aveți nevoie de acces la internet pentru a scrie o recenzie"
 
-#: src/gs-details-page.c:1862 src/gs-details-page.c:1878
+#: src/gs-details-page.c:1863 src/gs-details-page.c:1879
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nu s-a putut găsi „%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2456
+#: src/gs-details-page.c:2457
 msgid "Public domain"
 msgstr "Domeniul public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2459
+#: src/gs-details-page.c:2460
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://ro.wikipedia.org/wiki/Domeniul_public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2466
+#: src/gs-details-page.c:2467
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.ro"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2476 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2477 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "Aplicații libere"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2533
+#: src/gs-details-page.c:2534
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Utilizatorii sunt limitați de următoarea licență:"
 msgstr[1] "Utilizatorii sunt limitați de următoarele licențe:"
 msgstr[2] "Utilizatorii sunt limitați de următoarele licențe:"
 
-#: src/gs-details-page.c:2560 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2561 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "Mai multe informații"
 
@@ -1644,11 +1672,6 @@ msgstr "Pagina de detalii"
 #: src/gs-details-page.ui:222
 msgid "Downloading"
 msgstr "Descărcare"
-
-#: src/gs-details-page.ui:252 src/gs-removal-dialog.ui:32
-#: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
-msgid "_Cancel"
-msgstr "_Anulează"
 
 #: src/gs-details-page.ui:262
 msgid "_Update"
@@ -1800,7 +1823,7 @@ msgstr "Proprietară"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:442
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "Suplimente"
@@ -2122,7 +2145,7 @@ msgstr "Istoric"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:438
+#: src/gs-installed-page.c:436
 msgid "System Applications"
 msgstr "Aplicații de sistem"
 
@@ -2755,33 +2778,33 @@ msgstr "Nu a fost găsită nicio aplicație"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1090 src/gs-shell.c:1095 src/gs-shell.c:1110
-#: src/gs-shell.c:1114
+#: src/gs-shell.c:1110 src/gs-shell.c:1115 src/gs-shell.c:1130
+#: src/gs-shell.c:1134
 #, c-format
 msgid "“%s”"
 msgstr "„%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1161
+#: src/gs-shell.c:1181
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nu s-au putut descărca actualizări de firmware de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1167
+#: src/gs-shell.c:1187
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nu s-au putut descărca actualizări de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1174 src/gs-shell.c:1219
+#: src/gs-shell.c:1194 src/gs-shell.c:1239
 msgid "Unable to download updates"
 msgstr "Nu s-au putut descărca actualizări"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1180
+#: src/gs-shell.c:1200
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2790,29 +2813,29 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1189
+#: src/gs-shell.c:1209
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "Nu s-au putut descărca actualizări de la %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1194
+#: src/gs-shell.c:1214
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nu s-au putut descărca actualizări: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1201
+#: src/gs-shell.c:1221
 msgid "Unable to download updates: authentication was required"
 msgstr "Nu s-au putut descărca actualizări: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1206
+#: src/gs-shell.c:1226
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nu s-au putut descărca actualizări: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1211
+#: src/gs-shell.c:1231
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2820,21 +2843,21 @@ msgstr ""
 "aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1242
 msgid "Unable to get list of updates"
 msgstr "Nu s-a putut obține lista de actualizări"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1265
+#: src/gs-shell.c:1285
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nu s-a putut instala %s pentru că descărcarea de la %s a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1271
+#: src/gs-shell.c:1291
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nu s-a putut instala %s pentru că descărcarea a eșuat"
@@ -2843,74 +2866,74 @@ msgstr "Nu s-a putut instala %s pentru că descărcarea a eșuat"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1284
+#: src/gs-shell.c:1304
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Nu s-a putut instala %s pentru că executantul %s nu este disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1290
+#: src/gs-shell.c:1310
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nu s-a putut instala %s pentru că nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1297
+#: src/gs-shell.c:1317
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Nu s-a putut instala: accesul la internet a fost necesar dar nu a fost "
 "disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1303
+#: src/gs-shell.c:1323
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nu s-a putut instala: aplicația are un format nevalid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1328
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nu s-a putut instala %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1315
+#: src/gs-shell.c:1335
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nu s-a putut instala %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1322
+#: src/gs-shell.c:1342
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nu s-a putut instala %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1329
+#: src/gs-shell.c:1349
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nu s-a putut instal %s: nu aveți permisiunea de a instala aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1337
+#: src/gs-shell.c:1357
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Nu s-a putut instala %s: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Nu s-a putut instala %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1353
+#: src/gs-shell.c:1373
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nu s-a putut instala %s"
@@ -2919,14 +2942,14 @@ msgstr "Nu s-a putut instala %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1400
+#: src/gs-shell.c:1420
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Nu s-a putut actualiza %s din %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1407
+#: src/gs-shell.c:1427
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nu s-a putut actualiza %s pentru că descărcarea a eșuat"
@@ -2934,19 +2957,19 @@ msgstr "Nu s-a putut actualiza %s pentru că descărcarea a eșuat"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1414
+#: src/gs-shell.c:1434
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Nu s-a putut instala actualizări din %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1418
+#: src/gs-shell.c:1438
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Nu s-au putut instala actualizările pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1424
+#: src/gs-shell.c:1444
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nu s-a putut actualiza: accesul la internet a fost necesar dar nu a fost "
@@ -2954,53 +2977,53 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1434
+#: src/gs-shell.c:1454
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nu s-a putut actualiza %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1439
+#: src/gs-shell.c:1459
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Nu s-au putut instala actualizările: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1449
+#: src/gs-shell.c:1469
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nu s-a putut actualiza: %s autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1454
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Nu s-au putut instala actualizările: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1463
+#: src/gs-shell.c:1483
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nu s-a putut actualiza %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1468
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Nu s-au putut instala actualizările: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1477
+#: src/gs-shell.c:1497
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Nu s-a putut actualiza %s: nu aveți pemisiunea de a actualiza aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1483
+#: src/gs-shell.c:1503
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3010,41 +3033,41 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1493
+#: src/gs-shell.c:1513
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Nu s-a putut actualiza %s: energie electrică este necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1499
+#: src/gs-shell.c:1519
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Nu s-au putut instala actualizările: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1508
+#: src/gs-shell.c:1528
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Nu s-a putut actualiza %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1534
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Nu s-au putut instala actualizările: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1525
+#: src/gs-shell.c:1545
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nu s-a putut actualiza %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1528
+#: src/gs-shell.c:1548
 #, c-format
 msgid "Unable to install updates"
 msgstr "Nu s-au putut instala actualizări"
@@ -3052,21 +3075,21 @@ msgstr "Nu s-au putut instala actualizări"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1571
+#: src/gs-shell.c:1591
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nu s-a putut înnoi la %s de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1576
+#: src/gs-shell.c:1596
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nu s-a putut înnoi la %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1585
+#: src/gs-shell.c:1605
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3076,91 +3099,91 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1594
+#: src/gs-shell.c:1614
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nu s-a putut înnoi la %s: spațiu pe disc insuficient"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1602
+#: src/gs-shell.c:1622
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nu s-a putut înnoi la %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1609
+#: src/gs-shell.c:1629
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nu s-a putut înnoi la %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1616
+#: src/gs-shell.c:1636
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nu s-a putut înnoi la %s: nu aveți permisiunea de a înnoi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1623
+#: src/gs-shell.c:1643
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Nu s-a putut înnoi la %s: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1630
+#: src/gs-shell.c:1650
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Nu s-a putut înnoi la %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1639
+#: src/gs-shell.c:1659
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nu s-a putut înnoi la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1677
+#: src/gs-shell.c:1697
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nu s-a putut elimina %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1683
+#: src/gs-shell.c:1703
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nu s-a putut elimina %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1689
+#: src/gs-shell.c:1709
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nu s-a putut elimina %s: nu aveți pemisiunea de a elimina aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1696
+#: src/gs-shell.c:1716
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Nu s-a putut elimina %s: energie electrică este necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1703
+#: src/gs-shell.c:1723
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Nu s-a putut elimina %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1715
+#: src/gs-shell.c:1735
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nu s-a putut elimina %s"
@@ -3169,72 +3192,72 @@ msgstr "Nu s-a putut elimina %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1758
+#: src/gs-shell.c:1778
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nu s-a putut lansa %s: %s nu este instalat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1765 src/gs-shell.c:1816 src/gs-shell.c:1857
-#: src/gs-shell.c:1905
+#: src/gs-shell.c:1785 src/gs-shell.c:1836 src/gs-shell.c:1877
+#: src/gs-shell.c:1925
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Insuficient spațiu disponibil pe disc — eliberați spațiu și încercați din nou"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1776 src/gs-shell.c:1827 src/gs-shell.c:1868
-#: src/gs-shell.c:1939
+#: src/gs-shell.c:1796 src/gs-shell.c:1847 src/gs-shell.c:1888
+#: src/gs-shell.c:1959
 msgid "Sorry, something went wrong"
 msgstr "Ne pare rău, ceva nu a funcționat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1808
+#: src/gs-shell.c:1828
 msgid "Failed to install file: not supported"
 msgstr "Nu s-a putut instala fișierul: nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1812
+#: src/gs-shell.c:1832
 msgid "Failed to install file: authentication failed"
 msgstr "Eșec la instalarea fișierului: autentificare necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1849
+#: src/gs-shell.c:1869
 msgid "Failed to install: not supported"
 msgstr "Nu s-a putut instala: nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1853
+#: src/gs-shell.c:1873
 msgid "Failed to install: authentication failed"
 msgstr "Nu s-a putut instala: autentificarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1899
+#: src/gs-shell.c:1919
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nu s-a putut contacta %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1914
+#: src/gs-shell.c:1934
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "%s trebuie să fie repornit pentru a utiliza noile module."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1939
 msgid "This application needs to be restarted to use new plugins."
 msgstr ""
 "Această aplicație trebuie să fie repornită pentru a utiliza noile module."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1926
+#: src/gs-shell.c:1946
 msgid "AC power is required"
 msgstr "Energia electrică este necesară"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1930
+#: src/gs-shell.c:1950
 msgid "The battery level is too low"
 msgstr "Nivelul bateriei este prea scăzut"
 
@@ -4205,31 +4228,31 @@ msgid "EOS update service could not fetch and apply the update."
 msgstr "Serviciul de actualizare EOS nu a putut aduce și aplica actualizarea."
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:143
+#: plugins/external-appstream/gs-install-appstream.c:140
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "Instalator AppStream pentru Aplicații GNOME"
 
-#: plugins/external-appstream/gs-install-appstream.c:145
+#: plugins/external-appstream/gs-install-appstream.c:142
 msgid "Failed to parse command line arguments"
 msgstr "Eroare la parsarea argumentelor din linia de comandă"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:152
+#: plugins/external-appstream/gs-install-appstream.c:149
 msgid "You need to specify exactly one filename"
 msgstr "Trebuie să specificați exact un nume de fișier"
 
 #. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:159
+#: plugins/external-appstream/gs-install-appstream.c:156
 msgid "This program can only be used by the root user"
 msgstr "Acest program poate fi utilizat numai de utilizatorul root"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:167
+#: plugins/external-appstream/gs-install-appstream.c:164
 msgid "Failed to validate content type"
 msgstr "Eșec la validarea tipului de conținut"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:177
+#: plugins/external-appstream/gs-install-appstream.c:174
 msgid "Failed to copy"
 msgstr "Eșec la copiere"
 
@@ -4260,7 +4283,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak este o platformă pentru aplicații desktop în Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:903
+#: plugins/flatpak/gs-flatpak.c:900
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Se obține metadatele pentru flatpak pentru %s…"
@@ -4349,7 +4372,7 @@ msgid "Provides support for firmware upgrades"
 msgstr "Oferă suport pentru înnoiri de microcod"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:286
+#: plugins/odrs/gs-plugin-odrs.c:290
 msgid "Downloading application ratings…"
 msgstr "Se descarcă evaluările aplicațiiei…"
 
@@ -4653,9 +4676,6 @@ msgstr "Un snap este un pachet Linux universal"
 #~ msgid "I have an account already"
 #~ msgstr "Am deja un cont"
 
-#~ msgid "Password"
-#~ msgstr "Parolă"
-
 #~ msgid "I want to register for an account now"
 #~ msgstr "Vreau să mă înregistrez pentru un cont acum"
 
@@ -4718,9 +4738,6 @@ msgstr "Un snap este un pachet Linux universal"
 
 #~ msgid "Includes: ."
 #~ msgstr "Include:"
-
-#~ msgid "Restart Required"
-#~ msgstr "Repornire necesară"
 
 #~ msgid "_Restart & Update"
 #~ msgstr "_Repornește și actualizează"
