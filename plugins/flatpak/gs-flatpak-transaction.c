@@ -190,7 +190,7 @@ _transaction_ready (FlatpakTransaction *transaction)
 			for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
 				FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
 				g_string_append_printf (debug_message,
-							"\n ├ %p", related_to_op);
+							"\n ├ %s (%p)", flatpak_transaction_operation_get_ref (related_to_op), related_to_op);
 			}
 			g_string_append (debug_message, "\n └ (end)");
 			g_debug ("%s", debug_message->str);
