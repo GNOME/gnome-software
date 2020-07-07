@@ -8,10 +8,15 @@ cache:
 variables:
   MESON_TEST_TIMEOUT_MULTIPLIER: 2
   G_MESSAGES_DEBUG: all
-  MESON_COMMON_OPTIONS: "--buildtype debug --prefix /usr"
+  MESON_COMMON_OPTIONS: "--buildtype debug --wrap-mode=nodownload --prefix /usr"
+
+.build:
+  before_script:
+    - cp -r $HOME/subprojects/* subprojects/
 
 fedora-x86_64:
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v1
+  extends: .build
+  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v2
   stage: build
   except:
     - tags
@@ -36,7 +41,8 @@ fedora-x86_64:
       - "_build/${CI_JOB_NAME}-report.xml"
 
 debian-stable-x86_64:
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v1
+  extends: .build
+  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v2
   stage: build
   except:
     - tags

@@ -53,7 +53,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     xz-utils \
  && rm -rf /usr/share/doc/* /usr/share/man/*
 
-RUN pip3 install meson==0.47.0
+RUN pip3 install meson==0.50.0
 
 # Enable passwordless sudo for sudo users
 RUN sed -i -e '/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
@@ -61,5 +61,11 @@ RUN sed -i -e '/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
 ARG HOST_USER_ID=5555
 ENV HOST_USER_ID ${HOST_USER_ID}
 RUN useradd -u $HOST_USER_ID -G sudo -ms /bin/bash user
+
+USER user
+WORKDIR /home/user
+
+COPY cache-subprojects.sh .
+RUN ./cache-subprojects.sh
 
 ENV LANG=C.UTF-8 LANGUAGE=C.UTF-8 LC_ALL=C.UTF-8
