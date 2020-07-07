@@ -332,17 +332,17 @@ static void
 update_progress_for_op_recurse_up (GsFlatpakTransaction        *self,
 				   FlatpakTransactionProgress  *progress,
 				   GList                       *ops,
-				   FlatpakTransactionOperation *root_op,
-				   FlatpakTransactionOperation *op)
+				   FlatpakTransactionOperation *current_op,
+				   FlatpakTransactionOperation *root_op)
 {
-	GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (op);
+	GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (root_op);
 
-	if (!flatpak_transaction_operation_get_is_skipped (op))
-		update_progress_for_op (self, progress, ops, root_op, op);
+	if (!flatpak_transaction_operation_get_is_skipped (root_op))
+		update_progress_for_op (self, progress, ops, current_op, root_op);
 
 	for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
 		FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
-		update_progress_for_op_recurse_up (self, progress, ops, root_op, related_to_op);
+		update_progress_for_op_recurse_up (self, progress, ops, current_op, related_to_op);
 	}
 }
 #endif  /* flatpak 1.7.3 */
