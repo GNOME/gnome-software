@@ -6,17 +6,29 @@ read_arg() {
     # $3 = arg parameter
     local rematch='^[^=]*=(.*)$'
     if [[ $2 =~ $rematch ]]; then
-        read "$1" <<< "${BASH_REMATCH[1]}"
+        read -r "$1" <<< "${BASH_REMATCH[1]}"
     else
-        read "$1" <<< "$3"
+        read -r "$1" <<< "$3"
         # There is no way to shift our callers args, so
         # return 1 to indicate they should do it instead.
         return 1
     fi
 }
 
+SUDO_CMD="sudo"
+if docker -v |& grep -q podman; then
+        # Using podman
+        SUDO_CMD=""
+        # Docker is actually implemented by podman, and its OCI output
+        # is incompatible with some of the dockerd instances on GitLab
+        # CI runners.
+        export BUILDAH_FORMAT=docker
+fi
+
 set -e
 
+base=""
+base_version=""
 build=0
 run=0
 push=0
@@ -69,7 +81,7 @@ if [ $list == 1 ]; then
 fi
 
 # All commands after this require --base to be set
-if [ -z $base ]; then
+if [ -z "${base}" ]; then
         echo "Usage: $0 <command>"
         exit 1
 fi
@@ -79,7 +91,7 @@ if [ ! -f "$base.Dockerfile" ]; then
         exit 1
 fi
 
-if [ -z $base_version ]; then
+if [ -z "${base_version}" ]; then
         base_version="latest"
 else
         base_version="v$base_version"
@@ -89,7 +101,7 @@ TAG="registry.gitlab.gnome.org/gnome/gnome-software/${base}:${base_version}"
 
 if [ $build == 1 ]; then
         echo -e "\e[1;32mBUILDING\e[0m: ${base} as ${TAG}"
-        sudo docker build \
+        $SUDO_CMD docker build \
                 --build-arg HOST_USER_ID="$UID" \
                 --tag "${TAG}" \
                 --file "${base}.Dockerfile" .
@@ -100,16 +112,16 @@ if [ $push == 1 ]; then
         echo -e "\e[1;32mPUSHING\e[0m: ${base} as ${TAG}"
 
         if [ $no_login == 0 ]; then
-                sudo docker login registry.gitlab.gnome.org
+                $SUDO_CMD docker login registry.gitlab.gnome.org
         fi
 
-        sudo docker push $TAG
+        $SUDO_CMD docker push $TAG
         exit $?
 fi
 
 if [ $run == 1 ]; then
         echo -e "\e[1;32mRUNNING\e[0m: ${base} as ${TAG}"
-        sudo docker run \
+        $SUDO_CMD docker run \
                 --rm \
                 --volume "$(pwd)/..:/home/user/app" \
                 --workdir "/home/user/app" \
