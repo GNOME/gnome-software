@@ -1,6 +1,7 @@
 FROM fedora:31
 
 RUN dnf -y install \
+    accountsservice-devel \
     clang \
     clang-analyzer \
     dbus-daemon \
@@ -37,6 +38,7 @@ RUN dnf -y install \
     ostree-devel \
     PackageKit \
     PackageKit-glib-devel \
+    pam-devel \
     pcre-devel \
     polkit-devel \
     python3 \

@@ -16,13 +16,6 @@ fedora-x86_64:
   except:
     - tags
   script:
-    - git clone https://gitlab.freedesktop.org/pwithnall/malcontent.git ./malcontent
-    - pushd ./malcontent
-    - git checkout tags/0.4.0
-    - meson setup ${MESON_COMMON_OPTIONS} _build
-    - ninja -C _build
-    - sudo ninja -C _build install
-    - popd
     - meson ${MESON_COMMON_OPTIONS}
             -Drpm_ostree=true
             -Dmalcontent=true

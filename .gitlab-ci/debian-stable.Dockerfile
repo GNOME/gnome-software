@@ -18,6 +18,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     gtk-doc-tools \
     itstool \
     lcov \
+    libaccountsservice-dev \
     libappstream-glib-dev \
     libflatpak-dev \
     libfwupd-dev \
@@ -30,6 +31,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     libgudev-1.0-dev \
     libjson-glib-dev \
     libpackagekit-glib2-dev \
+    libpam0g-dev \
     libpolkit-gobject-1-dev \
     libsoup2.4-dev \
     libxmlb-dev \
@@ -37,6 +39,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     ninja-build \
     packagekit \
     pkg-config \
+    policykit-1 \
     python3 \
     python3-pip \
     python3-setuptools \
