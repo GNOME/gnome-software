@@ -110,8 +110,20 @@ json_glib = dependency('json-glib-1.0', version : '>= 1.2.0')
 libm = cc.find_library('m', required: false)
 libsoup = dependency('libsoup-2.4', version : '>= 2.52.0')
 
-sysprof = dependency('sysprof-capture-3', required: get_option('sysprof'))
-conf.set('HAVE_SYSPROF', sysprof.found())
+libsysprof_capture_dep = dependency('sysprof-capture-4',
+  required: get_option('sysprof'),
+  default_options: [
+    'enable_examples=false',
+    'enable_gtk=false',
+    'enable_tests=false',
+    'enable_tools=false',
+    'libsysprof=false',
+    'with_sysprofd=none',
+    'help=false',
+  ],
+  fallback: ['sysprof', 'libsysprof_capture_dep'],
+)
+conf.set('HAVE_SYSPROF', libsysprof_capture_dep.found())
 
 if get_option('mogwai')
   mogwai_schedule_client = dependency('mogwai-schedule-client-0', version : '>= 0.2.0')
