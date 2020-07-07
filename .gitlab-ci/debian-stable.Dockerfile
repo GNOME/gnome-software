@@ -45,6 +45,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     python3-setuptools \
     python3-wheel \
     shared-mime-info \
+    sudo \
     unzip \
     valgrind \
     wget \
@@ -54,8 +55,11 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
 
 RUN pip3 install meson==0.47.0
 
+# Enable passwordless sudo for sudo users
+RUN sed -i -e '/%sudo/s/ALL$/NOPASSWD: ALL/' /etc/sudoers
+
 ARG HOST_USER_ID=5555
 ENV HOST_USER_ID ${HOST_USER_ID}
-RUN useradd -u $HOST_USER_ID -ms /bin/bash user
+RUN useradd -u $HOST_USER_ID -G sudo -ms /bin/bash user
 
 ENV LANG=C.UTF-8 LANGUAGE=C.UTF-8 LC_ALL=C.UTF-8

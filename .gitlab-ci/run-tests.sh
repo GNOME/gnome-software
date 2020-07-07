@@ -12,21 +12,18 @@ case "$1" in
     log_file="_build/meson-logs/testlog.json"
 esac
 
-# FIXME: The tests need to be run as root
-if ! [ $(id -u) = 0 ]; then
-    echo "Tests need to be run as root"
-    exit 1
-fi
-
 # FIXME: The tests should be isolated and use mock services so they do not
 # require a functioning system bus. This will have to do for now though.
-mkdir -p /run/dbus
-mkdir -p /var
-ln -s /var/run /run
-dbus-daemon --system --fork
-/usr/lib/polkit-1/polkitd --no-debug &
-/usr/libexec/fwupd/fwupd --verbose &
+sudo mkdir -p /run/dbus
+sudo mkdir -p /var
+sudo ln -s /var/run /run
+sudo dbus-daemon --system --fork
+sudo /usr/lib/polkit-1/polkitd --no-debug &
+sudo /usr/libexec/fwupd/fwupd --verbose &
 
+# FIXME: Running the flatpak tests as root means the system helper doesn’t
+# need to be used, which makes them run a lot faster.
+sudo \
 meson test \
         -C _build \
         --timeout-multiplier ${MESON_TEST_TIMEOUT_MULTIPLIER} \
