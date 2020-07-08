@@ -523,13 +523,83 @@ _transaction_new_operation (FlatpakTransaction *transaction,
 	}
 }
 
+#if FLATPAK_CHECK_VERSION(1, 7, 3)
+static gboolean
+later_op_also_related (GList                       *ops,
+		       FlatpakTransactionOperation *current_op,
+		       FlatpakTransactionOperation *related_to_current_op)
+{
+	/* Here we're determining if anything in @ops which comes after
+	 * @current_op is related to @related_to_current_op and not skipped
+	 * (but all @ops are not skipped so no need to check explicitly)
+	 */
+	gboolean found_later_op = FALSE, seen_current_op = FALSE;
+	for (GList *l = ops; l != NULL; l = l->next) {
+		FlatpakTransactionOperation *op = l->data;
+		GPtrArray *related_to_ops;
+		if (current_op == op) {
+			seen_current_op = TRUE;
+			continue;
+		}
+		if (!seen_current_op)
+			continue;
+
+		related_to_ops = flatpak_transaction_operation_get_related_to_ops (op);
+		for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
+			FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
+			if (related_to_op == related_to_current_op) {
+				g_assert (flatpak_transaction_operation_get_is_skipped (related_to_op));
+				found_later_op = TRUE;
+			}
+		}
+	}
+
+	return found_later_op;
+}
+
+static void
+set_skipped_related_apps_to_installed (GsFlatpakTransaction        *self,
+				       FlatpakTransaction          *transaction,
+				       FlatpakTransactionOperation *operation)
+{
+	/* It's possible the thing being updated/installed, @operation, is a
+	 * related ref (e.g. extension or runtime) of an app which itself doesn't
+	 * need an update and therefore won't have _transaction_operation_done()
+	 * called for it directly. So we have to set the main app to installed
+	 * here.
+	*/
+	g_autolist(GObject) ops = flatpak_transaction_get_operations (transaction);
+	GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (operation);
+
+	for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
+		FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
+		if (flatpak_transaction_operation_get_is_skipped (related_to_op)) {
+			const gchar *ref;
+			g_autoptr(GsApp) related_to_app = NULL;
+
+			/* Check that no later op is also related to related_to_op, in
+			 * which case we want to let that operation finish before setting
+			 * the main app to installed.
+			 */
+			if (later_op_also_related (ops, operation, related_to_op))
+				continue;
+
+			ref = flatpak_transaction_operation_get_ref (related_to_op);
+			related_to_app = _ref_to_app (self, ref);
+			if (related_to_app != NULL)
+				gs_app_set_state (related_to_app, AS_APP_STATE_INSTALLED);
+		}
+	}
+}
+#endif  /* flatpak 1.7.3 */
+
 static void
 _transaction_operation_done (FlatpakTransaction *transaction,
 			     FlatpakTransactionOperation *operation,
 			     const gchar *commit,
 			     FlatpakTransactionResult details)
 {
-#if !FLATPAK_CHECK_VERSION(1,5,1)
+#if !FLATPAK_CHECK_VERSION(1,5,1) || FLATPAK_CHECK_VERSION(1,7,3)
 	GsFlatpakTransaction *self = GS_FLATPAK_TRANSACTION (transaction);
 #endif
 	/* invalidate */
@@ -560,6 +630,10 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 		else
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+#if FLATPAK_CHECK_VERSION(1,7,3)
+		set_skipped_related_apps_to_installed (self, transaction, operation);
+#endif
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UNINSTALL:
 		/* we don't actually know if this app is re-installable */
