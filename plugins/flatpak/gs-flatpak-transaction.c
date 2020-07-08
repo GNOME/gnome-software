@@ -613,6 +613,10 @@ _transaction_operation_done (FlatpakTransaction *transaction,
 	case FLATPAK_TRANSACTION_OPERATION_INSTALL:
 	case FLATPAK_TRANSACTION_OPERATION_INSTALL_BUNDLE:
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+#if FLATPAK_CHECK_VERSION(1,7,3)
+		set_skipped_related_apps_to_installed (self, transaction, operation);
+#endif
 		break;
 	case FLATPAK_TRANSACTION_OPERATION_UPDATE:
 		gs_app_set_version (app, gs_app_get_update_version (app));
