@@ -93,19 +93,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-	g_autofree gchar *user_agent = NULL;
-	g_autoptr(SoupSession) soup_session = NULL;
-
 	priv->client = fwupd_client_new ();
-
-	/* use a custom user agent to provide the fwupd version */
-	user_agent = fwupd_build_user_agent (PACKAGE_NAME, PACKAGE_VERSION);
-	soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, user_agent,
-						      SOUP_SESSION_TIMEOUT, 10,
-						      NULL);
-	soup_session_remove_feature_by_type (soup_session,
-					     SOUP_TYPE_CONTENT_DECODER);
-	gs_plugin_set_soup_session (plugin, soup_session);
 
 	/* set name of MetaInfo file */
 	gs_plugin_set_appstream_id (plugin, "org.gnome.Software.Plugin.Fwupd");
@@ -222,6 +210,7 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(SoupSession) soup_session = NULL;
 
 #if FWUPD_CHECK_VERSION(1,4,5)
 	/* send our implemented feature set */
@@ -232,7 +221,26 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		g_prefix_error (error, "Failed to set front-end features: ");
 		return FALSE;
 	}
+
+	/* we know the runtime daemon version now */
+	fwupd_client_set_user_agent_for_package (priv->client, PACKAGE_NAME, PACKAGE_VERSION);
+	if (!fwupd_client_ensure_networking (priv->client, error)) {
+		g_prefix_error (error, "Failed to setup networking: ");
+		return FALSE;
+	}
+	g_object_get (priv->client, "soup-session", &soup_session, NULL);
+#else
+	g_autofree gchar *user_agent = NULL;
+	/* use a custom user agent to provide the fwupd version */
+	user_agent = fwupd_build_user_agent (PACKAGE_NAME, PACKAGE_VERSION);
+	soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, user_agent,
+						      SOUP_SESSION_TIMEOUT, 10,
+						      NULL);
+	soup_session_remove_feature_by_type (soup_session, SOUP_TYPE_CONTENT_DECODER);
 #endif
+
+	/* use for gnome-software downloads */
+	gs_plugin_set_soup_session (plugin, soup_session);
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
