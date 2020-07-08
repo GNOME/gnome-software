@@ -770,25 +770,30 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 #endif  /* HAVE_SYSPROF */
 
 	/* check the plugin didn't take too long */
-	switch (action) {
-	case GS_PLUGIN_ACTION_INITIALIZE:
-	case GS_PLUGIN_ACTION_DESTROY:
-	case GS_PLUGIN_ACTION_SETUP:
-		if (g_timer_elapsed (timer, NULL) > 1.0f) {
-			g_warning ("plugin %s took %.1f seconds to do %s",
-				   gs_plugin_get_name (plugin),
-				   g_timer_elapsed (timer, NULL),
-				   gs_plugin_action_to_string (action));
+	if (g_timer_elapsed (timer, NULL) > 1.0f) {
+		GLogLevelFlags log_level;
+
+		switch (action) {
+		case GS_PLUGIN_ACTION_INITIALIZE:
+		case GS_PLUGIN_ACTION_DESTROY:
+		case GS_PLUGIN_ACTION_SETUP:
+			if (g_getenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD") == NULL)
+				log_level = G_LOG_LEVEL_WARNING;
+			else
+				log_level = G_LOG_LEVEL_DEBUG;
+			break;
+		default:
+			log_level = G_LOG_LEVEL_DEBUG;
+			break;
 		}
-		break;
-	default:
-		if (g_timer_elapsed (timer, NULL) > 1.0f) {
-			g_debug ("plugin %s took %.1f seconds to do %s",
-				 gs_plugin_get_name (plugin),
-				 g_timer_elapsed (timer, NULL),
-				 gs_plugin_action_to_string (action));
-			}
-		break;
+
+		g_log_structured_standard (G_LOG_DOMAIN, log_level,
+					   __FILE__, G_STRINGIFY (__LINE__),
+					   G_STRFUNC,
+					   "plugin %s took %.1f seconds to do %s",
+					   gs_plugin_get_name (plugin),
+					   g_timer_elapsed (timer, NULL),
+					   gs_plugin_action_to_string (action));
 	}
 
 	/* success */
