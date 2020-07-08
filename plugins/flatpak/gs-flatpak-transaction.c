@@ -270,12 +270,40 @@ update_progress_for_op (GsFlatpakTransaction        *self,
                         FlatpakTransactionOperation *current_op,
                         FlatpakTransactionOperation *root_op)
 {
-	GsApp *root_app = _transaction_operation_get_app (root_op);
+	g_autoptr(GsApp) root_app = NULL;
 	guint64 related_prior_download_bytes = 0;
 	guint64 related_download_bytes = 0;
 	guint64 current_bytes_transferred = flatpak_transaction_progress_get_bytes_transferred (current_progress);
 	gboolean seen_current_op = FALSE, seen_root_op = FALSE;
+	gboolean root_op_skipped = flatpak_transaction_operation_get_is_skipped (root_op);
 	guint percent;
+
+	/* If @root_op is being skipped and its GsApp isn't being
+	 * installed/removed, don't update the progress on it. It may be that
+	 * @root_op is the runtime of an app and the app is the thing the
+	 * transaction was created for.
+	 */
+	if (root_op_skipped) {
+		/* _transaction_operation_set_app() is only called on non-skipped ops */
+		const gchar *ref = flatpak_transaction_operation_get_ref (root_op);
+		root_app = _ref_to_app (self, ref);
+		if (root_app == NULL) {
+			g_warning ("Couldn't find GsApp for transaction operation %s",
+			           flatpak_transaction_operation_get_ref (root_op));
+			return;
+		}
+		if (gs_app_get_state (root_app) != AS_APP_STATE_INSTALLING &&
+		    gs_app_get_state (root_app) != AS_APP_STATE_REMOVING)
+			return;
+	} else {
+		GsApp *unskipped_root_app = _transaction_operation_get_app (root_op);
+		if (unskipped_root_app == NULL) {
+			g_warning ("Couldn't find GsApp for transaction operation %s",
+			           flatpak_transaction_operation_get_ref (root_op));
+			return;
+		}
+		root_app = g_object_ref (unskipped_root_app);
+	}
 
 	/* This relies on ops in a #FlatpakTransaction being run in the order
 	 * they’re returned by flatpak_transaction_get_operations(), which is true. */
@@ -288,6 +316,12 @@ update_progress_for_op (GsFlatpakTransaction        *self,
 		if (op == root_op)
 			seen_root_op = TRUE;
 
+		/* Currently libflatpak doesn't return skipped ops in
+		 * flatpak_transaction_get_operations(), but check just in case.
+		 */
+		if (op == root_op && root_op_skipped)
+			continue;
+
 		if (op_is_related_to_op (op, root_op)) {
 			/* Saturate instead of overflowing */
 			related_download_bytes = saturated_uint64_add (related_download_bytes, op_download_size);
@@ -297,7 +331,7 @@ update_progress_for_op (GsFlatpakTransaction        *self,
 	}
 
 	g_assert (related_prior_download_bytes <= related_download_bytes);
-	g_assert (seen_root_op);
+	g_assert (seen_root_op || root_op_skipped);
 
 	/* Avoid overflows when converting to percent, at the cost of losing
 	 * some precision in the least significant digits. */
@@ -337,9 +371,10 @@ update_progress_for_op_recurse_up (GsFlatpakTransaction        *self,
 {
 	GPtrArray *related_to_ops = flatpak_transaction_operation_get_related_to_ops (root_op);
 
-	if (!flatpak_transaction_operation_get_is_skipped (root_op))
-		update_progress_for_op (self, progress, ops, current_op, root_op);
+	/* Update progress for @root_op */
+	update_progress_for_op (self, progress, ops, current_op, root_op);
 
+	/* Update progress for ops related to @root_op, e.g. apps whose runtime is @root_op */
 	for (gsize i = 0; related_to_ops != NULL && i < related_to_ops->len; i++) {
 		FlatpakTransactionOperation *related_to_op = g_ptr_array_index (related_to_ops, i);
 		update_progress_for_op_recurse_up (self, progress, ops, current_op, related_to_op);
