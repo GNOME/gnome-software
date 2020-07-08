@@ -30,6 +30,8 @@ fedora-x86_64:
     - .gitlab-ci/run-tests.sh
             --no-suite packagekit
             --no-suite fwupd
+            --no-suite libglib-testing
+            --no-suite malcontent
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"
