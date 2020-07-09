@@ -46,6 +46,10 @@ gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const g
 	g_autoptr(GString) str = g_string_new (NULL);
 	g_autofree gchar *path = NULL;
 
+	g_return_val_if_fail (filename != NULL, FALSE);
+	g_return_val_if_fail (url != NULL, FALSE);
+	g_return_val_if_fail (runtimerepo != NULL, FALSE);
+
 	g_string_append (str, "[Flatpak Ref]\n");
 	g_string_append (str, "Title=Chiron\n");
 	g_string_append (str, "Name=org.test.Chiron\n");
@@ -55,8 +59,7 @@ gs_flatpak_test_write_ref_file (const gchar *filename, const gchar *url, const g
 	g_string_append (str, "Comment=Single line synopsis\n");
 	g_string_append (str, "Description=A Testing Application\n");
 	g_string_append (str, "Icon=https://getfedora.org/static/images/fedora-logotext.png\n");
-	if (runtimerepo != NULL)
-		g_string_append_printf (str, "RuntimeRepo=%s\n", runtimerepo);
+	g_string_append_printf (str, "RuntimeRepo=%s\n", runtimerepo);
 
 	path = g_build_filename (g_getenv ("GS_SELF_TEST_FLATPAK_DATADIR"), filename, NULL);
 	*file_out = g_file_new_for_path (path);
@@ -940,6 +943,9 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
 	const gchar *fn = "test.flatpakref";
+	const gchar *fn_repo = "test.flatpakrepo";
+	g_autoptr(GFile) fn_repo_file = NULL;
+	g_autofree gchar *fn_repourl = NULL;
 	g_autofree gchar *testdir2 = NULL;
 	g_autofree gchar *testdir2_repourl = NULL;
 	g_autofree gchar *testdir = NULL;
@@ -974,12 +980,19 @@ gs_plugins_flatpak_broken_remote_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
 
-	/* write a flatpakref file */
+	/* write a flatpakrepo file (the flatpakref below must have a RuntimeRepo=
+	 * to avoid a warning) */
 	testdir2 = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
 	if (testdir2 == NULL)
 		return;
+	ret = gs_flatpak_test_write_repo_file (fn_repo, testdir2, &fn_repo_file, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* write a flatpakref file */
+	fn_repourl = g_file_get_uri (fn_repo_file);
 	testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
-	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &file, &error);
+	ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, fn_repourl, &file, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
@@ -1110,16 +1123,26 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 		file = g_file_new_for_path (fn);
 		refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	} else {
+		const gchar *fn_repo = "test.flatpakrepo";
+		g_autoptr(GFile) fn_repo_file = NULL;
+		g_autofree gchar *fn_repourl = NULL;
 		g_autofree gchar *testdir2 = NULL;
 		g_autofree gchar *testdir2_repourl = NULL;
 
-		/* write a flatpakref file */
+		/* write a flatpakrepo file (the flatpakref below must have a RuntimeRepo=
+		 * to avoid a warning) */
 		testdir2 = gs_test_get_filename (TESTDATADIR, "app-with-runtime");
 		if (testdir2 == NULL)
 			return;
+		ret = gs_flatpak_test_write_repo_file (fn_repo, testdir2, &fn_repo_file, &error);
+		g_assert_no_error (error);
+		g_assert (ret);
+
+		/* write a flatpakref file */
+		fn_repourl = g_file_get_uri (fn_repo_file);
 		testdir2_repourl = g_strdup_printf ("file://%s/repo", testdir2);
 		fn = g_strdup ("test.flatpakref");
-		ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, NULL, &file, &error);
+		ret = gs_flatpak_test_write_ref_file (fn, testdir2_repourl, fn_repourl, &file, &error);
 		g_assert_no_error (error);
 		g_assert (ret);
 
@@ -1208,13 +1231,21 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	g_assert_no_error (error);
 	g_assert (app2 != NULL);
 	g_assert_cmpint (gs_app_get_state (app2), ==, AS_APP_STATE_INSTALLED);
+	if (is_bundle) {
 #if FLATPAK_CHECK_VERSION(1,1,2)
-	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
-		  "user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
+		g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
+				"user/flatpak/chiron-origin/desktop/org.test.Chiron/master"));
 #else
-	g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
-		  "user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
+		g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
+				"user/flatpak/org.test.Chiron-origin/desktop/org.test.Chiron/master"));
 #endif
+	} else {
+		/* Note: the origin is now test-1 because that remote was created from the
+		 * RuntimeRepo= setting
+		 */
+		g_assert (as_utils_unique_id_equal (gs_app_get_unique_id (app2),
+			  "user/flatpak/test-1/desktop/org.test.Chiron/master"));
+	}
 
 	/* remove app */
 	g_object_unref (plugin_job);
@@ -1242,6 +1273,21 @@ flatpak_bundle_or_ref_helper (GsPluginLoader *plugin_loader,
 	ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
+
+	if (!is_bundle) {
+		/* remove remote added by RuntimeRepo= in flatpakref */
+		g_autoptr(GsApp) runtime_source = gs_flatpak_app_new ("test-1");
+		gs_app_set_kind (runtime_source, AS_APP_KIND_SOURCE);
+		gs_app_set_management_plugin (runtime_source, "flatpak");
+		gs_app_set_state (runtime_source, AS_APP_STATE_INSTALLED);
+		g_object_unref (plugin_job);
+		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
+						 "app", runtime_source,
+						 NULL);
+		ret = gs_plugin_loader_job_action (plugin_loader, plugin_job, NULL, &error);
+		g_assert_no_error (error);
+		g_assert (ret);
+	}
 
 	/* there should be no sources now */
 	g_object_unref (plugin_job);
