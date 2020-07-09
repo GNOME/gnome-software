@@ -1501,6 +1501,11 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 		if (gs_app_get_state (main_app) != AS_APP_STATE_INSTALLING)
 			gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
 
+		/* set updatable state on the extension too, as it will have
+		 * its state updated to installing then installed later on */
+		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLING)
+			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+
 		/* already downloaded */
 		if (g_strcmp0 (commit, latest_commit) != 0) {
 			g_debug ("%s has a downloaded update %s->%s",
