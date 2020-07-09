@@ -1,4 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * vi:set noexpandtab tabstop=8 shiftwidth=8:
  *
  * Copyright (C) 2014-2015 Kalev Lember <klember@redhat.com>
  *

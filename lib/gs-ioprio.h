@@ -1,4 +1,6 @@
-/*
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
+ * vi:set noexpandtab tabstop=8 shiftwidth=8:
+ *
  * Copyright (C) 2006, Anders Aagaard
  * Copyright (C) 2008, Nokia <ivan.frade@nokia.com>
  *
