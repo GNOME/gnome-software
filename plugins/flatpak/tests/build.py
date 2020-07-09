@@ -23,9 +23,10 @@ def build_flatpak(appid, srcdir, repodir, branch='master', cleanrepodir=True):
     metadata = configparser.ConfigParser()
     metadata.read(metadata_path)
     is_runtime = True if 'Runtime' in metadata.sections() else False
+    is_extension = True if 'ExtensionOf' in metadata.sections() else False
 
     # runtimes have different defaults
-    if is_runtime:
+    if is_runtime and not is_extension:
         prefix = 'usr'
     else:
         prefix = 'files'
