@@ -19,9 +19,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-06-05 10:45+0000\n"
-"PO-Revision-Date: 2020-06-05 10:10-0400\n"
-"Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
+"POT-Creation-Date: 2020-07-06 15:04+0000\n"
+"PO-Revision-Date: 2020-07-10 13:20-0400\n"
+"Last-Translator: Merrick Zhang <anphorea@gmail.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -335,7 +335,7 @@ msgstr "搜索"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:285 src/gs-details-page.ui:886
+#: src/gnome-software.ui:272 src/gs-app-row.c:293 src/gs-details-page.ui:886
 msgid "Source"
 msgstr "源"
 
@@ -376,20 +376,20 @@ msgid "Find Out _More"
 msgstr "了解更多(_M)"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4516
+#: lib/gs-app.c:4558
 msgid "Local file"
 msgstr "本地文件"
 
-#: lib/gs-app.c:4568
+#: lib/gs-app.c:4610
 msgid "Package"
 msgstr "软件包"
 
-#: src/gs-app-addon-row.c:82 src/gs-app-row.c:392
+#: src/gs-app-addon-row.c:82 src/gs-app-row.c:400
 msgid "Pending"
 msgstr "等待中"
 
-#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:162 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:68
+#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
+#: src/gs-feature-tile.c:87
 msgid "Installed"
 msgstr "已安装"
 
@@ -397,7 +397,7 @@ msgstr "已安装"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:163 src/gs-details-page.c:349
+#: src/gs-app-addon-row.c:92 src/gs-app-row.c:171 src/gs-details-page.c:350
 #: src/gs-third-party-repo-row.c:99
 msgid "Installing"
 msgstr "安装中"
@@ -406,7 +406,7 @@ msgstr "安装中"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:169 src/gs-repo-row.c:125
+#: src/gs-app-addon-row.c:96 src/gs-app-row.c:177 src/gs-repo-row.c:125
 #: src/gs-third-party-repo-row.c:106
 msgid "Removing"
 msgstr "移除中"
@@ -508,7 +508,7 @@ msgstr ""
 #. TRANSLATORS: this is the menu item that opens the about window, e.g.
 #. * 'About Software' or 'About Application Installer' where the %s is
 #. * the application name chosen by the distro
-#: src/gs-application.c:335 src/gs-shell.c:2104
+#: src/gs-application.c:335 src/gs-shell.c:2124
 #, c-format
 msgid "About %s"
 msgstr "关于 %s"
@@ -525,20 +525,20 @@ msgstr "抱歉！该应用程序没有详细信息。"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:118
+#: src/gs-app-row.c:126
 msgid "Visit website"
 msgstr "访问网站"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:123
+#: src/gs-app-row.c:131
 msgid "Install…"
 msgstr "安装…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:130 src/gs-updates-section.c:478
+#: src/gs-app-row.c:138 src/gs-updates-section.c:478
 msgid "Cancel"
 msgstr "取消"
 
@@ -546,13 +546,13 @@ msgstr "取消"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:137 src/gs-common.c:287 src/gs-page.c:273
+#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:333
 msgid "Install"
 msgstr "安装"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:144
+#: src/gs-app-row.c:152
 msgid "Update"
 msgstr "更新"
 
@@ -560,20 +560,48 @@ msgstr "更新"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:148 src/gs-app-row.c:157 src/gs-page.c:434
+#: src/gs-app-row.c:156 src/gs-app-row.c:165 src/gs-page.c:491
 #: src/gs-repos-dialog.c:325
 msgid "Remove"
 msgstr "移除"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:275
+#: src/gs-app-row.c:283
 msgid "Device cannot be used during update."
 msgstr "升级期间设备无法被使用。"
 
-#: src/gs-app-row.c:450 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:458 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "要求额外的权限"
+
+#. TRANSLATORS: This is a description for entering user/password
+#: src/gs-basic-auth-dialog.c:81
+#, c-format
+msgid "Login required remote %s (realm %s)"
+msgstr "远程服务 %s ( %s 域) 需要登录"
+
+#: src/gs-basic-auth-dialog.ui:10
+msgid "Login Required"
+msgstr "需要登录"
+
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:252
+#: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
+#: src/gs-upgrade-banner.ui:112
+msgid "_Cancel"
+msgstr "取消(_C)"
+
+#: src/gs-basic-auth-dialog.ui:39
+msgid "_Login"
+msgstr "登录(_L)"
+
+#: src/gs-basic-auth-dialog.ui:99
+msgid "_User"
+msgstr "用户(_U)"
+
+#: src/gs-basic-auth-dialog.ui:119
+msgid "_Password"
+msgstr "密码(_P)"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -673,7 +701,7 @@ msgid "Application is ready to be used."
 msgstr "应用程序已就绪。"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:159 src/gs-common.c:638
+#: src/gs-common.c:159 src/gs-common.c:649
 msgid "Restart"
 msgstr "重新启动"
 
@@ -741,557 +769,557 @@ msgstr "安装并启用"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:440
+#: src/gs-common.c:451
 msgid "Detailed errors from the package manager follow:"
 msgstr "包管理器提供的详细错误如下："
 
-#: src/gs-common.c:459 src/gs-details-page.ui:447
+#: src/gs-common.c:470 src/gs-details-page.ui:447
 msgid "Details"
 msgstr "详细信息"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:624
+#: src/gs-common.c:635
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "已安装更新"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:629
+#: src/gs-common.c:640
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "需要重新启动以使更新生效。"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:636 src/gs-update-monitor.c:122
+#: src/gs-common.c:647 src/gs-update-monitor.c:122
 msgid "Not Now"
 msgstr "现在不"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:59
+#: src/gs-content-rating.c:60
 msgid "No cartoon violence"
 msgstr "无动画角色暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:61
+#: src/gs-content-rating.c:62
 msgid "Cartoon characters in unsafe situations"
 msgstr "动画角色处于危险境地"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:63
+#: src/gs-content-rating.c:64
 msgid "Cartoon characters in aggressive conflict"
 msgstr "动画角色处于激烈冲突"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:65
+#: src/gs-content-rating.c:66
 msgid "Graphic violence involving cartoon characters"
 msgstr "包含动画角色的写实暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:70
+#: src/gs-content-rating.c:71
 msgid "No fantasy violence"
 msgstr "无幻想的暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:72
+#: src/gs-content-rating.c:73
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr "角色处于易于与现实区分的危险境地"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:74
+#: src/gs-content-rating.c:75
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr "角色参与易于与现实区分的激烈冲突"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:76
+#: src/gs-content-rating.c:77
 msgid "Graphic violence easily distinguishable from reality"
 msgstr "角色参与易于与现实区分的写实暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:81
+#: src/gs-content-rating.c:82
 msgid "No realistic violence"
 msgstr "无逼真的暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:83
+#: src/gs-content-rating.c:84
 msgid "Mildly realistic characters in unsafe situations"
 msgstr "较逼真角色处于危险境地"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:85
+#: src/gs-content-rating.c:86
 msgid "Depictions of realistic characters in aggressive conflict"
 msgstr "描写逼真角色参与激烈冲突"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:87
+#: src/gs-content-rating.c:88
 msgid "Graphic violence involving realistic characters"
 msgstr "逼真角色参与的写实暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:92
+#: src/gs-content-rating.c:93
 msgid "No bloodshed"
 msgstr "无流血"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:94
+#: src/gs-content-rating.c:95
 msgid "Unrealistic bloodshed"
 msgstr "不逼真的血"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:96
+#: src/gs-content-rating.c:97
 msgid "Realistic bloodshed"
 msgstr "逼真的血"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:98
+#: src/gs-content-rating.c:99
 msgid "Depictions of bloodshed and the mutilation of body parts"
 msgstr "描写流血及肢体伤害"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:103
+#: src/gs-content-rating.c:104
 msgid "No sexual violence"
 msgstr "无性暴力"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:105
+#: src/gs-content-rating.c:106
 msgid "Rape or other violent sexual behavior"
 msgstr "强奸及其他暴力的性行为"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:112
+#: src/gs-content-rating.c:113
 msgid "No references to alcohol"
 msgstr "无对酒精的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:114
+#: src/gs-content-rating.c:115
 msgid "References to alcoholic beverages"
 msgstr "对酒精饮料的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:116
+#: src/gs-content-rating.c:117
 msgid "Use of alcoholic beverages"
 msgstr "饮用酒精饮料"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:122
+#: src/gs-content-rating.c:123
 msgid "No references to illicit drugs"
 msgstr "无对非法药物的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:124
+#: src/gs-content-rating.c:125
 msgid "References to illicit drugs"
 msgstr "对非法药物的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:126
+#: src/gs-content-rating.c:127
 msgid "Use of illicit drugs"
 msgstr "吸食非法药物"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:132
+#: src/gs-content-rating.c:133
 msgid "No references to tobacco products"
 msgstr "无烟草产品暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:134
+#: src/gs-content-rating.c:135
 msgid "References to tobacco products"
 msgstr "对烟草产品的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:136
+#: src/gs-content-rating.c:137
 msgid "Use of tobacco products"
 msgstr "吸食烟草产品"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:142
+#: src/gs-content-rating.c:143
 msgid "No nudity of any sort"
 msgstr "无任何形式的裸体"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:144
+#: src/gs-content-rating.c:145
 msgid "Brief artistic nudity"
 msgstr "短暂且艺术性的裸体"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:146
+#: src/gs-content-rating.c:147
 msgid "Prolonged nudity"
 msgstr "长时间的裸体描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:152
+#: src/gs-content-rating.c:153
 msgid "No references to or depictions of sexual nature"
 msgstr "无性相关的暗示和描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:154
+#: src/gs-content-rating.c:155
 msgid "Provocative references or depictions"
 msgstr "挑衅性暗示或描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:156
+#: src/gs-content-rating.c:157
 msgid "Sexual references or depictions"
 msgstr "性暗示或描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:158
+#: src/gs-content-rating.c:159
 msgid "Graphic sexual behavior"
 msgstr "生动的性行为"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:163
+#: src/gs-content-rating.c:164
 msgid "No profanity of any kind"
 msgstr "无任何种类的粗俗语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:165
+#: src/gs-content-rating.c:166
 msgid "Mild or infrequent use of profanity"
 msgstr "少量粗俗语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:167
+#: src/gs-content-rating.c:168
 msgid "Moderate use of profanity"
 msgstr "中等数量的粗俗语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:169
+#: src/gs-content-rating.c:170
 msgid "Strong or frequent use of profanity"
 msgstr "大量粗俗语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:174
+#: src/gs-content-rating.c:175
 msgid "No inappropriate humor"
 msgstr "无不适当的笑话"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:176
+#: src/gs-content-rating.c:177
 msgid "Slapstick humor"
 msgstr "闹剧式笑话"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:178
+#: src/gs-content-rating.c:179
 msgid "Vulgar or bathroom humor"
 msgstr "粗俗或浴室笑话"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:180
+#: src/gs-content-rating.c:181
 msgid "Mature or sexual humor"
 msgstr "荤笑话"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:185
+#: src/gs-content-rating.c:186
 msgid "No discriminatory language of any kind"
 msgstr "无任何种类的歧视性语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:187
+#: src/gs-content-rating.c:188
 msgid "Negativity towards a specific group of people"
 msgstr "对特定人群负面的语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:189
+#: src/gs-content-rating.c:190
 msgid "Discrimination designed to cause emotional harm"
 msgstr "伤害情感的歧视性语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:191
+#: src/gs-content-rating.c:192
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr "针对性别、性向、种族或宗教的歧视性语言"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:196
+#: src/gs-content-rating.c:197
 msgid "No advertising of any kind"
 msgstr "无任何种类的广告"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:198
+#: src/gs-content-rating.c:199
 msgid "Product placement"
 msgstr "植入式广告"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:200
+#: src/gs-content-rating.c:201
 msgid "Explicit references to specific brands or trademarked products"
 msgstr "对特定产品的品牌或商标的明显暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:202
+#: src/gs-content-rating.c:203
 msgid "Users are encouraged to purchase specific real-world items"
 msgstr "鼓励用户购买特定的真实商品"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:207
+#: src/gs-content-rating.c:208
 msgid "No gambling of any kind"
 msgstr "无任何种类的赌博"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:209
+#: src/gs-content-rating.c:210
 msgid "Gambling on random events using tokens or credits"
 msgstr "通过随机事件使用游戏票券赌博"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:211
+#: src/gs-content-rating.c:212
 msgid "Gambling using “play” money"
 msgstr "使用游戏货币赌博"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:213
+#: src/gs-content-rating.c:214
 msgid "Gambling using real money"
 msgstr "使用真实货币赌博"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:218
+#: src/gs-content-rating.c:219
 msgid "No ability to spend money"
 msgstr "无花钱的功能"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:220
+#: src/gs-content-rating.c:221
 msgid "Users are encouraged to donate real money"
 msgstr "鼓励用户捐赠真实货币"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:223
+#: src/gs-content-rating.c:224
 msgid "Ability to spend real money in-app"
 msgstr "应用中可使用真实货币"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:228
+#: src/gs-content-rating.c:229
 msgid "No way to chat with other users"
 msgstr "没有与其他用户聊天的功能"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:230
+#: src/gs-content-rating.c:231
 msgid "User-to-user interactions without chat functionality"
 msgstr "在用户之间不带聊天功能的交互功能"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:232
+#: src/gs-content-rating.c:233
 msgid "Moderated chat functionality between users"
 msgstr "在用户之间受监控的聊天功能"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:234
+#: src/gs-content-rating.c:235
 msgid "Uncontrolled chat functionality between users"
 msgstr "在用户之间不受控制的聊天功能"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:239
+#: src/gs-content-rating.c:240
 msgid "No way to talk with other users"
 msgstr "无与其他用户沟通的方式"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:241
+#: src/gs-content-rating.c:242
 msgid "Uncontrolled audio or video chat functionality between users"
 msgstr "在用户之间不受控制的音频或视频聊天功能"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:248
+#: src/gs-content-rating.c:249
 msgid "No sharing of social network usernames or email addresses"
 msgstr "不共享社交网络的用户名或电子邮件地址"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:250
+#: src/gs-content-rating.c:251
 msgid "Sharing social network usernames or email addresses"
 msgstr "共享社交网络的用户名或电子邮件地址"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:257
+#: src/gs-content-rating.c:258
 msgid "No sharing of user information with third parties"
 msgstr "不与第三方共享用户信息"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:259
+#: src/gs-content-rating.c:260
 msgid "Checking for the latest application version"
 msgstr "正在检查最新应用程序版本"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:261
+#: src/gs-content-rating.c:262
 msgid "Sharing diagnostic data that does not let others identify the user"
 msgstr "分享无法识别用户身份的诊断数据"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:263
+#: src/gs-content-rating.c:264
 msgid "Sharing information that lets others identify the user"
 msgstr "分享可以识别用户身份的信息"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:268
+#: src/gs-content-rating.c:269
 msgid "No sharing of physical location with other users"
 msgstr "不与其他用户共享物理位置"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:270
+#: src/gs-content-rating.c:271
 msgid "Sharing physical location with other users"
 msgstr "与其他用户共享物理位置"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:279
+#: src/gs-content-rating.c:280
 msgid "No references to homosexuality"
 msgstr "无对同性恋的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:281
+#: src/gs-content-rating.c:282
 msgid "Indirect references to homosexuality"
 msgstr "对同性恋的间接暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:283
+#: src/gs-content-rating.c:284
 msgid "Kissing between people of the same gender"
 msgstr "同性别人类之间的亲吻"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:285
+#: src/gs-content-rating.c:286
 msgid "Graphic sexual behavior between people of the same gender"
 msgstr "含有同性别人类之间性行为的图像"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:290
+#: src/gs-content-rating.c:291
 msgid "No references to prostitution"
 msgstr "无对卖淫的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:292
+#: src/gs-content-rating.c:293
 msgid "Indirect references to prostitution"
 msgstr "对卖淫的间接暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:294
+#: src/gs-content-rating.c:295
 msgid "Direct references to prostitution"
 msgstr "对卖淫的直接暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:296
+#: src/gs-content-rating.c:297
 msgid "Graphic depictions of the act of prostitution"
 msgstr "卖淫行为的图像描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:301
+#: src/gs-content-rating.c:302
 msgid "No references to adultery"
 msgstr "无对通奸的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:303
+#: src/gs-content-rating.c:304
 msgid "Indirect references to adultery"
 msgstr "对通奸的间接暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:305
+#: src/gs-content-rating.c:306
 msgid "Direct references to adultery"
 msgstr "对通奸的直接暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:307
+#: src/gs-content-rating.c:308
 msgid "Graphic depictions of the act of adultery"
 msgstr "通奸的图像描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:312
+#: src/gs-content-rating.c:313
 msgid "No sexualized characters"
 msgstr "无性暗示角色"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:315
+#: src/gs-content-rating.c:316
 msgid "Scantily clad human characters"
 msgstr "穿着暴露的人类角色"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:317
+#: src/gs-content-rating.c:318
 msgid "Overtly sexualized human characters"
 msgstr "具有明显性暗示的人类角色"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:322
+#: src/gs-content-rating.c:323
 msgid "No references to desecration"
 msgstr "无对亵渎行为的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:324
+#: src/gs-content-rating.c:325
 msgid "Depictions of or references to historical desecration"
 msgstr "亵渎历史的描写或暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:326
+#: src/gs-content-rating.c:327
 msgid "Depictions of modern-day human desecration"
 msgstr "对当代人类亵渎的描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:328
+#: src/gs-content-rating.c:329
 msgid "Graphic depictions of modern-day desecration"
 msgstr "亵渎当代社会的图像描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:333
+#: src/gs-content-rating.c:334
 msgid "No visible dead human remains"
 msgstr "无可见死亡人类尸体"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:335
+#: src/gs-content-rating.c:336
 msgid "Visible dead human remains"
 msgstr "有可见死亡人类尸体"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:337
+#: src/gs-content-rating.c:338
 msgid "Dead human remains that are exposed to the elements"
 msgstr "有死亡人类尸体并展示其内容物"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:339
+#: src/gs-content-rating.c:340
 msgid "Graphic depictions of desecration of human bodies"
 msgstr "对亵渎人体行为的图像描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:344
+#: src/gs-content-rating.c:345
 msgid "No references to slavery"
 msgstr "无对奴役的暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:346
+#: src/gs-content-rating.c:347
 msgid "Depictions of or references to historical slavery"
 msgstr "对历史上奴役行为的描写或暗示"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:348
+#: src/gs-content-rating.c:349
 msgid "Depictions of modern-day slavery"
 msgstr "对当代奴役行为的描写"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:350
+#: src/gs-content-rating.c:351
 msgid "Graphic depictions of modern-day slavery"
 msgstr "对当代奴役行为的图片描写"
 
 #. TRANSLATORS: This is the formatting of English and localized name
 #. of the rating e.g. "Adults Only (solo adultos)"
-#: src/gs-content-rating.c:406
+#: src/gs-content-rating.c:411
 #, c-format
 msgid "%s (%s)"
 msgstr "%s（%s）"
 
-#: src/gs-content-rating.c:540
+#: src/gs-content-rating.c:545
 msgid "General"
 msgstr "常规"
 
-#: src/gs-content-rating.c:549
+#: src/gs-content-rating.c:554
 msgid "ALL"
 msgstr "全部"
 
-#: src/gs-content-rating.c:553
+#: src/gs-content-rating.c:558
 msgid "Adults Only"
 msgstr "仅限成人"
 
-#: src/gs-content-rating.c:555
+#: src/gs-content-rating.c:560
 msgid "Mature"
 msgstr "成人"
 
-#: src/gs-content-rating.c:557
+#: src/gs-content-rating.c:562
 msgid "Teen"
 msgstr "青少年"
 
-#: src/gs-content-rating.c:559
+#: src/gs-content-rating.c:564
 msgid "Everyone 10+"
 msgstr "十岁及以上"
 
-#: src/gs-content-rating.c:561
+#: src/gs-content-rating.c:566
 msgid "Everyone"
 msgstr "任何人"
 
-#: src/gs-content-rating.c:563
+#: src/gs-content-rating.c:568
 msgid "Early Childhood"
 msgstr "儿童"
 
@@ -1360,29 +1388,29 @@ msgstr "需要额外的软件包"
 msgid "Find in Software"
 msgstr "在“软件”中查找"
 
-#: src/gs-details-page.c:344
+#: src/gs-details-page.c:345
 msgid "Removing…"
 msgstr "正在移除…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:363
+#: src/gs-details-page.c:364
 msgid "Pending installation…"
 msgstr "等待安装…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:370
+#: src/gs-details-page.c:371
 msgid "Pending update…"
 msgstr "等待更新…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:384
+#: src/gs-details-page.c:385
 msgid "Preparing…"
 msgstr "正在准备…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:743
+#: src/gs-details-page.c:744
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1394,9 +1422,9 @@ msgstr "这个应用只能在联网情况下使用。"
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:888 src/gs-details-page.c:905
+#: src/gs-details-page.c:889 src/gs-details-page.c:906
 #: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:87
+#: src/gs-upgrade-banner.c:88
 msgid "_Install"
 msgstr "安装(_I)"
 
@@ -1407,190 +1435,190 @@ msgstr "安装(_I)"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:919 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:920 src/gs-third-party-repo-row.c:75
 msgid "_Install…"
 msgstr "安装(_I)…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:961
+#: src/gs-details-page.c:962
 msgid "_Launch"
 msgstr "启动(_L)"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:985 src/gs-details-page.ui:192
+#: src/gs-details-page.c:986 src/gs-details-page.ui:192
 msgid "_Remove"
 msgstr "移除(_R)"
 
-#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:92
 msgid "Network"
 msgstr "网络"
 
-#: src/gs-details-page.c:1016 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1017 src/gs-update-dialog.c:92
 msgid "Can communicate over the network"
 msgstr "可以通过网络进行通信"
 
-#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
 msgid "System Services"
 msgstr "系统服务"
 
-#: src/gs-details-page.c:1017 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
 msgid "Can access D-Bus services on the system bus"
 msgstr "可以访问在系统总线上访问 D-Bus 服务"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "Session Services"
 msgstr "会话服务"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the session bus"
 msgstr "可以在会话总线上访问 D-Bus 服务"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Devices"
 msgstr "设备"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Can access system device files"
 msgstr "可以访问系统设备文件"
 
-#: src/gs-details-page.c:1020 src/gs-details-page.c:1021
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1022
 #: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
 msgid "Home folder"
 msgstr "主目录"
 
-#: src/gs-details-page.c:1020 src/gs-details-page.c:1022
-#: src/gs-details-page.c:1024 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1025 src/gs-update-dialog.c:96
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
 msgid "Can view, edit and create files"
 msgstr "可以查看、编辑和创建文件"
 
-#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
-#: src/gs-details-page.c:1025 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1022 src/gs-details-page.c:1024
+#: src/gs-details-page.c:1026 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view files"
 msgstr "可以查看文件"
 
-#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1023 src/gs-details-page.c:1024
 #: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
 msgid "File system"
 msgstr "文件系统"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
+#: src/gs-details-page.c:1025 src/gs-details-page.c:1026
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
 msgid "Downloads folder"
 msgstr "下载文件夹"
 
-#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:102
 msgid "Settings"
 msgstr "设置"
 
-#: src/gs-details-page.c:1026 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
 msgstr "可以查看和更改任意设置"
 
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
 msgid "Legacy display system"
 msgstr "传统显示系统"
 
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
 msgstr "使用旧式、不安全的显示系统"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
 msgstr "沙箱逃逸"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "可以逃脱沙箱并绕过任何其他限制"
 
-#: src/gs-details-page.c:1043
+#: src/gs-details-page.c:1044
 msgid "This application is fully sandboxed."
 msgstr "此应用程序已完全沙盒化。"
 
-#: src/gs-details-page.c:1051
+#: src/gs-details-page.c:1052
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
 msgstr "无法确认此应用程序可以访问系统的哪一部分。这是旧版应用程序的特征。"
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1210
+#: src/gs-details-page.c:1211
 msgctxt "version"
 msgid "Unknown"
 msgstr "未知"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1223
+#: src/gs-details-page.c:1224
 msgctxt "updated"
 msgid "Never"
 msgstr "未知"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1276
+#: src/gs-details-page.c:1277
 msgctxt "origin"
 msgid "Unknown"
 msgstr "未知"
 
-#: src/gs-details-page.c:1329
+#: src/gs-details-page.c:1330
 msgid "Low"
 msgstr "低"
 
-#: src/gs-details-page.c:1331
+#: src/gs-details-page.c:1332
 msgid "Medium"
 msgstr "中"
 
-#: src/gs-details-page.c:1333
+#: src/gs-details-page.c:1334
 msgid "High"
 msgstr "高"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1335 src/gs-details-page.ui:1006
+#: src/gs-details-page.c:1336 src/gs-details-page.ui:1006
 #: src/gs-review-row.c:57
 msgid "Unknown"
 msgstr "未知"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1673
+#: src/gs-details-page.c:1674
 msgid "You need internet access to write a review"
 msgstr "您需要互联网连接以编写评论"
 
-#: src/gs-details-page.c:1859 src/gs-details-page.c:1875
+#: src/gs-details-page.c:1863 src/gs-details-page.c:1879
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "无法找到“%s”"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2453
+#: src/gs-details-page.c:2457
 msgid "Public domain"
 msgstr "公有领域"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2456
+#: src/gs-details-page.c:2460
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://zh.wikipedia.org/wiki/公有领域"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2463
+#: src/gs-details-page.c:2467
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.zh-cn"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2473 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2477 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "自由软件"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2530
+#: src/gs-details-page.c:2534
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "用户受以下许可证的约束："
 
-#: src/gs-details-page.c:2557 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2561 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "更多信息"
 
@@ -1601,11 +1629,6 @@ msgstr "详细信息页面"
 #: src/gs-details-page.ui:222
 msgid "Downloading"
 msgstr "正在下载"
-
-#: src/gs-details-page.ui:252 src/gs-removal-dialog.ui:32
-#: src/gs-review-dialog.ui:22 src/gs-upgrade-banner.ui:112
-msgid "_Cancel"
-msgstr "取消(_C)"
 
 #: src/gs-details-page.ui:262
 msgid "_Update"
@@ -1749,7 +1772,7 @@ msgstr "专有软件"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:442
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
 #: plugins/core/gs-desktop-common.c:314
 msgid "Add-ons"
 msgstr "附加组件"
@@ -1811,7 +1834,7 @@ msgstr "没有对应此分级可用的详细信息。"
 #. TRANSLATORS: separator for a list of items
 #: src/gs-extras-page.c:134
 msgid " and "
-msgstr "和"
+msgstr " 和 "
 
 #. TRANSLATORS: separator for a list of items
 #: src/gs-extras-page.c:137
@@ -2044,7 +2067,7 @@ msgstr "历史"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:438
+#: src/gs-installed-page.c:436
 msgid "System Applications"
 msgstr "系统应用程序"
 
@@ -2213,20 +2236,20 @@ msgstr "未找到应用程序数据"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:264
+#: src/gs-page.c:324
 #, c-format
 msgid "Prepare %s"
 msgstr "准备 %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:403
+#: src/gs-page.c:460
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "您确定要移除 %s 软件源吗？"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:407
+#: src/gs-page.c:464
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2235,19 +2258,19 @@ msgstr "所有来自 %s 的应用程序将被移除，想再次使用它们您�
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:415
+#: src/gs-page.c:472
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "您确定要移除 %s 吗？"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:418
+#: src/gs-page.c:475
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s 将被移除，想再次使用它您必须重新安装。"
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:52 src/gs-summary-tile.c:85
+#: src/gs-popular-tile.c:63 src/gs-summary-tile.c:86
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s（已安装）"
@@ -2497,27 +2520,27 @@ msgstr "发布评论"
 msgid "_Post"
 msgstr "发布(_P)"
 
-#: src/gs-review-dialog.ui:108
+#: src/gs-review-dialog.ui:110
 msgid "Summary"
 msgstr "摘要"
 
-#: src/gs-review-dialog.ui:118
+#: src/gs-review-dialog.ui:120
 msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr "给您的评论一段简短的摘要，例如：“很棒的应用，推荐使用”。"
 
 #. Translators: This is where the users enter their opinions about the apps.
-#: src/gs-review-dialog.ui:143
+#: src/gs-review-dialog.ui:145
 msgctxt "app review"
 msgid "Review"
 msgstr "评论"
 
-#: src/gs-review-dialog.ui:153
+#: src/gs-review-dialog.ui:155
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr "您认为该应用怎么样？尝试为您的意见列出理由。"
 
-#: src/gs-review-dialog.ui:185
+#: src/gs-review-dialog.ui:187
 msgid ""
 "Find what data is sent in our <a href=\"https://odrs.gnome.org/privacy"
 "\">privacy policy</a>."
@@ -2643,81 +2666,81 @@ msgstr "未找到应用程序"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1090 src/gs-shell.c:1095 src/gs-shell.c:1110
-#: src/gs-shell.c:1114
+#: src/gs-shell.c:1110 src/gs-shell.c:1115 src/gs-shell.c:1130
+#: src/gs-shell.c:1134
 #, c-format
 msgid "“%s”"
 msgstr "“%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1161
+#: src/gs-shell.c:1181
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "无法从 %s 下载固件"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1167
+#: src/gs-shell.c:1187
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "无法从 %s 下载更新"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1174 src/gs-shell.c:1219
+#: src/gs-shell.c:1194 src/gs-shell.c:1239
 msgid "Unable to download updates"
 msgstr "无法下载更新"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1180
+#: src/gs-shell.c:1200
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr "无法下载更新：需要互联网连接，但互联网连接不可用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1189
+#: src/gs-shell.c:1209
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr "无法从 %s 下载更新：磁盘空间不足"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1194
+#: src/gs-shell.c:1214
 msgid "Unable to download updates: not enough disk space"
 msgstr "无法下载更新：磁盘空间不足"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1201
+#: src/gs-shell.c:1221
 msgid "Unable to download updates: authentication was required"
 msgstr "无法下载更新：需要身份验证"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1206
+#: src/gs-shell.c:1226
 msgid "Unable to download updates: authentication was invalid"
 msgstr "无法下载更新：身份验证无效"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1211
+#: src/gs-shell.c:1231
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr "无法下载更新：您没有安装软件的权限"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1242
 msgid "Unable to get list of updates"
 msgstr "无法获取更新列表"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1265
+#: src/gs-shell.c:1285
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "无法安装 %s 由于从 %s 下载失败"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1271
+#: src/gs-shell.c:1291
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "无法安装 %s 由于下载失败"
@@ -2726,72 +2749,72 @@ msgstr "无法安装 %s 由于下载失败"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1284
+#: src/gs-shell.c:1304
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "无法安装 %s 由于运行库 %s 不可用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1290
+#: src/gs-shell.c:1310
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "无法安装 %s 由于不支持"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1297
+#: src/gs-shell.c:1317
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr "无法安装：需要互联网连接，但互联网连接不可用"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1303
+#: src/gs-shell.c:1323
 msgid "Unable to install: the application has an invalid format"
 msgstr "无法安装：该应用程序为无效的格式"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1308
+#: src/gs-shell.c:1328
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "无法安装 %s：磁盘空间不足"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1315
+#: src/gs-shell.c:1335
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "无法安装 %s：需要身份验证"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1322
+#: src/gs-shell.c:1342
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "无法安装 %s：身份验证无效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1329
+#: src/gs-shell.c:1349
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "无法安装 %s：您没有安装软件的权限"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1337
+#: src/gs-shell.c:1357
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "无法安装 %s：需要交流电源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1344
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "无法安装 %s：电池电量太低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1353
+#: src/gs-shell.c:1373
 #, c-format
 msgid "Unable to install %s"
 msgstr "无法安装 %s"
@@ -2800,14 +2823,14 @@ msgstr "无法安装 %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1400
+#: src/gs-shell.c:1420
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "无法从 %2$s 更新 %1$s 由于下载失败"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1407
+#: src/gs-shell.c:1427
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "无法更新 %s 由于下载失败"
@@ -2815,70 +2838,70 @@ msgstr "无法更新 %s 由于下载失败"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1414
+#: src/gs-shell.c:1434
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "无法从 %s 安装更新由于下载失败"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1418
+#: src/gs-shell.c:1438
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "无法安装更新由于下载失败"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1424
+#: src/gs-shell.c:1444
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr "无法更新：需要互联网连接，但互联网连接不可用"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1434
+#: src/gs-shell.c:1454
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "无法更新 %s：磁盘空间不足"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1439
+#: src/gs-shell.c:1459
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "无法安装更新：磁盘空间不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1449
+#: src/gs-shell.c:1469
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "无法更新 %s：需要身份验证"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1454
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "无法安装更新：需要身份验证"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1463
+#: src/gs-shell.c:1483
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "无法更新 %s：身份验证无效"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1468
+#: src/gs-shell.c:1488
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "无法安装更新：身份验证无效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1477
+#: src/gs-shell.c:1497
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr "无法更新 %s：您没有更新软件的权限"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1483
+#: src/gs-shell.c:1503
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -2886,41 +2909,41 @@ msgstr "无法更新更新：您没有更新软件的权限"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1493
+#: src/gs-shell.c:1513
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "无法更新 %s：需要交流电源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1499
+#: src/gs-shell.c:1519
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "无法安装更新：需要交流电源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1508
+#: src/gs-shell.c:1528
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "无法更新 %s：电池电量太低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1534
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "无法安装更新：电池电量太低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1525
+#: src/gs-shell.c:1545
 #, c-format
 msgid "Unable to update %s"
 msgstr "无法更新 %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1528
+#: src/gs-shell.c:1548
 #, c-format
 msgid "Unable to install updates"
 msgstr "无法安装更新"
@@ -2928,21 +2951,21 @@ msgstr "无法安装更新"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1571
+#: src/gs-shell.c:1591
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "无法从 %2$s 升级到 %1$s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1576
+#: src/gs-shell.c:1596
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "无法升级到 %s 由于下载失败"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1585
+#: src/gs-shell.c:1605
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -2950,91 +2973,91 @@ msgstr "无法升级到 %s：需要互联网连接，但互联网连接不可用
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1594
+#: src/gs-shell.c:1614
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "无法升级到 %s：磁盘空间不足"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1602
+#: src/gs-shell.c:1622
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "无法升级到 %s：需要身份验证"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1609
+#: src/gs-shell.c:1629
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "无法升级到 %s：身份验证无效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1616
+#: src/gs-shell.c:1636
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "无法升级到 %s：您没有升级的权限"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1623
+#: src/gs-shell.c:1643
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "无法升级到 %s：需要交流电源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1630
+#: src/gs-shell.c:1650
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "无法升级到 %s：电池电量太低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1639
+#: src/gs-shell.c:1659
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "无法升级到 %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1677
+#: src/gs-shell.c:1697
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "无法移除 %s：需要身份验证"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1683
+#: src/gs-shell.c:1703
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "无法移除 %s：身份验证无效"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1689
+#: src/gs-shell.c:1709
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "无法移除 %s：您没有移除软件的权限"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1696
+#: src/gs-shell.c:1716
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "无法移除 %s：需要交流电源"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1703
+#: src/gs-shell.c:1723
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "无法移除 %s：电池电量太低"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1715
+#: src/gs-shell.c:1735
 #, c-format
 msgid "Unable to remove %s"
 msgstr "无法移除 %s"
@@ -3043,70 +3066,70 @@ msgstr "无法移除 %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1758
+#: src/gs-shell.c:1778
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "无法启动 %s：%s 还未安装"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1765 src/gs-shell.c:1816 src/gs-shell.c:1857
-#: src/gs-shell.c:1905
+#: src/gs-shell.c:1785 src/gs-shell.c:1836 src/gs-shell.c:1877
+#: src/gs-shell.c:1925
 msgid "Not enough disk space — free up some space and try again"
 msgstr "磁盘空间不足——释放一些空间后再试一次"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1776 src/gs-shell.c:1827 src/gs-shell.c:1868
-#: src/gs-shell.c:1939
+#: src/gs-shell.c:1796 src/gs-shell.c:1847 src/gs-shell.c:1888
+#: src/gs-shell.c:1959
 msgid "Sorry, something went wrong"
 msgstr "抱歉，出现了问题"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1808
+#: src/gs-shell.c:1828
 msgid "Failed to install file: not supported"
 msgstr "无法安装文件：不支持"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1812
+#: src/gs-shell.c:1832
 msgid "Failed to install file: authentication failed"
 msgstr "无法安装文件：身份验证失败"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1849
+#: src/gs-shell.c:1869
 msgid "Failed to install: not supported"
 msgstr "无法安装：不支持"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1853
+#: src/gs-shell.c:1873
 msgid "Failed to install: authentication failed"
 msgstr "无法安装：身份认证失败"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1899
+#: src/gs-shell.c:1919
 #, c-format
 msgid "Unable to contact %s"
 msgstr "无法联系 %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1914
+#: src/gs-shell.c:1934
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "%s 需要重启才能使用新插件。"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1939
 msgid "This application needs to be restarted to use new plugins."
 msgstr "此应用程序需要重启才能使用新插件。"
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1926
+#: src/gs-shell.c:1946
 msgid "AC power is required"
 msgstr "需要交流电源"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1930
+#: src/gs-shell.c:1950
 msgid "The battery level is too low"
 msgstr "电池电量太低"
 
@@ -3116,12 +3139,12 @@ msgstr "电池电量太低"
 msgid "Source: %s"
 msgstr "来源：%s"
 
-#: src/gs-summary-tile.c:90
+#: src/gs-summary-tile.c:91
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s（安装中）"
 
-#: src/gs-summary-tile.c:95
+#: src/gs-summary-tile.c:96
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s（移除中）"
@@ -3568,23 +3591,23 @@ msgstr "设备固件"
 msgid "_Download"
 msgstr "下载(_D)"
 
-#: src/gs-upgrade-banner.c:89
+#: src/gs-upgrade-banner.c:90
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr "建议您在更新前备份数据和文件。"
 
-#: src/gs-upgrade-banner.c:93
+#: src/gs-upgrade-banner.c:94
 msgid "_Restart Now"
 msgstr "立即重启(_R)"
 
-#: src/gs-upgrade-banner.c:95
+#: src/gs-upgrade-banner.c:96
 msgid "Updates will be applied when the computer is restarted."
 msgstr "更新将在计算机重启后应用。"
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:110
+#: src/gs-upgrade-banner.c:111
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s 现在可用"
@@ -3592,7 +3615,7 @@ msgstr "%s %s 现在可用"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:120
+#: src/gs-upgrade-banner.c:121
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "正在等待下载 %s %s"
@@ -3600,7 +3623,7 @@ msgstr "正在等待下载 %s %s"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:130
+#: src/gs-upgrade-banner.c:131
 #, c-format
 msgid "Downloading %s %s"
 msgstr "正在下载 %s %s"
@@ -3609,7 +3632,7 @@ msgstr "正在下载 %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:141
+#: src/gs-upgrade-banner.c:142
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s 已经可以安装"
@@ -4052,31 +4075,31 @@ msgid "EOS update service could not fetch and apply the update."
 msgstr "EOS 更新服务无法获取和应用更新。"
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:143
+#: plugins/external-appstream/gs-install-appstream.c:140
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "GNOME 软件 AppStream 系统级安装器"
 
-#: plugins/external-appstream/gs-install-appstream.c:145
+#: plugins/external-appstream/gs-install-appstream.c:142
 msgid "Failed to parse command line arguments"
 msgstr "解析命令行参数失败"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:152
+#: plugins/external-appstream/gs-install-appstream.c:149
 msgid "You need to specify exactly one filename"
 msgstr "您需要指定正好一个文件名"
 
 #. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:159
+#: plugins/external-appstream/gs-install-appstream.c:156
 msgid "This program can only be used by the root user"
 msgstr "该程序只能被 root 用户使用"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:167
+#: plugins/external-appstream/gs-install-appstream.c:164
 msgid "Failed to validate content type"
 msgstr "验证内容类型失败"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:177
+#: plugins/external-appstream/gs-install-appstream.c:174
 msgid "Failed to copy"
 msgstr "复制失败"
 
@@ -4105,7 +4128,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak 是用于 Linux 上桌面应用程序的框架"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:865
+#: plugins/flatpak/gs-flatpak.c:900
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "正在获取 %s 的 flatpak 元数据…"
@@ -4176,12 +4199,12 @@ msgid "%s CPU Microcode Update"
 msgstr "%s CPU微码更新"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:671
+#: plugins/fwupd/gs-plugin-fwupd.c:682
 msgid "Downloading firmware update signature…"
 msgstr "正在下载固件更新签名…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:712
+#: plugins/fwupd/gs-plugin-fwupd.c:723
 msgid "Downloading firmware update metadata…"
 msgstr "正在下载固件更新元数据…"
 
@@ -4194,7 +4217,7 @@ msgid "Provides support for firmware upgrades"
 msgstr "提供固件升级的支持"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:196
+#: plugins/odrs/gs-plugin-odrs.c:290
 msgid "Downloading application ratings…"
 msgstr "正在下载应用程序评分…"
 
@@ -4485,9 +4508,6 @@ msgstr "Snap 是个通用的 Linux 程序包"
 
 #~ msgid "I have an account already"
 #~ msgstr "我已有帐号"
-
-#~ msgid "Password"
-#~ msgstr "密码"
 
 #~ msgid "I want to register for an account now"
 #~ msgstr "我希望现在注册帐号"
