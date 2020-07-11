@@ -318,7 +318,6 @@ about_activated (GSimpleAction *action,
 	};
 	const gchar *copyright = "Copyright \xc2\xa9 2016-2019 Richard Hughes, Matthias Clasen, Kalev Lember";
 	GtkAboutDialog *dialog;
-	g_autofree gchar *title = NULL;
 
 	dialog = GTK_ABOUT_DIALOG (gtk_about_dialog_new ());
 	gtk_about_dialog_set_authors (dialog, authors);
@@ -329,11 +328,8 @@ about_activated (GSimpleAction *action,
 	gtk_about_dialog_set_version (dialog, VERSION);
 	gtk_about_dialog_set_program_name (dialog, g_get_application_name ());
 
-	/* TRANSLATORS: this is the title of the about window, e.g.
-	 * 'About Software' or 'About Application Installer' where the %s is
-	 * the application name chosen by the distro */
-	title = g_strdup_printf (_("About %s"), g_get_application_name ());
-	gtk_window_set_title (GTK_WINDOW (dialog), title);
+	/* TRANSLATORS: this is the title of the about window */
+	gtk_window_set_title (GTK_WINDOW (dialog), _("About Software"));
 
 	/* TRANSLATORS: well, we seem to think so, anyway */
 	gtk_about_dialog_set_comments (dialog, _("A nice way to manage the "

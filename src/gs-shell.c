@@ -2118,11 +2118,8 @@ gs_shell_add_about_menu_item (GsShell *shell)
 
 	primary_menu = G_MENU (gtk_builder_get_object (priv->builder, "primary_menu"));
 
-	/* TRANSLATORS: this is the menu item that opens the about window, e.g.
-	 * 'About Software' or 'About Application Installer' where the %s is
-	 * the application name chosen by the distro */
-	label = g_strdup_printf (_("About %s"), g_get_application_name ());
-	menu_item = g_menu_item_new (label, "app.about");
+	/* TRANSLATORS: this is the menu item that opens the about window */
+	menu_item = g_menu_item_new (_("About Software"), "app.about");
 	g_menu_append_item (primary_menu, menu_item);
 }
 
