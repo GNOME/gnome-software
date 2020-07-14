@@ -3613,8 +3613,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
+	action = gs_plugin_job_get_action (plugin_job);
+
 	/* check job has valid action */
-	if (gs_plugin_job_get_action (plugin_job) == GS_PLUGIN_ACTION_UNKNOWN) {
+	if (action == GS_PLUGIN_ACTION_UNKNOWN) {
 		g_autofree gchar *job_str = gs_plugin_job_to_string (plugin_job);
 		task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
 		g_task_return_new_error (task,
@@ -3625,7 +3627,6 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	}
 
 	/* deal with the install queue */
-	action = gs_plugin_job_get_action (plugin_job);
 	if (action == GS_PLUGIN_ACTION_REMOVE) {
 		if (remove_app_from_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job))) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
