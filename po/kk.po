@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-06-11 10:22+0000\n"
-"PO-Revision-Date: 2020-06-25 18:45+0500\n"
+"POT-Creation-Date: 2020-06-25 13:47+0000\n"
+"PO-Revision-Date: 2020-07-14 09:04+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -182,6 +182,8 @@ msgstr "Соңғы рет жаңарту туралы ескертудің уа�
 #: data/org.gnome.software.gschema.xml:60
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
+"Жаңартудан кейін тазартылатын қауіпсіздіктің бірінші жаңартуының уақыт "
+"белгісі"
 
 #: data/org.gnome.software.gschema.xml:64
 msgid "The last update timestamp"
@@ -190,6 +192,8 @@ msgstr "Соңғы рет жаңартудың уақыт белгісі"
 #: data/org.gnome.software.gschema.xml:68
 msgid "The last timestamp when the system was online and got any updates"
 msgstr ""
+"Жүйе онлайн режимінде болған және кез келген жаңартулар алғанның соңғы уақыт "
+"белгісі"
 
 #: data/org.gnome.software.gschema.xml:72
 msgid "The age in seconds to verify the upstream screenshot is still valid"
@@ -208,7 +212,7 @@ msgstr "Қолданбаларға пікірлерді қалдыру үшін 
 
 #: data/org.gnome.software.gschema.xml:86
 msgid "The minimum karma score for reviews"
-msgstr ""
+msgstr "Шолулар үшін карманың ең төменгі баллы"
 
 #: data/org.gnome.software.gschema.xml:87
 msgid "Reviews with karma less than this number will not be shown."
@@ -246,19 +250,22 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:119
 msgid "Show the prompt to install nonfree software repositories"
 msgstr ""
+"Тегін емес бағдарламалық қамтама репозиторийлерін орнату үшін сұрауды көрсету"
 
 #: data/org.gnome.software.gschema.xml:123
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
+"Орнатылған бағдарламалар тізімінде бағдарламалардың орнатылған өлшемін "
+"көрсету"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:127
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
-msgstr ""
+msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
 
 #: data/org.gnome.software.gschema.xml:128
 msgid "The URI that explains nonfree and proprietary software"
-msgstr ""
+msgstr "Тегін емес және меншігі бар бағдарламалық қамтаманы түсіндіретін URI"
 
 #: data/org.gnome.software.gschema.xml:132
 msgid ""
@@ -636,7 +643,7 @@ msgstr "ОЖ жаңартулары орнатылды"
 #. * have been successfully installed
 #: src/gs-common.c:126
 msgid "Recently installed updates are available to review"
-msgstr ""
+msgstr "Жуырда орнатылған жаңартулар бағалау үшін қолжетімді"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
@@ -756,92 +763,92 @@ msgstr "Қазір емес"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:59
 msgid "No cartoon violence"
-msgstr ""
+msgstr "Мультфильмдегі зорлық-зомбылық жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:61
 msgid "Cartoon characters in unsafe situations"
-msgstr ""
+msgstr "Мультфильм кейіпкерлері қауіпті жағдайларда"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:63
 msgid "Cartoon characters in aggressive conflict"
-msgstr ""
+msgstr "Агрессивті жанжалдағы мультфильм кейіпкерлері"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:65
 msgid "Graphic violence involving cartoon characters"
-msgstr ""
+msgstr "Мультфильм кейіпкерлерінің қатысуымен графикалық зорлық-зомбылық"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:70
 msgid "No fantasy violence"
-msgstr ""
+msgstr "Қиялдағы зорлық-зомбылық жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:72
 msgid "Characters in unsafe situations easily distinguishable from reality"
-msgstr ""
+msgstr "Қауіпті жағдайлардағы кейіпкерлер шындықтан оңай ажыратылады"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:74
 msgid "Characters in aggressive conflict easily distinguishable from reality"
-msgstr ""
+msgstr "Агрессивті жанжалдағы кейіпкерлер шындықтан оңай ажыратылады"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:76
 msgid "Graphic violence easily distinguishable from reality"
-msgstr ""
+msgstr "Графикалық зорлық-зомбылық шындықтан оңай ажыратылады"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:81
 msgid "No realistic violence"
-msgstr ""
+msgstr "Нақты зорлық-зомбылық жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:83
 msgid "Mildly realistic characters in unsafe situations"
-msgstr ""
+msgstr "Қауіпті жағдайларда шынайыға ұқсайтын кейіпкерлер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:85
 msgid "Depictions of realistic characters in aggressive conflict"
-msgstr ""
+msgstr "Агрессивті жанжалдағы шынайы кейіпкерлердің бейнелері"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:87
 msgid "Graphic violence involving realistic characters"
-msgstr ""
+msgstr "Нақты кейіпкерлерді қамтитын графикалық зорлық-зомбылық"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:92
 msgid "No bloodshed"
-msgstr ""
+msgstr "Қантөгіс жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:94
 msgid "Unrealistic bloodshed"
-msgstr ""
+msgstr "Шындыққа жанаспайтын қантөгіс"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:96
 msgid "Realistic bloodshed"
-msgstr ""
+msgstr "Реалистік қантөгіс"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:98
 msgid "Depictions of bloodshed and the mutilation of body parts"
-msgstr ""
+msgstr "Қантөгіст және дене мүшелерінің зақымдануы"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:103
 msgid "No sexual violence"
-msgstr ""
+msgstr "Жыныстық зорлық-зомбылық жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:105
 msgid "Rape or other violent sexual behavior"
-msgstr ""
+msgstr "Зорлау немесе басқа жыныстық зорлық-зомбылық"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:112
@@ -861,17 +868,17 @@ msgstr "Алкогольді өнімдерін пайдалану"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:122
 msgid "No references to illicit drugs"
-msgstr ""
+msgstr "Заңсыз есірткіге сілтемелер жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:124
 msgid "References to illicit drugs"
-msgstr ""
+msgstr "Заңсыз есірткіге сілтемелер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:126
 msgid "Use of illicit drugs"
-msgstr ""
+msgstr "Заңсыз есірткіні қолдану"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:132
@@ -891,37 +898,37 @@ msgstr "Темекі өнімдерін пайдалану"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:142
 msgid "No nudity of any sort"
-msgstr ""
+msgstr "Ешқандай жалаңаштық жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:144
 msgid "Brief artistic nudity"
-msgstr ""
+msgstr "Қысқа көркем жалаңаштық"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:146
 msgid "Prolonged nudity"
-msgstr ""
+msgstr "Ұзақ жалаңаштық"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:152
 msgid "No references to or depictions of sexual nature"
-msgstr ""
+msgstr "Сексуалдық сипаттағы сілтемелер немесе бейнелер жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:154
 msgid "Provocative references or depictions"
-msgstr ""
+msgstr "Арандатушылық сілтемелер немесе бейнелер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:156
 msgid "Sexual references or depictions"
-msgstr ""
+msgstr "Сексуалдық сілтемелер немесе бейнелер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:158
 msgid "Graphic sexual behavior"
-msgstr ""
+msgstr "Графикалық жыныстық мінез-құлық"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:163
@@ -946,42 +953,42 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:174
 msgid "No inappropriate humor"
-msgstr ""
+msgstr "Орынсыз әзіл жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:176
 msgid "Slapstick humor"
-msgstr ""
+msgstr "Жай әзіл"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:178
 msgid "Vulgar or bathroom humor"
-msgstr ""
+msgstr "Дөрекі немесе дәретханалық әзіл"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:180
 msgid "Mature or sexual humor"
-msgstr ""
+msgstr "Жетілген немесе жыныстық әзіл"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:185
 msgid "No discriminatory language of any kind"
-msgstr ""
+msgstr "Ешқандай дискриминациялық тіл жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:187
 msgid "Negativity towards a specific group of people"
-msgstr ""
+msgstr "Адамдардың белгілі бір тобына деген теріс көзқарас"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:189
 msgid "Discrimination designed to cause emotional harm"
-msgstr ""
+msgstr "Эмоционалдық зиян келтіруге арналған кемсітушілік"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:191
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr ""
+msgstr "Жынысы, сексуалдылық, нәсілі немесе діні бойынша айқын кемсіту"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:196
@@ -991,7 +998,7 @@ msgstr "Жарнаманың ешбір түрі жоқ"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:198
 msgid "Product placement"
-msgstr ""
+msgstr "Өнімнің өз-өзін беру"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:200
@@ -1007,22 +1014,22 @@ msgstr "Пайдаланушыларға шын әлемнен кейбір нә
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:207
 msgid "No gambling of any kind"
-msgstr ""
+msgstr "Ешқандай құмар ойын болмайды"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:209
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Кездейсоқ оқиғалардағы токендер немесе кредиттер арқылы құмар ойындар"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:211
 msgid "Gambling using “play” money"
-msgstr ""
+msgstr "\"Ойын\" ақшасын пайдаланатын құмар ойындар"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:213
 msgid "Gambling using real money"
-msgstr ""
+msgstr "Нақты ақшаны пайдаланатын құмар ойындар"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:218
@@ -1037,7 +1044,7 @@ msgstr "Пайдаланушылар шын ақшаны жіберуге ұсы
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:223
 msgid "Ability to spend real money in-app"
-msgstr ""
+msgstr "Нақты ақшаны бағдарламада жұмсай алу мүмкіндігі"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:228
@@ -1047,7 +1054,7 @@ msgstr "Басқа ойыншылармен чат мүмкін емес"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:230
 msgid "User-to-user interactions without chat functionality"
-msgstr ""
+msgstr "Сөйлесу функциясынсыз пайдаланушы-пайдаланушы арасындағы қарым-қатынас"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:232
@@ -1082,17 +1089,19 @@ msgstr "Әлеуметтік желілердегі аттар немесе эл
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:257
 msgid "No sharing of user information with third parties"
-msgstr ""
+msgstr "Пайдаланушы ақпаратын үшінші тараппен бөліспеу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:259
 msgid "Checking for the latest application version"
-msgstr ""
+msgstr "Қолданбаның соңғы нұсқасы тексерілуде"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:261
 msgid "Sharing diagnostic data that does not let others identify the user"
 msgstr ""
+"Басқалар пайдаланушыны анықтауға мүмкіндік бермейтін диагностикалық "
+"деректерді бөлісу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:263
@@ -1102,52 +1111,52 @@ msgstr "Басқалар пайдаланушыны анықтай алатын 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:268
 msgid "No sharing of physical location with other users"
-msgstr ""
+msgstr "Басқа пайдаланушылармен физикалық орналасумен бөліспеу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:270
 msgid "Sharing physical location with other users"
-msgstr ""
+msgstr "Басқа пайдаланушылармен физикалық орналасумен бөлісу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:279
 msgid "No references to homosexuality"
-msgstr ""
+msgstr "Гомосексуализмге сілтемелер жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:281
 msgid "Indirect references to homosexuality"
-msgstr ""
+msgstr "Гомосексуализмге жанама сілтемелер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:283
 msgid "Kissing between people of the same gender"
-msgstr ""
+msgstr "Бір жыныстағы адамдар арасындағы сүйісу"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:285
 msgid "Graphic sexual behavior between people of the same gender"
-msgstr ""
+msgstr "Бір жыныстағы адамдар арасындағы графикалық жыныстық қатынас"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:290
 msgid "No references to prostitution"
-msgstr ""
+msgstr "Жезөкшелікке сілтемелер жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:292
 msgid "Indirect references to prostitution"
-msgstr ""
+msgstr "Жезөкшелікке жанама сілтемелер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:294
 msgid "Direct references to prostitution"
-msgstr ""
+msgstr "Жезөкшелікке тікелей сілтемелер"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:296
 msgid "Graphic depictions of the act of prostitution"
-msgstr ""
+msgstr "Жезөкшелік актісінің графикалық бейнелері"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:301
@@ -1207,17 +1216,17 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:333
 msgid "No visible dead human remains"
-msgstr ""
+msgstr "Көзге көрінетін өлі адам жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:335
 msgid "Visible dead human remains"
-msgstr ""
+msgstr "Көрінетін өлі адамның қалдықтары"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:337
 msgid "Dead human remains that are exposed to the elements"
-msgstr ""
+msgstr "Элементтерге ұшыраған адамның өлі қалдықтары"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:339
@@ -1227,22 +1236,22 @@ msgstr ""
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:344
 msgid "No references to slavery"
-msgstr ""
+msgstr "Құлдық туралы сілтемелер жоқ"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:346
 msgid "Depictions of or references to historical slavery"
-msgstr ""
+msgstr "Тарихи құлдықтың бейнелері немесе сілтемелері"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:348
 msgid "Depictions of modern-day slavery"
-msgstr ""
+msgstr "Қазіргі уақыттағы құлдықтың суреттелуі"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:350
 msgid "Graphic depictions of modern-day slavery"
-msgstr ""
+msgstr "Қазіргі уақыттағы құлдықтың графикалық бейнелері"
 
 #. TRANSLATORS: This is the formatting of English and localized name
 #. of the rating e.g. "Adults Only (solo adultos)"
@@ -1264,7 +1273,6 @@ msgid "Adults Only"
 msgstr "Тек ересектер"
 
 #: src/gs-content-rating.c:555
-#| msgid "Featured"
 msgid "Mature"
 msgstr "Ересек"
 
@@ -1472,15 +1480,15 @@ msgstr "Баптаулар"
 
 #: src/gs-details-page.c:993 src/gs-update-dialog.c:102
 msgid "Can view and change any settings"
-msgstr ""
+msgstr "Кез келген параметрлерді көре және өзгерте алады"
 
 #: src/gs-details-page.c:994 src/gs-update-dialog.c:103
 msgid "Legacy display system"
-msgstr ""
+msgstr "Баяғы дисплей жүйесі"
 
 #: src/gs-details-page.c:994 src/gs-update-dialog.c:103
 msgid "Uses an old, insecure display system"
-msgstr ""
+msgstr "Ескі, қауіпсіз емес дисплей жүйесін пайдаланады"
 
 #: src/gs-details-page.c:995 src/gs-update-dialog.c:104
 msgid "Sandbox escape"
@@ -1488,11 +1496,11 @@ msgstr "Құмсалғыштан шығып кету"
 
 #: src/gs-details-page.c:995 src/gs-update-dialog.c:104
 msgid "Can escape the sandbox and circumvent any other restrictions"
-msgstr ""
+msgstr "Құмсалғыштан қашып, кез келген басқа шектеулерді айналып өте алады"
 
 #: src/gs-details-page.c:1010
 msgid "This application is fully sandboxed."
-msgstr ""
+msgstr "Бұл қолданба толығымен құмсалғышта жасайды."
 
 #: src/gs-details-page.c:1018
 msgid ""
@@ -1687,7 +1695,7 @@ msgstr "Құмсалғышта"
 #. TRANSLATORS: the title for Snap channels
 #: src/gs-details-page.ui:605 src/gs-origin-popover-row.c:102
 msgid "Channel"
-msgstr ""
+msgstr "Арна"
 
 #. Translators: The available version of an app
 #: src/gs-details-page.ui:641 src/gs-origin-popover-row.ui:151
@@ -2100,13 +2108,13 @@ msgstr "жүйе"
 #. TRANSLATORS: the installation location for flatpaks
 #: src/gs-origin-popover-row.c:86
 msgid "user"
-msgstr ""
+msgstr "пайдаланушы"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
 #: src/gs-origin-popover-row.c:107 src/gs-origin-popover-row.ui:122
 msgid "Branch"
-msgstr ""
+msgstr "Бұтақ"
 
 #: src/gs-origin-popover-row.ui:35 src/gs-repo-row.ui:75
 msgid "URL"
