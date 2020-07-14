@@ -1654,6 +1654,7 @@ gs_plugin_loader_job_get_categories_async (GsPluginLoader *plugin_loader,
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_source_tag (task, gs_plugin_loader_job_get_categories_async);
 	g_task_set_task_data (task, helper, (GDestroyNotify) gs_plugin_loader_helper_free);
 	g_task_run_in_thread (task, gs_plugin_loader_job_get_categories_thread_cb);
 }
@@ -3608,17 +3609,26 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	g_autoptr(GTask) task = NULL;
 	g_autoptr(GCancellable) cancellable_job = g_cancellable_new ();
+#if GLIB_CHECK_VERSION(2, 60, 0)
+	g_autofree gchar *task_name = NULL;
+#endif
 
 	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
 	g_return_if_fail (GS_IS_PLUGIN_JOB (plugin_job));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
 	action = gs_plugin_job_get_action (plugin_job);
+#if GLIB_CHECK_VERSION(2, 60, 0)
+	task_name = g_strdup_printf ("%s %s", G_STRFUNC, gs_plugin_action_to_string (action));
+#endif
 
 	/* check job has valid action */
 	if (action == GS_PLUGIN_ACTION_UNKNOWN) {
 		g_autofree gchar *job_str = gs_plugin_job_to_string (plugin_job);
 		task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
+#if GLIB_CHECK_VERSION(2, 60, 0)
+		g_task_set_name (task, task_name);
+#endif
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
 					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -3631,6 +3641,9 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 		if (remove_app_from_install_queue (plugin_loader, gs_plugin_job_get_app (plugin_job))) {
 			GsAppList *list = gs_plugin_job_get_list (plugin_job);
 			task = g_task_new (plugin_loader, cancellable, callback, user_data);
+#if GLIB_CHECK_VERSION(2, 60, 0)
+			g_task_set_name (task, task_name);
+#endif
 			g_task_return_pointer (task, g_object_ref (list), (GDestroyNotify) g_object_unref);
 			return;
 		}
@@ -3698,6 +3711,10 @@ gs_plugin_loader_job_process_async (GsPluginLoader *plugin_loader,
 
 	/* check required args */
 	task = g_task_new (plugin_loader, cancellable_job, callback, user_data);
+#if GLIB_CHECK_VERSION(2, 60, 0)
+	g_task_set_name (task, task_name);
+#endif
+
 	switch (action) {
 	case GS_PLUGIN_ACTION_SEARCH:
 	case GS_PLUGIN_ACTION_SEARCH_FILES:
