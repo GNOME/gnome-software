@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-06-30 16:49+0000\n"
-"PO-Revision-Date: 2020-06-30 20:14+0300\n"
+"POT-Creation-Date: 2020-07-29 12:57+0000\n"
+"PO-Revision-Date: 2020-07-29 16:57+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -396,11 +396,11 @@ msgid "Find Out _More"
 msgstr "З'ясувати _більше"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4516
+#: lib/gs-app.c:4558
 msgid "Local file"
 msgstr "Локальний файл"
 
-#: lib/gs-app.c:4568
+#: lib/gs-app.c:4610
 msgid "Package"
 msgstr "Пакунок"
 
@@ -509,28 +509,24 @@ msgstr "Віддавати перевагу локальним джерелам 
 msgid "Show version number"
 msgstr "Показати номер версії"
 
-#: src/gs-application.c:328
+#: src/gs-application.c:327
 msgid "translator-credits"
 msgstr "Daniel Korostil <ted.korostiled@gmail.com>"
 
-#. TRANSLATORS: this is the title of the about window, e.g.
-#. * 'About Software' or 'About Application Installer' where the %s is
-#. * the application name chosen by the distro
-#. TRANSLATORS: this is the menu item that opens the about window, e.g.
-#. * 'About Software' or 'About Application Installer' where the %s is
-#. * the application name chosen by the distro
-#: src/gs-application.c:335 src/gs-shell.c:2124
-#, c-format
-msgid "About %s"
-msgstr "Про %s"
+#. TRANSLATORS: this is the title of the about window
+#. TRANSLATORS: this is the menu item that opens the about window
+#: src/gs-application.c:332 src/gs-shell.c:2122
+#| msgid "Software"
+msgid "About Software"
+msgstr "Про «Програми»"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:339
+#: src/gs-application.c:335
 msgid "A nice way to manage the software on your system."
 msgstr "Гарний спосіб керуванням програмами на вашій системі."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:567
+#: src/gs-application.c:563
 msgid "Sorry! There are no details for that application."
 msgstr "Вибачте! Не маємо подробиць щодо цієї програми."
 
@@ -557,7 +553,7 @@ msgstr "Скасувати"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:273
+#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:333
 msgid "Install"
 msgstr "Встановити"
 
@@ -571,7 +567,7 @@ msgstr "Оновлення"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:156 src/gs-app-row.c:165 src/gs-page.c:434
+#: src/gs-app-row.c:156 src/gs-app-row.c:165 src/gs-page.c:491
 #: src/gs-repos-dialog.c:325
 msgid "Remove"
 msgstr "Вилучити"
@@ -603,8 +599,6 @@ msgid "_Cancel"
 msgstr "_Скасувати"
 
 #: src/gs-basic-auth-dialog.ui:39
-#| msgctxt "Menu of Games"
-#| msgid "Logic"
 msgid "_Login"
 msgstr "_Увійти"
 
@@ -2309,20 +2303,20 @@ msgstr "Не знайдено даних про програму"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:264
+#: src/gs-page.c:324
 #, c-format
 msgid "Prepare %s"
 msgstr "Підготувати %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:403
+#: src/gs-page.c:460
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Вилучити запис сховища %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:407
+#: src/gs-page.c:464
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2333,13 +2327,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:415
+#: src/gs-page.c:472
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Вилучити %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:418
+#: src/gs-page.c:475
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -4334,12 +4328,12 @@ msgid "%s CPU Microcode Update"
 msgstr "Оновлення для мікропрограми процесора %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:671
+#: plugins/fwupd/gs-plugin-fwupd.c:690
 msgid "Downloading firmware update signature…"
 msgstr "Отримуємо підпис оновлення мікропрограми…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:712
+#: plugins/fwupd/gs-plugin-fwupd.c:731
 msgid "Downloading firmware update metadata…"
 msgstr "Отримуємо метадані оновлення мікропрограми…"
 
@@ -4376,6 +4370,9 @@ msgstr "Підтримка Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Snap — універсальний пакунок Linux"
+
+#~ msgid "About %s"
+#~ msgstr "Про %s"
 
 #~ msgid "%s ME"
 #~ msgstr "ME %s"
