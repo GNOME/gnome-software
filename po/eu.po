@@ -39,7 +39,7 @@ msgid ""
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
-msgstr "GNOME Software programak aplikazio ospetsuak azalpen erabilgarriekin eta aplikazioko hainbat argazkirekin bistaratzen ditu. Aplikazioak kategorien zerrendak arakatuz aurki daitezke, edo bilaketak eginez. Lineaz kanpoko eguneraketaren bidez sistema eguneratzea baimentzen du."
+msgstr "GNOME Software programak aplikazio ospetsuak azalpen erabilgarriekin eta aplikazioko hainbat argazkirekin bistaratzen ditu. Aplikazioak kategorien zerrendak arakatuz aurki daitezke, edo bilaketak eginez. Lineaz kanpoko eguneratzearen bidez sistema eguneratzea baimentzen du."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:25
 msgid "Overview panel"
@@ -164,11 +164,11 @@ msgstr "Bertsio-berritzeen jakinarazpenaren denbora-zigilua"
 
 #: data/org.gnome.software.gschema.xml:60
 msgid "The timestamp of the first security update, cleared after update"
-msgstr "Aurreneko segurtasun-eguneraketaren denbora-zigilua, eguneraketaren ondoren garbitutakoa"
+msgstr "Aurreneko segurtasun-eguneratzearen denbora-zigilua, eguneratzearen ondoren garbitutakoa"
 
 #: data/org.gnome.software.gschema.xml:64
 msgid "The last update timestamp"
-msgstr "Azken eguneraketaren denbora-zigilua"
+msgstr "Azken eguneratzearen denbora-zigilua"
 
 #: data/org.gnome.software.gschema.xml:68
 msgid "The last timestamp when the system was online and got any updates"
@@ -1364,7 +1364,7 @@ msgstr "Zain dagoen instalazioa…"
 #. * bar to inform the user that the app should be updated soon
 #: src/gs-details-page.c:371
 msgid "Pending update…"
-msgstr "Zain dagoen eguneraketa…"
+msgstr "Zain dagoen eguneratzea…"
 
 #. Translators: This string is shown when preparing to download and install an app.
 #: src/gs-details-page.c:385
@@ -2238,7 +2238,7 @@ msgstr "%s (instalatuta)"
 
 #: src/gs-prefs-dialog.ui:5 src/gs-prefs-dialog.ui:17
 msgid "Update Preferences"
-msgstr "Eguneraketa-hobespenak"
+msgstr "Eguneratze-hobespenak"
 
 #: src/gs-prefs-dialog.ui:43
 msgid "Automatic Updates"
@@ -2250,7 +2250,7 @@ msgstr "Eguneratze automatikoak desgaituta daude mugikorretan edo neurtutako kon
 
 #: src/gs-prefs-dialog.ui:88
 msgid "Automatic Update Notifications"
-msgstr "Eguneraketa-jakinarazpen automatikoak"
+msgstr "Eguneratze-jakinarazpen automatikoak"
 
 #: src/gs-prefs-dialog.ui:102
 msgid "Show notifications when updates have been automatically installed."
@@ -2341,7 +2341,7 @@ msgstr "Desgaitu \"%s”?"
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
-msgstr "Biltegi honetatik instalatu den softwareak ez du eguneraketarik jasoko, ezta segurtasun-konponketak ere."
+msgstr "Biltegi honetatik instalatu den softwareak ez du eguneratzerik jasoko, ezta segurtasun-konponketak ere."
 
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-repos-dialog.c:328
@@ -2804,13 +2804,13 @@ msgstr "Ezin da %s eguneratu, deskargak huts egin baitu"
 #: src/gs-shell.c:1434
 #, c-format
 msgid "Unable to install updates from %s as download failed"
-msgstr "Ezin da %s biltegiko eguneraketarik instalatu, deskargak huts egin baitu"
+msgstr "Ezin da %s biltegiko eguneratzerik instalatu, deskargak huts egin baitu"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1438
 #, c-format
 msgid "Unable to install updates as download failed"
-msgstr "Ezin da eguneraketarik instalatu, deskargak huts egin baitu"
+msgstr "Ezin da eguneratzerik instalatu, deskargak huts egin baitu"
 
 #. TRANSLATORS: failure text for the in-app notification
 #: src/gs-shell.c:1444
@@ -2828,7 +2828,7 @@ msgstr "Ezin da %s eguneratu: ez dago nahikoa leku librerik diskoan"
 #: src/gs-shell.c:1459
 #, c-format
 msgid "Unable to install updates: not enough disk space"
-msgstr "Ezin da eguneraketarik instalatu: ez dago nahikoa lekurik diskoan"
+msgstr "Ezin da eguneratzerik instalatu: ez dago nahikoa lekurik diskoan"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
@@ -3122,7 +3122,7 @@ msgstr "_Kendu dena"
 #. * a description for the update
 #: src/gs-update-dialog.c:187
 msgid "No update description available."
-msgstr "Ez dago eguneraketaren azalpenik eskuragarri."
+msgstr "Ez dago eguneratzearen azalpenik eskuragarri."
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window.
 #. %s will be replaced by the date when the updates were installed.
@@ -3164,7 +3164,7 @@ msgstr "Aurreko bertsiora itzulitakoak"
 
 #: src/gs-update-dialog.ui:100
 msgid "No updates have been installed on this system."
-msgstr "Ez da eguneraketarik instalatu sistema honetan."
+msgstr "Ez da eguneratzerik instalatu sistema honetan."
 
 #: src/gs-update-monitor.c:110
 msgid "Security Updates Pending"
@@ -3339,7 +3339,7 @@ msgstr "Interneteko sarbidea behar da, baina ez dago erabilgarri. Ziurtatu Inter
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
-msgstr "Segurtasun-arazoak daude eguneraketarekin. Kontsultatu softwarearen hornitzailearekin xehetasun gehiagorako."
+msgstr "Segurtasun-arazoak daude eguneratzearekin. Kontsultatu softwarearen hornitzailearekin xehetasun gehiagorako."
 
 #. TRANSLATORS: we ran out of disk space
 #: src/gs-update-monitor.c:1097
@@ -3440,7 +3440,7 @@ msgstr "SE ez da gehiago sostengatuko"
 #. TRANSLATORS: EOL distros do not get important updates
 #: src/gs-updates-page.c:627
 msgid "This means that it does not receive security updates."
-msgstr "Segurtasun-eguneraketarik ez duela jasoko adierazten du honek."
+msgstr "Segurtasun-eguneratzerik ez duela jasoko adierazten du honek."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
 #: src/gs-updates-page.c:631
@@ -3545,7 +3545,7 @@ msgstr "Berrabiarazi behar da"
 #. * app updates, typically flatpaks or snaps
 #: src/gs-updates-section.c:425
 msgid "Application Updates"
-msgstr "Aplikazioen eguneraketa"
+msgstr "Aplikazioen eguneratzea"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
@@ -4036,7 +4036,7 @@ msgstr "Endless OS eguneratze bat, eginbide eta akatsen zuzenketa berriekin."
 
 #: plugins/eos-updater/gs-plugin-eos-updater.c:825
 msgid "EOS update service could not fetch and apply the update."
-msgstr "EOS eguneraketa-zerbitzuak ezin izan du eguneratzea atzitu eta aplikatu."
+msgstr "EOS eguneratze-zerbitzuak ezin izan du eguneratzea atzitu eta aplikatu."
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
 #: plugins/external-appstream/gs-install-appstream.c:140
@@ -4165,12 +4165,12 @@ msgstr "%s PUZ mikrokodearen eguneratzea"
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:690
 msgid "Downloading firmware update signature…"
-msgstr "Firmwarearen eguneraketaren sinadura deskargatzen…"
+msgstr "Firmwarearen eguneratzearen sinadura deskargatzen…"
 
 #. TRANSLATORS: status text when downloading
 #: plugins/fwupd/gs-plugin-fwupd.c:731
 msgid "Downloading firmware update metadata…"
-msgstr "Firmwarearen eguneraketaren metadatuak deskargatzen…"
+msgstr "Firmwarearen eguneratzearen metadatuak deskargatzen…"
 
 #: plugins/fwupd/org.gnome.Software.Plugin.Fwupd.metainfo.xml.in:6
 msgid "Firmware Upgrade Support"
