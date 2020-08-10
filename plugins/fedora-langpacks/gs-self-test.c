@@ -22,6 +22,13 @@ gs_plugins_fedora_langpacks_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginJob) plugin_job = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+
+	os_release = gs_os_release_new (NULL);
+	if (g_strcmp0 (gs_os_release_get_id (os_release), "fedora") != 0) {
+		g_test_skip ("not on fedora");
+		return;
+	}
 
 	/* start with a clean slate */
 	cachefn = gs_utils_get_cache_filename ("langpacks", "langpacks-ja",
