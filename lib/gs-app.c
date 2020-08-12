@@ -1161,6 +1161,7 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 	case GS_APP_STATE_AVAILABLE_LOCAL:
 		/* local has to go into an action state */
 		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
 		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
