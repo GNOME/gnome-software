@@ -1519,7 +1519,6 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_mutex_unlock (&plugin_loader->pending_apps_mutex);
 
 	if (ret) {
-		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
@@ -3146,6 +3145,7 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 						   &error);
 	remove_app_from_install_queue (plugin_loader, app);
 	if (!ret) {
+		gs_app_set_state_recover (app);
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_unique_id (app), error->message);
 	}
