@@ -217,6 +217,7 @@ main (int argc, char **argv)
 	tmp_root = g_dir_make_tmp ("gnome-software-core-test-XXXXXX", NULL);
 	g_assert (tmp_root != NULL);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
+	g_setenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR", tmp_root, TRUE);
 
 	os_release_filename = gs_test_get_filename (TESTDATADIR, "os-release");
 	g_assert (os_release_filename != NULL);

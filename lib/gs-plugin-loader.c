@@ -1752,9 +1752,11 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	g_autofree gchar *file = NULL;
 	g_auto(GStrv) names = NULL;
 	g_autoptr(GsAppList) list = NULL;
+	const gchar *tmp_data_dir;
 
 	/* load from file */
-	file = g_build_filename (g_get_user_data_dir (),
+	tmp_data_dir = g_getenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR");
+	file = g_build_filename (tmp_data_dir != NULL ? tmp_data_dir : g_get_user_data_dir (),
 				 "gnome-software",
 				 "install-queue",
 				 NULL);
@@ -1807,6 +1809,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GString) s = NULL;
 	g_autofree gchar *file = NULL;
+	const gchar *tmp_data_dir;
 
 	s = g_string_new ("");
 	pending_apps = priv->pending_apps;
@@ -1822,7 +1825,8 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	/* save file */
-	file = g_build_filename (g_get_user_data_dir (),
+	tmp_data_dir = g_getenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR");
+	file = g_build_filename (tmp_data_dir != NULL ? tmp_data_dir : g_get_user_data_dir (),
 				 "gnome-software",
 				 "install-queue",
 				 NULL);

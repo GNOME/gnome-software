@@ -60,6 +60,7 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
+	g_autofree gchar *tmp_root = NULL;
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
@@ -81,6 +82,10 @@ main (int argc, char **argv)
 #endif
 		     NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+
+	tmp_root = g_dir_make_tmp ("gnome-software-fwupd-test-XXXXXX", NULL);
+	g_assert_true (tmp_root != NULL);
+	g_setenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR", tmp_root, TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);

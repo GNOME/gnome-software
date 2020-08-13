@@ -765,6 +765,7 @@ main (int argc, char **argv)
 	tmp_root = g_dir_make_tmp ("gnome-software-dummy-test-XXXXXX", NULL);
 	g_assert (tmp_root != NULL);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
+	g_setenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR", tmp_root, TRUE);
 
 	xml = g_strdup ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"

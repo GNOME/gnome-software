@@ -1862,6 +1862,7 @@ main (int argc, char **argv)
 	tmp_root = g_dir_make_tmp ("gnome-software-flatpak-test-XXXXXX", NULL);
 	g_assert_true (tmp_root != NULL);
 	g_setenv ("GS_SELF_TEST_CACHEDIR", tmp_root, TRUE);
+	g_setenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR", tmp_root, TRUE);
 	g_setenv ("GS_SELF_TEST_FLATPAK_DATADIR", tmp_root, TRUE);
 
 	/* allow dist'ing with no gnome-software installed */

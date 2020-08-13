@@ -38,6 +38,7 @@ gs_plugins_repos_func (GsPluginLoader *plugin_loader)
 int
 main (int argc, char **argv)
 {
+	g_autofree gchar *tmp_root = NULL;
 	gboolean ret;
 	g_autofree gchar *reposdir = NULL;
 	g_autoptr(GError) error = NULL;
@@ -58,6 +59,10 @@ main (int argc, char **argv)
 	reposdir = gs_test_get_filename (TESTDATADIR, "yum.repos.d");
 	g_assert (reposdir != NULL);
 	g_setenv ("GS_SELF_TEST_REPOS_DIR", reposdir, TRUE);
+
+	tmp_root = g_dir_make_tmp ("gnome-software-repos-test-XXXXXX", NULL);
+	g_assert_true (tmp_root != NULL);
+	g_setenv ("GS_SELF_TEST_INSTALL_QUEUE_DIR", tmp_root, TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
