@@ -177,6 +177,11 @@ gs_fwupd_release_get_name (FwupdRelease *release)
 			 * at system bootup */
 			return g_strdup_printf (_("%s CPU Microcode Update"), name);
 		}
+		if (g_strcmp0 (cat, "X-Configuration") == 0) {
+			/* TRANSLATORS: configuration refers to hardware state,
+			 * e.g. a security database or a default power value */
+			return g_strdup_printf (_("%s Configuration Update"), name);
+		}
 	}
 #endif
 
