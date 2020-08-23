@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-08-19 14:58+0000\n"
-"PO-Revision-Date: 2020-08-19 17:34+0100\n"
+"POT-Creation-Date: 2020-08-19 18:10+0000\n"
+"PO-Revision-Date: 2020-08-23 23:27+0100\n"
 "Last-Translator: Juliano Camargo <julianosc@pm.me>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
 "Language: pt\n"
@@ -37,8 +37,8 @@ msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
 msgstr ""
-"A aplicação Aplicações permite encontrar e instalar novas aplicações e "
-"extensões do sistema, além de remover aplicações já instaladas."
+"O Aplicações permite encontrar e instalar novas aplicações e extensões do "
+"sistema, além de remover aplicações já instaladas."
 
 #: data/appdata/org.gnome.Software.appdata.xml.in:14
 msgid ""
@@ -49,7 +49,7 @@ msgid ""
 msgstr ""
 "O Aplicações GNOME apresenta aplicações populares em destaque com descrições "
 "úteis e múltiplas capturas de ecrã por aplicação. Aplicações podem ser "
-"encontradas tanto navegando a lista de categorias com procurando. Também "
+"encontradas tanto navegando a lista de categorias como procurando. Também "
 "permite que atualize o seu sistema utilizando uma atualização sem estar "
 "ligado à Internet."
 
@@ -101,6 +101,14 @@ msgstr ""
 msgid "Whether to manage updates and upgrades in GNOME Software"
 msgstr "Se o Aplicações GNOME deve ser usado para gerir atualizações"
 
+#: data/org.gnome.software.gschema.xml:11
+msgid ""
+"If disabled, GNOME Software will hide the updates panel, not perform any "
+"automatic updates actions or prompt for upgrades."
+msgstr ""
+"Caso desativado, o Aplicações Gnome esconderá o painel de atualizações, "
+"deixará de executá-las e notificá-las automaticamente."
+
 #: data/org.gnome.software.gschema.xml:15
 msgid "Automatically download and install updates"
 msgstr "Transferir e instalar atualizações automaticamente"
@@ -118,9 +126,28 @@ msgstr ""
 msgid "Notify the user about software updated in the background"
 msgstr "Notificar utilizador acerca de atualização pendente em segundo plano"
 
+#: data/org.gnome.software.gschema.xml:21
+msgid ""
+"If enabled, GNOME Software notifies the user about updates that happened "
+"whilst the user was idle."
+msgstr ""
+"Caso ativada, o Aplicações GNOME notificará o utilizador acerca de "
+"atualizações que ocorreram quando o mesmo estava inactivo."
+
 #: data/org.gnome.software.gschema.xml:25
 msgid "Whether to automatically refresh when on a metered connection"
 msgstr "Se recarrega automaticamente quando a ligação é limitada"
+
+#: data/org.gnome.software.gschema.xml:26
+msgid ""
+"If enabled, GNOME Software automatically refreshes in the background even "
+"when using a metered connection (eventually downloading some metadata, "
+"checking for updates, etc., which may incur in costs for the user)."
+msgstr ""
+"Caso ativada, o Aplicações GNOME verificará por actualizações em segundo "
+"plano quando a utilizar uma conexão medida (eventualmente transfere alguns "
+"metadados, verifica atualizações etc... que podem implicar em gastos ao "
+"utilizador)."
 
 #: data/org.gnome.software.gschema.xml:30
 msgid "Whether it’s the very first run of GNOME Software"
@@ -129,6 +156,11 @@ msgstr "Se é a primeira vez que o Aplicações GNOME é iniciado"
 #: data/org.gnome.software.gschema.xml:34
 msgid "Show star ratings next to applications"
 msgstr "Mostrar a classificação por estrelas à frente das aplicações"
+
+#: data/org.gnome.software.gschema.xml:38
+msgid "Filter applications based on the default branch set for the remote"
+msgstr ""
+"Filtra aplicações baseado na ramificação predefinida especificada como remota"
 
 #: data/org.gnome.software.gschema.xml:42
 msgid "Non-free applications show a warning dialog before install"
@@ -169,6 +201,28 @@ msgstr ""
 #: data/org.gnome.software.gschema.xml:64
 msgid "The last update timestamp"
 msgstr "O data e hora da última atualização"
+
+#: data/org.gnome.software.gschema.xml:68
+msgid "The last timestamp when the system was online and got any updates"
+msgstr ""
+"O último registro de data/hora quando o sistema actualizou pela última vez"
+
+#: data/org.gnome.software.gschema.xml:72
+msgid "The age in seconds to verify the upstream screenshot is still valid"
+msgstr ""
+"O tempo (em segundos) para verificar se a imagem de versão mais recente "
+"ainda é válida"
+
+#: data/org.gnome.software.gschema.xml:73
+msgid ""
+"Choosing a larger value will mean less round-trips to the remote server but "
+"updates to the screenshots may take longer to show to the user. A value of 0 "
+"means to never check the server if the image already exists in the cache."
+msgstr ""
+"Escolher um número maior implicará em menos viagens de ida e volta ao "
+"servidor remoto, mas atualizações de imagens podem demorar a chegar ao "
+"utilizador. Um valor 0 significa nunca verificar junto ao servidor se a "
+"imagem já existe em memória."
 
 #: data/org.gnome.software.gschema.xml:82
 msgid "The server to use for application reviews"
@@ -221,16 +275,48 @@ msgstr ""
 "Mostrar alguns elementos do IU a informar o utilizador que a aplicação não é "
 "livre"
 
+#: data/org.gnome.software.gschema.xml:119
+msgid "Show the prompt to install nonfree software repositories"
+msgstr ""
+"Ver linha de comando para instalar repositórios 'nonfree' de aplicações"
+
+#: data/org.gnome.software.gschema.xml:123
+msgid "Show the installed size for apps in the list of installed applications"
+msgstr ""
+"Ver o tamanho ocupado pelas aplicações instalada na lista de aplicações "
+"instaladas"
+
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:127
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://pt.wikipedia.org/wiki/Domínio_público'"
+
+#: data/org.gnome.software.gschema.xml:128
+msgid "The URI that explains nonfree and proprietary software"
+msgstr "O URI que introduz as aplicações proprietárias e 'nonfree'"
+
+#: data/org.gnome.software.gschema.xml:132
+msgid ""
+"A list of URLs pointing to appstream files that will be downloaded into an "
+"app-info folder"
+msgstr ""
+"A lista de URLs a apontar aos ficheiros 'appstream' que serão transferidos "
+"numa pasta de informações de aplicações"
 
 #: data/org.gnome.software.gschema.xml:136
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "Instalar um ficheiro <i>AppStream</i> numa localização do sistema para todos "
 "utilizadores"
+
+#: data/org.gnome.software.gschema.xml:140
+msgid "Enable GNOME Shell extensions repository"
+msgstr "Ativa o repositório de extensões do GNOME Shell"
+
+#: data/org.gnome.software.gschema.xml:147
+msgid "A string storing the gnome-online-account id used to login"
+msgstr ""
+"Um texto a gravar o id utilizado no início de sessão da conta online Gnome"
 
 #: src/gnome-software-local-file.desktop.in:3
 msgid "Software Install"
@@ -4260,7 +4346,6 @@ msgstr "Atualização de Microcódigo da CPU %s"
 #. * e.g. a security database or a default power value
 #: plugins/fwupd/gs-fwupd-app.c:183
 #, c-format
-#| msgid "%s Controller Update"
 msgid "%s Configuration Update"
 msgstr "Atualização de Configurações do %s"
 
