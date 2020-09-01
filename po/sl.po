@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
 "POT-Creation-Date: 2020-08-20 11:46+0000\n"
-"PO-Revision-Date: 2020-08-21 18:20+0200\n"
+"PO-Revision-Date: 2020-09-01 17:49+0200\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -583,7 +583,7 @@ msgstr "Zahteva dodatna dovoljenja"
 #: src/gs-basic-auth-dialog.c:82
 #, c-format
 msgid "Login required remote %s (realm %s)"
-msgstr ""
+msgstr "Prijavno ime in geslo za %s (območje %s)."
 
 #: src/gs-basic-auth-dialog.ui:10
 msgid "Login Required"
@@ -4321,36 +4321,32 @@ msgstr "Posodobtev ME %s"
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:156
-#, fuzzy, c-format
-#| msgid "%s Corporate ME"
+#, c-format
 msgid "%s Corporate ME Update"
-msgstr "Poslovni upravljalnik %s"
+msgstr "Posodobitev poslovnega upravljalnika %s"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:161
-#, fuzzy, c-format
-#| msgid "%s Consumer ME"
+#, c-format
 msgid "%s Consumer ME Update"
-msgstr "Uporabniški upravljalnik %s"
+msgstr "Posodobitev uporabniškega upravljalnika %s"
 
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
 #: plugins/fwupd/gs-fwupd-app.c:167
-#, fuzzy, c-format
-#| msgid "%s Controller"
+#, c-format
 msgid "%s Controller Update"
-msgstr "Vmesnik %s"
+msgstr "Posodobitev upravljalnika krmilnika %s"
 
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
 #: plugins/fwupd/gs-fwupd-app.c:173
-#, fuzzy, c-format
-#| msgid "%s Thunderbolt Controller"
+#, c-format
 msgid "%s Thunderbolt Controller Update"
-msgstr "%s vmesnik Thunderbolt"
+msgstr "Posodobitev upravljalnika krmilnika Thunderbolt %s"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
