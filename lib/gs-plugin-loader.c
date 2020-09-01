@@ -524,6 +524,9 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	if (func == NULL)
 		return TRUE;
 
+	/* at least one plugin supports this vfunc */
+	helper->anything_ran = TRUE;
+
 	/* fallback if unset */
 	if (app == NULL)
 		app = gs_plugin_job_get_app (helper->plugin_job);
@@ -797,8 +800,6 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 					   gs_plugin_action_to_string (action));
 	}
 
-	/* success */
-	helper->anything_ran = TRUE;
 	return TRUE;
 }
 
