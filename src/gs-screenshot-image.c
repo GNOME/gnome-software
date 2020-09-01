@@ -251,9 +251,11 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		return;
 	}
 	if (msg->status_code != SOUP_STATUS_OK) {
-                g_warning ("Result of screenshot downloading attempt with "
-			   "status code '%u': %s", msg->status_code,
-			   msg->reason_phrase);
+		/* Ignore failures due to being offline */
+		if (msg->status_code != SOUP_STATUS_CANT_RESOLVE)
+			g_warning ("Result of screenshot downloading attempt with "
+				   "status code '%u': %s", msg->status_code,
+				   msg->reason_phrase);
 		gs_screenshot_image_stop_spinner (ssimg);
 		/* if we're already showing an image, then don't set the error
 		 * as having an image (even if outdated) is better */
