@@ -763,7 +763,15 @@ static gboolean
 app_has_local_source (GsApp *app)
 {
 	const gchar *url = gs_app_get_origin_hostname (app);
-	return url != NULL && g_str_has_prefix (url, "file://");
+
+	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_BUNDLE)
+		return TRUE;
+
+	if (gs_flatpak_app_get_file_kind (app) == GS_FLATPAK_APP_FILE_KIND_REF &&
+	    g_strcmp0 (url, "localhost") == 0)
+		return TRUE;
+
+	return FALSE;
 }
 
 gboolean
