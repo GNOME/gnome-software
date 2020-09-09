@@ -2364,8 +2364,7 @@ gs_shell_show_installed_updates (GsShell *shell)
 	dialog = gs_update_dialog_new (priv->plugin_loader);
 	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog));
 
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), priv->main_window);
-	gtk_window_present (GTK_WINDOW (dialog));
+	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 }
 
 void
