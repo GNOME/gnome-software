@@ -3040,8 +3040,10 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		queue = gs_app_list_new ();
 		for (guint i = 0; i < priv->pending_apps->len; i++) {
 			GsApp *app = g_ptr_array_index (priv->pending_apps, i);
-			if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
+			if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 				gs_app_list_add (queue, app);
+			}
 		}
 		g_mutex_unlock (&priv->pending_apps_mutex);
 		for (guint i = 0; i < gs_app_list_length (queue); i++) {
