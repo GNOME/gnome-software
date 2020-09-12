@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-06-30 16:49+0000\n"
-"PO-Revision-Date: 2020-07-05 23:52+0300\n"
-"Last-Translator: Efstathios Iosifidis <iosifidis@opensuse.org>\n"
+"POT-Creation-Date: 2020-09-09 11:14+0000\n"
+"PO-Revision-Date: 2020-09-12 23:51+0300\n"
+"Last-Translator: Efstathios Iosifidis <eiosifidis@gnome.org>\n"
 "Language-Team: Greek, Modern (1453-) <gnome-el-list@gnome.org>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
@@ -71,7 +71,7 @@ msgstr "Πίνακας ενημερώσεων"
 msgid "The update details"
 msgstr "Λεπτομέρειες ενημέρωσης"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1494
+#: data/appdata/org.gnome.Software.appdata.xml.in:1517
 msgid "The GNOME Project"
 msgstr "Το έργο GNOME"
 
@@ -377,7 +377,7 @@ msgstr "Αναζήτηση"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:293 src/gs-details-page.ui:886
+#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:886
 msgid "Source"
 msgstr "Πηγή"
 
@@ -394,7 +394,7 @@ msgstr "Εξέταση δίσκου"
 #. button in the info bar
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gnome-software.ui:393 src/gs-updates-page.c:921
+#: src/gnome-software.ui:393 src/gs-updates-page.c:922
 msgid "Network Settings"
 msgstr "Ρυθμίσεις δικτύου"
 
@@ -418,20 +418,20 @@ msgid "Find Out _More"
 msgstr "Μάθετε _περισσότερα"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4516
+#: lib/gs-app.c:4559
 msgid "Local file"
 msgstr "Τοπικό αρχείο"
 
-#: lib/gs-app.c:4568
+#: lib/gs-app.c:4611
 msgid "Package"
 msgstr "Πακέτο"
 
-#: src/gs-app-addon-row.c:82 src/gs-app-row.c:400
+#: src/gs-app-addon-row.c:83 src/gs-app-row.c:401
 msgid "Pending"
 msgstr "Εκκρεμεί"
 
-#: src/gs-app-addon-row.c:88 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
-#: src/gs-feature-tile.c:87
+#: src/gs-app-addon-row.c:89 src/gs-app-row.ui:163 src/gs-app-tile.ui:51
+#: src/gs-feature-tile.c:88
 msgid "Installed"
 msgstr "Εγκατεστημένο"
 
@@ -439,8 +439,8 @@ msgstr "Εγκατεστημένο"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:92 src/gs-app-row.c:171 src/gs-details-page.c:350
-#: src/gs-third-party-repo-row.c:99
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:351
+#: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Εγκαθίσταται"
 
@@ -448,60 +448,60 @@ msgstr "Εγκαθίσταται"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being removed
-#: src/gs-app-addon-row.c:96 src/gs-app-row.c:177 src/gs-repo-row.c:125
-#: src/gs-third-party-repo-row.c:106
+#: src/gs-app-addon-row.c:97 src/gs-app-row.c:178 src/gs-repo-row.c:126
+#: src/gs-third-party-repo-row.c:107
 msgid "Removing"
 msgstr "Αφαίρεση"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:109
+#: src/gs-application.c:110
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Λειτουργία εκκίνησης : είτε ‘updates’, ‘updated’, ‘installed’ ή ‘overview’"
 
-#: src/gs-application.c:109
+#: src/gs-application.c:110
 msgid "MODE"
 msgstr "ΛΕΙΤΟΥΡΓΙΑ"
 
-#: src/gs-application.c:111
+#: src/gs-application.c:112
 msgid "Search for applications"
 msgstr "Αναζήτηση για εφαρμογές"
 
-#: src/gs-application.c:111
+#: src/gs-application.c:112
 msgid "SEARCH"
 msgstr "ΑΝΑΖΗΤΗΣΗ"
 
-#: src/gs-application.c:113
+#: src/gs-application.c:114
 msgid "Show application details (using application ID)"
 msgstr ""
 "Εμφάνιση λεπτομερειών εφαρμογής (χρησιμοποιώντας το αναγνωριστικό της "
 "εφαρμογής)"
 
-#: src/gs-application.c:113 src/gs-application.c:117
+#: src/gs-application.c:114 src/gs-application.c:118
 msgid "ID"
 msgstr "ΑΝΑΓΝΩΡΙΣΤΙΚΟ"
 
-#: src/gs-application.c:115
+#: src/gs-application.c:116
 msgid "Show application details (using package name)"
 msgstr "Εμφάνιση λεπτομερειών εφαρμογής (χρησιμοποιώντας το όνομα πακέτου)"
 
-#: src/gs-application.c:115
+#: src/gs-application.c:116
 msgid "PKGNAME"
 msgstr "PKGNAME"
 
-#: src/gs-application.c:117
+#: src/gs-application.c:118
 msgid "Install the application (using application ID)"
 msgstr "Εγκατάσταση εφαρμογής (χρησιμοποιώντας το αναγνωριστικό της)"
 
-#: src/gs-application.c:119
+#: src/gs-application.c:120
 msgid "Open a local package file"
 msgstr "Άνοιγμα τοπικού πακέτου"
 
-#: src/gs-application.c:119
+#: src/gs-application.c:120
 msgid "FILENAME"
 msgstr "ΟΝΟΜΑ ΑΡΧΕΙΟΥ"
 
-#: src/gs-application.c:121
+#: src/gs-application.c:122
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -509,27 +509,27 @@ msgstr ""
 "Το είδος της αλληλεπίδρασης που αναμένεται για αυτήν τη ενέργεια: είτε "
 "«none», «notify», ή «full»"
 
-#: src/gs-application.c:124
+#: src/gs-application.c:125
 msgid "Show verbose debugging information"
 msgstr "Εμφάνιση πληροφοριών αποσφαλμάτωσης"
 
-#: src/gs-application.c:126
+#: src/gs-application.c:127
 msgid "Installs any pending updates in the background"
 msgstr "Εγκαθιστά τυχόν εκκρεμείς ενημερώσεις στο παρασκήνιο"
 
-#: src/gs-application.c:128
+#: src/gs-application.c:129
 msgid "Show update preferences"
 msgstr "Εμφάνιση προτιμήσεων ενημέρωσης"
 
-#: src/gs-application.c:130
+#: src/gs-application.c:131
 msgid "Quit the running instance"
 msgstr "Έξοδος από την εφαρμογή"
 
-#: src/gs-application.c:132
+#: src/gs-application.c:133
 msgid "Prefer local file sources to AppStream"
 msgstr "Προτιμήστε τοπικές πηγές αρχείων σε AppStream"
 
-#: src/gs-application.c:134
+#: src/gs-application.c:135
 msgid "Show version number"
 msgstr "Προβολή του αριθμού έκδοσης"
 
@@ -546,43 +546,38 @@ msgstr ""
 "Για περισσότερες πληροφορίες, επισκεφθείτε τη σελίδα\n"
 "http://gnome.gr/"
 
-#. TRANSLATORS: this is the title of the about window, e.g.
-#. * 'About Software' or 'About Application Installer' where the %s is
-#. * the application name chosen by the distro
-#. TRANSLATORS: this is the menu item that opens the about window, e.g.
-#. * 'About Software' or 'About Application Installer' where the %s is
-#. * the application name chosen by the distro
-#: src/gs-application.c:335 src/gs-shell.c:2124
-#, c-format
-msgid "About %s"
-msgstr "Περί %s"
+#. TRANSLATORS: this is the title of the about window
+#. TRANSLATORS: this is the menu item that opens the about window
+#: src/gs-application.c:333 src/gs-shell.c:2123
+msgid "About Software"
+msgstr "Περί του λογισμικού"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:339
+#: src/gs-application.c:336
 msgid "A nice way to manage the software on your system."
 msgstr "Ένας ωραίος τρόπος για τη διαχείριση του λογισμικού στο σύστημά σας."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:567
+#: src/gs-application.c:564
 msgid "Sorry! There are no details for that application."
 msgstr "Συγγνώμη! Δεν υπάρχουν λεπτομέρειες γι' αυτή την εφαρμογή."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: src/gs-app-row.c:126
+#: src/gs-app-row.c:127
 msgid "Visit website"
 msgstr "Επισκεφθείτε τον ιστότοπο"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: src/gs-app-row.c:131
+#: src/gs-app-row.c:132
 msgid "Install…"
 msgstr "Εγκατάσταση…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:138 src/gs-updates-section.c:478
+#: src/gs-app-row.c:139 src/gs-updates-section.c:479
 msgid "Cancel"
 msgstr "Ακύρωση"
 
@@ -590,13 +585,13 @@ msgstr "Ακύρωση"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:145 src/gs-common.c:287 src/gs-page.c:273
+#: src/gs-app-row.c:146 src/gs-common.c:288 src/gs-page.c:334
 msgid "Install"
 msgstr "Εγκατάσταση"
 
 #. TRANSLATORS: this is a button in the updates panel
 #. * that allows the app to be easily updated live
-#: src/gs-app-row.c:152
+#: src/gs-app-row.c:153
 msgid "Update"
 msgstr "Ενημέρωση"
 
@@ -604,24 +599,24 @@ msgstr "Ενημέρωση"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:156 src/gs-app-row.c:165 src/gs-page.c:434
-#: src/gs-repos-dialog.c:325
+#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:492
+#: src/gs-repos-dialog.c:326
 msgid "Remove"
 msgstr "Αφαίρεση"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: src/gs-app-row.c:283
+#: src/gs-app-row.c:284
 msgid "Device cannot be used during update."
 msgstr ""
 "Η συσκευή δεν μπορεί να χρησιμοποιηθεί κατά τη διάρκεια της ενημέρωσης."
 
-#: src/gs-app-row.c:458 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:459 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "Απαιτεί πρόσθετα δικαιώματα"
 
 #. TRANSLATORS: This is a description for entering user/password
-#: src/gs-basic-auth-dialog.c:81
+#: src/gs-basic-auth-dialog.c:82
 #, c-format
 msgid "Login required remote %s (realm %s)"
 msgstr "Απαιτείται σύνδεση απομακρυσμένου %s (τομέας %s)"
@@ -650,24 +645,24 @@ msgstr "_Συνθηματικό"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: lib/gs-category.c:177
+#: lib/gs-category.c:178
 msgid "Other"
 msgstr "Άλλο"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: lib/gs-category.c:182
+#: lib/gs-category.c:183
 msgid "All"
 msgstr "Όλες"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: lib/gs-category.c:186
+#: lib/gs-category.c:187
 msgid "Featured"
 msgstr "Δημοφιλέστερο"
 
 #. TRANSLATORS: This is a heading on the categories page. %s gets
 #. replaced by the category name, e.g. 'Graphics & Photography'
-#: src/gs-category-page.c:452
+#: src/gs-category-page.c:453
 #, c-format
 msgid "Featured %s"
 msgstr "Προτεινόμενο %s"
@@ -679,7 +674,7 @@ msgstr "Βαθμολόγηση"
 
 #. Translators: A label for a button to sort apps alphabetically.
 #. TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm"
-#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:58
+#: src/gs-category-page.ui:32 src/gs-origin-popover-row.c:59
 msgid "Name"
 msgstr "Όνομα"
 
@@ -702,25 +697,25 @@ msgid "Subcategories sorting menu"
 msgstr "Υποκατηγορίες μενού ταξινόμησης"
 
 #. TRANSLATORS: the user isn't reading the question
-#: lib/gs-cmd.c:190
+#: lib/gs-cmd.c:191
 #, c-format
 msgid "Please enter a number from 1 to %u: "
 msgstr "Παρακαλούμε εισάγετε έναν αριθμό από το 1 έως το %u: "
 
 #. TRANSLATORS: asking the user to choose an app from a list
-#: lib/gs-cmd.c:253
+#: lib/gs-cmd.c:254
 msgid "Choose an application:"
 msgstr "Επιλογή εφαρμογής:"
 
 #. TRANSLATORS: this is the summary of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:123
+#: src/gs-common.c:124
 msgid "OS updates are now installed"
 msgstr "Έχουν εγκατασταθεί οι ενημερώσεις του λειτουργικού"
 
 #. TRANSLATORS: this is the body of a notification that OS updates
 #. * have been successfully installed
-#: src/gs-common.c:126
+#: src/gs-common.c:127
 msgid "Recently installed updates are available to review"
 msgstr "Πρόσφατες εγκατεστημένες ενημερώσεις είναι διαθέσιμες για κριτική"
 
@@ -728,40 +723,40 @@ msgstr "Πρόσφατες εγκατεστημένες ενημερώσεις �
 #. * has been successfully installed
 #. TRANSLATORS: this is the summary of a notification that a component
 #. * has been successfully installed
-#: src/gs-common.c:131 src/gs-common.c:145
+#: src/gs-common.c:132 src/gs-common.c:146
 #, c-format
 msgid "%s is now installed"
 msgstr "Το %s είναι τώρα εγκατεστημένο"
 
 #. TRANSLATORS: an application has been installed, but
 #. * needs a reboot to complete the installation
-#: src/gs-common.c:135 src/gs-common.c:149
+#: src/gs-common.c:136 src/gs-common.c:150
 msgid "A restart is required for the changes to take effect."
 msgstr "Απαιτείται επανεκκίνηση για να εφαρμοστούν αυτές οι αλλαγές."
 
 #. TRANSLATORS: this is the body of a notification that an application
 #. * has been successfully installed
-#: src/gs-common.c:139
+#: src/gs-common.c:140
 msgid "Application is ready to be used."
 msgstr "Η εφαρμογή είναι έτοιμη να χρησιμοποιηθεί."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:159 src/gs-common.c:649
+#: src/gs-common.c:160 src/gs-common.c:650
 msgid "Restart"
 msgstr "Επανεκκίνηση"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: src/gs-common.c:163
+#: src/gs-common.c:164
 msgid "Launch"
 msgstr "Εκκίνηση"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:221
+#: src/gs-common.c:222
 msgid "Install Third-Party Software?"
 msgstr "Να εγκατασταθεί λογισμικό από τρίτον;"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:225 src/gs-repos-dialog.c:234
+#: src/gs-common.c:226 src/gs-repos-dialog.c:235
 msgid "Enable Third-Party Software Repository?"
 msgstr "Να ενεργοποιηθεί αποθετήριο λογισμικού τρίτου;"
 
@@ -769,7 +764,7 @@ msgstr "Να ενεργοποιηθεί αποθετήριο λογισμικο�
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:241
+#: src/gs-common.c:242
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -782,701 +777,701 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:251
+#: src/gs-common.c:252
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "Το %s παρέχεται από το «%s»."
 
-#: src/gs-common.c:260
+#: src/gs-common.c:261
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Αυτό το αποθετήριο λογισμικού πρέπει να ενεργοποιηθεί για να συνεχιστεί η "
 "εγκατάσταση."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:270
+#: src/gs-common.c:271
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "Μπορεί να είναι παράνομη η εγκατάσταση ή χρήση του %s σε κάποιες χώρες."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:276
+#: src/gs-common.c:277
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Μπορεί να είναι παράνομη η εγκατάσταση ή χρήση αυτού του κωδικοποιητή σε "
 "κάποιες χώρες."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:283
+#: src/gs-common.c:284
 msgid "Don’t Warn Again"
 msgstr "Να μην εμφανιστεί ξανά αυτό το μήνυμα"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:292
+#: src/gs-common.c:293
 msgid "Enable and Install"
 msgstr "Ενεργοποίηση και εγκατάσταση"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:451
+#: src/gs-common.c:452
 msgid "Detailed errors from the package manager follow:"
 msgstr "Ακολουθούν λεπτομερή σφάλματα από τον διαχειριστή πακέτων:"
 
-#: src/gs-common.c:470 src/gs-details-page.ui:447
+#: src/gs-common.c:471 src/gs-details-page.ui:447
 msgid "Details"
 msgstr "Λεπτομέρειες"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:635
+#: src/gs-common.c:636
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Μια ενημέρωση έχει εγκατασταθεί"
 msgstr[1] "Οι ενημερώσεις έχουν εγκατασταθεί"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:640
+#: src/gs-common.c:641
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Απαιτείται επανεκκίνηση για να εφαρμοστεί η αλλαγή."
 msgstr[1] "Απαιτείται επανεκκίνηση για να εφαρμοστούν αυτές οι αλλαγές."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:647 src/gs-update-monitor.c:122
+#: src/gs-common.c:648 src/gs-update-monitor.c:123
 msgid "Not Now"
 msgstr "Όχι τώρα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:60
+#: src/gs-content-rating.c:61
 msgid "No cartoon violence"
 msgstr "Κινούμενα σχέδια χωρίς βία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:62
+#: src/gs-content-rating.c:63
 msgid "Cartoon characters in unsafe situations"
 msgstr "Χαρακτήρες κινουμένων σχεδίων σε επικίνδυνες καταστάσεις"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:64
+#: src/gs-content-rating.c:65
 msgid "Cartoon characters in aggressive conflict"
 msgstr "Χαρακτήρες κινουμένων σχεδίων σε επιθετική σύγκρουση"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:66
+#: src/gs-content-rating.c:67
 msgid "Graphic violence involving cartoon characters"
 msgstr "Γραφική βία μεταξύ χαρακτήρων κινουμένων σχεδίων"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:71
+#: src/gs-content-rating.c:72
 msgid "No fantasy violence"
 msgstr "Χωρίς φανταστική βία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:73
+#: src/gs-content-rating.c:74
 msgid "Characters in unsafe situations easily distinguishable from reality"
 msgstr ""
 "Χαρακτήρες σε επικίνδυνες καταστάσεις όπου διακρίνονται εύκολα από την "
 "πραγματικότητα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:75
+#: src/gs-content-rating.c:76
 msgid "Characters in aggressive conflict easily distinguishable from reality"
 msgstr ""
 "Χαρακτήρες σε επιθετικές συγκρούσεις όπου διακρίνονται εύκολα από την "
 "πραγματικότητα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:77
+#: src/gs-content-rating.c:78
 msgid "Graphic violence easily distinguishable from reality"
 msgstr "Γραφική βία όπου διακρίνεται εύκολα από την πραγματικότητα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:82
+#: src/gs-content-rating.c:83
 msgid "No realistic violence"
 msgstr "Χωρίς ρεαλιστική βία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:84
+#: src/gs-content-rating.c:85
 msgid "Mildly realistic characters in unsafe situations"
 msgstr "Ήπιοι ρεαλιστικοί χαρακτήρες σε επικίνδυνες καταστάσεις"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:86
+#: src/gs-content-rating.c:87
 msgid "Depictions of realistic characters in aggressive conflict"
 msgstr "Απεικονίσεις ρεαλιστικών χαρακτήρων σε επιθετική σύγκρουση"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:88
+#: src/gs-content-rating.c:89
 msgid "Graphic violence involving realistic characters"
 msgstr "Γραφική βία μεταξύ πραγματικών χαρακτήρων"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:93
+#: src/gs-content-rating.c:94
 msgid "No bloodshed"
 msgstr "Χωρίς αιματοχυσία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:95
+#: src/gs-content-rating.c:96
 msgid "Unrealistic bloodshed"
 msgstr "Μη ρεαλιστική αιματοχυσία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:97
+#: src/gs-content-rating.c:98
 msgid "Realistic bloodshed"
 msgstr "Ρεαλιστική αιματοχυσία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:99
+#: src/gs-content-rating.c:100
 msgid "Depictions of bloodshed and the mutilation of body parts"
 msgstr "Απεικονίσεις αιματοχυσίας και ακρωτηριασμού μερών του σώματος"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:104
+#: src/gs-content-rating.c:105
 msgid "No sexual violence"
 msgstr "Χωρίς σεξουαλική βία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:106
+#: src/gs-content-rating.c:107
 msgid "Rape or other violent sexual behavior"
 msgstr "Βιασμός ή άλλη βίαιη σεξουαλική συμπεριφορά"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:113
+#: src/gs-content-rating.c:114
 msgid "No references to alcohol"
 msgstr "Χωρίς αναφορές σε αλκοόλ"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:115
+#: src/gs-content-rating.c:116
 msgid "References to alcoholic beverages"
 msgstr "Αναφορές σε αλκοολούχα ποτά"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:117
+#: src/gs-content-rating.c:118
 msgid "Use of alcoholic beverages"
 msgstr "Χρήση αλκοολούχων ποτών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:123
+#: src/gs-content-rating.c:124
 msgid "No references to illicit drugs"
 msgstr "Χωρίς αναφορές σε παράνομα ναρκωτικά"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:125
+#: src/gs-content-rating.c:126
 msgid "References to illicit drugs"
 msgstr "Αναφορές σε παράνομα ναρκωτικά"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:127
+#: src/gs-content-rating.c:128
 msgid "Use of illicit drugs"
 msgstr "Χρήση παράνομων ναρκωτικών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:133
+#: src/gs-content-rating.c:134
 msgid "No references to tobacco products"
 msgstr "Καμία αναφορά σε προϊόντα καπνού"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:135
+#: src/gs-content-rating.c:136
 msgid "References to tobacco products"
 msgstr "Αναφορές σε προϊόντα καπνού"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:137
+#: src/gs-content-rating.c:138
 msgid "Use of tobacco products"
 msgstr "Χρήση προϊόντων καπνού"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:143
+#: src/gs-content-rating.c:144
 msgid "No nudity of any sort"
 msgstr "Χωρίς γυμνό οποιοδήποτε είδους"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:145
+#: src/gs-content-rating.c:146
 msgid "Brief artistic nudity"
 msgstr "Σύντομο καλλιτεχνικό γυμνό"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:147
+#: src/gs-content-rating.c:148
 msgid "Prolonged nudity"
 msgstr "Παρατεταμένο γυμνό"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:153
+#: src/gs-content-rating.c:154
 msgid "No references to or depictions of sexual nature"
 msgstr "Χωρίς αναφορές ή απεικονίσεις σεξουαλικού χαρακτήρα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:155
+#: src/gs-content-rating.c:156
 msgid "Provocative references or depictions"
 msgstr "Προκλητικές αναφορές ή απεικονίσεις"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:157
+#: src/gs-content-rating.c:158
 msgid "Sexual references or depictions"
 msgstr "Σεξουαλικές αναφορές ή απεικονίσεις"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:159
+#: src/gs-content-rating.c:160
 msgid "Graphic sexual behavior"
 msgstr "Γραφική σεξουαλική συμπεριφορά"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:164
+#: src/gs-content-rating.c:165
 msgid "No profanity of any kind"
 msgstr "Χωρίς βωμολοχίες κάθε είδους"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:166
+#: src/gs-content-rating.c:167
 msgid "Mild or infrequent use of profanity"
 msgstr "Ήπια ή σπάνια χρήση βωμολοχιών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:168
+#: src/gs-content-rating.c:169
 msgid "Moderate use of profanity"
 msgstr "Μέτρια χρήση βωμολοχιών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:170
+#: src/gs-content-rating.c:171
 msgid "Strong or frequent use of profanity"
 msgstr "Συχνή χρήση βωμολοχιών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:175
+#: src/gs-content-rating.c:176
 msgid "No inappropriate humor"
 msgstr "Χωρίς ακατάλληλο χιούμορ"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:177
+#: src/gs-content-rating.c:178
 msgid "Slapstick humor"
 msgstr "Χονδροειδές χιούμορ"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:179
+#: src/gs-content-rating.c:180
 msgid "Vulgar or bathroom humor"
 msgstr "Χυδαίο ή βρώμικο χιόυμορ"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:181
+#: src/gs-content-rating.c:182
 msgid "Mature or sexual humor"
 msgstr "Σεξουαλικό χιόυμορ"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:186
+#: src/gs-content-rating.c:187
 msgid "No discriminatory language of any kind"
 msgstr "Χωρίς βωμολοχίες κάθε είδους"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:188
+#: src/gs-content-rating.c:189
 msgid "Negativity towards a specific group of people"
 msgstr "Αρνητικότητα προς μια συγκεκριμένη ομάδα ανθρώπων"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:190
+#: src/gs-content-rating.c:191
 msgid "Discrimination designed to cause emotional harm"
 msgstr "Διακρίσεις με σκοπό συναισθηματική βλάβη"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:192
+#: src/gs-content-rating.c:193
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
 msgstr ""
 "Σαφής διάκριση με βάση το φύλο, τη σεξουαλικότητα, το γένος ή τη θρησκεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:197
+#: src/gs-content-rating.c:198
 msgid "No advertising of any kind"
 msgstr "Χωρίς διαφήμιση κάθε είδους"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:199
+#: src/gs-content-rating.c:200
 msgid "Product placement"
 msgstr "Τοποθέτηση προϊόντος"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:201
+#: src/gs-content-rating.c:202
 msgid "Explicit references to specific brands or trademarked products"
 msgstr "Ρητές αναφορές σε συγκεκριμένες μάρκες ή εμπορικά σήματα προϊόντων"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:203
+#: src/gs-content-rating.c:204
 msgid "Users are encouraged to purchase specific real-world items"
 msgstr ""
 "Οι χρήστες ενθαρρύνονται να αγοράζουν συγκεκριμένα πραγματικά αντικείμενα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:208
+#: src/gs-content-rating.c:209
 msgid "No gambling of any kind"
 msgstr "Χωρίς τζόγο κάθε είδους"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:210
+#: src/gs-content-rating.c:211
 msgid "Gambling on random events using tokens or credits"
 msgstr "Τζόγος σε τυχαία γεγονότα χρησιμοποιώντας μάρκες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:212
+#: src/gs-content-rating.c:213
 msgid "Gambling using “play” money"
 msgstr "Τζόγος χρησιμοποιώντας «εικονικά» χρήματα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:214
+#: src/gs-content-rating.c:215
 msgid "Gambling using real money"
 msgstr "Τζόγος με πραγματικά χρήματα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:219
+#: src/gs-content-rating.c:220
 msgid "No ability to spend money"
 msgstr "Χωρίς δυνατότητα χρήσης χρημάτων"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:221
+#: src/gs-content-rating.c:222
 msgid "Users are encouraged to donate real money"
 msgstr "Οι παίκτες ενθαρρύνονται να αγοράζουν πραγματικά χρήματα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:224
+#: src/gs-content-rating.c:225
 msgid "Ability to spend real money in-app"
 msgstr "Δυνατότητα χρήσης πραγματικών χρημάτων στην εφαρμογή"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:229
+#: src/gs-content-rating.c:230
 msgid "No way to chat with other users"
 msgstr "Χωρίς δυνατότητας συνομιλίας με άλλους χρήστες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:231
+#: src/gs-content-rating.c:232
 msgid "User-to-user interactions without chat functionality"
 msgstr "Οι αλληλεπιδράσεις μεταξύ χρηστών χωρίς λειτουργία συνομιλίας"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:233
+#: src/gs-content-rating.c:234
 msgid "Moderated chat functionality between users"
 msgstr "Ελεγχόμενη λειτουργία συνομιλίας μεταξύ των χρηστών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:235
+#: src/gs-content-rating.c:236
 msgid "Uncontrolled chat functionality between users"
 msgstr "Ανεξέλεγκτη λειτουργία συνομιλίας μεταξύ των χρηστών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:240
+#: src/gs-content-rating.c:241
 msgid "No way to talk with other users"
 msgstr "Χωρίς δυνατότητας συνομιλίας με άλλους χρήστες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:242
+#: src/gs-content-rating.c:243
 msgid "Uncontrolled audio or video chat functionality between users"
 msgstr "Ανεξέλεγκτη λειτουργία συνομιλίας με ήχο ή βίντεο μεταξύ των χρηστών"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:249
+#: src/gs-content-rating.c:250
 msgid "No sharing of social network usernames or email addresses"
 msgstr ""
 "Δεν γίνεται κοινή χρήση των ονομάτων χρηστών κοινωνικής δικτύωσης ή των "
 "διευθύνσεων ηλεκτρονικού ταχυδρομείου"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:251
+#: src/gs-content-rating.c:252
 msgid "Sharing social network usernames or email addresses"
 msgstr ""
 "Γίνεται κοινή χρήση των ονομάτων χρηστών κοινωνικής δικτύωσης ή των "
 "διευθύνσεων ηλεκτρονικού ταχυδρομείου"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:258
+#: src/gs-content-rating.c:259
 msgid "No sharing of user information with third parties"
 msgstr "Χωρίς διαμοιρασμό πληροφοριών του χρήστη με τρίτους"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:260
+#: src/gs-content-rating.c:261
 msgid "Checking for the latest application version"
 msgstr "Γίνεται έλεγχος για την πιο πρόσφατη έκδοση της εφαρμογής"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:262
+#: src/gs-content-rating.c:263
 msgid "Sharing diagnostic data that does not let others identify the user"
 msgstr ""
 "Διαμοιρασμός διαγνωστικών δεδομένων που δεν επιτρέπουν σε άλλους να "
 "αναγνωρίσουν τον χρήστη"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:264
+#: src/gs-content-rating.c:265
 msgid "Sharing information that lets others identify the user"
 msgstr ""
 "Διαμοιρασμός πληροφοριών που επιτρέπει σε άλλους να αναγνωρίσουν τον χρήστη"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:269
+#: src/gs-content-rating.c:270
 msgid "No sharing of physical location with other users"
 msgstr "Χωρίς διαμοιρασμό φυσικής τοποθεσίας σε άλλους χρήστες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:271
+#: src/gs-content-rating.c:272
 msgid "Sharing physical location with other users"
 msgstr "Διαμοιρασμός φυσικής τοποθεσίας σε άλλους χρήστες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:280
+#: src/gs-content-rating.c:281
 msgid "No references to homosexuality"
 msgstr "Χωρίς αναφορές σε ομοφυλοφιλία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:282
+#: src/gs-content-rating.c:283
 msgid "Indirect references to homosexuality"
 msgstr "Έμμεσες αναφορές στην ομοφυλοφιλία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:284
+#: src/gs-content-rating.c:285
 msgid "Kissing between people of the same gender"
 msgstr "Φιλί μεταξύ ανθρώπων του ίδιου φύλου"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:286
+#: src/gs-content-rating.c:287
 msgid "Graphic sexual behavior between people of the same gender"
 msgstr "Γραφική σεξουαλική συμπεριφορά μεταξύ ατόμων του ίδιου φύλου"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:291
+#: src/gs-content-rating.c:292
 msgid "No references to prostitution"
 msgstr "Χωρίς αναφορές σε πορνεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:293
+#: src/gs-content-rating.c:294
 msgid "Indirect references to prostitution"
 msgstr "Έμμεσες αναφορές στην πορνεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:295
+#: src/gs-content-rating.c:296
 msgid "Direct references to prostitution"
 msgstr "Άμεσες αναφορές σε πορνεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:297
+#: src/gs-content-rating.c:298
 msgid "Graphic depictions of the act of prostitution"
 msgstr "Γραφικές απεικονίσεις της πράξης πορνείας"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:302
+#: src/gs-content-rating.c:303
 msgid "No references to adultery"
 msgstr "Χωρίς αναφορές σε μοιχεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:304
+#: src/gs-content-rating.c:305
 msgid "Indirect references to adultery"
 msgstr "Έμμεσες αναφορές σε μοιχεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:306
+#: src/gs-content-rating.c:307
 msgid "Direct references to adultery"
 msgstr "Άμεσες αναφορές σε μοιχεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:308
+#: src/gs-content-rating.c:309
 msgid "Graphic depictions of the act of adultery"
 msgstr "Γραφικές απεικονίσεις της μοιχείας"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:313
+#: src/gs-content-rating.c:314
 msgid "No sexualized characters"
 msgstr "Δεν υπάρχουν σεξουαλικοποιημένοι χαρακτήρες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:316
+#: src/gs-content-rating.c:317
 msgid "Scantily clad human characters"
 msgstr "Ελαφρά ντυμένοι ανθρώπινοι χαρακτήρες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:318
+#: src/gs-content-rating.c:319
 msgid "Overtly sexualized human characters"
 msgstr "Εξαιρετικά σεξουαλικοποιημένοι ανθρώπινοι χαρακτήρες"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:323
+#: src/gs-content-rating.c:324
 msgid "No references to desecration"
 msgstr "Χωρίς αναφορές σε βεβήλωση"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:325
+#: src/gs-content-rating.c:326
 msgid "Depictions of or references to historical desecration"
 msgstr "Απεικονίσεις ή αναφορές στην ιστορική βεβήλωση"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:327
+#: src/gs-content-rating.c:328
 msgid "Depictions of modern-day human desecration"
 msgstr "Απεικονίσεις της σύγχρονης ανθρώπινης βεβήλωσης"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:329
+#: src/gs-content-rating.c:330
 msgid "Graphic depictions of modern-day desecration"
 msgstr "Γραφικές απεικονίσεις της σύγχρονης βεβήλωσης"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:334
+#: src/gs-content-rating.c:335
 msgid "No visible dead human remains"
 msgstr "Δεν υπάρχουν ορατά νεκρά ανθρώπινα κατάλοιπα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:336
+#: src/gs-content-rating.c:337
 msgid "Visible dead human remains"
 msgstr "Ορατά νεκρά ανθρώπινα κατάλοιπα"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:338
+#: src/gs-content-rating.c:339
 msgid "Dead human remains that are exposed to the elements"
 msgstr "Νεκρά ανθρώπινα λείψανα που εκτίθενται στα στοιχεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:340
+#: src/gs-content-rating.c:341
 msgid "Graphic depictions of desecration of human bodies"
 msgstr "Γραφικές απεικονίσεις της βεβήλωσης των ανθρώπινων σωμάτων"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:345
+#: src/gs-content-rating.c:346
 msgid "No references to slavery"
 msgstr "Χωρίς αναφορές σε δουλεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:347
+#: src/gs-content-rating.c:348
 msgid "Depictions of or references to historical slavery"
 msgstr "Απεικονίσεις ή αναφορές στην ιστορική δουλεία"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:349
+#: src/gs-content-rating.c:350
 msgid "Depictions of modern-day slavery"
 msgstr "Απεικονίσεις της σύγχρονης δουλείας"
 
 #. TRANSLATORS: content rating description
-#: src/gs-content-rating.c:351
+#: src/gs-content-rating.c:352
 msgid "Graphic depictions of modern-day slavery"
 msgstr "Γραφικές απεικονίσεις της σύγχρονης δουλείας"
 
 #. TRANSLATORS: This is the formatting of English and localized name
 #. of the rating e.g. "Adults Only (solo adultos)"
-#: src/gs-content-rating.c:411
+#: src/gs-content-rating.c:412
 #, c-format
 msgid "%s (%s)"
 msgstr "%s (%s)"
 
-#: src/gs-content-rating.c:545
+#: src/gs-content-rating.c:546
 msgid "General"
 msgstr "Γενικά"
 
-#: src/gs-content-rating.c:554
+#: src/gs-content-rating.c:555
 msgid "ALL"
 msgstr "ΟΛΟΙ"
 
-#: src/gs-content-rating.c:558
+#: src/gs-content-rating.c:559
 msgid "Adults Only"
 msgstr "Μόνο ενήλικες"
 
-#: src/gs-content-rating.c:560
+#: src/gs-content-rating.c:561
 msgid "Mature"
 msgstr "Ώριμος"
 
-#: src/gs-content-rating.c:562
+#: src/gs-content-rating.c:563
 msgid "Teen"
 msgstr "Έφηβοι"
 
-#: src/gs-content-rating.c:564
+#: src/gs-content-rating.c:565
 msgid "Everyone 10+"
 msgstr "Όλοι 10+"
 
-#: src/gs-content-rating.c:566
+#: src/gs-content-rating.c:567
 msgid "Everyone"
 msgstr "Όλοι"
 
-#: src/gs-content-rating.c:568
+#: src/gs-content-rating.c:569
 msgid "Early Childhood"
 msgstr "Παιδική ηλικία"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: src/gs-dbus-helper.c:281
+#: src/gs-dbus-helper.c:282
 msgid "An application"
 msgstr "Μια εφαρμογή"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: src/gs-dbus-helper.c:287
+#: src/gs-dbus-helper.c:288
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "Το %s ζητά πρόσθετη υποστήριξη μορφής αρχείου."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:289
+#: src/gs-dbus-helper.c:290
 msgid "Additional MIME Types Required"
 msgstr "Απαιτούνται πρόσθετοι τύποι MIME"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: src/gs-dbus-helper.c:293
+#: src/gs-dbus-helper.c:294
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "Το %s ζητά πρόσθετες γραμματοσειρές."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:295
+#: src/gs-dbus-helper.c:296
 msgid "Additional Fonts Required"
 msgstr "Απαιτούνται πρόσθετες γραμματοσειρές"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: src/gs-dbus-helper.c:299
+#: src/gs-dbus-helper.c:300
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "Το %s ζητά πρόσθετους κωδικοποιητές πολυμέσων."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:301
+#: src/gs-dbus-helper.c:302
 msgid "Additional Multimedia Codecs Required"
 msgstr "Απαιτούνται πρόσθετοι κωδικοποιητές πολυμέσων"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: src/gs-dbus-helper.c:305
+#: src/gs-dbus-helper.c:306
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "Το %s ζητά πρόσθετους οδηγούς εκτυπωτή."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:307
+#: src/gs-dbus-helper.c:308
 msgid "Additional Printer Drivers Required"
 msgstr "Απαιτούνται πρόσθετοι οδηγοί εκτυπωτή"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: src/gs-dbus-helper.c:311
+#: src/gs-dbus-helper.c:312
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "Το %s ζητά πρόσθετα πακέτα."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:313
+#: src/gs-dbus-helper.c:314
 msgid "Additional Packages Required"
 msgstr "Απαιτούνται πρόσθετα πακέτα"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:322
+#: src/gs-dbus-helper.c:323
 msgid "Find in Software"
 msgstr "Εύρεση στο λογισμικό"
 
-#: src/gs-details-page.c:345
+#: src/gs-details-page.c:346
 msgid "Removing…"
 msgstr "Αφαιρείται…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:364
+#: src/gs-details-page.c:365
 msgid "Pending installation…"
 msgstr "Εκκρεμεί εγκατάσταση…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:371
+#: src/gs-details-page.c:372
 msgid "Pending update…"
 msgstr "Εκκρεμής ενημέρωση…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:385
+#: src/gs-details-page.c:386
 msgid "Preparing…"
 msgstr "Προετοιμάζεται…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:744
+#: src/gs-details-page.c:745
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1490,9 +1485,9 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:889 src/gs-details-page.c:906
-#: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:83
-#: src/gs-upgrade-banner.c:88
+#: src/gs-details-page.c:890 src/gs-details-page.c:907
+#: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:84
+#: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "Ε_γκατάσταση"
 
@@ -1503,109 +1498,109 @@ msgstr "Ε_γκατάσταση"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:920 src/gs-third-party-repo-row.c:75
+#: src/gs-details-page.c:921 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "Ε_γκατάσταση…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:962
+#: src/gs-details-page.c:963
 msgid "_Launch"
 msgstr "Ε_κκίνηση"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:986 src/gs-details-page.ui:192
+#: src/gs-details-page.c:987 src/gs-details-page.ui:192
 msgid "_Remove"
 msgstr "Α_φαίρεση"
 
-#: src/gs-details-page.c:1017 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "Δίκτυο"
 
-#: src/gs-details-page.c:1017 src/gs-update-dialog.c:92
+#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "Δυνατότητα επικοινωνίας μέσω δικτύου"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "Υπηρεσίες συστήματος"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "Δυνατότητα πρόσβασης στις υπηρεσίες D-Bus στο δίαυλο συστήματος"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "Υπηρεσίες συνεδρίας"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "Δυνατότητα πρόσβασης στις υπηρεσίες D-Bus στο δίαυλο συνεδρίας"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "Συσκευές"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "Δυνατότητα πρόσβασης αρχείων συσκευών συστήματος"
 
-#: src/gs-details-page.c:1021 src/gs-details-page.c:1022
-#: src/gs-update-dialog.c:96 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
+#: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "Προσωπικός φάκελος"
-
-#: src/gs-details-page.c:1021 src/gs-details-page.c:1023
-#: src/gs-details-page.c:1025 src/gs-update-dialog.c:96
-#: src/gs-update-dialog.c:98 src/gs-update-dialog.c:100
-msgid "Can view, edit and create files"
-msgstr "Δυνατότητα προβολής, επεξεργασίας και δημιουργίας αρχείων"
 
 #: src/gs-details-page.c:1022 src/gs-details-page.c:1024
 #: src/gs-details-page.c:1026 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
+msgid "Can view, edit and create files"
+msgstr "Δυνατότητα προβολής, επεξεργασίας και δημιουργίας αρχείων"
+
+#: src/gs-details-page.c:1023 src/gs-details-page.c:1025
+#: src/gs-details-page.c:1027 src/gs-update-dialog.c:98
+#: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "Δυνατότητα προβολής αρχείων"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1024
-#: src/gs-update-dialog.c:98 src/gs-update-dialog.c:99
+#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
+#: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "Σύστημα αρχείων"
 
-#: src/gs-details-page.c:1025 src/gs-details-page.c:1026
-#: src/gs-update-dialog.c:100 src/gs-update-dialog.c:101
+#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
+#: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "Φάκελος λήψεων"
 
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "Ρυθμίσεις"
 
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:102
+#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "Δυνατότητα προβολής και αλλαγής οποιονδήποτε ρυθμίσεων"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "Σύστημα προβολής παλαιού τύπου"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "Χρησιμοποιεί ένα παλιό, ανασφαλές σύστημα προβολής"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "Αποφυγή φιλτραρισματος"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr ""
 "Μπορεί να ξεφύγει από το φιλτράρισμα και να παρακάμψει άλλους περιορισμούς"
 
-#: src/gs-details-page.c:1044
+#: src/gs-details-page.c:1045
 msgid "This application is fully sandboxed."
 msgstr "Αυτή η εφαρμογή είναι πλήρως φιλτραρισμένη."
 
-#: src/gs-details-page.c:1052
+#: src/gs-details-page.c:1053
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1614,83 +1609,83 @@ msgstr ""
 "αυτή η εφαρμογή. Αυτό είναι χαρακτηριστικό για παλαιότερες εφαρμογές."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1211
+#: src/gs-details-page.c:1212
 msgctxt "version"
 msgid "Unknown"
 msgstr "Άγνωστη"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1224
+#: src/gs-details-page.c:1225
 msgctxt "updated"
 msgid "Never"
 msgstr "Ποτέ"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1277
+#: src/gs-details-page.c:1278
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Άγνωστη"
 
-#: src/gs-details-page.c:1330
+#: src/gs-details-page.c:1331
 msgid "Low"
 msgstr "Χαμηλό"
 
-#: src/gs-details-page.c:1332
+#: src/gs-details-page.c:1333
 msgid "Medium"
 msgstr "Μέσο"
 
-#: src/gs-details-page.c:1334
+#: src/gs-details-page.c:1335
 msgid "High"
 msgstr "Υψηλό"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1336 src/gs-details-page.ui:1006
-#: src/gs-review-row.c:57
+#: src/gs-details-page.c:1337 src/gs-details-page.ui:1006
+#: src/gs-review-row.c:58
 msgid "Unknown"
 msgstr "Άγνωστο"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1674
+#: src/gs-details-page.c:1675
 msgid "You need internet access to write a review"
 msgstr "Απαιτείται σύνδεση στο διαδίκτυο για να γράψετε μια κριτική"
 
-#: src/gs-details-page.c:1863 src/gs-details-page.c:1879
+#: src/gs-details-page.c:1864 src/gs-details-page.c:1880
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Αδύνατη η εύρεση του «%s»"
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2457
+#: src/gs-details-page.c:2458
 msgid "Public domain"
 msgstr "Δημόσιος τομέας"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2460
+#: src/gs-details-page.c:2461
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://en.wikipedia.org/wiki/Public_domain"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2467
+#: src/gs-details-page.c:2468
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2477 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2478 src/gs-details-page.ui:1250
 msgid "Free Software"
 msgstr "Ελεύθερο λογισμικό"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2534
+#: src/gs-details-page.c:2535
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Οι χρήστες δεσμεύονται από την εξής άδεια χρήσης:"
 msgstr[1] "Οι χρήστες δεσμεύονται από τις εξής άδειες χρήσης:"
 
-#: src/gs-details-page.c:2561 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2562 src/gs-details-page.ui:1322
 msgid "More information"
 msgstr "Περισσότερες πληροφορίες"
 
@@ -1798,7 +1793,7 @@ msgid "Sandboxed"
 msgstr "Φιλτραρισμένη"
 
 #. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:605 src/gs-origin-popover-row.c:102
+#: src/gs-details-page.ui:605 src/gs-origin-popover-row.c:103
 msgid "Channel"
 msgstr "Κανάλι"
 
@@ -1852,8 +1847,8 @@ msgstr "Ιδιοταγές"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:440
-#: plugins/core/gs-desktop-common.c:314
+#: src/gs-details-page.ui:1044 src/gs-installed-page.c:441
+#: plugins/core/gs-desktop-common.c:315
 msgid "Add-ons"
 msgstr "Πρόσθετα"
 
@@ -1915,18 +1910,18 @@ msgid "No details were available for this rating."
 msgstr "Δεν υπήρχαν διαθέσιμες λεπτομέρειες γι' αυτήν την κριτική."
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:134
+#: src/gs-extras-page.c:135
 msgid " and "
 msgstr " και "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:137
+#: src/gs-extras-page.c:138
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:163
+#: src/gs-extras-page.c:164
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1935,38 +1930,38 @@ msgstr[1] "Διαθέσιμες γραμματοσειρές για τα σεν�
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:171
+#: src/gs-extras-page.c:172
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "Διαθέσιμο λογισμικό για το %s"
 msgstr[1] "Διαθέσιμο λογισμικό για το %s"
 
-#: src/gs-extras-page.c:213
+#: src/gs-extras-page.c:214
 msgid "Unable to Find Requested Software"
 msgstr "Αδύνατη η εύρεση του ζητούμενου λογισμικού"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:318
+#: src/gs-extras-page.c:319
 #, c-format
 msgid "%s not found"
 msgstr "Δεν βρέθηκε το %s"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:322
+#: src/gs-extras-page.c:323
 msgid "on the website"
 msgstr "στον ιστότοπο"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:329
+#: src/gs-extras-page.c:330
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Δεν υπάρχουν διαθέσιμες εφαρμογές που παρέχουν το αρχείο %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:333 src/gs-extras-page.c:344 src/gs-extras-page.c:355
+#: src/gs-extras-page.c:334 src/gs-extras-page.c:345 src/gs-extras-page.c:356
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1977,21 +1972,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:340 src/gs-extras-page.c:362
+#: src/gs-extras-page.c:341 src/gs-extras-page.c:363
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Δεν υπάρχουν διαθέσιμες εφαρμογές για υποστήριξη του %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:351
+#: src/gs-extras-page.c:352
 #, c-format
 msgid "%s is not available."
 msgstr "Το %s δεν είναι διαθέσιμο."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:366
+#: src/gs-extras-page.c:367
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -2002,14 +1997,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:373
+#: src/gs-extras-page.c:374
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Δεν υπάρχουν διαθέσιμες γραμματοσειρές για υποστήριξη του σεναρίου %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:377
+#: src/gs-extras-page.c:378
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2020,14 +2015,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:384
+#: src/gs-extras-page.c:385
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Δεν υπάρχουν διαθέσιμα πρόσθετα κωδικοποιητών για τη μορφή %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:388
+#: src/gs-extras-page.c:389
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2039,14 +2034,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:395
+#: src/gs-extras-page.c:396
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Δεν υπάρχουν διαθέσιμοι πόροι πλάσματος για υποστήριξη του %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:399
+#: src/gs-extras-page.c:400
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2057,14 +2052,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:406
+#: src/gs-extras-page.c:407
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Δεν υπάρχουν διαθέσιμοι οδηγοί εκτυπωτή για το %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:410
+#: src/gs-extras-page.c:411
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2074,12 +2069,12 @@ msgstr ""
 "που υποστηρίζει αυτόν τον εκτυπωτή μπορούν να βρεθούν στο %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:454
+#: src/gs-extras-page.c:455
 msgid "this website"
 msgstr "αυτός ο ιστότοπος"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: src/gs-extras-page.c:458
+#: src/gs-extras-page.c:459
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -2094,11 +2089,11 @@ msgstr[1] ""
 "Δυστυχώς, το %s που αναζητούσατε δεν μπόρεσε να βρεθεί. Παρακαλούμε δείτε το "
 "%s για περισσότερες πληροφορίες."
 
-#: src/gs-extras-page.c:526 src/gs-extras-page.c:582 src/gs-extras-page.c:621
+#: src/gs-extras-page.c:527 src/gs-extras-page.c:583 src/gs-extras-page.c:622
 msgid "Failed to find any search results"
 msgstr "Αποτυχία εύρεσης αποτελεσμάτων αναζήτησης"
 
-#: src/gs-extras-page.c:809
+#: src/gs-extras-page.c:810
 #, c-format
 msgid "%s file format"
 msgstr "Μορφή αρχείου %s"
@@ -2131,21 +2126,21 @@ msgstr "_Πάμε για ψώνια"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: src/gs-history-dialog.c:69
+#: src/gs-history-dialog.c:70
 msgctxt "app status"
 msgid "Removed"
 msgstr "Αφαιρέθηκε"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: src/gs-history-dialog.c:75
+#: src/gs-history-dialog.c:76
 msgctxt "app status"
 msgid "Installed"
 msgstr "Εγκατεστημένο"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: src/gs-history-dialog.c:81
+#: src/gs-history-dialog.c:82
 msgctxt "app status"
 msgid "Updated"
 msgstr "Ενημερωμένο"
@@ -2153,14 +2148,14 @@ msgstr "Ενημερωμένο"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: src/gs-history-dialog.c:87
+#: src/gs-history-dialog.c:88
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Άγνωστο"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: src/gs-history-dialog.c:110 src/gs-review-row.c:64 src/gs-updates-page.c:257
+#: src/gs-history-dialog.c:111 src/gs-review-row.c:65 src/gs-updates-page.c:258
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
@@ -2170,7 +2165,7 @@ msgstr "Ιστορικό"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: src/gs-installed-page.c:436
+#: src/gs-installed-page.c:437
 msgid "System Applications"
 msgstr "Εφαρμογές συστήματος"
 
@@ -2179,7 +2174,7 @@ msgid "Installed page"
 msgstr "Εγκατεστημένη σελίδα"
 
 #. TRANSLATORS: initial start
-#: src/gs-loading-page.c:61 src/gs-loading-page.c:65
+#: src/gs-loading-page.c:62 src/gs-loading-page.c:66
 msgid "Software catalog is being downloaded"
 msgstr "Γίνεται λήψη του καταλόγου λογισμικού"
 
@@ -2227,18 +2222,18 @@ msgid "There are no reviews to moderate"
 msgstr "Δεν υπάρχουν κριτικές προς διαχείριση"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:83
+#: src/gs-origin-popover-row.c:84
 msgid "system"
 msgstr "σύστημα"
 
 #. TRANSLATORS: the installation location for flatpaks
-#: src/gs-origin-popover-row.c:86
+#: src/gs-origin-popover-row.c:87
 msgid "user"
 msgstr "χρήστης"
 
 #. TRANSLATORS: the title for Flatpak branches
 #. Translators: The branch, e.g. 'stable' or '3.32'
-#: src/gs-origin-popover-row.c:107 src/gs-origin-popover-row.ui:122
+#: src/gs-origin-popover-row.c:108 src/gs-origin-popover-row.ui:122
 msgid "Branch"
 msgstr "Κλάδος"
 
@@ -2257,41 +2252,41 @@ msgid "Installation"
 msgstr "Εγκατάσταση"
 
 #. add button
-#: src/gs-overview-page.c:312
+#: src/gs-overview-page.c:313
 msgid "More…"
 msgstr "Περισσότερα…"
 
 #. TRANSLATORS: this is a heading for audio applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:562
+#: src/gs-overview-page.c:563
 msgid "Recommended Audio & Video Applications"
 msgstr "Προτεινόμενες εφαρμογές ήχου & βίντεο"
 
 #. TRANSLATORS: this is a heading for games which have been
 #. * featured ('recommended') by the distribution
-#: src/gs-overview-page.c:567
+#: src/gs-overview-page.c:568
 msgid "Recommended Games"
 msgstr "Προτεινόμενα παιχνίδια"
 
 #. TRANSLATORS: this is a heading for graphics applications
 #. * which have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:572
+#: src/gs-overview-page.c:573
 msgid "Recommended Graphics Applications"
 msgstr "Προτεινόμενες εφαρμογές γραφικών"
 
 #. TRANSLATORS: this is a heading for office applications which
 #. * have been featured ('recommended') by the distribution
-#: src/gs-overview-page.c:577
+#: src/gs-overview-page.c:578
 msgid "Recommended Productivity Applications"
 msgstr "Συνιστώμενες εφαρμογές παραγωγικότητας"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:925 src/gs-repos-dialog.c:831
+#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:832
 msgid "Access additional software from selected third party sources."
 msgstr "Πρόσβαση σε πρόσθετο λογισμικό από επιλεγμένες πηγές τρίτων."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:929 src/gs-repos-dialog.c:835
+#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:836
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2301,13 +2296,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:934 src/gs-repos-dialog.c:840
+#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:841
 msgid "Find out more…"
 msgstr "Μάθετε περισσότερα…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:942 src/gs-repos-dialog.c:239
+#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:240
 msgid "Enable"
 msgstr "Ενεργοποίηση"
 
@@ -2347,20 +2342,20 @@ msgstr "Δε βρέθηκαν δεδομένα εφαρμογών"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:264
+#: src/gs-page.c:325
 #, c-format
 msgid "Prepare %s"
 msgstr "Προετοιμασία του %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:403
+#: src/gs-page.c:461
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Είστε σίγουροι ότι θέλετε να αφαιρέσετε το αποθετήριο %s;"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:407
+#: src/gs-page.c:465
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2371,13 +2366,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:415
+#: src/gs-page.c:473
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Είστε σίγουροι ότι θέλετε να αφαιρέσετε το %s;"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:418
+#: src/gs-page.c:476
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -2385,7 +2380,7 @@ msgstr ""
 "χρησιμοποιήσετε."
 
 #. TRANSLATORS: this refers to an app (by name) that is installed
-#: src/gs-popular-tile.c:63 src/gs-summary-tile.c:86
+#: src/gs-popular-tile.c:64 src/gs-summary-tile.c:87
 #, c-format
 msgid "%s (Installed)"
 msgstr "%s (εγκαταστάθηκε)"
@@ -2414,7 +2409,7 @@ msgstr "Εμφάνιση ειδοποιήσεων όταν οι ενημερώσ
 
 #. TRANSLATORS: This is a text displayed during a distro upgrade. %s
 #. will be replaced by the name and version of distro, e.g. 'Fedora 23'.
-#: src/gs-removal-dialog.c:119
+#: src/gs-removal-dialog.c:120
 #, c-format
 msgid ""
 "Some of the currently installed software is not compatible with %s. If you "
@@ -2433,7 +2428,7 @@ msgstr "_Συνέχεια"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:97
+#: src/gs-repos-dialog.c:98
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2442,7 +2437,7 @@ msgstr[1] "%u εφαρμογές εγκαταστάθηκαν"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:104
+#: src/gs-repos-dialog.c:105
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2452,7 +2447,7 @@ msgstr[1] "%u πρόσθετα εγκαταστάθηκαν"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repos-dialog.c:112
+#: src/gs-repos-dialog.c:113
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2462,7 +2457,7 @@ msgstr[1] "%u εφαρμογές"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repos-dialog.c:118
+#: src/gs-repos-dialog.c:119
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2473,7 +2468,7 @@ msgstr[1] "%u πρόσθετα"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repos-dialog.c:125
+#: src/gs-repos-dialog.c:126
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -2482,20 +2477,20 @@ msgstr[1] "Τα %s και %s εγκαταστάθηκαν"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:301
+#: src/gs-repos-dialog.c:302
 #, c-format
 msgid "Remove “%s”?"
 msgstr "Αφαίρεση του «%s»;"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:306
+#: src/gs-repos-dialog.c:307
 #, c-format
 msgid "Disable “%s”?"
 msgstr "Απενεργοποίηση του «%s»;"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:310
+#: src/gs-repos-dialog.c:311
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2504,19 +2499,19 @@ msgstr ""
 "πλέον ενημερώσεις, συμπεριλαμβανομένων των διορθώσεων ασφαλείας."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:328
+#: src/gs-repos-dialog.c:329
 msgid "Disable"
 msgstr "Απενεργοποίηση"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:744
+#: src/gs-repos-dialog.c:745
 msgid "the operating system"
 msgstr "το λειτουργικό σύστημα"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:810 src/gs-repos-dialog.c:846
+#: src/gs-repos-dialog.c:811 src/gs-repos-dialog.c:847
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr ""
@@ -2524,7 +2519,7 @@ msgstr ""
 "το %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:828
+#: src/gs-repos-dialog.c:829
 msgid "Third Party Repositories"
 msgstr "Αποθετήρια τρίτων"
 
@@ -2534,105 +2529,105 @@ msgstr "Κανένα επιπρόσθετο αποθετήριο"
 
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for enabling a repo
-#: src/gs-repo-row.c:95
+#: src/gs-repo-row.c:96
 msgid "_Enable"
 msgstr "_Ενεργοποίηση"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for removing a repo. The ellipsis indicates that further
 #. steps are required
-#: src/gs-repo-row.c:104
+#: src/gs-repo-row.c:105
 msgid "_Remove…"
 msgstr "_Απομάκρυνση…"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. for disabling a repo. The ellipsis indicates that further
 #. steps are required
-#: src/gs-repo-row.c:109
+#: src/gs-repo-row.c:110
 msgid "_Disable…"
 msgstr "_Απενεργοποίηση…"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being enabled
-#: src/gs-repo-row.c:117
+#: src/gs-repo-row.c:118
 msgid "Enabling"
 msgstr "Ενεργοποιείται"
 
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being disabled
-#: src/gs-repo-row.c:129
+#: src/gs-repo-row.c:130
 msgid "Disabling"
 msgstr "Απενεργοποίηση"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is enabled.
-#: src/gs-repo-row.c:143
+#: src/gs-repo-row.c:144
 msgid "Enabled"
 msgstr "Ενεργοποιημένο"
 
 #. TRANSLATORS: this is a label in the software repositories
 #. dialog that indicates that a repo is disabled.
-#: src/gs-repo-row.c:149
+#: src/gs-repo-row.c:150
 msgid "Disabled"
 msgstr "Απενεργοποιημένο"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really bad application
-#: src/gs-review-dialog.c:81
+#: src/gs-review-dialog.c:82
 msgid "Hate it"
 msgstr "Το μισώ"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
-#: src/gs-review-dialog.c:85
+#: src/gs-review-dialog.c:86
 msgid "Don’t like it"
 msgstr "Δεν μου αρέσει"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
-#: src/gs-review-dialog.c:89
+#: src/gs-review-dialog.c:90
 msgid "It’s OK"
 msgstr "Είναι εντάξει"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
-#: src/gs-review-dialog.c:93
+#: src/gs-review-dialog.c:94
 msgid "Like it"
 msgstr "Μου αρέσει"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
-#: src/gs-review-dialog.c:97
+#: src/gs-review-dialog.c:98
 msgid "Love it"
 msgstr "Το αγαπώ"
 
 #. TRANSLATORS: the review can't just be copied and pasted
-#: src/gs-review-dialog.c:119
+#: src/gs-review-dialog.c:120
 msgid "Please take more time writing the review"
 msgstr "Παρακαλούμε, αφιερώστε περισσότερο χρόνο για τη κριτική σας"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:123
+#: src/gs-review-dialog.c:124
 msgid "Please choose a star rating"
 msgstr "Παρακαλούμε επιλέξτε μια βαθμολογία"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:127
+#: src/gs-review-dialog.c:128
 msgid "The summary is too short"
 msgstr "Η σύνοψη είναι πολύ μιρκή"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:131
+#: src/gs-review-dialog.c:132
 msgid "The summary is too long"
 msgstr "Η σύνοψη είναι πολύ μεγάλη"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:135
+#: src/gs-review-dialog.c:136
 msgid "The description is too short"
 msgstr "Η περιγραφή είναι πολύ μικρή"
 
 #. TRANSLATORS: the review is not acceptable
-#: src/gs-review-dialog.c:139
+#: src/gs-review-dialog.c:140
 msgid "The description is too long"
 msgstr "Η περιγραφή είναι πολύ μεγάλη"
 
@@ -2684,14 +2679,14 @@ msgid "ratings in total"
 msgstr "συνολικές αξιολογήσεις"
 
 #. TRANSLATORS: we explain what the action is going to do
-#: src/gs-review-row.c:222
+#: src/gs-review-row.c:223
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
 "Μπορείτε να αναφέρετε τις κριτικές για καταχρηστική, αγενής, ή μεροληπτική "
 "συμπεριφορά."
 
 #. TRANSLATORS: we ask the user if they really want to do this
-#: src/gs-review-row.c:227
+#: src/gs-review-row.c:228
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
@@ -2702,13 +2697,13 @@ msgstr ""
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
-#: src/gs-review-row.c:241
+#: src/gs-review-row.c:242
 msgid "Report Review?"
 msgstr "Αναφορά κριτικής;"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
-#: src/gs-review-row.c:245
+#: src/gs-review-row.c:246
 msgid "Report"
 msgstr "Αναφορά"
 
@@ -2740,45 +2735,45 @@ msgstr "Αφαίρεση…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:235
+#: src/gs-screenshot-image.c:236
 msgid "Screenshot not found"
 msgstr "Δεν βρέθηκε στιγμιότυπο"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:250
+#: src/gs-screenshot-image.c:251
 msgid "Failed to load image"
 msgstr "Αποτυχία φόρτωσης εικόνας"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:381
+#: src/gs-screenshot-image.c:382
 msgid "Screenshot size not found"
 msgstr "Δεν βρέθηκε μέγεθος στιγμιοτύπου"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:411
+#: src/gs-screenshot-image.c:412
 msgid "Could not create cache"
 msgstr "Αδυναμία δημιουργίας λανθάνουσας μνήμης"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:471
+#: src/gs-screenshot-image.c:472
 msgid "Screenshot not valid"
 msgstr "Άκυρο στιγμιότυπο οθόνης"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:486
+#: src/gs-screenshot-image.c:487
 msgid "Screenshot not available"
 msgstr "Μη διαθέσιμο στιγμιότυπο οθόνης"
 
-#: src/gs-screenshot-image.c:544
+#: src/gs-screenshot-image.c:545
 msgid "Screenshot"
 msgstr "Στιγμιότυπο οθόνης"
 
 #. TRANSLATORS: this is when there are too many search results
 #. * to show in in the search page
-#: src/gs-search-page.c:142
+#: src/gs-search-page.c:143
 #, c-format
 msgid "%u more match"
 msgid_plural "%u more matches"
@@ -2801,33 +2796,33 @@ msgstr "Δε βρέθηκαν εφαρμογές"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1110 src/gs-shell.c:1115 src/gs-shell.c:1130
-#: src/gs-shell.c:1134
+#: src/gs-shell.c:1111 src/gs-shell.c:1116 src/gs-shell.c:1131
+#: src/gs-shell.c:1135
 #, c-format
 msgid "“%s”"
 msgstr "«%s»"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1181
+#: src/gs-shell.c:1182
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Αδύνατη η λήψη ενημερώσεων υλικολογισμικού από το %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1187
+#: src/gs-shell.c:1188
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Αδύνατη η λήψη ενημερώσεων από το %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1194 src/gs-shell.c:1239
+#: src/gs-shell.c:1195 src/gs-shell.c:1240
 msgid "Unable to download updates"
 msgstr "Αδύνατη η λήψη ενημερώσεων"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1200
+#: src/gs-shell.c:1201
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2836,29 +2831,29 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1209
+#: src/gs-shell.c:1210
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "Αδύνατη η λήψη ενημερώσεων από %s: δεν υπάρχει επαρκής χώρος στον δίσκο"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1214
+#: src/gs-shell.c:1215
 msgid "Unable to download updates: not enough disk space"
 msgstr "Αδύνατη η λήψη ενημερώσεων: δεν υπάρχει επαρκής χώρος στον δίσκο"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1221
+#: src/gs-shell.c:1222
 msgid "Unable to download updates: authentication was required"
 msgstr "Αδύνατη η λήψη ενημερώσεων: απαιτείται πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1226
+#: src/gs-shell.c:1227
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Αδύνατη η λήψη ενημερώσεων: ήταν άκυρη η πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1231
+#: src/gs-shell.c:1232
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2866,21 +2861,21 @@ msgstr ""
 "λογισμικό"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1242
+#: src/gs-shell.c:1243
 msgid "Unable to get list of updates"
 msgstr "Αδύνατη η λήψη της λίστας ενημερώσεων"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1285
+#: src/gs-shell.c:1286
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Αδύνατη η εγκατάσταση του %s καθώς απέτυχε η λήψη από το %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1291
+#: src/gs-shell.c:1292
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Αδύνατη η εγκατάσταση του %s καθώς απέτυχε η λήψη"
@@ -2889,7 +2884,7 @@ msgstr "Αδύνατη η εγκατάσταση του %s καθώς απέτυ
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1304
+#: src/gs-shell.c:1305
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr ""
@@ -2898,46 +2893,46 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1310
+#: src/gs-shell.c:1311
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Αδύνατη η εγκατάσταση του %s καθώς δεν υποστηρίζεται"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1317
+#: src/gs-shell.c:1318
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Αδύνατη η εγκατάσταση: ήταν απαραίτητη η πρόσβαση στο διαδίκτυο αλλά δεν "
 "ήταν διαθέσιμη"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1323
+#: src/gs-shell.c:1324
 msgid "Unable to install: the application has an invalid format"
 msgstr "Αδύνατη η εγκατάσταση: η εφαρμογή έχει άκυρη μορφή"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1328
+#: src/gs-shell.c:1329
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Αδύνατη η εγκατάσταση του %s: δεν υπάρχει επαρκής χώρος στον δίσκο"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1335
+#: src/gs-shell.c:1336
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Αδύνατη η εγκατάσταση του %s: απαιτείται πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1342
+#: src/gs-shell.c:1343
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Αδύνατη η εγκατάσταση του %s: ήταν άκυρη η πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1349
+#: src/gs-shell.c:1350
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr ""
@@ -2945,14 +2940,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1357
+#: src/gs-shell.c:1358
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Αδύνατη η εγκατάσταση του %s: απαιτείται συνεχόμενη παροχή ρεύματος"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1364
+#: src/gs-shell.c:1365
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr ""
@@ -2960,7 +2955,7 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1373
+#: src/gs-shell.c:1374
 #, c-format
 msgid "Unable to install %s"
 msgstr "Αδύνατη η εγκατάσταση του %s"
@@ -2969,14 +2964,14 @@ msgstr "Αδύνατη η εγκατάσταση του %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1420
+#: src/gs-shell.c:1421
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Αδύνατη η ενημέρωση του %s από %s καθώς απέτυχε η λήψη"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1427
+#: src/gs-shell.c:1428
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Αδύνατη η ενημέρωση του %s καθώς απέτυχε η λήψη"
@@ -2984,19 +2979,19 @@ msgstr "Αδύνατη η ενημέρωση του %s καθώς απέτυχε
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1434
+#: src/gs-shell.c:1435
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Αδύνατη η εγκατάσταση ενημερώσεων από %s καθώς απέτυχε η λήψη"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1438
+#: src/gs-shell.c:1439
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Αδύνατη η εγκατάσταση ενημερώσεων καθώς απέτυχε η λήψη"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1444
+#: src/gs-shell.c:1445
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Αδύνατη η ενημέρωση: ήταν απαραίτητη η πρόσβαση στο διαδίκτυο αλλά δεν ήταν "
@@ -3004,13 +2999,13 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1454
+#: src/gs-shell.c:1455
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Αδύνατη η ενημέρωση του %s: δεν υπάρχει επαρκής χώρος στον δίσκο"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1459
+#: src/gs-shell.c:1460
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr ""
@@ -3018,40 +3013,40 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1469
+#: src/gs-shell.c:1470
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Αδύνατη η ενημέρωση του %s: απαιτείται πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1474
+#: src/gs-shell.c:1475
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Αδύνατη η εγκατάσταση ενημερώσεων: απαιτείται πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1483
+#: src/gs-shell.c:1484
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Αδύνατη η ενημέρωση του %s: ήταν άκυρη η πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1488
+#: src/gs-shell.c:1489
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Αδύνατη η εγκατάσταση ενημερώσεων: μη έγκυρη πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1497
+#: src/gs-shell.c:1498
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Αδύνατη η ενημέρωση του %s: δεν έχετε άδεια για να ενημερώσετε λογισμικό"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1503
+#: src/gs-shell.c:1504
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3061,14 +3056,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1513
+#: src/gs-shell.c:1514
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Αδύνατη η ενημέρωση του %s: απαιτείται συνεχόμενη παροχή ρεύματος"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1519
+#: src/gs-shell.c:1520
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr ""
@@ -3076,14 +3071,14 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1528
+#: src/gs-shell.c:1529
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Αδύνατη η ενημέρωση του %s: Το επίπεδο της μπαταρίας είναι πολύ χαμηλό"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1534
+#: src/gs-shell.c:1535
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr ""
@@ -3091,13 +3086,13 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1545
+#: src/gs-shell.c:1546
 #, c-format
 msgid "Unable to update %s"
 msgstr "Αδύνατη η ενημέρωση του %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1548
+#: src/gs-shell.c:1549
 #, c-format
 msgid "Unable to install updates"
 msgstr "Αδυναμία εγκατάστασης ενημερώσεων"
@@ -3105,21 +3100,21 @@ msgstr "Αδυναμία εγκατάστασης ενημερώσεων"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1591
+#: src/gs-shell.c:1592
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Αδύνατη η αναβάθμιση του %s από το %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1596
+#: src/gs-shell.c:1597
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Αδύνατη η αναβάθμιση του %s καθώς απέτυχε η λήψη"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1605
+#: src/gs-shell.c:1606
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3129,42 +3124,42 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1614
+#: src/gs-shell.c:1615
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Αδύνατη η αναβάθμιση του %s: δεν υπάρχει επαρκής χώρος στον δίσκο"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1622
+#: src/gs-shell.c:1623
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Αδύνατη η αναβάμιση του %s: απαιτείται πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1629
+#: src/gs-shell.c:1630
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Αδύνατη η αναβάθμιση του %s: ήταν άκυρη η πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1636
+#: src/gs-shell.c:1637
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Αδύνατη η αναβάθμιση του %s: δεν έχετε άδεια για να αναβαθμίσετε"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1643
+#: src/gs-shell.c:1644
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Αδύνατη η αναβάμιση του %s: απαιτείται συνεχόμενη παροχή ρεύματος"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1650
+#: src/gs-shell.c:1651
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr ""
@@ -3172,49 +3167,49 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1659
+#: src/gs-shell.c:1660
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Αδύνατη η αναβάθμιση του %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1697
+#: src/gs-shell.c:1698
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Αδύνατη η αφαίρεση του %s: απαιτείται πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1703
+#: src/gs-shell.c:1704
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Αδύνατη η αφαίρεση του %s: ήταν άκυρη η πιστοποίηση"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1709
+#: src/gs-shell.c:1710
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Αδύνατη η αφαίρεση του %s: δεν έχετε άδεια για να αφαιρέσετε λογισμικό"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1716
+#: src/gs-shell.c:1717
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Αδύνατη η αφαίρεση του %s: απαιτείται συνεχόμενη παροχή ρεύματος"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1723
+#: src/gs-shell.c:1724
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Αδύνατη η αφαίρεση του %s: Το επίπεδο της μπαταρίας είναι πολύ χαμηλό"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1735
+#: src/gs-shell.c:1736
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Αδύνατη  η αφαίρεση του %s"
@@ -3223,101 +3218,101 @@ msgstr "Αδύνατη  η αφαίρεση του %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1778
+#: src/gs-shell.c:1779
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Αδύνατη η εκκίνηση του %s: δεν είναι εγκατεστημένο το %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1785 src/gs-shell.c:1836 src/gs-shell.c:1877
-#: src/gs-shell.c:1925
+#: src/gs-shell.c:1786 src/gs-shell.c:1837 src/gs-shell.c:1878
+#: src/gs-shell.c:1926
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Δεν υπάρχει αρκετός χώρος στον δίσκο — ελευθερώστε κάποιο χώρο και "
 "προσπαθήστε ξανά"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1796 src/gs-shell.c:1847 src/gs-shell.c:1888
-#: src/gs-shell.c:1959
+#: src/gs-shell.c:1797 src/gs-shell.c:1848 src/gs-shell.c:1889
+#: src/gs-shell.c:1960
 msgid "Sorry, something went wrong"
 msgstr "Συγνώμη, κάτι πήγε λάθος"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1828
+#: src/gs-shell.c:1829
 msgid "Failed to install file: not supported"
 msgstr "Αδύνατη η εγκατάσταση του αρχείου: δεν υποστηρίζεται"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1832
+#: src/gs-shell.c:1833
 msgid "Failed to install file: authentication failed"
 msgstr "Απέτυχε η εγκατάσταση του αρχείου: αποτυχία πιστοποίησης"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1869
+#: src/gs-shell.c:1870
 msgid "Failed to install: not supported"
 msgstr "Αδύνατη η εγκατάσταση: δεν υποστηρίζεται"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1873
+#: src/gs-shell.c:1874
 msgid "Failed to install: authentication failed"
 msgstr "Απέτυχε η εγκατάσταση: αποτυχία πιστοποίησης"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1919
+#: src/gs-shell.c:1920
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Αδύνατη η επικοινωνία με το %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1934
+#: src/gs-shell.c:1935
 #, c-format
 msgid "%s needs to be restarted to use new plugins."
 msgstr "Απαιτείται επανεκκίνηση του %s για να χρησιμοποιηθούν τα νέα πρόσθετα."
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1939
+#: src/gs-shell.c:1940
 msgid "This application needs to be restarted to use new plugins."
 msgstr ""
 "Απαιτείται επανεκκίνηση της εφαρμογής για να χρησιμοποιηθούν τα νέα πρόσθετα."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1946
+#: src/gs-shell.c:1947
 msgid "AC power is required"
 msgstr "Απαιτείται συνεχόμενη παροχή ρεύματος"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1950
+#: src/gs-shell.c:1951
 msgid "The battery level is too low"
 msgstr "Το επίπεδο της μπαταρίας είναι πολύ χαμηλό"
 
 #. TRANSLATORS: this refers to where the app came from
-#: src/gs-shell-search-provider.c:256
+#: src/gs-shell-search-provider.c:258
 #, c-format
 msgid "Source: %s"
 msgstr "Πηγή: %s"
 
-#: src/gs-summary-tile.c:91
+#: src/gs-summary-tile.c:92
 #, c-format
 msgid "%s (Installing)"
 msgstr "%s (εγκαθίσταται)"
 
-#: src/gs-summary-tile.c:96
+#: src/gs-summary-tile.c:97
 #, c-format
 msgid "%s (Removing)"
 msgstr "%s (αφαιρείται)"
 
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for removing multiple repos
-#: src/gs-third-party-repo-row.c:92
+#: src/gs-third-party-repo-row.c:93
 msgid "_Remove All"
 msgstr "Α_φαίρεση όλων"
 
 #. TRANSLATORS: this is where the packager did not write
 #. * a description for the update
-#: src/gs-update-dialog.c:187
+#: src/gs-update-dialog.c:188
 msgid "No update description available."
 msgstr "Μη διαθέσιμη περιγραφή της ενημέρωσης."
 
@@ -3325,37 +3320,37 @@ msgstr "Μη διαθέσιμη περιγραφή της ενημέρωσης."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: src/gs-update-dialog.c:291
+#: src/gs-update-dialog.c:292
 #, c-format
 msgid "Installed on %s"
 msgstr "Εγκατεστημένο στο %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: src/gs-update-dialog.c:311
+#: src/gs-update-dialog.c:312
 msgid "Installed Updates"
 msgstr "Εγκατεστημένες ενημερώσεις"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:527
+#: src/gs-update-dialog.c:528
 msgid "Additions"
 msgstr "Προσθήκες"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:531
+#: src/gs-update-dialog.c:532
 msgid "Removals"
 msgstr "Αφαιρέσεις"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:535
+#: src/gs-update-dialog.c:536
 msgid "Updates"
 msgstr "Ενημερώσεις"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:539
+#: src/gs-update-dialog.c:540
 msgid "Downgrades"
 msgstr "Υποβαθμίσεις"
 
@@ -3363,34 +3358,34 @@ msgstr "Υποβαθμίσεις"
 msgid "No updates have been installed on this system."
 msgstr "Δεν έχουν εγκατασταθεί ενημερώσεις σε αυτό το σύστημα."
 
-#: src/gs-update-monitor.c:110
+#: src/gs-update-monitor.c:111
 msgid "Security Updates Pending"
 msgstr "Εκκρεμούν ενημερώσεις ασφάλειας"
 
-#: src/gs-update-monitor.c:111
+#: src/gs-update-monitor.c:112
 msgid "It is recommended that you install important updates now"
 msgstr "Συνιστάται να εγκαταστήσετε τώρα τις σημαντικές ενημερώσεις"
 
-#: src/gs-update-monitor.c:114
+#: src/gs-update-monitor.c:115
 msgid "Restart & Install"
 msgstr "Επανεκκίνηση & εγκατάσταση"
 
-#: src/gs-update-monitor.c:118
+#: src/gs-update-monitor.c:119
 msgid "Software Updates Available"
 msgstr "Υπάρχουν διαθέσιμες ενημερώσεις λογισμικού"
 
-#: src/gs-update-monitor.c:119
+#: src/gs-update-monitor.c:120
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Σημαντικές ενημερώσεις λειτουργικού συστήματος και εφαρμογών είναι έτοιμες "
 "να εγκατασταθούν"
 
-#: src/gs-update-monitor.c:123
+#: src/gs-update-monitor.c:124
 msgid "View"
 msgstr "Προβολή"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:231
+#: src/gs-update-monitor.c:232
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3398,7 +3393,7 @@ msgstr[0] "%u Εφαρμογή ενημερώθηκε — Απαιτείται �
 msgstr[1] "%u Εφαρμογές ενημερώθηκαν — Απαιτείται επανεκκίνηση"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:237
+#: src/gs-update-monitor.c:238
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3406,24 +3401,24 @@ msgstr[0] "%u Ενημέρωση εφαρμογής"
 msgstr[1] "%u Ενημερώσεις εφαρμογών"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:248
+#: src/gs-update-monitor.c:249
 #, c-format
 msgid "%s has been updated."
 msgstr "η εφαρμογή %s έχουν ενημερωθεί."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:251
+#: src/gs-update-monitor.c:252
 msgid "Please restart the application."
 msgstr "Παρακαλούμε επανεκκινήστε την εφαρμογή."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:259
+#: src/gs-update-monitor.c:260
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "οι εφαρμογές %s και %s έχουν ενημερωθεί."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:265 src/gs-update-monitor.c:284
+#: src/gs-update-monitor.c:266 src/gs-update-monitor.c:285
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3431,69 +3426,69 @@ msgstr[0] "%u εφαρμογή απαιτεί επανεκκίνηση."
 msgstr[1] "%u εφαρμογές απαιτούν επανεκκίνηση."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:277
+#: src/gs-update-monitor.c:278
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Περιλαμβάνει %s, %s και %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:518 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:519 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Υπάρχουν διαθέσιμες ενημερώσεις του λειτουργικού συστήματος"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:520
+#: src/gs-update-monitor.c:521
 msgid "Upgrade to continue receiving security updates."
 msgstr "Αναβαθμίστε για να συνεχίσετε να λαμβάνετε ενημερώσεις ασφαλείας."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:575
+#: src/gs-update-monitor.c:576
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Η νέα έκδοση του %s είναι διαθέσιμη προς εγκατάσταση"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:579
+#: src/gs-update-monitor.c:580
 msgid "Software Upgrade Available"
 msgstr "Υπάρχουν διαθέσιμες ενημερώσεις λογισμικού"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:968
+#: src/gs-update-monitor.c:969
 msgid "Software Updates Failed"
 msgstr "Αποτυχία ενημερώσεων λογισμικού"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:970
+#: src/gs-update-monitor.c:971
 msgid "An important OS update failed to be installed."
 msgstr "Απέτυχε να εγκατασταθεί μία σημαντική ενημέρωση λογισμικού."
 
-#: src/gs-update-monitor.c:971
+#: src/gs-update-monitor.c:972
 msgid "Show Details"
 msgstr "Εμφάνιση λεπτομερειών"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:994
+#: src/gs-update-monitor.c:995
 msgid "System Upgrade Complete"
 msgstr "Η αναβάθμιση του συστήματος ολοκληρώθηκε"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:999
+#: src/gs-update-monitor.c:1000
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Καλώς ήλθατε στο %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1005
+#: src/gs-update-monitor.c:1006
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Εγκαταστάθηκε ενημέρωση λογισμικού"
 msgstr[1] "Εγκαταστάθηκαν ενημερώσεις λογισμικού"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1009
+#: src/gs-update-monitor.c:1010
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Εγκαταστάθηκε μια σημαντική ενημέρωση του λειτουργικού συστήματος."
@@ -3504,30 +3499,30 @@ msgstr[1] "Εγκαταστάθηκαν σημαντικές ενημερώσε�
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1020
+#: src/gs-update-monitor.c:1021
 msgctxt "updates"
 msgid "Review"
 msgstr "Επισκόπηση"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1068
+#: src/gs-update-monitor.c:1069
 msgid "Failed To Update"
 msgstr "Αποτυχία ενημέρωσης"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1074
+#: src/gs-update-monitor.c:1075
 msgid "The system was already up to date."
 msgstr "Το σύστημα ήταν ήδη ενημερωμένο."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1079
+#: src/gs-update-monitor.c:1080
 msgid "The update was cancelled."
 msgstr "Η ενημέρωση ακυρώθηκε."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1085
+#: src/gs-update-monitor.c:1086
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3536,7 +3531,7 @@ msgstr ""
 "βεβαιωθείτε ότι έχετε πρόσβαση διαδικτύου και ξαναδοκιμάστε."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1091
+#: src/gs-update-monitor.c:1092
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3545,7 +3540,7 @@ msgstr ""
 "πάροχο του λογισμικού σας για περισσότερες λεπτομέρειες."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1097
+#: src/gs-update-monitor.c:1098
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -3553,7 +3548,7 @@ msgstr ""
 "και ξαναπροσπαθήστε."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1102
+#: src/gs-update-monitor.c:1103
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3563,106 +3558,106 @@ msgstr ""
 "με τον πάροχο λογισμικού σας."
 
 #. TRANSLATORS: Time in 24h format
-#: src/gs-updates-page.c:225
+#: src/gs-updates-page.c:226
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: src/gs-updates-page.c:228
+#: src/gs-updates-page.c:229
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: src/gs-updates-page.c:234
+#: src/gs-updates-page.c:235
 msgid "Yesterday, %R"
 msgstr "Χθες, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: src/gs-updates-page.c:238
+#: src/gs-updates-page.c:239
 msgid "Yesterday, %l:%M %p"
 msgstr "Χθες, %l:%M %p"
 
-#: src/gs-updates-page.c:241
+#: src/gs-updates-page.c:242
 msgid "Two days ago"
 msgstr "Δύο ημέρες πριν"
 
-#: src/gs-updates-page.c:243
+#: src/gs-updates-page.c:244
 msgid "Three days ago"
 msgstr "Τρεις ημέρες πριν"
 
-#: src/gs-updates-page.c:245
+#: src/gs-updates-page.c:246
 msgid "Four days ago"
 msgstr "Τέσσερις ημέρες πριν"
 
-#: src/gs-updates-page.c:247
+#: src/gs-updates-page.c:248
 msgid "Five days ago"
 msgstr "Πέντε ημέρες πριν"
 
-#: src/gs-updates-page.c:249
+#: src/gs-updates-page.c:250
 msgid "Six days ago"
 msgstr "Έξι ημέρες πριν"
 
-#: src/gs-updates-page.c:251
+#: src/gs-updates-page.c:252
 msgid "One week ago"
 msgstr "Πριν από μία εβδομάδα"
 
-#: src/gs-updates-page.c:253
+#: src/gs-updates-page.c:254
 msgid "Two weeks ago"
 msgstr "Πριν από δύο εβδομάδες"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: src/gs-updates-page.c:269
+#: src/gs-updates-page.c:270
 msgid "Looking for new updates…"
 msgstr "Αναζήτηση νέων ενημερώσεων…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:338
+#: src/gs-updates-page.c:339
 msgid "Setting up updates…"
 msgstr "Ρύθμιση ενημερώσεων…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: src/gs-updates-page.c:339 src/gs-updates-page.c:346
+#: src/gs-updates-page.c:340 src/gs-updates-page.c:347
 msgid "(This could take a while)"
 msgstr "(Αυτό ίσως απαιτήσει λίγο χρόνο)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: src/gs-updates-page.c:453
+#: src/gs-updates-page.c:454
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ελέγχθηκε τελευταία φορά: %s"
 
 #. TRANSLATORS:  the first %s is the distro name, e.g. 'Fedora'
 #. * and the second %s is the distro version, e.g. '25'
-#: src/gs-updates-page.c:617
+#: src/gs-updates-page.c:618
 #, c-format
 msgid "%s %s is no longer supported."
 msgstr "Το %s %s δεν υποστηρίζεται πλέον."
 
 #. TRANSLATORS: OS refers to operating system, e.g. Fedora
-#: src/gs-updates-page.c:622
+#: src/gs-updates-page.c:623
 msgid "Your OS is no longer supported."
 msgstr "Το λειτουργικό σύστημα δεν υποστηρίζεται πλέον."
 
 #. TRANSLATORS: EOL distros do not get important updates
-#: src/gs-updates-page.c:627
+#: src/gs-updates-page.c:628
 msgid "This means that it does not receive security updates."
 msgstr "Αυτό σημαίνει ότι δεν λαμβάνει ενημερώσεις ασφαλείας."
 
 #. TRANSLATORS: upgrade refers to a major update, e.g. Fedora 25 to 26
-#: src/gs-updates-page.c:631
+#: src/gs-updates-page.c:632
 msgid "It is recommended that you upgrade to a more recent version."
 msgstr "Συνιστάται να κάνετε αναβάθμιση σε μια πιο πρόσφατη έκδοση."
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: src/gs-updates-page.c:889
+#: src/gs-updates-page.c:890
 msgid "Charges May Apply"
 msgstr "Μπορεί υπάρξουν χρεώσεις"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:893
+#: src/gs-updates-page.c:894
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -3672,27 +3667,27 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: src/gs-updates-page.c:897
+#: src/gs-updates-page.c:898
 msgid "Check _Anyway"
 msgstr "_Να ελεγχθεί οπωσδήποτε"
 
 #. TRANSLATORS: can't do updates check
-#: src/gs-updates-page.c:913
+#: src/gs-updates-page.c:914
 msgid "No Network"
 msgstr "Χωρίς δίκτυο"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: src/gs-updates-page.c:917
+#: src/gs-updates-page.c:918
 msgid "Internet access is required to check for updates."
 msgstr "Απαιτείται πρόσβαση διαδικτύου για τον έλεγχο ενημερώσεων."
 
 #. This label indicates that the update check is in progress
-#: src/gs-updates-page.c:1340
+#: src/gs-updates-page.c:1341
 msgid "Checking…"
 msgstr "Γίνεται έλεγχος…"
 
-#: src/gs-updates-page.c:1353
+#: src/gs-updates-page.c:1354
 msgid "Check for updates"
 msgstr "Έλεγχος για ενημερώσεις"
 
@@ -3731,56 +3726,56 @@ msgstr "Οι ενημερώσεις διαχειρίζονται αυτόματ�
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:280
+#: src/gs-updates-section.c:281
 msgid "Restart & Update"
 msgstr "Επανεκκίνηση & ενημέρωση"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:286
+#: src/gs-updates-section.c:287
 msgid "Update All"
 msgstr "Ενημέρωση όλων"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:417
+#: src/gs-updates-section.c:418
 msgid "Integrated Firmware"
 msgstr "Ενσωματωμένο υλικολογισμικό"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:421
+#: src/gs-updates-section.c:422
 msgid "Requires Restart"
 msgstr "Απαιτεί επανεκκίνηση"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:425
+#: src/gs-updates-section.c:426
 msgid "Application Updates"
 msgstr "Ενημερώσεις εφαρμογών"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:429
+#: src/gs-updates-section.c:430
 msgid "Device Firmware"
 msgstr "Υλικολογισμικό συσκευής"
 
-#: src/gs-updates-section.c:457 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:458 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "Λή_ψη"
 
-#: src/gs-upgrade-banner.c:90
+#: src/gs-upgrade-banner.c:91
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
 "Συνιστάται να κρατήσετε ένα αντίγραφο ασφαλείας των αρχείων σας πριν την "
 "αναβάθμιση."
 
-#: src/gs-upgrade-banner.c:94
+#: src/gs-upgrade-banner.c:95
 msgid "_Restart Now"
 msgstr "_Επανεκκίνηση τώρα"
 
-#: src/gs-upgrade-banner.c:96
+#: src/gs-upgrade-banner.c:97
 msgid "Updates will be applied when the computer is restarted."
 msgstr ""
 "Οι ενημερώσεις θα εφαρμοστούν όταν θα γίνει επανεκκίνηση του υπολογιστή."
@@ -3788,7 +3783,7 @@ msgstr ""
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: src/gs-upgrade-banner.c:111
+#: src/gs-upgrade-banner.c:112
 #, c-format
 msgid "%s %s Now Available"
 msgstr "Το %s %s είναι διαθέσιμο"
@@ -3796,7 +3791,7 @@ msgstr "Το %s %s είναι διαθέσιμο"
 #. TRANSLATORS: This is the text displayed while waiting to
 #. * download a distro upgrade. First %s is the distro name and
 #. * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23"
-#: src/gs-upgrade-banner.c:121
+#: src/gs-upgrade-banner.c:122
 #, c-format
 msgid "Waiting to Download %s %s"
 msgstr "Αναμονή για λήψη του %s %s"
@@ -3804,7 +3799,7 @@ msgstr "Αναμονή για λήψη του %s %s"
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: src/gs-upgrade-banner.c:131
+#: src/gs-upgrade-banner.c:132
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Λήψη του %s %s"
@@ -3813,7 +3808,7 @@ msgstr "Λήψη του %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: src/gs-upgrade-banner.c:142
+#: src/gs-upgrade-banner.c:143
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "Το %s %s είναι έτοιμο προς εγκατάσταση"
@@ -3841,467 +3836,467 @@ msgstr ""
 "Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;"
 "Store;"
 
-#: plugins/core/gs-desktop-common.c:16
+#: plugins/core/gs-desktop-common.c:17
 msgctxt "Menu of Audio & Video"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:19
+#: plugins/core/gs-desktop-common.c:20
 msgctxt "Menu of Audio & Video"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:22
+#: plugins/core/gs-desktop-common.c:23
 msgctxt "Menu of Audio & Video"
 msgid "Audio Creation & Editing"
 msgstr "Δημιουργία και επεξεργασία ήχου"
 
-#: plugins/core/gs-desktop-common.c:28
+#: plugins/core/gs-desktop-common.c:29
 msgctxt "Menu of Audio & Video"
 msgid "Music Players"
 msgstr "Αναπαραγωγείς μουσικής"
 
-#: plugins/core/gs-desktop-common.c:37
+#: plugins/core/gs-desktop-common.c:38
 msgctxt "Menu of Developer Tools"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:40
+#: plugins/core/gs-desktop-common.c:41
 msgctxt "Menu of Developer Tools"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:43
+#: plugins/core/gs-desktop-common.c:44
 msgctxt "Menu of Developer Tools"
 msgid "Debuggers"
 msgstr "Αποσφαλματωτές"
 
-#: plugins/core/gs-desktop-common.c:46
+#: plugins/core/gs-desktop-common.c:47
 msgctxt "Menu of Developer Tools"
 msgid "IDEs"
 msgstr "Ολοκληρωμένα περιβάλλοντα ανάπτυξης (IDE)"
 
-#: plugins/core/gs-desktop-common.c:55
+#: plugins/core/gs-desktop-common.c:56
 msgctxt "Menu of Education & Science"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:59
+#: plugins/core/gs-desktop-common.c:60
 msgctxt "Menu of Education & Science"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:63
+#: plugins/core/gs-desktop-common.c:64
 msgctxt "Menu of Education & Science"
 msgid "Artificial Intelligence"
 msgstr "Τεχνητή νοημοσύνη"
 
-#: plugins/core/gs-desktop-common.c:66
+#: plugins/core/gs-desktop-common.c:67
 msgctxt "Menu of Education & Science"
 msgid "Astronomy"
 msgstr "Αστρονομία"
 
-#: plugins/core/gs-desktop-common.c:70
+#: plugins/core/gs-desktop-common.c:71
 msgctxt "Menu of Education & Science"
 msgid "Chemistry"
 msgstr "Χημεία"
 
-#: plugins/core/gs-desktop-common.c:74
+#: plugins/core/gs-desktop-common.c:75
 msgctxt "Menu of Education & Science"
 msgid "Languages"
 msgstr "Γλώσσες"
 
-#: plugins/core/gs-desktop-common.c:78
+#: plugins/core/gs-desktop-common.c:79
 msgctxt "Menu of Education & Science"
 msgid "Math"
 msgstr "Μαθηματικά"
 
-#: plugins/core/gs-desktop-common.c:85
+#: plugins/core/gs-desktop-common.c:86
 msgctxt "Menu of Education & Science"
 msgid "Robotics"
 msgstr "Ρομποτική"
 
-#: plugins/core/gs-desktop-common.c:94
+#: plugins/core/gs-desktop-common.c:95
 msgctxt "Menu of Games"
 msgid "All"
 msgstr "Όλα"
 
-#: plugins/core/gs-desktop-common.c:97
+#: plugins/core/gs-desktop-common.c:98
 msgctxt "Menu of Games"
 msgid "Featured"
 msgstr "Δημοφιλέστερο"
 
-#: plugins/core/gs-desktop-common.c:100
+#: plugins/core/gs-desktop-common.c:101
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Δράση"
 
-#: plugins/core/gs-desktop-common.c:103
+#: plugins/core/gs-desktop-common.c:104
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Περιπέτεια"
 
-#: plugins/core/gs-desktop-common.c:106
+#: plugins/core/gs-desktop-common.c:107
 msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "Arcade"
 
-#: plugins/core/gs-desktop-common.c:109
+#: plugins/core/gs-desktop-common.c:110
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Κύβοι"
 
-#: plugins/core/gs-desktop-common.c:112
+#: plugins/core/gs-desktop-common.c:113
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Επιτραπέζια"
 
-#: plugins/core/gs-desktop-common.c:115
+#: plugins/core/gs-desktop-common.c:116
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Κάρτες"
 
-#: plugins/core/gs-desktop-common.c:118
+#: plugins/core/gs-desktop-common.c:119
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Προσομοιωτές"
 
-#: plugins/core/gs-desktop-common.c:121
+#: plugins/core/gs-desktop-common.c:122
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Παιδικά"
 
-#: plugins/core/gs-desktop-common.c:124
+#: plugins/core/gs-desktop-common.c:125
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Λογική"
 
-#: plugins/core/gs-desktop-common.c:127
+#: plugins/core/gs-desktop-common.c:128
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Παιχνίδια ρόλων"
 
-#: plugins/core/gs-desktop-common.c:130
+#: plugins/core/gs-desktop-common.c:131
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Αθλητικά"
 
-#: plugins/core/gs-desktop-common.c:134
+#: plugins/core/gs-desktop-common.c:135
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Στρατηγική"
 
-#: plugins/core/gs-desktop-common.c:142
+#: plugins/core/gs-desktop-common.c:143
 msgctxt "Menu of Graphics & Photography"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:145
+#: plugins/core/gs-desktop-common.c:146
 msgctxt "Menu of Graphics & Photography"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:148
+#: plugins/core/gs-desktop-common.c:149
 msgctxt "Menu of Graphics & Photography"
 msgid "3D Graphics"
 msgstr "Γραφικά 3D"
 
-#: plugins/core/gs-desktop-common.c:151
+#: plugins/core/gs-desktop-common.c:152
 msgctxt "Menu of Graphics & Photography"
 msgid "Photography"
 msgstr "Φωτογραφία"
 
-#: plugins/core/gs-desktop-common.c:154
+#: plugins/core/gs-desktop-common.c:155
 msgctxt "Menu of Graphics & Photography"
 msgid "Scanning"
 msgstr "Σάρωση"
 
-#: plugins/core/gs-desktop-common.c:157
+#: plugins/core/gs-desktop-common.c:158
 msgctxt "Menu of Graphics & Photography"
 msgid "Vector Graphics"
 msgstr "Διανυσματικά γραφικά"
 
-#: plugins/core/gs-desktop-common.c:160
+#: plugins/core/gs-desktop-common.c:161
 msgctxt "Menu of Graphics & Photography"
 msgid "Viewers"
 msgstr "Εφαρμογές προβολής"
 
-#: plugins/core/gs-desktop-common.c:168
+#: plugins/core/gs-desktop-common.c:169
 msgctxt "Menu of Productivity"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:171
+#: plugins/core/gs-desktop-common.c:172
 msgctxt "Menu of Productivity"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:174
+#: plugins/core/gs-desktop-common.c:175
 msgctxt "Menu of Productivity"
 msgid "Calendar"
 msgstr "Ημερολόγιο"
 
-#: plugins/core/gs-desktop-common.c:178
+#: plugins/core/gs-desktop-common.c:179
 msgctxt "Menu of Productivity"
 msgid "Database"
 msgstr "Βάση δεδομένων"
 
-#: plugins/core/gs-desktop-common.c:181
+#: plugins/core/gs-desktop-common.c:182
 msgctxt "Menu of Productivity"
 msgid "Finance"
 msgstr "Οικονομικά"
 
-#: plugins/core/gs-desktop-common.c:185
+#: plugins/core/gs-desktop-common.c:186
 msgctxt "Menu of Productivity"
 msgid "Word Processor"
 msgstr "Επεξεργαστής κειμένου"
 
-#: plugins/core/gs-desktop-common.c:194
+#: plugins/core/gs-desktop-common.c:195
 msgctxt "Menu of Add-ons"
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
-#: plugins/core/gs-desktop-common.c:197
+#: plugins/core/gs-desktop-common.c:198
 msgctxt "Menu of Add-ons"
 msgid "Codecs"
 msgstr "Κωδικοποιητές"
 
-#: plugins/core/gs-desktop-common.c:200
+#: plugins/core/gs-desktop-common.c:201
 msgctxt "Menu of Add-ons"
 msgid "Input Sources"
 msgstr "Πηγές εισόδου"
 
-#: plugins/core/gs-desktop-common.c:203
+#: plugins/core/gs-desktop-common.c:204
 msgctxt "Menu of Add-ons"
 msgid "Language Packs"
 msgstr "Πακέτα γλωσσών"
 
-#: plugins/core/gs-desktop-common.c:206
+#: plugins/core/gs-desktop-common.c:207
 msgctxt "Menu of Add-ons"
 msgid "Localization"
 msgstr "Τοπικοποίηση"
 
-#: plugins/core/gs-desktop-common.c:209
+#: plugins/core/gs-desktop-common.c:210
 msgctxt "Menu of Add-ons"
 msgid "Hardware Drivers"
 msgstr "Οδηγοί υλικού"
 
-#: plugins/core/gs-desktop-common.c:217
+#: plugins/core/gs-desktop-common.c:218
 msgctxt "Menu of Communication & News"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:220
+#: plugins/core/gs-desktop-common.c:221
 msgctxt "Menu of Communication & News"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:223
+#: plugins/core/gs-desktop-common.c:224
 msgctxt "Menu of Communication & News"
 msgid "Chat"
 msgstr "Συνομιλία"
 
-#: plugins/core/gs-desktop-common.c:230
+#: plugins/core/gs-desktop-common.c:231
 msgctxt "Menu of Communication & News"
 msgid "News"
 msgstr "Ειδήσεις"
 
-#: plugins/core/gs-desktop-common.c:234
+#: plugins/core/gs-desktop-common.c:235
 msgctxt "Menu of Communication & News"
 msgid "Web Browsers"
 msgstr "Περιηγητές Ιστού"
 
-#: plugins/core/gs-desktop-common.c:242
+#: plugins/core/gs-desktop-common.c:243
 msgctxt "Menu of Utilities"
 msgid "All"
 msgstr "Όλες"
 
-#: plugins/core/gs-desktop-common.c:245
+#: plugins/core/gs-desktop-common.c:246
 msgctxt "Menu of Utilities"
 msgid "Featured"
 msgstr "Δημοφιλέστερες"
 
-#: plugins/core/gs-desktop-common.c:248
+#: plugins/core/gs-desktop-common.c:249
 msgctxt "Menu of Utilities"
 msgid "Text Editors"
 msgstr "Επεξεργαστές κειμένου"
 
-#: plugins/core/gs-desktop-common.c:256
+#: plugins/core/gs-desktop-common.c:257
 msgctxt "Menu of Reference"
 msgid "All"
 msgstr "Όλα"
 
-#: plugins/core/gs-desktop-common.c:259
+#: plugins/core/gs-desktop-common.c:260
 msgctxt "Menu of Reference"
 msgid "Featured"
 msgstr "Δημοφιλέστερο"
 
-#: plugins/core/gs-desktop-common.c:262
+#: plugins/core/gs-desktop-common.c:263
 msgctxt "Menu of Art"
 msgid "Art"
 msgstr "Τέχνη"
 
-#: plugins/core/gs-desktop-common.c:265
+#: plugins/core/gs-desktop-common.c:266
 msgctxt "Menu of Reference"
 msgid "Biography"
 msgstr "Βιογραφία"
 
-#: plugins/core/gs-desktop-common.c:268
+#: plugins/core/gs-desktop-common.c:269
 msgctxt "Menu of Reference"
 msgid "Comics"
 msgstr "Κόμικ"
 
-#: plugins/core/gs-desktop-common.c:271
+#: plugins/core/gs-desktop-common.c:272
 msgctxt "Menu of Reference"
 msgid "Fiction"
 msgstr "Φαντασία"
 
-#: plugins/core/gs-desktop-common.c:274
+#: plugins/core/gs-desktop-common.c:275
 msgctxt "Menu of Reference"
 msgid "Health"
 msgstr "Υγεία"
 
-#: plugins/core/gs-desktop-common.c:277
+#: plugins/core/gs-desktop-common.c:278
 msgctxt "Menu of Reference"
 msgid "History"
 msgstr "Ιστορία"
 
-#: plugins/core/gs-desktop-common.c:280
+#: plugins/core/gs-desktop-common.c:281
 msgctxt "Menu of Reference"
 msgid "Lifestyle"
 msgstr "Lifestyle"
 
-#: plugins/core/gs-desktop-common.c:283
+#: plugins/core/gs-desktop-common.c:284
 msgctxt "Menu of Reference"
 msgid "Politics"
 msgstr "Πολιτική"
 
-#: plugins/core/gs-desktop-common.c:286
+#: plugins/core/gs-desktop-common.c:287
 msgctxt "Menu of Reference"
 msgid "Sports"
 msgstr "Αθλητικά"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
-#: plugins/core/gs-desktop-common.c:296
+#: plugins/core/gs-desktop-common.c:297
 msgid "Audio & Video"
 msgstr "Ήχος & βίντεο"
 
 #. TRANSLATORS: this is the menu spec main category for Development
-#: plugins/core/gs-desktop-common.c:299
+#: plugins/core/gs-desktop-common.c:300
 msgid "Developer Tools"
 msgstr "Εργαλεία προγραμματιστή"
 
 #. TRANSLATORS: this is the menu spec main category for Education & Science
-#: plugins/core/gs-desktop-common.c:302
+#: plugins/core/gs-desktop-common.c:303
 msgid "Education & Science"
 msgstr "Εκπαίδευση & επιστήμη"
 
 #. TRANSLATORS: this is the menu spec main category for Game
-#: plugins/core/gs-desktop-common.c:305
+#: plugins/core/gs-desktop-common.c:306
 msgid "Games"
 msgstr "Παιχνίδια"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
-#: plugins/core/gs-desktop-common.c:308
+#: plugins/core/gs-desktop-common.c:309
 msgid "Graphics & Photography"
 msgstr "Γραφικά & φωτογραφία"
 
 #. TRANSLATORS: this is the menu spec main category for Office
-#: plugins/core/gs-desktop-common.c:311
+#: plugins/core/gs-desktop-common.c:312
 msgid "Productivity"
 msgstr "Παραγωγικότητα"
 
 #. TRANSLATORS: this is the menu spec main category for Communication
-#: plugins/core/gs-desktop-common.c:317
+#: plugins/core/gs-desktop-common.c:318
 msgid "Communication & News"
 msgstr "Επικοινωνία & ειδήσεις"
 
 #. TRANSLATORS: this is the menu spec main category for Reference
-#: plugins/core/gs-desktop-common.c:320
+#: plugins/core/gs-desktop-common.c:321
 msgid "Reference"
 msgstr "Αναφορά"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
-#: plugins/core/gs-desktop-common.c:323
+#: plugins/core/gs-desktop-common.c:324
 msgid "Utilities"
 msgstr "Βοηθήματα"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: plugins/core/gs-plugin-generic-updates.c:55
+#: plugins/core/gs-plugin-generic-updates.c:56
 msgid "OS Updates"
 msgstr "Ενημερώσεις λειτουργικού"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: plugins/core/gs-plugin-generic-updates.c:60
+#: plugins/core/gs-plugin-generic-updates.c:61
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Περιλαμβάνει βελτιώσεις απόδοσης, σταθερότητας και ασφάλειας για όλους τους "
 "χρήστες."
 
 #. TRANSLATORS: status text when downloading
-#: plugins/core/gs-plugin-rewrite-resource.c:41
+#: plugins/core/gs-plugin-rewrite-resource.c:42
 msgid "Downloading featured images…"
 msgstr "Λήψη εικόνων δημοφιλέστερων…"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:561
+#: plugins/eos-updater/gs-plugin-eos-updater.c:562
 msgid "Endless OS"
 msgstr "Endless OS"
 
 #. TRANSLATORS: ‘Endless OS’ is a brand name; https://endlessos.com/
-#: plugins/eos-updater/gs-plugin-eos-updater.c:564
+#: plugins/eos-updater/gs-plugin-eos-updater.c:565
 msgid "An Endless OS update with new features and fixes."
 msgstr "Μια ενημέρωση του Endless OS με νέες δυνατότητες και επιδιορθώσεις."
 
-#: plugins/eos-updater/gs-plugin-eos-updater.c:825
+#: plugins/eos-updater/gs-plugin-eos-updater.c:826
 msgid "EOS update service could not fetch and apply the update."
 msgstr ""
 "Η υπηρεσία ενημέρωσης του EOS δεν μπορεί να κάνει λήψη και εφαρμογή της "
 "ενημέρωσης."
 
 #. TRANSLATORS: tool that is used when copying profiles system-wide
-#: plugins/external-appstream/gs-install-appstream.c:140
+#: plugins/external-appstream/gs-install-appstream.c:141
 msgid "GNOME Software AppStream system-wide installer"
 msgstr "Εγκαταστάτης Λογισμικού GNOME AppStream σε όλο το σύστημα"
 
-#: plugins/external-appstream/gs-install-appstream.c:142
+#: plugins/external-appstream/gs-install-appstream.c:143
 msgid "Failed to parse command line arguments"
 msgstr "Αποτυχία ανάλυσης των ορισμάτων της γραμμής εντολής"
 
 #. TRANSLATORS: user did not specify a valid filename
-#: plugins/external-appstream/gs-install-appstream.c:149
+#: plugins/external-appstream/gs-install-appstream.c:150
 msgid "You need to specify exactly one filename"
 msgstr "Πρέπει να ορίσετε ακριβώς ένα όνομα αρχείου"
 
 #. TRANSLATORS: only able to install files as root
-#: plugins/external-appstream/gs-install-appstream.c:156
+#: plugins/external-appstream/gs-install-appstream.c:157
 msgid "This program can only be used by the root user"
 msgstr "Το πρόγραμμα μπορεί να χρησιμοποιηθεί μόνο από τον χρήστη root"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:164
+#: plugins/external-appstream/gs-install-appstream.c:165
 msgid "Failed to validate content type"
 msgstr "Αποτυχία επικύρωσης τύπου περιεχομένου"
 
 #. TRANSLATORS: error details
-#: plugins/external-appstream/gs-install-appstream.c:174
+#: plugins/external-appstream/gs-install-appstream.c:175
 msgid "Failed to copy"
 msgstr "Αποτυχία αντιγραφής"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/external-appstream/gs-plugin-external-appstream.c:235
+#: plugins/external-appstream/gs-plugin-external-appstream.c:236
 msgid "Downloading extra metadata files…"
 msgstr "Λήψη επιπλέον μεταδεδομένων αρχείων…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:192
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:193
 msgid "Downloading upgrade information…"
 msgstr "Λήψη πληροφοριών αναβάθμισης…"
 
 #. TRANSLATORS: this is a title for Fedora distro upgrades
-#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:282
+#: plugins/fedora-pkgdb-collections/gs-plugin-fedora-pkgdb-collections.c:283
 msgid ""
 "Upgrade for the latest features, performance and stability improvements."
 msgstr ""
@@ -4317,49 +4312,49 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Το Flatpak είναι ένα framework για εφαρμογές στο Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:900
+#: plugins/flatpak/gs-flatpak.c:901
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "Λήψη μεταδεδομένων flatpak για %s…"
 
 #. TRANSLATORS: a specific part of hardware,
 #. * the first %s is the device name, e.g. 'Unifying Receiver`
-#: plugins/fwupd/gs-fwupd-app.c:135
+#: plugins/fwupd/gs-fwupd-app.c:136
 #, c-format
 msgid "%s Device Update"
 msgstr "%s Ενημέρωση συσκευής"
 
 #. TRANSLATORS: the entire system, e.g. all internal devices,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:140
+#: plugins/fwupd/gs-fwupd-app.c:141
 #, c-format
 msgid "%s System Update"
 msgstr "%s Ενημέρωση συστήματος"
 
 #. TRANSLATORS: the EC is typically the keyboard controller chip,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:145
+#: plugins/fwupd/gs-fwupd-app.c:146
 #, c-format
 msgid "%s Embedded Controller Update"
 msgstr "%s Ενημέρωση ελεγκτή Embedded"
 
 #. TRANSLATORS: ME stands for Management Engine, the Intel AMT thing,
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:150
+#: plugins/fwupd/gs-fwupd-app.c:151
 #, c-format
 msgid "%s ME Update"
 msgstr "%s Ενημέρωση ME"
 
 #. TRANSLATORS: ME stands for Management Engine (with Intel AMT),
 #. * where the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:155
+#: plugins/fwupd/gs-fwupd-app.c:156
 #, c-format
 msgid "%s Corporate ME Update"
 msgstr "%s Εταιρική ενημέρωση ME"
 
 #. TRANSLATORS: ME stands for Management Engine, where
 #. * the first %s is the device name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:160
+#: plugins/fwupd/gs-fwupd-app.c:161
 #, c-format
 msgid "%s Consumer ME Update"
 msgstr "%s Καταναλωτική ενημέρωση ME"
@@ -4367,7 +4362,7 @@ msgstr "%s Καταναλωτική ενημέρωση ME"
 #. TRANSLATORS: the controller is a device that has other devices
 #. * plugged into it, for example ThunderBolt, FireWire or USB,
 #. * the first %s is the device name, e.g. 'Intel ThunderBolt`
-#: plugins/fwupd/gs-fwupd-app.c:166
+#: plugins/fwupd/gs-fwupd-app.c:167
 #, c-format
 msgid "%s Controller Update"
 msgstr "%s Ενημέρωση ελεγκτή"
@@ -4375,25 +4370,32 @@ msgstr "%s Ενημέρωση ελεγκτή"
 #. TRANSLATORS: the Thunderbolt controller is a device that
 #. * has other high speed Thunderbolt devices plugged into it;
 #. * the first %s is the system name, e.g. 'ThinkPad P50`
-#: plugins/fwupd/gs-fwupd-app.c:172
+#: plugins/fwupd/gs-fwupd-app.c:173
 #, c-format
 msgid "%s Thunderbolt Controller Update"
 msgstr "%s Ενημέρωση ελεγκτή Thunderbolt"
 
 #. TRANSLATORS: the CPU microcode is firmware loaded onto the CPU
 #. * at system bootup
-#: plugins/fwupd/gs-fwupd-app.c:177
+#: plugins/fwupd/gs-fwupd-app.c:178
 #, c-format
 msgid "%s CPU Microcode Update"
 msgstr "%s Ενημέρωση μικροκώδικα CPU"
 
+#. TRANSLATORS: configuration refers to hardware state,
+#. * e.g. a security database or a default power value
+#: plugins/fwupd/gs-fwupd-app.c:183
+#, c-format
+msgid "%s Configuration Update"
+msgstr "%s Ενημέρωση ρύθμισης"
+
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:671
+#: plugins/fwupd/gs-plugin-fwupd.c:691
 msgid "Downloading firmware update signature…"
 msgstr "Λήψη υπογραφής ενημέρωσης firmware…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:712
+#: plugins/fwupd/gs-plugin-fwupd.c:732
 msgid "Downloading firmware update metadata…"
 msgstr "Λήψη μεταδεδομένων ενημέρωσης firmware…"
 
@@ -4406,7 +4408,7 @@ msgid "Provides support for firmware upgrades"
 msgstr "Παρέχει υποστήριξη για αναβαθμίσεις υλικολογισμικού"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:290
+#: plugins/odrs/gs-plugin-odrs.c:291
 msgid "Downloading application ratings…"
 msgstr "Λήψη αξιολογήσεων εφαρμογών…"
 
@@ -4420,7 +4422,7 @@ msgstr ""
 "Το ODRS είναι μια υπηρεσία όπου παρέχει κριτικές χρηστών στις εφαρμογές"
 
 #. TRANSLATORS: default snap store name
-#: plugins/snap/gs-plugin-snap.c:239
+#: plugins/snap/gs-plugin-snap.c:240
 msgid "Snap Store"
 msgstr "Κατάστημα Snappy"
 
@@ -4431,6 +4433,9 @@ msgstr "Υποστήριξη Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Το snap είναι ένα καθολικό πακέτο του Linux"
+
+#~ msgid "About %s"
+#~ msgstr "Περί %s"
 
 #~ msgid "%s ME"
 #~ msgstr "%s ME"
@@ -4934,9 +4939,6 @@ msgstr "Το snap είναι ένα καθολικό πακέτο του Linux"
 #~ msgctxt "Menu of Utility"
 #~ msgid "Featured"
 #~ msgstr "Δημοφιλέστερο"
-
-#~ msgid "About Software"
-#~ msgstr "Περί του λογισμικού"
 
 #~ msgid "Total"
 #~ msgstr "Σύνολο"
