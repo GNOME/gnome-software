@@ -492,7 +492,9 @@ gs_shell_change_mode (GsShell *shell,
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		gtk_entry_set_text (GTK_ENTRY (widget), data);
+		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		gs_shell_clean_back_entry_stack (shell);
