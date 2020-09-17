@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-08-19 14:58+0000\n"
-"PO-Revision-Date: 2020-09-04 14:02+0200\n"
+"POT-Creation-Date: 2020-09-09 11:14+0000\n"
+"PO-Revision-Date: 2020-09-17 14:07+0200\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -68,7 +68,7 @@ msgstr "Panel s aktualizáciami"
 msgid "The update details"
 msgstr "Podrobnosti o aktualizácii"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1494
+#: data/appdata/org.gnome.Software.appdata.xml.in:1517
 msgid "The GNOME Project"
 msgstr "Projekt GNOME"
 
@@ -266,7 +266,7 @@ msgstr ""
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
 #: data/org.gnome.software.gschema.xml:127
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
-msgstr ""
+msgstr "'https://sk.wikipedia.org/wiki/Propriet%C3%A1rny_softv%C3%A9r'"
 
 #: data/org.gnome.software.gschema.xml:128
 msgid "The URI that explains nonfree and proprietary software"
@@ -1282,12 +1282,12 @@ msgstr "Vyobrazenia alebo odkazy na historické znesvätenie"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:328
 msgid "Depictions of modern-day human desecration"
-msgstr ""
+msgstr "Vyobrazenia ľudského znesvätenia modernej doby"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:330
 msgid "Graphic depictions of modern-day desecration"
-msgstr ""
+msgstr "Grafické vyobrazenia znesvätenia modernej doby"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:335
@@ -1322,12 +1322,12 @@ msgstr "Vyobrazenia alebo odkazy na historické otroctvo"
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:350
 msgid "Depictions of modern-day slavery"
-msgstr ""
+msgstr "Vyobrazenia otroctva modernej doby"
 
 #. TRANSLATORS: content rating description
 #: src/gs-content-rating.c:352
 msgid "Graphic depictions of modern-day slavery"
-msgstr ""
+msgstr "Grafické vyobrazenie otroctva modernej doby"
 
 #. TRANSLATORS: This is the formatting of English and localized name
 #. of the rating e.g. "Adults Only (solo adultos)"
@@ -1515,7 +1515,7 @@ msgstr "Systémové služby"
 
 #: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
-msgstr ""
+msgstr "Môže pristupovať k službám zbernice D-Bus na systémovej zbernici"
 
 #: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Session Services"
@@ -1523,7 +1523,7 @@ msgstr "Služby relácie"
 
 #: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
-msgstr ""
+msgstr "Môže pristupovať k službám zbernice D-Bus na relačnej zbernici"
 
 #: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
 msgid "Devices"
@@ -1584,7 +1584,7 @@ msgstr "V izolovanom priestore"
 
 #: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
-msgstr ""
+msgstr "Môže uniknúť z izolovaného priestoru a obísť akékoľvek iné obmedzenia"
 
 #: src/gs-details-page.c:1045
 msgid "This application is fully sandboxed."
@@ -2205,6 +2205,15 @@ msgid ""
 "Alternatively, if the current network has been in­correctly identified as "
 "being metered, this setting can be changed."
 msgstr ""
+"Aktuálna sieť je obmedzená. Obmedzené pripojenia majú obmedzené dáta a s tým "
+"sú spojené poplatky. Kvôli úspore dát boli preto automatické aktualizácie "
+"pozastavené.\n"
+"\n"
+"Automatické aktualizácie budú pokračovať, keď bude dostupná neobmedzená "
+"sieť. Dovtedy je možné inštalovať aktualizácie ručne.\n"
+"\n"
+"Alebo ak bolo obmedzenie aktuálnej siete nesprávne identifikované, môže byť "
+"toto nastavenie zmenené."
 
 #: src/gs-metered-data-dialog.ui:53
 msgid "Open Network _Settings"
