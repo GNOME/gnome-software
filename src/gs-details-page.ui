@@ -603,6 +603,7 @@
                             <child>
                               <object class="GsInfoBar" id="infobar_details_app_repo">
                                 <property name="visible">True</property>
+                                <property name="has-window">True</property>
                                 <property name="margin_top">20</property>
                                 <property name="title" translatable="yes">Software Repository Included</property>
                                 <property name="body" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
@@ -622,6 +623,7 @@
                             <child>
                               <object class="GsInfoBar" id="infobar_details_app_norepo">
                                 <property name="visible">True</property>
+                                <property name="has-window">True</property>
                                 <property name="margin_top">20</property>
                                 <property name="title" translatable="yes">No Software Repository Included</property>
                                 <property name="body" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
@@ -641,6 +643,7 @@
                             <child>
                               <object class="GsInfoBar" id="infobar_details_package_baseos">
                                 <property name="visible">True</property>
+                                <property name="has-window">True</property>
                                 <property name="message_type">warning</property>
                                 <property name="margin_top">20</property>
                                 <property name="title" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
@@ -660,6 +663,7 @@
                             <child>
                               <object class="GsInfoBar" id="infobar_details_repo">
                                 <property name="visible">True</property>
+                                <property name="has-window">True</property>
                                 <property name="margin_top">20</property>
                                 <property name="title" translatable="yes" comments="Translators: a repository file used for installing software has been discovered.">Software Repository Identified</property>
                                 <property name="body" translatable="yes">Adding this software repository will give you access to additional software and upgrades.</property>

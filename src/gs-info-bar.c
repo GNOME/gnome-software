@@ -17,6 +17,7 @@ struct _GsInfoBar
 	GtkWidget	*label_title;
 	GtkWidget	*label_body;
 	GtkWidget	*label_warning;
+	gboolean	 has_window;
 };
 
 G_DEFINE_TYPE (GsInfoBar, gs_info_bar, GTK_TYPE_INFO_BAR)
@@ -25,8 +26,22 @@ enum {
 	PROP_0,
 	PROP_TITLE,
 	PROP_BODY,
-	PROP_WARNING
+	PROP_WARNING,
+	PROP_HAS_WINDOW
 };
+
+static gboolean
+gs_info_bar_get_has_window (GsInfoBar *bar)
+{
+	return bar->has_window;
+}
+
+static void
+gs_info_bar_set_has_window (GsInfoBar *bar,
+			    gboolean has_window)
+{
+	bar->has_window = has_window;
+}
 
 static void
 gs_info_bar_get_property (GObject *object,
@@ -45,6 +60,9 @@ gs_info_bar_get_property (GObject *object,
 		break;
 	case PROP_WARNING:
 		g_value_set_string (value, gs_info_bar_get_warning (infobar));
+		break;
+	case PROP_HAS_WINDOW:
+		g_value_set_boolean (value, gs_info_bar_get_has_window (infobar));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -70,10 +88,23 @@ gs_info_bar_set_property (GObject *object,
 	case PROP_WARNING:
 		gs_info_bar_set_warning (infobar, g_value_get_string (value));
 		break;
+	case PROP_HAS_WINDOW:
+		gs_info_bar_set_has_window (infobar, g_value_get_boolean (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
+}
+
+static void
+gs_info_bar_constructed (GObject *object)
+{
+	GsInfoBar *bar = GS_INFO_BAR (object);
+
+	G_OBJECT_CLASS (gs_info_bar_parent_class)->constructed (object);
+
+	gtk_widget_set_has_window (GTK_WIDGET (object), bar->has_window);
 }
 
 static void
@@ -91,6 +122,7 @@ gs_info_bar_class_init (GsInfoBarClass *klass)
 
 	object_class->get_property = gs_info_bar_get_property;
 	object_class->set_property = gs_info_bar_set_property;
+	object_class->constructed = gs_info_bar_constructed;
 
 	g_object_class_install_property (object_class, PROP_TITLE,
 		g_param_spec_string ("title",
@@ -112,6 +144,14 @@ gs_info_bar_class_init (GsInfoBarClass *klass)
 				     "The warning text of the info bar, below the body text",
 				     NULL,
 				     G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class, PROP_HAS_WINDOW,
+		g_param_spec_boolean ("has-window",
+				      "Has Window",
+				      "Private property, whether the info bar needs its own window",
+				      FALSE,
+				      G_PARAM_READWRITE |
+				      G_PARAM_CONSTRUCT));
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-info-bar.ui");
 
