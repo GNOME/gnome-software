@@ -630,6 +630,8 @@ gs_details_page_refresh_screenshots (GsDetailsPage *self)
 			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssmain),
 						      AS_IMAGE_NORMAL_WIDTH,
 						      AS_IMAGE_NORMAL_HEIGHT);
+			gtk_style_context_add_class (gtk_widget_get_style_context (ssmain),
+						     "screenshot-image-main");
 			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssmain), NULL);
 
 			/* when we're offline, the load will be immediate, so we
