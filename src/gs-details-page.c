@@ -872,6 +872,44 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 	gtk_widget_show (origin_box);
 }
 
+static gboolean
+gs_details_page_can_launch_app (GsDetailsPage *self)
+{
+	const gchar *desktop_id;
+	GDesktopAppInfo *desktop_appinfo;
+	g_autoptr(GAppInfo) appinfo = NULL;
+
+	if (!self->app)
+		return FALSE;
+
+	switch (gs_app_get_state (self->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		break;
+	default:
+		return FALSE;
+	}
+
+	if (gs_app_has_quirk (self->app, GS_APP_QUIRK_NOT_LAUNCHABLE) ||
+	    gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE))
+		return FALSE;
+
+	desktop_id = gs_app_get_launchable (self->app, AS_LAUNCHABLE_KIND_DESKTOP_ID);
+	if (!desktop_id)
+		desktop_id = gs_app_get_id (self->app);
+	if (!desktop_id)
+		return FALSE;
+
+	desktop_appinfo = gs_utils_get_desktop_app_info (desktop_id);
+	if (!desktop_appinfo)
+		return FALSE;
+
+	appinfo = G_APP_INFO (desktop_appinfo);
+
+	return g_app_info_should_show (appinfo);
+}
+
 static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
@@ -942,21 +980,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 	}
 
 	/* launch button */
-	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
-		if (!gs_app_has_quirk (self->app, GS_APP_QUIRK_NOT_LAUNCHABLE) &&
-		    !gs_app_has_quirk (self->app, GS_APP_QUIRK_PARENTAL_NOT_LAUNCHABLE)) {
-			gtk_widget_set_visible (self->button_details_launch, TRUE);
-		} else {
-			gtk_widget_set_visible (self->button_details_launch, FALSE);
-		}
-		break;
-	default:
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
-		break;
-	}
+	gtk_widget_set_visible (self->button_details_launch, gs_details_page_can_launch_app (self));
 
 	gtk_button_set_label (GTK_BUTTON (self->button_details_launch),
 			      /* TRANSLATORS: A label for a button to execute the selected application. */
