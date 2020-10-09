@@ -189,7 +189,7 @@ gs_page_app_removed_cb (GObject *source,
 		return;
 	}
 	if (!ret) {
-		g_warning ("failed to remove: %s", error->message);
+		g_warning ("failed to uninstall: %s", error->message);
 		return;
 	}
 
@@ -410,7 +410,7 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 	if (response != GTK_RESPONSE_OK)
 		return;
 
-	g_debug ("remove %s", gs_app_get_id (helper->app));
+	g_debug ("uninstall %s", gs_app_get_id (helper->app));
 	plugin_job = gs_plugin_job_newv (helper->action,
 					 "interactive", TRUE,
 					 "app", helper->app,
@@ -445,7 +445,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 						 "interactive", TRUE,
 						 "app", app,
 							 NULL);
-		g_debug ("remove %s", gs_app_get_id (app));
+		g_debug ("uninstall %s", gs_app_get_id (app));
 		gs_plugin_loader_job_process_async (priv->plugin_loader, plugin_job,
 						    helper->cancellable,
 						    gs_page_app_removed_cb,
@@ -463,17 +463,17 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 					 gs_app_get_name (app));
 		/* TRANSLATORS: longer dialog text */
 		message = g_strdup_printf (_("All applications from %s will be "
-					     "removed, and you will have to "
+					     "uninstalled, and you will have to "
 					     "re-install the repository to use them again."),
 					   gs_app_get_name (app));
 		break;
 	default:
 		/* TRANSLATORS: this is a prompt message, and '%s' is an
 		 * application summary, e.g. 'GNOME Clocks' */
-		title = g_strdup_printf (_("Are you sure you want to remove %s?"),
+		title = g_strdup_printf (_("Are you sure you want to uninstall %s?"),
 					 gs_app_get_name (app));
 		/* TRANSLATORS: longer dialog text */
-		message = g_strdup_printf (_("%s will be removed, and you will "
+		message = g_strdup_printf (_("%s will be uninstalled, and you will "
 					     "have to install it to use it again."),
 					   gs_app_get_name (app));
 		break;
@@ -489,7 +489,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 						  "%s", message);
 
 	/* TRANSLATORS: this is button text to remove the application */
-	remove_button = gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
+	remove_button = gtk_dialog_add_button (GTK_DIALOG (dialog), _("Uninstall"), GTK_RESPONSE_OK);
 	context = gtk_widget_get_style_context (remove_button);
 	gtk_style_context_add_class (context, "destructive-action");
 
