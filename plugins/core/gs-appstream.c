@@ -900,18 +900,23 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		for (guint i = 0; i < bundles->len; i++) {
 			XbNode *bundle = g_ptr_array_index (bundles, i);
 			const gchar *kind = xb_node_get_attr (bundle, "type");
-			gs_app_add_source (app, xb_node_get_text (bundle));
+			const gchar *bundle_id = xb_node_get_text (bundle);
+
+			if (bundle_id == NULL || kind == NULL)
+				continue;
+
+			gs_app_add_source (app, bundle_id);
 			gs_app_set_bundle_kind (app, as_bundle_kind_from_string (kind));
 
 			/* get the type/name/arch/branch */
 			if (gs_app_get_bundle_kind (app) == AS_BUNDLE_KIND_FLATPAK) {
-				g_auto(GStrv) split = g_strsplit (xb_node_get_text (bundle), "/", -1);
+				g_auto(GStrv) split = g_strsplit (bundle_id, "/", -1);
 				if (g_strv_length (split) != 4) {
 					g_set_error (error,
 						     GS_PLUGIN_ERROR,
 						     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 						     "invalid ID %s for a flatpak ref",
-						     xb_node_get_text (bundle));
+						     bundle_id);
 					return FALSE;
 				}
 
