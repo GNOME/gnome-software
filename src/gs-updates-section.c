@@ -66,7 +66,7 @@ _row_unrevealed_cb (GObject *row, GParamSpec *pspec, gpointer data)
 	list = gtk_widget_get_parent (GTK_WIDGET (row));
 	if (list == NULL)
 		return;
-	gtk_container_remove (GTK_CONTAINER (list), GTK_WIDGET (row));
+	gtk_widget_destroy (GTK_WIDGET (row));
 }
 
 static void
@@ -117,7 +117,10 @@ gs_updates_section_remove_all (GsUpdatesSection *self)
 	children = gtk_container_get_children (GTK_CONTAINER (self));
 	for (GList *l = children; l != NULL; l = l->next) {
 		GtkWidget *w = GTK_WIDGET (l->data);
-		gtk_container_remove (GTK_CONTAINER (self), w);
+		/* Destroying, rather than just removing, prevents the ::unrevealed
+		 * signal from being emitted, which would cause unfortunate reentrancy.
+		 */
+		gtk_widget_destroy (w);
 	}
 	gs_app_list_remove_all (self->list);
 	gtk_widget_hide (GTK_WIDGET (self));
