@@ -8,6 +8,8 @@ without them having to think about it, and gives them confidence that their
 system is up to date. It supports popular distributions, subject to those
 distributions maintaining their own distro-specific integration code.
 
+The specific use cases that Software covers are [documented in more detail](./doc/use-cases.md).
+
 # Features
 
 A plugin system is used to access software from different sources.
