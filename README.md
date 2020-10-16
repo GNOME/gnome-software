@@ -2,7 +2,14 @@
 
 # Software
 
-[Software](https://wiki.gnome.org/Apps/Software) lets you install and update applications and system extensions.
+[Software](https://wiki.gnome.org/Apps/Software) allows users to easily find,
+discover and install apps. It also keeps their OS, apps and devices up to date
+without them having to think about it, and gives them confidence that their
+system is up to date. It supports popular distributions, subject to those
+distributions maintaining their own distro-specific integration code.
+
+# Features
+
 A plugin system is used to access software from different sources.
 Plugins are provided for:
  - Traditional package installation via PackageKit (e.g. Debian package, RPM).
