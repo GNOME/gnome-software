@@ -387,7 +387,7 @@ static gboolean
 gs_appstream_is_recent_release (XbNode *component)
 {
 	guint64 ts;
-	guint64 secs;
+	gint64 secs;
 
 	/* get newest release */
 	ts = xb_node_query_attr_as_uint (component, "releases/release", "timestamp", NULL);
@@ -395,7 +395,7 @@ gs_appstream_is_recent_release (XbNode *component)
 		return FALSE;
 
 	/* is last build less than one year ago? */
-	secs = ((guint64) g_get_real_time () / G_USEC_PER_SEC) - ts;
+	secs = (g_get_real_time () / G_USEC_PER_SEC) - ts;
 	return secs / (60 * 60 * 24) < 365;
 }
 
