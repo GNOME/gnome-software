@@ -2393,6 +2393,23 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 			value_bad = value;
 	}
 
+	/* if the worst thing is nothing, great! show a more specific message
+	 * than a big listing of all the groups */
+	if (value_bad == AS_CONTENT_RATING_VALUE_NONE) {
+		/* set the labels */
+		gtk_label_set_label (GTK_LABEL (self->label_content_rating_message),
+				     _("The application contains no age-inappropriate content."));
+		gtk_widget_set_visible (self->label_content_rating_title, FALSE);
+		gtk_widget_set_visible (self->label_content_rating_message, TRUE);
+		gtk_widget_set_visible (self->label_content_rating_none, FALSE);
+
+		/* show popover */
+		gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
+		gtk_widget_show (self->popover_content_rating);
+
+		return;
+	}
+
 	/* get the content rating description for the worst things about the app;
 	 * handle the groups separately*/
 	for (gsize i = 0; ids[i] != NULL; i++) {
