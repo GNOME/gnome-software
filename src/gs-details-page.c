@@ -2378,6 +2378,11 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 		"social-info",
 		NULL
 	};
+	const gchar *coalesce_groups[] = {
+		"sex-themes",
+		"sex-homosexuality",
+		NULL
+	};
 
 	cr = gs_app_get_content_rating (self->app);
 	if (cr == NULL)
@@ -2411,7 +2416,8 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 	}
 
 	/* get the content rating description for the worst things about the app;
-	 * handle the groups separately*/
+	 * handle the groups separately. intentionally coalesce some categories
+	 * if they have the same values, to avoid confusion */
 	for (gsize i = 0; ids[i] != NULL; i++) {
 		if (!g_strv_contains (violence_group, ids[i]) &&
 		    !g_strv_contains (social_group, ids[i])) {
@@ -2419,6 +2425,14 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 			value = as_content_rating_get_value (cr, ids[i]);
 			if (value < value_bad)
 				continue;
+
+			/* coalesce down to the first element in @coalesce_groups,
+			 * unless this group’s value differs. currently only one
+			 * coalesce group is supported */
+			if (g_strv_contains (coalesce_groups + 1, ids[i]) &&
+			    as_content_rating_get_value (cr, coalesce_groups[0]) == value)
+				continue;
+
 			tmp = gs_content_rating_key_value_to_str (ids[i], value);
 			g_string_append_printf (str, "• %s\n", tmp);
 		}
