@@ -467,11 +467,25 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	}
 
 	/* add warning */
-	if (priv->show_update &&
-	    gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEW_PERMISSIONS)) {
-		gtk_label_set_text (GTK_LABEL (priv->label_warning),
-		                    _("Requires additional permissions"));
-		gtk_widget_show (priv->label_warning);
+	if (priv->show_update) {
+		g_autoptr(GString) warning = g_string_new (NULL);
+		const gchar *renamed_from;
+
+		if (gs_app_has_quirk (priv->app, GS_APP_QUIRK_NEW_PERMISSIONS))
+			g_string_append (warning, _("Requires additional permissions"));
+
+		renamed_from = gs_app_get_renamed_from (priv->app);
+		if (renamed_from && g_strcmp0 (renamed_from, gs_app_get_name (priv->app)) != 0) {
+			if (warning->len > 0)
+				g_string_append (warning, "\n");
+			/* Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name. */
+			g_string_append_printf (warning, _("Renamed from %s"), renamed_from);
+		}
+
+		if (warning->len > 0) {
+			gtk_label_set_text (GTK_LABEL (priv->label_warning), warning->str);
+			gtk_widget_show (priv->label_warning);
+		}
 	}
 }
 

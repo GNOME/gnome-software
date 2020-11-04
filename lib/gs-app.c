@@ -54,6 +54,7 @@ typedef struct
 	gboolean		 unique_id_valid;
 	gchar			*branch;
 	gchar			*name;
+	gchar			*renamed_from;
 	GsAppQuality		 name_quality;
 	GPtrArray		*icons;
 	GPtrArray		*sources;
@@ -1328,6 +1329,44 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 	priv->name_quality = quality;
 	if (_g_set_str (&priv->name, name))
 		g_object_notify_by_pspec (G_OBJECT (app), obj_props[PROP_NAME]);
+}
+
+/**
+ * gs_app_get_renamed_from:
+ * @app: a #GsApp
+ *
+ * Gets the old human-readable name of an application that's being renamed, the
+ * same name that was returned by gs_app_get_name() before the rename.
+ *
+ * Returns: (nullable): a string, or %NULL for unset
+ *
+ * Since: 40
+ **/
+const gchar *
+gs_app_get_renamed_from (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return priv->renamed_from;
+}
+
+/**
+ * gs_app_set_renamed_from:
+ * @app: a #GsApp
+ * @renamed_from: (nullable): The old name, e.g. "Iagno"
+ *
+ * Sets the old name of an application that's being renamed
+ *
+ * Since: 40
+ **/
+void
+gs_app_set_renamed_from (GsApp *app, const gchar *renamed_from)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+	_g_set_str (&priv->renamed_from, renamed_from);
 }
 
 /**
@@ -4245,6 +4284,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->unique_id);
 	g_free (priv->branch);
 	g_free (priv->name);
+	g_free (priv->renamed_from);
 	g_hash_table_unref (priv->urls);
 	g_hash_table_unref (priv->launchables);
 	g_free (priv->license);

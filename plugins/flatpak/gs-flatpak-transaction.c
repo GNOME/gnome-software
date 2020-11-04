@@ -728,7 +728,6 @@ _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 	if (rebased_to_ref && remote) {
 		g_autoptr(GError) local_error = NULL;
 
-		//FIXME: show something in the UI
 		if (!flatpak_transaction_add_rebase (transaction, remote, rebased_to_ref,
 						     NULL, previous_ids, &local_error) ||
 		    !flatpak_transaction_add_uninstall (transaction, ref, &local_error)) {
@@ -740,6 +739,11 @@ _transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
 			g_warning ("Failed to rebase %s to %s: %s", ref, rebased_to_ref, local_error->message);
 			return FALSE;
 		}
+
+		/* Note: A message about the rename will be shown in the UI
+		 * thanks to code in gs_flatpak_refine_appstream() which
+		 * sets gs_app_set_renamed_from().
+		 */
 		return TRUE;
 	}
 

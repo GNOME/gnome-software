@@ -2400,6 +2400,7 @@ get_renamed_component (GsFlatpak *self,
 	g_autofree gchar *xpath = NULL;
 	g_autofree gchar *source_safe = NULL;
 	g_autoptr(FlatpakRemoteRef) remote_ref = NULL;
+	g_autoptr(XbNode) component = NULL;
 
 	remote_ref = flatpak_installation_fetch_remote_ref_sync (self->installation,
 								 origin,
@@ -2421,7 +2422,26 @@ get_renamed_component (GsFlatpak *self,
 	source_safe = xb_string_escape (renamed_to);
 	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
 				 origin, source_safe);
-	return xb_silo_query_first (silo, xpath, NULL);
+	component = xb_silo_query_first (silo, xpath, NULL);
+
+	/* Get the previous name so it can be displayed in the UI */
+	if (component != NULL) {
+		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
+		const gchar *installed_name = NULL;
+
+		installed_ref = flatpak_installation_get_installed_ref (self->installation,
+									gs_flatpak_app_get_ref_kind (app),
+									gs_flatpak_app_get_ref_name (app),
+									gs_flatpak_app_get_ref_arch (app),
+									gs_app_get_branch (app),
+									NULL, NULL);
+		if (installed_ref != NULL)
+			installed_name = flatpak_installed_ref_get_appdata_name (installed_ref);
+		if (installed_name != NULL)
+			gs_app_set_renamed_from (app, installed_name);
+	}
+
+	return g_steal_pointer (&component);
 }
 
 static gboolean
