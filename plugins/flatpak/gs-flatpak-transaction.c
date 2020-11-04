@@ -703,7 +703,7 @@ _transaction_end_of_lifed (FlatpakTransaction *transaction,
 			   const gchar *rebase)
 {
 	if (rebase) {
-		g_printerr ("%s is end-of-life, in preference of %s\n", ref, rebase);
+		g_printerr ("%s is end-of-life, in favor of %s\n", ref, rebase);
 	} else if (reason) {
 		g_printerr ("%s is end-of-life, with reason: %s\n", ref, reason);
 	}
