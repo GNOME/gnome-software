@@ -2390,6 +2390,40 @@ gs_flatpak_refine_appstream_from_bytes (GsFlatpak *self,
 	return TRUE;
 }
 
+static XbNode *
+get_renamed_component (GsFlatpak *self,
+		       GsApp *app,
+		       XbSilo *silo)
+{
+	const gchar *origin = gs_app_get_origin (app);
+	const gchar *renamed_to;
+	g_autofree gchar *xpath = NULL;
+	g_autofree gchar *source_safe = NULL;
+	g_autoptr(FlatpakRemoteRef) remote_ref = NULL;
+
+	remote_ref = flatpak_installation_fetch_remote_ref_sync (self->installation,
+								 origin,
+								 gs_flatpak_app_get_ref_kind (app),
+								 gs_flatpak_app_get_ref_name (app),
+								 gs_flatpak_app_get_ref_arch (app),
+								 gs_app_get_branch (app),
+								 NULL, NULL);
+	if (remote_ref == NULL)
+		return NULL;
+
+	renamed_to = flatpak_remote_ref_get_eol_rebase (remote_ref);
+	if (renamed_to == NULL)
+		return NULL;
+
+	/* FIXME: This libxmlb query will need reworking after this PR lands:
+	 * https://github.com/hughsie/libxmlb/pull/67
+	 */
+	source_safe = xb_string_escape (renamed_to);
+	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
+				 origin, source_safe);
+	return xb_silo_query_first (silo, xpath, NULL);
+}
+
 static gboolean
 gs_flatpak_refine_appstream (GsFlatpak *self,
 			     GsApp *app,
@@ -2413,6 +2447,12 @@ gs_flatpak_refine_appstream (GsFlatpak *self,
 	xpath = g_strdup_printf ("components[@origin='%s']/component/bundle[@type='flatpak'][text()='%s']/..",
 				 origin, source_safe);
 	component = xb_silo_query_first (silo, xpath, &error_local);
+
+	/* If the app was renamed, use the appstream data from the new name;
+	 * usually it will not exist under the old name */
+	if (component == NULL && gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_APP)
+		component = get_renamed_component (self, app, silo);
+
 	if (component == NULL) {
 		g_autoptr(FlatpakInstalledRef) installed_ref = NULL;
 		g_autoptr(GBytes) appstream_gz = NULL;
