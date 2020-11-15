@@ -2354,11 +2354,24 @@ gs_details_page_more_reviews_button_cb (GtkWidget *widget, GsDetailsPage *self)
 	gtk_widget_set_visible (self->button_more_reviews, FALSE);
 }
 
+static guint
+content_rating_get_age (AsContentRating *content_rating, const gchar *id)
+{
+	AsContentRatingValue value = as_content_rating_get_value (content_rating, id);
+#if AS_CHECK_VERSION (0, 7, 15)
+	return as_content_rating_attribute_to_csm_age (id, value);
+#else
+	/* Hackily treat the value as an age; it should compare the same */
+	return (guint) value;
+#endif
+}
+
 static void
 gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self)
 {
 	AsContentRating *cr;
 	AsContentRatingValue value_bad = AS_CONTENT_RATING_VALUE_NONE;
+	guint age_bad = 0;
 	const gchar *tmp;
 	g_autofree const gchar **ids = NULL;
 	g_autoptr(GString) str = g_string_new (NULL);
@@ -2378,6 +2391,11 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 		"social-info",
 		NULL
 	};
+	const gchar *coalesce_groups[] = {
+		"sex-themes",
+		"sex-homosexuality",
+		NULL
+	};
 
 	cr = gs_app_get_content_rating (self->app);
 	if (cr == NULL)
@@ -2387,42 +2405,72 @@ gs_details_page_content_rating_button_cb (GtkWidget *widget, GsDetailsPage *self
 
 	/* get the worst thing */
 	for (gsize i = 0; ids[i] != NULL; i++) {
+		guint age;
 		AsContentRatingValue value;
 		value = as_content_rating_get_value (cr, ids[i]);
+		age = content_rating_get_age (cr, ids[i]);
+		if (age > age_bad)
+			age_bad = age;
 		if (value > value_bad)
 			value_bad = value;
 	}
 
+	/* if the worst thing is nothing, great! show a more specific message
+	 * than a big listing of all the groups */
+	if (value_bad == AS_CONTENT_RATING_VALUE_NONE) {
+		/* set the labels */
+		gtk_label_set_label (GTK_LABEL (self->label_content_rating_message),
+				     _("The application contains no age-inappropriate content."));
+		gtk_widget_set_visible (self->label_content_rating_title, FALSE);
+		gtk_widget_set_visible (self->label_content_rating_message, TRUE);
+		gtk_widget_set_visible (self->label_content_rating_none, FALSE);
+
+		/* show popover */
+		gtk_popover_set_relative_to (GTK_POPOVER (self->popover_content_rating), widget);
+		gtk_widget_show (self->popover_content_rating);
+
+		return;
+	}
+
 	/* get the content rating description for the worst things about the app;
-	 * handle the groups separately*/
+	 * handle the groups separately. intentionally coalesce some categories
+	 * if they have the same values, to avoid confusion */
 	for (gsize i = 0; ids[i] != NULL; i++) {
 		if (!g_strv_contains (violence_group, ids[i]) &&
 		    !g_strv_contains (social_group, ids[i])) {
-			AsContentRatingValue value;
-			value = as_content_rating_get_value (cr, ids[i]);
-			if (value < value_bad)
+			guint age;
+			age = content_rating_get_age (cr, ids[i]);
+			if (age < age_bad)
 				continue;
-			tmp = gs_content_rating_key_value_to_str (ids[i], value);
+
+			/* coalesce down to the first element in @coalesce_groups,
+			 * unless this group’s value differs. currently only one
+			 * coalesce group is supported */
+			if (g_strv_contains (coalesce_groups + 1, ids[i]) &&
+			    content_rating_get_age (cr, coalesce_groups[0]) == age)
+				continue;
+
+			tmp = gs_content_rating_key_value_to_str (ids[i], as_content_rating_get_value (cr, ids[i]));
 			g_string_append_printf (str, "• %s\n", tmp);
 		}
 	}
 
 	for (gsize i = 0; violence_group[i] != NULL; i++) {
-		AsContentRatingValue value;
-		value = as_content_rating_get_value (cr, violence_group[i]);
-		if (value < value_bad)
+		guint age;
+		age = content_rating_get_age (cr, violence_group[i]);
+		if (age < age_bad)
 			continue;
-		tmp = gs_content_rating_key_value_to_str (violence_group[i], value);
+		tmp = gs_content_rating_key_value_to_str (violence_group[i], as_content_rating_get_value (cr, violence_group[i]));
 		g_string_append_printf (str, "• %s\n", tmp);
 		break;
 	}
 
 	for (gsize i = 0; social_group[i] != NULL; i++) {
-		AsContentRatingValue value;
-		value = as_content_rating_get_value (cr, social_group[i]);
-		if (value < value_bad)
+		guint age;
+		age = content_rating_get_age (cr, social_group[i]);
+		if (age < age_bad)
 			continue;
-		tmp = gs_content_rating_key_value_to_str (social_group[i], value);
+		tmp = gs_content_rating_key_value_to_str (social_group[i], as_content_rating_get_value (cr, social_group[i]));
 		g_string_append_printf (str, "• %s\n", tmp);
 		break;
 	}
