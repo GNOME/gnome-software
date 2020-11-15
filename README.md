@@ -27,3 +27,10 @@ $ XDG_DATA_DIRS=install/share:$XDG_DATA_DIRS ./install/bin/gnome-software
 # Debugging
 
 Running with `--verbose` will give detailed logging information.
+
+# Maintainers
+
+Software is maintained by several co-maintainers, as listed in `gnome-software.doap`.
+All changes to Software need to be reviewed by at least one co-maintainer (who
+can’t review their own changes). Larger decisions need input from at least two
+co-maintainers.
