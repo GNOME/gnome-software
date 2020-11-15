@@ -1915,13 +1915,11 @@ gs_shell_show_event_url_to_app (GsShell *shell, GsPluginEvent *event)
 static gboolean
 gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 {
-	GsApp *app = gs_plugin_event_get_app (event);
 	GsApp *origin = gs_plugin_event_get_origin (event);
 	GsShellEventButtons buttons = GS_SHELL_EVENT_BUTTON_NONE;
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const GError *error = gs_plugin_event_get_error (event);
 	g_autoptr(GString) str = g_string_new (NULL);
-	g_autofree gchar *str_app = NULL;
 	g_autofree gchar *str_origin = NULL;
 
 	switch (error->code) {
@@ -1942,18 +1940,8 @@ gs_shell_show_event_fallback (GsShell *shell, GsPluginEvent *event)
 		buttons |= GS_SHELL_EVENT_BUTTON_NO_SPACE;
 		break;
 	case GS_PLUGIN_ERROR_RESTART_REQUIRED:
-		if (app != NULL) {
-			str_app = gs_shell_get_title_from_app (app);
-			/* TRANSLATORS: failure text for the in-app notification,
-			 * where the %s is the application name (e.g. "GIMP") */
-			g_string_append_printf (str, _("%s needs to be restarted "
-						       "to use new plugins."),
-						str_app);
-		} else {
-			/* TRANSLATORS: failure text for the in-app notification */
-			g_string_append (str, _("This application needs to be "
-						"restarted to use new plugins."));
-		}
+		/* TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'. */
+		g_string_append (str, _("Software needs to be restarted to use new plugins."));
 		buttons |= GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED;
 		break;
 	case GS_PLUGIN_ERROR_AC_POWER_REQUIRED:
