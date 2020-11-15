@@ -677,10 +677,27 @@ gs_plugin_download (GsPlugin *plugin, GsAppList *list,
 		for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 			GsApp *app = gs_app_list_index (list_tmp, i);
 			g_autofree gchar *ref = NULL;
+			g_autoptr(GError) error_local = NULL;
 
 			ref = gs_flatpak_app_get_ref_display (app);
-			if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
-				gs_flatpak_error_convert (error);
+			if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, &error_local))
+				continue;
+
+			/* Errors about missing remotes are not fatal, as that’s
+			 * a not-uncommon situation. */
+			if (g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
+				g_autoptr(GsPluginEvent) event = NULL;
+
+				g_warning ("Skipping update for ‘%s’: %s", ref, error_local->message);
+
+				event = gs_plugin_event_new ();
+				gs_flatpak_error_convert (&error_local);
+				gs_plugin_event_set_error (event, error_local);
+				gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+				gs_plugin_report_event (plugin, event);
+			} else {
+				gs_flatpak_error_convert (&error_local);
+				g_propagate_error (error, g_steal_pointer (&error_local));
 				return FALSE;
 			}
 		}
@@ -935,16 +952,34 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 		GsApp *app = gs_app_list_index (list_tmp, i);
 		g_autofree gchar *ref = NULL;
+		g_autoptr(GError) error_local = NULL;
 
 		ref = gs_flatpak_app_get_ref_display (app);
-		if (!flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
-			gs_flatpak_error_convert (error);
-			return FALSE;
+		if (flatpak_transaction_add_update (transaction, ref, NULL, NULL, error)) {
+			/* add to the transaction cache for quick look up -- other unrelated
+			 * refs will be matched using gs_plugin_flatpak_find_app_by_ref() */
+			gs_flatpak_transaction_add_app (transaction, app);
+
+			continue;
 		}
 
-		/* add to the transaction cache for quick look up -- other unrelated
-		 * refs will be matched using gs_plugin_flatpak_find_app_by_ref() */
-		gs_flatpak_transaction_add_app (transaction, app);
+		/* Errors about missing remotes are not fatal, as that’s
+		 * a not-uncommon situation. */
+		if (g_error_matches (error_local, FLATPAK_ERROR, FLATPAK_ERROR_REMOTE_NOT_FOUND)) {
+			g_autoptr(GsPluginEvent) event = NULL;
+
+			g_warning ("Skipping update for ‘%s’: %s", ref, error_local->message);
+
+			event = gs_plugin_event_new ();
+			gs_flatpak_error_convert (&error_local);
+			gs_plugin_event_set_error (event, error_local);
+			gs_plugin_event_add_flag (event, GS_PLUGIN_EVENT_FLAG_WARNING);
+			gs_plugin_report_event (plugin, event);
+		} else {
+			gs_flatpak_error_convert (&error_local);
+			g_propagate_error (error, g_steal_pointer (&error_local));
+			return FALSE;
+		}
 	}
 
 	/* run transaction */
