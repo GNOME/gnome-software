@@ -262,10 +262,20 @@ app_has_pending_action (GsApp *app)
 }
 
 static void
+gs_details_page_set_header_label (GsDetailsPage *self,
+				  const gchar *text)
+{
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
+	gtk_label_set_label (GTK_LABEL (widget), text ? text : "");
+	gtk_widget_set_visible (widget, text != NULL);
+}
+
+static void
 gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
-	GtkWidget *widget;
 	GtkAdjustment *adj;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_DETAILS) {
@@ -274,13 +284,11 @@ gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
 		return;
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_label_set_label (GTK_LABEL (widget), "");
-	gtk_widget_show (widget);
-
 	/* not set, perhaps file-to-app */
 	if (self->app == NULL)
 		return;
+
+	gs_details_page_set_header_label (self, gs_app_get_name (self->app));
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
@@ -1127,7 +1135,6 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	GsAppList *history;
 	GdkPixbuf *pixbuf = NULL;
 	GList *addons;
-	GtkWidget *widget;
 	const gchar *tmp;
 	gboolean ret;
 	gchar **menu_path;
@@ -1139,14 +1146,12 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
+	gs_details_page_set_header_label (self, tmp);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (self->application_details_title), tmp);
-		gtk_label_set_label (GTK_LABEL (widget), tmp);
 		gtk_widget_set_visible (self->application_details_title, TRUE);
 	} else {
 		gtk_widget_set_visible (self->application_details_title, FALSE);
-		gtk_label_set_label (GTK_LABEL (widget), "");
 	}
 	tmp = gs_app_get_summary (self->app);
 	if (tmp != NULL && tmp[0] != '\0') {
@@ -1968,6 +1973,8 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
+	g_clear_object (&self->app);
+	gs_details_page_set_header_label (self, _("Loading…"));
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -2001,6 +2008,8 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
+	g_clear_object (&self->app);
+	gs_details_page_set_header_label (self, _("Loading…"));
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
