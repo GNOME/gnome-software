@@ -14,6 +14,14 @@ Software supports showing metadata that closely matches the [AppStream](https://
 
 Software runs as a background service to provide update notifications and be a search provider for [GNOME Shell](https://wiki.gnome.org/Projects/GnomeShell).
 
+# Contact
+
+For questions about how to use Software, ask on [Discourse](https://discourse.gnome.org/tag/gnome-software).
+
+Bug reports and merge requests should be filed on [GNOME GitLab](https://gitlab.gnome.org/GNOME/gnome-software).
+
+For development discussion, join us on `#gnome-software` on [irc.gnome.org](https://wiki.gnome.org/Community/GettingInTouch/IRC).
+
 # Building
 
 Build locally with:
