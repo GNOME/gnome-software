@@ -452,7 +452,7 @@ is_downgrade (const gchar *evr1,
 
 	/* check release */
 #if AS_CHECK_VERSION(0,7,15)
-	rc = as_utils_vercmp_full (version1, version2,
+	rc = as_utils_vercmp_full (release1, release2,
 	                           AS_VERSION_COMPARE_FLAG_NONE);
 #else
 	rc = as_utils_vercmp (release1, release2);
