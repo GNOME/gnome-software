@@ -241,7 +241,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 #endif
 
 	/* use for gnome-software downloads */
-	gs_plugin_set_soup_session (plugin, soup_session);
+	if (soup_session != NULL)
+		gs_plugin_set_soup_session (plugin, soup_session);
 
 	/* add source */
 	priv->cached_origin = gs_app_new (gs_plugin_get_name (plugin));
@@ -643,6 +644,24 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 				GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+#if FWUPD_CHECK_VERSION(1,5,2)
+
+	/* check cache age */
+	if (cache_age > 0) {
+		guint64 age = fwupd_remote_get_age (remote);
+		guint tmp = age < G_MAXUINT ? (guint) age : G_MAXUINT;
+		if (tmp < cache_age) {
+			g_debug ("fwupd remote is only %u seconds old, so ignoring refresh", tmp);
+			return TRUE;
+		}
+	}
+
+	/* download new content */
+	if (!fwupd_client_refresh_remote (priv->client, remote, cancellable, error)) {
+		gs_plugin_fwupd_error_convert (error);
+		return FALSE;
+	}
+#else
 	GChecksumType checksum_kind;
 	const gchar *url_sig = NULL;
 	const gchar *url = NULL;
@@ -747,6 +766,7 @@ gs_plugin_fwupd_refresh_remote (GsPlugin *plugin,
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
 	}
+#endif
 	return TRUE;
 }
 
@@ -806,10 +826,23 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
+#if FWUPD_CHECK_VERSION(1,5,2)
+		g_autoptr(GFile) file = g_file_new_for_path (filename);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		if (!fwupd_client_download_file (priv->client,
+						 uri, file,
+						 FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
+						 cancellable,
+						 error)) {
+			gs_plugin_fwupd_error_convert (error);
+			return FALSE;
+		}
+#else
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
+#endif
 		downloaded_to_cache = TRUE;
 	}
 
@@ -948,6 +981,9 @@ gs_plugin_download_app (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+#if FWUPD_CHECK_VERSION(1,5,2)
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+#endif
 	GFile *local_file;
 	g_autofree gchar *filename = NULL;
 
@@ -971,6 +1007,9 @@ gs_plugin_download_app (GsPlugin *plugin,
 	filename = g_file_get_path (local_file);
 	if (!g_file_query_exists (local_file, cancellable)) {
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
+#if FWUPD_CHECK_VERSION(1,5,2)
+		g_autoptr(GFile) file = g_file_new_for_path (filename);
+#endif
 
 		if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_INTERACTIVE)) {
 			g_autoptr(GError) error_local = NULL;
@@ -982,9 +1021,20 @@ gs_plugin_download_app (GsPlugin *plugin,
 			}
 		}
 
+#if FWUPD_CHECK_VERSION(1,5,2)
+		if (!fwupd_client_download_file (priv->client,
+						 uri, file,
+						 FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
+						 cancellable,
+						 error)) {
+			gs_plugin_fwupd_error_convert (error);
+			return FALSE;
+		}
+#else
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
+#endif
 	}
 	gs_app_set_size_download (app, 0);
 	return TRUE;
