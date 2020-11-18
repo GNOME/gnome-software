@@ -798,9 +798,10 @@ install_resources_activated (GSimpleAction *action,
 	GdkDisplay *display;
 	const gchar *mode;
 	const gchar *startup_id;
+	const gchar *desktop_id;
 	g_autofree gchar **resources = NULL;
 
-	g_variant_get (parameter, "(&s^a&s&s)", &mode, &resources, &startup_id);
+	g_variant_get (parameter, "(&s^a&s&s&s)", &mode, &resources, &startup_id, &desktop_id);
 
 	display = gdk_display_get_default ();
 #ifdef GDK_WINDOWING_X11
@@ -821,7 +822,7 @@ install_resources_activated (GSimpleAction *action,
 	gs_application_present_window (app, startup_id);
 
 	gs_shell_reset_state (app->shell);
-	gs_shell_show_extras_search (app->shell, mode, resources);
+	gs_shell_show_extras_search (app->shell, mode, resources, desktop_id);
 }
 
 static GActionEntry actions[] = {
@@ -846,7 +847,7 @@ static GActionEntry actions_after_loading[] = {
 	{ "details-url", details_url_activated, "(s)", NULL, NULL },
 	{ "install", install_activated, "(su)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
-	{ "install-resources", install_resources_activated, "(sass)", NULL, NULL },
+	{ "install-resources", install_resources_activated, "(sasss)", NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 

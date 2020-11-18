@@ -54,6 +54,7 @@ struct _GsExtrasPage
 	GsLanguage		 *language;
 	GsVendor		 *vendor;
 	guint			  pending_search_cnt;
+	gchar			 *caller_app_name;
 
 	GtkWidget		 *label_failed;
 	GtkWidget		 *label_no_results;
@@ -452,12 +453,23 @@ build_no_results_label (GsExtrasPage *self)
 	url = g_strdup_printf ("<a href=\"%s\">%s</a>",
 	                       gs_app_get_url (app, AS_URL_KIND_MISSING),
                                /* TRANSLATORS: hyperlink title */
-                               _("this website"));
+                               _("the documentation"));
 
 	codec_titles = build_comma_separated_list ((gchar **) array->pdata);
-	/* TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website" */
-	return g_strdup_printf (ngettext ("Unfortunately, the %s you were searching for could not be found. Please see %s for more information.",
-	                                  "Unfortunately, the %s you were searching for could not be found. Please see %s for more information.",
+	if (self->caller_app_name) {
+		/* TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
+		   the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation" */
+		return g_strdup_printf (ngettext ("Unable to find the %s requested by %s. Please see %s for more information.",
+						  "Unable to find the %s requested by %s. Please see %s for more information.",
+						  num),
+					codec_titles,
+					self->caller_app_name,
+					url);
+	}
+
+	/* TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation" */
+	return g_strdup_printf (ngettext ("Unable to find the %s you were searching for. Please see %s for more information.",
+	                                  "Unable to find the %s you were searching for. Please see %s for more information.",
 	                                  num),
 	                        codec_titles,
 	                        url);
@@ -974,12 +986,31 @@ gs_extras_page_search_printer_drivers (GsExtrasPage *self, gchar **device_ids)
 	gs_extras_page_load (self, array_search_data);
 }
 
+static gchar *
+gs_extras_page_get_app_name (const gchar *desktop_id)
+{
+	g_autoptr(GDesktopAppInfo) app_info = NULL;
+
+	if (!desktop_id || !*desktop_id)
+		return NULL;
+
+	app_info = g_desktop_app_info_new (desktop_id);
+	if (!app_info)
+		return NULL;
+
+	return g_strdup (g_app_info_get_display_name (G_APP_INFO (app_info)));
+}
+
 void
 gs_extras_page_search (GsExtrasPage  *self,
                        const gchar   *mode_str,
-                       gchar        **resources)
+                       gchar        **resources,
+		       const gchar   *desktop_id)
 {
 	self->mode = gs_extras_page_mode_from_string (mode_str);
+	g_clear_pointer (&self->caller_app_name, g_free);
+	self->caller_app_name = gs_extras_page_get_app_name (desktop_id);
+
 	switch (self->mode) {
 	case GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES:
 		gs_extras_page_search_package_files (self, resources);
@@ -1164,6 +1195,7 @@ gs_extras_page_dispose (GObject *object)
 	g_clear_object (&self->plugin_loader);
 
 	g_clear_pointer (&self->array_search_data, g_ptr_array_unref);
+	g_clear_pointer (&self->caller_app_name, g_free);
 
 	G_OBJECT_CLASS (gs_extras_page_parent_class)->dispose (object);
 }

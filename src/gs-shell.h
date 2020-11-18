@@ -81,7 +81,8 @@ void		 gs_shell_show_search_result	(GsShell	*shell,
 						 const gchar    *search);
 void		 gs_shell_show_extras_search	(GsShell	*shell,
 						 const gchar	*mode,
-						 gchar		**resources);
+						 gchar		**resources,
+						 const gchar    *desktop_id);
 void		 gs_shell_show_uri		(GsShell	*shell,
 						 const gchar	*url);
 void		 gs_shell_setup			(GsShell	*shell,

@@ -321,7 +321,7 @@ notify_search_resources (GsExtrasPageMode   mode,
 	g_notification_set_body (n, body);
 	/* TRANSLATORS: this is a button that launches gnome-software */
 	g_notification_add_button_with_target (n, _("Find in Software"), "app.install-resources", "(s^ass)", mode_string, resources, "");
-	g_notification_set_default_action_and_target (n, "app.install-resources", "(s^ass)", mode_string, resources, "");
+	g_notification_set_default_action_and_target (n, "app.install-resources", "(s^asss)", mode_string, resources, "", desktop_id);
 	g_application_send_notification (g_application_get_default (), "install-resources", n);
 }
 
@@ -349,7 +349,7 @@ install_resources (GsExtrasPageMode   mode,
 	app = g_application_get_default ();
 	mode_string = gs_extras_page_mode_to_string (mode);
 	g_action_group_activate_action (G_ACTION_GROUP (app), "install-resources",
-	                                g_variant_new ("(s^ass)", mode_string, resources, startup_id));
+	                                g_variant_new ("(s^asss)", mode_string, resources, startup_id, desktop_id));
 }
 
 static gboolean
