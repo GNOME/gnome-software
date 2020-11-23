@@ -531,7 +531,6 @@ gs_category_page_setup (GsPage *page,
                         GError **error)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
-	GtkAdjustment *adj;
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->builder = g_object_ref (builder);
@@ -550,8 +549,6 @@ gs_category_page_setup (GsPage *page,
 						       G_CALLBACK (sort_button_clicked),
 						       self);
 
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
-	gtk_container_set_focus_vadjustment (GTK_CONTAINER (self->category_detail_box), adj);
 	return TRUE;
 }
 
