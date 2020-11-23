@@ -59,7 +59,7 @@ G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
 typedef struct {
 	GsApplication *app;
 	GSimpleAction *action;
-	GVariant *action_param;
+	GVariant *action_param;  /* (nullable) */
 } GsActivationHelper;
 
 static GsActivationHelper *
@@ -70,7 +70,7 @@ gs_activation_helper_new (GsApplication *app,
 	GsActivationHelper *helper = g_slice_new0 (GsActivationHelper);
 	helper->app = app;
 	helper->action = G_SIMPLE_ACTION (action);
-	helper->action_param = parameter;
+	helper->action_param = (parameter != NULL) ? g_variant_ref_sink (parameter) : NULL;
 
 	return helper;
 }
@@ -78,7 +78,7 @@ gs_activation_helper_new (GsApplication *app,
 static void
 gs_activation_helper_free (GsActivationHelper *helper)
 {
-	g_variant_unref (helper->action_param);
+	g_clear_pointer (&helper->action_param, g_variant_unref);
 	g_slice_free (GsActivationHelper, helper);
 }
 
@@ -894,7 +894,7 @@ wrapper_action_activated_cb (GSimpleAction *action,
 	if (app->shell_loaded_handler_id != 0) {
 		GsActivationHelper *helper = gs_activation_helper_new (app,
 								       G_SIMPLE_ACTION (real_action),
-								       g_variant_ref (parameter));
+								       parameter);
 
 		g_signal_connect_swapped (app->shell, "loaded",
 					  G_CALLBACK (activate_on_shell_loaded_cb), helper);
