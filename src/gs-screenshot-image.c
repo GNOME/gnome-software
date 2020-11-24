@@ -15,11 +15,14 @@
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
 
+#define SPINNER_TIMEOUT_SECS 2
+
 struct _GsScreenshotImage
 {
 	GtkBin		 parent_instance;
 
 	AsScreenshot	*screenshot;
+	GtkWidget	*spinner;
 	GtkWidget	*stack;
 	GtkWidget	*box_error;
 	GtkWidget	*image1;
@@ -33,6 +36,7 @@ struct _GsScreenshotImage
 	guint		 width;
 	guint		 height;
 	guint		 scale;
+	guint		 load_timeout_id;
 	gboolean	 showing_image;
 };
 
@@ -43,6 +47,20 @@ gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 {
 	g_return_val_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg), NULL);
 	return ssimg->screenshot;
+}
+
+static void
+gs_screenshot_image_start_spinner (GsScreenshotImage *ssimg)
+{
+	gtk_widget_show (ssimg->spinner);
+	gs_start_spinner (GTK_SPINNER (ssimg->spinner));
+}
+
+static void
+gs_screenshot_image_stop_spinner (GsScreenshotImage *ssimg)
+{
+	gs_stop_spinner (GTK_SPINNER (ssimg->spinner));
+	gtk_widget_hide (ssimg->spinner);
 }
 
 static void
@@ -58,6 +76,7 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 	else
 		gtk_widget_show (ssimg->label_error);
 	ssimg->showing_image = FALSE;
+	gs_screenshot_image_stop_spinner (ssimg);
 }
 
 static void
@@ -95,6 +114,8 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 
 	gtk_widget_show (GTK_WIDGET (ssimg));
 	ssimg->showing_image = TRUE;
+
+	gs_screenshot_image_stop_spinner (ssimg);
 }
 
 static void
@@ -214,6 +235,11 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GInputStream) stream = NULL;
 
+	if (ssimg->load_timeout_id) {
+		g_source_remove (ssimg->load_timeout_id);
+		ssimg->load_timeout_id = 0;
+	}
+
 	/* return immediately if the message was cancelled or if we're in destruction */
 	if (msg->status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
 		return;
@@ -221,12 +247,14 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	if (msg->status_code == SOUP_STATUS_NOT_MODIFIED) {
 		g_debug ("screenshot has not been modified");
 		as_screenshot_show_image (ssimg);
+		gs_screenshot_image_stop_spinner (ssimg);
 		return;
 	}
 	if (msg->status_code != SOUP_STATUS_OK) {
                 g_warning ("Result of screenshot downloading attempt with "
 			   "status code '%u': %s", msg->status_code,
 			   msg->reason_phrase);
+		gs_screenshot_image_stop_spinner (ssimg);
 		/* if we're already showing an image, then don't set the error
 		 * as having an image (even if outdated) is better */
 		if (ssimg->showing_image)
@@ -241,8 +269,10 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
 						      msg->response_body->length,
 						      NULL);
-	if (stream == NULL)
+	if (stream == NULL) {
+		gs_screenshot_image_stop_spinner (ssimg);
 		return;
+	}
 
 	/* load the image */
 	pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
@@ -343,6 +373,17 @@ gs_screenshot_soup_msg_set_modified_request (SoupMessage *msg, GFile *file)
 	soup_message_headers_append (msg->request_headers,
 				     "If-Modified-Since",
 				     mod_date);
+}
+
+static gboolean
+gs_screenshot_show_spinner_cb (gpointer user_data)
+{
+	GsScreenshotImage *ssimg = user_data;
+
+	ssimg->load_timeout_id = 0;
+	gs_screenshot_image_start_spinner (ssimg);
+
+	return FALSE;
 }
 
 void
@@ -473,6 +514,11 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		return;
 	}
 
+	if (ssimg->load_timeout_id) {
+		g_source_remove (ssimg->load_timeout_id);
+		ssimg->load_timeout_id = 0;
+	}
+
 	/* cancel any previous messages */
 	if (ssimg->message != NULL) {
 		soup_session_cancel_message (ssimg->session,
@@ -495,6 +541,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		gs_screenshot_soup_msg_set_modified_request (ssimg->message, file);
 	}
 
+	ssimg->load_timeout_id = g_timeout_add_seconds (SPINNER_TIMEOUT_SECS,
+		gs_screenshot_show_spinner_cb, ssimg);
+
 	/* send async */
 	soup_session_queue_message (ssimg->session,
 				    g_object_ref (ssimg->message) /* transfer full */,
@@ -512,6 +561,11 @@ static void
 gs_screenshot_image_destroy (GtkWidget *widget)
 {
 	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (widget);
+
+	if (ssimg->load_timeout_id) {
+		g_source_remove (ssimg->load_timeout_id);
+		ssimg->load_timeout_id = 0;
+	}
 
 	if (ssimg->message != NULL) {
 		soup_session_cancel_message (ssimg->session,
@@ -575,6 +629,7 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/gs-screenshot-image.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, spinner);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, stack);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image1);
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image2);
