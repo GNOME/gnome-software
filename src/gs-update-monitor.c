@@ -519,7 +519,7 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	n = g_notification_new (_("Operating System Updates Unavailable"));
 	/* TRANSLATORS: this is the message dialog for the distro EOL notice */
 	g_notification_set_body (n, _("Upgrade to continue receiving security updates."));
-	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "update");
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	g_application_send_notification (monitor->application, "eol", n);
 }
 
