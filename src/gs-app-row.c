@@ -354,6 +354,20 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 			gtk_widget_hide (priv->version_arrow_label);
 		}
 
+		/* ensure the arrow is the right way round for the text direction,
+		 * as arrows are not bidi-mirrored automatically
+		 * See section 2 of http://www.unicode.org/L2/L2017/17438-bidi-math-fdbk.html */
+		switch (gtk_widget_get_direction (priv->version_box)) {
+		case GTK_TEXT_DIR_RTL:
+			gtk_label_set_label (GTK_LABEL (priv->version_arrow_label), "←");
+			break;
+		case GTK_TEXT_DIR_NONE:
+		case GTK_TEXT_DIR_LTR:
+		default:
+			gtk_label_set_label (GTK_LABEL (priv->version_arrow_label), "→");
+			break;
+		}
+
 		/* show the box if we have either of the versions */
 		if (version_current != NULL || version_update != NULL)
 			gtk_widget_show (priv->version_box);
