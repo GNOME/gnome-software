@@ -182,6 +182,7 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(PkError) error_code = NULL;
 	const gchar *repo_id;
 
 	repo_id = gs_app_get_origin (app);
@@ -203,7 +204,13 @@ gs_plugin_app_origin_repo_enable (GsPlugin *plugin,
 	                                 gs_packagekit_helper_cb, helper,
 	                                 error);
 	g_mutex_unlock (&priv->task_mutex);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+
+	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	if (results != NULL &&
+	    (error_code = pk_results_get_error_code (results)) != NULL &&
+	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
+		g_clear_error (error);
+	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
 	}
@@ -224,6 +231,7 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(PkError) error_code = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -237,7 +245,13 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 					 gs_packagekit_helper_cb, helper,
 					 error);
 	g_mutex_unlock (&priv->task_mutex);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+
+	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	if (results != NULL &&
+	    (error_code = pk_results_get_error_code (results)) != NULL &&
+	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
+		g_clear_error (error);
+	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
@@ -457,6 +471,7 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsPackagekitHelper) helper = gs_packagekit_helper_new (plugin);
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(PkError) error_code = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
@@ -470,7 +485,13 @@ gs_plugin_repo_disable (GsPlugin *plugin,
 					 gs_packagekit_helper_cb, helper,
 					 error);
 	g_mutex_unlock (&priv->task_mutex);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
+
+	/* pk_client_repo_enable() returns an error if the repo is already enabled. */
+	if (results != NULL &&
+	    (error_code = pk_results_get_error_code (results)) != NULL &&
+	    pk_error_get_code (error_code) == PK_ERROR_ENUM_REPO_ALREADY_SET) {
+		g_clear_error (error);
+	} else if (!gs_plugin_packagekit_results_valid (results, error)) {
 		gs_app_set_state_recover (app);
 		gs_utils_error_add_origin_id (error, app);
 		return FALSE;
