@@ -2293,8 +2293,13 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* primary menu */
 	gs_shell_add_about_menu_item (shell);
 
-	/* show loading page, which triggers the initial refresh */
-	gs_shell_change_mode (shell, GS_SHELL_MODE_LOADING, NULL, TRUE);
+	if (g_settings_get_boolean (priv->settings, "download-updates")) {
+		/* show loading page, which triggers the initial refresh */
+		gs_shell_change_mode (shell, GS_SHELL_MODE_LOADING, NULL, TRUE);
+	} else {
+		g_debug ("Skipped refresh of the repositories due to 'download-updates' disabled");
+		initial_refresh_done (GS_LOADING_PAGE (page), shell);
+	}
 }
 
 void

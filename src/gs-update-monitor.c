@@ -180,6 +180,16 @@ no_updates_for_a_week (GsUpdateMonitor *monitor)
 }
 
 static gboolean
+should_download_updates (GsUpdateMonitor *monitor)
+{
+#ifdef HAVE_MOGWAI
+	return TRUE;
+#else
+	return g_settings_get_boolean (monitor->settings, "download-updates");
+#endif
+}
+
+static gboolean
 _filter_by_app_kind (GsApp *app, gpointer user_data)
 {
 	AsAppKind kind = GPOINTER_TO_UINT (user_data);
@@ -836,6 +846,11 @@ check_updates (GsUpdateMonitor *monitor)
 		/* ...and past 6am */
 		if (!(now_hour >= 6))
 			return;
+	}
+
+	if (!should_download_updates (monitor)) {
+		get_updates (monitor);
+		return;
 	}
 
 	g_debug ("Daily update check due");
