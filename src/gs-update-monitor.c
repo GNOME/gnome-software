@@ -293,7 +293,7 @@ _build_autoupdated_notification (GsUpdateMonitor *monitor, GsAppList *list)
 	n = g_notification_new (title);
 	if (body->len > 0)
 		g_notification_set_body (n, body->str);
-	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updated");
 	return g_steal_pointer (&n);
 }
 
