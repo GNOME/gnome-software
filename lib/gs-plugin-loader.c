@@ -384,6 +384,7 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 				const GError *error_local,
 				GError **error)
 {
+	g_autoptr(GError) error_local_copy = NULL;
 	g_autofree gchar *app_id = NULL;
 	g_autofree gchar *origin_id = NULL;
 	g_autoptr(GsPluginEvent) event = NULL;
@@ -404,24 +405,26 @@ gs_plugin_error_handle_failure (GsPluginLoaderHelper *helper,
 	}
 
 	/* find and strip any unique IDs from the error message */
+	error_local_copy = g_error_copy (error_local);
+
 	for (guint i = 0; i < 2; i++) {
 		if (app_id == NULL)
-			app_id = gs_utils_error_strip_app_id (error_local);
+			app_id = gs_utils_error_strip_app_id (error_local_copy);
 		if (origin_id == NULL)
-			origin_id = gs_utils_error_strip_origin_id (error_local);
+			origin_id = gs_utils_error_strip_origin_id (error_local_copy);
 	}
 
 	/* fatal error */
 	if (gs_plugin_job_get_action (helper->plugin_job) == GS_PLUGIN_ACTION_SETUP ||
-	    gs_plugin_loader_is_error_fatal (error_local) ||
+	    gs_plugin_loader_is_error_fatal (error_local_copy) ||
 	    g_getenv ("GS_SELF_TEST_PLUGIN_ERROR_FAIL_HARD") != NULL) {
 		if (error != NULL)
-			*error = g_error_copy (error_local);
+			*error = g_steal_pointer (&error_local_copy);
 		return FALSE;
 	}
 
 	/* create event which is handled by the GsShell */
-	event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local);
+	event = gs_plugin_job_to_failed_event (helper->plugin_job, error_local_copy);
 
 	/* set the app and origin IDs if we managed to scrape them from the error above */
 	if (as_utils_unique_id_valid (app_id)) {
