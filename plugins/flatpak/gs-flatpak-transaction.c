@@ -703,9 +703,9 @@ _transaction_end_of_lifed (FlatpakTransaction *transaction,
 			   const gchar *rebase)
 {
 	if (rebase) {
-		g_printerr ("%s is end-of-life, in favor of %s\n", ref, rebase);
+		g_message ("%s is end-of-life, in favor of %s", ref, rebase);
 	} else if (reason) {
-		g_printerr ("%s is end-of-life, with reason: %s\n", ref, reason);
+		g_message ("%s is end-of-life, with reason: %s", ref, reason);
 	}
 	//FIXME: show something in the UI
 }
