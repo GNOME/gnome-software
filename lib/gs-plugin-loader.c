@@ -656,8 +656,8 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 	case GS_PLUGIN_ACTION_SEARCH_PROVIDES:
 		{
 			GsPluginSearchFunc plugin_func = func;
-			gchar *search[2] = { gs_plugin_job_get_search (helper->plugin_job), NULL };
-			ret = plugin_func (plugin, search, list,
+			const gchar *search[2] = { gs_plugin_job_get_search (helper->plugin_job), NULL };
+			ret = plugin_func (plugin, (gchar **) search, list,
 					   cancellable, &error_local);
 		}
 		break;

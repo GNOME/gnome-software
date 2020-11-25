@@ -459,7 +459,7 @@ gs_plugin_packagekit_details_array_to_hash (GPtrArray *array)
 	for (gsize i = 0; i < array->len; i++) {
 		PkDetails *details = g_ptr_array_index (array, i);
 		g_hash_table_insert (details_collection,
-				     pk_details_get_package_id (details),
+				     (void *) pk_details_get_package_id (details),
 				     details);
 	}
 
