@@ -238,7 +238,6 @@ gs_plugin_appstream_load_desktop_fn (GsPlugin *plugin,
 				     GError **error)
 {
 	g_autoptr(GFile) file = g_file_new_for_path (filename);
-	g_autoptr(XbBuilderFixup) fixup = NULL;
 	g_autoptr(XbBuilderNode) info = NULL;
 	g_autoptr(XbBuilderSource) source = xb_builder_source_new ();
 
