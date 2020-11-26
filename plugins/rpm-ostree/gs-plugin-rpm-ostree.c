@@ -237,7 +237,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 typedef struct {
 	GsPlugin *plugin;
 	GError *error;
-	GMainLoop *loop;
+	GMainContext *context;
 	GsApp *app;
 	gboolean complete;
 } TransactionProgress;
@@ -248,7 +248,7 @@ transaction_progress_new (void)
 	TransactionProgress *self;
 
 	self = g_slice_new0 (TransactionProgress);
-	self->loop = g_main_loop_new (NULL, FALSE);
+	self->context = g_main_context_ref (g_main_context_default ());
 
 	return self;
 }
@@ -258,7 +258,7 @@ transaction_progress_free (TransactionProgress *self)
 {
 	g_clear_object (&self->plugin);
 	g_clear_error (&self->error);
-	g_main_loop_unref (self->loop);
+	g_main_context_unref (self->context);
 	g_clear_object (&self->app);
 	g_slice_free (TransactionProgress, self);
 }
@@ -268,7 +268,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(TransactionProgress, transaction_progress_free);
 static void
 transaction_progress_end (TransactionProgress *self)
 {
-	g_main_loop_quit (self->loop);
+	self->complete = TRUE;
+	g_main_context_wakeup (self->context);
 }
 
 static void
@@ -380,7 +381,10 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	                                               error))
 		goto out;
 
-	g_main_loop_run (tp->loop);
+	/* Process all the signals until we receive the Finished signal. */
+	while (!tp->complete) {
+		g_main_context_iteration (tp->context, TRUE);
+	}
 
 	g_cancellable_disconnect (cancellable, cancel_handler);
 
