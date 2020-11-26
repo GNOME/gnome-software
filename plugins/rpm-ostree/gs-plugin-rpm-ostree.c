@@ -326,6 +326,17 @@ on_transaction_progress (GDBusProxy *proxy,
 }
 
 static void
+on_owner_notify (GObject    *obj,
+                 GParamSpec *pspec,
+                 gpointer    user_data)
+{
+	TransactionProgress *tp = user_data;
+
+	/* Wake up the context so it can notice the server has disappeared. */
+	g_main_context_wakeup (tp->context);
+}
+
+static void
 cancelled_handler (GCancellable *cancellable,
                    gpointer user_data)
 {
@@ -344,8 +355,10 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	g_autoptr(GDBusConnection) peer_connection = NULL;
 	gint cancel_handler;
 	gulong signal_handler = 0;
+	gulong notify_handler = 0;
 	gboolean success = FALSE;
 	gboolean just_started = FALSE;
+	g_autofree gchar *name_owner = NULL;
 
 	peer_connection = g_dbus_connection_new_for_address_sync (transaction_address,
 	                                                          G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT,
@@ -374,6 +387,10 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	                                   G_CALLBACK (on_transaction_progress),
 	                                   tp);
 
+	notify_handler = g_signal_connect (transaction, "notify::g-name-owner",
+					   G_CALLBACK (on_owner_notify),
+					   tp);
+
 	/* Tell the server we're ready to receive signals. */
 	if (!gs_rpmostree_transaction_call_start_sync (transaction,
 	                                               &just_started,
@@ -381,8 +398,11 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	                                               error))
 		goto out;
 
-	/* Process all the signals until we receive the Finished signal. */
-	while (!tp->complete) {
+	/* Process all the signals until we receive the Finished signal or the
+	 * daemon disappears (which can happen if it crashes). */
+	while (!tp->complete &&
+	       (name_owner = g_dbus_proxy_get_name_owner (G_DBUS_PROXY (transaction))) != NULL) {
+		g_clear_pointer (&name_owner, g_free);
 		g_main_context_iteration (tp->context, TRUE);
 	}
 
@@ -391,12 +411,17 @@ gs_rpmostree_transaction_get_response_sync (GsRPMOSTreeSysroot *sysroot_proxy,
 	if (!g_cancellable_set_error_if_cancelled (cancellable, error)) {
 		if (tp->error) {
 			g_propagate_error (error, g_steal_pointer (&tp->error));
+		} else if (!tp->complete && name_owner == NULL) {
+			g_set_error_literal (error, G_DBUS_ERROR, G_DBUS_ERROR_NO_REPLY,
+					     "Daemon disappeared");
 		} else {
 			success = TRUE;
 		}
 	}
 
 out:
+	if (notify_handler != 0)
+		g_signal_handler_disconnect (transaction, notify_handler);
 	if (signal_handler)
 		g_signal_handler_disconnect (transaction, signal_handler);
 	if (transaction != NULL)
