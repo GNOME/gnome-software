@@ -39,29 +39,10 @@
 #endif
 
 #include "gs-metered.h"
+#include "gs-utils.h"
 
 
 #ifdef HAVE_MOGWAI
-
-/* FIXME: Backported from https://gitlab.gnome.org/GNOME/glib/merge_requests/983.
- * Drop once we can depend on a version of GLib which includes it .*/
-typedef void MainContextPusher;
-
-static inline MainContextPusher *
-main_context_pusher_new (GMainContext *main_context)
-{
-  g_main_context_push_thread_default (main_context);
-  return (MainContextPusher *) main_context;
-}
-
-static inline void
-main_context_pusher_free (MainContextPusher *pusher)
-{
-  g_main_context_pop_thread_default ((GMainContext *) pusher);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC (MainContextPusher, main_context_pusher_free)
-
 
 typedef struct
 {
@@ -131,14 +112,14 @@ gs_metered_block_on_download_scheduler (GVariant      *parameters,
 	g_autoptr(MwscScheduleEntry) schedule_entry = NULL;
 	g_autofree gchar *parameters_str = NULL;
 	g_autoptr(GMainContext) context = NULL;
-	g_autoptr(MainContextPusher) pusher = NULL;
+	g_autoptr(GsMainContextPusher) pusher = NULL;
 
 	parameters_str = (parameters != NULL) ? g_variant_print (parameters, TRUE) : g_strdup ("(none)");
 	g_debug ("%s: Waiting with parameters: %s", G_STRFUNC, parameters_str);
 
 	/* Push the context early so that the #MwscScheduler is created to run within it. */
 	context = g_main_context_new ();
-	pusher = main_context_pusher_new (context);
+	pusher = gs_main_context_pusher_new (context);
 
 	/* Wait until the download can be scheduled.
 	 * FIXME: In future, downloads could be split up by app, so they can all
