@@ -248,7 +248,7 @@ transaction_progress_new (void)
 	TransactionProgress *self;
 
 	self = g_slice_new0 (TransactionProgress);
-	self->context = g_main_context_ref (g_main_context_default ());
+	self->context = g_main_context_ref_thread_default ();
 
 	return self;
 }
