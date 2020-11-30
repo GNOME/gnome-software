@@ -304,6 +304,9 @@ gs_app_compare_priority (GsApp *app1, GsApp *app2)
 	GsAppPrivate *priv1 = gs_app_get_instance_private (app1);
 	GsAppPrivate *priv2 = gs_app_get_instance_private (app2);
 
+	g_return_val_if_fail (GS_IS_APP (app1), 0);
+	g_return_val_if_fail (GS_IS_APP (app2), 0);
+
 	/* prefer prio */
 	if (priv1->priority > priv2->priority)
 		return -1;
@@ -409,6 +412,9 @@ gchar *
 gs_app_to_string (GsApp *app)
 {
 	GString *str = g_string_new ("GsApp:");
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
 	gs_app_to_string_append (app, str);
 	if (str->len > 0)
 		g_string_truncate (str, str->len - 1);
@@ -427,7 +433,7 @@ gs_app_to_string (GsApp *app)
 void
 gs_app_to_string_append (GsApp *app, GString *str)
 {
-	GsAppClass *klass = GS_APP_GET_CLASS (app);
+	GsAppClass *klass;
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	AsImage *im;
 	GList *keys;
@@ -436,6 +442,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (str != NULL);
+
+	klass = GS_APP_GET_CLASS (app);
 
 	g_string_append_printf (str, " [%p]\n", app);
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (priv->kind));
@@ -886,6 +894,9 @@ void
 gs_app_set_state_recover (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
+
+	g_return_if_fail (GS_IS_APP (app));
+
 	if (priv->state_recover == AS_APP_STATE_UNKNOWN)
 		return;
 	if (priv->state_recover == priv->state)
@@ -1733,6 +1744,8 @@ gs_app_get_use_drop_shadow (GsApp *app)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	AsIcon *ic;
 
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
 	/* guess */
 	if (priv->icons->len == 0)
 		return TRUE;
@@ -1890,6 +1903,7 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (runtime));
 	g_return_if_fail (app != runtime);
 	locker = g_mutex_locker_new (&priv->mutex);
 	g_set_object (&priv->runtime, runtime);
@@ -4057,7 +4071,11 @@ gs_app_get_cancellable (GsApp *app)
 {
 	g_autoptr(GCancellable) cancellable = NULL;
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	locker = g_mutex_locker_new (&priv->mutex);
 
 	if (priv->cancellable == NULL || g_cancellable_is_cancelled (priv->cancellable)) {
 		cancellable = g_cancellable_new ();
@@ -4078,7 +4096,9 @@ GsPluginAction
 gs_app_get_pending_action (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_val_if_fail (GS_IS_APP (app), GS_PLUGIN_ACTION_UNKNOWN);
+	locker = g_mutex_locker_new (&priv->mutex);
 	return priv->pending_action;
 }
 
@@ -4094,7 +4114,9 @@ gs_app_set_pending_action (GsApp *app,
 			   GsPluginAction action)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
 	gs_app_set_pending_action_internal (app, action);
 }
 
@@ -4546,6 +4568,8 @@ gs_app_new_from_unique_id (const gchar *unique_id)
 gchar *
 gs_app_get_origin_ui (GsApp *app)
 {
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
 	/* use the distro name for official packages */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
 		g_autoptr(GsOsRelease) os_release = gs_os_release_new (NULL);
@@ -4586,6 +4610,8 @@ gs_app_get_packaging_format (GsApp *app)
 	AsBundleKind bundle_kind;
 	const gchar *bundle_kind_ui;
 	const gchar *packaging_format;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
 	/* does the app have packaging format set? */
 	packaging_format = gs_app_get_metadata_item (app, "GnomeSoftware::PackagingFormat");
@@ -4637,7 +4663,12 @@ void
 gs_app_subsume_metadata (GsApp *app, GsApp *donor)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (donor);
-	g_autoptr(GList) keys = g_hash_table_get_keys (priv->metadata);
+	g_autoptr(GList) keys = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (donor));
+
+	keys = g_hash_table_get_keys (priv->metadata);
 	for (GList *l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		GVariant *tmp = gs_app_get_metadata_variant (donor, key);
@@ -4651,7 +4682,7 @@ GsAppPermissions
 gs_app_get_permissions (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_UNKNOWN);
 	return priv->permissions;
 }
 
@@ -4659,7 +4690,7 @@ void
 gs_app_set_permissions (GsApp *app, GsAppPermissions permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
+	g_return_if_fail (GS_IS_APP (app));
 	priv->permissions = permissions;
 }
 
@@ -4667,7 +4698,7 @@ GsAppPermissions
 gs_app_get_update_permissions (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_PERMISSIONS_UNKNOWN);
 	return priv->update_permissions;
 }
 
@@ -4675,6 +4706,6 @@ void
 gs_app_set_update_permissions (GsApp *app, GsAppPermissions update_permissions)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-
+	g_return_if_fail (GS_IS_APP (app));
 	priv->update_permissions = update_permissions;
 }
