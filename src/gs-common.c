@@ -162,8 +162,9 @@ gs_app_notify_installed (GsApp *app)
 	} else if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP) {
 		/* TRANSLATORS: this is button that opens the newly installed application */
 		g_notification_add_button_with_target (n, _("Launch"),
-						       "app.launch", "s",
-						       gs_app_get_id (app));
+						       "app.launch", "(ss)",
+						       gs_app_get_id (app),
+						       gs_app_get_management_plugin (app));
 	}
 	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
 						       gs_app_get_unique_id (app), "");
