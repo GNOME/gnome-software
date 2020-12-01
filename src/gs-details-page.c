@@ -1728,26 +1728,36 @@ gs_details_page_app_refine_cb (GObject *source,
 static void
 gs_details_page_content_rating_set_css (GsDetailsPage *page, guint age)
 {
-	g_autoptr(GString) css = g_string_new (NULL);
-	const gchar *color_bg = NULL;
-	const gchar *color_fg = "#ffffff";
-	if (age >= 18) {
-		color_bg = "#ee2222";
-	} else if (age >= 15) {
-		color_bg = "#f1c000";
-	} else if (age >= 12) {
-		color_bg = "#2a97c9";
-	} else if (age >= 5) {
-		color_bg = "#3f756c";
-	} else {
-		color_bg = "#009d66";
-	}
-	g_string_append_printf (css, "color: %s;\n", color_fg);
-	g_string_append_printf (css, "background-color: %s;\n", color_bg);
+	GtkStyleContext *style_context;
+	const gchar *classes[] =  {
+		"details-rating-18",
+		"details-rating-15",
+		"details-rating-12",
+		"details-rating-5",
+		"details-rating-0"
+	};
+	guint age_index, ii;
 
-	gs_utils_widget_set_css (page->button_details_rating_value,
-				 (GtkCssProvider **) &page->button_details_rating_style_provider,
-				 "content-rating-custom", css->str);
+	if (age >= 18)
+		age_index = 0;
+	else if (age >= 15)
+		age_index = 1;
+	else if (age >= 12)
+		age_index = 2;
+	else if (age >= 5)
+		age_index = 3;
+	else
+		age_index = 4;
+
+	style_context = gtk_widget_get_style_context (page->button_details_rating_value);
+	for (ii = 0; ii < G_N_ELEMENTS (classes); ii++) {
+		if (ii == age_index) {
+			if (!gtk_style_context_has_class (style_context, classes[ii]))
+				gtk_style_context_add_class (style_context, classes[ii]);
+		} else {
+			gtk_style_context_remove_class (style_context, classes[ii]);
+		}
+	}
 }
 
 static void
@@ -2928,6 +2938,8 @@ gs_details_page_init (GsDetailsPage *self)
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_addons),
 				    list_sort_func,
 				    self, NULL);
+
+	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_details_permissions_value), "content-rating-permissions");
 }
 
 GsDetailsPage *
