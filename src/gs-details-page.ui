@@ -65,11 +65,11 @@
                     <property name="visible">True</property>
                     <property name="halign">fill</property>
                     <property name="valign">start</property>
-                    <property name="margin_top">4</property>
-                    <property name="margin_bottom">4</property>
-                    <property name="border_width">24</property>
                     <property name="spacing">18</property>
                     <property name="hexpand">False</property>
+                    <style>
+                      <class name="details-page"/>
+                    </style>
                     <child>
                       <object class="GsFixedSizeBin">
                         <property name="visible">True</property>
@@ -317,86 +317,8 @@
                     </child>
 
                     <child>
-                      <object class="GsFixedSizeBin">
+                      <object class="GsScreenshotCarousel" id="screenshot_carousel">
                         <property name="visible">True</property>
-                        <property name="preferred-width">860</property>
-                        <child>
-                          <object class="GtkBox" id="box_details_screenshot">
-                            <property name="visible">True</property>
-                            <property name="margin_bottom">14</property>
-                            <property name="spacing">9</property>
-                            <child>
-                              <object class="GtkBox" id="box_details_screenshot_main">
-                                <property name="visible">True</property>
-                                <property name="orientation">vertical</property>
-                                <property name="spacing">6</property>
-                                <property name="hexpand">True</property>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkScrolledWindow" id="box_details_screenshot_scrolledwindow">
-                                <property name="visible">True</property>
-                                <property name="shadow_type">none</property>
-                                <property name="can_focus">True</property>
-                                <property name="hscrollbar_policy">never</property>
-                                <property name="vscrollbar_policy">automatic</property>
-                                <child>
-                                  <object class="GtkBox" id="box_details_screenshot_thumbnails">
-                                    <property name="visible">True</property>
-                                    <property name="orientation">vertical</property>
-                                    <property name="spacing">7</property>
-                                    <child>
-                                      <placeholder/>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-
-                    <child>
-                      <object class="GsFixedSizeBin">
-                        <property name="visible">True</property>
-                        <property name="preferred-width">860</property>
-                        <child>
-                          <object class="GtkBox" id="box_details_screenshot_fallback">
-                            <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">6</property>
-                            <property name="width_request">752</property>
-                            <property name="height_request">423</property>
-                            <property name="hexpand">True</property>
-                            <property name="halign">fill</property>
-                            <style>
-                              <class name="screenshot-image"/>
-                            </style>
-                            <child>
-                              <object class="GtkImage">
-                                <property name="visible">True</property>
-                                <property name="pixel_size">64</property>
-                                <property name="icon_name">camera-photo-symbolic</property>
-                                <property name="icon_size">6</property>
-                                <property name="valign">end</property>
-                                <property name="vexpand">True</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="halign">center</property>
-                                <property name="valign">start</property>
-                                <property name="vexpand">True</property>
-                                <property name="label" translatable="yes">No screenshot provided</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                     </child>
 

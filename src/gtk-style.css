@@ -214,13 +214,20 @@ sidebar row.needs-attention:selected > box > label {
 	opacity: 0.25;
 }
 
-.screenshot-image, .screenshot-image-thumb {
-	background-image: none;
-	background-color: shade(@theme_bg_color, 0.9);
+screenshot-carousel > box {
+	border-width: 1px 0;
 }
-.screenshot-image { border-radius: 5px; }
-.screenshot-image-thumb { border-radius: 3px; }
-.screenshot-image-main .image1, .screenshot-image-main .image2 { margin: 12px; }
+
+screenshot-carousel button {
+	margin: 12px;
+}
+
+.screenshot-image-main .image1, .screenshot-image-main .image2 {
+	margin-top: 6px;
+	margin-bottom: 12px;
+	margin-left: 6px;
+	margin-right: 6px;
+}
 
 .app-tile-label {
 	font-size: 105%;

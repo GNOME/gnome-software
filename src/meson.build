@@ -57,6 +57,7 @@ gnome_software_sources = [
   'gs-review-histogram.c',
   'gs-review-row.c',
   'gs-rounded-bin.c',
+  'gs-screenshot-carousel.c',
   'gs-screenshot-image.c',
   'gs-search-page.c',
   'gs-shell.c',

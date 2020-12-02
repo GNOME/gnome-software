@@ -24,7 +24,7 @@
 #include "gs-description-box.h"
 #include "gs-history-dialog.h"
 #include "gs-origin-popover-row.h"
-#include "gs-screenshot-image.h"
+#include "gs-screenshot-carousel.h"
 #include "gs-star-widget.h"
 #include "gs-review-histogram.h"
 #include "gs-review-dialog.h"
@@ -90,10 +90,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_progress2;
 	GtkWidget		*star;
 	GtkWidget		*label_review_count;
-	GtkWidget		*box_details_screenshot;
-	GtkWidget		*box_details_screenshot_main;
-	GtkWidget		*box_details_screenshot_scrolledwindow;
-	GtkWidget		*box_details_screenshot_thumbnails;
+	GtkWidget		*screenshot_carousel;
 	GtkWidget		*box_details_license_list;
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_add_shortcut;
@@ -143,7 +140,6 @@ struct _GsDetailsPage
 	GtkWidget		*row_latest_version;
 	GtkWidget		*version_history_button;
 	GtkWidget		*box_reviews;
-	GtkWidget		*box_details_screenshot_fallback;
 	GtkWidget		*histogram;
 	GtkWidget		*button_review;
 	GtkWidget		*list_box_reviews;
@@ -578,192 +574,6 @@ gs_details_page_notify_state_changed_cb (GsApp *app,
                                          GsDetailsPage *self)
 {
 	g_idle_add (gs_details_page_switch_to_idle, g_object_ref (self));
-}
-
-static void
-gs_details_page_load_main_screenshot (GsDetailsPage *self,
-				      AsScreenshot *screenshot)
-{
-	GsScreenshotImage *ssmain;
-	g_autoptr(GList) children = NULL;
-
-	children = gtk_container_get_children (GTK_CONTAINER (self->box_details_screenshot_main));
-	ssmain = GS_SCREENSHOT_IMAGE (children->data);
-
-	gs_screenshot_image_set_screenshot (ssmain, screenshot);
-	gs_screenshot_image_load_async (ssmain, NULL);
-}
-
-static void
-gs_details_page_screenshot_selected_cb (GtkListBox *list,
-                                        GtkListBoxRow *row,
-                                        GsDetailsPage *self)
-{
-	GsScreenshotImage *ssthumb;
-	AsScreenshot *ss;
-
-	if (row == NULL)
-		return;
-
-	ssthumb = GS_SCREENSHOT_IMAGE (gtk_bin_get_child (GTK_BIN (row)));
-	ss = gs_screenshot_image_get_screenshot (ssthumb);
-
-	gs_details_page_load_main_screenshot (self, ss);
-}
-
-static void
-gs_details_page_refresh_screenshots (GsDetailsPage *self)
-{
-	GPtrArray *screenshots;
-	AsScreenshot *ss;
-	GtkWidget *label;
-	GtkWidget *list;
-	GtkWidget *ssimg;
-	GtkWidget *main_screenshot = NULL;
-	guint i;
-	gboolean is_offline = !gs_plugin_loader_get_network_available (self->plugin_loader);
-	guint num_screenshots_loaded = 0;
-
-	/* reset the visibility of screenshots */
-	gtk_widget_show (self->box_details_screenshot);
-
-	/* treat screenshots differently */
-	if (gs_app_get_kind (self->app) == AS_COMPONENT_KIND_FONT) {
-		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
-		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
-		screenshots = gs_app_get_screenshots (self->app);
-		for (i = 0; i < screenshots->len; i++) {
-			ss = g_ptr_array_index (screenshots, i);
-
-			/* set caption */
-			label = gtk_label_new (as_screenshot_get_caption (ss));
-			g_object_set (label,
-				      "xalign", 0.0,
-				      "max-width-chars", 10,
-				      "wrap", TRUE,
-				      NULL);
-			gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_main), label);
-			gtk_widget_set_visible (label, TRUE);
-
-			/* set images */
-			ssimg = gs_screenshot_image_new (self->session);
-			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
-			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-						      640,
-						      48);
-			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
-			gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_main), ssimg);
-			gtk_widget_set_visible (ssimg, TRUE);
-		}
-		gtk_widget_set_visible (self->box_details_screenshot,
-		                        screenshots->len > 0);
-		gtk_widget_set_visible (self->box_details_screenshot_fallback,
-		                        screenshots->len == 0 && !is_offline);
-		return;
-	}
-
-	/* fallback warning */
-	screenshots = gs_app_get_screenshots (self->app);
-	switch (gs_app_get_kind (self->app)) {
-	case AS_COMPONENT_KIND_GENERIC:
-	case AS_COMPONENT_KIND_CODEC:
-	case AS_COMPONENT_KIND_ADDON:
-	case AS_COMPONENT_KIND_REPOSITORY:
-	case AS_COMPONENT_KIND_FIRMWARE:
-	case AS_COMPONENT_KIND_DRIVER:
-	case AS_COMPONENT_KIND_INPUT_METHOD:
-	case AS_COMPONENT_KIND_LOCALIZATION:
-	case AS_COMPONENT_KIND_RUNTIME:
-		gtk_widget_set_visible (self->box_details_screenshot_fallback, FALSE);
-		break;
-	default:
-		gtk_widget_set_visible (self->box_details_screenshot_fallback,
-					screenshots->len == 0 && !is_offline);
-		break;
-	}
-
-	/* reset screenshots */
-	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
-	gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
-
-	list = gtk_list_box_new ();
-	gtk_style_context_add_class (gtk_widget_get_style_context (list), "image-list");
-	gtk_widget_show (list);
-	gtk_widget_show (self->box_details_screenshot_scrolledwindow);
-	gtk_container_add (GTK_CONTAINER (self->box_details_screenshot_thumbnails), list);
-
-	for (i = 0; i < screenshots->len; i++) {
-		ss = g_ptr_array_index (screenshots, i);
-
-		/* we need to load the main screenshot only once if we're online
-		 * but all times if we're offline (to check which are cached and
-		 * hide those who aren't) */
-		if (is_offline || main_screenshot == NULL) {
-			GtkWidget *ssmain = gs_screenshot_image_new (self->session);
-			gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssmain)), FALSE);
-			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssmain), ss);
-			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssmain),
-						      AS_IMAGE_NORMAL_WIDTH,
-						      AS_IMAGE_NORMAL_HEIGHT);
-			gtk_style_context_add_class (gtk_widget_get_style_context (ssmain),
-						     "screenshot-image-main");
-			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssmain), NULL);
-
-			/* when we're offline, the load will be immediate, so we
-			 * can check if it succeeded, and just skip it and its
-			 * thumbnails otherwise */
-			if (is_offline &&
-			    !gs_screenshot_image_is_showing (GS_SCREENSHOT_IMAGE (ssmain)))
-				continue;
-
-			/* only set the main_screenshot once */
-			if (main_screenshot == NULL) {
-				main_screenshot = ssmain;
-				gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main),
-						    main_screenshot, FALSE, FALSE, 0);
-				gtk_widget_show (main_screenshot);
-			}
-		}
-
-		ssimg = gs_screenshot_image_new (self->session);
-		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
-		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      AS_IMAGE_THUMBNAIL_WIDTH,
-					      AS_IMAGE_THUMBNAIL_HEIGHT);
-		gtk_style_context_add_class (gtk_widget_get_style_context (ssimg),
-					     "screenshot-image-thumb");
-		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
-		gtk_list_box_insert (GTK_LIST_BOX (list), ssimg, -1);
-		gtk_widget_set_visible (ssimg, TRUE);
-		++num_screenshots_loaded;
-	}
-
-	if (main_screenshot == NULL) {
-		gtk_widget_hide (self->box_details_screenshot);
-		return;
-	}
-
-	/* reload the main screenshot with a larger size if it's the only screenshot
-	 * available */
-	if (num_screenshots_loaded == 1) {
-		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (main_screenshot),
-					      AS_IMAGE_LARGE_WIDTH,
-					      AS_IMAGE_LARGE_HEIGHT);
-		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (main_screenshot), NULL);
-	}
-
-	if (num_screenshots_loaded <= 1) {
-		gtk_widget_hide (self->box_details_screenshot_thumbnails);
-		return;
-	}
-
-	gtk_widget_show (self->box_details_screenshot_thumbnails);
-	gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
-	g_signal_connect (list, "row-selected",
-			  G_CALLBACK (gs_details_page_screenshot_selected_cb),
-			  self);
-	gtk_list_box_select_row (GTK_LIST_BOX (list),
-				 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
 }
 
 static void
@@ -2032,6 +1842,8 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 	g_autofree gchar *tmp = NULL;
 	g_autoptr(GsPluginJob) plugin_job1 = NULL;
 	g_autoptr(GsPluginJob) plugin_job2 = NULL;
+	gboolean is_online = gs_plugin_loader_get_network_available (self->plugin_loader);
+	gboolean has_screenshots;
 
 	/* print what we've got */
 	tmp = gs_app_to_string (self->app);
@@ -2039,7 +1851,9 @@ gs_details_page_load_stage2 (GsDetailsPage *self)
 
 	/* update UI */
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_READY);
-	gs_details_page_refresh_screenshots (self);
+	gs_screenshot_carousel_load_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel), self->app, is_online, NULL);
+	has_screenshots = gs_screenshot_carousel_get_has_screenshots (GS_SCREENSHOT_CAROUSEL (self->screenshot_carousel));
+	gtk_widget_set_visible (self->screenshot_carousel, has_screenshots);
 	gs_details_page_refresh_addons (self);
 	gs_details_page_refresh_reviews (self);
 	gs_details_page_refresh_all (self);
@@ -3021,10 +2835,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, star);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_review_count);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_main);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_scrolledwindow);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_thumbnails);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, screenshot_carousel);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_license_list);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_add_shortcut);
@@ -3072,7 +2883,6 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, row_latest_version);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, version_history_button);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_reviews);
-	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_screenshot_fallback);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, histogram);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_review);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, list_box_reviews);
@@ -3115,6 +2925,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 static void
 gs_details_page_init (GsDetailsPage *self)
 {
+	g_type_ensure (GS_TYPE_SCREENSHOT_CAROUSEL);
+
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	/* setup networking */
