@@ -841,6 +841,12 @@ gs_details_page_get_alternates_cb (GObject *source_object,
 
 	gs_container_remove_all (GTK_CONTAINER (origin_popover_list_box));
 
+	/* Did we switch away from the page in the meantime? */
+	if (!gs_page_is_active (GS_PAGE (self))) {
+		gtk_widget_hide (origin_box);
+		return;
+	}
+
 	list = gs_plugin_loader_job_process_finish (plugin_loader,
 						    res,
 						    &error);
