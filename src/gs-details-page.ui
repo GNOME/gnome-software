@@ -59,21 +59,21 @@
               <object class="GtkViewport" id="viewport1">
                 <property name="visible">True</property>
                 <child>
-                  <object class="GsFixedSizeBin" id="gs_fixed_bin">
+                  <object class="GtkBox" id="box_details">
+                    <property name="width_request">752</property>
+                    <property name="orientation">vertical</property>
                     <property name="visible">True</property>
-                    <property name="preferred-width">860</property>
+                    <property name="halign">fill</property>
+                    <property name="valign">start</property>
+                    <property name="margin_top">4</property>
+                    <property name="margin_bottom">4</property>
+                    <property name="border_width">24</property>
+                    <property name="spacing">18</property>
+                    <property name="hexpand">False</property>
                     <child>
-                      <object class="GtkBox" id="box_details">
-                        <property name="width_request">752</property>
-                        <property name="orientation">vertical</property>
+                      <object class="GsFixedSizeBin">
                         <property name="visible">True</property>
-                        <property name="halign">fill</property>
-                        <property name="valign">start</property>
-                        <property name="margin_top">4</property>
-                        <property name="margin_bottom">4</property>
-                        <property name="border_width">24</property>
-                        <property name="spacing">18</property>
-                        <property name="hexpand">False</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_details_header">
                             <property name="orientation">horizontal</property>
@@ -164,7 +164,13 @@
 
                           </object>
                         </child>
+                      </object>
+                    </child>
 
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_install_remove">
                             <property name="visible">True</property>
@@ -307,7 +313,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
 
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_details_screenshot">
                             <property name="visible">True</property>
@@ -345,6 +357,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_details_screenshot_fallback">
                             <property name="visible">True</property>
@@ -378,6 +397,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GsDescriptionBox" id="box_details_description">
                             <property name="orientation">vertical</property>
@@ -389,6 +415,13 @@
                             <property name="margin_bottom">14</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_addons">
                             <property name="visible">True</property>
@@ -437,6 +470,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkListBox" id="list_box_version_history">
                             <property name="visible">True</property>
@@ -482,6 +522,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkLabel" id="label_webapp_warning">
                             <property name="visible">False</property>
@@ -495,6 +542,13 @@
                             </style>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_repo">
                             <property name="visible">True</property>
@@ -503,6 +557,13 @@
                             <property name="body" translatable="yes">This application includes a software repository which provides updates, as well as access to other software.</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_app_norepo">
                             <property name="visible">True</property>
@@ -511,6 +572,13 @@
                             <property name="body" translatable="yes">This application does not include a software repository. It will not be updated with new versions.</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_package_baseos">
                             <property name="visible">True</property>
@@ -519,6 +587,13 @@
                             <property name="title" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GsInfoBar" id="infobar_details_repo">
                             <property name="visible">True</property>
@@ -528,6 +603,13 @@
                             <property name="warning" translatable="yes">Only use software repositories that you trust.</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_details_support">
                             <property name="visible">True</property>
@@ -553,6 +635,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkLabel" id="application_details_details_title">
                             <property name="visible">True</property>
@@ -566,6 +655,13 @@
                             </style>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_details_details">
                             <property name="visible">True</property>
@@ -1103,6 +1199,13 @@
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+
+                    <child>
+                      <object class="GsFixedSizeBin">
+                        <property name="visible">True</property>
+                        <property name="preferred-width">860</property>
                         <child>
                           <object class="GtkBox" id="box_reviews">
                             <property name="visible">False</property>
