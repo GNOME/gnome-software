@@ -533,7 +533,6 @@ gs_details_page_screenshot_selected_cb (GtkListBox *list,
 {
 	GsScreenshotImage *ssthumb;
 	AsScreenshot *ss;
-	g_autoptr(GList) children = NULL;
 
 	if (row == NULL)
 		return;
@@ -930,7 +929,6 @@ static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
 	AsAppState state;
-	g_autofree gchar *text = NULL;
 
 	state = gs_app_get_state (self->app);
 

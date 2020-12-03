@@ -2117,7 +2117,6 @@ gs_shell_add_about_menu_item (GsShell *shell)
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GMenu *primary_menu;
 	g_autoptr(GMenuItem) menu_item = NULL;
-	g_autofree gchar *label = NULL;
 
 	primary_menu = G_MENU (gtk_builder_get_object (priv->builder, "primary_menu"));
 

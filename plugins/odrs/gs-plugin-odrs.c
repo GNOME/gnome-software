@@ -635,7 +635,7 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 
 	for (guint i = 0; i < reviewable_ids->len; i++) {
 		const gchar *id = g_ptr_array_index (reviewable_ids, i);
-		const GsOdrsRating search_rating = { id, { 0, }};
+		const GsOdrsRating search_rating = { (gchar *) id, { 0, }};
 		guint found_index;
 		const GsOdrsRating *found_rating;
 

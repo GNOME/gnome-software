@@ -109,7 +109,6 @@ gs_plugin_external_appstream_refresh_sys (GsPlugin *plugin,
 	g_autofree gchar *file_name = NULL;
 	g_autofree gchar *local_mod_date = NULL;
 	g_autofree gchar *target_file_path = NULL;
-	g_autofree gchar *tmp_file_tmpl = NULL;
 	g_autoptr(GFileIOStream) iostream = NULL;
 	g_autoptr(GFile) tmp_file = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
