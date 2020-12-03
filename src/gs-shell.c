@@ -2125,11 +2125,24 @@ gs_shell_add_about_menu_item (GsShell *shell)
 	g_menu_append_item (primary_menu, menu_item);
 }
 
+static gboolean
+gs_shell_close_window_accel_cb (GtkAccelGroup *accel_group,
+				GObject *acceleratable,
+				guint keyval,
+				GdkModifierType modifier)
+{
+	gtk_window_close (GTK_WINDOW (acceleratable));
+
+	return TRUE;
+}
+
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
+	g_autoptr(GtkAccelGroup) accel_group = NULL;
+	GClosure *closure;
 	GtkStyleContext *style_context;
 	GsPage *page;
 
@@ -2162,6 +2175,11 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	g_signal_connect (priv->main_window, "delete-event",
 			  G_CALLBACK (main_window_closed_cb), shell);
+
+	accel_group = gtk_accel_group_new ();
+	gtk_window_add_accel_group (priv->main_window, accel_group);
+	closure = g_cclosure_new (G_CALLBACK (gs_shell_close_window_accel_cb), NULL, NULL);
+	gtk_accel_group_connect (accel_group, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_LOCKED, closure);
 
 	/* fix up the header bar */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
