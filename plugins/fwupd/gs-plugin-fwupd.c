@@ -214,14 +214,13 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_autoptr(SoupSession) soup_session = NULL;
 
 #if FWUPD_CHECK_VERSION(1,4,5)
+	g_autoptr(GError) error_local = NULL;
 	/* send our implemented feature set */
 	if (!fwupd_client_set_feature_flags (priv->client,
 					     FWUPD_FEATURE_FLAG_UPDATE_ACTION |
 					     FWUPD_FEATURE_FLAG_DETACH_ACTION,
-					     cancellable, error)) {
-		g_prefix_error (error, "Failed to set front-end features: ");
-		return FALSE;
-	}
+					     cancellable, &error_local))
+		g_debug ("Failed to set front-end features: %s", error_local->message);
 
 	/* we know the runtime daemon version now */
 	fwupd_client_set_user_agent_for_package (priv->client, PACKAGE_NAME, PACKAGE_VERSION);
