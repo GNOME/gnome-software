@@ -213,6 +213,9 @@ const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
 						 GsAppQuality	 quality,
 						 const gchar	*name);
+const gchar	*gs_app_get_renamed_from	(GsApp		*app);
+void		 gs_app_set_renamed_from	(GsApp		*app,
+						 const gchar	*renamed_from);
 const gchar	*gs_app_get_source_default	(GsApp		*app);
 void		 gs_app_add_source		(GsApp		*app,
 						 const gchar	*source);

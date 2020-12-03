@@ -703,12 +703,53 @@ _transaction_end_of_lifed (FlatpakTransaction *transaction,
 			   const gchar *rebase)
 {
 	if (rebase) {
-		g_printerr ("%s is end-of-life, in preference of %s\n", ref, rebase);
+		g_message ("%s is end-of-life, in favor of %s", ref, rebase);
 	} else if (reason) {
-		g_printerr ("%s is end-of-life, with reason: %s\n", ref, reason);
+		g_message ("%s is end-of-life, with reason: %s", ref, reason);
 	}
 	//FIXME: show something in the UI
 }
+
+#if FLATPAK_CHECK_VERSION(1,4,1)
+static gboolean
+_transaction_end_of_lifed_with_rebase (FlatpakTransaction  *transaction,
+				       const gchar         *remote,
+				       const gchar         *ref,
+				       const gchar         *reason,
+				       const gchar         *rebased_to_ref,
+				       const gchar        **previous_ids)
+{
+	if (rebased_to_ref) {
+		g_message ("%s is end-of-life, in favor of %s", ref, rebased_to_ref);
+	} else if (reason) {
+		g_message ("%s is end-of-life, with reason: %s", ref, reason);
+	}
+
+	if (rebased_to_ref && remote) {
+		g_autoptr(GError) local_error = NULL;
+
+		if (!flatpak_transaction_add_rebase (transaction, remote, rebased_to_ref,
+						     NULL, previous_ids, &local_error) ||
+		    !flatpak_transaction_add_uninstall (transaction, ref, &local_error)) {
+			/* There's no way to make the whole transaction fail on
+			 * this error path, so just print a warning and return
+			 * FALSE, which will cause the operation on the
+			 * end-of-lifed ref not to be skipped.
+			 */
+			g_warning ("Failed to rebase %s to %s: %s", ref, rebased_to_ref, local_error->message);
+			return FALSE;
+		}
+
+		/* Note: A message about the rename will be shown in the UI
+		 * thanks to code in gs_flatpak_refine_appstream() which
+		 * sets gs_app_set_renamed_from().
+		 */
+		return TRUE;
+	}
+
+	return FALSE;
+}
+#endif
 
 static gboolean
 _transaction_add_new_remote (FlatpakTransaction *transaction,
@@ -766,6 +807,9 @@ gs_flatpak_transaction_class_init (GsFlatpakTransactionClass *klass)
 	transaction_class->operation_error = _transaction_operation_error;
 	transaction_class->choose_remote_for_ref = _transaction_choose_remote_for_ref;
 	transaction_class->end_of_lifed = _transaction_end_of_lifed;
+#if FLATPAK_CHECK_VERSION(1,4,1)
+	transaction_class->end_of_lifed_with_rebase = _transaction_end_of_lifed_with_rebase;
+#endif
 #if !FLATPAK_CHECK_VERSION(1,5,1)
 	object_class->set_property = gs_flatpak_transaction_set_property;
 
