@@ -28,6 +28,7 @@ struct _GsReposDialog
 
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
+	GtkWidget	*frame;
 	GtkWidget	*frame_third_party;
 	GtkWidget	*label_description;
 	GtkWidget	*label_empty;
@@ -569,6 +570,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		app = gs_app_list_index (list, i);
 		add_repo (dialog, app);
 	}
+
+	gtk_widget_set_visible (dialog->frame,
+		gtk_list_box_get_row_at_index (GTK_LIST_BOX (dialog->listbox), 0) != NULL);
 }
 
 static void
@@ -859,6 +863,7 @@ gs_repos_dialog_class_init (GsReposDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-repos-dialog.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, frame_third_party);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_description);
 	gtk_widget_class_bind_template_child (widget_class, GsReposDialog, label_empty);
