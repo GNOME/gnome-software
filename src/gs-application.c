@@ -741,22 +741,42 @@ launch_activated (GSimpleAction *action,
 		  gpointer       data)
 {
 	GsApplication *self = GS_APPLICATION (data);
-	const gchar *id;
-	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsPluginJob) refine_job = NULL;
+	GsApp *app = NULL;
+	const gchar *id, *management_plugin;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsPluginJob) search_job = NULL;
 	g_autoptr(GsPluginJob) launch_job = NULL;
 	g_autoptr(GError) error = NULL;
+	guint ii, len;
 
-	id = g_variant_get_string (parameter, NULL);
-	app = gs_app_new (id);
-	refine_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REFINE,
-					 "app", app,
-					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
+	g_variant_get (parameter, "(&s&s)", &id, &management_plugin);
+
+	search_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
+					 "search", id,
+					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_PERMISSIONS |
+							 GS_PLUGIN_REFINE_FLAGS_REQUIRE_RUNTIME,
 					 NULL);
-	if (!gs_plugin_loader_job_action (self->plugin_loader, refine_job, self->cancellable, &error)) {
-		g_warning ("Failed to refine app: %s", error->message);
+	list = gs_plugin_loader_job_process (self->plugin_loader, search_job, self->cancellable, &error);
+	if (!list) {
+		g_warning ("Failed to search for application '%s' (from '%s'): %s", id, management_plugin, error ? error->message : "Unknown error");
 		return;
 	}
+
+	len = gs_app_list_length (list);
+	for (ii = 0; ii < len && !app; ii++) {
+		GsApp *list_app = gs_app_list_index (list, ii);
+
+		if (gs_app_is_installed (list_app) &&
+		    g_strcmp0 (gs_app_get_management_plugin (list_app), management_plugin) == 0)
+			app = list_app;
+	}
+
+	if (!app) {
+		g_warning ("Did not find application '%s' from '%s'", id, management_plugin);
+		return;
+	}
+
 	launch_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_LAUNCH,
 					 "app", app,
 					 NULL);
@@ -831,7 +851,7 @@ static GActionEntry actions[] = {
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "reboot", reboot_activated, NULL, NULL, NULL },
 	{ "shutdown", shutdown_activated, NULL, NULL, NULL },
-	{ "launch", launch_activated, "s", NULL, NULL },
+	{ "launch", launch_activated, "(ss)", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "autoupdate", autoupdate_activated, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
