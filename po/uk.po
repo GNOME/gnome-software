@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-12-03 14:35+0000\n"
-"PO-Revision-Date: 2020-12-03 18:45+0200\n"
+"POT-Creation-Date: 2020-12-04 14:04+0000\n"
+"PO-Revision-Date: 2020-12-04 16:15+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -351,7 +351,7 @@ msgstr "Пошук"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:895
+#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:930
 msgid "Source"
 msgstr "Джерело"
 
@@ -392,11 +392,11 @@ msgid "Find Out _More"
 msgstr "З'ясувати _більше"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4623
+#: lib/gs-app.c:4687
 msgid "Local file"
 msgstr "Локальний файл"
 
-#: lib/gs-app.c:4677
+#: lib/gs-app.c:4741
 msgid "Package"
 msgstr "Пакунок"
 
@@ -413,7 +413,7 @@ msgstr "Встановлено"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:359
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:361
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Встановлення"
@@ -548,7 +548,7 @@ msgstr "Скасувати"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:288 src/gs-page.c:334
+#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:334
 msgid "Install"
 msgstr "Встановити"
 
@@ -563,7 +563,7 @@ msgstr "Оновлення"
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:492
-#: src/gs-repos-dialog.c:326
+#: src/gs-repos-dialog.c:327
 msgid "Remove"
 msgstr "Вилучити"
 
@@ -709,7 +709,7 @@ msgid "Application is ready to be used."
 msgstr "Програми готові до використання."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:160 src/gs-common.c:650
+#: src/gs-common.c:160 src/gs-common.c:651
 msgid "Restart"
 msgstr "Перезапустити"
 
@@ -719,12 +719,12 @@ msgid "Launch"
 msgstr "Запустити"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222
+#: src/gs-common.c:223
 msgid "Install Third-Party Software?"
 msgstr "Встановити програму третьої сторони?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:226 src/gs-repos-dialog.c:235
+#: src/gs-common.c:227 src/gs-repos-dialog.c:236
 msgid "Enable Third-Party Software Repository?"
 msgstr "Увімкнути сторонні сховища програмного забезпечення?"
 
@@ -732,7 +732,7 @@ msgstr "Увімкнути сторонні сховища програмног�
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:242
+#: src/gs-common.c:243
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -744,53 +744,53 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:252
+#: src/gs-common.c:253
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s постачається через «%s»."
 
-#: src/gs-common.c:261
+#: src/gs-common.c:262
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Для продовження встановлення слід увімкнути це сховище програмного "
 "забезпечення."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:271
+#: src/gs-common.c:272
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "В деяких країнах встановлення або використання %s може бути незаконне."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:277
+#: src/gs-common.c:278
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "В деяких країнах встановлення або використання цього кодеку може бути "
 "незаконне."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:284
+#: src/gs-common.c:285
 msgid "Don’t Warn Again"
 msgstr "Більше не попереджати"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:293
+#: src/gs-common.c:294
 msgid "Enable and Install"
 msgstr "Увімкнути та встановити"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:452
+#: src/gs-common.c:453
 msgid "Detailed errors from the package manager follow:"
 msgstr "Докладні помилки з керування пакунками:"
 
-#: src/gs-common.c:471 src/gs-details-page.ui:456
+#: src/gs-common.c:472 src/gs-details-page.ui:456
 msgid "Details"
 msgstr "Подробиці"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:636
+#: src/gs-common.c:637
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "Було встановлено оновлення"
@@ -799,7 +799,7 @@ msgstr[2] "Було встановлено оновлення"
 msgstr[3] "Було встановлено оновлення"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:641
+#: src/gs-common.c:642
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "Для набуття ними чинності слід перезавантажити систему."
@@ -808,7 +808,7 @@ msgstr[2] "Для набуття ними чинності слід переза
 msgstr[3] "Для набуття ним чинності слід перезавантажити систему."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:648 src/gs-update-monitor.c:123
+#: src/gs-common.c:649 src/gs-update-monitor.c:123
 msgid "Not Now"
 msgstr "Не зараз"
 
@@ -1411,29 +1411,29 @@ msgstr "Потрібно додаткові пакунки"
 msgid "Find in Software"
 msgstr "Знайти серед програм"
 
-#: src/gs-details-page.c:354
+#: src/gs-details-page.c:356
 msgid "Removing…"
 msgstr "Вилучення…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:373
+#: src/gs-details-page.c:375
 msgid "Pending installation…"
 msgstr "Очікуємо на встановлення…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:380
+#: src/gs-details-page.c:382
 msgid "Pending update…"
 msgstr "Оновлення у черзі…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:394
+#: src/gs-details-page.c:396
 msgid "Preparing…"
 msgstr "Приготування…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:754
+#: src/gs-details-page.c:756
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1446,7 +1446,7 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:942 src/gs-details-page.c:959
+#: src/gs-details-page.c:944 src/gs-details-page.c:961
 #: src/gs-details-page.ui:176 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
@@ -1459,108 +1459,108 @@ msgstr "_Встановити"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:973 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:975 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Встановити…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:1001
+#: src/gs-details-page.c:1003
 msgid "_Launch"
 msgstr "_Запустити"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:1025 src/gs-details-page.ui:201
+#: src/gs-details-page.c:1027 src/gs-details-page.ui:201
 msgid "_Remove"
 msgstr "В_илучити"
 
-#: src/gs-details-page.c:1056 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1058 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "Мережа"
 
-#: src/gs-details-page.c:1056 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1058 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "Може обмінюватися даними мережею"
 
-#: src/gs-details-page.c:1057 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1059 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "Служби системи"
 
-#: src/gs-details-page.c:1057 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1059 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "Може отримувати доступ до служб D-Bus на каналі системи"
 
-#: src/gs-details-page.c:1058 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1060 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "Служби сеансу"
 
-#: src/gs-details-page.c:1058 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1060 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "Може отримувати доступ до служб D-Bus на каналі сеансу"
 
-#: src/gs-details-page.c:1059 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1061 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "Пристрої"
 
-#: src/gs-details-page.c:1059 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1061 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "Може отримувати доступ до файлів пристроїв системи"
 
-#: src/gs-details-page.c:1060 src/gs-details-page.c:1061
+#: src/gs-details-page.c:1062 src/gs-details-page.c:1063
 #: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "Домашня тека"
 
-#: src/gs-details-page.c:1060 src/gs-details-page.c:1062
-#: src/gs-details-page.c:1064 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1062 src/gs-details-page.c:1064
+#: src/gs-details-page.c:1066 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view, edit and create files"
 msgstr "Може переглядати, редагувати та створювати файли"
 
-#: src/gs-details-page.c:1061 src/gs-details-page.c:1063
-#: src/gs-details-page.c:1065 src/gs-update-dialog.c:98
+#: src/gs-details-page.c:1063 src/gs-details-page.c:1065
+#: src/gs-details-page.c:1067 src/gs-update-dialog.c:98
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "Може переглядати файли"
 
-#: src/gs-details-page.c:1062 src/gs-details-page.c:1063
+#: src/gs-details-page.c:1064 src/gs-details-page.c:1065
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "Файлова система"
 
-#: src/gs-details-page.c:1064 src/gs-details-page.c:1065
+#: src/gs-details-page.c:1066 src/gs-details-page.c:1067
 #: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "Тека отриманих даних"
 
-#: src/gs-details-page.c:1066 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1068 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "Параметри"
 
-#: src/gs-details-page.c:1066 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1068 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "Може переглядати і змінювати будь-які параметри"
 
-#: src/gs-details-page.c:1067 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1069 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "Застаріла система керування дисплеєм"
 
-#: src/gs-details-page.c:1067 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1069 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "Використовує застарілу небезпечну систему керування дисплеєм"
 
-#: src/gs-details-page.c:1068 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1070 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "Втеча з «пісочниці»"
 
-#: src/gs-details-page.c:1068 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1070 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Може подолати обмеження «пісочниці» і обійти будь-які інші обмеження"
 
-#: src/gs-details-page.c:1083
+#: src/gs-details-page.c:1085
 msgid "This application is fully sandboxed."
 msgstr "Ця програма повністю працює у «пісочниці»"
 
-#: src/gs-details-page.c:1091
+#: src/gs-details-page.c:1093
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1569,69 +1569,73 @@ msgstr ""
 "Це стандартна ситуація для застарілих програм."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1247
+#: src/gs-details-page.c:1249
 msgctxt "version"
 msgid "Unknown"
 msgstr "Невідомо"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1260
+#: src/gs-details-page.c:1278
 msgctxt "updated"
 msgid "Never"
 msgstr "Ніколи"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1313
+#: src/gs-details-page.c:1331
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: src/gs-details-page.c:1366
+#: src/gs-details-page.c:1384
+msgid "None"
+msgstr "Немає"
+
+#: src/gs-details-page.c:1386
 msgid "Low"
 msgstr "Низька"
 
-#: src/gs-details-page.c:1368
+#: src/gs-details-page.c:1388
 msgid "Medium"
 msgstr "Середня"
 
-#: src/gs-details-page.c:1370
+#: src/gs-details-page.c:1390
 msgid "High"
 msgstr "Висока"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1372 src/gs-details-page.ui:1015
+#: src/gs-details-page.c:1392 src/gs-details-page.ui:1050
 #: src/gs-review-row.c:58
 msgid "Unknown"
 msgstr "Невідома"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1710
+#: src/gs-details-page.c:1730
 msgid "You need internet access to write a review"
 msgstr "Щоб написати відгук, потрібен інтернет"
 
-#: src/gs-details-page.c:1899 src/gs-details-page.c:1915
+#: src/gs-details-page.c:1919 src/gs-details-page.c:1935
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Неможливо знайти «%s»"
 
-#: src/gs-details-page.c:1981 src/gs-details-page.c:2016
+#: src/gs-details-page.c:2001 src/gs-details-page.c:2036
 msgid "Loading…"
 msgstr "Завантаження…"
 
-#: src/gs-details-page.c:2436
+#: src/gs-details-page.c:2456
 msgid "The application contains no age-inappropriate content."
 msgstr "У програмі містяться неприйнятні для заданого віку дані."
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2545
+#: src/gs-details-page.c:2565
 msgid "Public domain"
 msgstr "Відкритий домен"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2548
+#: src/gs-details-page.c:2568
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr ""
 "https://uk.wikipedia.org/wiki/%D0%A1%D1%83%D1%81%D0%BF%D1%96%D0%BB%D1%8C"
@@ -1639,17 +1643,17 @@ msgstr ""
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2555
+#: src/gs-details-page.c:2575
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2565 src/gs-details-page.ui:1259
+#: src/gs-details-page.c:2585 src/gs-details-page.ui:1294
 msgid "Free Software"
 msgstr "Вільні програми"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2622
+#: src/gs-details-page.c:2642
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Користувачі пов'язані з такою ліцензією:"
@@ -1657,7 +1661,7 @@ msgstr[1] "Користувачі пов'язані з такими ліценз
 msgstr[2] "Користувачі пов'язані з такими ліцензіями:"
 msgstr[3] "Користувач пов'язаний з такою ліцензією:"
 
-#: src/gs-details-page.c:2649 src/gs-details-page.ui:1331
+#: src/gs-details-page.c:2669 src/gs-details-page.ui:1366
 msgid "More information"
 msgstr "Докладніше"
 
@@ -1777,76 +1781,81 @@ msgstr "Канал"
 msgid "Version"
 msgstr "Версія"
 
-#: src/gs-details-page.ui:686
+#: src/gs-details-page.ui:685
+#| msgid "Recent Releases"
+msgid "Released"
+msgstr "Випущено"
+
+#: src/gs-details-page.ui:721
 msgid "Age Rating"
 msgstr "Віковий рейтинг"
 
-#: src/gs-details-page.ui:724 src/gs-details-page.ui:1417
+#: src/gs-details-page.ui:759 src/gs-details-page.ui:1452
 msgid "Permissions"
 msgstr "Права доступу"
 
-#: src/gs-details-page.ui:762
+#: src/gs-details-page.ui:797
 msgid "Updated"
 msgstr "Оновлено"
 
-#: src/gs-details-page.ui:796
+#: src/gs-details-page.ui:831
 msgid "Category"
 msgstr "Категорія"
 
-#: src/gs-details-page.ui:833
+#: src/gs-details-page.ui:868
 msgid "Installed Size"
 msgstr "Розмір встановлення"
 
-#: src/gs-details-page.ui:864
+#: src/gs-details-page.ui:899
 msgid "Download Size"
 msgstr "Розмір звантаження"
 
-#: src/gs-details-page.ui:926
+#: src/gs-details-page.ui:961
 msgid "Developer"
 msgstr "Розробник"
 
-#: src/gs-details-page.ui:972
+#: src/gs-details-page.ui:1007
 msgid "License"
 msgstr "Ліцензія"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:991
+#: src/gs-details-page.ui:1026
 msgid "Free"
 msgstr "Вільна"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:1003
+#: src/gs-details-page.ui:1038
 msgid "Proprietary"
 msgstr "Комерційна"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1053 src/gs-installed-page.c:441
+#: src/gs-details-page.ui:1088 src/gs-installed-page.c:441
 #: plugins/core/gs-desktop-common.c:315
 msgid "Add-ons"
 msgstr "Додатки"
 
-#: src/gs-details-page.ui:1065
+#: src/gs-details-page.ui:1100
 msgid "Selected add-ons will be installed with the application."
 msgstr "Вибрані додатки буде встановлено з цією програмою."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1103
+#: src/gs-details-page.ui:1138
 msgid "Reviews"
 msgstr "Огляди"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1121
+#: src/gs-details-page.ui:1156
 msgid "_Write a Review"
 msgstr "_Написати огляд"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1142
+#: src/gs-details-page.ui:1177
 msgid "_Show More"
 msgstr "_Показати більше"
 
-#: src/gs-details-page.ui:1270
+#: src/gs-details-page.ui:1305
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1854,11 +1863,11 @@ msgstr ""
 "Це означає, що програма вільно запускається, копіюється, поширюється, "
 "досліджується і редагується."
 
-#: src/gs-details-page.ui:1310
+#: src/gs-details-page.ui:1345
 msgid "Proprietary Software"
 msgstr "Закриті програми"
 
-#: src/gs-details-page.ui:1321
+#: src/gs-details-page.ui:1356
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1867,19 +1876,19 @@ msgstr ""
 "Це означає, що програма належить особі або компанії. Часто бувають обмеження "
 "на використання і код зазвичай недоступний."
 
-#: src/gs-details-page.ui:1353
+#: src/gs-details-page.ui:1388
 msgid "Unknown Software License"
 msgstr "Невідома ліцензія"
 
-#: src/gs-details-page.ui:1364
+#: src/gs-details-page.ui:1399
 msgid "The license terms of this software are unknown."
 msgstr "Умови ліцензії цієї програми — невідомі."
 
-#: src/gs-details-page.ui:1384
+#: src/gs-details-page.ui:1419
 msgid "The application was rated this way because it features:"
 msgstr "Для програми було встановлено рейтинг з таких причин:"
 
-#: src/gs-details-page.ui:1398
+#: src/gs-details-page.ui:1433
 msgid "No details were available for this rating."
 msgstr "Немає подробиць щодо цього рейтингу."
 
@@ -2283,13 +2292,13 @@ msgid "Recommended Productivity Applications"
 msgstr "Рекомендовані офісні програми"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:832
+#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:836
 msgid "Access additional software from selected third party sources."
 msgstr ""
 "Доступ до додаткового програмного забезпечення з вибраних сторонніх джерел."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:840
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2299,13 +2308,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:841
+#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:845
 msgid "Find out more…"
 msgstr "З'ясувати більше…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:240
+#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:241
 msgid "Enable"
 msgstr "Увімкнути"
 
@@ -2430,7 +2439,7 @@ msgstr "_Далі"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:98
+#: src/gs-repos-dialog.c:99
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2441,7 +2450,7 @@ msgstr[3] "Встановлено одну програму"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:105
+#: src/gs-repos-dialog.c:106
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2453,7 +2462,7 @@ msgstr[3] "Встановлено один додаток"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repos-dialog.c:113
+#: src/gs-repos-dialog.c:114
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2465,7 +2474,7 @@ msgstr[3] "%u програму"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repos-dialog.c:119
+#: src/gs-repos-dialog.c:120
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2478,7 +2487,7 @@ msgstr[3] "%u додаток"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repos-dialog.c:126
+#: src/gs-repos-dialog.c:127
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -2489,20 +2498,20 @@ msgstr[3] "Встановлено %s і %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:302
+#: src/gs-repos-dialog.c:303
 #, c-format
 msgid "Remove “%s”?"
 msgstr "Вилучити «%s»?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:307
+#: src/gs-repos-dialog.c:308
 #, c-format
 msgid "Disable “%s”?"
 msgstr "Вимкнути «%s»?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:311
+#: src/gs-repos-dialog.c:312
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2511,25 +2520,25 @@ msgstr ""
 "отримуватиме оновлень, зокрема оновлень захисту."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:329
+#: src/gs-repos-dialog.c:330
 msgid "Disable"
 msgstr "Вимкнути"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:745
+#: src/gs-repos-dialog.c:749
 msgid "the operating system"
 msgstr "операційна система"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:811 src/gs-repos-dialog.c:847
+#: src/gs-repos-dialog.c:815 src/gs-repos-dialog.c:851
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Ці сховища доповнюють типове програмне забезпечення, яке надається %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:829
+#: src/gs-repos-dialog.c:833
 msgid "Third Party Repositories"
 msgstr "Сторонні сховища"
 
@@ -4372,12 +4381,12 @@ msgid "%s Configuration Update"
 msgstr "Оновлення налаштувань %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:710
+#: plugins/fwupd/gs-plugin-fwupd.c:709
 msgid "Downloading firmware update signature…"
 msgstr "Отримуємо підпис оновлення мікропрограми…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:751
+#: plugins/fwupd/gs-plugin-fwupd.c:750
 msgid "Downloading firmware update metadata…"
 msgstr "Отримуємо метадані оновлення мікропрограми…"
 
