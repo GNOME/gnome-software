@@ -112,6 +112,8 @@ struct _GsDetailsPage
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_version_title;
 	GtkWidget		*label_details_version_value;
+	GtkWidget		*label_details_released_title;
+	GtkWidget		*label_details_released_value;
 	GtkWidget		*label_details_permissions_title;
 	GtkWidget		*button_details_permissions_value;
 	GtkWidget		*label_failed;
@@ -1249,6 +1251,22 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* refresh size information */
 	gs_details_page_refresh_size (self);
+
+	/* set the released date */
+	if (gs_app_get_release_date (self->app)) {
+		g_autoptr(GDateTime) dt = NULL;
+		g_autofree gchar *released_str = NULL;
+
+		dt = g_date_time_new_from_unix_utc ((gint64) gs_app_get_release_date (self->app));
+		released_str = g_date_time_format (dt, "%x");
+
+		gtk_label_set_label (GTK_LABEL (self->label_details_released_value), released_str);
+		gtk_widget_set_visible (self->label_details_released_title, TRUE);
+		gtk_widget_set_visible (self->label_details_released_value, TRUE);
+	} else {
+		gtk_widget_set_visible (self->label_details_released_title, FALSE);
+		gtk_widget_set_visible (self->label_details_released_value, FALSE);
+	}
 
 	/* set the updated date */
 	updated = gs_app_get_install_date (self->app);
@@ -2873,6 +2891,8 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_updated_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_version_value);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_released_title);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_released_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_details_permissions_title);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, button_details_permissions_value);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_failed);

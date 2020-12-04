@@ -106,6 +106,7 @@ typedef struct
 	GsAppList		*related;
 	GsAppList		*history;
 	guint64			 install_date;
+	guint64			 release_date;
 	guint64			 kudos;
 	gboolean		 to_be_installed;
 	GsAppQuirk		 quirk;
@@ -134,6 +135,7 @@ enum {
 	PROP_PROGRESS,
 	PROP_CAN_CANCEL_INSTALLATION,
 	PROP_INSTALL_DATE,
+	PROP_RELEASE_DATE,
 	PROP_QUIRK,
 	PROP_PENDING_ACTION,
 	PROP_KEY_COLORS,
@@ -608,6 +610,11 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_printf (str, "install-date", "%"
 				  G_GUINT64_FORMAT "",
 				  priv->install_date);
+	}
+	if (priv->release_date != 0) {
+		gs_app_kv_printf (str, "release-date", "%"
+				  G_GUINT64_FORMAT "",
+				  priv->release_date);
 	}
 	if (priv->size_installed != 0)
 		gs_app_kv_size (str, "size-installed", priv->size_installed);
@@ -3518,6 +3525,45 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
 }
 
 /**
+ * gs_app_get_release_date:
+ * @app: a #GsApp
+ *
+ * Gets the date that an application was released.
+ *
+ * Returns: A UNIX epoch, or 0 for unset
+ *
+ * Since: 3.40
+ **/
+guint64
+gs_app_get_release_date (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+	return priv->release_date;
+}
+
+/**
+ * gs_app_set_release_date:
+ * @app: a #GsApp
+ * @release_date: an epoch, or 0
+ *
+ * Sets the date that an application was released.
+ *
+ * Since: 3.40
+ **/
+void
+gs_app_set_release_date (GsApp *app, guint64 release_date)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_return_if_fail (GS_IS_APP (app));
+	if (release_date == priv->release_date)
+		return;
+	priv->release_date = release_date;
+
+	gs_app_queue_notify (app, obj_props[PROP_RELEASE_DATE]);
+}
+
+/**
  * gs_app_is_installed:
  * @app: a #GsApp
  *
@@ -4199,6 +4245,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_INSTALL_DATE:
 		g_value_set_uint64 (value, priv->install_date);
 		break;
+	case PROP_RELEASE_DATE:
+		g_value_set_uint64 (value, priv->release_date);
+		break;
 	case PROP_QUIRK:
 		g_value_set_uint64 (value, priv->quirk);
 		break;
@@ -4259,6 +4308,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_INSTALL_DATE:
 		gs_app_set_install_date (app, g_value_get_uint64 (value));
+		break;
+	case PROP_RELEASE_DATE:
+		gs_app_set_release_date (app, g_value_get_uint64 (value));
 		break;
 	case PROP_QUIRK:
 		priv->quirk = g_value_get_uint64 (value);
@@ -4436,6 +4488,18 @@ gs_app_class_init (GsAppClass *klass)
 	 * GsApp:install-date:
 	 */
 	obj_props[PROP_INSTALL_DATE] = g_param_spec_uint64 ("install-date", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+	/**
+	 * GsApp:release-date:
+	 *
+	 * Set to the release date of the application on the server. Can be 0,
+	 * which means the release date is unknown.
+	 *
+	 * Since: 3.40
+	 */
+	obj_props[PROP_RELEASE_DATE] = g_param_spec_uint64 ("release-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 

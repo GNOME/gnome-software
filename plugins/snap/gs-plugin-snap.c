@@ -911,6 +911,7 @@ refine_app_with_client (GsPlugin             *plugin,
 	SnapdSnap *snap;
 	const gchar *developer_name;
 	g_autofree gchar *description = NULL;
+	guint64 release_date = 0;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
@@ -989,6 +990,7 @@ refine_app_with_client (GsPlugin             *plugin,
 		for (i = 0; i < channels->len; i++) {
 			SnapdChannel *c = channels->pdata[i];
 			g_autofree gchar *expanded_name = NULL;
+			GDateTime *dt;
 
 			expanded_name = expand_channel_name (snapd_channel_get_name (c));
 			if (g_strcmp0 (expanded_name, channel) != 0)
@@ -996,10 +998,15 @@ refine_app_with_client (GsPlugin             *plugin,
 
 			version = snapd_channel_get_version (c);
 			confinement = snapd_channel_get_confinement (c);
+
+			dt = snapd_channel_get_released_at (c);
+			if (dt)
+				release_date = (guint64) g_date_time_to_unix (dt);
 		}
 	}
 
 	gs_app_set_version (app, version);
+	gs_app_set_release_date (app, release_date);
 
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS &&
 	    priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT &&
