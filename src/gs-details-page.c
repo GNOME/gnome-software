@@ -1361,8 +1361,10 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 		populate_permission_details (self, permissions);
 
-		if (gs_app_get_permissions (self->app) != GS_APP_PERMISSIONS_UNKNOWN) {
-			if ((permissions & ~LIMITED_PERMISSIONS) == 0)
+		if (permissions != GS_APP_PERMISSIONS_UNKNOWN) {
+			if (permissions == GS_APP_PERMISSIONS_NONE)
+				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("None"));
+			else if ((permissions & ~LIMITED_PERMISSIONS) == 0)
 				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Low"));
 			else if ((permissions & ~MEDIUM_PERMISSIONS) == 0)
 				gtk_button_set_label (GTK_BUTTON (self->button_details_permissions_value), _("Medium"));
