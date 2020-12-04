@@ -684,6 +684,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			 GError **error)
 {
 	const gchar *tmp;
+	guint64 timestamp;
 	g_autoptr(GPtrArray) bundles = NULL;
 	g_autoptr(GPtrArray) launchables = NULL;
 	g_autoptr(XbNode) req = NULL;
@@ -889,6 +890,11 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		tmp = xb_node_get_attr (component, "type");
 		gs_app_set_kind (app, as_app_kind_from_string (tmp));
 	}
+
+	/* set the release date */
+	timestamp = xb_node_query_attr_as_uint (component, "releases/release", "timestamp", NULL);
+	if (timestamp != G_MAXUINT64)
+		gs_app_set_release_date (app, timestamp);
 
 	/* copy all the metadata */
 	if (!gs_appstream_copy_metadata (app, component, error))
