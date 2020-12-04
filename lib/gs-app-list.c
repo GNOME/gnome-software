@@ -44,6 +44,13 @@ enum {
 	PROP_LAST
 };
 
+enum {
+	SIGNAL_APP_STATE_CHANGED,
+	SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
+
 /**
  * gs_app_list_get_state:
  * @list: A #GsAppList
@@ -191,6 +198,8 @@ static void
 gs_app_list_state_notify_cb (GsApp *app, GParamSpec *pspec, GsAppList *self)
 {
 	gs_app_list_invalidate_state (self);
+
+	g_signal_emit (self, signals[SIGNAL_APP_STATE_CHANGED], 0, app);
 }
 
 static void
@@ -936,6 +945,20 @@ gs_app_list_class_init (GsAppListClass *klass)
 				   0, GS_APP_PROGRESS_UNKNOWN, GS_APP_PROGRESS_UNKNOWN,
 				   G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
+
+	/**
+	 * GsAppList:app-state-changed:
+	 * @app: a #GsApp
+	 *
+	 * Emitted when any of the internal #GsApp instances changes its state.
+	 *
+	 * Since: 3.40
+	 */
+	signals [SIGNAL_APP_STATE_CHANGED] =
+		g_signal_new ("app-state-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      0, NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
 }
 
 static void
