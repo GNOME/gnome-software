@@ -601,6 +601,28 @@ gs_updates_section_progress_notify_cb (GsAppList *list,
 }
 
 static void
+gs_updates_section_app_state_changed_cb (GsAppList *list,
+					 GsApp *in_app,
+					 GsUpdatesSection *self)
+{
+	guint ii, len, busy = 0;
+
+	len = gs_app_list_length (list);
+
+	for (ii = 0; ii < len; ii++) {
+		GsApp *app = gs_app_list_index (list, ii);
+		AsAppState state = gs_app_get_state (app);
+
+		if (state == AS_APP_STATE_INSTALLING ||
+		    state == AS_APP_STATE_REMOVING) {
+			busy++;
+		}
+	}
+
+	gtk_widget_set_sensitive (self->button_update, busy < len);
+}
+
+static void
 gs_updates_section_init (GsUpdatesSection *self)
 {
 	GtkStyleContext *context;
@@ -641,5 +663,12 @@ gs_updates_section_new (GsUpdatesSectionKind kind,
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->page = g_object_ref (page);
 	self->section_header = g_object_ref_sink (_build_section_header (self));
+
+	if (self->kind == GS_UPDATES_SECTION_KIND_ONLINE) {
+		g_signal_connect_object (self->list, "app-state-changed",
+					 G_CALLBACK (gs_updates_section_app_state_changed_cb),
+					 self, 0);
+	}
+
 	return GTK_LIST_BOX (self);
 }
