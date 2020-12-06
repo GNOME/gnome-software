@@ -380,7 +380,8 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
-	g_assert_cmpint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
+	g_assert_true (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN ||
+		       gs_app_get_progress (app) == 100);
 	g_assert_cmpint (gs_app_get_state (runtime), ==, AS_APP_STATE_INSTALLED);
 
 	/* check the application exists in the right places */
@@ -455,7 +456,8 @@ gs_plugins_flatpak_app_with_runtime_func (GsPluginLoader *plugin_loader)
 	g_assert_true (ret);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.3");
-	g_assert_cmpint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
+	g_assert_true (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN ||
+		       gs_app_get_progress (app) == 100);
 	g_signal_handler_disconnect (app, signal_id);
 
 	/* remove the application */
@@ -1518,7 +1520,8 @@ gs_plugins_flatpak_app_update_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_version (app), ==, "1.2.4");
 	g_assert_cmpstr (gs_app_get_update_version (app), ==, NULL);
 	g_assert_cmpstr (gs_app_get_update_details (app), ==, NULL);
-	g_assert_cmpint (gs_app_get_progress (app), ==, GS_APP_PROGRESS_UNKNOWN);
+	g_assert_true (gs_app_get_progress (app) == GS_APP_PROGRESS_UNKNOWN ||
+		       gs_app_get_progress (app) == 100);
 	g_assert_true (got_progress_installing);
 	//g_assert_cmpint (progress_cnt, >, 20); //FIXME: bug in OSTree
 	g_assert_cmpint (pending_app_changed_cnt, ==, 0);
