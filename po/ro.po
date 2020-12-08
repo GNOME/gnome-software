@@ -7,10 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-09-09 11:14+0000\n"
-"PO-Revision-Date: 2020-11-20 10:43+0100\n"
-"Last-Translator: Florentina Mușat <florentina [dot] musat [dot] 28 [at] "
-"gmail [dot] com>\n"
+"POT-Creation-Date: 2020-12-04 14:04+0000\n"
+"PO-Revision-Date: 2020-12-08 20:55+0200\n"
+"Last-Translator: Florentina Mușat <florentina.musat.28@gmail.com>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
 "sourceforge.net>\n"
 "Language: ro\n"
@@ -19,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2);\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-Project-Style: gnome\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
@@ -300,11 +299,7 @@ msgstr ""
 "Instalează fișierele AppStream într-o locație generală de sistem pentru toți "
 "utilizatorii"
 
-#: data/org.gnome.software.gschema.xml:140
-msgid "Enable GNOME Shell extensions repository"
-msgstr "Activează depozitul de extensii GNOME Shell"
-
-#: data/org.gnome.software.gschema.xml:147
+#: data/org.gnome.software.gschema.xml:143
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Un șir de caractere ce stochează id-ul pentru contul google folosit la "
@@ -363,7 +358,7 @@ msgstr "Caută"
 
 #. Translators: This is a label in the header bar, followed by a drop down to choose between different source repos
 #. TRANSLATORS: this refers to where the app came from
-#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:886
+#: src/gnome-software.ui:272 src/gs-app-row.c:294 src/gs-details-page.ui:930
 msgid "Source"
 msgstr "Sursă"
 
@@ -404,15 +399,15 @@ msgid "Find Out _More"
 msgstr "Aflați mai _multe"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4559
+#: lib/gs-app.c:4687
 msgid "Local file"
 msgstr "Fișier local"
 
-#: lib/gs-app.c:4611
+#: lib/gs-app.c:4741
 msgid "Package"
 msgstr "Pachet"
 
-#: src/gs-app-addon-row.c:83 src/gs-app-row.c:401
+#: src/gs-app-addon-row.c:83 src/gs-app-row.c:415
 msgid "Pending"
 msgstr "În așteptare"
 
@@ -425,7 +420,7 @@ msgstr "Instalat"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is a button in the software repositories dialog
 #. that shows the status of a repo being installed
-#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:351
+#: src/gs-app-addon-row.c:93 src/gs-app-row.c:172 src/gs-details-page.c:361
 #: src/gs-third-party-repo-row.c:100
 msgid "Installing"
 msgstr "Se instalează"
@@ -528,7 +523,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:333 src/gs-shell.c:2123
+#: src/gs-application.c:333 src/gs-shell.c:2124
 msgid "About Software"
 msgstr "Despre Aplicații"
 
@@ -557,7 +552,7 @@ msgstr "Instalează…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: src/gs-app-row.c:139 src/gs-updates-section.c:479
+#: src/gs-app-row.c:139 src/gs-updates-section.c:482
 msgid "Cancel"
 msgstr "Anulează"
 
@@ -565,7 +560,7 @@ msgstr "Anulează"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:288 src/gs-page.c:334
+#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:334
 msgid "Install"
 msgstr "Instalează"
 
@@ -580,7 +575,7 @@ msgstr "Actualizează"
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
 #: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:492
-#: src/gs-repos-dialog.c:326
+#: src/gs-repos-dialog.c:327
 msgid "Remove"
 msgstr "Elimină"
 
@@ -590,9 +585,15 @@ msgstr "Elimină"
 msgid "Device cannot be used during update."
 msgstr "Dispozitivul nu poate fi folosit în timpul actualizării."
 
-#: src/gs-app-row.c:459 src/gs-update-dialog.ui:182
+#: src/gs-app-row.c:475 src/gs-update-dialog.ui:182
 msgid "Requires additional permissions"
 msgstr "Necesită permisiuni adiționale"
+
+#. Translators: A message to indicate that an app has been renamed. The placeholder is the old human-readable name.
+#: src/gs-app-row.c:482
+#, c-format
+msgid "Renamed from %s"
+msgstr "Redenumit de la %s"
 
 #. TRANSLATORS: This is a description for entering user/password
 #: src/gs-basic-auth-dialog.c:82
@@ -604,7 +605,7 @@ msgstr "Autentificare la distanță necesară %s (realm %s)"
 msgid "Login Required"
 msgstr "Autentificare necesară"
 
-#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:252
+#: src/gs-basic-auth-dialog.ui:19 src/gs-details-page.ui:261
 #: src/gs-removal-dialog.ui:32 src/gs-review-dialog.ui:22
 #: src/gs-upgrade-banner.ui:112
 msgid "_Cancel"
@@ -720,7 +721,7 @@ msgid "Application is ready to be used."
 msgstr "Aplicația este gata de utilizare."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:160 src/gs-common.c:650
+#: src/gs-common.c:160 src/gs-common.c:651
 msgid "Restart"
 msgstr "Repornește"
 
@@ -730,12 +731,12 @@ msgid "Launch"
 msgstr "Lansează"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:222
+#: src/gs-common.c:223
 msgid "Install Third-Party Software?"
 msgstr "Instalați aplicații din sursă terță?"
 
 #. TRANSLATORS: window title
-#: src/gs-common.c:226 src/gs-repos-dialog.c:235
+#: src/gs-common.c:227 src/gs-repos-dialog.c:236
 msgid "Enable Third-Party Software Repository?"
 msgstr "Activați depozitul terț de aplicații?"
 
@@ -743,7 +744,7 @@ msgstr "Activați depozitul terț de aplicații?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
 #.
-#: src/gs-common.c:242
+#: src/gs-common.c:243
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -755,52 +756,52 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software repository name, e.g. fedora-optional
-#: src/gs-common.c:252
+#: src/gs-common.c:253
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s este furnizat de către „%s”."
 
-#: src/gs-common.c:261
+#: src/gs-common.c:262
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
 "Aceast depozit de aplicații trebuie activat petru a putea continua "
 "instalarea."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:271
+#: src/gs-common.c:272
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Ar putea fi ilegală instalarea sau folosirea lui %s în anumite țări."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: src/gs-common.c:277
+#: src/gs-common.c:278
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Ar putea fi ilegală instalarea sau folosirea acestui codec în anumite țări."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: src/gs-common.c:284
+#: src/gs-common.c:285
 msgid "Don’t Warn Again"
 msgstr "Nu atenționa din nou"
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:293
+#: src/gs-common.c:294
 msgid "Enable and Install"
 msgstr "Activează și instalează"
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: src/gs-common.c:452
+#: src/gs-common.c:453
 msgid "Detailed errors from the package manager follow:"
 msgstr "Erorile detaliate ale administratorului de pachete:"
 
-#: src/gs-common.c:471 src/gs-details-page.ui:447
+#: src/gs-common.c:472 src/gs-details-page.ui:456
 msgid "Details"
 msgstr "Detalii"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: src/gs-common.c:636
+#: src/gs-common.c:637
 msgid "An update has been installed"
 msgid_plural "Updates have been installed"
 msgstr[0] "O actualizare a fost instalată"
@@ -808,7 +809,7 @@ msgstr[1] "Actualizările au fost instalate"
 msgstr[2] "Actualizările au fost instalate"
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: src/gs-common.c:641
+#: src/gs-common.c:642
 msgid "A restart is required for it to take effect."
 msgid_plural "A restart is required for them to take effect."
 msgstr[0] "O repornire este necesară pentru ca ea să aibă efect."
@@ -816,7 +817,7 @@ msgstr[1] "O repornire este necesară pentru ca ele să aibă efect."
 msgstr[2] "O repornire este necesară pentru ca ele să aibă efect."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:648 src/gs-update-monitor.c:123
+#: src/gs-common.c:649 src/gs-update-monitor.c:123
 msgid "Not Now"
 msgstr "Nu acum"
 
@@ -1420,29 +1421,29 @@ msgstr "Sunt necesare pachete adiționale"
 msgid "Find in Software"
 msgstr "Caută în Aplicații"
 
-#: src/gs-details-page.c:346
+#: src/gs-details-page.c:356
 msgid "Removing…"
 msgstr "Se elimină…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be installed soon
-#: src/gs-details-page.c:365
+#: src/gs-details-page.c:375
 msgid "Pending installation…"
 msgstr "Instalare în așteptare…"
 
 #. TRANSLATORS: This is a label on top of the app's progress
 #. * bar to inform the user that the app should be updated soon
-#: src/gs-details-page.c:372
+#: src/gs-details-page.c:382
 msgid "Pending update…"
 msgstr "Actualizare în așteptare…"
 
 #. Translators: This string is shown when preparing to download and install an app.
-#: src/gs-details-page.c:386
+#: src/gs-details-page.c:396
 msgid "Preparing…"
 msgstr "Se pregătește…"
 
 #. TRANSLATORS: this is the warning box
-#: src/gs-details-page.c:745
+#: src/gs-details-page.c:756
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -1456,8 +1457,8 @@ msgstr ""
 #. * can be live-installed
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo
-#: src/gs-details-page.c:890 src/gs-details-page.c:907
-#: src/gs-details-page.ui:167 src/gs-third-party-repo-row.c:84
+#: src/gs-details-page.c:944 src/gs-details-page.c:961
+#: src/gs-details-page.ui:176 src/gs-third-party-repo-row.c:84
 #: src/gs-upgrade-banner.c:89
 msgid "_Install"
 msgstr "_Instalează"
@@ -1469,108 +1470,108 @@ msgstr "_Instalează"
 #. TRANSLATORS: this is a button in the software repositories
 #. dialog for installing a repo.
 #. The ellipsis indicates that further steps are required
-#: src/gs-details-page.c:921 src/gs-third-party-repo-row.c:76
+#: src/gs-details-page.c:975 src/gs-third-party-repo-row.c:76
 msgid "_Install…"
 msgstr "_Instalează…"
 
 #. TRANSLATORS: A label for a button to execute the selected application.
-#: src/gs-details-page.c:963
+#: src/gs-details-page.c:1003
 msgid "_Launch"
 msgstr "_Lansează"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: src/gs-details-page.c:987 src/gs-details-page.ui:192
+#: src/gs-details-page.c:1027 src/gs-details-page.ui:201
 msgid "_Remove"
 msgstr "_Elimină"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1058 src/gs-update-dialog.c:93
 msgid "Network"
 msgstr "Rețea"
 
-#: src/gs-details-page.c:1018 src/gs-update-dialog.c:93
+#: src/gs-details-page.c:1058 src/gs-update-dialog.c:93
 msgid "Can communicate over the network"
 msgstr "Pot comunica prin rețea"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1059 src/gs-update-dialog.c:94
 msgid "System Services"
 msgstr "Servicii ale sistemului"
 
-#: src/gs-details-page.c:1019 src/gs-update-dialog.c:94
+#: src/gs-details-page.c:1059 src/gs-update-dialog.c:94
 msgid "Can access D-Bus services on the system bus"
 msgstr "Poate accesa serviciile D-Bus pe magistrala sistemului"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1060 src/gs-update-dialog.c:95
 msgid "Session Services"
 msgstr "Servicii de sesiune"
 
-#: src/gs-details-page.c:1020 src/gs-update-dialog.c:95
+#: src/gs-details-page.c:1060 src/gs-update-dialog.c:95
 msgid "Can access D-Bus services on the session bus"
 msgstr "Poate accesa serviciile D-Bus pe magistrala sesiunilor"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1061 src/gs-update-dialog.c:96
 msgid "Devices"
 msgstr "Dispozitive"
 
-#: src/gs-details-page.c:1021 src/gs-update-dialog.c:96
+#: src/gs-details-page.c:1061 src/gs-update-dialog.c:96
 msgid "Can access system device files"
 msgstr "Pot accesa fișierele de sistem ale dispozitivelor"
 
-#: src/gs-details-page.c:1022 src/gs-details-page.c:1023
+#: src/gs-details-page.c:1062 src/gs-details-page.c:1063
 #: src/gs-update-dialog.c:97 src/gs-update-dialog.c:98
 msgid "Home folder"
 msgstr "Dosar personal"
 
-#: src/gs-details-page.c:1022 src/gs-details-page.c:1024
-#: src/gs-details-page.c:1026 src/gs-update-dialog.c:97
+#: src/gs-details-page.c:1062 src/gs-details-page.c:1064
+#: src/gs-details-page.c:1066 src/gs-update-dialog.c:97
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:101
 msgid "Can view, edit and create files"
 msgstr "Poate vedea, edita și crea fișiere"
 
-#: src/gs-details-page.c:1023 src/gs-details-page.c:1025
-#: src/gs-details-page.c:1027 src/gs-update-dialog.c:98
+#: src/gs-details-page.c:1063 src/gs-details-page.c:1065
+#: src/gs-details-page.c:1067 src/gs-update-dialog.c:98
 #: src/gs-update-dialog.c:100 src/gs-update-dialog.c:102
 msgid "Can view files"
 msgstr "Poate vedea fișiere"
 
-#: src/gs-details-page.c:1024 src/gs-details-page.c:1025
+#: src/gs-details-page.c:1064 src/gs-details-page.c:1065
 #: src/gs-update-dialog.c:99 src/gs-update-dialog.c:100
 msgid "File system"
 msgstr "Sistem de fișiere"
 
-#: src/gs-details-page.c:1026 src/gs-details-page.c:1027
+#: src/gs-details-page.c:1066 src/gs-details-page.c:1067
 #: src/gs-update-dialog.c:101 src/gs-update-dialog.c:102
 msgid "Downloads folder"
 msgstr "Dosar descărcări"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1068 src/gs-update-dialog.c:103
 msgid "Settings"
 msgstr "Configurări"
 
-#: src/gs-details-page.c:1028 src/gs-update-dialog.c:103
+#: src/gs-details-page.c:1068 src/gs-update-dialog.c:103
 msgid "Can view and change any settings"
 msgstr "Poate vedea și modifica orice configurare"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1069 src/gs-update-dialog.c:104
 msgid "Legacy display system"
 msgstr "Sistem moștenit de afișare"
 
-#: src/gs-details-page.c:1029 src/gs-update-dialog.c:104
+#: src/gs-details-page.c:1069 src/gs-update-dialog.c:104
 msgid "Uses an old, insecure display system"
 msgstr "Folosește un sistem de afișare vechi și nesigur"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1070 src/gs-update-dialog.c:105
 msgid "Sandbox escape"
 msgstr "Evadare din modul sandbox"
 
-#: src/gs-details-page.c:1030 src/gs-update-dialog.c:105
+#: src/gs-details-page.c:1070 src/gs-update-dialog.c:105
 msgid "Can escape the sandbox and circumvent any other restrictions"
 msgstr "Poate evada din modul sandbox și împiedica orice alte restricții"
 
-#: src/gs-details-page.c:1045
+#: src/gs-details-page.c:1085
 msgid "This application is fully sandboxed."
 msgstr "Această aplicație este izolată complet."
 
-#: src/gs-details-page.c:1053
+#: src/gs-details-page.c:1093
 msgid ""
 "Unable to determine which parts of the system this application accesses. "
 "This is typical for older applications."
@@ -1579,84 +1580,96 @@ msgstr ""
 "aplicație. Aceasta este tipic aplicațiilor mai vechi."
 
 #. TRANSLATORS: this is where the version is not known
-#: src/gs-details-page.c:1212
+#: src/gs-details-page.c:1249
 msgctxt "version"
 msgid "Unknown"
 msgstr "Necunoscută"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: src/gs-details-page.c:1225
+#: src/gs-details-page.c:1278
 msgctxt "updated"
 msgid "Never"
 msgstr "Niciodată"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: src/gs-details-page.c:1278
+#: src/gs-details-page.c:1331
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Necunoscută"
 
-#: src/gs-details-page.c:1331
+#: src/gs-details-page.c:1384
+msgid "None"
+msgstr "Nimic"
+
+#: src/gs-details-page.c:1386
 msgid "Low"
 msgstr "Redus"
 
-#: src/gs-details-page.c:1333
+#: src/gs-details-page.c:1388
 msgid "Medium"
 msgstr "Mediu"
 
-#: src/gs-details-page.c:1335
+#: src/gs-details-page.c:1390
 msgid "High"
 msgstr "Ridicat"
 
 #. This refers to the license of the application
 #. TRANSLATORS: this is when a user doesn't specify a name
-#: src/gs-details-page.c:1337 src/gs-details-page.ui:1006
+#: src/gs-details-page.c:1392 src/gs-details-page.ui:1050
 #: src/gs-review-row.c:58
 msgid "Unknown"
 msgstr "Necunoscut"
 
 #. TRANSLATORS: we need a remote server to process
-#: src/gs-details-page.c:1675
+#: src/gs-details-page.c:1730
 msgid "You need internet access to write a review"
 msgstr "Aveți nevoie de acces la internet pentru a scrie o recenzie"
 
-#: src/gs-details-page.c:1864 src/gs-details-page.c:1880
+#: src/gs-details-page.c:1919 src/gs-details-page.c:1935
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nu s-a putut găsi „%s”"
 
+#: src/gs-details-page.c:2001 src/gs-details-page.c:2036
+msgid "Loading…"
+msgstr "Se încarcă…"
+
+#: src/gs-details-page.c:2456
+msgid "The application contains no age-inappropriate content."
+msgstr "Aplicația nu conține conținut neadecvat vârstei."
+
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2458
+#: src/gs-details-page.c:2565
 msgid "Public domain"
 msgstr "Domeniul public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2461
+#: src/gs-details-page.c:2568
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://ro.wikipedia.org/wiki/Domeniul_public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2468
+#: src/gs-details-page.c:2575
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.ro"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2478 src/gs-details-page.ui:1250
+#: src/gs-details-page.c:2585 src/gs-details-page.ui:1294
 msgid "Free Software"
 msgstr "Aplicații libere"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2535
+#: src/gs-details-page.c:2642
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Utilizatorii sunt limitați de următoarea licență:"
 msgstr[1] "Utilizatorii sunt limitați de următoarele licențe:"
 msgstr[2] "Utilizatorii sunt limitați de următoarele licențe:"
 
-#: src/gs-details-page.c:2562 src/gs-details-page.ui:1322
+#: src/gs-details-page.c:2669 src/gs-details-page.ui:1366
 msgid "More information"
 msgstr "Mai multe informații"
 
@@ -1664,33 +1677,37 @@ msgstr "Mai multe informații"
 msgid "Details page"
 msgstr "Pagina de detalii"
 
-#: src/gs-details-page.ui:222
+#: src/gs-details-page.ui:39
+msgid "Loading application details…"
+msgstr "Se încarcă detaliile aplicației…"
+
+#: src/gs-details-page.ui:231
 msgid "Downloading"
 msgstr "Descărcare"
 
-#: src/gs-details-page.ui:262
+#: src/gs-details-page.ui:271
 msgid "_Update"
 msgstr "Act_ualizează"
 
 #. Translators: A label for a button to add a shortcut to the selected application.
-#: src/gs-details-page.ui:278
+#: src/gs-details-page.ui:287
 msgid "_Add shortcut"
 msgstr "_Adaugă scurtătură"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
-#: src/gs-details-page.ui:292
+#: src/gs-details-page.ui:301
 msgid "Re_move shortcut"
 msgstr "Eli_mină scurtătură"
 
-#: src/gs-details-page.ui:366
+#: src/gs-details-page.ui:375
 msgid "No screenshot provided"
 msgstr "Nicio captură de ecran pusă la dispoziție"
 
-#: src/gs-details-page.ui:386
+#: src/gs-details-page.ui:395
 msgid "Software Repository Included"
 msgstr "Depozit de aplicații inclus"
 
-#: src/gs-details-page.ui:387
+#: src/gs-details-page.ui:396
 msgid ""
 "This application includes a software repository which provides updates, as "
 "well as access to other software."
@@ -1698,11 +1715,11 @@ msgstr ""
 "Aplicația include un depozit de aplicații care furnizează atât actualizări "
 "cât și acces la alte aplicații."
 
-#: src/gs-details-page.ui:394
+#: src/gs-details-page.ui:403
 msgid "No Software Repository Included"
 msgstr "Niciun depozit de aplicații inclus"
 
-#: src/gs-details-page.ui:395
+#: src/gs-details-page.ui:404
 msgid ""
 "This application does not include a software repository. It will not be "
 "updated with new versions."
@@ -1710,7 +1727,7 @@ msgstr ""
 "Această aplicație nu include un depozit de aplicații. Ca urmare, nu va fi "
 "actualizată la versiuni noi."
 
-#: src/gs-details-page.ui:403
+#: src/gs-details-page.ui:412
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -1719,11 +1736,11 @@ msgstr ""
 "trebui înlocuită."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: src/gs-details-page.ui:410
+#: src/gs-details-page.ui:419
 msgid "Software Repository Identified"
 msgstr "Depozit de aplicații identificat"
 
-#: src/gs-details-page.ui:411
+#: src/gs-details-page.ui:420
 msgid ""
 "Adding this software repository will give you access to additional software "
 "and upgrades."
@@ -1731,118 +1748,122 @@ msgstr ""
 "Adăugarea acestui depozit de aplicații vă va oferi acces la actualizări și "
 "aplicații adiționale."
 
-#: src/gs-details-page.ui:412
+#: src/gs-details-page.ui:421
 msgid "Only use software repositories that you trust."
 msgstr "Utilizați doar depozite de aplicații de încredere."
 
-#: src/gs-details-page.ui:422
+#: src/gs-details-page.ui:431
 msgid "_Website"
 msgstr "Pagină _web"
 
-#: src/gs-details-page.ui:431
+#: src/gs-details-page.ui:440
 msgid "_Donate"
 msgstr "_Donează"
 
-#: src/gs-details-page.ui:541
+#: src/gs-details-page.ui:550
 msgid "Localized in your Language"
 msgstr "Localizat în limba dumneavoastră"
 
-#: src/gs-details-page.ui:552
+#: src/gs-details-page.ui:561
 msgid "Documentation"
 msgstr "Documentație"
 
-#: src/gs-details-page.ui:563
+#: src/gs-details-page.ui:572
 msgid "Release Activity"
 msgstr "Activitate de lansare"
 
-#: src/gs-details-page.ui:574
+#: src/gs-details-page.ui:583
 msgid "System Integration"
 msgstr "Integrarea cu sistemul"
 
-#: src/gs-details-page.ui:585
+#: src/gs-details-page.ui:594
 msgid "Sandboxed"
 msgstr "Izolată"
 
 #. TRANSLATORS: the title for Snap channels
-#: src/gs-details-page.ui:605 src/gs-origin-popover-row.c:103
+#: src/gs-details-page.ui:614 src/gs-origin-popover-row.c:103
 msgid "Channel"
 msgstr "Canal"
 
 #. Translators: The available version of an app
-#: src/gs-details-page.ui:641 src/gs-origin-popover-row.ui:151
+#: src/gs-details-page.ui:650 src/gs-origin-popover-row.ui:151
 msgid "Version"
 msgstr "Versiune"
 
-#: src/gs-details-page.ui:677
+#: src/gs-details-page.ui:685
+msgid "Released"
+msgstr "Lansat"
+
+#: src/gs-details-page.ui:721
 msgid "Age Rating"
 msgstr "Categorie de vârstă"
 
-#: src/gs-details-page.ui:715 src/gs-details-page.ui:1408
+#: src/gs-details-page.ui:759 src/gs-details-page.ui:1452
 msgid "Permissions"
 msgstr "Permisiuni"
 
-#: src/gs-details-page.ui:753
+#: src/gs-details-page.ui:797
 msgid "Updated"
 msgstr "Actualizat"
 
-#: src/gs-details-page.ui:787
+#: src/gs-details-page.ui:831
 msgid "Category"
 msgstr "Categorie"
 
-#: src/gs-details-page.ui:824
+#: src/gs-details-page.ui:868
 msgid "Installed Size"
 msgstr "Dimensiunea instalării"
 
-#: src/gs-details-page.ui:855
+#: src/gs-details-page.ui:899
 msgid "Download Size"
 msgstr "Dimensiunea descărcării"
 
-#: src/gs-details-page.ui:917
+#: src/gs-details-page.ui:961
 msgid "Developer"
 msgstr "Dezvoltator"
 
-#: src/gs-details-page.ui:963
+#: src/gs-details-page.ui:1007
 msgid "License"
 msgstr "Licență"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:982
+#: src/gs-details-page.ui:1026
 msgid "Free"
 msgstr "Liberă"
 
 #. This refers to the license of the application
-#: src/gs-details-page.ui:994
+#: src/gs-details-page.ui:1038
 msgid "Proprietary"
 msgstr "Proprietară"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the menu spec main category for Add-ons
-#: src/gs-details-page.ui:1044 src/gs-installed-page.c:441
+#: src/gs-details-page.ui:1088 src/gs-installed-page.c:441
 #: plugins/core/gs-desktop-common.c:315
 msgid "Add-ons"
 msgstr "Suplimente"
 
-#: src/gs-details-page.ui:1056
+#: src/gs-details-page.ui:1100
 msgid "Selected add-ons will be installed with the application."
 msgstr "Suplimentele alese vor fi instalate împreună cu aplicația."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: src/gs-details-page.ui:1094
+#: src/gs-details-page.ui:1138
 msgid "Reviews"
 msgstr "Recenzii"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: src/gs-details-page.ui:1112
+#: src/gs-details-page.ui:1156
 msgid "_Write a Review"
 msgstr "_Scrieți o recenzie"
 
 #. Translators: Button to return more application-submitted reviews.
-#: src/gs-details-page.ui:1133
+#: src/gs-details-page.ui:1177
 msgid "_Show More"
 msgstr "_Arată mai multe"
 
-#: src/gs-details-page.ui:1261
+#: src/gs-details-page.ui:1305
 msgid ""
 "This means that the software can be freely run, copied, distributed, studied "
 "and modified."
@@ -1850,11 +1871,11 @@ msgstr ""
 "Acesta înseamnă că programul poate fi rulat, copiat, distribuit, studiat și "
 "modificat liber."
 
-#: src/gs-details-page.ui:1301
+#: src/gs-details-page.ui:1345
 msgid "Proprietary Software"
 msgstr "Programe proprietare"
 
-#: src/gs-details-page.ui:1312
+#: src/gs-details-page.ui:1356
 msgid ""
 "This means that the software is owned by an individual or a company. There "
 "are often restrictions on its use and its source code cannot usually be "
@@ -1864,35 +1885,35 @@ msgstr ""
 "multe ori sunt restricții la folosirea lui și de obicei codul sursă nu poate "
 "fi accesat."
 
-#: src/gs-details-page.ui:1344
+#: src/gs-details-page.ui:1388
 msgid "Unknown Software License"
 msgstr "Licență software necunoscută"
 
-#: src/gs-details-page.ui:1355
+#: src/gs-details-page.ui:1399
 msgid "The license terms of this software are unknown."
 msgstr "Termenii licenței acestei aplicații sunt necunoscuți."
 
-#: src/gs-details-page.ui:1375
+#: src/gs-details-page.ui:1419
 msgid "The application was rated this way because it features:"
 msgstr "Această aplicație a fost evaluată astfel pentru că pune în prim plan:"
 
-#: src/gs-details-page.ui:1389
+#: src/gs-details-page.ui:1433
 msgid "No details were available for this rating."
 msgstr "Niciun detaliu disponibil pentru această evaluare."
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:135
+#: src/gs-extras-page.c:136
 msgid " and "
 msgstr " și "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:138
+#: src/gs-extras-page.c:139
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:164
+#: src/gs-extras-page.c:165
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1902,7 +1923,7 @@ msgstr[2] "Fonturi disponibile pentru scripturile %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:172
+#: src/gs-extras-page.c:173
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -1910,31 +1931,31 @@ msgstr[0] "Aplicații disponibile pentru %s"
 msgstr[1] "Aplicații disponibile pentru %s"
 msgstr[2] "Aplicații disponibile pentru %s"
 
-#: src/gs-extras-page.c:214
+#: src/gs-extras-page.c:215
 msgid "Unable to Find Requested Software"
 msgstr "Aplicația căutată nu a putut fi găsită"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:319
+#: src/gs-extras-page.c:320
 #, c-format
 msgid "%s not found"
 msgstr "%s nu a fost găsit"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:323
+#: src/gs-extras-page.c:324
 msgid "on the website"
 msgstr "pe situl web"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:330
+#: src/gs-extras-page.c:331
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Nu sunt disponibile aplicații care să furnizeze fișierul %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:334 src/gs-extras-page.c:345 src/gs-extras-page.c:356
+#: src/gs-extras-page.c:335 src/gs-extras-page.c:346 src/gs-extras-page.c:357
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1945,21 +1966,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:341 src/gs-extras-page.c:363
+#: src/gs-extras-page.c:342 src/gs-extras-page.c:364
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Nu sunt disponibile aplicații cu suport pentru %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:352
+#: src/gs-extras-page.c:353
 #, c-format
 msgid "%s is not available."
 msgstr "%s nu este disponibilă."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:367
+#: src/gs-extras-page.c:368
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1970,14 +1991,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:374
+#: src/gs-extras-page.c:375
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Nu sunt disponibile fonturi pentru suportul scriptului %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:378
+#: src/gs-extras-page.c:379
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1988,14 +2009,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:385
+#: src/gs-extras-page.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Niciun codec suplimentar disponibil pentru formatul %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:389
+#: src/gs-extras-page.c:390
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2006,14 +2027,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:396
+#: src/gs-extras-page.c:397
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Nu sunt disponibile resurse Plasma pentru suportul lui %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:400
+#: src/gs-extras-page.c:401
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2024,14 +2045,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:407
+#: src/gs-extras-page.c:408
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Nu sunt disponibile drivere pentru %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:411
+#: src/gs-extras-page.c:412
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2041,34 +2062,51 @@ msgstr ""
 "suport pentru această imprimantă pot fi găsite %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:455
-msgid "this website"
-msgstr "pe acest sit web"
+#: src/gs-extras-page.c:456
+msgid "the documentation"
+msgstr "documentația"
 
-#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: src/gs-extras-page.c:459
+#. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
+#. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
+#: src/gs-extras-page.c:462
 #, c-format
 msgid ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
+"Unable to find the %s requested by %s. Please see %s for more information."
 msgid_plural ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
+"Unable to find the %s requested by %s. Please see %s for more information."
 msgstr[0] ""
-"Din păcate, %s pe care îl căutați nu a putut fi găsit. Consultați %s pentru "
-"mai multe informații."
+"Nu s-a putut găsi %s cerut de %s. Consultați %s pentru mai multe informații."
 msgstr[1] ""
-"Din păcate, %s pe care le căutați nu au putut fi găsite. Consultați %s "
-"pentru mai multe informații."
+"Nu s-au putut găsi %s cerute de %s. Consultați %s pentru mai multe "
+"informații."
+msgstr[2] ""
+"Nu s-au putut găsi %s cerute de %s. Consultați %s pentru mai multe "
+"informații."
+
+#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
+#: src/gs-extras-page.c:471
+#, c-format
+msgid ""
+"Unable to find the %s you were searching for. Please see %s for more "
+"information."
+msgid_plural ""
+"Unable to find the %s you were searching for. Please see %s for more "
+"information."
+msgstr[0] ""
+"Nu s-a putut găsi %s pe care îl căutați. Consultați %s pentru mai multe "
+"informații."
+msgstr[1] ""
+"Nu s-au putut găsi %s pe care le căutați. Consultați %s pentru mai multe "
+"informații."
 msgstr[2] ""
 "Din păcate, %s pe care le căutați nu au putut fi găsite. Consultați %s "
 "pentru mai multe informații."
 
-#: src/gs-extras-page.c:527 src/gs-extras-page.c:583 src/gs-extras-page.c:622
+#: src/gs-extras-page.c:539 src/gs-extras-page.c:595 src/gs-extras-page.c:634
 msgid "Failed to find any search results"
 msgstr "Căutarea nu a dat niciun rezultat"
 
-#: src/gs-extras-page.c:810
+#: src/gs-extras-page.c:822
 #, c-format
 msgid "%s file format"
 msgstr "format fișier %s"
@@ -2255,12 +2293,12 @@ msgid "Recommended Productivity Applications"
 msgstr "Aplicații de productivitate recomandate"
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:832
+#: src/gs-overview-page.c:926 src/gs-repos-dialog.c:836
 msgid "Access additional software from selected third party sources."
 msgstr "Accesați aplicații adiționale din surse de părți terțe selecte."
 
 #. TRANSLATORS: this is the third party repositories info bar.
-#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:836
+#: src/gs-overview-page.c:930 src/gs-repos-dialog.c:840
 msgid ""
 "Some of this software is proprietary and therefore has restrictions on use, "
 "sharing, and access to source code."
@@ -2270,13 +2308,13 @@ msgstr ""
 
 #. TRANSLATORS: this is the clickable
 #. * link on the third party repositories info bar
-#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:841
+#: src/gs-overview-page.c:935 src/gs-repos-dialog.c:845
 msgid "Find out more…"
 msgstr "Aflați mai multe…"
 
 #. TRANSLATORS: button to turn on third party software repositories
 #. TRANSLATORS: button to accept the agreement
-#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:240
+#: src/gs-overview-page.c:943 src/gs-repos-dialog.c:241
 msgid "Enable"
 msgstr "Activează"
 
@@ -2402,7 +2440,7 @@ msgstr "_Continuă"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:98
+#: src/gs-repos-dialog.c:99
 #, c-format
 msgid "%u application installed"
 msgid_plural "%u applications installed"
@@ -2412,7 +2450,7 @@ msgstr[2] "%u de aplicații instalate"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software repository.
-#: src/gs-repos-dialog.c:105
+#: src/gs-repos-dialog.c:106
 #, c-format
 msgid "%u add-on installed"
 msgid_plural "%u add-ons installed"
@@ -2423,7 +2461,7 @@ msgstr[2] "%u de suplimente adiționale instalate"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of applications.
-#: src/gs-repos-dialog.c:113
+#: src/gs-repos-dialog.c:114
 #, c-format
 msgid "%u application"
 msgid_plural "%u applications"
@@ -2434,7 +2472,7 @@ msgstr[2] "%u de aplicații"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the number of add-ons.
-#: src/gs-repos-dialog.c:119
+#: src/gs-repos-dialog.c:120
 #, c-format
 msgid "%u add-on"
 msgid_plural "%u add-ons"
@@ -2446,7 +2484,7 @@ msgstr[2] "%u de suplimente"
 #. and y add-ons installed' sentence, describing a software repository.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: src/gs-repos-dialog.c:126
+#: src/gs-repos-dialog.c:127
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -2456,20 +2494,20 @@ msgstr[2] "%s și %s instalate"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:302
+#: src/gs-repos-dialog.c:303
 #, c-format
 msgid "Remove “%s”?"
 msgstr "Eliminați „%s”?"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is a
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-repos-dialog.c:307
+#: src/gs-repos-dialog.c:308
 #, c-format
 msgid "Disable “%s”?"
 msgstr "Dezactivați „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-repos-dialog.c:311
+#: src/gs-repos-dialog.c:312
 msgid ""
 "Software that has been installed from this repository will no longer receive "
 "updates, including security fixes."
@@ -2478,25 +2516,25 @@ msgstr ""
 "incluzând actualizări de securitate."
 
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-repos-dialog.c:329
+#: src/gs-repos-dialog.c:330
 msgid "Disable"
 msgstr "Dezactivează"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: src/gs-repos-dialog.c:745
+#: src/gs-repos-dialog.c:749
 msgid "the operating system"
 msgstr "sistemul de operare"
 
 #. TRANSLATORS: This is the description text displayed in the Software Repositories dialog.
 #. %s gets replaced by the name of the actual distro, e.g. Fedora.
-#: src/gs-repos-dialog.c:811 src/gs-repos-dialog.c:847
+#: src/gs-repos-dialog.c:815 src/gs-repos-dialog.c:851
 #, c-format
 msgid "These repositories supplement the default software provided by %s."
 msgstr "Aceste depozite suplimentează aplicațiile implicite oferite de %s."
 
 #. TRANSLATORS: info bar title in the software repositories dialog
-#: src/gs-repos-dialog.c:829
+#: src/gs-repos-dialog.c:833
 msgid "Third Party Repositories"
 msgstr "Depozite terțe"
 
@@ -2711,39 +2749,39 @@ msgstr "Elimină…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: src/gs-screenshot-image.c:236
+#: src/gs-screenshot-image.c:264
 msgid "Screenshot not found"
 msgstr "Nu s-a găsit captura de ecran"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: src/gs-screenshot-image.c:251
+#: src/gs-screenshot-image.c:281
 msgid "Failed to load image"
 msgstr "Imaginea nu a putut fi încărcată"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: src/gs-screenshot-image.c:382
+#: src/gs-screenshot-image.c:423
 msgid "Screenshot size not found"
 msgstr "Mărimea capturii de ecarn nu a fost găsită"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: src/gs-screenshot-image.c:412
+#: src/gs-screenshot-image.c:453
 msgid "Could not create cache"
 msgstr "Nu s-a putut creea cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: src/gs-screenshot-image.c:472
+#: src/gs-screenshot-image.c:513
 msgid "Screenshot not valid"
 msgstr "Captură de ecran nevalidă"
 
 #. TRANSLATORS: this is when networking is not available
-#: src/gs-screenshot-image.c:487
+#: src/gs-screenshot-image.c:533
 msgid "Screenshot not available"
 msgstr "Captură de ecran indisponibilă"
 
-#: src/gs-screenshot-image.c:545
+#: src/gs-screenshot-image.c:599
 msgid "Screenshot"
 msgstr "Captură de ecran"
 
@@ -2773,33 +2811,33 @@ msgstr "Nu a fost găsită nicio aplicație"
 #. TRANSLATORS: this is part of the in-app notification,
 #. * where the %s is a multi-word localised app name
 #. * e.g. 'Getting things GNOME!"
-#: src/gs-shell.c:1111 src/gs-shell.c:1116 src/gs-shell.c:1131
-#: src/gs-shell.c:1135
+#: src/gs-shell.c:1125 src/gs-shell.c:1130 src/gs-shell.c:1145
+#: src/gs-shell.c:1149
 #, c-format
 msgid "“%s”"
 msgstr "„%s”"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1182
+#: src/gs-shell.c:1196
 #, c-format
 msgid "Unable to download firmware updates from %s"
 msgstr "Nu s-au putut descărca actualizări de firmware de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1188
+#: src/gs-shell.c:1202
 #, c-format
 msgid "Unable to download updates from %s"
 msgstr "Nu s-au putut descărca actualizări de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1195 src/gs-shell.c:1240
+#: src/gs-shell.c:1209 src/gs-shell.c:1254
 msgid "Unable to download updates"
 msgstr "Nu s-au putut descărca actualizări"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1201
+#: src/gs-shell.c:1215
 msgid ""
 "Unable to download updates: internet access was required but wasn’t available"
 msgstr ""
@@ -2808,29 +2846,29 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the source (e.g. "alt.fedoraproject.org")
-#: src/gs-shell.c:1210
+#: src/gs-shell.c:1224
 #, c-format
 msgid "Unable to download updates from %s: not enough disk space"
 msgstr ""
 "Nu s-au putut descărca actualizări de la %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1215
+#: src/gs-shell.c:1229
 msgid "Unable to download updates: not enough disk space"
 msgstr "Nu s-au putut descărca actualizări: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1222
+#: src/gs-shell.c:1236
 msgid "Unable to download updates: authentication was required"
 msgstr "Nu s-au putut descărca actualizări: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1227
+#: src/gs-shell.c:1241
 msgid "Unable to download updates: authentication was invalid"
 msgstr "Nu s-au putut descărca actualizări: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1232
+#: src/gs-shell.c:1246
 msgid ""
 "Unable to download updates: you do not have permission to install software"
 msgstr ""
@@ -2838,21 +2876,21 @@ msgstr ""
 "aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1243
+#: src/gs-shell.c:1257
 msgid "Unable to get list of updates"
 msgstr "Nu s-a putut obține lista de actualizări"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the application name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1286
+#: src/gs-shell.c:1300
 #, c-format
 msgid "Unable to install %s as download failed from %s"
 msgstr "Nu s-a putut instala %s pentru că descărcarea de la %s a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1292
+#: src/gs-shell.c:1306
 #, c-format
 msgid "Unable to install %s as download failed"
 msgstr "Nu s-a putut instala %s pentru că descărcarea a eșuat"
@@ -2861,74 +2899,74 @@ msgstr "Nu s-a putut instala %s pentru că descărcarea a eșuat"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1305
+#: src/gs-shell.c:1319
 #, c-format
 msgid "Unable to install %s as runtime %s not available"
 msgstr "Nu s-a putut instala %s pentru că executantul %s nu este disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1311
+#: src/gs-shell.c:1325
 #, c-format
 msgid "Unable to install %s as not supported"
 msgstr "Nu s-a putut instala %s pentru că nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1318
+#: src/gs-shell.c:1332
 msgid "Unable to install: internet access was required but wasn’t available"
 msgstr ""
 "Nu s-a putut instala: accesul la internet a fost necesar dar nu a fost "
 "disponibil"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1324
+#: src/gs-shell.c:1338
 msgid "Unable to install: the application has an invalid format"
 msgstr "Nu s-a putut instala: aplicația are un format nevalid"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1329
+#: src/gs-shell.c:1343
 #, c-format
 msgid "Unable to install %s: not enough disk space"
 msgstr "Nu s-a putut instala %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1336
+#: src/gs-shell.c:1350
 #, c-format
 msgid "Unable to install %s: authentication was required"
 msgstr "Nu s-a putut instala %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1343
+#: src/gs-shell.c:1357
 #, c-format
 msgid "Unable to install %s: authentication was invalid"
 msgstr "Nu s-a putut instala %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1350
+#: src/gs-shell.c:1364
 #, c-format
 msgid "Unable to install %s: you do not have permission to install software"
 msgstr "Nu s-a putut instal %s: nu aveți permisiunea de a instala aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1358
+#: src/gs-shell.c:1372
 #, c-format
 msgid "Unable to install %s: AC power is required"
 msgstr "Nu s-a putut instala %s: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1365
+#: src/gs-shell.c:1379
 #, c-format
 msgid "Unable to install %s: The battery level is too low"
 msgstr "Nu s-a putut instala %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1374
+#: src/gs-shell.c:1388
 #, c-format
 msgid "Unable to install %s"
 msgstr "Nu s-a putut instala %s"
@@ -2937,14 +2975,14 @@ msgstr "Nu s-a putut instala %s"
 #. * where the first %s is the app name (e.g. "GIMP") and
 #. * the second %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1421
+#: src/gs-shell.c:1435
 #, c-format
 msgid "Unable to update %s from %s as download failed"
 msgstr "Nu s-a putut actualiza %s din %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1428
+#: src/gs-shell.c:1442
 #, c-format
 msgid "Unable to update %s as download failed"
 msgstr "Nu s-a putut actualiza %s pentru că descărcarea a eșuat"
@@ -2952,19 +2990,19 @@ msgstr "Nu s-a putut actualiza %s pentru că descărcarea a eșuat"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1435
+#: src/gs-shell.c:1449
 #, c-format
 msgid "Unable to install updates from %s as download failed"
 msgstr "Nu s-a putut instala actualizări din %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1439
+#: src/gs-shell.c:1453
 #, c-format
 msgid "Unable to install updates as download failed"
 msgstr "Nu s-au putut instala actualizările pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1445
+#: src/gs-shell.c:1459
 msgid "Unable to update: internet access was required but wasn’t available"
 msgstr ""
 "Nu s-a putut actualiza: accesul la internet a fost necesar dar nu a fost "
@@ -2972,53 +3010,53 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1455
+#: src/gs-shell.c:1469
 #, c-format
 msgid "Unable to update %s: not enough disk space"
 msgstr "Nu s-a putut actualiza %s: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1460
+#: src/gs-shell.c:1474
 #, c-format
 msgid "Unable to install updates: not enough disk space"
 msgstr "Nu s-au putut instala actualizările: spațiu insuficient pe disc"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1470
+#: src/gs-shell.c:1484
 #, c-format
 msgid "Unable to update %s: authentication was required"
 msgstr "Nu s-a putut actualiza: %s autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1475
+#: src/gs-shell.c:1489
 #, c-format
 msgid "Unable to install updates: authentication was required"
 msgstr "Nu s-au putut instala actualizările: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1484
+#: src/gs-shell.c:1498
 #, c-format
 msgid "Unable to update %s: authentication was invalid"
 msgstr "Nu s-a putut actualiza %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1489
+#: src/gs-shell.c:1503
 #, c-format
 msgid "Unable to install updates: authentication was invalid"
 msgstr "Nu s-au putut instala actualizările: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1498
+#: src/gs-shell.c:1512
 #, c-format
 msgid "Unable to update %s: you do not have permission to update software"
 msgstr ""
 "Nu s-a putut actualiza %s: nu aveți pemisiunea de a actualiza aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1504
+#: src/gs-shell.c:1518
 #, c-format
 msgid ""
 "Unable to install updates: you do not have permission to update software"
@@ -3028,41 +3066,41 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1514
+#: src/gs-shell.c:1528
 #, c-format
 msgid "Unable to update %s: AC power is required"
 msgstr "Nu s-a putut actualiza %s: energie electrică este necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1520
+#: src/gs-shell.c:1534
 #, c-format
 msgid "Unable to install updates: AC power is required"
 msgstr "Nu s-au putut instala actualizările: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1529
+#: src/gs-shell.c:1543
 #, c-format
 msgid "Unable to update %s: The battery level is too low"
 msgstr "Nu s-a putut actualiza %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "Dell XPS 13")
-#: src/gs-shell.c:1535
+#: src/gs-shell.c:1549
 #, c-format
 msgid "Unable to install updates: The battery level is too low"
 msgstr "Nu s-au putut instala actualizările: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1546
+#: src/gs-shell.c:1560
 #, c-format
 msgid "Unable to update %s"
 msgstr "Nu s-a putut actualiza %s"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1549
+#: src/gs-shell.c:1563
 #, c-format
 msgid "Unable to install updates"
 msgstr "Nu s-au putut instala actualizări"
@@ -3070,21 +3108,21 @@ msgstr "Nu s-au putut instala actualizări"
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the first %s is the distro name (e.g. "Fedora 25") and
 #. * the second %s is the origin, e.g. "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1592
+#: src/gs-shell.c:1606
 #, c-format
 msgid "Unable to upgrade to %s from %s"
 msgstr "Nu s-a putut înnoi la %s de la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the app name (e.g. "GIMP")
-#: src/gs-shell.c:1597
+#: src/gs-shell.c:1611
 #, c-format
 msgid "Unable to upgrade to %s as download failed"
 msgstr "Nu s-a putut înnoi la %s pentru că descărcarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1606
+#: src/gs-shell.c:1620
 #, c-format
 msgid ""
 "Unable to upgrade to %s: internet access was required but wasn’t available"
@@ -3094,91 +3132,91 @@ msgstr ""
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1615
+#: src/gs-shell.c:1629
 #, c-format
 msgid "Unable to upgrade to %s: not enough disk space"
 msgstr "Nu s-a putut înnoi la %s: spațiu pe disc insuficient"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1623
+#: src/gs-shell.c:1637
 #, c-format
 msgid "Unable to upgrade to %s: authentication was required"
 msgstr "Nu s-a putut înnoi la %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1630
+#: src/gs-shell.c:1644
 #, c-format
 msgid "Unable to upgrade to %s: authentication was invalid"
 msgstr "Nu s-a putut înnoi la %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1637
+#: src/gs-shell.c:1651
 #, c-format
 msgid "Unable to upgrade to %s: you do not have permission to upgrade"
 msgstr "Nu s-a putut înnoi la %s: nu aveți permisiunea de a înnoi"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1644
+#: src/gs-shell.c:1658
 #, c-format
 msgid "Unable to upgrade to %s: AC power is required"
 msgstr "Nu s-a putut înnoi la %s: energie electrică necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1651
+#: src/gs-shell.c:1665
 #, c-format
 msgid "Unable to upgrade to %s: The battery level is too low"
 msgstr "Nu s-a putut înnoi la %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the distro name (e.g. "Fedora 25")
-#: src/gs-shell.c:1660
+#: src/gs-shell.c:1674
 #, c-format
 msgid "Unable to upgrade to %s"
 msgstr "Nu s-a putut înnoi la %s"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1698
+#: src/gs-shell.c:1712
 #, c-format
 msgid "Unable to remove %s: authentication was required"
 msgstr "Nu s-a putut elimina %s: autentificarea a fost necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1704
+#: src/gs-shell.c:1718
 #, c-format
 msgid "Unable to remove %s: authentication was invalid"
 msgstr "Nu s-a putut elimina %s: autentificarea a fost nevalidă"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1710
+#: src/gs-shell.c:1724
 #, c-format
 msgid "Unable to remove %s: you do not have permission to remove software"
 msgstr "Nu s-a putut elimina %s: nu aveți pemisiunea de a elimina aplicații"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1717
+#: src/gs-shell.c:1731
 #, c-format
 msgid "Unable to remove %s: AC power is required"
 msgstr "Nu s-a putut elimina %s: energie electrică este necesară"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1724
+#: src/gs-shell.c:1738
 #, c-format
 msgid "Unable to remove %s: The battery level is too low"
 msgstr "Nu s-a putut elimina %s: nivelul bateriei este prea scăzut"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1736
+#: src/gs-shell.c:1750
 #, c-format
 msgid "Unable to remove %s"
 msgstr "Nu s-a putut elimina %s"
@@ -3187,72 +3225,64 @@ msgstr "Nu s-a putut elimina %s"
 #. * where the first %s is the application name (e.g. "GIMP")
 #. * and the second %s is the name of the runtime, e.g.
 #. * "GNOME SDK [flatpak.gnome.org]"
-#: src/gs-shell.c:1779
+#: src/gs-shell.c:1793
 #, c-format
 msgid "Unable to launch %s: %s is not installed"
 msgstr "Nu s-a putut lansa %s: %s nu este instalat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1786 src/gs-shell.c:1837 src/gs-shell.c:1878
-#: src/gs-shell.c:1926
+#: src/gs-shell.c:1800 src/gs-shell.c:1851 src/gs-shell.c:1892
+#: src/gs-shell.c:1938
 msgid "Not enough disk space — free up some space and try again"
 msgstr ""
 "Insuficient spațiu disponibil pe disc — eliberați spațiu și încercați din nou"
 
 #. TRANSLATORS: we failed to get a proper error code
-#: src/gs-shell.c:1797 src/gs-shell.c:1848 src/gs-shell.c:1889
-#: src/gs-shell.c:1960
+#: src/gs-shell.c:1811 src/gs-shell.c:1862 src/gs-shell.c:1903
+#: src/gs-shell.c:1962
 msgid "Sorry, something went wrong"
 msgstr "Ne pare rău, ceva nu a funcționat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1829
+#: src/gs-shell.c:1843
 msgid "Failed to install file: not supported"
 msgstr "Nu s-a putut instala fișierul: nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1833
+#: src/gs-shell.c:1847
 msgid "Failed to install file: authentication failed"
 msgstr "Eșec la instalarea fișierului: autentificare necesară"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1870
+#: src/gs-shell.c:1884
 msgid "Failed to install: not supported"
 msgstr "Nu s-a putut instala: nu este suportat"
 
 #. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1874
+#: src/gs-shell.c:1888
 msgid "Failed to install: authentication failed"
 msgstr "Nu s-a putut instala: autentificarea a eșuat"
 
 #. TRANSLATORS: failure text for the in-app notification,
 #. * the %s is the origin, e.g. "Fedora" or
 #. * "Fedora Project [fedoraproject.org]"
-#: src/gs-shell.c:1920
+#: src/gs-shell.c:1932
 #, c-format
 msgid "Unable to contact %s"
 msgstr "Nu s-a putut contacta %s"
 
-#. TRANSLATORS: failure text for the in-app notification,
-#. * where the %s is the application name (e.g. "GIMP")
-#: src/gs-shell.c:1935
-#, c-format
-msgid "%s needs to be restarted to use new plugins."
-msgstr "%s trebuie să fie repornit pentru a utiliza noile module."
-
-#. TRANSLATORS: failure text for the in-app notification
-#: src/gs-shell.c:1940
-msgid "This application needs to be restarted to use new plugins."
-msgstr ""
-"Această aplicație trebuie să fie repornită pentru a utiliza noile module."
+#. TRANSLATORS: failure text for the in-app notification, where the 'Software' means this application, aka 'GNOME Software'.
+#: src/gs-shell.c:1944
+msgid "Software needs to be restarted to use new plugins."
+msgstr "Programul trebuie repornit pentru a utiliza modulele noi."
 
 #. TRANSLATORS: need to be connected to the AC power
-#: src/gs-shell.c:1947
+#: src/gs-shell.c:1949
 msgid "AC power is required"
 msgstr "Energia electrică este necesară"
 
 #. TRANSLATORS: not enough juice to do this safely
-#: src/gs-shell.c:1951
+#: src/gs-shell.c:1953
 msgid "The battery level is too low"
 msgstr "Nivelul bateriei este prea scăzut"
 
@@ -3300,25 +3330,25 @@ msgstr "Actualizări instalate"
 
 #. TRANSLATORS: This is the header for package additions during
 #. * a system update
-#: src/gs-update-dialog.c:528
+#: src/gs-update-dialog.c:544
 msgid "Additions"
 msgstr "Adiții"
 
 #. TRANSLATORS: This is the header for package removals during
 #. * a system update
-#: src/gs-update-dialog.c:532
+#: src/gs-update-dialog.c:548
 msgid "Removals"
 msgstr "Eliminări"
 
 #. TRANSLATORS: This is the header for package updates during
 #. * a system update
-#: src/gs-update-dialog.c:536
+#: src/gs-update-dialog.c:552
 msgid "Updates"
 msgstr "Actualizări"
 
 #. TRANSLATORS: This is the header for package downgrades during
 #. * a system update
-#: src/gs-update-dialog.c:540
+#: src/gs-update-dialog.c:556
 msgid "Downgrades"
 msgstr "Retrogradări"
 
@@ -3351,7 +3381,7 @@ msgid "View"
 msgstr "Vizualizare"
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:232
+#: src/gs-update-monitor.c:242
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3360,7 +3390,7 @@ msgstr[1] "%u aplicații actualizate — Necesită repornirea"
 msgstr[2] "%u de aplicații actualizate — Necesită repornirea"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:238
+#: src/gs-update-monitor.c:248
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3369,24 +3399,24 @@ msgstr[1] "%u aplicații actualizate"
 msgstr[2] "%u de aplicații actualizate"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:249
+#: src/gs-update-monitor.c:259
 #, c-format
 msgid "%s has been updated."
 msgstr "%s a fost actualizată."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:252
+#: src/gs-update-monitor.c:262
 msgid "Please restart the application."
 msgstr "Reporniți aplicația."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:260
+#: src/gs-update-monitor.c:270
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s și %s au fost actualizate."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:266 src/gs-update-monitor.c:285
+#: src/gs-update-monitor.c:276 src/gs-update-monitor.c:295
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3395,62 +3425,62 @@ msgstr[1] "%u aplicații necesită repornirea."
 msgstr[2] "%u de aplicații necesită repornirea."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:278
+#: src/gs-update-monitor.c:288
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Include %s, %s și %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:519 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:529 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Sunt disponibile actualizări de sistem"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:521
+#: src/gs-update-monitor.c:531
 msgid "Upgrade to continue receiving security updates."
 msgstr "Înnoiți sistemul pentru a continua să primiți actualizări."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:576
+#: src/gs-update-monitor.c:586
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "O nouă versiune a %s este disponibilă pentru instalat"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:580
+#: src/gs-update-monitor.c:590
 msgid "Software Upgrade Available"
 msgstr "Înnoire de aplicații dispobilă"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:969
+#: src/gs-update-monitor.c:984
 msgid "Software Updates Failed"
 msgstr "Actualizarea aplicațiilor a eșuat"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:971
+#: src/gs-update-monitor.c:986
 msgid "An important OS update failed to be installed."
 msgstr "Instalarea unei actualizări importante a SO e eșuat."
 
-#: src/gs-update-monitor.c:972
+#: src/gs-update-monitor.c:987
 msgid "Show Details"
 msgstr "Arată detalii"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:995
+#: src/gs-update-monitor.c:1010
 msgid "System Upgrade Complete"
 msgstr "Înnoirea sistemului completă"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1000
+#: src/gs-update-monitor.c:1015
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Bun venit la %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1006
+#: src/gs-update-monitor.c:1021
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Actualizarea aplicației a fost instalată"
@@ -3458,7 +3488,7 @@ msgstr[1] "Actualizări de aplicații instalate"
 msgstr[2] "Actualizări de aplicații instalate"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1010
+#: src/gs-update-monitor.c:1025
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "O actualizare importantă a SO a fost instalată."
@@ -3470,30 +3500,30 @@ msgstr[2] "Actualizări importante ale SO au fost instalate."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1021
+#: src/gs-update-monitor.c:1036
 msgctxt "updates"
 msgid "Review"
 msgstr "Recenzează"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1069
+#: src/gs-update-monitor.c:1084
 msgid "Failed To Update"
 msgstr "Actualizarea a eșuat"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1075
+#: src/gs-update-monitor.c:1090
 msgid "The system was already up to date."
 msgstr "Sistemul a fost deja actualizat."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1080
+#: src/gs-update-monitor.c:1095
 msgid "The update was cancelled."
 msgstr "Actualizarea a fost anulată."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1086
+#: src/gs-update-monitor.c:1101
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3502,7 +3532,7 @@ msgstr ""
 "aveți acces la internet și încercați din nou."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1092
+#: src/gs-update-monitor.c:1107
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3511,14 +3541,14 @@ msgstr ""
 "furnizorul dumneavoastră de aplicații pentru mai multe detalii."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1098
+#: src/gs-update-monitor.c:1113
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Insuficient spațiu disponibil pe disc. Eliberați spațiu și încercați din nou."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1103
+#: src/gs-update-monitor.c:1118
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -3698,41 +3728,41 @@ msgstr "Actualizările sunt administrate în mod automat"
 
 #. TRANSLATORS: This is the button for installing all
 #. * offline updates
-#: src/gs-updates-section.c:281
+#: src/gs-updates-section.c:284
 msgid "Restart & Update"
 msgstr "Repornește și actualizează"
 
 #. TRANSLATORS: This is the button for upgrading all
 #. * online-updatable applications
-#: src/gs-updates-section.c:287
+#: src/gs-updates-section.c:290
 msgid "Update All"
 msgstr "Actualizează toate"
 
 #. TRANSLATORS: This is the header for system firmware that
 #. * requires a reboot to apply
-#: src/gs-updates-section.c:418
+#: src/gs-updates-section.c:421
 msgid "Integrated Firmware"
 msgstr "Microcod integrat"
 
 #. TRANSLATORS: This is the header for offline OS and offline
 #. * app updates that require a reboot to apply
-#: src/gs-updates-section.c:422
+#: src/gs-updates-section.c:425
 msgid "Requires Restart"
 msgstr "Necesită repornirea"
 
 #. TRANSLATORS: This is the header for online runtime and
 #. * app updates, typically flatpaks or snaps
-#: src/gs-updates-section.c:426
+#: src/gs-updates-section.c:429
 msgid "Application Updates"
 msgstr "Actualizări pentru aplicații"
 
 #. TRANSLATORS: This is the header for device firmware that can
 #. * be installed online
-#: src/gs-updates-section.c:430
+#: src/gs-updates-section.c:433
 msgid "Device Firmware"
 msgstr "Microcod pentru dispozitive"
 
-#: src/gs-updates-section.c:458 src/gs-upgrade-banner.ui:102
+#: src/gs-updates-section.c:461 src/gs-upgrade-banner.ui:102
 msgid "_Download"
 msgstr "_Descarcă"
 
@@ -3941,12 +3971,12 @@ msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Logică"
 
-#: plugins/core/gs-desktop-common.c:128
+#: plugins/core/gs-desktop-common.c:129
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Pe roluri"
 
-#: plugins/core/gs-desktop-common.c:131
+#: plugins/core/gs-desktop-common.c:132
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Sport"
@@ -4252,7 +4282,7 @@ msgid "Failed to copy"
 msgstr "Eșec la copiere"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/external-appstream/gs-plugin-external-appstream.c:236
+#: plugins/external-appstream/gs-plugin-external-appstream.c:235
 msgid "Downloading extra metadata files…"
 msgstr "Se descarcă fișierele cu metadate…"
 
@@ -4356,12 +4386,12 @@ msgid "%s Configuration Update"
 msgstr "Actualizare configurație %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:691
+#: plugins/fwupd/gs-plugin-fwupd.c:709
 msgid "Downloading firmware update signature…"
 msgstr "Se descarcă semnătura pentru actualizarea de microcod…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:732
+#: plugins/fwupd/gs-plugin-fwupd.c:750
 msgid "Downloading firmware update metadata…"
 msgstr "Se descarcă metadate pentru actualizarea de microcod…"
 
@@ -4374,7 +4404,7 @@ msgid "Provides support for firmware upgrades"
 msgstr "Oferă suport pentru înnoiri de microcod"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/odrs/gs-plugin-odrs.c:291
+#: plugins/odrs/gs-plugin-odrs.c:305
 msgid "Downloading application ratings…"
 msgstr "Se descarcă evaluările aplicațiiei…"
 
@@ -4399,6 +4429,16 @@ msgstr "Suport Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Un snap este un pachet Linux universal"
+
+#~ msgid "Enable GNOME Shell extensions repository"
+#~ msgstr "Activează depozitul de extensii GNOME Shell"
+
+#~ msgid "this website"
+#~ msgstr "pe acest sit web"
+
+#~ msgid "This application needs to be restarted to use new plugins."
+#~ msgstr ""
+#~ "Această aplicație trebuie să fie repornită pentru a utiliza noile module."
 
 #~ msgid "About %s"
 #~ msgstr "Despre %s"
@@ -4956,10 +4996,6 @@ msgstr "Un snap este un pachet Linux universal"
 #~ msgctxt "license"
 #~ msgid "Unknown"
 #~ msgstr "Necunoscută"
-
-#~ msgctxt "menu category"
-#~ msgid "None"
-#~ msgstr "Nespecificat"
 
 #~ msgid "This software comes from a 3rd party."
 #~ msgstr "Această aplicație provine dintr-o parte terță."
