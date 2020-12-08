@@ -225,6 +225,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* we know the runtime daemon version now */
 	fwupd_client_set_user_agent_for_package (priv->client, PACKAGE_NAME, PACKAGE_VERSION);
 	if (!fwupd_client_ensure_networking (priv->client, error)) {
+		gs_plugin_fwupd_error_convert (error);
 		g_prefix_error (error, "Failed to setup networking: ");
 		return FALSE;
 	}
@@ -780,8 +781,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* get the list of enabled remotes */
 	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
-	if (remotes == NULL)
+	if (remotes == NULL) {
+		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
+	}
 	for (guint i = 0; i < remotes->len; i++) {
 		FwupdRemote *remote = g_ptr_array_index (remotes, i);
 		if (!fwupd_remote_get_enabled (remote))
