@@ -547,10 +547,10 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* get current list of updates */
 	devices = fwupd_client_get_devices (priv->client, cancellable, &error_local);
 	if (devices == NULL) {
-		if (g_error_matches (error_local,
-				     FWUPD_ERROR,
-				     FWUPD_ERROR_NOTHING_TO_DO)) {
-			g_debug ("no devices");
+		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND)) {
+			g_debug ("no devices (%s)", error_local->message);
 			return TRUE;
 		}
 		g_propagate_error (error, g_steal_pointer (&error_local));
@@ -777,11 +777,18 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) remotes = NULL;
 
 	/* get the list of enabled remotes */
-	remotes = fwupd_client_get_remotes (priv->client, cancellable, error);
+	remotes = fwupd_client_get_remotes (priv->client, cancellable, &error_local);
 	if (remotes == NULL) {
+		g_debug ("No remotes found: %s", error_local ? error_local->message : "Unknown error");
+		if (g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOTHING_TO_DO) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_SUPPORTED) ||
+		    g_error_matches (error_local, FWUPD_ERROR, FWUPD_ERROR_NOT_FOUND))
+			return TRUE;
+		g_propagate_error (error, g_steal_pointer (&error_local));
 		gs_plugin_fwupd_error_convert (error);
 		return FALSE;
 	}
