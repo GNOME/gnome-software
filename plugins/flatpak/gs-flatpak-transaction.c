@@ -101,6 +101,11 @@ _ref_to_app (GsFlatpakTransaction *self, const gchar *ref)
 	if (app != NULL)
 		return g_object_ref (app);
 	g_signal_emit (self, signals[SIGNAL_REF_TO_APP], 0, ref, &app);
+
+	/* Cache the result */
+	if (app != NULL)
+		g_hash_table_insert (self->refhash, g_strdup (ref), g_object_ref (app));
+
 	return app;
 }
 
