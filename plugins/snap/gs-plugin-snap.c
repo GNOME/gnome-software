@@ -297,22 +297,28 @@ find_snaps (GsPlugin *plugin, SnapdFindFlags flags, const gchar *section, const 
 	return g_steal_pointer (&snaps);
 }
 
+static gchar *
+get_appstream_id (SnapdSnap *snap)
+{
+	GStrv common_ids;
+
+	/* Get the AppStream ID from the snap, or generate a fallback one */
+	common_ids = snapd_snap_get_common_ids (snap);
+	if (g_strv_length (common_ids) == 1)
+		return g_strdup (common_ids[0]);
+	else
+		return g_strdup_printf ("io.snapcraft.%s-%s", snapd_snap_get_name (snap), snapd_snap_get_id (snap));
+}
+
 static GsApp *
 snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 {
-	GStrv common_ids;
 	g_autofree gchar *appstream_id = NULL;
 	g_autofree gchar *unique_id = NULL;
 	g_autoptr(GsApp) app = NULL;
 	SnapdConfinement confinement;
 
-	/* Get the AppStream ID from the snap, or generate a fallback one */
-	common_ids = snapd_snap_get_common_ids (snap);
-	if (g_strv_length (common_ids) == 1)
-		appstream_id = g_strdup (common_ids[0]);
-	else
-		appstream_id = g_strdup_printf ("io.snapcraft.%s-%s", snapd_snap_get_name (snap), snapd_snap_get_id (snap));
-
+	appstream_id = get_appstream_id (snap);
 	switch (snapd_snap_get_snap_type (snap)) {
 	case SNAPD_SNAP_TYPE_APP:
 		unique_id = g_strdup_printf ("system/snap/*/desktop/%s/*", appstream_id);
@@ -330,7 +336,7 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 
 	app = gs_plugin_cache_lookup (plugin, unique_id);
 	if (app == NULL) {
-		app = gs_app_new (NULL);
+		app = gs_app_new (appstream_id);
 		gs_app_set_from_unique_id (app, unique_id);
 		gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_SNAP);
 		gs_app_set_metadata (app, "snap::name", snapd_snap_get_name (snap));
@@ -645,30 +651,12 @@ expand_channel_name (const gchar *name)
 	return g_strdup (name);
 }
 
-gboolean
-gs_plugin_add_alternates (GsPlugin *plugin,
-			  GsApp *app,
-			  GsAppList *list,
-			  GCancellable *cancellable,
-			  GError **error)
+static void
+add_channels (SnapdSnap *snap, GsAppList *list)
 {
-	const gchar *snap_name;
-	g_autoptr(SnapdSnap) snap = NULL;
 	GStrv tracks;
 	GPtrArray *channels;
 	g_autoptr(GPtrArray) sorted_channels = NULL;
-
-	/* not us */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
-		return TRUE;
-
-	snap_name = gs_app_get_metadata_item (app, "snap::name");
-
-	snap = get_store_snap (plugin, snap_name, TRUE, cancellable, NULL);
-	if (snap == NULL) {
-		g_warning ("Failed to get store snap %s\n", snap_name);
-		return TRUE;
-	}
 
 	tracks = snapd_snap_get_tracks (snap);
 	channels = snapd_snap_get_channels (snap);
@@ -681,15 +669,54 @@ gs_plugin_add_alternates (GsPlugin *plugin,
 
 	for (guint i = 0; i < sorted_channels->len; i++) {
 		SnapdChannel *channel = g_ptr_array_index (sorted_channels, i);
+		g_autofree gchar *appstream_id = NULL;
 		g_autoptr(GsApp) a;
 		g_autofree gchar *expanded_name = NULL;
 
-		a = gs_app_new (NULL);
+		appstream_id = get_appstream_id (snap);
+		a = gs_app_new (appstream_id);
 		gs_app_set_bundle_kind (a, AS_BUNDLE_KIND_SNAP);
-		gs_app_set_metadata (a, "snap::name", snap_name);
+		gs_app_set_metadata (a, "snap::name", snapd_snap_get_name (snap));
 		expanded_name = expand_channel_name (snapd_channel_get_name (channel));
 		gs_app_set_branch (a, expanded_name);
 		gs_app_list_add (list, a);
+	}
+}
+
+gboolean
+gs_plugin_add_alternates (GsPlugin *plugin,
+			  GsApp *app,
+			  GsAppList *list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	/* If it is a snap, find the channels that snap provides, otherwise find snaps that match on common id */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") == 0) {
+		const gchar *snap_name;
+		g_autoptr(SnapdSnap) snap = NULL;
+
+		snap_name = gs_app_get_metadata_item (app, "snap::name");
+
+		snap = get_store_snap (plugin, snap_name, TRUE, cancellable, NULL);
+		if (snap == NULL) {
+			g_warning ("Failed to get store snap %s\n", snap_name);
+			return TRUE;
+		}
+
+		add_channels (snap, list);
+	} else {
+		g_autoptr(GPtrArray) snaps = NULL;
+		guint i;
+
+		snaps = find_snaps (plugin, SNAPD_FIND_FLAGS_SCOPE_WIDE | SNAPD_FIND_FLAGS_MATCH_COMMON_ID, NULL, gs_app_get_id (app), cancellable, NULL);
+		for (i = 0; i < snaps->len; i++) {
+			SnapdSnap *snap = g_ptr_array_index (snaps, i);
+			SnapdSnap *store_snap;
+
+			store_snap = get_store_snap (plugin, snapd_snap_get_name (snap), TRUE, cancellable, NULL);
+			add_channels (store_snap, list);
+		}
+		return TRUE;
 	}
 
 	return TRUE;
