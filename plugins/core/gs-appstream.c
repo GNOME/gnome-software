@@ -1085,8 +1085,14 @@ gs_appstream_silo_search_component2 (GPtrArray *array, XbNode *component, const 
 	for (guint i = 0; i < array->len; i++) {
 		g_autoptr(GPtrArray) n = NULL;
 		GsAppstreamSearchHelper *helper = g_ptr_array_index (array, i);
+#if LIBXMLB_CHECK_VERSION(0, 3, 0)
+		g_auto(XbValueBindings) bindings = XB_VALUE_BINDINGS_INIT ();
+		xb_value_bindings_bind_str (&bindings, 0, search, NULL);
+		n = xb_node_query_with_bindings (component, helper->query, &bindings, NULL);
+#else
 		xb_query_bind_str (helper->query, 0, search, NULL);
 		n = xb_node_query_full (component, helper->query, NULL);
+#endif
 		if (n != NULL)
 			match_value |= helper->match_value;
 	}
