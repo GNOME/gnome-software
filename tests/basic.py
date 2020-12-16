@@ -40,7 +40,7 @@ try:
     search_page_listbox = search_page.child(roleName='list box')
 
     try:
-        shopping_button = app.child(name=u'Let\u2019s Go Shopping', retry=False)
+        shopping_button = app.child(name=u'Browse Software', retry=False)
         shopping_button.click()
     except tree.SearchError:
         print "not first-run, moving on"
