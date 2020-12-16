@@ -102,8 +102,8 @@ if get_option('packagekit')
   gnome_software_dependencies += [packagekit]
 endif
 
-if get_option('gnome_desktop')
-  gnome_software_dependencies += [gnome_desktop]
+if gsettings_desktop_schemas.found()
+  gnome_software_dependencies += [gsettings_desktop_schemas]
 endif
 
 if get_option('gspell')

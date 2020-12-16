@@ -5,7 +5,6 @@
 %global appstream_glib_version 0.7.15
 %global libsoup_version 2.52.0
 %global gsettings_desktop_schemas_version 3.12.0
-%global gnome_desktop_version 3.18.0
 %global fwupd_version 1.2.10
 %global flatpak_version 1.1.3
 %global libxmlb_version 0.1.7
@@ -28,7 +27,6 @@ BuildRequires: docbook-style-xsl
 BuildRequires: desktop-file-utils
 BuildRequires: fwupd-devel >= %{fwupd_version}
 BuildRequires: glib2-devel >= %{glib2_version}
-BuildRequires: gnome-desktop3-devel
 BuildRequires: gnome-online-accounts-devel
 BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
 BuildRequires: gspell-devel
@@ -54,7 +52,6 @@ Requires: flatpak%{?_isa} >= %{flatpak_version}
 Requires: flatpak-libs%{?_isa} >= %{flatpak_version}
 Requires: fwupd%{?_isa} >= %{fwupd_version}
 Requires: glib2%{?_isa} >= %{glib2_version}
-Requires: gnome-desktop3%{?_isa} >= %{gnome_desktop_version}
 # gnome-menus is needed for app folder .directory entries
 Requires: gnome-menus%{?_isa}
 Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
