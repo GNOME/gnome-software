@@ -3218,6 +3218,8 @@ gs_plugin_loader_process_thread_cb (GTask *task,
 	gboolean add_to_pending_array = FALSE;
 	guint max_results;
 	GsAppListSortFunc sort_func;
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GsMainContextPusher) pusher = gs_main_context_pusher_new (context);
 #ifdef HAVE_SYSPROF
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
 #endif

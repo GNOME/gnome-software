@@ -93,4 +93,27 @@ gboolean	 gs_utils_parse_evr		(const gchar	 *evr,
 						 gchar		**out_release);
 void		 gs_utils_set_online_updates_timestamp (GSettings *settings);
 
+#if !GLIB_CHECK_VERSION(2, 64, 0)
+typedef void GsMainContextPusher;
+
+static inline GsMainContextPusher *
+gs_main_context_pusher_new (GMainContext *main_context)
+{
+  g_main_context_push_thread_default (main_context);
+  return (GsMainContextPusher *) main_context;
+}
+
+static inline void
+gs_main_context_pusher_free (GsMainContextPusher *pusher)
+{
+  g_main_context_pop_thread_default ((GMainContext *) pusher);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (GsMainContextPusher, gs_main_context_pusher_free)
+#else
+#define GsMainContextPusher GMainContextPusher
+#define gs_main_context_pusher_new g_main_context_pusher_new
+#define gs_main_context_pusher_free g_main_context_pusher_free
+#endif
+
 G_END_DECLS
