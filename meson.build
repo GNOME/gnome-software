@@ -138,9 +138,9 @@ else
   valgrind = []
 endif
 
-if get_option('gnome_desktop')
-  gnome_desktop = dependency('gnome-desktop-3.0', version : '>= 3.18.0')
-  conf.set('HAVE_GNOME_DESKTOP', 1)
+gsettings_desktop_schemas = dependency('gsettings-desktop-schemas', version : '>= 3.18.0', required: get_option('gsettings_desktop_schemas'))
+if gsettings_desktop_schemas.found()
+  conf.set('HAVE_GSETTINGS_DESKTOP_SCHEMAS', 1)
 endif
 
 if get_option('gspell')
