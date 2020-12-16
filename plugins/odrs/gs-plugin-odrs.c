@@ -630,8 +630,27 @@ gs_plugin_odrs_refine_ratings (GsPlugin *plugin,
 
 	locker = g_mutex_locker_new (&priv->ratings_mutex);
 
-	if (priv->ratings == NULL)
-		return TRUE;
+	if (!priv->ratings) {
+		g_autofree gchar *cache_filename = NULL;
+
+		g_clear_pointer (&locker, g_mutex_locker_free);
+
+		/* Load from the local cache, if available, when in offline or
+		   when refresh/download disabled on start */
+		cache_filename = gs_utils_get_cache_filename ("odrs",
+							      "ratings.json",
+							      GS_UTILS_CACHE_FLAG_WRITEABLE,
+							      error);
+
+		if (!cache_filename ||
+		    !gs_plugin_odrs_load_ratings (plugin, cache_filename, NULL))
+			return TRUE;
+
+		locker = g_mutex_locker_new (&priv->ratings_mutex);
+
+		if (!priv->ratings)
+			return TRUE;
+	}
 
 	for (guint i = 0; i < reviewable_ids->len; i++) {
 		const gchar *id = g_ptr_array_index (reviewable_ids, i);
