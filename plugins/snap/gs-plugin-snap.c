@@ -316,7 +316,6 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 	g_autofree gchar *appstream_id = NULL;
 	g_autofree gchar *unique_id = NULL;
 	g_autoptr(GsApp) app = NULL;
-	SnapdConfinement confinement;
 
 	appstream_id = get_appstream_id (snap);
 	switch (snapd_snap_get_snap_type (snap)) {
@@ -349,13 +348,6 @@ snap_to_app (GsPlugin *plugin, SnapdSnap *snap)
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	if (gs_plugin_check_distro_id (plugin, "ubuntu"))
 		gs_app_add_quirk (app, GS_APP_QUIRK_PROVENANCE);
-
-	confinement = snapd_snap_get_confinement (snap);
-	if (confinement != SNAPD_CONFINEMENT_UNKNOWN) {
-		GEnumClass *enum_class = g_type_class_ref (SNAPD_TYPE_CONFINEMENT);
-		gs_app_set_metadata (app, "snap::confinement", g_enum_get_value (enum_class, confinement)->value_nick);
-		g_type_class_unref (enum_class);
-	}
 
 	return g_steal_pointer (&app);
 }
@@ -1034,6 +1026,12 @@ refine_app_with_client (GsPlugin             *plugin,
 
 	gs_app_set_version (app, version);
 	gs_app_set_release_date (app, release_date);
+
+	if (confinement != SNAPD_CONFINEMENT_UNKNOWN) {
+		GEnumClass *enum_class = g_type_class_ref (SNAPD_TYPE_CONFINEMENT);
+		gs_app_set_metadata (app, "snap::confinement", g_enum_get_value (enum_class, confinement)->value_nick);
+		g_type_class_unref (enum_class);
+	}
 
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KUDOS &&
 	    priv->system_confinement == SNAPD_SYSTEM_CONFINEMENT_STRICT &&
