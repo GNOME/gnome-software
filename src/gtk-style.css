@@ -98,6 +98,39 @@
 	text-shadow: none;
 }
 
+.content-rating-permissions label {
+	color: black;
+}
+
+.details-rating-18 {
+	color: white;
+	background-image: none;
+	background-color: #ee2222;
+}
+
+.details-rating-15 {
+	color: white;
+	background-image: none;
+	background-color: #f1c000;
+}
+
+.details-rating-12 {
+	color: white;
+	background-image: none;
+	background-color: #2a97c9;
+}
+.details-rating-5 {
+	color: white;
+	background-image: none;
+	background-color: #3f756c;
+}
+
+.details-rating-0 {
+	color: white;
+	background-image: none;
+	background-color: #009d66;
+}
+
 .details-license-free {
 	background-color: #4e9a06;
 	border-color: #3e7905;
@@ -183,16 +216,14 @@
 }
 
 @define-color gs_tile_bg_color mix(@theme_base_color,@theme_bg_color,0.3);
-@define-color gs_tile_borders mix(@gs_tile_bg_color,@theme_fg_color,0.3);
-@define-color gs_tile_borders_alpha alpha(@theme_fg_color,0.3);
 
 .view.tile {
 	padding: 1px;
 	border: none;
-	box-shadow: inset 0 2px 0 @theme_base_color,
-	            inset 0 -2px 0 mix(@gs_tile_bg_color,@gs_tile_borders,0.5),
-	            inset 0 0 0 1px @gs_tile_borders,
-	            inset 0 -3px 0 -2px shade(@gs_tile_borders,0.75);
+    box-shadow: inset 0 2px 0 transparent,
+                inset 0 -2px 0 transparent,
+                inset 0 0 0 1px @unfocused_borders,
+                inset 0 -3px 0 -2px transparent;
 	background: @gs_tile_bg_color;
 }
 
@@ -239,13 +270,14 @@
 	border-radius: 5px; /* match button tiles */
 	border-width: 1px;
 	border-image: none;
+	border-color:@theme_bg_color;
 	box-shadow: none;
 	/* box-shadow: inset 0 0 0 1px alpha(@theme_fg_color,0.3), 0 0 1px alpha(black,0.4); */
 }
-  .featured-tile:backdrop label {
+.featured-tile:backdrop label {
     color: inherit;
     text-shadow: none;
-  }
+}
 
 .application-details-infobar.info {
 	background-color: shade(@theme_bg_color, 0.9);
@@ -328,8 +360,8 @@
 
 .reviewbar {
 	background-image: none;
-	background-color: #babdb6;
-	color: #555753;
+	background-color: @unfocused_insensitive_color;
+	color: @insensitive_fg_color;
 }
 
 .error-label {
@@ -402,7 +434,7 @@ flowboxchild {
 }
 .star-disabled,
 .star-disabled:disabled {
-	color: shade(@theme_bg_color, 0.8);
+	color: @unfocused_insensitive_color;
 }
 
 .counter-label {
