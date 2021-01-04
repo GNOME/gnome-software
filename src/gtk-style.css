@@ -322,6 +322,12 @@
 .application-details-description {
 }
 
+@keyframes install-progress-unknown-move {
+	0% { background-position: 0%; }
+	50% { background-position: 100%; }
+	100% { background-position: 0%; }
+}
+
 .install-progress {
 	background-image: linear-gradient(to top, @theme_selected_bg_color 2px, alpha(@theme_selected_bg_color, 0) 2px);
 	background-repeat: no-repeat;

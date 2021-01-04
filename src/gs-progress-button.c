@@ -24,19 +24,22 @@ G_DEFINE_TYPE (GsProgressButton, gs_progress_button, GTK_TYPE_BUTTON)
 void
 gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 {
-	g_autofree gchar *css = NULL;
+	g_autofree gchar *tmp = NULL;
+	const gchar *css;
 
 	if (percentage == GS_APP_PROGRESS_UNKNOWN) {
-		g_warning ("FIXME: Unknown progress handling is not yet implemented for GsProgressButton");
-		percentage = 0;
+		css = ".install-progress {\n"
+		      "  background-size: 25%;\n"
+		      "  animation: install-progress-unknown-move infinite linear 2s;\n"
+		      "}\n";
+	} else if (percentage == 0) {
+		css = ".install-progress { background-size: 0; }";
+	} else if (percentage == 100) {
+		css = ".install-progress { background-size: 100%; }";
+	} else {
+		tmp = g_strdup_printf (".install-progress { background-size: %u%%; }", percentage);
+		css = tmp;
 	}
-
-	if (percentage == 0)
-		css = g_strdup (".install-progress { background-size: 0; }");
-	else if (percentage == 100)
-		css = g_strdup (".install-progress { background-size: 100%; }");
-	else
-		css = g_strdup_printf (".install-progress { background-size: %u%%; }", percentage);
 
 	gtk_css_provider_load_from_data (button->css_provider, css, -1, NULL);
 }
