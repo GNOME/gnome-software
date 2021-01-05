@@ -12,6 +12,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-application.h"
 #include "gs-page.h"
 #include "gs-common.h"
 #include "gs-screenshot-image.h"
@@ -127,6 +128,9 @@ gs_page_app_installed_cb (GObject *source,
 	ret = gs_plugin_loader_job_action_finish (plugin_loader,
 						   res,
 						   &error);
+
+	gs_application_emit_install_resources_done (GS_APPLICATION (g_application_get_default ()), NULL, error);
+
 	if (g_error_matches (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_CANCELLED)) {

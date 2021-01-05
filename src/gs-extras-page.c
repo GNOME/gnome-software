@@ -12,6 +12,7 @@
 #include "gs-extras-page.h"
 
 #include "gs-app-row.h"
+#include "gs-application.h"
 #include "gs-language.h"
 #include "gs-shell.h"
 #include "gs-common.h"
@@ -55,6 +56,7 @@ struct _GsExtrasPage
 	GsVendor		 *vendor;
 	guint			  pending_search_cnt;
 	gchar			 *caller_app_name;
+	gchar			 *install_resources_ident;
 
 	GtkWidget		 *label_failed;
 	GtkWidget		 *label_no_results;
@@ -240,11 +242,37 @@ gs_extras_page_update_ui_state (GsExtrasPage *self)
 }
 
 static void
+gs_extras_page_maybe_emit_installed_resources_done (GsExtrasPage *self)
+{
+	if (self->install_resources_ident && (
+	    self->state == GS_EXTRAS_PAGE_STATE_LOADING ||
+	    self->state == GS_EXTRAS_PAGE_STATE_NO_RESULTS ||
+	    self->state == GS_EXTRAS_PAGE_STATE_FAILED)) {
+		GsApplication *application;
+		GError *op_error = NULL;
+
+		/* When called during the LOADING state, it means the package is already installed */
+		if (self->state == GS_EXTRAS_PAGE_STATE_NO_RESULTS) {
+			g_set_error_literal (&op_error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND, _("Requested software not found"));
+		} else if (self->state == GS_EXTRAS_PAGE_STATE_FAILED) {
+			g_set_error_literal (&op_error, G_IO_ERROR, G_IO_ERROR_FAILED, _("Failed to find requested software"));
+		}
+
+		application = GS_APPLICATION (g_application_get_default ());
+		gs_application_emit_install_resources_done (application, self->install_resources_ident, op_error);
+
+		g_clear_pointer (&self->install_resources_ident, g_free);
+		g_clear_error (&op_error);
+	}
+}
+
+static void
 gs_extras_page_set_state (GsExtrasPage *self,
                           GsExtrasPageState state)
 {
 	self->state = state;
 	gs_extras_page_update_ui_state (self);
+	gs_extras_page_maybe_emit_installed_resources_done (self);
 }
 
 static void
@@ -509,6 +537,8 @@ show_search_results (GsExtrasPage *self)
 		g_assert (list != NULL);
 		app = gs_app_row_get_app (GS_APP_ROW (list->data));
 		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, TRUE);
+		if (gs_app_is_installed (app))
+			gs_extras_page_maybe_emit_installed_resources_done (self);
 	} else {
 		/* show what we got */
 		g_debug ("extras: got %u search results, showing", n_children);
@@ -1005,11 +1035,14 @@ void
 gs_extras_page_search (GsExtrasPage  *self,
                        const gchar   *mode_str,
                        gchar        **resources,
-		       const gchar   *desktop_id)
+                       const gchar   *desktop_id,
+                       const gchar   *ident)
 {
 	self->mode = gs_extras_page_mode_from_string (mode_str);
 	g_clear_pointer (&self->caller_app_name, g_free);
 	self->caller_app_name = gs_extras_page_get_app_name (desktop_id);
+	g_clear_pointer (&self->install_resources_ident, g_free);
+	self->install_resources_ident = (ident && *ident) ? g_strdup (ident) : NULL;
 
 	switch (self->mode) {
 	case GS_EXTRAS_PAGE_MODE_INSTALL_PACKAGE_FILES:
@@ -1196,6 +1229,7 @@ gs_extras_page_dispose (GObject *object)
 
 	g_clear_pointer (&self->array_search_data, g_ptr_array_unref);
 	g_clear_pointer (&self->caller_app_name, g_free);
+	g_clear_pointer (&self->install_resources_ident, g_free);
 
 	G_OBJECT_CLASS (gs_extras_page_parent_class)->dispose (object);
 }

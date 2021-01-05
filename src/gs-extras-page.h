@@ -35,6 +35,7 @@ GsExtrasPage		*gs_extras_page_new			(void);
 void			 gs_extras_page_search			(GsExtrasPage		 *self,
 								 const gchar 		 *mode,
 								 gchar			**resources,
-								 const gchar             *desktop_id);
+								 const gchar             *desktop_id,
+								 const gchar		 *ident);
 
 G_END_DECLS

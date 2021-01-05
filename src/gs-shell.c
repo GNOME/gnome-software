@@ -2424,7 +2424,7 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 	gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, category, TRUE);
 }
 
-void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources, const gchar *desktop_id)
+void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources, const gchar *desktop_id, const gchar *ident)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GsPage *page;
@@ -2432,7 +2432,7 @@ void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **res
 	page = GS_PAGE (gtk_builder_get_object (priv->builder, "extras_page"));
 
 	save_back_entry (shell);
-	gs_extras_page_search (GS_EXTRAS_PAGE (page), mode, resources, desktop_id);
+	gs_extras_page_search (GS_EXTRAS_PAGE (page), mode, resources, desktop_id, ident);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, TRUE);
 	gs_shell_activate (shell);
 }
