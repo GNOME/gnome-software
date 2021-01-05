@@ -1211,6 +1211,9 @@ gs_utils_parse_evr (const gchar *evr,
  * Sets the value of online-updates-timestamp to current epoch. "online-updates-timestamp" represents
  * the last time the system was online and got any updates.
  *
+ * It also sets the "update-notification-timestamp", to not receive
+ * notifications about available updates too early after the actual
+ * update happened.
  **/
 void
 gs_utils_set_online_updates_timestamp (GSettings *settings)
@@ -1221,6 +1224,8 @@ gs_utils_set_online_updates_timestamp (GSettings *settings)
 
 	now = g_date_time_new_now_local ();
 	g_settings_set (settings, "online-updates-timestamp", "x", g_date_time_to_unix (now));
+
+	g_settings_set (settings, "update-notification-timestamp", "x", g_date_time_to_unix (now));
 }
 
 /* vim: set noexpandtab: */
