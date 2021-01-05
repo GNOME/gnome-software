@@ -19,3 +19,7 @@ G_DECLARE_FINAL_TYPE (GsApplication, gs_application, GS, APPLICATION, GtkApplica
 GsApplication	*gs_application_new		(void);
 GsPluginLoader	*gs_application_get_plugin_loader	(GsApplication *application);
 gboolean	 gs_application_has_active_window	(GsApplication *application);
+void		 gs_application_emit_install_resources_done
+							(GsApplication *application,
+							 const gchar *ident,
+							 const GError *op_error);
