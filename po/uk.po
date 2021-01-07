@@ -1,13 +1,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Daniel Korostil <ted.korostiled@gmail.com>, 2013, 2014, 2015, 2016, 2017.
-# Yuri Chornoivan <yurchor@ukr.net>, 2020.
+# Yuri Chornoivan <yurchor@ukr.net>, 2020, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-12-04 14:04+0000\n"
-"PO-Revision-Date: 2020-12-04 16:15+0200\n"
+"POT-Creation-Date: 2021-01-06 23:16+0000\n"
+"PO-Revision-Date: 2021-01-07 09:44+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <trans-uk@lists.fedoraproject.org>\n"
 "Language: uk\n"
@@ -67,7 +67,7 @@ msgstr "Панель оновлення"
 msgid "The update details"
 msgstr "Подробиці оновлення"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1517
+#: data/appdata/org.gnome.Software.appdata.xml.in:1528
 msgid "The GNOME Project"
 msgstr "Проєкт GNOME"
 
@@ -428,52 +428,52 @@ msgid "Removing"
 msgstr "Вилучення"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:110
+#: src/gs-application.c:117
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Стартовий режим, один із: «updates», «updated» «installed» або «overview»"
 
-#: src/gs-application.c:110
+#: src/gs-application.c:117
 msgid "MODE"
 msgstr "РЕЖИМ"
 
-#: src/gs-application.c:112
+#: src/gs-application.c:119
 msgid "Search for applications"
 msgstr "Пошук програм"
 
-#: src/gs-application.c:112
+#: src/gs-application.c:119
 msgid "SEARCH"
 msgstr "SEARCH"
 
-#: src/gs-application.c:114
+#: src/gs-application.c:121
 msgid "Show application details (using application ID)"
 msgstr "Показувати подробиці програм (через ідентифікатор програми)"
 
-#: src/gs-application.c:114 src/gs-application.c:118
+#: src/gs-application.c:121 src/gs-application.c:125
 msgid "ID"
 msgstr "Ідентифікатор"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:123
 msgid "Show application details (using package name)"
 msgstr "Показувати подробиць програм (через назву пакунка)"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:123
 msgid "PKGNAME"
 msgstr "PKGNAME"
 
-#: src/gs-application.c:118
+#: src/gs-application.c:125
 msgid "Install the application (using application ID)"
 msgstr "Встановити програму (через ідентифікатор програми)"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:127
 msgid "Open a local package file"
 msgstr "Відкрити локальний файл пакунку"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:127
 msgid "FILENAME"
 msgstr "НАЗВАФАЙЛА"
 
-#: src/gs-application.c:122
+#: src/gs-application.c:129
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -481,47 +481,47 @@ msgstr ""
 "Тип взаємодії, які очікується від цієї дії: або «none», або «notify», або "
 "«full»"
 
-#: src/gs-application.c:125
+#: src/gs-application.c:132
 msgid "Show verbose debugging information"
 msgstr "Показати розширену зневаджувальну інформацію"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:134
 msgid "Installs any pending updates in the background"
 msgstr "Встановлює будь-які оновлення з черги у фоновому режимі"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:136
 msgid "Show update preferences"
 msgstr "Показати налаштування оновлення"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:138
 msgid "Quit the running instance"
 msgstr "Вийти із запущеного зразку "
 
-#: src/gs-application.c:133
+#: src/gs-application.c:140
 msgid "Prefer local file sources to AppStream"
 msgstr "Віддавати перевагу локальним джерелам файлів для AppStream"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:142
 msgid "Show version number"
 msgstr "Показати номер версії"
 
-#: src/gs-application.c:328
+#: src/gs-application.c:335
 msgid "translator-credits"
 msgstr "Daniel Korostil <ted.korostiled@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:333 src/gs-shell.c:2124
+#: src/gs-application.c:340 src/gs-shell.c:2124
 msgid "About Software"
 msgstr "Про «Програми»"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:336
+#: src/gs-application.c:343
 msgid "A nice way to manage the software on your system."
 msgstr "Гарний спосіб керуванням програмами на вашій системі."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:564
+#: src/gs-application.c:571
 msgid "Sorry! There are no details for that application."
 msgstr "Вибачте! Не маємо подробиць щодо цієї програми."
 
@@ -548,7 +548,7 @@ msgstr "Скасувати"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:334
+#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:338
 msgid "Install"
 msgstr "Встановити"
 
@@ -562,7 +562,7 @@ msgstr "Оновлення"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:492
+#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:496
 #: src/gs-repos-dialog.c:327
 msgid "Remove"
 msgstr "Вилучити"
@@ -1347,67 +1347,67 @@ msgid "Early Childhood"
 msgstr "Для маленьких дітей"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: src/gs-dbus-helper.c:282
+#: src/gs-dbus-helper.c:283
 msgid "An application"
 msgstr "Програма"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: src/gs-dbus-helper.c:288
+#: src/gs-dbus-helper.c:289
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "%s потребує підтримування додаткового формату файлів."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:290
+#: src/gs-dbus-helper.c:291
 msgid "Additional MIME Types Required"
 msgstr "Потрібно додаткові типи MIME"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: src/gs-dbus-helper.c:294
+#: src/gs-dbus-helper.c:295
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "%s потребує додаткові шрифти."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:296
+#: src/gs-dbus-helper.c:297
 msgid "Additional Fonts Required"
 msgstr "Потрібно додаткові шрифти"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: src/gs-dbus-helper.c:300
+#: src/gs-dbus-helper.c:301
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "%s потребує додаткові кодеки."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:302
+#: src/gs-dbus-helper.c:303
 msgid "Additional Multimedia Codecs Required"
 msgstr "Потрібно додаткові кодеки"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: src/gs-dbus-helper.c:306
+#: src/gs-dbus-helper.c:307
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "%s потребує додаткові драйвера до принтера."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:308
+#: src/gs-dbus-helper.c:309
 msgid "Additional Printer Drivers Required"
 msgstr "Потребує додаткові драйвера до принтера"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: src/gs-dbus-helper.c:312
+#: src/gs-dbus-helper.c:313
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "%s потребує додаткові пакунки."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:314
+#: src/gs-dbus-helper.c:315
 msgid "Additional Packages Required"
 msgstr "Потрібно додаткові пакунки"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:323
+#: src/gs-dbus-helper.c:324
 msgid "Find in Software"
 msgstr "Знайти серед програм"
 
@@ -1615,27 +1615,27 @@ msgstr "Невідома"
 msgid "You need internet access to write a review"
 msgstr "Щоб написати відгук, потрібен інтернет"
 
-#: src/gs-details-page.c:1919 src/gs-details-page.c:1935
+#: src/gs-details-page.c:1929 src/gs-details-page.c:1945
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Неможливо знайти «%s»"
 
-#: src/gs-details-page.c:2001 src/gs-details-page.c:2036
+#: src/gs-details-page.c:2011 src/gs-details-page.c:2046
 msgid "Loading…"
 msgstr "Завантаження…"
 
-#: src/gs-details-page.c:2456
+#: src/gs-details-page.c:2466
 msgid "The application contains no age-inappropriate content."
 msgstr "У програмі містяться неприйнятні для заданого віку дані."
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2565
+#: src/gs-details-page.c:2575
 msgid "Public domain"
 msgstr "Відкритий домен"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2568
+#: src/gs-details-page.c:2578
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr ""
 "https://uk.wikipedia.org/wiki/%D0%A1%D1%83%D1%81%D0%BF%D1%96%D0%BB%D1%8C"
@@ -1643,17 +1643,17 @@ msgstr ""
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2575
+#: src/gs-details-page.c:2585
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2585 src/gs-details-page.ui:1294
+#: src/gs-details-page.c:2595 src/gs-details-page.ui:1294
 msgid "Free Software"
 msgstr "Вільні програми"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2642
+#: src/gs-details-page.c:2652
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Користувачі пов'язані з такою ліцензією:"
@@ -1661,7 +1661,7 @@ msgstr[1] "Користувачі пов'язані з такими ліценз
 msgstr[2] "Користувачі пов'язані з такими ліцензіями:"
 msgstr[3] "Користувач пов'язаний з такою ліцензією:"
 
-#: src/gs-details-page.c:2669 src/gs-details-page.ui:1366
+#: src/gs-details-page.c:2679 src/gs-details-page.ui:1366
 msgid "More information"
 msgstr "Докладніше"
 
@@ -1782,7 +1782,6 @@ msgid "Version"
 msgstr "Версія"
 
 #: src/gs-details-page.ui:685
-#| msgid "Recent Releases"
 msgid "Released"
 msgstr "Випущено"
 
@@ -1893,18 +1892,18 @@ msgid "No details were available for this rating."
 msgstr "Немає подробиць щодо цього рейтингу."
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:136
+#: src/gs-extras-page.c:138
 msgid " and "
 msgstr " і "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:139
+#: src/gs-extras-page.c:141
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:165
+#: src/gs-extras-page.c:167
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1915,7 +1914,7 @@ msgstr[3] "Доступний шрифт для писемності %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:173
+#: src/gs-extras-page.c:175
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -1924,31 +1923,41 @@ msgstr[1] "Доступні програми для %s"
 msgstr[2] "Доступні програми для %s"
 msgstr[3] "Доступна програма для %s"
 
-#: src/gs-extras-page.c:215
+#: src/gs-extras-page.c:217
 msgid "Unable to Find Requested Software"
 msgstr "Неможливо знайти потрібну програму"
 
+#: src/gs-extras-page.c:256
+#| msgid "Screenshot size not found"
+msgid "Requested software not found"
+msgstr "Потрібного програмного забезпечення не знайдено"
+
+#: src/gs-extras-page.c:258
+#| msgid "Unable to Find Requested Software"
+msgid "Failed to find requested software"
+msgstr "Не вдалося знайти потрібного вам програмного забезпечення"
+
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:320
+#: src/gs-extras-page.c:348
 #, c-format
 msgid "%s not found"
 msgstr "%s не знайдено"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:324
+#: src/gs-extras-page.c:352
 msgid "on the website"
 msgstr "на сайті"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:331
+#: src/gs-extras-page.c:359
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Немає жодної програми, яка б забезпечувала файл %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:335 src/gs-extras-page.c:346 src/gs-extras-page.c:357
+#: src/gs-extras-page.c:363 src/gs-extras-page.c:374 src/gs-extras-page.c:385
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1957,21 +1966,21 @@ msgstr "Відомості про %s, як і варіанти одержанн�
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:342 src/gs-extras-page.c:364
+#: src/gs-extras-page.c:370 src/gs-extras-page.c:392
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Немає жодної програми, яка підтримує %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:353
+#: src/gs-extras-page.c:381
 #, c-format
 msgid "%s is not available."
 msgstr "%s — недоступна."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:368
+#: src/gs-extras-page.c:396
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1982,14 +1991,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:375
+#: src/gs-extras-page.c:403
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Не знайдено жодного доступного шрифту для підтримування скрипту %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:379
+#: src/gs-extras-page.c:407
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2000,14 +2009,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:386
+#: src/gs-extras-page.c:414
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Немає жодного кодеку для формату %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:390
+#: src/gs-extras-page.c:418
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2018,14 +2027,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:397
+#: src/gs-extras-page.c:425
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Немає жодного ресурсу плазми, що підтримує %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:401
+#: src/gs-extras-page.c:429
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2036,14 +2045,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:408
+#: src/gs-extras-page.c:436
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Немає жодного доступного драйвера принтера для %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:412
+#: src/gs-extras-page.c:440
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2053,13 +2062,13 @@ msgstr ""
 "принтер, можна знайти %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:456
+#: src/gs-extras-page.c:484
 msgid "the documentation"
 msgstr "документацією"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:462
+#: src/gs-extras-page.c:490
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2079,7 +2088,7 @@ msgstr[3] ""
 "дізнатися більше."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:471
+#: src/gs-extras-page.c:499
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2100,11 +2109,11 @@ msgstr[3] ""
 "Не вдалося знайти потрібного вам %s. Будь ласка, ознайомтеся із %s, щоб "
 "дізнатися більше."
 
-#: src/gs-extras-page.c:539 src/gs-extras-page.c:595 src/gs-extras-page.c:634
+#: src/gs-extras-page.c:569 src/gs-extras-page.c:625 src/gs-extras-page.c:664
 msgid "Failed to find any search results"
 msgstr "Не вдалось одержати жодного результату"
 
-#: src/gs-extras-page.c:822
+#: src/gs-extras-page.c:852
 #, c-format
 msgid "%s file format"
 msgstr "Формат файла %s"
@@ -2354,20 +2363,20 @@ msgstr "Не знайдено даних про програму"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:325
+#: src/gs-page.c:329
 #, c-format
 msgid "Prepare %s"
 msgstr "Підготувати %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:461
+#: src/gs-page.c:465
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Вилучити запис сховища %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:465
+#: src/gs-page.c:469
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2378,13 +2387,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:473
+#: src/gs-page.c:477
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Вилучити %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:476
+#: src/gs-page.c:480
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -4381,12 +4390,12 @@ msgid "%s Configuration Update"
 msgstr "Оновлення налаштувань %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:709
+#: plugins/fwupd/gs-plugin-fwupd.c:710
 msgid "Downloading firmware update signature…"
 msgstr "Отримуємо підпис оновлення мікропрограми…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:750
+#: plugins/fwupd/gs-plugin-fwupd.c:751
 msgid "Downloading firmware update metadata…"
 msgstr "Отримуємо метадані оновлення мікропрограми…"
 
