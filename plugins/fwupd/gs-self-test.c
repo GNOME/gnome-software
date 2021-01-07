@@ -54,7 +54,7 @@ gs_plugins_fwupd_func (GsPluginLoader *plugin_loader)
 			 "Latest firmware release.");
 
 	/* seems wrong, but this is only set if the update is available */
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UNKNOWN);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UNKNOWN);
 }
 
 int

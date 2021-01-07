@@ -126,7 +126,7 @@ gs_removal_dialog_show_upgrade_removals (GsRemovalDialog *self,
 		GsApp *app = gs_app_list_index (removals, i);
 		g_autofree gchar *tmp = NULL;
 
-		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
+		if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
 			continue;
 		tmp = gs_app_to_string (app);
 		g_debug ("removal %u: %s", i, tmp);

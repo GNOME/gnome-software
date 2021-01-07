@@ -179,7 +179,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	resolve2_list = gs_app_list_new ();
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_list_add (resolve2_list, app);
 	}
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
@@ -617,7 +617,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	/* add each of these as related applications */
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app2 = gs_app_list_index (list, i);
-		if (gs_app_get_state (app2) != AS_APP_STATE_UNAVAILABLE)
+		if (gs_app_get_state (app2) != GS_APP_STATE_UNAVAILABLE)
 			continue;
 		gs_app_add_related (app, app2);
 	}
@@ -655,7 +655,7 @@ gs_plugin_packagekit_refine_name_to_id (GsPlugin *plugin,
 		tmp = g_ptr_array_index (sources, 0);
 		if (!gs_plugin_packagekit_refine_valid_package_name (tmp))
 			continue;
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN ||
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
 		    gs_plugin_refine_requires_package_id (app, flags) ||
 		    gs_plugin_refine_requires_origin (app, flags) ||
 		    gs_plugin_refine_requires_version (app, flags)) {
@@ -740,7 +740,7 @@ gs_plugin_packagekit_refine_update_details (GsPlugin *plugin,
 		const gchar *tmp;
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_IS_WILDCARD))
 			continue;
-		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
@@ -769,7 +769,7 @@ gs_plugin_refine (GsPlugin *plugin,
 {
 	/* when we need the cannot-be-upgraded applications, we implement this
 	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
-	 * to the related-apps list with a state of %AS_APP_STATE_UNAVAILABLE */
+	 * to the related-apps list with a state of %GS_APP_STATE_UNAVAILABLE */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
 		for (guint i = 0; i < gs_app_list_length (list); i++) {
 			GsApp *app = gs_app_list_index (list, i);

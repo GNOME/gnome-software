@@ -140,7 +140,7 @@ gs_updates_page_invalidate (GsUpdatesPage *self)
 static GsUpdatesSectionKind
 _get_app_section (GsApp *app)
 {
-	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE) {
+	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE) {
 		if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
 			return GS_UPDATES_SECTION_KIND_ONLINE_FIRMWARE;
 		return GS_UPDATES_SECTION_KIND_ONLINE;
@@ -170,7 +170,7 @@ _get_num_updates (GsUpdatesPage *self)
 	for (guint i = 0; i < gs_app_list_length (apps); ++i) {
 		GsApp *app = gs_app_list_index (apps, i);
 		if (gs_app_is_updatable (app) ||
-		    gs_app_get_state (app) == AS_APP_STATE_INSTALLING)
+		    gs_app_get_state (app) == GS_APP_STATE_INSTALLING)
 			++count;
 	}
 	return count;
@@ -606,7 +606,7 @@ gs_updates_page_get_system_finished_cb (GObject *source_object,
 		gtk_widget_set_visible (self->box_end_of_life, FALSE);
 		return;
 	}
-	if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE) {
+	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE) {
 		gtk_widget_set_visible (self->box_end_of_life, FALSE);
 		return;
 	}
@@ -1140,7 +1140,7 @@ gs_updates_page_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
 	removals = gs_app_get_related (upgrade);
 	for (i = 0; i < gs_app_list_length (removals); i++) {
 		GsApp *app = gs_app_list_index (removals, i);
-		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
+		if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
 			continue;
 		cnt++;
 	}
@@ -1185,9 +1185,9 @@ gs_updates_page_invalidate_downloaded_upgrade (GsUpdatesPage *self)
 	app = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
 	if (app == NULL)
 		return;
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 		return;
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	g_debug ("resetting %s to AVAILABLE as the updates have changed",
 		 gs_app_get_id (app));
 }
@@ -1199,8 +1199,8 @@ gs_shell_update_are_updates_in_progress (GsUpdatesPage *self)
 	for (guint i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
 		switch (gs_app_get_state (app)) {
-		case AS_APP_STATE_INSTALLING:
-		case AS_APP_STATE_REMOVING:
+		case GS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_REMOVING:
 			return TRUE;
 			break;
 		default:

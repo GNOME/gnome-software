@@ -246,7 +246,7 @@ gs_page_install_app (GsPage *page,
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* probably non-free */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		GtkResponseType response;
 
 		response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
@@ -443,7 +443,7 @@ gs_page_remove_app (GsPage *page, GsApp *app, GCancellable *cancellable)
 	helper->app = g_object_ref (app);
 	helper->page = g_object_ref (page);
 	helper->cancellable = g_object_ref (cancellable);
-	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 		plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_REMOVE,
 						 "interactive", TRUE,

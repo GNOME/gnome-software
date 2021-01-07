@@ -235,7 +235,7 @@ _systemd_trigger_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
 	/* if we can process this online do not require a trigger */
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 		return TRUE;
 
 	/* only process this app if was created by this plugin */

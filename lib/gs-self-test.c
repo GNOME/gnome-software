@@ -428,13 +428,13 @@ gs_plugin_func (void)
 	/* prefer installed applications */
 	list = gs_app_list_new ();
 	app = gs_app_new ("e");
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	gs_app_set_unique_id (app, "user/foo/*/*/e/*");
 	gs_app_set_priority (app, 0);
 	gs_app_list_add (list, app);
 	g_object_unref (app);
 	app = gs_app_new ("e");
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	gs_app_set_unique_id (app, "user/bar/*/*/e/*");
 	gs_app_set_priority (app, 100);
 	gs_app_list_add (list, app);
@@ -657,18 +657,18 @@ gs_app_func (void)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "hugh");
 
 	/* check non-transient state saving */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_REMOVING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_REMOVING);
 	gs_app_set_state_recover (app); // simulate an error
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 
 	/* try again */
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_REMOVING);
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_REMOVING);
 	gs_app_set_state_recover (app); // simulate an error
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 
 	/* correctly parse URL */
 	gs_app_set_origin_hostname (app, "https://mirrors.fedoraproject.org/metalink");
@@ -687,10 +687,10 @@ gs_app_func (void)
 
 	/* check pending action */
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_pending_action (app, GS_PLUGIN_ACTION_UPDATE);
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UPDATE);
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	g_assert_cmpuint (gs_app_get_pending_action (app), ==, GS_PLUGIN_ACTION_UNKNOWN);
 	gs_app_set_state_recover (app);
 }
@@ -736,24 +736,24 @@ gs_app_list_func (void)
 	gs_app_list_add_flag (list, GS_APP_LIST_FLAG_WATCH_APPS);
 
 	g_assert_cmpint (gs_app_list_get_progress (list), ==, 0);
-	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_UNKNOWN);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_UNKNOWN);
 	gs_app_list_add (list, app1);
 	gs_app_set_progress (app1, 75);
-	gs_app_set_state (app1, AS_APP_STATE_AVAILABLE);
-	gs_app_set_state (app1, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app1, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app1, GS_APP_STATE_INSTALLING);
 	gs_test_flush_main_context ();
 	g_assert_cmpint (gs_app_list_get_progress (list), ==, 75);
-	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_INSTALLING);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_INSTALLING);
 
 	gs_app_list_add (list, app2);
 	gs_app_set_progress (app2, 25);
 	gs_test_flush_main_context ();
 	g_assert_cmpint (gs_app_list_get_progress (list), ==, 50);
-	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_INSTALLING);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_INSTALLING);
 
 	gs_app_list_remove (list, app1);
 	g_assert_cmpint (gs_app_list_get_progress (list), ==, 25);
-	g_assert_cmpint (gs_app_list_get_state (list), ==, AS_APP_STATE_UNKNOWN);
+	g_assert_cmpint (gs_app_list_get_state (list), ==, GS_APP_STATE_UNKNOWN);
 }
 
 static void

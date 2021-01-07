@@ -216,9 +216,9 @@ gs_details_page_update_shortcut_button (GsDetailsPage *self)
 
 	/* only consider the shortcut button if the app is installed */
 	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		break;
 	default:
 		return;
@@ -253,14 +253,14 @@ app_has_pending_action (GsApp *app)
 {
 	/* sanitize the pending state change by verifying we're in one of the
 	 * expected states */
-	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE &&
-	    gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE &&
-	    gs_app_get_state (app) != AS_APP_STATE_UPDATABLE &&
-	    gs_app_get_state (app) != AS_APP_STATE_QUEUED_FOR_INSTALL)
+	if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE &&
+	    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE &&
+	    gs_app_get_state (app) != GS_APP_STATE_UPDATABLE &&
+	    gs_app_get_state (app) != GS_APP_STATE_QUEUED_FOR_INSTALL)
 		return FALSE;
 
 	return (gs_app_get_pending_action (app) != GS_PLUGIN_ACTION_UNKNOWN) ||
-	       (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL);
+	       (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL);
 }
 
 static void
@@ -321,12 +321,12 @@ static void
 gs_details_page_refresh_progress (GsDetailsPage *self)
 {
 	guint percentage;
-	AsAppState state;
+	GsAppState state;
 
 	/* cancel button */
 	state = gs_app_get_state (self->app);
 	switch (state) {
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (self->button_cancel, TRUE);
 		/* If the app is installing, the user can only cancel it if
 		 * 1) They haven't already, and
@@ -350,12 +350,12 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 
 	/* progress status label */
 	switch (state) {
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
 		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 				     _("Removing…"));
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (self->label_progress_status, TRUE);
 		gtk_label_set_label (GTK_LABEL (self->label_progress_status),
 				     _("Installing"));
@@ -389,7 +389,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 
 	/* percentage bar */
 	switch (state) {
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		percentage = gs_app_get_progress (self->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
 			/* Translators: This string is shown when preparing to download and install an app. */
@@ -426,7 +426,7 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 
 	/* spinner */
 	switch (state) {
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		if (!gtk_widget_get_visible (self->spinner_remove)) {
 			gtk_spinner_start (GTK_SPINNER (self->spinner_remove));
 			gtk_widget_set_visible (self->spinner_remove, TRUE);
@@ -443,8 +443,8 @@ gs_details_page_refresh_progress (GsDetailsPage *self)
 
 	/* progress box */
 	switch (state) {
-	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (self->box_progress, TRUE);
 		break;
 	default:
@@ -900,9 +900,9 @@ gs_details_page_can_launch_app (GsDetailsPage *self)
 		return FALSE;
 
 	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		break;
 	default:
 		return FALSE;
@@ -930,30 +930,30 @@ gs_details_page_can_launch_app (GsDetailsPage *self)
 static void
 gs_details_page_refresh_buttons (GsDetailsPage *self)
 {
-	AsAppState state;
+	GsAppState state;
 
 	state = gs_app_get_state (self->app);
 
 	/* install button */
 	switch (state) {
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (self->button_install, TRUE);
 		/* TRANSLATORS: button text in the header when an application
 		 * can be installed */
 		gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
-	case AS_APP_STATE_UNKNOWN:
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_UNKNOWN:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (self->button_install, FALSE);
 		break;
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->button_install, TRUE);
 			/* TRANSLATORS: button text in the header when firmware
@@ -963,7 +963,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 			gtk_widget_set_visible (self->button_install, FALSE);
 		}
 		break;
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		if (gs_app_get_url (self->app, AS_URL_KIND_MISSING) != NULL) {
 			gtk_widget_set_visible (self->button_install, FALSE);
 		} else {
@@ -977,13 +977,13 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		break;
 	default:
 		g_warning ("App unexpectedly in state %s",
-			   as_app_state_to_string (state));
+			   gs_app_state_to_string (state));
 		g_assert_not_reached ();
 	}
 
 	/* update button */
 	switch (state) {
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->button_update, FALSE);
 		} else {
@@ -1013,9 +1013,9 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	} else {
 		switch (state) {
-		case AS_APP_STATE_INSTALLED:
-		case AS_APP_STATE_UPDATABLE:
-		case AS_APP_STATE_UPDATABLE_LIVE:
+		case GS_APP_STATE_INSTALLED:
+		case GS_APP_STATE_UPDATABLE:
+		case GS_APP_STATE_UPDATABLE_LIVE:
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
 			/* Mark the button as destructive only if Launch is not visible */
@@ -1026,18 +1026,18 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 			/* TRANSLATORS: button text in the header when an application can be erased */
 			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Remove"));
 			break;
-		case AS_APP_STATE_AVAILABLE_LOCAL:
-		case AS_APP_STATE_AVAILABLE:
-		case AS_APP_STATE_INSTALLING:
-		case AS_APP_STATE_REMOVING:
-		case AS_APP_STATE_UNAVAILABLE:
-		case AS_APP_STATE_UNKNOWN:
-		case AS_APP_STATE_QUEUED_FOR_INSTALL:
+		case GS_APP_STATE_AVAILABLE_LOCAL:
+		case GS_APP_STATE_AVAILABLE:
+		case GS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_REMOVING:
+		case GS_APP_STATE_UNAVAILABLE:
+		case GS_APP_STATE_UNKNOWN:
+		case GS_APP_STATE_QUEUED_FOR_INSTALL:
 			gtk_widget_set_visible (self->button_remove, FALSE);
 			break;
 		default:
 			g_warning ("App unexpectedly in state %s",
-				   as_app_state_to_string (state));
+				   gs_app_state_to_string (state));
 			g_assert_not_reached ();
 		}
 	}
@@ -1402,7 +1402,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
 				gs_app_has_quirk (self->app, GS_APP_QUIRK_COMPULSORY) &&
-				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+				gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 
 	switch (gs_app_get_kind (self->app)) {
 	case AS_APP_KIND_DESKTOP:
@@ -1410,7 +1410,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->infobar_details_app_repo,
 					gs_app_has_quirk (self->app,
 							  GS_APP_QUIRK_HAS_SOURCE) &&
-					gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+					gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		gtk_widget_set_visible (self->infobar_details_repo, FALSE);
 		break;
 	case AS_APP_KIND_GENERIC:
@@ -1419,7 +1419,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 		gtk_widget_set_visible (self->infobar_details_repo,
 					gs_app_has_quirk (self->app,
 							  GS_APP_QUIRK_HAS_SOURCE) &&
-					gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+					gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
 		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
@@ -1436,7 +1436,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 			gtk_widget_set_visible (self->infobar_details_app_norepo,
 						!gs_app_has_quirk (self->app,
 							  GS_APP_QUIRK_HAS_SOURCE) &&
-						gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+						gs_app_get_state (self->app) == GS_APP_STATE_AVAILABLE_LOCAL);
 		}
 		break;
 	default:
@@ -1446,9 +1446,9 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* only show the "select addons" string if the app isn't yet installed */
 	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (self->label_addons_uninstalled_app, FALSE);
 		break;
 	default:
@@ -1521,8 +1521,8 @@ gs_details_page_refresh_addons (GsDetailsPage *self)
 		GtkWidget *row;
 
 		addon = gs_app_list_index (addons, i);
-		if (gs_app_get_state (addon) == AS_APP_STATE_UNKNOWN ||
-		    gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
+		if (gs_app_get_state (addon) == GS_APP_STATE_UNKNOWN ||
+		    gs_app_get_state (addon) == GS_APP_STATE_UNAVAILABLE)
 			continue;
 
 		row = gs_app_addon_row_new (addon);
@@ -1630,7 +1630,7 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	case AS_APP_KIND_WEB_APP:
 	case AS_APP_KIND_SHELL_EXTENSION:
 		/* don't show a missing rating on a local file */
-		if (gs_app_get_state (self->app) != AS_APP_STATE_AVAILABLE_LOCAL &&
+		if (gs_app_get_state (self->app) != GS_APP_STATE_AVAILABLE_LOCAL &&
 		    self->enable_reviews)
 			show_reviews = TRUE;
 		break;
@@ -1923,7 +1923,7 @@ gs_details_page_load_stage1_cb (GObject *source,
 			   error->message);
 	}
 	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
-	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
+	    gs_app_get_state (self->app) == GS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *str = NULL;
 		const gchar *id = gs_app_get_id (self->app);
 		str = g_strdup_printf (_("Unable to find “%s”"), id == NULL ? gs_app_get_source_default (self->app) : id);
@@ -2209,7 +2209,7 @@ gs_details_page_app_cancel_button_cb (GtkWidget *widget, GsDetailsPage *self)
 
 	/* FIXME: We should be able to revert the QUEUED_FOR_INSTALL without
 	 * having to pretend to remove the app */
-	if (gs_app_get_state (self->app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
+	if (gs_app_get_state (self->app) == GS_APP_STATE_QUEUED_FOR_INSTALL)
 		gs_details_page_remove_app (self);
 }
 
@@ -2224,14 +2224,14 @@ gs_details_page_app_install_button_cb (GtkWidget *widget, GsDetailsPage *self)
 		if (gs_app_addon_row_get_selected (l->data)) {
 			GsApp *addon = gs_app_addon_row_get_addon (l->data);
 
-			if (gs_app_get_state (addon) == AS_APP_STATE_AVAILABLE)
+			if (gs_app_get_state (addon) == GS_APP_STATE_AVAILABLE)
 				gs_app_set_to_be_installed (addon, TRUE);
 		}
 	}
 
 	g_set_object (&self->app_cancellable, gs_app_get_cancellable (self->app));
 
-	if (gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE_LIVE) {
+	if (gs_app_get_state (self->app) == GS_APP_STATE_UPDATABLE_LIVE) {
 		gs_page_update_app (GS_PAGE (self), self->app, self->app_cancellable);
 		return;
 	}
@@ -2260,9 +2260,9 @@ gs_details_page_addon_selected_cb (GsAppAddonRow *row,
 	 * triggers an immediate install. Otherwise we'll install the addon
 	 * together with the main app. */
 	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_addon_row_get_selected (row)) {
 			g_set_object (&self->app_cancellable, gs_app_get_cancellable (addon));
 			gs_page_install_app (GS_PAGE (self), addon, GS_SHELL_INTERACTION_FULL,

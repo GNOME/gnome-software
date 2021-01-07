@@ -409,8 +409,8 @@ create_app_row (GsApp *app)
 	gtk_widget_set_hexpand (label, TRUE);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_container_add (GTK_CONTAINER (row), label);
-	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE ||
-	    gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE) {
+	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE ||
+	    gs_app_get_state (app) == GS_APP_STATE_UPDATABLE_LIVE) {
 		g_autofree gchar *verstr = format_version_update (app, gtk_widget_get_direction (row));
 		label = gtk_label_new (verstr);
 	} else {
@@ -490,14 +490,14 @@ get_app_section (GsApp *app)
 	 * 3. updates
 	 * 4. downgrades */
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE:
 		section = GS_UPDATE_DIALOG_SECTION_ADDITIONS;
 		break;
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		section = GS_UPDATE_DIALOG_SECTION_REMOVALS;
 		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		if (is_downgrade (gs_app_get_version (app),
 		                  gs_app_get_update_version (app)))
 			section = GS_UPDATE_DIALOG_SECTION_DOWNGRADES;
@@ -506,7 +506,7 @@ get_app_section (GsApp *app)
 		break;
 	default:
 		g_warning ("get_app_section: unhandled state %s for %s",
-		           as_app_state_to_string (gs_app_get_state (app)),
+		           gs_app_state_to_string (gs_app_get_state (app)),
 		           gs_app_get_unique_id (app));
 		section = GS_UPDATE_DIALOG_SECTION_UPDATES;
 		break;

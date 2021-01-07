@@ -28,7 +28,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
 static void
 gs_update_list_app_state_notify_cb (GsApp *app, GParamSpec *pspec, gpointer user_data)
 {
-	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
 		GsAppRow *app_row = GS_APP_ROW (user_data);
 		gs_app_row_unreveal (app_row);
 	}

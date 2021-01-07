@@ -182,7 +182,7 @@ gs_plugin_fwupd_notify_status_cb (GObject *object,
 	case FWUPD_STATUS_DEVICE_RESTART:
 	case FWUPD_STATUS_DEVICE_WRITE:
 	case FWUPD_STATUS_DEVICE_VERIFY:
-		gs_app_set_state (priv->app_current, AS_APP_STATE_INSTALLING);
+		gs_app_set_state (priv->app_current, GS_APP_STATE_INSTALLING);
 		break;
 	case FWUPD_STATUS_IDLE:
 		g_clear_object (&priv->app_current);
@@ -346,7 +346,7 @@ gs_plugin_fwupd_new_app_from_device_raw (GsPlugin *plugin, FwupdDevice *device)
 	app = gs_app_new (id);
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 	gs_app_set_version (app, fwupd_device_get_version (device));
@@ -387,7 +387,7 @@ gs_plugin_fwupd_new_app (GsPlugin *plugin, FwupdDevice *dev, GError **error)
 
 	/* update unsupported */
 	app = gs_plugin_fwupd_new_app_from_device (plugin, dev);
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -837,7 +837,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 		const gchar *uri = gs_fwupd_app_get_update_uri (app);
 #if FWUPD_CHECK_VERSION(1,5,2)
 		g_autoptr(GFile) file = g_file_new_for_path (filename);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		if (!fwupd_client_download_file (priv->client,
 						 uri, file,
 						 FWUPD_CLIENT_DOWNLOAD_FLAG_NONE,
@@ -847,7 +847,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 			return FALSE;
 		}
 #else
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		if (!gs_plugin_download_file (plugin, app, uri, filename,
 					      cancellable, error))
 			return FALSE;
@@ -867,7 +867,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	if (gs_app_get_metadata_item (app, "fwupd::OnlyOffline") != NULL)
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	if (!fwupd_client_install (priv->client, device_id,
 				   filename, install_flags,
 				   cancellable, error)) {
@@ -877,7 +877,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	}
 
 	/* delete the file from the cache */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	if (downloaded_to_cache) {
 		if (!g_file_delete (local_file, cancellable, error))
 			return FALSE;
@@ -935,7 +935,7 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 		return FALSE;
 	}
 	gs_app_set_state (app, enabled ?
-	                  AS_APP_STATE_INSTALLING : AS_APP_STATE_REMOVING);
+	                  GS_APP_STATE_INSTALLING : GS_APP_STATE_REMOVING);
 	if (!fwupd_client_modify_remote (priv->client,
 	                                 remote_id,
 	                                 "Enabled",
@@ -946,7 +946,7 @@ gs_plugin_fwupd_modify_source (GsPlugin *plugin, GsApp *app, gboolean enabled,
 		return FALSE;
 	}
 	gs_app_set_state (app, enabled ?
-	                  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+	                  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 	return TRUE;
 }
 
@@ -1164,7 +1164,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_set_state (app, fwupd_remote_get_enabled (remote) ?
-				  AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+				  GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 				 fwupd_remote_get_title (remote));

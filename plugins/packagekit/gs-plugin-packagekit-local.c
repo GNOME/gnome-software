@@ -141,8 +141,8 @@ gs_plugin_packagekit_local_check_installed (GsPlugin *plugin,
 		return FALSE;
 	packages = pk_results_get_package_array (results);
 	if (packages->len > 0) {
-		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		for (guint i = 0; i < packages->len; i++){
 			PkPackage *pkg = g_ptr_array_index (packages, i);
 			gs_app_add_source_id (app, pk_package_get_id (pkg));
@@ -235,7 +235,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
 			    pk_details_get_summary (item));

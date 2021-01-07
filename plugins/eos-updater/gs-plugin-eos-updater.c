@@ -221,20 +221,20 @@ os_upgrade_cancelled_cb (GCancellable *cancellable,
 }
 
 static gboolean
-should_add_os_upgrade (AsAppState state)
+should_add_os_upgrade (GsAppState state)
 {
 	switch (state) {
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		return TRUE;
-	case AS_APP_STATE_UNKNOWN:
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UNAVAILABLE:
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_UNKNOWN:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_REMOVING:
 	default:
 		return FALSE;
 	}
@@ -246,9 +246,9 @@ should_add_os_upgrade (AsAppState state)
 static void
 app_set_state (GsPlugin   *plugin,
                GsApp      *app,
-               AsAppState  new_state)
+               GsAppState  new_state)
 {
-	AsAppState old_state = gs_app_get_state (app);
+	GsAppState old_state = gs_app_get_state (app);
 
 	if (new_state == old_state)
 		return;
@@ -355,8 +355,8 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsApp *app = priv->os_upgrade;
 	EosUpdaterState state;
-	AsAppState previous_app_state = gs_app_get_state (app);
-	AsAppState current_app_state;
+	GsAppState previous_app_state = gs_app_get_state (app);
+	GsAppState current_app_state;
 
 	/* in case the OS upgrade has been disabled */
 	if (priv->updater_proxy == NULL) {
@@ -370,7 +370,7 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 	switch (state) {
 	case EOS_UPDATER_STATE_NONE:
 	case EOS_UPDATER_STATE_READY: {
-		app_set_state (plugin, app, AS_APP_STATE_UNKNOWN);
+		app_set_state (plugin, app, GS_APP_STATE_UNKNOWN);
 		break;
 	} case EOS_UPDATER_STATE_POLLING: {
 		/* Nothing to do here. */
@@ -378,7 +378,7 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 	} case EOS_UPDATER_STATE_UPDATE_AVAILABLE: {
 		guint64 total_size;
 
-		app_set_state (plugin, app, AS_APP_STATE_AVAILABLE);
+		app_set_state (plugin, app, GS_APP_STATE_AVAILABLE);
 
 		total_size = gs_eos_updater_get_download_size (priv->updater_proxy);
 		gs_app_set_size_download (app, total_size);
@@ -392,7 +392,7 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 
 		/* FIXME: Set to QUEUED_FOR_INSTALL if we’re waiting for metered
 		 * data permission. */
-		app_set_state (plugin, app, AS_APP_STATE_INSTALLING);
+		app_set_state (plugin, app, GS_APP_STATE_INSTALLING);
 
 		downloaded = gs_eos_updater_get_downloaded_bytes (priv->updater_proxy);
 		total_size = gs_eos_updater_get_download_size (priv->updater_proxy);
@@ -411,13 +411,13 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 		break;
 	}
 	case EOS_UPDATER_STATE_UPDATE_READY: {
-		app_set_state (plugin, app, AS_APP_STATE_UPDATABLE);
+		app_set_state (plugin, app, GS_APP_STATE_UPDATABLE);
 		break;
 	}
 	case EOS_UPDATER_STATE_APPLYING_UPDATE: {
 		/* set as 'installing' because if it is applying the update, we
 		 * want to show the progress bar */
-		app_set_state (plugin, app, AS_APP_STATE_INSTALLING);
+		app_set_state (plugin, app, GS_APP_STATE_INSTALLING);
 
 		/* set up the fake progress to inform the user that something
 		 * is still being done (we don't get progress reports from
@@ -433,7 +433,7 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 		break;
 	}
 	case EOS_UPDATER_STATE_UPDATE_APPLIED: {
-		app_set_state (plugin, app, AS_APP_STATE_UPDATABLE);
+		app_set_state (plugin, app, GS_APP_STATE_UPDATABLE);
 
 		break;
 	}
@@ -453,7 +453,7 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 		/* We can’t recover the app state since eos-updater needs to
 		 * go through the ready → poll → fetch → apply loop again in
 		 * order to recover its state. So go back to ‘unknown’. */
-		app_set_state (plugin, app, AS_APP_STATE_UNKNOWN);
+		app_set_state (plugin, app, GS_APP_STATE_UNKNOWN);
 
 		/* Cancelling anything in the updater will result in a
 		 * transition to the Error state. Use that as a cue to reset
@@ -470,8 +470,8 @@ sync_state_from_updater_unlocked (GsPlugin *plugin)
 	current_app_state = gs_app_get_state (app);
 
 	g_debug ("%s: Old app state: %s; new app state: %s",
-		 G_STRFUNC, as_app_state_to_string (previous_app_state),
-		 as_app_state_to_string (current_app_state));
+		 G_STRFUNC, gs_app_state_to_string (previous_app_state),
+		 gs_app_state_to_string (current_app_state));
 
 	/* if the state changed from or to 'unknown', we need to notify that a
 	 * new update should be shown */
@@ -683,7 +683,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 	/* if we are testing the plugin, then always add the OS upgrade */
 	if (g_getenv ("GS_PLUGIN_EOS_TEST") != NULL) {
-		gs_app_set_state (priv->os_upgrade, AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (priv->os_upgrade, GS_APP_STATE_AVAILABLE);
 		gs_app_list_add (list, priv->os_upgrade);
 		return TRUE;
 	}

@@ -55,17 +55,17 @@ gs_popular_tile_refresh (GsAppTile *self)
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		installed = TRUE;
 		/* TRANSLATORS: this refers to an app (by name) that is installed */
 		name = g_strdup_printf (_("%s (Installed)"),
 					gs_app_get_name (app));
 		break;
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_INSTALLING:
 	default:
 		installed = FALSE;
 		name = g_strdup (gs_app_get_name (app));

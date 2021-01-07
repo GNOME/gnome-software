@@ -60,7 +60,7 @@ gs_fwupd_app_set_from_device (GsApp *app, FwupdDevice *dev)
 
 	/* something can be done */
 	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_UPDATABLE))
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 
 	/* only can be applied in systemd-offline */
 	if (fwupd_device_has_flag (dev, FWUPD_DEVICE_FLAG_ONLY_OFFLINE))

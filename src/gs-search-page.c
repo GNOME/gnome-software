@@ -51,12 +51,12 @@ gs_search_page_app_row_clicked_cb (GsAppRow *app_row,
 {
 	GsApp *app;
 	app = gs_app_row_get_app (app_row);
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
+	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE)
 		gs_page_install_app (GS_PAGE (self), app, GS_SHELL_INTERACTION_FULL,
 				     self->cancellable);
-	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
+	else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
 		gs_page_remove_app (GS_PAGE (self), app, self->cancellable);
-	else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+	else if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL) {
 			gs_page_install_app (GS_PAGE (self), app,
 					     GS_SHELL_INTERACTION_FULL,
@@ -201,7 +201,7 @@ gs_search_page_get_app_sort_key (GsApp *app)
 
 	/* sort missing codecs before applications */
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		g_string_append (key, "9:");
 		break;
 	default:

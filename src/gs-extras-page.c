@@ -281,16 +281,16 @@ app_row_button_clicked_cb (GsAppRow *app_row,
 {
 	GsApp *app = gs_app_row_get_app (app_row);
 
-	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE &&
+	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE &&
 	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
 		gs_shell_show_uri (self->shell,
 	                           gs_app_get_url (app, AS_URL_KIND_MISSING));
-	} else if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE ||
-	           gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL ||
-	           gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+	} else if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE ||
+	           gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL ||
+	           gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		gs_page_install_app (GS_PAGE (self), app, GS_SHELL_INTERACTION_FULL,
 				     self->search_cancellable);
-	} else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+	} else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
 		gs_page_remove_app (GS_PAGE (self), app, self->search_cancellable);
 	} else {
 		g_critical ("extras: app in unexpected state %u", gs_app_get_state (app));
@@ -449,7 +449,7 @@ create_missing_app (SearchData *search_data)
 	gs_app_set_summary_missing (app, g_string_free (summary_missing, FALSE));
 
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-	gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+	gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 	gs_app_set_url (app, AS_URL_KIND_MISSING, search_data->url_not_found);
 
 	return app;
@@ -1109,7 +1109,7 @@ row_activated_cb (GtkListBox *list_box,
 
 	app = gs_app_row_get_app (GS_APP_ROW (row));
 
-	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE &&
+	if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE &&
 	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
 		gs_shell_show_uri (self->shell,
 		                   gs_app_get_url (app, AS_URL_KIND_MISSING));
@@ -1128,7 +1128,7 @@ get_app_sort_key (GsApp *app)
 
 	/* sort missing applications as last */
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		g_string_append (key, "9:");
 		break;
 	default:

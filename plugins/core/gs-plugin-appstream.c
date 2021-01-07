@@ -726,7 +726,7 @@ gs_plugin_appstream_refine_state (GsPlugin *plugin, GsApp *app, GError **error)
 		g_propagate_error (error, g_steal_pointer (&error_local));
 		return FALSE;
 	}
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	return TRUE;
 }
 
@@ -773,7 +773,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	}
 
 	/* if an installed desktop or appdata file exists set to installed */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 		if (!gs_plugin_appstream_refine_state (plugin, app, error))
 			return FALSE;
 	}
@@ -989,7 +989,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		g_autoptr(GsApp) app = gs_appstream_create_app (plugin, priv->silo, component, error);
 		if (app == NULL)
 			return FALSE;
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
 		gs_app_list_add (list, app);
 	}

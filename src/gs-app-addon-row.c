@@ -50,7 +50,7 @@ gs_app_addon_row_get_summary (GsAppAddonRow *row)
 	g_autofree gchar *escaped = NULL;
 
 	/* try all these things in order */
-	if (gs_app_get_state (row->app) == AS_APP_STATE_UNAVAILABLE)
+	if (gs_app_get_state (row->app) == GS_APP_STATE_UNAVAILABLE)
 		tmp = gs_app_get_summary_missing (row->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_summary (row->app);
@@ -78,21 +78,21 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 
 	/* update the state label */
 	switch (gs_app_get_state (row->app)) {
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Pending"));
 		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
-	case AS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Installed"));
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Installing"));
 		break;
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (row->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (row->label), _("Removing"));
 		break;
@@ -104,25 +104,25 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	/* update the checkbox */
 	g_signal_handlers_block_by_func (row->checkbox, checkbox_toggled, row);
 	switch (gs_app_get_state (row->app)) {
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
 		break;
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_sensitive (row->checkbox, TRUE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_sensitive (row->checkbox, FALSE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
 		break;
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_sensitive (row->checkbox, FALSE);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		break;

@@ -873,10 +873,10 @@ gs_flatpak_progress_cb (const gchar *status,
 			gs_app_set_progress (phelper->app, progress);
 
 		switch (gs_app_get_state (phelper->app)) {
-		case AS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_INSTALLING:
 			plugin_status = GS_PLUGIN_STATUS_INSTALLING;
 			break;
-		case AS_APP_STATE_REMOVING:
+		case GS_APP_STATE_REMOVING:
 			plugin_status = GS_PLUGIN_STATUS_REMOVING;
 			break;
 		default:
@@ -1109,8 +1109,8 @@ gs_flatpak_create_installed (GsFlatpak *self,
 	/* create new object */
 	origin = flatpak_installed_ref_get_origin (xref);
 	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref));
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	gs_flatpak_set_metadata_installed (self, app, xref);
 	return g_steal_pointer (&app);
 }
@@ -1351,7 +1351,7 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	}
 
 	/* install it */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	if (!flatpak_installation_modify_remote (self->installation,
 						 xremote,
 						 cancellable,
@@ -1369,7 +1369,7 @@ gs_flatpak_app_install_source (GsFlatpak *self, GsApp *app,
 	g_rw_lock_reader_unlock (&self->silo_lock);
 
 	/* success */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	return TRUE;
 }
 
@@ -1447,7 +1447,7 @@ get_real_app_for_update (GsFlatpak *self,
 		g_debug ("Related extension app %s of main app %s is updatable, so "
 			 "setting the latter's state instead.", gs_app_get_unique_id (app),
 			 gs_app_get_unique_id (main_app));
-		gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_state (main_app, GS_APP_STATE_UPDATABLE_LIVE);
 	}
 
 	return main_app;
@@ -1503,13 +1503,13 @@ gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 
 		/* if for some reason the app is already getting updated, then
 		 * don't change its state */
-		if (gs_app_get_state (main_app) != AS_APP_STATE_INSTALLING)
-			gs_app_set_state (main_app, AS_APP_STATE_UPDATABLE_LIVE);
+		if (gs_app_get_state (main_app) != GS_APP_STATE_INSTALLING)
+			gs_app_set_state (main_app, GS_APP_STATE_UPDATABLE_LIVE);
 
 		/* set updatable state on the extension too, as it will have
 		 * its state updated to installing then installed later on */
-		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLING)
-			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		if (gs_app_get_state (app) != GS_APP_STATE_INSTALLING)
+			gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 
 		/* already downloaded */
 		if (g_strcmp0 (commit, latest_commit) != 0) {
@@ -1697,7 +1697,7 @@ gs_plugin_refine_item_origin (GsFlatpak *self,
 		return TRUE;
 
 	/* not applicable */
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
+	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
 		return TRUE;
 
 	/* ensure metadata exists */
@@ -1784,7 +1784,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 	g_autoptr(GPtrArray) installed_refs = NULL;
 
 	/* already found */
-	if (gs_app_get_state (app) != AS_APP_STATE_UNKNOWN)
+	if (gs_app_get_state (app) != GS_APP_STATE_UNKNOWN)
 		return TRUE;
 
 	/* need broken out metadata */
@@ -1826,8 +1826,8 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_unique_id (app));
 		gs_flatpak_set_metadata_installed (self, app, ref);
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 		/* flatpak only allows one installed app to be launchable */
 		if (flatpak_installed_ref_get_is_current (ref)) {
@@ -1845,7 +1845,7 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 		return FALSE;
 
 	/* anything not installed just check the remote is still present */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN &&
 	    gs_app_get_origin (app) != NULL) {
 		g_autoptr(FlatpakRemote) xremote = NULL;
 		xremote = flatpak_installation_get_remote_by_name (self->installation,
@@ -1857,14 +1857,14 @@ gs_flatpak_refine_app_state_unlocked (GsFlatpak *self,
 					 "but %s is disabled",
 					 gs_app_get_unique_id (app),
 					 flatpak_remote_get_name (xremote));
-				gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+				gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 			} else {
 				g_debug ("marking %s as available with flatpak",
 					 gs_app_get_unique_id (app));
-				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+				gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 			}
 		} else {
-			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			g_debug ("failed to find %s remote %s for %s",
 				 self->id,
 				 gs_app_get_origin (app),
@@ -2127,7 +2127,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 	guint64 installed_size = GS_APP_SIZE_UNKNOWABLE;
 
 	/* not applicable */
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
+	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL)
 		return TRUE;
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return TRUE;
@@ -2148,7 +2148,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 		return FALSE;
 
 	/* calculate the platform size too if the app is not installed */
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE &&
+	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE &&
 	    gs_flatpak_app_get_ref_kind (app) == FLATPAK_REF_KIND_APP) {
 		GsApp *app_runtime;
 
@@ -2159,7 +2159,7 @@ gs_plugin_refine_item_size (GsFlatpak *self,
 		                                           cancellable,
 		                                           error))
 			return FALSE;
-		if (gs_app_get_state (app_runtime) == AS_APP_STATE_INSTALLED) {
+		if (gs_app_get_state (app_runtime) == GS_APP_STATE_INSTALLED) {
 			g_debug ("runtime %s is already installed, so not adding size",
 				 gs_app_get_unique_id (app_runtime));
 		} else {
@@ -2233,13 +2233,13 @@ gs_flatpak_refine_appstream_release (XbNode *component, GsApp *app)
 	if (version == NULL)
 		return;
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gs_app_set_version (app, version);
 		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		gs_app_set_update_version (app, version);
 		break;
 	default:
@@ -2524,7 +2524,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
                                 GCancellable *cancellable,
                                 GError **error)
 {
-	AsAppState old_state = gs_app_get_state (app);
+	GsAppState old_state = gs_app_get_state (app);
 	g_autoptr(GRWLockReaderLocker) locker = NULL;
 
 	/* not us */
@@ -2550,7 +2550,7 @@ gs_flatpak_refine_app_unlocked (GsFlatpak *self,
 	}
 
 	/* scope is fast, do unconditionally */
-	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE_LOCAL)
+	if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE_LOCAL)
 		gs_plugin_refine_item_scope (self, app);
 
 	/* if the state was changed, perhaps set the version from the release */
@@ -2727,7 +2727,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 	}
 
 	/* remove */
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	if (!flatpak_installation_remove_remote (self->installation,
 						 gs_app_get_id (app),
 						 cancellable,
@@ -2743,7 +2743,7 @@ gs_flatpak_app_remove_source (GsFlatpak *self,
 		xb_silo_invalidate (self->silo);
 	g_rw_lock_reader_unlock (&self->silo_lock);
 
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	return TRUE;
 }
 
@@ -2782,13 +2782,13 @@ gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_flatpak_create_app (self, origin, FLATPAK_REF (xref_bundle));
-	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
 		if (gs_flatpak_app_get_ref_name (app) == NULL)
 			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
 		return g_steal_pointer (&app);
 	}
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_BUNDLE);
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
 	metadata = flatpak_bundle_ref_get_metadata (xref_bundle);
@@ -2927,14 +2927,14 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* load metadata */
 	app = gs_flatpak_create_app (self, NULL /* origin */, FLATPAK_REF (xref));
-	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
 		if (gs_flatpak_app_get_ref_name (app) == NULL)
 			gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 		return g_steal_pointer (&app);
 	}
 	gs_app_add_quirk (app, GS_APP_QUIRK_HAS_SOURCE);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REF);
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 
 	/* use the data from the flatpakref file as a fallback */
@@ -2999,7 +2999,7 @@ gs_flatpak_file_to_app_ref (GsFlatpak *self,
 
 	/* the new runtime is available from the RuntimeRepo */
 	runtime = gs_app_get_runtime (app);
-	if (runtime != NULL && gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
+	if (runtime != NULL && gs_app_get_state (runtime) == GS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *uri = NULL;
 		uri = g_key_file_get_string (kf, "Flatpak Ref", "RuntimeRepo", NULL);
 		gs_flatpak_app_set_runtime_url (runtime, uri);

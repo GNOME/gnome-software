@@ -296,10 +296,10 @@ on_transaction_progress (GDBusProxy *proxy,
 			GsPluginStatus plugin_status;
 
 			switch (gs_app_get_state (tp->app)) {
-			case AS_APP_STATE_INSTALLING:
+			case GS_APP_STATE_INSTALLING:
 				plugin_status = GS_PLUGIN_STATUS_INSTALLING;
 				break;
-			case AS_APP_STATE_REMOVING:
+			case GS_APP_STATE_REMOVING:
 				plugin_status = GS_PLUGIN_STATUS_REMOVING;
 				break;
 			default:
@@ -462,7 +462,7 @@ app_from_modified_pkg_variant (GsPlugin *plugin, GVariant *variant)
 	gs_app_add_source (app, name);
 	gs_app_set_version (app, old_evr);
 	gs_app_set_update_version (app, new_evr);
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 
 	g_debug ("!%s\n", old_nevra);
 	g_debug ("=%s\n", new_nevra);
@@ -501,14 +501,14 @@ app_from_single_pkg_variant (GsPlugin *plugin, GVariant *variant, gboolean addit
 		/* addition */
 		gs_app_add_source (app, name);
 		gs_app_set_version (app, evr);
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
 		g_debug ("+%s\n", nevra);
 	} else {
 		/* removal */
 		gs_app_add_source (app, name);
 		gs_app_set_version (app, evr);
-		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 
 		g_debug ("-%s\n", nevra);
 	}
@@ -924,7 +924,7 @@ trigger_rpmostree_update (GsPlugin *plugin,
 	g_autoptr(TransactionProgress) tp = transaction_progress_new ();
 
 	/* if we can process this online do not require a trigger */
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 		return TRUE;
 
 	/* only process this app if was created by this plugin */
@@ -1074,9 +1074,9 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 	g_autoptr(TransactionProgress) tp = NULL;
 
 	if (enable)
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	else
-		gs_app_set_state (app, AS_APP_STATE_REMOVING);
+		gs_app_set_state (app, GS_APP_STATE_REMOVING);
 
 	options_builder = g_variant_builder_new (G_VARIANT_TYPE ("a{ss}"));
 	g_variant_builder_add (options_builder, "{ss}", "enabled", enable ? "1" : "0");
@@ -1108,9 +1108,9 @@ gs_plugin_repo_enable (GsPlugin *plugin,
 
 	/* state is known */
 	if (enable)
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	else
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
 	return TRUE;
 }
@@ -1137,7 +1137,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return gs_plugin_repo_enable (plugin, app, TRUE, cancellable, error);
 
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE:
 		if (gs_app_get_source_default (app) == NULL) {
 			g_set_error_literal (error,
 			                     GS_PLUGIN_ERROR,
@@ -1148,7 +1148,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		install_package = gs_app_get_source_default (app);
 		break;
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		if (gs_app_get_local_file (app) == NULL) {
 			g_set_error_literal (error,
 			                     GS_PLUGIN_ERROR,
@@ -1164,11 +1164,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		             GS_PLUGIN_ERROR,
 		             GS_PLUGIN_ERROR_NOT_SUPPORTED,
 		             "do not know how to install app in state %s",
-		             as_app_state_to_string (gs_app_get_state (app)));
+		             gs_app_state_to_string (gs_app_get_state (app)));
 		return FALSE;
 	}
 
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	tp->app = g_object_ref (app);
 
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
@@ -1204,7 +1204,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* state is known */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 	/* get the new icon from the package */
 	gs_app_set_local_file (app, NULL);
@@ -1236,7 +1236,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return gs_plugin_repo_enable (plugin, app, FALSE, cancellable, error);
 
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	tp->app = g_object_ref (app);
 
 	options = make_rpmostree_options_variant (FALSE,  /* reboot */
@@ -1272,7 +1272,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* state is not known: we don't know if we can re-install this app */
-	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+	gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 
 	return TRUE;
 }
@@ -1320,8 +1320,8 @@ resolve_installed_packages_app (GsPlugin *plugin,
 		RpmOstreePackage *pkg = g_ptr_array_index (pkglist, i);
 		if (g_strcmp0 (rpm_ostree_package_get_name (pkg), gs_app_get_source_default (app)) == 0) {
 			gs_app_set_version (app, rpm_ostree_package_get_evr (pkg));
-			if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+			if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+				gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 			if (g_strv_contains ((const gchar * const *) layered_packages,
 			                     rpm_ostree_package_get_name (pkg)) ||
 			    g_strv_contains ((const gchar * const *) layered_local_packages,
@@ -1351,8 +1351,8 @@ resolve_available_packages_app (GsPlugin *plugin,
 	pkg = find_package_by_name (sack, gs_app_get_source_default (app));
 	if (pkg != NULL) {
 		gs_app_set_version (app, dnf_package_get_evr (pkg));
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 
 		/* anything not part of the base system can be removed */
 		gs_app_remove_quirk (app, GS_APP_QUIRK_COMPULSORY);
@@ -1560,7 +1560,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	                                          FALSE,  /* dry-run */
 	                                          FALSE); /* no-overrides */
 
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	tp->app = g_object_ref (app);
 
 	if (!gs_rpmostree_os_call_rebase_sync (priv->os_proxy,
@@ -1595,7 +1595,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	}
 
 	/* state is known */
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 	return TRUE;
 }
 
@@ -1697,7 +1697,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_bundle_kind (app, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* add default source */
 	name = headerGetString (h, RPMTAG_NAME);
@@ -1845,7 +1845,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 
 		enabled = (dnf_repo_get_enabled (repo) & DNF_REPO_ENABLED_PACKAGES) > 0;
-		gs_app_set_state (app, enabled ? AS_APP_STATE_INSTALLED : AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, enabled ? GS_APP_STATE_INSTALLED : GS_APP_STATE_AVAILABLE);
 
 		description = dnf_repo_get_description (repo);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, description);

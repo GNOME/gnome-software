@@ -73,7 +73,7 @@ gboolean	 gs_app_list_has_flag		(GsAppList	*list,
 						 GsAppListFlags	 flag);
 void		 gs_app_list_add_flag		(GsAppList	*list,
 						 GsAppListFlags	 flag);
-AsAppState	 gs_app_list_get_state		(GsAppList	*list);
+GsAppState	 gs_app_list_get_state		(GsAppList	*list);
 guint		 gs_app_list_get_progress	(GsAppList	*list);
 
 G_END_DECLS

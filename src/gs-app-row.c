@@ -87,7 +87,7 @@ gs_app_row_get_description (GsAppRow *app_row)
 
 	/* if missing summary is set, return it without escaping in order to
 	 * correctly show hyperlinks */
-	if (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE) {
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_UNAVAILABLE) {
 		tmp = gs_app_get_summary_missing (priv->app);
 		if (tmp != NULL && tmp[0] != '\0')
 			return g_string_new (tmp);
@@ -119,7 +119,7 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 
 	/* label */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button, TRUE);
 		if (missing_search_result) {
 			/* TRANSLATORS: this is a button next to the search results that
@@ -132,20 +132,20 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install…"));
 		}
 		break;
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows to cancel a queued install of the application */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
 		break;
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		break;
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (priv->button, TRUE);
 		if (priv->show_update) {
 			/* TRANSLATORS: this is a button in the updates panel
@@ -157,21 +157,21 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 			gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
 		}
 		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_INSTALLED:
 		if (!gs_app_has_quirk (priv->app, GS_APP_QUIRK_COMPULSORY))
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily removed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * shows the status of an application being installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
 		break;
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * shows the status of an application being erased */
@@ -183,17 +183,17 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 
 	/* visible */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_UNAVAILABLE:
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
-	case AS_APP_STATE_UPDATABLE_LIVE:
-	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_visible (priv->button, TRUE);
 		break;
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (priv->button,
 					!gs_app_has_quirk (priv->app,
 							   GS_APP_QUIRK_COMPULSORY));
@@ -209,11 +209,11 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 		gtk_style_context_remove_class (context, "destructive-action");
 	} else {
 		switch (gs_app_get_state (priv->app)) {
-		case AS_APP_STATE_UPDATABLE:
-		case AS_APP_STATE_INSTALLED:
+		case GS_APP_STATE_UPDATABLE:
+		case GS_APP_STATE_INSTALLED:
 			gtk_style_context_add_class (context, "destructive-action");
 			break;
-		case AS_APP_STATE_UPDATABLE_LIVE:
+		case GS_APP_STATE_UPDATABLE_LIVE:
 			if (priv->show_update)
 				gtk_style_context_remove_class (context, "destructive-action");
 			else
@@ -227,8 +227,8 @@ gs_app_row_refresh_button (GsAppRow *app_row, gboolean missing_search_result)
 
 	/* always insensitive when in selection mode */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
 		gtk_widget_set_sensitive (priv->button, FALSE);
 		break;
 	default:
@@ -251,12 +251,12 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		return;
 
 	/* is this a missing search result from the extras page? */
-	missing_search_result = (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE &&
+	missing_search_result = (gs_app_get_state (priv->app) == GS_APP_STATE_UNAVAILABLE &&
 	                         gs_app_get_url (priv->app, AS_URL_KIND_MISSING) != NULL);
 
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gs_progress_button_set_progress (GS_PROGRESS_BUTTON (priv->button),
 		                                 gs_app_get_progress (priv->app));
 		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button), TRUE);
@@ -302,9 +302,9 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 	/* installed tag */
 	if (!priv->show_buttons) {
 		switch (gs_app_get_state (priv->app)) {
-		case AS_APP_STATE_UPDATABLE:
-		case AS_APP_STATE_UPDATABLE_LIVE:
-		case AS_APP_STATE_INSTALLED:
+		case GS_APP_STATE_UPDATABLE:
+		case GS_APP_STATE_UPDATABLE_LIVE:
+		case GS_APP_STATE_INSTALLED:
 			gtk_widget_set_visible (priv->label_installed, TRUE);
 			break;
 		default:
@@ -410,7 +410,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	/* pending label */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->label, TRUE);
 		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
 		break;
@@ -421,7 +421,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	/* spinner */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		gtk_spinner_start (GTK_SPINNER (priv->spinner));
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		break;
@@ -435,8 +435,8 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	/* hide buttons in the update list, unless the app is live updatable */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_UPDATABLE_LIVE:
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (priv->button_box, TRUE);
 		break;
 	default:
@@ -449,8 +449,8 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 		size = gs_app_get_size_installed (priv->app);
 	} else if (priv->show_update) {
 		switch (gs_app_get_state (priv->app)) {
-		case AS_APP_STATE_UPDATABLE_LIVE:
-		case AS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_UPDATABLE_LIVE:
+		case GS_APP_STATE_INSTALLING:
 			size = gs_app_get_size_download (priv->app);
 			break;
 		default:

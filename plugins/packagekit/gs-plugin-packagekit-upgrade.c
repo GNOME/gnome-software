@@ -67,7 +67,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 		return TRUE;
 
 	/* ask PK to download enough packages to upgrade the system */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	gs_packagekit_helper_set_progress_app (helper, app);
 	g_mutex_lock (&priv->task_mutex);
 	results = pk_task_upgrade_system_sync (priv->task,
@@ -83,6 +83,6 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	}
 
 	/* state is known */
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 	return TRUE;
 }

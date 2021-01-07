@@ -623,7 +623,7 @@ refresh_third_party_repo (GsOverviewPage *self)
 	/* only show if never prompted and third party repo is available */
 	if (g_settings_get_boolean (priv->settings, "show-nonfree-prompt") &&
 	    priv->third_party_repo != NULL &&
-	    gs_app_get_state (priv->third_party_repo) == AS_APP_STATE_AVAILABLE) {
+	    gs_app_get_state (priv->third_party_repo) == GS_APP_STATE_AVAILABLE) {
 		gtk_widget_set_visible (priv->infobar_third_party, TRUE);
 	} else {
 		gtk_widget_set_visible (priv->infobar_third_party, FALSE);
@@ -889,7 +889,7 @@ third_party_response_cb (GtkInfoBar *info_bar,
 	if (response_id != GTK_RESPONSE_YES)
 		return;
 
-	if (gs_app_get_state (priv->third_party_repo) == AS_APP_STATE_AVAILABLE) {
+	if (gs_app_get_state (priv->third_party_repo) == GS_APP_STATE_AVAILABLE) {
 		gs_page_install_app (GS_PAGE (self), priv->third_party_repo,
 		                     GS_SHELL_INTERACTION_FULL,
 		                     priv->cancellable);

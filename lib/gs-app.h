@@ -29,6 +29,40 @@ struct _GsAppClass
 };
 
 /**
+ * GsAppState:
+ * @GS_APP_STATE_UNKNOWN:			Unknown state
+ * @GS_APP_STATE_INSTALLED:			Application is installed
+ * @GS_APP_STATE_AVAILABLE:			Application is available
+ * @GS_APP_STATE_AVAILABLE_LOCAL:		Application is locally available as a file
+ * @GS_APP_STATE_UPDATABLE:			Application is installed and updatable
+ * @GS_APP_STATE_UNAVAILABLE:			Application is referenced, but not available
+ * @GS_APP_STATE_QUEUED_FOR_INSTALL:		Application is queued for install
+ * @GS_APP_STATE_INSTALLING:			Application is being installed
+ * @GS_APP_STATE_REMOVING:			Application is being removed
+ * @GS_APP_STATE_UPDATABLE_LIVE:		Application is installed and updatable live
+ * @GS_APP_STATE_PURCHASABLE:			Application is available for purchasing
+ * @GS_APP_STATE_PURCHASING:			Application is being purchased
+ *
+ * The application state.
+ **/
+typedef enum {
+	GS_APP_STATE_UNKNOWN,				/* Since: 0.2.2 */
+	GS_APP_STATE_INSTALLED,				/* Since: 0.2.2 */
+	GS_APP_STATE_AVAILABLE,				/* Since: 0.2.2 */
+	GS_APP_STATE_AVAILABLE_LOCAL,			/* Since: 0.2.2 */
+	GS_APP_STATE_UPDATABLE,				/* Since: 0.2.2 */
+	GS_APP_STATE_UNAVAILABLE,			/* Since: 0.2.2 */
+	GS_APP_STATE_QUEUED_FOR_INSTALL,		/* Since: 0.2.2 */
+	GS_APP_STATE_INSTALLING,			/* Since: 0.2.2 */
+	GS_APP_STATE_REMOVING,				/* Since: 0.2.2 */
+	GS_APP_STATE_UPDATABLE_LIVE,			/* Since: 0.5.4 */
+	GS_APP_STATE_PURCHASABLE,			/* Since: 0.5.17 */
+	GS_APP_STATE_PURCHASING,			/* Since: 0.5.17 */
+	/*< private >*/
+	GS_APP_STATE_LAST
+} GsAppState;
+
+/**
  * GsAppKudo:
  * @GS_APP_KUDO_MY_LANGUAGE:		Localised in my language
  * @GS_APP_KUDO_RECENT_RELEASE:		Released recently
@@ -174,6 +208,8 @@ typedef enum {
  */
 #define GS_APP_PROGRESS_UNKNOWN G_MAXUINT
 
+const gchar 	*gs_app_state_to_string (GsAppState state);
+
 GsApp		*gs_app_new			(const gchar	*id);
 G_DEPRECATED_FOR(gs_app_set_from_unique_id)
 GsApp		*gs_app_new_from_unique_id	(const gchar	*unique_id);
@@ -189,9 +225,9 @@ void		 gs_app_set_id			(GsApp		*app,
 AsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
 						 AsAppKind	 kind);
-AsAppState	 gs_app_get_state		(GsApp		*app);
+GsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
-						 AsAppState	 state);
+						 GsAppState	 state);
 AsAppScope	 gs_app_get_scope		(GsApp		*app);
 void		 gs_app_set_scope		(GsApp		*app,
 						 AsAppScope	 scope);

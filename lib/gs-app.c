@@ -95,8 +95,8 @@ typedef struct
 	guint64			 size_installed;
 	guint64			 size_download;
 	AsAppKind		 kind;
-	AsAppState		 state;
-	AsAppState		 state_recover;
+	GsAppState		 state;
+	GsAppState		 state_recover;
 	AsAppScope		 scope;
 	AsBundleKind		 bundle_kind;
 	guint			 progress;  /* integer 0–100 (inclusive), or %GS_APP_PROGRESS_UNKNOWN */
@@ -187,6 +187,44 @@ _g_set_array (GArray **array_ptr, GArray *new_array)
 		g_array_unref (*array_ptr);
 	*array_ptr = g_array_ref (new_array);
 	return TRUE;
+}
+
+/**
+ * gs_app_state_to_string:
+ * @state: the #GsAppState.
+ *
+ * Converts the enumerated value to an text representation.
+ *
+ * Returns: string version of @state, or %NULL for unknown
+ **/
+const gchar *
+gs_app_state_to_string (GsAppState state)
+{
+	if (state == GS_APP_STATE_UNKNOWN)
+		return "unknown";
+	if (state == GS_APP_STATE_INSTALLED)
+		return "installed";
+	if (state == GS_APP_STATE_AVAILABLE)
+		return "available";
+	if (state == GS_APP_STATE_PURCHASABLE)
+		return "purchasable";
+	if (state == GS_APP_STATE_PURCHASING)
+		return "purchasing";
+	if (state == GS_APP_STATE_AVAILABLE_LOCAL)
+		return "local";
+	if (state == GS_APP_STATE_QUEUED_FOR_INSTALL)
+		return "queued";
+	if (state == GS_APP_STATE_INSTALLING)
+		return "installing";
+	if (state == GS_APP_STATE_REMOVING)
+		return "removing";
+	if (state == GS_APP_STATE_UPDATABLE)
+		return "updatable";
+	if (state == GS_APP_STATE_UPDATABLE_LIVE)
+		return "updatable-live";
+	if (state == GS_APP_STATE_UNAVAILABLE)
+		return "unavailable";
+	return NULL;
 }
 
 static void
@@ -450,7 +488,7 @@ gs_app_to_string_append (GsApp *app, GString *str)
 
 	g_string_append_printf (str, " [%p]\n", app);
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (priv->kind));
-	gs_app_kv_lpad (str, "state", as_app_state_to_string (priv->state));
+	gs_app_kv_lpad (str, "state", gs_app_state_to_string (priv->state));
 	if (priv->quirk > 0) {
 		g_autofree gchar *qstr = gs_app_quirk_to_string (priv->quirk);
 		gs_app_kv_lpad (str, "quirk", qstr);
@@ -841,15 +879,15 @@ gs_app_set_bundle_kind (GsApp *app, AsBundleKind bundle_kind)
  *
  * Gets the state of the application.
  *
- * Returns: the #AsAppState, e.g. %AS_APP_STATE_INSTALLED
+ * Returns: the #GsAppState, e.g. %GS_APP_STATE_INSTALLED
  *
  * Since: 3.22
  **/
-AsAppState
+GsAppState
 gs_app_get_state (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
-	g_return_val_if_fail (GS_IS_APP (app), AS_APP_STATE_UNKNOWN);
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_STATE_UNKNOWN);
 	return priv->state;
 }
 
@@ -905,15 +943,15 @@ gs_app_set_state_recover (GsApp *app)
 
 	g_return_if_fail (GS_IS_APP (app));
 
-	if (priv->state_recover == AS_APP_STATE_UNKNOWN)
+	if (priv->state_recover == GS_APP_STATE_UNKNOWN)
 		return;
 	if (priv->state_recover == priv->state)
 		return;
 
 	g_debug ("recovering state on %s from %s to %s",
 		 priv->id,
-		 as_app_state_to_string (priv->state),
-		 as_app_state_to_string (priv->state_recover));
+		 gs_app_state_to_string (priv->state),
+		 gs_app_state_to_string (priv->state_recover));
 
 	/* make sure progress gets reset when recovering state, to prevent
 	 * confusing initial states when going through more than one attempt */
@@ -925,7 +963,7 @@ gs_app_set_state_recover (GsApp *app)
 
 /* mutex must be held */
 static gboolean
-gs_app_set_state_internal (GsApp *app, AsAppState state)
+gs_app_set_state_internal (GsApp *app, GsAppState state)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	gboolean state_change_ok = FALSE;
@@ -936,84 +974,84 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 
 	/* check the state change is allowed */
 	switch (priv->state) {
-	case AS_APP_STATE_UNKNOWN:
+	case GS_APP_STATE_UNKNOWN:
 		/* unknown has to go into one of the stable states */
-		if (state == AS_APP_STATE_INSTALLED ||
-		    state == AS_APP_STATE_QUEUED_FOR_INSTALL ||
-		    state == AS_APP_STATE_AVAILABLE ||
-		    state == AS_APP_STATE_AVAILABLE_LOCAL ||
-		    state == AS_APP_STATE_UPDATABLE ||
-		    state == AS_APP_STATE_UPDATABLE_LIVE ||
-		    state == AS_APP_STATE_UNAVAILABLE)
+		if (state == GS_APP_STATE_INSTALLED ||
+		    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
+		    state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_AVAILABLE_LOCAL ||
+		    state == GS_APP_STATE_UPDATABLE ||
+		    state == GS_APP_STATE_UPDATABLE_LIVE ||
+		    state == GS_APP_STATE_UNAVAILABLE)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_INSTALLED:
 		/* installed has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_REMOVING ||
-		    state == AS_APP_STATE_UNAVAILABLE ||
-		    state == AS_APP_STATE_UPDATABLE ||
-		    state == AS_APP_STATE_UPDATABLE_LIVE)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_UNAVAILABLE ||
+		    state == GS_APP_STATE_UPDATABLE ||
+		    state == GS_APP_STATE_UPDATABLE_LIVE)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_INSTALLING ||
-		    state == AS_APP_STATE_AVAILABLE)
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE:
 		/* available has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_QUEUED_FOR_INSTALL ||
-		    state == AS_APP_STATE_INSTALLING)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_QUEUED_FOR_INSTALL ||
+		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		/* installing has to go into an stable state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_INSTALLED ||
-		    state == AS_APP_STATE_UPDATABLE ||
-		    state == AS_APP_STATE_UPDATABLE_LIVE ||
-		    state == AS_APP_STATE_AVAILABLE)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_INSTALLED ||
+		    state == GS_APP_STATE_UPDATABLE ||
+		    state == GS_APP_STATE_UPDATABLE_LIVE ||
+		    state == GS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		/* removing has to go into an stable state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_AVAILABLE ||
-		    state == AS_APP_STATE_INSTALLED)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_INSTALLED)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE:
 		/* updatable has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_REMOVING ||
-		    state == AS_APP_STATE_INSTALLING)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		/* updatable-live has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_REMOVING ||
-		    state == AS_APP_STATE_INSTALLING)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_REMOVING ||
+		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		/* updatable has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_AVAILABLE)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		/* local has to go into an action state */
-		if (state == AS_APP_STATE_UNKNOWN ||
-		    state == AS_APP_STATE_INSTALLING)
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
 	default:
 		g_warning ("state %s unhandled",
-			   as_app_state_to_string (priv->state));
+			   gs_app_state_to_string (priv->state));
 		g_assert_not_reached ();
 	}
 
@@ -1021,22 +1059,22 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	if (!state_change_ok) {
 		g_warning ("State change on %s from %s to %s is not OK",
 			   gs_app_get_unique_id_unlocked (app),
-			   as_app_state_to_string (priv->state),
-			   as_app_state_to_string (state));
+			   gs_app_state_to_string (priv->state),
+			   gs_app_state_to_string (state));
 	}
 
 	priv->state = state;
 
-	if (state == AS_APP_STATE_UNKNOWN ||
-	    state == AS_APP_STATE_AVAILABLE_LOCAL ||
-	    state == AS_APP_STATE_AVAILABLE)
+	if (state == GS_APP_STATE_UNKNOWN ||
+	    state == GS_APP_STATE_AVAILABLE_LOCAL ||
+	    state == GS_APP_STATE_AVAILABLE)
 		priv->install_date = 0;
 
 	/* save this to simplify error handling in the plugins */
 	switch (state) {
-	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_REMOVING:
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		/* transient, so ignore */
 		break;
 	default:
@@ -1119,11 +1157,11 @@ gs_app_set_pending_action_internal (GsApp *app,
 /**
  * gs_app_set_state:
  * @app: a #GsApp
- * @state: a #AsAppState, e.g. AS_APP_STATE_UPDATABLE_LIVE
+ * @state: a #GsAppState, e.g. GS_APP_STATE_UPDATABLE_LIVE
  *
  * This sets the state of the application.
  * The following state diagram explains the typical states.
- * All applications start in state %AS_APP_STATE_UNKNOWN,
+ * All applications start in state %GS_APP_STATE_UNKNOWN,
  * but the frontend is not supposed to see GsApps with this state.
  *
  * Plugins are responsible for changing the state to one of the other
@@ -1141,7 +1179,7 @@ gs_app_set_pending_action_internal (GsApp *app,
  * Since: 3.22
  **/
 void
-gs_app_set_state (GsApp *app, AsAppState state)
+gs_app_set_state (GsApp *app, GsAppState state)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_autoptr(GMutexLocker) locker = NULL;
@@ -1154,7 +1192,7 @@ gs_app_set_state (GsApp *app, AsAppState state)
 		 * actions that usually change the state, we assign it to the
 		 * appropriate action here */
 		GsPluginAction action = GS_PLUGIN_ACTION_UNKNOWN;
-		if (priv->state == AS_APP_STATE_QUEUED_FOR_INSTALL)
+		if (priv->state == GS_APP_STATE_QUEUED_FOR_INSTALL)
 			action = GS_PLUGIN_ACTION_INSTALL;
 		gs_app_set_pending_action_internal (app, action);
 
@@ -3139,7 +3177,7 @@ gs_app_get_size_download (GsApp *app)
 
 	/* add the runtime if this is not installed */
 	if (priv->runtime != NULL) {
-		if (gs_app_get_state (priv->runtime) == AS_APP_STATE_AVAILABLE)
+		if (gs_app_get_state (priv->runtime) == GS_APP_STATE_AVAILABLE)
 			sz += gs_app_get_size_installed (priv->runtime);
 	}
 
@@ -3442,8 +3480,8 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 
 	/* if the app is updatable-live and any related app is not then
 	 * degrade to the offline state */
-	if (priv->state == AS_APP_STATE_UPDATABLE_LIVE &&
-	    priv2->state == AS_APP_STATE_UPDATABLE)
+	if (priv->state == GS_APP_STATE_UPDATABLE_LIVE &&
+	    priv2->state == GS_APP_STATE_UPDATABLE)
 		priv->state = priv2->state;
 
 	gs_app_list_add (priv->related, app2);
@@ -3578,10 +3616,10 @@ gs_app_is_installed (GsApp *app)
 {
 	GsAppPrivate *priv = gs_app_get_instance_private (app);
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	return (priv->state == AS_APP_STATE_INSTALLED) ||
-	       (priv->state == AS_APP_STATE_UPDATABLE) ||
-	       (priv->state == AS_APP_STATE_UPDATABLE_LIVE) ||
-	       (priv->state == AS_APP_STATE_REMOVING);
+	return (priv->state == GS_APP_STATE_INSTALLED) ||
+	       (priv->state == GS_APP_STATE_UPDATABLE) ||
+	       (priv->state == GS_APP_STATE_UPDATABLE_LIVE) ||
+	       (priv->state == GS_APP_STATE_REMOVING);
 }
 
 /**
@@ -3601,8 +3639,8 @@ gs_app_is_updatable (GsApp *app)
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	if (priv->kind == AS_APP_KIND_OS_UPGRADE)
 		return TRUE;
-	return (priv->state == AS_APP_STATE_UPDATABLE) ||
-	       (priv->state == AS_APP_STATE_UPDATABLE_LIVE);
+	return (priv->state == GS_APP_STATE_UPDATABLE) ||
+	       (priv->state == GS_APP_STATE_UPDATABLE_LIVE);
 }
 
 /**
@@ -4460,9 +4498,9 @@ gs_app_class_init (GsAppClass *klass)
 	 * GsApp:state:
 	 */
 	obj_props[PROP_STATE] = g_param_spec_uint ("state", NULL, NULL,
-				   AS_APP_STATE_UNKNOWN,
-				   AS_APP_STATE_LAST,
-				   AS_APP_STATE_UNKNOWN,
+				   GS_APP_STATE_UNKNOWN,
+				   GS_APP_STATE_LAST,
+				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	/**
@@ -4682,7 +4720,7 @@ gs_app_get_origin_ui (GsApp *app)
 	}
 
 	/* use "Local file" rather than the filename for local files */
-	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE_LOCAL) {
 		/* TRANSLATORS: this is a locally downloaded package */
 		return g_strdup (_("Local file"));
 	}

@@ -57,7 +57,7 @@ refresh_ui (GsThirdPartyRepoRow *row)
 
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		gs_progress_button_set_progress (GS_PROGRESS_BUTTON (priv->button),
 		                                 gs_app_get_progress (priv->app));
 		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button), TRUE);
@@ -69,7 +69,7 @@ refresh_ui (GsThirdPartyRepoRow *row)
 
 	/* set button text */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_UNAVAILABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		/* TRANSLATORS: this is a button in the software repositories
 		   dialog for installing a repo.
 		   The ellipsis indicates that further steps are required */
@@ -77,31 +77,31 @@ refresh_ui (GsThirdPartyRepoRow *row)
 		/* enable button */
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
-	case AS_APP_STATE_AVAILABLE:
-	case AS_APP_STATE_AVAILABLE_LOCAL:
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE_LOCAL:
 		/* TRANSLATORS: this is a button in the software repositories
 		   dialog for installing a repo */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("_Install"));
 		/* enable button */
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		/* TRANSLATORS: this is a button in the software repositories
 		   dialog for removing multiple repos */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("_Remove All"));
 		/* enable button */
 		gtk_widget_set_sensitive (priv->button, TRUE);
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		/* TRANSLATORS: this is a button in the software repositories dialog
 		   that shows the status of a repo being installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
 		/* disable button */
 		gtk_widget_set_sensitive (priv->button, FALSE);
 		break;
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		/* TRANSLATORS: this is a button in the software repositories dialog
 		   that shows the status of a repo being removed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Removing"));
@@ -113,7 +113,7 @@ refresh_ui (GsThirdPartyRepoRow *row)
 	}
 
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->button, FALSE);
 		break;
 	default:
@@ -123,9 +123,9 @@ refresh_ui (GsThirdPartyRepoRow *row)
 
 	context = gtk_widget_get_style_context (priv->button);
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UPDATABLE_LIVE:
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE_LIVE:
 		gtk_style_context_add_class (context, "destructive-action");
 		break;
 	default:

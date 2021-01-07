@@ -111,13 +111,13 @@ gs_installed_page_invalidate_sort_idle (gpointer user_data)
 {
 	GsAppRow *app_row = user_data;
 	GsApp *app = gs_app_row_get_app (app_row);
-	AsAppState state = gs_app_get_state (app);
+	GsAppState state = gs_app_get_state (app);
 
 	gtk_list_box_row_changed (GTK_LIST_BOX_ROW (app_row));
 
 	/* if the app has been uninstalled (which can happen from another view)
 	 * we should removed it from the installed view */
-	if (state == AS_APP_STATE_AVAILABLE || state == AS_APP_STATE_UNKNOWN)
+	if (state == GS_APP_STATE_AVAILABLE || state == GS_APP_STATE_UNKNOWN)
 		gs_installed_page_unreveal_row (app_row);
 
 	g_object_unref (app_row);
@@ -320,13 +320,13 @@ gs_installed_page_get_app_sort_key (GsApp *app)
 
 	/* sort installed, removing, other */
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		g_string_append (key, "1:");
 		break;
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		g_string_append (key, "2:");
 		break;
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_REMOVING:
 		g_string_append (key, "3:");
 		break;
 	default:

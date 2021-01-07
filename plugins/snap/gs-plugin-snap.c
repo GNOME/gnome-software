@@ -974,11 +974,11 @@ refine_app_with_client (GsPlugin             *plugin,
 
 	if (local_snap != NULL && g_strcmp0 (tracking_channel, channel) == 0) {
 		/* Do not set to installed state if app is updatable */
-		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE) {
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		}
 	} else
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	gs_app_add_quirk (app, GS_APP_QUIRK_DO_NOT_AUTO_UPDATE);
 
 	/* use store information for basic metadata over local information */
@@ -1151,7 +1151,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	name = gs_app_get_metadata_item (app, "snap::name");
 	channel = gs_app_get_branch (app);
 
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
 	if (g_strcmp0 (gs_app_get_metadata_item (app, "snap::confinement"), "classic") == 0)
 		flags |= SNAPD_INSTALL_FLAGS_CLASSIC;
@@ -1170,7 +1170,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 
 	return TRUE;
 }
@@ -1274,13 +1274,13 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (client == NULL)
 		return FALSE;
 
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	if (!snapd_client_remove2_sync (client, SNAPD_REMOVE_FLAGS_NONE, gs_app_get_metadata_item (app, "snap::name"), progress_cb, app, cancellable, error)) {
 		gs_app_set_state_recover (app);
 		snapd_error_convert (error);
 		return FALSE;
 	}
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	return TRUE;
 }
 
@@ -1314,8 +1314,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 		/* If for some reason the app is already getting updated, then
 		 * don't change its state */
-		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLING)
-			gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		if (gs_app_get_state (app) != GS_APP_STATE_INSTALLING)
+			gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 
 		/* Add GsApp to updatable GsAppList */
 		gs_app_list_add (list, app);
@@ -1342,7 +1342,7 @@ gs_plugin_update (GsPlugin *plugin,
 		gchar *name = gs_app_get_metadata_item (app, "snap::name");
 
 		/* Refresh the snap */
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
 		if (!snapd_client_refresh_sync (client, name, NULL, progress_cb, app, cancellable, error)) {
 			gs_app_set_state_recover (app);
@@ -1350,7 +1350,7 @@ gs_plugin_update (GsPlugin *plugin,
 			return FALSE;
 		}
 
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	}
 
 	return TRUE;
