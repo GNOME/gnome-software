@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2020-12-04 14:04+0000\n"
-"PO-Revision-Date: 2020-12-08 20:55+0200\n"
+"POT-Creation-Date: 2021-01-06 23:16+0000\n"
+"PO-Revision-Date: 2021-01-07 13:12+0100\n"
 "Last-Translator: Florentina Mușat <florentina.musat.28@gmail.com>\n"
 "Language-Team: Gnome Romanian Translation Team <gnomero-list@lists."
 "sourceforge.net>\n"
@@ -71,7 +71,7 @@ msgstr "Panoul cu actualizări"
 msgid "The update details"
 msgstr "Detaliile actualizărilor"
 
-#: data/appdata/org.gnome.Software.appdata.xml.in:1517
+#: data/appdata/org.gnome.Software.appdata.xml.in:1528
 msgid "The GNOME Project"
 msgstr "Proiectul GNOME"
 
@@ -435,53 +435,53 @@ msgid "Removing"
 msgstr "Se elimină"
 
 #. TRANSLATORS: this is a command line option
-#: src/gs-application.c:110
+#: src/gs-application.c:117
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Mod de pornire: fie „updates” (actualizări), „updated” (actualizat), "
 "„installed” (instalat) sau „overview” (prezentare generală)"
 
-#: src/gs-application.c:110
+#: src/gs-application.c:117
 msgid "MODE"
 msgstr "MOD"
 
-#: src/gs-application.c:112
+#: src/gs-application.c:119
 msgid "Search for applications"
 msgstr "Căutați aplicații"
 
-#: src/gs-application.c:112
+#: src/gs-application.c:119
 msgid "SEARCH"
 msgstr "CAUTĂ"
 
-#: src/gs-application.c:114
+#: src/gs-application.c:121
 msgid "Show application details (using application ID)"
 msgstr "Arată detaliile aplicației (folosind ID-ul aplicației)"
 
-#: src/gs-application.c:114 src/gs-application.c:118
+#: src/gs-application.c:121 src/gs-application.c:125
 msgid "ID"
 msgstr "ID"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:123
 msgid "Show application details (using package name)"
 msgstr "Arată detaliile aplicației (folosind numele pachetului)"
 
-#: src/gs-application.c:116
+#: src/gs-application.c:123
 msgid "PKGNAME"
 msgstr "NUME PACHET"
 
-#: src/gs-application.c:118
+#: src/gs-application.c:125
 msgid "Install the application (using application ID)"
 msgstr "Instalează aplicația (folosind ID-ul aplicației)"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:127
 msgid "Open a local package file"
 msgstr "Deschide un pachet local"
 
-#: src/gs-application.c:120
+#: src/gs-application.c:127
 msgid "FILENAME"
 msgstr "NUME FIȘIER"
 
-#: src/gs-application.c:122
+#: src/gs-application.c:129
 msgid ""
 "The kind of interaction expected for this action: either ‘none’, ‘notify’, "
 "or ‘full’"
@@ -489,51 +489,51 @@ msgstr ""
 "Tipul de interacție așteptat de la această acțiune: fie „none”, „notifiy”, "
 "sau „full”"
 
-#: src/gs-application.c:125
+#: src/gs-application.c:132
 msgid "Show verbose debugging information"
 msgstr "Arată informații detaliate de depanare"
 
-#: src/gs-application.c:127
+#: src/gs-application.c:134
 msgid "Installs any pending updates in the background"
 msgstr "Instalează orice actualizări apărute în fundal"
 
-#: src/gs-application.c:129
+#: src/gs-application.c:136
 msgid "Show update preferences"
 msgstr "Arată preferințele de actualizare"
 
-#: src/gs-application.c:131
+#: src/gs-application.c:138
 msgid "Quit the running instance"
 msgstr "Ieși din instanța în curs de rulare"
 
-#: src/gs-application.c:133
+#: src/gs-application.c:140
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferă surse de fișiere locale pentru AppStream"
 
-#: src/gs-application.c:135
+#: src/gs-application.c:142
 msgid "Show version number"
 msgstr "Arată numărul de versiune"
 
-#: src/gs-application.c:328
+#: src/gs-application.c:335
 msgid "translator-credits"
 msgstr ""
 "Bogdan Mințoi <mintoi [dot ] bogdan [at] gmail [dot] com> 2014\n"
 "Adrian Gabor <raziel_theripper [at] yahoo [dot] com> 2015\n"
-"Daniel Șerbănescu <daniel [at] serbanescu [dot] dk> 2016-2020\n"
+"Daniel Șerbănescu <daniel [at] serbanescu [dot] dk> 2016-2021\n"
 "Florentina Mușat <florentina [dot] musat [dot] 28 [at] gmail [dot] com>, 2020"
 
 #. TRANSLATORS: this is the title of the about window
 #. TRANSLATORS: this is the menu item that opens the about window
-#: src/gs-application.c:333 src/gs-shell.c:2124
+#: src/gs-application.c:340 src/gs-shell.c:2124
 msgid "About Software"
 msgstr "Despre Aplicații"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: src/gs-application.c:336
+#: src/gs-application.c:343
 msgid "A nice way to manage the software on your system."
 msgstr "Un mod plăcut de a administra aplicații pentru sistemul dumneavoastră."
 
 #. TRANSLATORS: we tried to show an app that did not exist
-#: src/gs-application.c:564
+#: src/gs-application.c:571
 msgid "Sorry! There are no details for that application."
 msgstr "Nu există detalii pentru aplicația aceea."
 
@@ -560,7 +560,7 @@ msgstr "Anulează"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
 #. TRANSLATORS: update the fw
-#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:334
+#: src/gs-app-row.c:146 src/gs-common.c:289 src/gs-page.c:338
 msgid "Install"
 msgstr "Instalează"
 
@@ -574,7 +574,7 @@ msgstr "Actualizează"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #. TRANSLATORS: this is button text to remove the repo
-#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:492
+#: src/gs-app-row.c:157 src/gs-app-row.c:166 src/gs-page.c:496
 #: src/gs-repos-dialog.c:327
 msgid "Remove"
 msgstr "Elimină"
@@ -764,7 +764,7 @@ msgstr "%s este furnizat de către „%s”."
 #: src/gs-common.c:262
 msgid "This software repository must be enabled to continue installation."
 msgstr ""
-"Aceast depozit de aplicații trebuie activat petru a putea continua "
+"Acest depozit de aplicații trebuie activat pentru a putea continua "
 "instalarea."
 
 #. TRANSLATORS: Laws are geographical, urgh...
@@ -1357,67 +1357,67 @@ msgid "Early Childhood"
 msgstr "Copilărie timpurie"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: src/gs-dbus-helper.c:282
+#: src/gs-dbus-helper.c:283
 msgid "An application"
 msgstr "O aplicație"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: src/gs-dbus-helper.c:288
+#: src/gs-dbus-helper.c:289
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "%s cere suport adițional pentru formatul de fișier."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:290
+#: src/gs-dbus-helper.c:291
 msgid "Additional MIME Types Required"
 msgstr "Sunt necesare tipuri MIME adiționale"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: src/gs-dbus-helper.c:294
+#: src/gs-dbus-helper.c:295
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "%s cere fonturi adiționale."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:296
+#: src/gs-dbus-helper.c:297
 msgid "Additional Fonts Required"
 msgstr "Sunt necesare fonturi adiționale"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: src/gs-dbus-helper.c:300
+#: src/gs-dbus-helper.c:301
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "%s cere codecuri multimedia adiționale."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:302
+#: src/gs-dbus-helper.c:303
 msgid "Additional Multimedia Codecs Required"
 msgstr "Sunt necesare codecuri multimedia adiționale"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: src/gs-dbus-helper.c:306
+#: src/gs-dbus-helper.c:307
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "%s cere drivere adiționale pentru imprimantă."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:308
+#: src/gs-dbus-helper.c:309
 msgid "Additional Printer Drivers Required"
 msgstr "Sunt necesare drivere adiționale pentru imprimantă"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: src/gs-dbus-helper.c:312
+#: src/gs-dbus-helper.c:313
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "%s cere pachete adiționale."
 
 #. TRANSLATORS: notification title
-#: src/gs-dbus-helper.c:314
+#: src/gs-dbus-helper.c:315
 msgid "Additional Packages Required"
 msgstr "Sunt necesare pachete adiționale"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: src/gs-dbus-helper.c:323
+#: src/gs-dbus-helper.c:324
 msgid "Find in Software"
 msgstr "Caută în Aplicații"
 
@@ -1626,50 +1626,50 @@ msgstr "Necunoscut"
 msgid "You need internet access to write a review"
 msgstr "Aveți nevoie de acces la internet pentru a scrie o recenzie"
 
-#: src/gs-details-page.c:1919 src/gs-details-page.c:1935
+#: src/gs-details-page.c:1929 src/gs-details-page.c:1945
 #, c-format
 msgid "Unable to find “%s”"
 msgstr "Nu s-a putut găsi „%s”"
 
-#: src/gs-details-page.c:2001 src/gs-details-page.c:2036
+#: src/gs-details-page.c:2011 src/gs-details-page.c:2046
 msgid "Loading…"
 msgstr "Se încarcă…"
 
-#: src/gs-details-page.c:2456
+#: src/gs-details-page.c:2466
 msgid "The application contains no age-inappropriate content."
 msgstr "Aplicația nu conține conținut neadecvat vârstei."
 
 #. TRANSLATORS: see the wikipedia page
-#: src/gs-details-page.c:2565
+#: src/gs-details-page.c:2575
 msgid "Public domain"
 msgstr "Domeniul public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://de.wikipedia.org/wiki/Gemeinfreiheit
-#: src/gs-details-page.c:2568
+#: src/gs-details-page.c:2578
 msgid "https://en.wikipedia.org/wiki/Public_domain"
 msgstr "https://ro.wikipedia.org/wiki/Domeniul_public"
 
 #. TRANSLATORS: Replace the link with a version in your language,
 #. * e.g. https://www.gnu.org/philosophy/free-sw.de
-#: src/gs-details-page.c:2575
+#: src/gs-details-page.c:2585
 msgid "https://www.gnu.org/philosophy/free-sw"
 msgstr "https://www.gnu.org/philosophy/free-sw.ro"
 
 #. TRANSLATORS: see GNU page
-#: src/gs-details-page.c:2585 src/gs-details-page.ui:1294
+#: src/gs-details-page.c:2595 src/gs-details-page.ui:1294
 msgid "Free Software"
 msgstr "Aplicații libere"
 
 #. TRANSLATORS: for the free software popover
-#: src/gs-details-page.c:2642
+#: src/gs-details-page.c:2652
 msgid "Users are bound by the following license:"
 msgid_plural "Users are bound by the following licenses:"
 msgstr[0] "Utilizatorii sunt limitați de următoarea licență:"
 msgstr[1] "Utilizatorii sunt limitați de următoarele licențe:"
 msgstr[2] "Utilizatorii sunt limitați de următoarele licențe:"
 
-#: src/gs-details-page.c:2669 src/gs-details-page.ui:1366
+#: src/gs-details-page.c:2679 src/gs-details-page.ui:1366
 msgid "More information"
 msgstr "Mai multe informații"
 
@@ -1902,18 +1902,18 @@ msgid "No details were available for this rating."
 msgstr "Niciun detaliu disponibil pentru această evaluare."
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:136
+#: src/gs-extras-page.c:138
 msgid " and "
 msgstr " și "
 
 #. TRANSLATORS: separator for a list of items
-#: src/gs-extras-page.c:139
+#: src/gs-extras-page.c:141
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: src/gs-extras-page.c:165
+#: src/gs-extras-page.c:167
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1923,7 +1923,7 @@ msgstr[2] "Fonturi disponibile pentru scripturile %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: src/gs-extras-page.c:173
+#: src/gs-extras-page.c:175
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -1931,31 +1931,39 @@ msgstr[0] "Aplicații disponibile pentru %s"
 msgstr[1] "Aplicații disponibile pentru %s"
 msgstr[2] "Aplicații disponibile pentru %s"
 
-#: src/gs-extras-page.c:215
+#: src/gs-extras-page.c:217
 msgid "Unable to Find Requested Software"
 msgstr "Aplicația căutată nu a putut fi găsită"
 
+#: src/gs-extras-page.c:256
+msgid "Requested software not found"
+msgstr "Programul cerut nu a fost găsit"
+
+#: src/gs-extras-page.c:258
+msgid "Failed to find requested software"
+msgstr "Eșec la găsirea programului cerut"
+
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: src/gs-extras-page.c:320
+#: src/gs-extras-page.c:348
 #, c-format
 msgid "%s not found"
 msgstr "%s nu a fost găsit"
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:324
+#: src/gs-extras-page.c:352
 msgid "on the website"
 msgstr "pe situl web"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:331
+#: src/gs-extras-page.c:359
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Nu sunt disponibile aplicații care să furnizeze fișierul %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:335 src/gs-extras-page.c:346 src/gs-extras-page.c:357
+#: src/gs-extras-page.c:363 src/gs-extras-page.c:374 src/gs-extras-page.c:385
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1966,21 +1974,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:342 src/gs-extras-page.c:364
+#: src/gs-extras-page.c:370 src/gs-extras-page.c:392
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Nu sunt disponibile aplicații cu suport pentru %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:353
+#: src/gs-extras-page.c:381
 #, c-format
 msgid "%s is not available."
 msgstr "%s nu este disponibilă."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:368
+#: src/gs-extras-page.c:396
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1991,14 +1999,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:375
+#: src/gs-extras-page.c:403
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Nu sunt disponibile fonturi pentru suportul scriptului %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:379
+#: src/gs-extras-page.c:407
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -2009,14 +2017,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:386
+#: src/gs-extras-page.c:414
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Niciun codec suplimentar disponibil pentru formatul %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:390
+#: src/gs-extras-page.c:418
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -2027,14 +2035,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:397
+#: src/gs-extras-page.c:425
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Nu sunt disponibile resurse Plasma pentru suportul lui %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:401
+#: src/gs-extras-page.c:429
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -2045,14 +2053,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: src/gs-extras-page.c:408
+#: src/gs-extras-page.c:436
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Nu sunt disponibile drivere pentru %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: src/gs-extras-page.c:412
+#: src/gs-extras-page.c:440
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -2062,13 +2070,13 @@ msgstr ""
 "suport pentru această imprimantă pot fi găsite %s."
 
 #. TRANSLATORS: hyperlink title
-#: src/gs-extras-page.c:456
+#: src/gs-extras-page.c:484
 msgid "the documentation"
 msgstr "documentația"
 
 #. TRANSLATORS: no codecs were found. The first %s will be replaced by actual codec name(s),
 #. the second %s is the application name, which requested the codecs, the third %s is a link titled "the documentation"
-#: src/gs-extras-page.c:462
+#: src/gs-extras-page.c:490
 #, c-format
 msgid ""
 "Unable to find the %s requested by %s. Please see %s for more information."
@@ -2084,7 +2092,7 @@ msgstr[2] ""
 "informații."
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "the documentation"
-#: src/gs-extras-page.c:471
+#: src/gs-extras-page.c:499
 #, c-format
 msgid ""
 "Unable to find the %s you were searching for. Please see %s for more "
@@ -2102,11 +2110,11 @@ msgstr[2] ""
 "Din păcate, %s pe care le căutați nu au putut fi găsite. Consultați %s "
 "pentru mai multe informații."
 
-#: src/gs-extras-page.c:539 src/gs-extras-page.c:595 src/gs-extras-page.c:634
+#: src/gs-extras-page.c:569 src/gs-extras-page.c:625 src/gs-extras-page.c:664
 msgid "Failed to find any search results"
 msgstr "Căutarea nu a dat niciun rezultat"
 
-#: src/gs-extras-page.c:822
+#: src/gs-extras-page.c:852
 #, c-format
 msgid "%s file format"
 msgstr "format fișier %s"
@@ -2354,20 +2362,20 @@ msgstr "Nu s-au găsit datele aplicației"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:325
+#: src/gs-page.c:329
 #, c-format
 msgid "Prepare %s"
 msgstr "Pregătește %s"
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * repository name, e.g. 'GNOME Nightly'
-#: src/gs-page.c:461
+#: src/gs-page.c:465
 #, c-format
 msgid "Are you sure you want to remove the %s repository?"
 msgstr "Sigur doriți să eliminați depozitul %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:465
+#: src/gs-page.c:469
 #, c-format
 msgid ""
 "All applications from %s will be removed, and you will have to re-install "
@@ -2378,13 +2386,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and '%s' is an
 #. * application summary, e.g. 'GNOME Clocks'
-#: src/gs-page.c:473
+#: src/gs-page.c:477
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Sigur doriți să eliminați %s?"
 
 #. TRANSLATORS: longer dialog text
-#: src/gs-page.c:476
+#: src/gs-page.c:480
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -4386,12 +4394,12 @@ msgid "%s Configuration Update"
 msgstr "Actualizare configurație %s"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:709
+#: plugins/fwupd/gs-plugin-fwupd.c:710
 msgid "Downloading firmware update signature…"
 msgstr "Se descarcă semnătura pentru actualizarea de microcod…"
 
 #. TRANSLATORS: status text when downloading
-#: plugins/fwupd/gs-plugin-fwupd.c:750
+#: plugins/fwupd/gs-plugin-fwupd.c:751
 msgid "Downloading firmware update metadata…"
 msgstr "Se descarcă metadate pentru actualizarea de microcod…"
 
