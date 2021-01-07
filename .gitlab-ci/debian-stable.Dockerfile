@@ -2,7 +2,6 @@ FROM debian:buster
 
 RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     appstream \
-    appstream-util \
     clang \
     clang-tools-7 \
     dbus \
@@ -19,6 +18,7 @@ RUN apt-get update -qq && apt-get install --no-install-recommends -qq -y \
     itstool \
     lcov \
     libaccountsservice-dev \
+    libappstream-dev \
     libappstream-glib-dev \
     libflatpak-dev \
     libfwupd-dev \

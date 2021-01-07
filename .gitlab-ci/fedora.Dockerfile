@@ -1,6 +1,7 @@
 FROM fedora:31
 
 RUN dnf -y install \
+    appstream \
     accountsservice-devel \
     clang \
     clang-analyzer \
@@ -25,6 +26,7 @@ RUN dnf -y install \
     itstool \
     lcov \
     libappstream-glib-devel \
+    appstream-devel \
     libdnf-devel \
     libgudev-devel \
     liboauth-devel \
