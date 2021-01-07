@@ -1577,6 +1577,8 @@ gs_plugin_loader_job_get_categories_thread_cb (GTask *task,
 {
 	GError *error = NULL;
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) task_data;
+	g_autoptr(GMainContext) context = g_main_context_new ();
+	g_autoptr(GsMainContextPusher) pusher = gs_main_context_pusher_new (context);
 #ifdef HAVE_SYSPROF
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (helper->plugin_loader);
 	gint64 begin_time_nsec G_GNUC_UNUSED = SYSPROF_CAPTURE_CURRENT_TIME;
