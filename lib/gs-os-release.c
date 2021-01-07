@@ -320,16 +320,28 @@ gs_os_release_init (GsOsRelease *os_release)
  * gs_os_release_new:
  * @error: a #GError, or %NULL
  *
- * Creates a new os_release.
+ * Returns a new reference to a #GsOsRelease. The information may be cached.
  *
- * Returns: (transfer full): A newly allocated #GsOsRelease, or %NULL for error
+ * Returns: (transfer full): A new reference to a #GsOsRelease, or %NULL for error
  *
  * Since: 3.22
  **/
 GsOsRelease *
 gs_os_release_new (GError **error)
 {
-	GsOsRelease *os_release;
-	os_release = g_initable_new (GS_TYPE_OS_RELEASE, NULL, error, NULL);
-	return GS_OS_RELEASE (os_release);
+	static gsize initialised = 0;
+	static GsOsRelease *os_release = NULL;
+	static GError *os_release_error = NULL;
+
+	if (g_once_init_enter (&initialised)) {
+		os_release = g_initable_new (GS_TYPE_OS_RELEASE, NULL, &os_release_error, NULL);
+		g_once_init_leave (&initialised, 1);
+	}
+
+	if (os_release != NULL) {
+		return g_object_ref (os_release);
+	} else {
+		g_propagate_error (error, g_error_copy (os_release_error));
+		return NULL;
+	}
 }
