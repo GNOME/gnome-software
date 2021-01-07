@@ -87,7 +87,7 @@ search_done_cb (GObject *source,
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		GsApp *app = gs_app_list_index (list, i);
-		if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
+		if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE)
 			continue;
 		g_variant_builder_add (&builder, "s", gs_app_get_unique_id (app));
 
@@ -107,7 +107,7 @@ gs_shell_search_provider_get_app_sort_key (GsApp *app)
 
 	/* sort available apps before installed ones */
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE:
 		g_string_append (key, "9:");
 		break;
 	default:

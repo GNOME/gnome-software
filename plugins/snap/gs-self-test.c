@@ -279,7 +279,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	g_assert (apps != NULL);
 	g_assert_cmpint (gs_app_list_length (apps), ==, 1);
 	app = gs_app_list_index (apps, 0);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_AVAILABLE);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "snap");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "VERSION");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "SUMMARY");
@@ -315,7 +315,7 @@ gs_plugins_snap_test_func (GsPluginLoader *plugin_loader)
 	gs_test_flush_main_context ();
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_size_installed (app), ==, 1000);
 	g_assert_cmpint (gs_app_get_install_date (app), ==, g_date_time_to_unix (g_date_time_new_utc (2017, 1, 2, 11, 23, 58)));
 

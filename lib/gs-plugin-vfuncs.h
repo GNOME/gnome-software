@@ -537,7 +537,7 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
  * console, but they can also be retrieved using gs_plugin_loader_get_events().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
- * to %AS_APP_STATE_INSTALLED.
+ * to %GS_APP_STATE_INSTALLED.
  *
  * Returns: %TRUE for success or if not relevant
  **/
@@ -566,7 +566,7 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
  * console, but they can also be retrieved using gs_plugin_loader_get_events().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
- * to %AS_APP_STATE_AVAILABLE or %AS_APP_STATE_UNKNOWN if not known.
+ * to %GS_APP_STATE_AVAILABLE or %GS_APP_STATE_UNKNOWN if not known.
  *
  * Returns: %TRUE for success or if not relevant
  **/
@@ -613,7 +613,7 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
  * console, but they can also be retrieved using gs_plugin_loader_get_events().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
- * to %AS_APP_STATE_INSTALLED or %AS_APP_STATE_UNKNOWN if not known.
+ * to %GS_APP_STATE_INSTALLED or %GS_APP_STATE_UNKNOWN if not known.
  *
  * If %GS_APP_QUIRK_IS_PROXY is set on the application then the actual #GsApp
  * set in @app will be the related application of the parent. Plugins do not

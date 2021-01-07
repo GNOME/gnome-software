@@ -30,7 +30,7 @@ gs_plugins_core_search_repo_name_func (GsPluginLoader *plugin_loader)
 
 	/* force this app to be installed */
 	app_tmp = gs_plugin_loader_app_create (plugin_loader, "*/*/yellow/desktop/arachne.desktop/*");
-	gs_app_set_state (app_tmp, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app_tmp, GS_APP_STATE_INSTALLED);
 
 	/* get search result based on addon keyword */
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_SEARCH,
@@ -77,7 +77,7 @@ gs_plugins_core_os_release_func (GsPluginLoader *plugin_loader)
 	/* make sure there is valid content */
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.Fedora-25");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPGRADE);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Fedora");
 	g_assert_cmpstr (gs_app_get_version (app), ==, "25");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==,
@@ -123,8 +123,8 @@ gs_plugins_core_generic_updates_func (GsPluginLoader *plugin_loader)
 	gs_app_set_bundle_kind (app2, AS_BUNDLE_KIND_PACKAGE);
 	gs_app_set_scope (app1, AS_APP_SCOPE_SYSTEM);
 	gs_app_set_scope (app2, AS_APP_SCOPE_SYSTEM);
-	gs_app_set_state (app1, AS_APP_STATE_UPDATABLE);
-	gs_app_set_state (app2, AS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app1, GS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app2, GS_APP_STATE_UPDATABLE);
 	gs_app_add_source (app1, "package1");
 	gs_app_add_source (app2, "package2");
 	gs_app_list_add (list, app1);

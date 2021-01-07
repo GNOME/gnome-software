@@ -53,7 +53,7 @@ static void
 _app_row_button_clicked_cb (GsAppRow *app_row, GsUpdatesSection *self)
 {
 	GsApp *app = gs_app_row_get_app (app_row);
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
 		return;
 	gs_page_update_app (GS_PAGE (self->page), app, gs_app_get_cancellable (app));
 }
@@ -80,7 +80,7 @@ _unreveal_row (GsAppRow *app_row)
 static void
 _app_state_notify_cb (GsApp *app, GParamSpec *pspec, gpointer user_data)
 {
-	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
 		GsAppRow *app_row = GS_APP_ROW (user_data);
 		_unreveal_row (app_row);
 	}
@@ -389,7 +389,7 @@ _button_update_all_clicked_cb (GtkButton *button, GsUpdatesSection *self)
 	/* look at each app in turn */
 	for (guint i = 0; i < gs_app_list_length (self->list); i++) {
 		GsApp *app = gs_app_list_index (self->list, i);
-		if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE)
+		if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE)
 			helper->do_reboot = TRUE;
 		if (gs_app_has_quirk (app, GS_APP_QUIRK_NEEDS_REBOOT))
 			helper->do_reboot_notification = TRUE;
@@ -611,10 +611,10 @@ gs_updates_section_app_state_changed_cb (GsAppList *list,
 
 	for (ii = 0; ii < len; ii++) {
 		GsApp *app = gs_app_list_index (list, ii);
-		AsAppState state = gs_app_get_state (app);
+		GsAppState state = gs_app_get_state (app);
 
-		if (state == AS_APP_STATE_INSTALLING ||
-		    state == AS_APP_STATE_REMOVING) {
+		if (state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_REMOVING) {
 			busy++;
 		}
 	}

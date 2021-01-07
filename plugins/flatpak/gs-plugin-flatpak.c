@@ -754,7 +754,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* run transaction */
-	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
@@ -804,7 +804,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* queue for install if installation needs the network */
 	if (!app_has_local_source (app) &&
 	    !gs_plugin_get_network_available (plugin)) {
-		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
+		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
 		return TRUE;
 	}
 
@@ -909,7 +909,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 
 	/* run transaction */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 	if (!gs_flatpak_transaction_run (transaction, cancellable, error)) {
 		gs_flatpak_error_convert (error);
 		gs_app_set_state_recover (app);
@@ -985,7 +985,7 @@ gs_plugin_flatpak_update (GsPlugin *plugin,
 	/* run transaction */
 	for (guint i = 0; i < gs_app_list_length (list_tmp); i++) {
 		GsApp *app = gs_app_list_index (list_tmp, i);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 
 		/* If all apps' update are previously downloaded and available locally,
 		 * FlatpakTransaction should run with no-pull flag. This is the case
@@ -1199,7 +1199,7 @@ gs_plugin_flatpak_file_to_app_ref (GsPlugin *plugin,
 		} else {
 			/* the new runtime is available from the RuntimeRepo */
 			if (gs_flatpak_app_get_runtime_url (runtime) != NULL)
-				gs_app_set_state (runtime, AS_APP_STATE_AVAILABLE_LOCAL);
+				gs_app_set_state (runtime, GS_APP_STATE_AVAILABLE_LOCAL);
 		}
 	}
 

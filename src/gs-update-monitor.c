@@ -337,7 +337,7 @@ update_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 static gboolean
 _should_auto_update (GsApp *app)
 {
-	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
+	if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE_LIVE)
 		return FALSE;
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_NEW_PERMISSIONS))
 		return FALSE;
@@ -522,7 +522,7 @@ get_system_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	/* is not EOL */
 	app = gs_plugin_loader_get_system_app (plugin_loader);
-	if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
+	if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
 		return;
 
 	/* TRANSLATORS: this is when the current OS version goes end-of-life */

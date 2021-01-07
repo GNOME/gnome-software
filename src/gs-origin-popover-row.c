@@ -52,7 +52,7 @@ refresh_ui (GsOriginPopoverRow *row)
 		gtk_label_set_text (GTK_LABEL (priv->name_label), origin_ui);
 	}
 
-	if (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_AVAILABLE_LOCAL) {
 		GFile *local_file = gs_app_get_local_file (priv->app);
 		url = g_file_get_basename (local_file);
 		/* TRANSLATORS: This is followed by a file name, e.g. "Name: gedit.rpm" */

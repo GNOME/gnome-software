@@ -105,7 +105,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	 * UPDATABLE (packages are downloaded and upgrade is ready to go)
 	 */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE:
 		/* TRANSLATORS: This is the text displayed when a distro
 		 * upgrade is available. First %s is the distro name and the
 		 * 2nd %s is the version, e.g. "Fedora 23 Now Available" */
@@ -115,7 +115,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
 		break;
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
 		/* TRANSLATORS: This is the text displayed while waiting to
 		 * download a distro upgrade. First %s is the distro name and
 		 * the 2nd %s is the version, e.g. "Waiting to Download Fedora 23" */
@@ -125,7 +125,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, TRUE);
 		break;
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		/* TRANSLATORS: This is the text displayed while downloading a
 		 * distro upgrade. First %s is the distro name and the 2nd %s
 		 * is the version, e.g. "Downloading Fedora 23" */
@@ -135,7 +135,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, TRUE);
 		break;
-	case AS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE:
 		/* TRANSLATORS: This is the text displayed when a distro
 		 * upgrade has been downloaded and is ready to be installed.
 		 * First %s is the distro name and the 2nd %s is the version,
@@ -148,14 +148,14 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		break;
 	default:
 		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
-			    as_app_state_to_string (gs_app_get_state (priv->app)),
+			    gs_app_state_to_string (gs_app_get_state (priv->app)),
 			    gs_app_get_unique_id (priv->app));
 		break;
 	}
 
 	/* Hide the upgrade box until the app state is known. */
 	gtk_widget_set_visible (priv->box_upgrades,
-				(gs_app_get_state (priv->app) != AS_APP_STATE_UNKNOWN));
+				(gs_app_get_state (priv->app) != GS_APP_STATE_UNKNOWN));
 
 	/* Refresh the summary if we got anything better than the default blurb */
 	if (gs_app_get_summary (priv->app) != NULL)
@@ -164,22 +164,22 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 
 	/* Show the right buttons for the current state */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_AVAILABLE:
 		gtk_widget_show (priv->button_upgrades_download);
 		gtk_widget_hide (priv->button_upgrades_install);
 		break;
-	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_QUEUED_FOR_INSTALL:
+	case GS_APP_STATE_INSTALLING:
 		gtk_widget_hide (priv->button_upgrades_download);
 		gtk_widget_hide (priv->button_upgrades_install);
 		break;
-	case AS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UPDATABLE:
 		gtk_widget_hide (priv->button_upgrades_download);
 		gtk_widget_show (priv->button_upgrades_install);
 		break;
 	default:
 		g_critical ("Unexpected app state ‘%s’ of app ‘%s’",
-			    as_app_state_to_string (gs_app_get_state (priv->app)),
+			    gs_app_state_to_string (gs_app_get_state (priv->app)),
 			    gs_app_get_unique_id (priv->app));
 		break;
 	}
@@ -190,7 +190,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {
-	case AS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLING:
 		percentage = gs_app_get_progress (priv->app);
 		if (percentage == GS_APP_PROGRESS_UNKNOWN) {
 			if (priv->progress_pulse_id == 0)

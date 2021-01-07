@@ -48,7 +48,7 @@ gs_plugin_generic_updates_get_os_update (GsPlugin *plugin)
 	gs_app_add_quirk (app, GS_APP_QUIRK_IS_PROXY);
 	gs_app_set_management_plugin (app, "");
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPDATE);
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_state (app, GS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_name (app,
 			 GS_APP_QUALITY_NORMAL,
 			 /* TRANSLATORS: this is a group of updates that are not

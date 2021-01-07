@@ -68,7 +68,7 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 	app = gs_flatpak_app_new (flatpak_remote_get_name (xremote));
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 	gs_app_set_state (app, flatpak_remote_get_disabled (xremote) ?
-			  AS_APP_STATE_AVAILABLE : AS_APP_STATE_INSTALLED);
+			  GS_APP_STATE_AVAILABLE : GS_APP_STATE_INSTALLED);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 			 flatpak_remote_get_name (xremote));
@@ -165,7 +165,7 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	app = gs_flatpak_app_new (repo_id);
 	gs_flatpak_app_set_file_kind (app, GS_FLATPAK_APP_FILE_KIND_REPO);
 	gs_app_set_kind (app, AS_APP_KIND_SOURCE);
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_add_quirk (app, GS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
 	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);

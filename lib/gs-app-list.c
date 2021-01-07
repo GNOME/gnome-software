@@ -32,7 +32,7 @@ struct _GsAppList
 	GMutex			 mutex;
 	guint			 size_peak;
 	GsAppListFlags		 flags;
-	AsAppState		 state;
+	GsAppState		 state;
 	guint			 progress;  /* 0–100 inclusive, or %GS_APP_PROGRESS_UNKNOWN */
 };
 
@@ -60,14 +60,14 @@ static guint signals [SIGNAL_LAST] = { 0 };
  * This method will only return a valid result if gs_app_list_add_flag() has
  * been called with %GS_APP_LIST_FLAG_WATCH_APPS.
  *
- * Returns: the #AsAppState, e.g. %AS_APP_STATE_INSTALLED
+ * Returns: the #GsAppState, e.g. %GS_APP_STATE_INSTALLED
  *
  * Since: 3.30
  **/
-AsAppState
+GsAppState
 gs_app_list_get_state (GsAppList *list)
 {
-	g_return_val_if_fail (GS_IS_APP_LIST (list), AS_APP_STATE_UNKNOWN);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), GS_APP_STATE_UNKNOWN);
 	return list->state;
 }
 
@@ -169,15 +169,15 @@ gs_app_list_invalidate_progress (GsAppList *self)
 static void
 gs_app_list_invalidate_state (GsAppList *self)
 {
-	AsAppState state = AS_APP_STATE_UNKNOWN;
+	GsAppState state = GS_APP_STATE_UNKNOWN;
 	g_autoptr(GPtrArray) apps = gs_app_list_get_watched (self);
 
 	/* find any action state of the list */
 	for (guint i = 0; i < apps->len; i++) {
 		GsApp *app_tmp = g_ptr_array_index (apps, i);
-		AsAppState state_tmp = gs_app_get_state (app_tmp);
-		if (state_tmp == AS_APP_STATE_INSTALLING ||
-		    state_tmp == AS_APP_STATE_REMOVING) {
+		GsAppState state_tmp = gs_app_get_state (app_tmp);
+		if (state_tmp == GS_APP_STATE_INSTALLING ||
+		    state_tmp == GS_APP_STATE_REMOVING) {
 			state = state_tmp;
 			break;
 		}
@@ -927,9 +927,9 @@ gs_app_list_class_init (GsAppListClass *klass)
 	 * GsAppList:state:
 	 */
 	pspec = g_param_spec_uint ("state", NULL, NULL,
-				   AS_APP_STATE_UNKNOWN,
-				   AS_APP_STATE_LAST,
-				   AS_APP_STATE_UNKNOWN,
+				   GS_APP_STATE_UNKNOWN,
+				   GS_APP_STATE_LAST,
+				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READABLE);
 	g_object_class_install_property (object_class, PROP_STATE, pspec);
 

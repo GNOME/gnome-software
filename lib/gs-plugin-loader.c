@@ -754,7 +754,7 @@ gs_plugin_loader_call_vfunc (GsPluginLoaderHelper *helper,
 
 	/* add app to the pending installation queue if necessary */
 	if (action == GS_PLUGIN_ACTION_INSTALL &&
-	    app != NULL && gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+	    app != NULL && gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 	        add_app_to_install_queue (helper->plugin_loader, app);
 	}
 
@@ -1200,8 +1200,8 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 {
 	/* even without AppData, show things in progress */
 	switch (gs_app_get_state (app)) {
-	case AS_APP_STATE_INSTALLING:
-	case AS_APP_STATE_REMOVING:
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_REMOVING:
 		return TRUE;
 		break;
 	default:
@@ -1251,7 +1251,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unknown state */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 		g_debug ("app invalid as state unknown %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -1259,7 +1259,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 
 	/* don't show unconverted unavailables */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN &&
-		gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+		gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
 		g_debug ("app invalid as unconverted unavailable %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -1735,12 +1735,12 @@ gs_plugin_loader_pending_apps_remove (GsPluginLoader *plugin_loader,
 
 		/* check the app is not still in an action helper */
 		switch (gs_app_get_state (app)) {
-		case AS_APP_STATE_INSTALLING:
-		case AS_APP_STATE_REMOVING:
+		case GS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_REMOVING:
 			g_warning ("application %s left in %s helper",
 				   gs_app_get_unique_id (app),
-				   as_app_state_to_string (gs_app_get_state (app)));
-			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+				   gs_app_state_to_string (gs_app_get_state (app)));
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			break;
 		default:
 			break;
@@ -1778,7 +1778,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 		if (strlen (names[i]) == 0)
 			continue;
 		app = gs_app_new (names[i]);
-		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
+		gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
 		gs_app_list_add (list, app);
 	}
 
@@ -1820,7 +1820,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	for (i = (gint) pending_apps->len - 1; i >= 0; i--) {
 		GsApp *app;
 		app = g_ptr_array_index (pending_apps, i);
-		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
 			g_string_append (s, gs_app_get_id (app));
 			g_string_append_c (s, '\n');
 		}
@@ -1856,7 +1856,7 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_ptr_array_add (priv->pending_apps, g_object_ref (app));
 	g_mutex_unlock (&priv->pending_apps_mutex);
 
-	gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
+	gs_app_set_state (app, GS_APP_STATE_QUEUED_FOR_INSTALL);
 	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 	save_install_queue (plugin_loader);
@@ -1884,7 +1884,7 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	if (ret) {
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
@@ -3046,8 +3046,8 @@ gs_plugin_loader_network_changed_cb (GNetworkMonitor *monitor,
 		queue = gs_app_list_new ();
 		for (guint i = 0; i < priv->pending_apps->len; i++) {
 			GsApp *app = g_ptr_array_index (priv->pending_apps, i);
-			if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
-				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+			if (gs_app_get_state (app) == GS_APP_STATE_QUEUED_FOR_INSTALL) {
+				gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 				gs_app_list_add (queue, app);
 			}
 		}
@@ -3171,7 +3171,7 @@ gs_plugin_loader_generic_update (GsPluginLoader *plugin_loader,
 				return FALSE;
 
 			/* already installed? */
-			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
+			if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
 				continue;
 
 			/* make sure that the app update is cancelled when the whole op is cancelled */
