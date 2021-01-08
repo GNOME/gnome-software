@@ -433,10 +433,10 @@ package_id_equal (gconstpointer a,
 {
 	const gchar *package_id_a = a;
 	const gchar *package_id_b = b;
-	gsize n_semicolons = 0;
+	gsize i, n_semicolons = 0;
 
 	/* compare up to and including the last semicolon */
-	for (gsize i = 0; package_id_a[i] != '\0' && package_id_b[i] != '\0'; i++) {
+	for (i = 0; package_id_a[i] != '\0' && package_id_b[i] != '\0'; i++) {
 		if (package_id_a[i] != package_id_b[i])
 			return FALSE;
 		if (package_id_a[i] == ';')
@@ -445,7 +445,7 @@ package_id_equal (gconstpointer a,
 			return TRUE;
 	}
 
-	return FALSE;
+	return package_id_a[i] == package_id_b[i];
 }
 
 GHashTable *
