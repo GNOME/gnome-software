@@ -1593,7 +1593,6 @@ gs_details_page_refresh_reviews (GsDetailsPage *self)
 	case AS_COMPONENT_KIND_FONT:
 	case AS_COMPONENT_KIND_INPUT_METHOD:
 	case AS_COMPONENT_KIND_WEB_APP:
-	case AS_COMPONENT_KIND_SHELL_EXTENSION:
 		/* don't show a missing rating on a local file */
 		if (gs_app_get_state (self->app) != GS_APP_STATE_AVAILABLE_LOCAL &&
 		    self->enable_reviews)

@@ -175,11 +175,8 @@ _get_app_sort_key (GsApp *app)
 	case AS_COMPONENT_KIND_INPUT_METHOD:
 		g_string_append (key, "7:");
 		break;
-	case AS_COMPONENT_KIND_SHELL_EXTENSION:
-		g_string_append (key, "8:");
-		break;
 	default:
-		g_string_append (key, "9:");
+		g_string_append (key, "8:");
 		break;
 	}
 

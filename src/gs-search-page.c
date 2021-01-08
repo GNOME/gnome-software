@@ -195,7 +195,6 @@ gs_search_page_get_app_sort_key (GsApp *app)
 	/* sort apps before runtimes and extensions */
 	switch (gs_app_get_kind (app)) {
 	case AS_COMPONENT_KIND_DESKTOP_APP:
-	case AS_COMPONENT_KIND_SHELL_EXTENSION:
 		g_string_append (key, "9:");
 		break;
 	default:

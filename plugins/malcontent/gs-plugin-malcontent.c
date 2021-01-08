@@ -78,7 +78,6 @@ app_is_expected_to_have_content_rating (GsApp *app)
 	case AS_COMPONENT_KIND_UNKNOWN:
 	case AS_COMPONENT_KIND_DESKTOP_APP:
 	case AS_COMPONENT_KIND_WEB_APP:
-	case AS_COMPONENT_KIND_SHELL_EXTENSION:
 	case AS_COMPONENT_KIND_CONSOLE_APP:
 	default:
 		break;

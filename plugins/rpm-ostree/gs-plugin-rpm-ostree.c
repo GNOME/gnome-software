@@ -1610,10 +1610,6 @@ gs_plugin_launch (GsPlugin *plugin,
 	               gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	/* these are handled by the shell extensions plugin */
-	if (gs_app_get_kind (app) == AS_COMPONENT_KIND_SHELL_EXTENSION)
-		return TRUE;
-
 	return gs_plugin_app_launch (plugin, app, error);
 }
 

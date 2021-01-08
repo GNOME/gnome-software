@@ -31,15 +31,6 @@ gs_appstream_create_app (GsPlugin *plugin, XbSilo *silo, XbNode *component, GErr
 	if (gs_app_has_quirk (app_new, GS_APP_QUIRK_IS_WILDCARD))
 		return g_steal_pointer (&app_new);
 
-	/* no longer supported */
-	if (gs_app_get_kind (app_new) == AS_COMPONENT_KIND_SHELL_EXTENSION) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "shell extensions no longer supported");
-		return NULL;
-	}
-
 	/* look for existing object */
 	app = gs_plugin_cache_lookup (plugin, gs_app_get_unique_id (app_new));
 	if (app != NULL)
