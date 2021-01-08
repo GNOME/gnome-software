@@ -252,7 +252,7 @@ gs_app_row_actually_refresh (GsAppRow *app_row)
 
 	/* is this a missing search result from the extras page? */
 	missing_search_result = (gs_app_get_state (priv->app) == GS_APP_STATE_UNAVAILABLE &&
-	                         gs_app_get_url (priv->app, AS_URL_KIND_MISSING) != NULL);
+	                         gs_app_get_url_missing (priv->app) != NULL);
 
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {

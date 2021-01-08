@@ -58,14 +58,14 @@ gs_search_page_app_row_clicked_cb (GsAppRow *app_row,
 	else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
 		gs_page_remove_app (GS_PAGE (self), app, self->cancellable);
 	else if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
-		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL) {
+		if (gs_app_get_url_missing (app) == NULL) {
 			gs_page_install_app (GS_PAGE (self), app,
 					     GS_SHELL_INTERACTION_FULL,
 					     self->cancellable);
 			return;
 		}
 		gs_shell_show_uri (self->shell,
-		                   gs_app_get_url (app, AS_URL_KIND_MISSING));
+		                   gs_app_get_url_missing (app));
 	}
 }
 

@@ -924,7 +924,7 @@ gs_details_page_refresh_buttons (GsDetailsPage *self)
 		}
 		break;
 	case GS_APP_STATE_UNAVAILABLE:
-		if (gs_app_get_url (self->app, AS_URL_KIND_MISSING) != NULL) {
+		if (gs_app_get_url_missing (self->app) != NULL) {
 			gtk_widget_set_visible (self->button_install, FALSE);
 		} else {
 			gtk_widget_set_visible (self->button_install, TRUE);

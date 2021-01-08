@@ -78,6 +78,7 @@ typedef struct
 	GPtrArray		*key_colors;
 	GHashTable		*urls;
 	GHashTable		*launchables;
+	gchar			*url_missing;
 	gchar			*license;
 	GsAppQuality		 license_quality;
 	gchar			**menu_path;
@@ -147,6 +148,7 @@ enum {
 	PROP_PENDING_ACTION,
 	PROP_KEY_COLORS,
 	PROP_IS_UPDATE_DOWNLOADED,
+	PROP_URL_MISSING,
 	PROP_LAST
 };
 
@@ -2385,6 +2387,52 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 }
 
 /**
+ * gs_app_get_url_missing:
+ * @app: a #GsApp
+ *
+ * Gets a web address for the application with explanations
+ * why it does not have an installation candidate.
+ *
+ * Returns: (nullable): a string, or %NULL for unset
+ *
+ * Since: 40
+ **/
+const gchar *
+gs_app_get_url_missing (GsApp *app)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	locker = g_mutex_locker_new (&priv->mutex);
+	return priv->url_missing;
+}
+
+/**
+ * gs_app_set_url_missing:
+ * @app: a #GsApp
+ * @url: (nullable): a web URL, e.g. `http://www.packagekit.org/pk-package-not-found.html`, or %NULL
+ *
+ * Sets a web address containing explanations why this app
+ * does not have an installation candidate.
+ *
+ * Since: 40
+ **/
+void
+gs_app_set_url_missing (GsApp *app, const gchar *url)
+{
+	GsAppPrivate *priv = gs_app_get_instance_private (app);
+	g_autoptr(GMutexLocker) locker = NULL;
+	g_return_if_fail (GS_IS_APP (app));
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (g_strcmp0 (priv->url_missing, url) == 0)
+		return;
+	g_free (priv->url_missing);
+	priv->url_missing = g_strdup (url);
+	gs_app_queue_notify (app, obj_props[PROP_URL_MISSING]);
+}
+
+/**
  * gs_app_get_launchable:
  * @app: a #GsApp
  * @kind: a #AsLaunchableKind, e.g. %AS_LAUNCHABLE_KIND_DESKTOP_ID
@@ -4437,6 +4485,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_IS_UPDATE_DOWNLOADED:
 		g_value_set_boolean (value, priv->is_update_downloaded);
 		break;
+	case PROP_URL_MISSING:
+		g_value_set_string (value, priv->url_missing);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4508,6 +4559,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	case PROP_IS_UPDATE_DOWNLOADED:
 		gs_app_set_is_update_downloaded (app, g_value_get_boolean (value));
 		break;
+	case PROP_URL_MISSING:
+		gs_app_set_url_missing (app, g_value_get_string (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -4546,6 +4600,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->branch);
 	g_free (priv->name);
 	g_free (priv->renamed_from);
+	g_free (priv->url_missing);
 	g_hash_table_unref (priv->urls);
 	g_hash_table_unref (priv->launchables);
 	g_free (priv->license);
@@ -4730,6 +4785,18 @@ gs_app_class_init (GsAppClass *klass)
 	obj_props[PROP_IS_UPDATE_DOWNLOADED] = g_param_spec_boolean ("is-update-downloaded", NULL, NULL,
 					       FALSE,
 					       G_PARAM_READWRITE);
+
+	/**
+	 * GsApp:url-missing:
+	 *
+	 * A web URL pointing to explanations why this app
+	 * does not have an installation candidate.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_URL_MISSING] = g_param_spec_string ("url-missing", NULL, NULL,
+					NULL,
+					G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	g_object_class_install_properties (object_class, PROP_LAST, obj_props);
 }
