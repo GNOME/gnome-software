@@ -78,6 +78,7 @@ typedef struct
 	GsAppQuality		 license_quality;
 	gchar			**menu_path;
 	gchar			*origin;
+	gchar			*origin_ui;
 	gchar			*origin_appstream;
 	gchar			*origin_hostname;
 	gchar			*update_version;
@@ -627,6 +628,8 @@ gs_app_to_string_append (GsApp *app, GString *str)
 		gs_app_kv_lpad (str, "branch", priv->branch);
 	if (priv->origin != NULL && priv->origin[0] != '\0')
 		gs_app_kv_lpad (str, "origin", priv->origin);
+	if (priv->origin_ui != NULL && priv->origin_ui[0] != '\0')
+		gs_app_kv_lpad (str, "origin-ui", priv->origin_ui);
 	if (priv->origin_appstream != NULL && priv->origin_appstream[0] != '\0')
 		gs_app_kv_lpad (str, "origin-appstream", priv->origin_appstream);
 	if (priv->origin_hostname != NULL && priv->origin_hostname[0] != '\0')
@@ -4402,6 +4405,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->license);
 	g_strfreev (priv->menu_path);
 	g_free (priv->origin);
+	g_free (priv->origin_ui);
 	g_free (priv->origin_appstream);
 	g_free (priv->origin_hostname);
 	g_ptr_array_unref (priv->sources);
@@ -4710,7 +4714,17 @@ gs_app_new_from_unique_id (const gchar *unique_id)
 gchar *
 gs_app_get_origin_ui (GsApp *app)
 {
+	GsAppPrivate *priv;
+	g_autoptr(GMutexLocker) locker = NULL;
+
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	priv = gs_app_get_instance_private (app);
+	locker = g_mutex_locker_new (&priv->mutex);
+	if (priv->origin_ui && *priv->origin_ui)
+		return g_strdup (priv->origin_ui);
+
+	g_clear_pointer (&locker, g_mutex_locker_free);
 
 	/* use the distro name for official packages */
 	if (gs_app_has_quirk (app, GS_APP_QUIRK_PROVENANCE)) {
@@ -4734,6 +4748,28 @@ gs_app_get_origin_ui (GsApp *app)
 
 	/* fall back to origin */
 	return g_strdup (gs_app_get_origin (app));
+}
+
+void
+gs_app_set_origin_ui (GsApp *app,
+		      const gchar *origin_ui)
+{
+	GsAppPrivate *priv;
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	g_return_if_fail (GS_IS_APP (app));
+
+	priv = gs_app_get_instance_private (app);
+	locker = g_mutex_locker_new (&priv->mutex);
+
+	if (origin_ui && !*origin_ui)
+		origin_ui = NULL;
+
+	if (g_strcmp0 (priv->origin_ui, origin_ui) == 0)
+		return;
+
+	g_free (priv->origin_ui);
+	priv->origin_ui = g_strdup (origin_ui);
 }
 
 /**

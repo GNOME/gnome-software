@@ -76,8 +76,10 @@ gs_flatpak_app_new_from_remote (FlatpakRemote *xremote)
 
 	/* title */
 	title = flatpak_remote_get_title (xremote);
-	if (title != NULL)
+	if (title != NULL) {
 		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, title);
+		gs_app_set_origin_ui (app, title);
+	}
 
 	/* url */
 	url = flatpak_remote_get_url (xremote);
@@ -170,6 +172,7 @@ gs_flatpak_app_new_from_repo_file (GFile *file,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, repo_title);
 	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	gs_flatpak_app_set_repo_url (app, repo_url);
+	gs_app_set_origin_ui (app, repo_title);
 	gs_app_set_origin_hostname (app, repo_url);
 
 	/* user specified a URL */
