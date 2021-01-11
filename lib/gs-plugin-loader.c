@@ -3550,10 +3550,18 @@ gs_plugin_loader_process_in_thread_pool_cb (gpointer data,
 	gpointer source_object = g_task_get_source_object (task);
 	gpointer task_data = g_task_get_task_data (task);
 	GCancellable *cancellable = g_task_get_cancellable (task);
+	GsPluginLoaderHelper *helper = g_task_get_task_data (task);
+	GsApp *app = gs_plugin_job_get_app (helper->plugin_job);
+	GsPluginAction action = gs_plugin_job_get_action (helper->plugin_job);
 
 	gs_ioprio_init ();
 
 	gs_plugin_loader_process_thread_cb (task, source_object, task_data, cancellable);
+
+	/* Clear any pending action set in gs_plugin_loader_schedule_task() */
+	if (app != NULL && gs_app_get_pending_action (app) == action)
+		gs_app_set_pending_action (app, GS_PLUGIN_ACTION_UNKNOWN);
+
 	g_object_unref (task);
 }
 
