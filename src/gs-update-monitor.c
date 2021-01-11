@@ -80,103 +80,82 @@ reenable_offline_update_notification (gpointer data)
 }
 
 static void
-notify_offline_update_available (GsUpdateMonitor *monitor)
+check_updates_kind (GsAppList *apps,
+		    gboolean *out_has_important,
+		    gboolean *out_all_downloaded,
+		    gboolean *out_any_downloaded)
 {
-	const gchar *title;
-	const gchar *body;
-	guint64 elapsed_security = 0;
-	guint64 security_timestamp = 0;
-	g_autoptr(GNotification) n = NULL;
-
-	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
-		return;
-	if (monitor->notification_blocked_id > 0)
-		return;
-
-	/* rate limit update notifications to once per hour */
-	monitor->notification_blocked_id = g_timeout_add_seconds (SECONDS_IN_AN_HOUR, reenable_offline_update_notification, monitor);
-
-	/* get time in days since we saw the first unapplied security update */
-	g_settings_get (monitor->settings,
-			"security-timestamp", "x", &security_timestamp);
-	if (security_timestamp > 0) {
-		elapsed_security = (guint64) g_get_monotonic_time () - security_timestamp;
-		elapsed_security /= G_USEC_PER_SEC;
-		elapsed_security /= 60 * 60 * 24;
-	}
-
-	/* only show the scary warning after the user has ignored
-	 * security updates for a full day */
-	if (elapsed_security > 1) {
-		title = _("Security Updates Pending");
-		body = _("It is recommended that you install important updates now");
-		n = g_notification_new (title);
-		g_notification_set_body (n, body);
-		g_notification_add_button (n, _("Restart & Install"), "app.reboot-and-install");
-		g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
-		g_application_send_notification (monitor->application, "updates-available", n);
-	} else {
-		title = _("Software Updates Available");
-		body = _("Important OS and application updates are ready to be installed");
-		n = g_notification_new (title);
-		g_notification_set_body (n, body);
-		g_notification_add_button (n, _("Not Now"), "app.nop");
-		g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
-		g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
-		g_application_send_notification (monitor->application, "updates-available", n);
-	}
-}
-
-static gboolean
-has_important_updates (GsAppList *apps)
-{
-	guint i;
+	gboolean has_important, all_downloaded, any_downloaded;
+	guint ii, len;
 	GsApp *app;
 
-	for (i = 0; i < gs_app_list_length (apps); i++) {
-		app = gs_app_list_index (apps, i);
-		if (gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL ||
-		    gs_app_get_update_urgency (app) == AS_URGENCY_KIND_HIGH)
-			return TRUE;
+	len = gs_app_list_length (apps);
+	has_important = FALSE;
+	all_downloaded = len > 0;
+	any_downloaded = FALSE;
+
+	for (ii = 0; ii < len && (!has_important || all_downloaded || !any_downloaded); ii++) {
+		app = gs_app_list_index (apps, ii);
+
+		has_important = has_important ||
+				gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL ||
+				gs_app_get_update_urgency (app) == AS_URGENCY_KIND_HIGH;
+
+		/* took from gs-updates-section.c: _all_offline_updates_downloaded();
+		   the app is considered downloaded, when its download size is 0 */
+		if (gs_app_get_size_download (app))
+			all_downloaded = FALSE;
+		else
+			any_downloaded = TRUE;
 	}
 
-	return FALSE;
+	*out_has_important = has_important;
+	*out_all_downloaded = all_downloaded;
+	*out_any_downloaded = any_downloaded;
 }
 
 static gboolean
-check_if_timestamp_more_than_a_week_ago (GsUpdateMonitor *monitor, const gchar *timestamp)
+get_timestamp_difference_days (GsUpdateMonitor *monitor, const gchar *timestamp, gint64 *out_days)
 {
-	GTimeSpan d;
 	gint64 tmp;
 	g_autoptr(GDateTime) last_update = NULL;
 	g_autoptr(GDateTime) now = NULL;
 
+	g_return_val_if_fail (out_days != NULL, FALSE);
+
 	g_settings_get (monitor->settings, timestamp, "x", &tmp);
 	if (tmp == 0)
-		return TRUE;
+		return FALSE;
 
 	last_update = g_date_time_new_from_unix_local (tmp);
 	if (last_update == NULL) {
 		g_warning ("failed to set timestamp %" G_GINT64_FORMAT, tmp);
-		return TRUE;
+		return FALSE;
 	}
 
 	now = g_date_time_new_now_local ();
-	d = g_date_time_difference (now, last_update);
-	if (d >= 7 * G_TIME_SPAN_DAY)
-		return TRUE;
 
-	return FALSE;
+	*out_days = g_date_time_difference (now, last_update) / G_TIME_SPAN_DAY;
+
+	return TRUE;
 }
 
 static gboolean
-no_updates_for_a_week (GsUpdateMonitor *monitor)
+check_if_timestamp_more_than_days_ago (GsUpdateMonitor *monitor, const gchar *timestamp, guint days)
 {
-	if (check_if_timestamp_more_than_a_week_ago (monitor, "install-timestamp") ||
-	    check_if_timestamp_more_than_a_week_ago (monitor, "online-updates-timestamp"))
+	gint64 timestamp_days;
+
+	if (!get_timestamp_difference_days (monitor, timestamp, &timestamp_days))
 		return TRUE;
 
-	return FALSE;
+	return timestamp_days >= days;
+}
+
+static gboolean
+no_notification_for_days (GsUpdateMonitor *monitor,
+			  guint days)
+{
+	return check_if_timestamp_more_than_days_ago (monitor, "update-notification-timestamp", days);
 }
 
 static gboolean
@@ -187,6 +166,108 @@ should_download_updates (GsUpdateMonitor *monitor)
 #else
 	return g_settings_get_boolean (monitor->settings, "download-updates");
 #endif
+}
+
+/* The days below are discussed at https://gitlab.gnome.org/GNOME/gnome-software/-/issues/947 */
+static gboolean
+should_notify_about_pending_updates (GsUpdateMonitor *monitor,
+				     GsAppList *apps,
+				     const gchar **out_title,
+				     const gchar **out_body)
+{
+	gboolean has_important = FALSE, all_downloaded = FALSE, any_downloaded = FALSE;
+	gboolean should_download, res = FALSE;
+	gint64 timestamp_days;
+
+	if (!get_timestamp_difference_days (monitor, "update-notification-timestamp", &timestamp_days)) {
+		/* Large-enough number to succeed for the initial test */
+		timestamp_days = 365;
+	}
+
+	should_download = should_download_updates (monitor);
+	check_updates_kind (apps, &has_important, &all_downloaded, &any_downloaded);
+
+	if (!gs_app_list_length (apps)) {
+		/* Notify only when the download is disabled and it's the 4th day or it's more than 7 days */
+		if (!should_download && (timestamp_days >= 7 || timestamp_days == 4)) {
+			*out_title = _("Software Updates Are Out of Date");
+			*out_body = _("Please check for software updates.");
+			res = TRUE;
+		}
+	} else if (has_important) {
+		if (timestamp_days >= 1) {
+			if (all_downloaded) {
+				*out_title = _("Critical Software Update Ready to Install");
+				*out_body = _("An important software update is ready to be installed.");
+				res = TRUE;
+			} else {
+				*out_title = _("Critical Software Updates Available to Download");
+				*out_body = _("Important: critical software updates are waiting.");
+				res = TRUE;
+			}
+		}
+	} else if (all_downloaded) {
+		if (timestamp_days >= 3) {
+			*out_title = _("Software Updates Ready to Install");
+			*out_body = _("Software updates are waiting and ready to be installed.");
+			res = TRUE;
+		}
+	/* To not hide downloaded updates for 14 days when new updates were discovered meanwhile */
+	} else if (timestamp_days >= (any_downloaded ? 3 : 14)) {
+		*out_title = _("Software Updates Available to Download");
+		*out_body = _("Please download waiting software updates.");
+		res = TRUE;
+	}
+
+	g_debug ("%s: last_test_days:%" G_GINT64_FORMAT " n-apps:%u should_download:%d has_important:%d "
+		"all_downloaded:%d any_downloaded:%d res:%d%s%s%s%s", G_STRFUNC,
+		timestamp_days, gs_app_list_length (apps), should_download, has_important, all_downloaded, any_downloaded, res,
+		res ? " reason:" : "",
+		res ? *out_title : "",
+		res ? "|" : "",
+		res ? *out_body : "");
+
+	return res;
+}
+
+static void
+reset_update_notification_timestamp (GsUpdateMonitor *monitor)
+{
+	g_autoptr(GDateTime) now = NULL;
+
+	now = g_date_time_new_now_local ();
+	g_settings_set (monitor->settings, "update-notification-timestamp", "x",
+	                g_date_time_to_unix (now));
+}
+
+static void
+notify_about_pending_updates (GsUpdateMonitor *monitor,
+			      GsAppList *apps)
+{
+	const gchar *title = NULL, *body = NULL;
+	g_autoptr(GNotification) nn = NULL;
+
+	if (monitor->notification_blocked_id > 0)
+		return;
+
+	/* rate limit update notifications to once per day */
+	monitor->notification_blocked_id = g_timeout_add_seconds (24 * SECONDS_IN_AN_HOUR, reenable_offline_update_notification, monitor);
+
+	if (!should_notify_about_pending_updates (monitor, apps, &title, &body))
+		return;
+
+	g_debug ("Notify about update: '%s'", title);
+
+	nn = g_notification_new (title);
+	g_notification_set_body (nn, body);
+	g_notification_set_default_action_and_target (nn, "app.set-mode", "s", "updates");
+	g_application_send_notification (monitor->application, "updates-available", nn);
+
+	/* Keep the old notification time when there are no updates and the update download is disabled,
+	   to notify the user every day after 7 days of no update check */
+	if (gs_app_list_length (apps) ||
+	    should_download_updates (monitor))
+		reset_update_notification_timestamp (monitor);
 }
 
 static gboolean
@@ -389,12 +470,8 @@ download_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	}
 
 	/* show a notification for offline updates */
-	if (gs_app_list_length (update_offline) > 0) {
-		if (has_important_updates (update_offline) ||
-		    no_updates_for_a_week (monitor)) {
-			notify_offline_update_available (monitor);
-		}
-	}
+	if (gs_app_list_length (update_offline) > 0)
+		notify_about_pending_updates (monitor, update_offline);
 }
 
 static void
@@ -406,7 +483,6 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 	guint64 security_timestamp_old = 0;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) apps = NULL;
-	gboolean download_updates;
 
 	/* get result */
 	apps = gs_plugin_loader_job_process_finish (GS_PLUGIN_LOADER (object), res, &error);
@@ -441,13 +517,9 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 
 	g_debug ("got %u updates", gs_app_list_length (apps));
 
-#ifdef HAVE_MOGWAI
-	download_updates = TRUE;
-#else
-	download_updates = g_settings_get_boolean (monitor->settings, "download-updates");
-#endif
-
-	if (download_updates) {
+	if (should_download_updates (monitor) &&
+	    (security_timestamp_old != security_timestamp ||
+	    no_notification_for_days (monitor, 14))) {
 		g_autoptr(GsPluginJob) plugin_job = NULL;
 
 		/* download any updates; individual plugins are responsible for deciding
@@ -464,37 +536,16 @@ get_updates_finished_cb (GObject *object, GAsyncResult *res, gpointer data)
 						    download_finished_cb,
 						    monitor);
 	} else {
-		/* notify immediately if auto-updates are turned off */
-		if (has_important_updates (apps) ||
-		    no_updates_for_a_week (monitor)) {
-			notify_offline_update_available (monitor);
-		}
+		notify_about_pending_updates (monitor, apps);
+
+		reset_update_notification_timestamp (monitor);
 	}
 }
 
 static gboolean
 should_show_upgrade_notification (GsUpdateMonitor *monitor)
 {
-	GTimeSpan d;
-	gint64 tmp;
-	g_autoptr(GDateTime) now = NULL;
-	g_autoptr(GDateTime) then = NULL;
-
-	g_settings_get (monitor->settings, "upgrade-notification-timestamp", "x", &tmp);
-	if (tmp == 0)
-		return TRUE;
-	then = g_date_time_new_from_unix_local (tmp);
-	if (then == NULL) {
-		g_warning ("failed to parse timestamp %" G_GINT64_FORMAT, tmp);
-		return TRUE;
-	}
-
-	now = g_date_time_new_now_local ();
-	d = g_date_time_difference (now, then);
-	if (d >= 7 * G_TIME_SPAN_DAY)
-		return TRUE;
-
-	return FALSE;
+	return check_if_timestamp_more_than_days_ago (monitor, "upgrade-notification-timestamp", 7);
 }
 
 static void
@@ -1042,6 +1093,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	g_settings_set (monitor->settings,
 			"install-timestamp", "x", gs_app_get_install_date (app));
 
+	reset_update_notification_timestamp (monitor);
 }
 
 static gboolean
