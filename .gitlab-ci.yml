@@ -16,7 +16,7 @@ variables:
 
 fedora-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v2
+  image: registry.gitlab.gnome.org/gnome/gnome-software/fedora:v3
   stage: build
   except:
     - tags
@@ -44,7 +44,7 @@ fedora-x86_64:
 
 debian-stable-x86_64:
   extends: .build
-  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v2
+  image: registry.gitlab.gnome.org/gnome/gnome-software/debian-stable:v3
   stage: build
   except:
     - tags
@@ -59,6 +59,7 @@ debian-stable-x86_64:
             --no-suite packagekit
             --no-suite fwupd
             --no-suite fedora-langpacks
+            --no-suite libxmlb
   artifacts:
     reports:
       junit: "_build/${CI_JOB_NAME}-report.xml"

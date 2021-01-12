@@ -2,7 +2,7 @@
 
 set -e
 
-git clone https://gitlab.gnome.org/GNOME/gnome-software.git
+git clone --depth 1 --no-tags https://gitlab.gnome.org/GNOME/gnome-software.git
 meson subprojects download --sourcedir gnome-software
 rm gnome-software/subprojects/*.wrap
 mv gnome-software/subprojects/ .
