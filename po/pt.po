@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/GNOME/gnome-software/issues\n"
-"POT-Creation-Date: 2021-01-08 23:06+0000\n"
-"PO-Revision-Date: 2021-01-09 14:44+0000\n"
+"POT-Creation-Date: 2021-01-11 16:28+0000\n"
+"PO-Revision-Date: 2021-01-13 22:31+0000\n"
 "Last-Translator: Hugo Carvalho <hugokarvalho@hotmail.com>\n"
 "Language-Team: Portuguese <https://l10n.gnome.org/teams/pt/>\n"
 "Language: pt\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.4.2\n"
 "X-DamnedLies-Scope: partial\n"
 "X-Project-Style: gnome\n"
 
@@ -194,27 +194,31 @@ msgid "The last upgrade notification timestamp"
 msgstr "A data e hora da última notificação de atualização"
 
 #: data/org.gnome.software.gschema.xml:60
+msgid "The last update notification timestamp"
+msgstr "A data e hora da última notificação de atualização"
+
+#: data/org.gnome.software.gschema.xml:64
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
 "A data e hora da primeira atualização de segurança, limpo depois da "
 "atualização"
 
-#: data/org.gnome.software.gschema.xml:64
+#: data/org.gnome.software.gschema.xml:68
 msgid "The last update timestamp"
 msgstr "O data e hora da última atualização"
 
-#: data/org.gnome.software.gschema.xml:68
+#: data/org.gnome.software.gschema.xml:72
 msgid "The last timestamp when the system was online and got any updates"
 msgstr ""
 "O último registro de data/hora quando o sistema actualizou pela última vez"
 
-#: data/org.gnome.software.gschema.xml:72
+#: data/org.gnome.software.gschema.xml:76
 msgid "The age in seconds to verify the upstream screenshot is still valid"
 msgstr ""
 "O tempo (em segundos) para verificar se a imagem de versão mais recente "
 "ainda é válida"
 
-#: data/org.gnome.software.gschema.xml:73
+#: data/org.gnome.software.gschema.xml:77
 msgid ""
 "Choosing a larger value will mean less round-trips to the remote server but "
 "updates to the screenshots may take longer to show to the user. A value of 0 "
@@ -225,78 +229,78 @@ msgstr ""
 "utilizador. Um valor 0 significa nunca verificar junto ao servidor se a "
 "imagem já existe em memória."
 
-#: data/org.gnome.software.gschema.xml:82
+#: data/org.gnome.software.gschema.xml:86
 msgid "The server to use for application reviews"
 msgstr "O servidor a utilizar para análises de aplicações"
 
-#: data/org.gnome.software.gschema.xml:86
+#: data/org.gnome.software.gschema.xml:90
 msgid "The minimum karma score for reviews"
 msgstr "O valor mínimo de karma para as análises"
 
-#: data/org.gnome.software.gschema.xml:87
+#: data/org.gnome.software.gschema.xml:91
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Análises com karma menor que este número não serão mostradas."
 
-#: data/org.gnome.software.gschema.xml:91
+#: data/org.gnome.software.gschema.xml:95
 msgid "A list of official repositories that should not be considered 3rd party"
 msgstr ""
 "Uma lista oficial de fontes que não deverão ser consideradas como de "
 "terceiros"
 
-#: data/org.gnome.software.gschema.xml:95
+#: data/org.gnome.software.gschema.xml:99
 msgid "A list of official repositories that should be considered free software"
 msgstr ""
 "Uma lista oficial de fontes que deverão ser consideradas como contendo "
 "apenas software livre"
 
-#: data/org.gnome.software.gschema.xml:99
+#: data/org.gnome.software.gschema.xml:103
 msgid ""
 "The licence URL to use when an application should be considered free software"
 msgstr ""
 "O URL da licença a ser utilizado quando uma aplicação deve ser considerada "
 "como software livre"
 
-#: data/org.gnome.software.gschema.xml:103
+#: data/org.gnome.software.gschema.xml:107
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 "Instalar aplicações associadas em todos os utilizadores do sistema sempre "
 "que possível"
 
-#: data/org.gnome.software.gschema.xml:107
+#: data/org.gnome.software.gschema.xml:111
 msgid "Allow access to the Software Repositories dialog"
 msgstr "Permitir acesso ao diálogo Fontes de Software"
 
-#: data/org.gnome.software.gschema.xml:111
+#: data/org.gnome.software.gschema.xml:115
 msgid "Offer upgrades for pre-releases"
 msgstr "Oferecer atualizações para pré-lançamentos"
 
-#: data/org.gnome.software.gschema.xml:115
+#: data/org.gnome.software.gschema.xml:119
 msgid "Show some UI elements informing the user that an app is non-free"
 msgstr ""
 "Mostrar alguns elementos do IU a informar o utilizador que a aplicação não é "
 "livre"
 
-#: data/org.gnome.software.gschema.xml:119
+#: data/org.gnome.software.gschema.xml:123
 msgid "Show the prompt to install nonfree software repositories"
 msgstr ""
 "Ver linha de comando para instalar repositórios 'nonfree' de aplicações"
 
-#: data/org.gnome.software.gschema.xml:123
+#: data/org.gnome.software.gschema.xml:127
 msgid "Show the installed size for apps in the list of installed applications"
 msgstr ""
 "Ver o tamanho ocupado pelas aplicações instalada na lista de aplicações "
 "instaladas"
 
 #. Translators: Replace the link with a version in your language, e.g. 'https://de.wikipedia.org/wiki/Proprietäre_Software'. Remember to include ''.
-#: data/org.gnome.software.gschema.xml:127
+#: data/org.gnome.software.gschema.xml:131
 msgid "'https://en.wikipedia.org/wiki/Proprietary_software'"
 msgstr "'https://en.wikipedia.org/wiki/Proprietary_software'"
 
-#: data/org.gnome.software.gschema.xml:128
+#: data/org.gnome.software.gschema.xml:132
 msgid "The URI that explains nonfree and proprietary software"
 msgstr "O URI que explica o software não-livre e proprietário"
 
-#: data/org.gnome.software.gschema.xml:132
+#: data/org.gnome.software.gschema.xml:136
 msgid ""
 "A list of URLs pointing to appstream files that will be downloaded into an "
 "app-info folder"
@@ -304,13 +308,13 @@ msgstr ""
 "A lista de URLs a apontar aos ficheiros 'appstream' que serão transferidos "
 "numa pasta de informações de aplicações"
 
-#: data/org.gnome.software.gschema.xml:136
+#: data/org.gnome.software.gschema.xml:140
 msgid "Install the AppStream files to a system-wide location for all users"
 msgstr ""
 "Instalar um ficheiro <i>AppStream</i> numa localização do sistema para todos "
 "utilizadores"
 
-#: data/org.gnome.software.gschema.xml:143
+#: data/org.gnome.software.gschema.xml:147
 msgid "A string storing the gnome-online-account id used to login"
 msgstr ""
 "Um texto a gravar o id utilizado no início de sessão da conta online Gnome"
@@ -409,11 +413,11 @@ msgid "Find Out _More"
 msgstr "Saber _mais"
 
 #. TRANSLATORS: this is a locally downloaded package
-#: lib/gs-app.c:4725
+#: lib/gs-app.c:4739
 msgid "Local file"
 msgstr "Ficheiro local"
 
-#: lib/gs-app.c:4779
+#: lib/gs-app.c:4815
 msgid "Package"
 msgstr "Pacote"
 
@@ -827,7 +831,7 @@ msgstr[1] ""
 "É necessário reiniciar o dispositivo para que as mudanças tenham efeito."
 
 #. TRANSLATORS: button text
-#: src/gs-common.c:649 src/gs-update-monitor.c:123
+#: src/gs-common.c:649
 msgid "Not Now"
 msgstr "Agora não"
 
@@ -3369,34 +3373,48 @@ msgstr "Pacotes a reverter"
 msgid "No updates have been installed on this system."
 msgstr "Nenhumas atualizações instaladas neste sistema."
 
-#: src/gs-update-monitor.c:111
-msgid "Security Updates Pending"
-msgstr "Instalações de segurança pendentes"
+#: src/gs-update-monitor.c:193
+msgid "Software Updates Are Out of Date"
+msgstr "As atualizações de software estão desatualizadas"
 
-#: src/gs-update-monitor.c:112
-msgid "It is recommended that you install important updates now"
-msgstr "É recomendável que instale atualizações importantes agora"
+#: src/gs-update-monitor.c:194
+msgid "Please check for software updates."
+msgstr "Procurar atualizações."
 
-#: src/gs-update-monitor.c:115
-msgid "Restart & Install"
-msgstr "Reiniciar & _Instalar"
+#: src/gs-update-monitor.c:200
+msgid "Critical Software Update Ready to Install"
+msgstr "Atualização crítica pronta para instalar"
 
-#: src/gs-update-monitor.c:119
-msgid "Software Updates Available"
-msgstr "Atualizações de aplicações disponíveis"
+#: src/gs-update-monitor.c:201
+msgid "An important software update is ready to be installed."
+msgstr "Uma atualização importante está pronta para ser instalada."
 
-#: src/gs-update-monitor.c:120
-msgid "Important OS and application updates are ready to be installed"
-msgstr ""
-"Atualizações importantes do sistema operativo e de aplicações estão prontas "
-"para serem instaladas"
+#: src/gs-update-monitor.c:204
+msgid "Critical Software Updates Available to Download"
+msgstr "Atualizações críticas disponíveis para transferir"
 
-#: src/gs-update-monitor.c:124
-msgid "View"
-msgstr "Ver"
+#: src/gs-update-monitor.c:205
+msgid "Important: critical software updates are waiting."
+msgstr "Importante: atualizações críticas estão em espera."
+
+#: src/gs-update-monitor.c:211
+msgid "Software Updates Ready to Install"
+msgstr "Atualizações prontas para instalar"
+
+#: src/gs-update-monitor.c:212
+msgid "Software updates are waiting and ready to be installed."
+msgstr "Atualizações estão em espera e prontas para serem instaladas."
+
+#: src/gs-update-monitor.c:217
+msgid "Software Updates Available to Download"
+msgstr "Atualizações disponíveis para transferir"
+
+#: src/gs-update-monitor.c:218
+msgid "Please download waiting software updates."
+msgstr "Transferir atualizações em espera."
 
 #. TRANSLATORS: apps were auto-updated and restart is required
-#: src/gs-update-monitor.c:242
+#: src/gs-update-monitor.c:323
 #, c-format
 msgid "%u Application Updated — Restart Required"
 msgid_plural "%u Applications Updated — Restart Required"
@@ -3404,7 +3422,7 @@ msgstr[0] "%u aplicação foi atualizada — é necessário reiniciar o sistema"
 msgstr[1] "%u aplicações foram atualizadas — é necessário reiniciar o sistema"
 
 #. TRANSLATORS: apps were auto-updated
-#: src/gs-update-monitor.c:248
+#: src/gs-update-monitor.c:329
 #, c-format
 msgid "%u Application Updated"
 msgid_plural "%u Applications Updated"
@@ -3412,24 +3430,24 @@ msgstr[0] "%u aplicação atualizada"
 msgstr[1] "%u aplicações atualizadas"
 
 #. TRANSLATORS: %1 is an application name, e.g. Firefox
-#: src/gs-update-monitor.c:259
+#: src/gs-update-monitor.c:340
 #, c-format
 msgid "%s has been updated."
 msgstr "%s foi atualizada."
 
 #. TRANSLATORS: the app needs restarting
-#: src/gs-update-monitor.c:262
+#: src/gs-update-monitor.c:343
 msgid "Please restart the application."
 msgstr "Por favor reinicie a aplicação."
 
 #. TRANSLATORS: %1 and %2 are both application names, e.g. Firefox
-#: src/gs-update-monitor.c:270
+#: src/gs-update-monitor.c:351
 #, c-format
 msgid "%s and %s have been updated."
 msgstr "%s e %s foram atualizadas."
 
 #. TRANSLATORS: at least one application needs restarting
-#: src/gs-update-monitor.c:276 src/gs-update-monitor.c:295
+#: src/gs-update-monitor.c:357 src/gs-update-monitor.c:376
 #, c-format
 msgid "%u application requires a restart."
 msgid_plural "%u applications require a restart."
@@ -3437,69 +3455,69 @@ msgstr[0] "É necessário reiniciar %u aplicação."
 msgstr[1] "É necessário reiniciar %u aplicações."
 
 #. TRANSLATORS: %1, %2 and %3 are all application names, e.g. Firefox
-#: src/gs-update-monitor.c:288
+#: src/gs-update-monitor.c:369
 #, c-format
 msgid "Includes %s, %s and %s."
 msgstr "Inclui %s, %s e %s."
 
 #. TRANSLATORS: this is when the current OS version goes end-of-life
-#: src/gs-update-monitor.c:529 src/gs-updates-page.ui:43
+#: src/gs-update-monitor.c:580 src/gs-updates-page.ui:43
 msgid "Operating System Updates Unavailable"
 msgstr "Atualizações do sistema operativo disponíveis"
 
 #. TRANSLATORS: this is the message dialog for the distro EOL notice
-#: src/gs-update-monitor.c:531
+#: src/gs-update-monitor.c:582
 msgid "Upgrade to continue receiving security updates."
 msgstr "Atualize para continuar a receber atualizações de segurança."
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: src/gs-update-monitor.c:586
+#: src/gs-update-monitor.c:637
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Está disponível uma nova versão de %s para instalar"
 
 #. TRANSLATORS: this is a distro upgrade
-#: src/gs-update-monitor.c:590
+#: src/gs-update-monitor.c:641
 msgid "Software Upgrade Available"
 msgstr "Atualizações de aplicações disponíveis"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: src/gs-update-monitor.c:984
+#: src/gs-update-monitor.c:1035
 msgid "Software Updates Failed"
 msgstr "Falha na atualização de aplicações"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: src/gs-update-monitor.c:986
+#: src/gs-update-monitor.c:1037
 msgid "An important OS update failed to be installed."
 msgstr "Uma atualização importante do sistema operativo falhou ao instalar."
 
-#: src/gs-update-monitor.c:987
+#: src/gs-update-monitor.c:1038
 msgid "Show Details"
 msgstr "Mostrar detalhes"
 
 #. TRANSLATORS: Notification title when we've done a distro upgrade
-#: src/gs-update-monitor.c:1010
+#: src/gs-update-monitor.c:1061
 msgid "System Upgrade Complete"
 msgstr "Atualização do sistema concluída"
 
 #. TRANSLATORS: This is the notification body when we've done a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Welcome to Fedora 28!"
-#: src/gs-update-monitor.c:1015
+#: src/gs-update-monitor.c:1066
 #, c-format
 msgid "Welcome to %s %s!"
 msgstr "Bem-vindo(a) ao %s %s!"
 
 #. TRANSLATORS: title when we've done offline updates
-#: src/gs-update-monitor.c:1021
+#: src/gs-update-monitor.c:1072
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Atualização de aplicação instalada"
 msgstr[1] "Atualizações de aplicações instaladas"
 
 #. TRANSLATORS: message when we've done offline updates
-#: src/gs-update-monitor.c:1025
+#: src/gs-update-monitor.c:1076
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Foi instalada uma atualização importante do sistema operativo."
@@ -3510,30 +3528,30 @@ msgstr[1] "Foram instaladas atualizações importantes do sistema operativo."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: src/gs-update-monitor.c:1036
+#: src/gs-update-monitor.c:1087
 msgctxt "updates"
 msgid "Review"
 msgstr "Análise"
 
 #. TRANSLATORS: this is when the offline update failed
-#: src/gs-update-monitor.c:1084
+#: src/gs-update-monitor.c:1136
 msgid "Failed To Update"
 msgstr "Falha ao atualizar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: src/gs-update-monitor.c:1090
+#: src/gs-update-monitor.c:1142
 msgid "The system was already up to date."
 msgstr "O sistema já estava atualizado."
 
 #. TRANSLATORS: the user aborted the update manually
-#: src/gs-update-monitor.c:1095
+#: src/gs-update-monitor.c:1147
 msgid "The update was cancelled."
 msgstr "A atualização foi cancelada."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: src/gs-update-monitor.c:1101
+#: src/gs-update-monitor.c:1153
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -3542,7 +3560,7 @@ msgstr ""
 "se que tem acesso à Internet e tente novamente."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: src/gs-update-monitor.c:1107
+#: src/gs-update-monitor.c:1159
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -3551,7 +3569,7 @@ msgstr ""
 "fornecedor de programas para mais detalhes."
 
 #. TRANSLATORS: we ran out of disk space
-#: src/gs-update-monitor.c:1113
+#: src/gs-update-monitor.c:1165
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -3559,7 +3577,7 @@ msgstr ""
 "novamente."
 
 #. TRANSLATORS: We didn't handle the error type
-#: src/gs-update-monitor.c:1118
+#: src/gs-update-monitor.c:1170
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -4313,7 +4331,7 @@ msgid "Flatpak is a framework for desktop applications on Linux"
 msgstr "Flatpak é uma framework para aplicações desktop no Linux"
 
 #. TRANSLATORS: status text when downloading new metadata
-#: plugins/flatpak/gs-flatpak.c:901
+#: plugins/flatpak/gs-flatpak.c:998
 #, c-format
 msgid "Getting flatpak metadata for %s…"
 msgstr "A obter metadados flatpak para %s…"
@@ -4435,6 +4453,23 @@ msgstr "Suporte para Snap"
 #: plugins/snap/org.gnome.Software.Plugin.Snap.metainfo.xml.in:7
 msgid "A snap is a universal Linux package"
 msgstr "Um snap é um pacote universal para Linux"
+
+#~ msgid "Security Updates Pending"
+#~ msgstr "Instalações de segurança pendentes"
+
+#~ msgid "It is recommended that you install important updates now"
+#~ msgstr "É recomendável que instale atualizações importantes agora"
+
+#~ msgid "Restart & Install"
+#~ msgstr "Reiniciar & _Instalar"
+
+#~ msgid "Important OS and application updates are ready to be installed"
+#~ msgstr ""
+#~ "Atualizações importantes do sistema operativo e de aplicações estão "
+#~ "prontas para serem instaladas"
+
+#~ msgid "View"
+#~ msgstr "Ver"
 
 #~ msgid "_Let’s Go Shopping"
 #~ msgstr "_Vamos às compras"
