@@ -20,6 +20,7 @@
 
 #include "gs-details-page.h"
 #include "gs-app-addon-row.h"
+#include "gs-description-box.h"
 #include "gs-history-dialog.h"
 #include "gs-origin-popover-row.h"
 #include "gs-screenshot-image.h"
@@ -62,6 +63,7 @@ struct _GsDetailsPage
 	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
+	GtkWidget		*label_webapp_warning;
 	GtkWidget		*box_details_support;
 	GtkWidget		*box_progress;
 	GtkWidget		*box_progress2;
@@ -716,50 +718,9 @@ gs_details_page_donate_cb (GtkWidget *widget, GsDetailsPage *self)
 static void
 gs_details_page_set_description (GsDetailsPage *self, const gchar *tmp)
 {
-	GtkStyleContext *style_context;
-	GtkWidget *para;
-	guint i;
-	g_auto(GStrv) split = NULL;
-
-	/* does the description exist? */
-	gtk_widget_set_visible (self->box_details_description, tmp != NULL);
-	if (tmp == NULL)
-		return;
-
-	/* add each paragraph as a new GtkLabel which lets us get the 24px
-	 * paragraph spacing */
-	gs_container_remove_all (GTK_CONTAINER (self->box_details_description));
-	split = g_strsplit (tmp, "\n\n", -1);
-	for (i = 0; split[i] != NULL; i++) {
-		para = gtk_label_new (split[i]);
-		gtk_label_set_line_wrap (GTK_LABEL (para), TRUE);
-		gtk_label_set_max_width_chars (GTK_LABEL (para), 40);
-		gtk_label_set_selectable (GTK_LABEL (para), TRUE);
-		gtk_widget_set_visible (para, TRUE);
-		gtk_widget_set_can_focus (para, FALSE);
-		g_object_set (para,
-			      "xalign", 0.0,
-			      NULL);
-
-		/* add style class for theming */
-		style_context = gtk_widget_get_style_context (para);
-		gtk_style_context_add_class (style_context,
-					     "application-details-description");
-
-		gtk_container_add (GTK_CONTAINER (self->box_details_description), para);
-	}
-
-	/* show the webapp warning */
-	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
-		GtkWidget *label;
-		/* TRANSLATORS: this is the warning box */
-		label = gtk_label_new (_("This application can only be used when there is an active internet connection."));
-		gtk_widget_set_visible (label, TRUE);
-		gtk_label_set_xalign (GTK_LABEL (label), 0.f);
-		gtk_style_context_add_class (gtk_widget_get_style_context (label),
-					     "application-details-webapp-warning");
-		gtk_container_add (GTK_CONTAINER (self->box_details_description), label);
-	}
+	gs_description_box_set_text (GS_DESCRIPTION_BOX (self->box_details_description), tmp);
+	gs_description_box_set_collapsed (GS_DESCRIPTION_BOX (self->box_details_description), TRUE);
+	gtk_widget_set_visible (self->label_webapp_warning, gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP);
 }
 
 static void
@@ -2851,6 +2812,7 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_description);
+	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, label_webapp_warning);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_details_support);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress);
 	gtk_widget_class_bind_template_child (widget_class, GsDetailsPage, box_progress2);
