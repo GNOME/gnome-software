@@ -26,6 +26,7 @@ gnome_software_sources = [
   'gs-common.c',
   'gs-css.c',
   'gs-content-rating.c',
+  'gs-description-box.c',
   'gs-details-page.c',
   'gs-extras-page.c',
   'gs-feature-tile.c',
