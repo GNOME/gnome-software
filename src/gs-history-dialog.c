@@ -66,8 +66,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_REMOVING:
 			/* TRANSLATORS: this is the status in the history UI,
-			 * where we are showing the application was removed */
-			tmp = C_("app status", "Removed");
+			 * where we are showing the application was uninstalled */
+			tmp = C_("app status", "Uninstalled");
 			break;
 		case GS_APP_STATE_INSTALLED:
 		case GS_APP_STATE_INSTALLING:
