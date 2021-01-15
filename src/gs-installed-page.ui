@@ -40,11 +40,15 @@
                   <object class="GsFixedSizeBin" id="gs_fixed_bin">
                     <property name="visible">True</property>
                     <property name="preferred-width">860</property>
+                    <property name="border-width">24</property>
                     <child>
                       <object class="GtkListBox" id="list_box_install">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="selection_mode">none</property>
+                        <style>
+                          <class name="full-page-app-list"/>
+                        </style>
                       </object>
                     </child>
                   </object>
