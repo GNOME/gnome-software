@@ -493,6 +493,7 @@ gs_shell_change_mode (GsShell *shell,
 	case GS_SHELL_MODE_SEARCH:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
 		gtk_entry_set_text (GTK_ENTRY (widget), data);
 		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
 		break;

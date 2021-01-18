@@ -36,6 +36,7 @@ struct _GsSearchPage
 	gchar			*value;
 	guint			 waiting_id;
 	guint			 max_results;
+	gboolean		 changed;
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -166,7 +167,10 @@ gs_search_page_get_search_cb (GObject *source_object,
 		} else {
 			a = gs_app_new (self->appid_to_show);
 		}
-		gs_shell_show_app (self->shell, a);
+
+		if (a)
+			gs_shell_show_app (self->shell, a);
+
 		g_clear_pointer (&self->appid_to_show, g_free);
 	}
 }
@@ -236,6 +240,8 @@ gs_search_page_load (GsSearchPage *self)
 {
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
+	self->changed = FALSE;
+
 	/* cancel any pending searches */
 	g_cancellable_cancel (self->search_cancellable);
 	g_clear_object (&self->search_cancellable);
@@ -302,8 +308,14 @@ gs_search_page_reload (GsPage *page)
 void
 gs_search_page_set_appid_to_show (GsSearchPage *self, const gchar *appid)
 {
+	if (appid == self->appid_to_show ||
+	    g_strcmp0 (appid, self->appid_to_show) == 0)
+		return;
+
 	g_free (self->appid_to_show);
 	self->appid_to_show = g_strdup (appid);
+
+	self->changed = TRUE;
 }
 
 const gchar *
@@ -315,15 +327,14 @@ gs_search_page_get_text (GsSearchPage *self)
 void
 gs_search_page_set_text (GsSearchPage *self, const gchar *value)
 {
-	if (value == self->value)
-		return;
-	if (g_strcmp0 (value, self->value) == 0)
+	if (value == self->value ||
+	    g_strcmp0 (value, self->value) == 0)
 		return;
 
 	g_free (self->value);
 	self->value = g_strdup (value);
 
-	gs_search_page_load (self);
+	self->changed = TRUE;
 }
 
 static void
@@ -355,6 +366,9 @@ gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
+
+	if (self->value && self->changed)
+		gs_search_page_load (self);
 }
 
 static void
