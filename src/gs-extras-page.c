@@ -546,7 +546,7 @@ show_search_results (GsExtrasPage *self)
 		g_debug ("extras: found one result, showing in details view");
 		g_assert (list != NULL);
 		app = gs_app_row_get_app (GS_APP_ROW (list->data));
-		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, TRUE);
+		gs_shell_show_app (self->shell, app);
 		if (gs_app_is_installed (app))
 			gs_extras_page_maybe_emit_installed_resources_done (self);
 	} else {
