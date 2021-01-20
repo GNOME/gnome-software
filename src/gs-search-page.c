@@ -44,7 +44,17 @@ struct _GsSearchPage
 	GtkWidget		*stack_search;
 };
 
-G_DEFINE_TYPE (GsSearchPage, gs_search_page, GS_TYPE_PAGE)
+static void gs_search_page_scrollable_init (GtkScrollable *iface);
+
+G_DEFINE_TYPE_WITH_CODE (GsSearchPage, gs_search_page, GS_TYPE_PAGE,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, gs_search_page_scrollable_init))
+
+typedef enum {
+	PROP_HADJUSTMENT = 1,
+	PROP_VADJUSTMENT,
+	PROP_HSCROLL_POLICY,
+	PROP_VSCROLL_POLICY,
+} GsSearchPageProperty;
 
 static void
 gs_search_page_app_row_clicked_cb (GsAppRow *app_row,
@@ -453,6 +463,61 @@ gs_search_page_setup (GsPage *page,
 }
 
 static void
+gs_search_page_get_property (GObject    *object,
+                             guint       prop_id,
+                             GValue     *value,
+                             GParamSpec *pspec)
+{
+	GsSearchPage *self = GS_SEARCH_PAGE (object);
+
+	switch ((GsSearchPageProperty) prop_id) {
+	case PROP_HADJUSTMENT:
+		g_value_set_object (value, gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search)));
+		break;
+	case PROP_VADJUSTMENT:
+		g_value_set_object (value, gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search)));
+		break;
+	case PROP_HSCROLL_POLICY:
+		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
+		break;
+	case PROP_VSCROLL_POLICY:
+		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_search_page_set_property (GObject      *object,
+                             guint         prop_id,
+                             const GValue *value,
+                             GParamSpec   *pspec)
+{
+	GsSearchPage *self = GS_SEARCH_PAGE (object);
+
+	switch ((GsSearchPageProperty) prop_id) {
+	case PROP_HADJUSTMENT:
+		gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search),
+						     g_value_get_object (value));
+		break;
+	case PROP_VADJUSTMENT:
+		gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search),
+						     g_value_get_object (value));
+		break;
+	case PROP_HSCROLL_POLICY:
+	case PROP_VSCROLL_POLICY:
+		/* Not supported yet */
+		g_assert_not_reached ();
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_search_page_dispose (GObject *object)
 {
 	GsSearchPage *self = GS_SEARCH_PAGE (object);
@@ -488,8 +553,11 @@ gs_search_page_class_init (GsSearchPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_search_page_get_property;
+	object_class->set_property = gs_search_page_set_property;
 	object_class->dispose = gs_search_page_dispose;
 	object_class->finalize = gs_search_page_finalize;
+
 	page_class->app_installed = gs_search_page_app_installed;
 	page_class->app_removed = gs_search_page_app_removed;
 	page_class->switch_to = gs_search_page_switch_to;
@@ -497,12 +565,23 @@ gs_search_page_class_init (GsSearchPageClass *klass)
 	page_class->reload = gs_search_page_reload;
 	page_class->setup = gs_search_page_setup;
 
+	g_object_class_override_property (object_class, PROP_HADJUSTMENT, "hadjustment");
+	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
+	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
+	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-search-page.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, list_box_search);
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, scrolledwindow_search);
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, spinner_search);
 	gtk_widget_class_bind_template_child (widget_class, GsSearchPage, stack_search);
+}
+
+static void
+gs_search_page_scrollable_init (GtkScrollable *iface)
+{
+	/* Nothing to do here; all defined in properties */
 }
 
 static void
