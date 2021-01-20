@@ -489,41 +489,13 @@ stack_notify_visible_child_cb (GObject    *object,
 					mode == GS_SHELL_MODE_UPDATES);
 
 	/* do action for mode */
+	page = GS_PAGE (g_hash_table_lookup (priv->pages, page_name[mode]));
+
 	priv->mode = mode;
-	switch (mode) {
-	case GS_SHELL_MODE_OVERVIEW:
+	if (mode == GS_SHELL_MODE_OVERVIEW ||
+	    mode == GS_SHELL_MODE_INSTALLED ||
+	    mode == GS_SHELL_MODE_UPDATES)
 		gs_shell_clean_back_entry_stack (shell);
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "overview"));
-		break;
-	case GS_SHELL_MODE_INSTALLED:
-		gs_shell_clean_back_entry_stack (shell);
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "installed"));
-		break;
-	case GS_SHELL_MODE_MODERATE:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "moderate"));
-		break;
-	case GS_SHELL_MODE_LOADING:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "loading"));
-		break;
-	case GS_SHELL_MODE_SEARCH:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-		break;
-	case GS_SHELL_MODE_UPDATES:
-		gs_shell_clean_back_entry_stack (shell);
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "updates"));
-		break;
-	case GS_SHELL_MODE_DETAILS:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "details"));
-		break;
-	case GS_SHELL_MODE_CATEGORY:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "category"));
-		break;
-	case GS_SHELL_MODE_EXTRAS:
-		page = GS_PAGE (g_hash_table_lookup (priv->pages, "extras"));
-		break;
-	default:
-		g_assert_not_reached ();
-	}
 
 	/* show the back button if needed */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
