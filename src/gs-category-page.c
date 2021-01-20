@@ -58,7 +58,7 @@ struct _GsCategoryPage
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
 static void
-gs_category_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_category_page_switch_to (GsPage *page)
 {
 	GsCategoryPage *self = GS_CATEGORY_PAGE (page);
 	GtkWidget *widget;

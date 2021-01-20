@@ -543,7 +543,9 @@ gs_shell_change_mode (GsShell *shell,
 	if (priv->page != NULL)
 		gs_page_switch_from (priv->page);
 	g_set_object (&priv->page, page);
-	gs_page_switch_to (page, scroll_up);
+	gs_page_switch_to (page);
+	if (scroll_up)
+		gs_page_scroll_up (page);
 	priv->in_mode_change = FALSE;
 
 	/* update header bar widgets */
@@ -871,7 +873,8 @@ search_changed_handler (GObject *entry, GsShell *shell)
 		} else {
 			GsPage *page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
 			gs_search_page_set_text (GS_SEARCH_PAGE (page), text);
-			gs_page_switch_to (page, TRUE);
+			gs_page_switch_to (page);
+			gs_page_scroll_up (page);
 		}
 	}
 }

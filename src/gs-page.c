@@ -602,14 +602,13 @@ gs_page_is_active (GsPage *page)
  * widgets.
  */
 void
-gs_page_switch_to (GsPage *page,
-                   gboolean scroll_up)
+gs_page_switch_to (GsPage *page)
 {
 	GsPageClass *klass = GS_PAGE_GET_CLASS (page);
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	priv->is_active = TRUE;
 	if (klass->switch_to != NULL)
-		klass->switch_to (page, scroll_up);
+		klass->switch_to (page);
 }
 
 /**
@@ -626,6 +625,28 @@ gs_page_switch_from (GsPage *page)
 	priv->is_active = FALSE;
 	if (klass->switch_from != NULL)
 		klass->switch_from (page);
+}
+
+/**
+ * gs_page_scroll_up:
+ * @page: a #GsPage
+ *
+ * Scroll the page to the top of its content, if it supports scrolling.
+ *
+ * If it doesn’t support scrolling, this is a no-op.
+ *
+ * Since: 40
+ */
+void
+gs_page_scroll_up (GsPage *page)
+{
+	g_return_if_fail (GS_IS_PAGE (page));
+
+	if (GTK_IS_SCROLLABLE (page)) {
+		GtkAdjustment *adj;
+		adj = gtk_scrollable_get_vadjustment (GTK_SCROLLABLE (page));
+		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+	}
 }
 
 void

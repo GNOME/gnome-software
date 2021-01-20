@@ -277,7 +277,7 @@ gs_installed_page_reload (GsPage *page)
 }
 
 static void
-gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_installed_page_switch_to (GsPage *page)
 {
 	GsInstalledPage *self = GS_INSTALLED_PAGE (page);
 	GtkWidget *widget;
@@ -293,11 +293,6 @@ gs_installed_page_switch_to (GsPage *page, gboolean scroll_up)
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
 	gtk_widget_show (widget);
 
-	if (scroll_up) {
-		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_install));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_INSTALLED) {
 		gs_grab_focus_when_mapped (self->scrolledwindow_install);
 	}

@@ -638,8 +638,7 @@ gs_updates_page_reload (GsPage *page)
 }
 
 static void
-gs_updates_page_switch_to (GsPage *page,
-                           gboolean scroll_up)
+gs_updates_page_switch_to (GsPage *page)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
 	GtkWidget *widget;
@@ -656,12 +655,6 @@ gs_updates_page_switch_to (GsPage *page,
 	gtk_widget_show (widget);
 
 	gtk_widget_set_visible (self->button_refresh, TRUE);
-
-	if (scroll_up) {
-		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_updates));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 
 	/* no need to refresh */
 	if (self->cache_valid) {
@@ -709,7 +702,8 @@ gs_updates_page_refresh_cb (GsPluginLoader *plugin_loader,
 
 	/* get the new list */
 	gs_updates_page_invalidate (self);
-	gs_page_switch_to (GS_PAGE (self), TRUE);
+	gs_page_switch_to (GS_PAGE (self));
+	gs_page_scroll_up (GS_PAGE (self));
 }
 
 static void

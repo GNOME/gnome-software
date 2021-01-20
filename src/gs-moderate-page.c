@@ -231,7 +231,7 @@ gs_moderate_page_reload (GsPage *page)
 }
 
 static void
-gs_moderate_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_moderate_page_switch_to (GsPage *page)
 {
 	GsModeratePage *self = GS_MODERATE_PAGE (page);
 

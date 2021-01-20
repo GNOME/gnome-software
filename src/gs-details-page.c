@@ -279,7 +279,7 @@ gs_details_page_set_header_label (GsDetailsPage *self,
 }
 
 static void
-gs_details_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_details_page_switch_to (GsPage *page)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (page);
 	GtkAdjustment *adj;
@@ -500,8 +500,10 @@ gs_details_page_switch_to_idle (gpointer user_data)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (user_data);
 
-	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
-		gs_page_switch_to (GS_PAGE (self), TRUE);
+	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS) {
+		gs_page_switch_to (GS_PAGE (self));
+		gs_page_scroll_up (GS_PAGE (self));
+	}
 
 	/* update widgets */
 	gs_details_page_refresh_all (self);
@@ -2158,7 +2160,8 @@ gs_details_page_load_stage1 (GsDetailsPage *self)
 	g_autoptr(GsPluginJob) plugin_job = NULL;
 
 	/* update UI */
-	gs_page_switch_to (GS_PAGE (self), TRUE);
+	gs_page_switch_to (GS_PAGE (self));
+	gs_page_scroll_up (GS_PAGE (self));
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 
 	/* get extra details about the app */

@@ -1086,8 +1086,7 @@ gs_extras_page_search (GsExtrasPage  *self,
 }
 
 static void
-gs_extras_page_switch_to (GsPage *page,
-                          gboolean scroll_up)
+gs_extras_page_switch_to (GsPage *page)
 {
 	GsExtrasPage *self = GS_EXTRAS_PAGE (page);
 	GtkWidget *widget;
@@ -1100,12 +1099,6 @@ gs_extras_page_switch_to (GsPage *page,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
 	gtk_widget_show (widget);
-
-	if (scroll_up) {
-		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 
 	gs_extras_page_update_ui_state (self);
 }

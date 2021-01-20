@@ -347,7 +347,7 @@ gs_search_page_set_text (GsSearchPage *self, const gchar *value)
 }
 
 static void
-gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
+gs_search_page_switch_to (GsPage *page)
 {
 	GsSearchPage *self = GS_SEARCH_PAGE (page);
 	GtkWidget *widget;
@@ -369,12 +369,6 @@ gs_search_page_switch_to (GsPage *page, gboolean scroll_up)
 	/* hardcode */
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "search_button"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), TRUE);
-
-	if (scroll_up) {
-		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
 
 	if (self->value && self->changed)
 		gs_search_page_load (self);
