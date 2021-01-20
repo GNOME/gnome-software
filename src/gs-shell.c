@@ -73,6 +73,7 @@ typedef struct
 	gulong			 search_changed_id;
 	gchar			*events_info_uri;
 	gboolean		 in_mode_change;
+	GtkStack		*stack_main;
 	GsPage			*page;
 
 #ifdef HAVE_MOGWAI
@@ -411,20 +412,27 @@ gs_shell_clean_back_entry_stack (GsShell *shell)
 	}
 }
 
-void
-gs_shell_change_mode (GsShell *shell,
-		      GsShellMode mode,
-		      gpointer data,
-		      gboolean scroll_up)
+static void
+stack_notify_visible_child_cb (GObject    *object,
+                               GParamSpec *pspec,
+                               gpointer    user_data)
 {
+	GsShell *shell = GS_SHELL (user_data);
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GsApp *app;
 	GsPage *page;
 	GtkWidget *widget;
 	GtkStyleContext *context;
+	GsShellMode mode;
+	gsize i;
 
-	if (priv->ignore_primary_buttons)
-		return;
+	/* Work out the mode for this child. */
+	for (i = 0; i < G_N_ELEMENTS (page_name); i++) {
+		if (g_strcmp0 (page_name[i], gtk_stack_get_visible_child_name (priv->stack_main)) == 0) {
+			mode = i;
+			break;
+		}
+	}
+	g_assert (i < G_N_ELEMENTS (page_name));
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
 	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (widget), TRUE);
@@ -475,10 +483,6 @@ gs_shell_change_mode (GsShell *shell,
 
 	priv->ignore_primary_buttons = FALSE;
 
-	/* switch page */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_main"));
-	gtk_stack_set_visible_child_name (GTK_STACK (widget), page_name[mode]);
-
 	/* do action for mode */
 	priv->mode = mode;
 	switch (mode) {
@@ -498,32 +502,16 @@ gs_shell_change_mode (GsShell *shell,
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "search"));
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
-		gtk_entry_set_text (GTK_ENTRY (widget), data);
-		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		gs_shell_clean_back_entry_stack (shell);
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "updates"));
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		app = GS_APP (data);
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "details"));
-		if (gs_app_get_local_file (app) != NULL) {
-			gs_details_page_set_local_file (GS_DETAILS_PAGE (page),
-			                                gs_app_get_local_file (app));
-		} else if (gs_app_get_metadata_item (app, "GnomeSoftware::from-url") != NULL) {
-			gs_details_page_set_url (GS_DETAILS_PAGE (page),
-			                         gs_app_get_metadata_item (app, "GnomeSoftware::from-url"));
-		} else {
-			gs_details_page_set_app (GS_DETAILS_PAGE (page), data);
-		}
 		break;
 	case GS_SHELL_MODE_CATEGORY:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "category"));
-		gs_category_page_set_category (GS_CATEGORY_PAGE (page),
-		                               GS_CATEGORY (data));
 		break;
 	case GS_SHELL_MODE_EXTRAS:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "extras"));
@@ -544,8 +532,6 @@ gs_shell_change_mode (GsShell *shell,
 		gs_page_switch_from (priv->page);
 	g_set_object (&priv->page, page);
 	gs_page_switch_to (page);
-	if (scroll_up)
-		gs_page_scroll_up (page);
 	priv->in_mode_change = FALSE;
 
 	/* update header bar widgets */
@@ -567,7 +553,6 @@ gs_shell_change_mode (GsShell *shell,
 
 	/* destroy any existing modals */
 	if (priv->modal_dialogs != NULL) {
-		gsize i = 0;
 		/* block signal emission of 'unmapped' since that will
 		 * call g_ptr_array_remove_index. The unmapped signal may
 		 * be emitted whilst running unref handlers for
@@ -580,6 +565,51 @@ gs_shell_change_mode (GsShell *shell,
 		}
 		g_ptr_array_set_size (priv->modal_dialogs, 0);
 	}
+}
+
+void
+gs_shell_change_mode (GsShell *shell,
+		      GsShellMode mode,
+		      gpointer data,
+		      gboolean scroll_up)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GsApp *app;
+	GsPage *page;
+	GtkWidget *widget;
+
+	if (priv->ignore_primary_buttons)
+		return;
+
+	/* switch page */
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_main), page_name[mode]);
+
+	/* do any mode-specific actions */
+	page = GS_PAGE (g_hash_table_lookup (priv->pages, page_name[mode]));
+
+	if (mode == GS_SHELL_MODE_SEARCH) {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
+		gtk_entry_set_text (GTK_ENTRY (widget), data);
+		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
+	} else if (mode == GS_SHELL_MODE_DETAILS) {
+		app = GS_APP (data);
+		if (gs_app_get_local_file (app) != NULL) {
+			gs_details_page_set_local_file (GS_DETAILS_PAGE (page),
+			                                gs_app_get_local_file (app));
+		} else if (gs_app_get_metadata_item (app, "GnomeSoftware::from-url") != NULL) {
+			gs_details_page_set_url (GS_DETAILS_PAGE (page),
+			                         gs_app_get_metadata_item (app, "GnomeSoftware::from-url"));
+		} else {
+			gs_details_page_set_app (GS_DETAILS_PAGE (page), data);
+		}
+	} else if (mode == GS_SHELL_MODE_CATEGORY) {
+		gs_category_page_set_category (GS_CATEGORY_PAGE (page),
+		                               GS_CATEGORY (data));
+	}
+
+	if (scroll_up)
+		gs_page_scroll_up (page);
 }
 
 static void
@@ -2216,6 +2246,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* mouse hardware back button */
 	g_signal_connect_after (priv->main_window, "button_press_event",
 				G_CALLBACK (window_button_press_event), shell);
+
+	priv->stack_main = GTK_STACK (gtk_builder_get_object (priv->builder, "stack_main"));
+	g_signal_connect (priv->stack_main, "notify::visible-child", G_CALLBACK (stack_notify_visible_child_cb), shell);
 
 	/* show the search bar when clicking on the search button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
