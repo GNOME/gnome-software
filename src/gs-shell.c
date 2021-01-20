@@ -913,11 +913,6 @@ static void
 search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GtkWidget *search_bar;
-
-	search_bar = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (search_bar),
-	                                gtk_toggle_button_get_active (toggle_button));
 
 	if (priv->in_mode_change)
 		return;
@@ -926,17 +921,6 @@ search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 	if (priv->mode == GS_SHELL_MODE_SEARCH &&
 	    !gtk_toggle_button_get_active (toggle_button))
 		gs_shell_go_back (shell);
-}
-
-static void
-search_mode_enabled_cb (GtkSearchBar *search_bar, GParamSpec *pspec, GsShell *shell)
-{
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GtkWidget *search_button;
-
-	search_button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (search_button),
-	                              gtk_search_bar_get_search_mode (search_bar));
 }
 
 static gboolean
@@ -2254,11 +2238,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
 	g_signal_connect (widget, "clicked",
 	                  G_CALLBACK (search_button_clicked_cb),
-	                  shell);
-	/* set the search button enabled when search bar appears */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	g_signal_connect (widget, "notify::search-mode-enabled",
-	                  G_CALLBACK (search_mode_enabled_cb),
 	                  shell);
 
 	/* show the account popover when clicking on the account button */

@@ -224,6 +224,7 @@
               <object class="GtkToggleButton" id="search_button">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="active" bind-source="search_bar" bind-property="search-mode-enabled" bind-flags="sync-create|bidirectional" />
                 <child internal-child="accessible">
                   <object class="AtkObject" id="search_button_accessible">
                     <property name="accessible-name" translatable="yes">Search</property>
