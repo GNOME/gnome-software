@@ -59,7 +59,6 @@ typedef struct {
 typedef struct
 {
 	GSettings		*settings;
-	gboolean		 ignore_primary_buttons;
 	GCancellable		*cancellable;
 	GsPluginLoader		*plugin_loader;
 	GsShellMode		 mode;
@@ -72,7 +71,6 @@ typedef struct
 	GPtrArray		*modal_dialogs;
 	gulong			 search_changed_id;
 	gchar			*events_info_uri;
-	gboolean		 in_mode_change;
 	GtkStack		*stack_main;
 	GsPage			*page;
 
@@ -412,6 +410,9 @@ gs_shell_clean_back_entry_stack (GsShell *shell)
 	}
 }
 
+static void search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell);
+static void gs_overview_page_button_cb (GtkWidget *widget, GsShell *shell);
+
 static void
 stack_notify_visible_child_cb (GObject    *object,
                                GParamSpec *pspec,
@@ -420,7 +421,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	GsShell *shell = GS_SHELL (user_data);
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GsPage *page;
-	GtkWidget *widget;
+	GtkWidget *widget, *search_button;
 	GtkStyleContext *context;
 	GsShellMode mode;
 	gsize i;
@@ -451,16 +452,16 @@ stack_notify_visible_child_cb (GObject    *object,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "origin_box"));
 	gtk_widget_hide (widget);
 
-	priv->in_mode_change = TRUE;
 	/* only show the search button in overview and search pages */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
-	gtk_widget_set_visible (widget, mode == GS_SHELL_MODE_OVERVIEW ||
-					mode == GS_SHELL_MODE_SEARCH);
+	search_button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_button"));
+	g_signal_handlers_block_by_func (search_button, search_button_clicked_cb, shell);
+	gtk_widget_set_visible (search_button, mode == GS_SHELL_MODE_OVERVIEW ||
+					       mode == GS_SHELL_MODE_SEARCH);
 	/* hide unless we're going to search */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget),
 					mode == GS_SHELL_MODE_SEARCH);
-	priv->in_mode_change = FALSE;
+	g_signal_handlers_unblock_by_func (search_button, search_button_clicked_cb, shell);
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
@@ -469,19 +470,23 @@ stack_notify_visible_child_cb (GObject    *object,
 	gtk_window_set_title (priv->main_window, g_get_application_name ());
 
 	/* update main buttons according to mode */
-	priv->ignore_primary_buttons = TRUE;
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_explore"));
+	g_signal_handlers_block_by_func (widget, gs_overview_page_button_cb, shell);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_OVERVIEW);
+	g_signal_handlers_unblock_by_func (widget, gs_overview_page_button_cb, shell);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
+	g_signal_handlers_block_by_func (widget, gs_overview_page_button_cb, shell);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_INSTALLED);
+	g_signal_handlers_unblock_by_func (widget, gs_overview_page_button_cb, shell);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+	g_signal_handlers_block_by_func (widget, gs_overview_page_button_cb, shell);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
+	g_signal_handlers_unblock_by_func (widget, gs_overview_page_button_cb, shell);
+
 	gtk_widget_set_visible (widget, gs_plugin_loader_get_allow_updates (priv->plugin_loader) ||
 					mode == GS_SHELL_MODE_UPDATES);
-
-	priv->ignore_primary_buttons = FALSE;
 
 	/* do action for mode */
 	priv->mode = mode;
@@ -526,13 +531,10 @@ stack_notify_visible_child_cb (GObject    *object,
 				mode != GS_SHELL_MODE_SEARCH &&
 				!g_queue_is_empty (priv->back_entry_stack));
 
-	priv->in_mode_change = TRUE;
-
 	if (priv->page != NULL)
 		gs_page_switch_from (priv->page);
 	g_set_object (&priv->page, page);
 	gs_page_switch_to (page);
-	priv->in_mode_change = FALSE;
 
 	/* update header bar widgets */
 	widget = gs_page_get_header_start_widget (page);
@@ -577,9 +579,6 @@ gs_shell_change_mode (GsShell *shell,
 	GsApp *app;
 	GsPage *page;
 	GtkWidget *widget;
-
-	if (priv->ignore_primary_buttons)
-		return;
 
 	/* switch page */
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_main), page_name[mode]);
@@ -913,9 +912,6 @@ static void
 search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-
-	if (priv->in_mode_change)
-		return;
 
 	/* go back when exiting the search view */
 	if (priv->mode == GS_SHELL_MODE_SEARCH &&
@@ -2572,7 +2568,6 @@ gs_shell_init (GsShell *shell)
 
 	priv->pages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	priv->back_entry_stack = g_queue_new ();
-	priv->ignore_primary_buttons = FALSE;
 	priv->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
 }
 
