@@ -642,18 +642,12 @@ static void
 gs_updates_page_switch_to (GsPage *page)
 {
 	GsUpdatesPage *self = GS_UPDATES_PAGE (page);
-	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES) {
 		g_warning ("Called switch_to(updates) when in mode %s",
 			   gs_shell_get_mode_string (self->shell));
 		return;
 	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
-	gtk_widget_show (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
-	gtk_widget_show (widget);
 
 	gtk_widget_set_visible (self->button_refresh, TRUE);
 

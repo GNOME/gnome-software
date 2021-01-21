@@ -350,25 +350,12 @@ static void
 gs_search_page_switch_to (GsPage *page)
 {
 	GsSearchPage *self = GS_SEARCH_PAGE (page);
-	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_SEARCH) {
 		g_warning ("Called switch_to(search) when in mode %s",
 			   gs_shell_get_mode_string (self->shell));
 		return;
 	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
-	gtk_widget_show (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "menu_button"));
-	gtk_widget_show (widget);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "search_bar"));
-	gtk_widget_show (widget);
-
-	/* hardcode */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "search_button"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), TRUE);
 
 	if (self->value && self->changed)
 		gs_search_page_load (self);

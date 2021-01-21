@@ -406,6 +406,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	GtkStyleContext *context;
 	GsShellMode mode;
 	gsize i;
+	gboolean buttonbox_visible;
 
 	/* Work out the mode for this child. */
 	for (i = 0; i < G_N_ELEMENTS (page_name); i++) {
@@ -419,13 +420,17 @@ stack_notify_visible_child_cb (GObject    *object,
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header"));
 	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (widget), TRUE);
 
-	/* hide all mode specific header widgets here, they will be shown in the
-	 * refresh functions
+	/* update the visibility of mode-specific header widgets
 	 */
+	buttonbox_visible = (mode == GS_SHELL_MODE_OVERVIEW ||
+			     mode == GS_SHELL_MODE_INSTALLED ||
+			     mode == GS_SHELL_MODE_UPDATES ||
+			     mode == GS_SHELL_MODE_SEARCH);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "buttonbox_main"));
-	gtk_widget_hide (widget);
+	gtk_widget_set_visible (widget, buttonbox_visible);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "menu_button"));
-	gtk_widget_hide (widget);
+	gtk_widget_set_visible (widget, buttonbox_visible);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header_selection_menu_button"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "origin_box"));
