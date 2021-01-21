@@ -61,7 +61,6 @@ typedef struct
 	GSettings		*settings;
 	GCancellable		*cancellable;
 	GsPluginLoader		*plugin_loader;
-	GsShellMode		 mode;
 	GHashTable		*pages;
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
@@ -218,7 +217,7 @@ gs_shell_refresh_auto_updates_ui (GsShell *shell)
 #endif
 
 	gtk_info_bar_set_revealed (metered_updates_bar,
-				   priv->mode != GS_SHELL_MODE_LOADING &&
+				   gs_shell_get_mode (shell) != GS_SHELL_MODE_LOADING &&
 				   automatic_updates_enabled &&
 				   automatic_updates_paused);
 	gtk_info_bar_set_default_response (metered_updates_bar, GTK_RESPONSE_OK);
@@ -491,7 +490,6 @@ stack_notify_visible_child_cb (GObject    *object,
 	/* do action for mode */
 	page = GS_PAGE (g_hash_table_lookup (priv->pages, page_name[mode]));
 
-	priv->mode = mode;
 	if (mode == GS_SHELL_MODE_OVERVIEW ||
 	    mode == GS_SHELL_MODE_INSTALLED ||
 	    mode == GS_SHELL_MODE_UPDATES)
@@ -600,14 +598,14 @@ save_back_entry (GsShell *shell)
 	GsPage *page;
 
 	entry = g_new0 (BackEntry, 1);
-	entry->mode = priv->mode;
+	entry->mode = gs_shell_get_mode (shell);
 
 	entry->focus = gtk_window_get_focus (priv->main_window);
 	if (entry->focus != NULL)
 		g_object_add_weak_pointer (G_OBJECT (entry->focus),
 					   (gpointer *) &entry->focus);
 
-	switch (priv->mode) {
+	switch (entry->mode) {
 	case GS_SHELL_MODE_CATEGORY:
 		page = GS_PAGE (g_hash_table_lookup (priv->pages, "category"));
 		entry->category = gs_category_page_get_category (GS_CATEGORY_PAGE (page));
@@ -815,7 +813,7 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 
 	/* if the "loaded" signal handler didn't change the mode, kick off async
 	 * overview page refresh, and switch to the page once done */
-	if (priv->mode == GS_SHELL_MODE_LOADING) {
+	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING) {
 		GsPage *page;
 
 		page = GS_PAGE (gtk_builder_get_object (priv->builder, "overview_page"));
@@ -883,10 +881,8 @@ search_changed_handler (GObject *entry, GsShell *shell)
 static void
 search_button_clicked_cb (GtkToggleButton *toggle_button, GsShell *shell)
 {
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-
 	/* go back when exiting the search view */
-	if (priv->mode == GS_SHELL_MODE_SEARCH &&
+	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH &&
 	    !gtk_toggle_button_get_active (toggle_button))
 		gs_shell_go_back (shell);
 }
@@ -1042,7 +1038,7 @@ gs_shell_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
 	GtkWidget *widget;
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
 	gtk_widget_set_visible (widget, gs_plugin_loader_get_allow_updates (plugin_loader) ||
-					priv->mode == GS_SHELL_MODE_UPDATES);
+					gs_shell_get_mode (shell) == GS_SHELL_MODE_UPDATES);
 }
 
 typedef enum {
@@ -2317,12 +2313,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_reset_state (GsShell *shell)
 {
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-
 	/* reset to overview, unless we're in the loading state which advances
 	 * to overview on its own */
-	if (priv->mode != GS_SHELL_MODE_LOADING)
-		priv->mode = GS_SHELL_MODE_OVERVIEW;
+	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_LOADING)
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 
 	gs_shell_clean_back_entry_stack (shell);
 }
@@ -2338,14 +2332,19 @@ gs_shell_get_mode (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
-	return priv->mode;
+	for (gsize i = 0; i < G_N_ELEMENTS (page_name); i++) {
+		if (g_strcmp0 (gtk_stack_get_visible_child_name (priv->stack_main), page_name[i]) == 0)
+			return (GsShellMode) i;
+	}
+
+	g_assert_not_reached ();
 }
 
 const gchar *
 gs_shell_get_mode_string (GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	return page_name[priv->mode];
+	return gtk_stack_get_visible_child_name (priv->stack_main);
 }
 
 void
