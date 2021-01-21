@@ -17,14 +17,7 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_SHELL (gs_shell_get_type ())
 
-G_DECLARE_DERIVABLE_TYPE (GsShell, gs_shell, GS, SHELL, GObject)
-
-struct _GsShellClass
-{
-	GObjectClass			 parent_class;
-
-	void (* loaded)		 (GsShell *shell);
-};
+G_DECLARE_FINAL_TYPE (GsShell, gs_shell, GS, SHELL, GObject)
 
 typedef enum {
 	GS_SHELL_MODE_UNKNOWN,
