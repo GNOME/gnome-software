@@ -28,6 +28,12 @@ typedef struct
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 
+typedef enum {
+	PROP_TITLE = 1,
+} GsPageProperty;
+
+static GParamSpec *obj_props[PROP_TITLE + 1] = { NULL, };
+
 GsShell *
 gs_page_get_shell (GsPage *page)
 {
@@ -595,6 +601,30 @@ gs_page_is_active (GsPage *page)
 }
 
 /**
+ * gs_page_get_title:
+ * @page: a #GsPage
+ *
+ * Get the value of #GsPage:title.
+ *
+ * Returns: (nullable): human readable title for the page, or %NULL if one isn’t set
+ *
+ * Since: 40
+ */
+const gchar *
+gs_page_get_title (GsPage *page)
+{
+	g_auto(GValue) value = G_VALUE_INIT;
+
+	g_return_val_if_fail (GS_IS_PAGE (page), NULL);
+
+	/* The property is typically overridden by subclasses; the
+	 * implementation in #GsPage itself is just a placeholder. */
+	g_object_get_property (G_OBJECT (page), "title", &value);
+
+	return g_value_get_string (&value);
+}
+
+/**
  * gs_page_switch_to:
  *
  * Pure virtual method that subclasses have to override to show page specific
@@ -681,6 +711,23 @@ gs_page_setup (GsPage *page,
 }
 
 static void
+gs_page_get_property (GObject    *object,
+                      guint       prop_id,
+                      GValue     *value,
+                      GParamSpec *pspec)
+{
+	switch ((GsPageProperty) prop_id) {
+	case PROP_TITLE:
+		/* Should be overridden by subclasses. */
+		g_value_set_string (value, NULL);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_page_dispose (GObject *object)
 {
 	GsPage *page = GS_PAGE (object);
@@ -703,7 +750,23 @@ gs_page_class_init (GsPageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->get_property = gs_page_get_property;
 	object_class->dispose = gs_page_dispose;
+
+	/**
+	 * GsPage:title: (nullable)
+	 *
+	 * A human readable title for this page, or %NULL if one isn’t set or
+	 * doesn’t make sense.
+	 *
+	 * Since: 40
+	 */
+	obj_props[PROP_TITLE] =
+		g_param_spec_string ("title", NULL, NULL,
+				     NULL,
+				     G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
+
+	g_object_class_install_properties (object_class, G_N_ELEMENTS (obj_props), obj_props);
 }
 
 GsPage *

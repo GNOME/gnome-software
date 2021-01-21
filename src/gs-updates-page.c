@@ -103,6 +103,7 @@ typedef enum {
 	PROP_VADJUSTMENT,
 	PROP_HSCROLL_POLICY,
 	PROP_VSCROLL_POLICY,
+	PROP_TITLE,
 } GsUpdatesPageProperty;
 
 static void
@@ -1320,6 +1321,9 @@ gs_updates_page_get_property (GObject    *object,
 	case PROP_VSCROLL_POLICY:
 		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
 		break;
+	case PROP_TITLE:
+		g_value_set_string (value, _("Updates"));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1346,6 +1350,10 @@ gs_updates_page_set_property (GObject      *object,
 	case PROP_HSCROLL_POLICY:
 	case PROP_VSCROLL_POLICY:
 		/* Not supported yet */
+		g_assert_not_reached ();
+		break;
+	case PROP_TITLE:
+		/* Read only */
 		g_assert_not_reached ();
 		break;
 	default:
@@ -1405,6 +1413,7 @@ gs_updates_page_class_init (GsUpdatesPageClass *klass)
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
 	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
 	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-updates-page.ui");
 

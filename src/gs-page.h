@@ -75,4 +75,6 @@ gboolean	 gs_page_setup				(GsPage		*page,
 							 GError		**error);
 gboolean	 gs_page_is_active			(GsPage		*page);
 
+const gchar	*gs_page_get_title			(GsPage		*page);
+
 G_END_DECLS

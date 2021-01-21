@@ -57,6 +57,10 @@ struct _GsCategoryPage
 
 G_DEFINE_TYPE (GsCategoryPage, gs_category_page, GS_TYPE_PAGE)
 
+typedef enum {
+	PROP_TITLE = 1,
+} GsCategoryPageProperty;
+
 static void
 gs_category_page_switch_to (GsPage *page)
 {
@@ -65,7 +69,7 @@ gs_category_page_switch_to (GsPage *page)
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
 	gtk_widget_show (widget);
-	gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (self->category));
+	gtk_label_set_label (GTK_LABEL (widget), gs_page_get_title (page));
 }
 
 static void
@@ -480,6 +484,9 @@ gs_category_page_set_category (GsCategoryPage *self, GsCategory *category)
 	 * with the previous scroll value */
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_category));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+
+	/* notify of the updated title */
+	g_object_notify (G_OBJECT (self), "title");
 }
 
 GsCategory *
@@ -492,6 +499,27 @@ static void
 gs_category_page_init (GsCategoryPage *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
+}
+
+static void
+gs_category_page_get_property (GObject    *object,
+                               guint       prop_id,
+                               GValue     *value,
+                               GParamSpec *pspec)
+{
+	GsCategoryPage *self = GS_CATEGORY_PAGE (object);
+
+	switch ((GsCategoryPageProperty) prop_id) {
+	case PROP_TITLE:
+		if (self->category != NULL)
+			g_value_set_string (value, gs_category_get_name (self->category));
+		else
+			g_value_set_string (value, NULL);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -559,10 +587,14 @@ gs_category_page_class_init (GsCategoryPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_category_page_get_property;
 	object_class->dispose = gs_category_page_dispose;
+
 	page_class->switch_to = gs_category_page_switch_to;
 	page_class->reload = gs_category_page_reload;
 	page_class->setup = gs_category_page_setup;
+
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-page.ui");
 

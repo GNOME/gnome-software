@@ -70,6 +70,7 @@ typedef enum {
 	PROP_VADJUSTMENT,
 	PROP_HSCROLL_POLICY,
 	PROP_VSCROLL_POLICY,
+	PROP_TITLE,
 } GsOverviewPageProperty;
 
 enum {
@@ -907,6 +908,10 @@ gs_overview_page_get_property (GObject    *object,
 	case PROP_VSCROLL_POLICY:
 		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
 		break;
+	case PROP_TITLE:
+		/* Translators: This is the title of the main page of the UI. */
+		g_value_set_string (value, _("Explore"));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -933,6 +938,10 @@ gs_overview_page_set_property (GObject      *object,
 	case PROP_HSCROLL_POLICY:
 	case PROP_VSCROLL_POLICY:
 		/* Not supported yet */
+		g_assert_not_reached ();
+		break;
+	case PROP_TITLE:
+		/* Read only. */
 		g_assert_not_reached ();
 		break;
 	default:
@@ -976,6 +985,7 @@ gs_overview_page_class_init (GsOverviewPageClass *klass)
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
 	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
 	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	signals [SIGNAL_REFRESHED] =
 		g_signal_new ("refreshed",

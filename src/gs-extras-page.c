@@ -76,6 +76,7 @@ typedef enum {
 	PROP_VADJUSTMENT,
 	PROP_HSCROLL_POLICY,
 	PROP_VSCROLL_POLICY,
+	PROP_TITLE,
 } GsExtrasPageProperty;
 
 static void
@@ -216,20 +217,7 @@ gs_extras_page_update_ui_state (GsExtrasPage *self)
 
 	/* headerbar title */
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	switch (self->state) {
-	case GS_EXTRAS_PAGE_STATE_LOADING:
-	case GS_EXTRAS_PAGE_STATE_READY:
-		title = build_title (self);
-		gtk_label_set_label (GTK_LABEL (widget), title);
-		break;
-	case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
-	case GS_EXTRAS_PAGE_STATE_FAILED:
-		gtk_label_set_label (GTK_LABEL (widget), _("Unable to Find Requested Software"));
-		break;
-	default:
-		g_assert_not_reached ();
-		break;
-	}
+	gtk_label_set_label (GTK_LABEL (widget), gs_page_get_title (GS_PAGE (self)));
 
 	/* stack */
 	switch (self->state) {
@@ -280,7 +268,12 @@ static void
 gs_extras_page_set_state (GsExtrasPage *self,
                           GsExtrasPageState state)
 {
+	if (self->state == state)
+		return;
+
 	self->state = state;
+
+	g_object_notify (G_OBJECT (self), "title");
 	gs_extras_page_update_ui_state (self);
 	gs_extras_page_maybe_emit_installed_resources_done (self);
 }
@@ -779,6 +772,9 @@ gs_extras_page_load (GsExtrasPage *self, GPtrArray *array_search_data)
 		}
 		self->pending_search_cnt++;
 	}
+
+	/* the page title will have changed */
+	g_object_notify (G_OBJECT (self), "title");
 }
 
 static void
@@ -1048,7 +1044,14 @@ gs_extras_page_search (GsExtrasPage  *self,
                        const gchar   *desktop_id,
                        const gchar   *ident)
 {
+	GsExtrasPageMode old_mode;
+
+	old_mode = self->mode;
 	self->mode = gs_extras_page_mode_from_string (mode_str);
+
+	if (old_mode != self->mode)
+		g_object_notify (G_OBJECT (self), "title");
+
 	g_clear_pointer (&self->caller_app_name, g_free);
 	self->caller_app_name = gs_extras_page_get_app_name (desktop_id);
 	g_clear_pointer (&self->install_resources_ident, g_free);
@@ -1234,6 +1237,21 @@ gs_extras_page_get_property (GObject    *object,
 	case PROP_VSCROLL_POLICY:
 		g_value_set_enum (value, GTK_SCROLL_MINIMUM);
 		break;
+	case PROP_TITLE:
+		switch (self->state) {
+		case GS_EXTRAS_PAGE_STATE_LOADING:
+		case GS_EXTRAS_PAGE_STATE_READY:
+			g_value_take_string (value, build_title (self));
+			break;
+		case GS_EXTRAS_PAGE_STATE_NO_RESULTS:
+		case GS_EXTRAS_PAGE_STATE_FAILED:
+			g_value_set_string (value, _("Unable to Find Requested Software"));
+			break;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1260,6 +1278,10 @@ gs_extras_page_set_property (GObject      *object,
 	case PROP_HSCROLL_POLICY:
 	case PROP_VSCROLL_POLICY:
 		/* Not supported yet */
+		g_assert_not_reached ();
+		break;
+	case PROP_TITLE:
+		/* Read-only */
 		g_assert_not_reached ();
 		break;
 	default:
@@ -1332,6 +1354,7 @@ gs_extras_page_class_init (GsExtrasPageClass *klass)
 	g_object_class_override_property (object_class, PROP_VADJUSTMENT, "vadjustment");
 	g_object_class_override_property (object_class, PROP_HSCROLL_POLICY, "hscroll-policy");
 	g_object_class_override_property (object_class, PROP_VSCROLL_POLICY, "vscroll-policy");
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-extras-page.ui");
 

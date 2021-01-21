@@ -163,10 +163,32 @@ struct _GsDetailsPage
 
 G_DEFINE_TYPE (GsDetailsPage, gs_details_page, GS_TYPE_PAGE)
 
+typedef enum {
+	PROP_TITLE = 1,
+} GsDetailsPageProperty;
+
+static GsDetailsPageState
+gs_details_page_get_state (GsDetailsPage *self)
+{
+	const gchar *visible_child_name = gtk_stack_get_visible_child_name (GTK_STACK (self->stack_details));
+
+	if (g_str_equal (visible_child_name, "spinner"))
+		return GS_DETAILS_PAGE_STATE_LOADING;
+	else if (g_str_equal (visible_child_name, "ready"))
+		return GS_DETAILS_PAGE_STATE_READY;
+	else if (g_str_equal (visible_child_name, "failed"))
+		return GS_DETAILS_PAGE_STATE_FAILED;
+	else
+		g_assert_not_reached ();
+}
+
 static void
 gs_details_page_set_state (GsDetailsPage *self,
                            GsDetailsPageState state)
 {
+	if (state == gs_details_page_get_state (self))
+		return;
+
 	/* spinner */
 	switch (state) {
 	case GS_DETAILS_PAGE_STATE_LOADING:
@@ -196,6 +218,9 @@ gs_details_page_set_state (GsDetailsPage *self,
 	default:
 		g_assert_not_reached ();
 	}
+
+	/* the page title will have changed */
+	g_object_notify (G_OBJECT (self), "title");
 }
 
 static void
@@ -268,14 +293,13 @@ app_has_pending_action (GsApp *app)
 }
 
 static void
-gs_details_page_set_header_label (GsDetailsPage *self,
-				  const gchar *text)
+gs_details_page_update_header_label (GsDetailsPage *self)
 {
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
-	gtk_label_set_label (GTK_LABEL (widget), text ? text : "");
-	gtk_widget_set_visible (widget, text != NULL);
+	gtk_label_set_label (GTK_LABEL (widget), gs_page_get_title (GS_PAGE (self)));
+	gtk_widget_set_visible (widget, gtk_label_get_label (GTK_LABEL (widget)) != NULL);
 }
 
 static void
@@ -294,7 +318,7 @@ gs_details_page_switch_to (GsPage *page)
 	if (self->app == NULL)
 		return;
 
-	gs_details_page_set_header_label (self, gs_app_get_name (self->app));
+	gs_details_page_update_header_label (self);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_details));
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
@@ -1198,7 +1222,7 @@ gs_details_page_refresh_all (GsDetailsPage *self)
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
-	gs_details_page_set_header_label (self, tmp);
+	gs_details_page_update_header_label (self);
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (self->application_details_title), tmp);
 		gtk_widget_set_visible (self->application_details_title, TRUE);
@@ -1914,6 +1938,10 @@ _set_app (GsDetailsPage *self, GsApp *app)
 
 	/* save app */
 	g_set_object (&self->app, app);
+
+	/* title/app name will have changed */
+	g_object_notify (G_OBJECT (self), "title");
+
 	if (self->app == NULL) {
 		/* switch away from the details view that failed to load */
 		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
@@ -2089,7 +2117,7 @@ gs_details_page_set_local_file (GsDetailsPage *self, GFile *file)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
-	gs_details_page_set_header_label (self, _("Loading…"));
+	gs_details_page_update_header_label (self);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_FILE_TO_APP,
 					 "file", file,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -2124,7 +2152,7 @@ gs_details_page_set_url (GsDetailsPage *self, const gchar *url)
 	gs_details_page_set_state (self, GS_DETAILS_PAGE_STATE_LOADING);
 	g_clear_object (&self->app_local_file);
 	g_clear_object (&self->app);
-	gs_details_page_set_header_label (self, _("Loading…"));
+	gs_details_page_update_header_label (self);
 	plugin_job = gs_plugin_job_newv (GS_PLUGIN_ACTION_URL_TO_APP,
 					 "search", url,
 					 "refine-flags", GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -2903,6 +2931,38 @@ gs_details_page_setup (GsPage *page,
 }
 
 static void
+gs_details_page_get_property (GObject    *object,
+                              guint       prop_id,
+                              GValue     *value,
+                              GParamSpec *pspec)
+{
+	GsDetailsPage *self = GS_DETAILS_PAGE (object);
+
+	switch ((GsDetailsPageProperty) prop_id) {
+	case PROP_TITLE:
+		switch (gs_details_page_get_state (self)) {
+		case GS_DETAILS_PAGE_STATE_LOADING:
+			/* TRANSLATORS: This is a title for the app details page,
+			 * shown when it’s loading the details of an app. */
+			g_value_set_string (value, _("Loading…"));
+			break;
+		case GS_DETAILS_PAGE_STATE_READY:
+			g_value_set_string (value, gs_app_get_name (self->app));
+			break;
+		case GS_DETAILS_PAGE_STATE_FAILED:
+			g_value_set_string (value, NULL);
+			break;
+		default:
+			g_assert_not_reached ();
+		}
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 gs_details_page_dispose (GObject *object)
 {
 	GsDetailsPage *self = GS_DETAILS_PAGE (object);
@@ -2933,12 +2993,16 @@ gs_details_page_class_init (GsDetailsPageClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_details_page_get_property;
 	object_class->dispose = gs_details_page_dispose;
+
 	page_class->app_installed = gs_details_page_app_installed;
 	page_class->app_removed = gs_details_page_app_removed;
 	page_class->switch_to = gs_details_page_switch_to;
 	page_class->reload = gs_details_page_reload;
 	page_class->setup = gs_details_page_setup;
+
+	g_object_class_override_property (object_class, PROP_TITLE, "title");
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-details-page.ui");
 
