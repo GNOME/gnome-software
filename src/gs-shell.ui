@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.15.2 on Thu Aug 15 17:13:59 2013 -->
 <interface>
-  <!-- interface-requires gtk+ 3.10 -->
-  <!-- interface-requires handy 1.0 -->
+  <requires lib="gtk+" version="3.10"/>
+  <requires lib="handy" version="1.0"/>
   <object class="GtkMenu" id="header_selection_menu">
     <property name="visible">True</property>
     <child>
@@ -29,7 +28,8 @@
       <attribute name="action">app.prefs</attribute>
     </item>
   </menu>
-  <object class="GtkApplicationWindow" id="window_software">
+
+  <template class="GsShell" parent="GtkApplicationWindow">
     <property name="visible">False</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
@@ -182,8 +182,8 @@
                 <child>
                   <object class="GtkMenuButton" id="header_selection_menu_button">
                     <property name="visible">False</property>
-		    <property name="popup">header_selection_menu</property>
-		    <style>
+                    <property name="popup">header_selection_menu</property>
+                    <style>
                       <class name="selection-menu"/>
                     </style>
                     <child>
@@ -511,5 +511,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>

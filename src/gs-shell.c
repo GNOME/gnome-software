@@ -58,7 +58,7 @@ typedef struct {
 
 struct _GsShell
 {
-	GObject			 parent_object;
+	GtkApplicationWindow	 parent_object;
 
 	GSettings		*settings;
 	GCancellable		*cancellable;
@@ -66,8 +66,6 @@ struct _GsShell
 	GHashTable		*pages;
 	GtkWidget		*header_start_widget;
 	GtkWidget		*header_end_widget;
-	GtkBuilder		*builder;
-	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
 	GPtrArray		*modal_dialogs;
 	gulong			 search_changed_id;
@@ -84,9 +82,44 @@ struct _GsShell
 	gboolean		 scheduler_held;
 	gulong			 scheduler_invalidated_handler;
 #endif  /* HAVE_MOGWAI */
+
+	GtkWidget		*header;
+	GtkWidget		*metered_updates_bar;
+	GtkWidget		*buttonbox_main;
+	GtkWidget		*menu_button;
+	GtkWidget		*header_selection_menu_button;
+	GtkWidget		*search_button;
+	GtkWidget		*button_explore;
+	GtkWidget		*button_installed;
+	GtkWidget		*button_updates;
+	GtkWidget		*entry_search;
+	GtkWidget		*search_bar;
+	GtkWidget		*button_back;
+	GtkWidget		*notification_event;
+	GtkWidget		*button_events_sources;
+	GtkWidget		*button_events_no_space;
+	GtkWidget		*button_events_network_settings;
+	GtkWidget		*button_events_restart_required;
+	GtkWidget		*button_events_more_info;
+	GtkWidget		*button_events_dismiss;
+	GtkWidget		*label_events;
+	GtkWidget		*primary_menu;
+	GtkWidget		*button_installed_counter;
+	GtkWidget		*button_updates_counter;
+	GtkWidget		*application_details_header;
+
+	GsPage			*overview_page;
+	GsPage			*updates_page;
+	GsPage			*installed_page;
+	GsPage			*moderate_page;
+	GsPage			*loading_page;
+	GsPage			*search_page;
+	GsPage			*details_page;
+	GsPage			*category_page;
+	GsPage			*extras_page;
 };
 
-G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
+G_DEFINE_TYPE (GsShell, gs_shell, GTK_TYPE_APPLICATION_WINDOW)
 
 enum {
 	SIGNAL_LOADED,
@@ -114,7 +147,7 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 					    shell->modal_dialogs->len - 1);
 		g_debug ("using old modal %p as parent", parent);
 	} else {
-		parent = shell->main_window;
+		parent = GTK_WINDOW (shell);
 		g_debug ("using main window");
 	}
 	gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
@@ -129,39 +162,31 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
-GtkWindow *
-gs_shell_get_window (GsShell *shell)
-{
-	return shell->main_window;
-}
-
 void
 gs_shell_activate (GsShell *shell)
 {
-	gtk_window_present (shell->main_window);
+	gtk_window_present (GTK_WINDOW (shell));
 }
 
 static void
 gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
 {
 	GtkWidget *old_widget;
-	GtkWidget *header;
 
 	old_widget = shell->header_start_widget;
-	header = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header"));
 
 	if (shell->header_start_widget == widget)
 		return;
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		gtk_header_bar_pack_start (GTK_HEADER_BAR (header), widget);
+		gtk_header_bar_pack_start (GTK_HEADER_BAR (shell->header), widget);
 	}
 
 	shell->header_start_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (header), old_widget);
+		gtk_container_remove (GTK_CONTAINER (shell->header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -170,23 +195,21 @@ static void
 gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 {
 	GtkWidget *old_widget;
-	GtkWidget *header;
 
 	old_widget = shell->header_end_widget;
-	header = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header"));
 
 	if (shell->header_end_widget == widget)
 		return;
 
 	if (widget != NULL) {
 		g_object_ref (widget);
-		gtk_header_bar_pack_end (GTK_HEADER_BAR (header), widget);
+		gtk_header_bar_pack_end (GTK_HEADER_BAR (shell->header), widget);
 	}
 
 	shell->header_end_widget = widget;
 
 	if (old_widget != NULL) {
-		gtk_container_remove (GTK_CONTAINER (header), old_widget);
+		gtk_container_remove (GTK_CONTAINER (shell->header), old_widget);
 		g_object_unref (old_widget);
 	}
 }
@@ -196,11 +219,8 @@ gs_shell_refresh_auto_updates_ui (GsShell *shell)
 {
 	gboolean automatic_updates_paused;
 	gboolean automatic_updates_enabled;
-	GtkInfoBar *metered_updates_bar;
 
 	automatic_updates_enabled = g_settings_get_boolean (shell->settings, "download-updates");
-
-	metered_updates_bar = GTK_INFO_BAR (gtk_builder_get_object (shell->builder, "metered_updates_bar"));
 
 #ifdef HAVE_MOGWAI
 	automatic_updates_paused = (shell->scheduler == NULL || !mwsc_scheduler_get_allow_downloads (shell->scheduler));
@@ -208,11 +228,11 @@ gs_shell_refresh_auto_updates_ui (GsShell *shell)
 	automatic_updates_paused = gs_plugin_loader_get_network_metered (shell->plugin_loader);
 #endif
 
-	gtk_info_bar_set_revealed (metered_updates_bar,
+	gtk_info_bar_set_revealed (GTK_INFO_BAR (shell->metered_updates_bar),
 				   gs_shell_get_mode (shell) != GS_SHELL_MODE_LOADING &&
 				   automatic_updates_enabled &&
 				   automatic_updates_paused);
-	gtk_info_bar_set_default_response (metered_updates_bar, GTK_RESPONSE_OK);
+	gtk_info_bar_set_default_response (GTK_INFO_BAR (shell->metered_updates_bar), GTK_RESPONSE_OK);
 }
 
 static void
@@ -223,7 +243,7 @@ gs_shell_metered_updates_bar_response_cb (GtkInfoBar *info_bar,
 	GsShell *shell = GS_SHELL (user_data);
 	GtkDialog *dialog;
 
-	dialog = GTK_DIALOG (gs_metered_data_dialog_new (shell->main_window));
+	dialog = GTK_DIALOG (gs_metered_data_dialog_new (GTK_WINDOW (shell)));
 	gs_shell_modal_dialog_present (shell, dialog);
 
 	/* just destroy */
@@ -365,7 +385,7 @@ gs_shell_basic_auth_start_cb (GsPluginLoader *plugin_loader,
 {
 	GtkWidget *dialog;
 
-	dialog = gs_basic_auth_dialog_new (shell->main_window, remote, realm, callback, callback_data);
+	dialog = gs_basic_auth_dialog_new (GTK_WINDOW (shell), remote, realm, callback, callback_data);
 	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 
 	/* just destroy */
@@ -404,7 +424,7 @@ stack_notify_visible_child_cb (GObject    *object,
 {
 	GsShell *shell = GS_SHELL (user_data);
 	GsPage *page;
-	GtkWidget *widget, *search_button;
+	GtkWidget *widget;
 	GtkStyleContext *context;
 	GsShellMode mode;
 	gsize i;
@@ -419,8 +439,7 @@ stack_notify_visible_child_cb (GObject    *object,
 	}
 	g_assert (i < G_N_ELEMENTS (page_name));
 
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header"));
-	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (widget), TRUE);
+	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (shell->header), TRUE);
 
 	/* update the visibility of mode-specific header widgets
 	 */
@@ -429,50 +448,44 @@ stack_notify_visible_child_cb (GObject    *object,
 			     mode == GS_SHELL_MODE_UPDATES ||
 			     mode == GS_SHELL_MODE_SEARCH);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "buttonbox_main"));
-	gtk_widget_set_visible (widget, buttonbox_visible);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "menu_button"));
-	gtk_widget_set_visible (widget, buttonbox_visible);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header_selection_menu_button"));
-	gtk_widget_hide (widget);
+	gtk_widget_set_visible (shell->buttonbox_main, buttonbox_visible);
+	gtk_widget_set_visible (shell->menu_button, buttonbox_visible);
+	gtk_widget_hide (shell->header_selection_menu_button);
 
 	gtk_widget_set_visible (shell->application_details_header, !buttonbox_visible);
 
 	/* only show the search button in overview and search pages */
-	search_button = GTK_WIDGET (gtk_builder_get_object (shell->builder, "search_button"));
-	g_signal_handlers_block_by_func (search_button, search_button_clicked_cb, shell);
-	gtk_widget_set_visible (search_button, mode == GS_SHELL_MODE_OVERVIEW ||
-					       mode == GS_SHELL_MODE_SEARCH);
+	g_signal_handlers_block_by_func (shell->search_button, search_button_clicked_cb, shell);
+	gtk_widget_set_visible (shell->search_button,
+				mode == GS_SHELL_MODE_OVERVIEW ||
+				mode == GS_SHELL_MODE_SEARCH);
 	/* hide unless we're going to search */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "search_bar"));
-	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (widget),
+	gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar),
 					mode == GS_SHELL_MODE_SEARCH);
-	g_signal_handlers_unblock_by_func (search_button, search_button_clicked_cb, shell);
+	g_signal_handlers_unblock_by_func (shell->search_button, search_button_clicked_cb, shell);
 
-	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (shell->builder, "header")));
+	context = gtk_widget_get_style_context (shell->header);
 	gtk_style_context_remove_class (context, "selection-mode");
 
 	/* set the window title back to default */
-	gtk_window_set_title (shell->main_window, g_get_application_name ());
+	gtk_window_set_title (GTK_WINDOW (shell), g_get_application_name ());
 
 	/* update main buttons according to mode */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_explore"));
-	g_signal_handlers_block_by_func (widget, gs_overview_page_button_cb, shell);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_OVERVIEW);
-	g_signal_handlers_unblock_by_func (widget, gs_overview_page_button_cb, shell);
+	g_signal_handlers_block_by_func (shell->button_explore, gs_overview_page_button_cb, shell);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell->button_explore), mode == GS_SHELL_MODE_OVERVIEW);
+	g_signal_handlers_unblock_by_func (shell->button_explore, gs_overview_page_button_cb, shell);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_installed"));
-	g_signal_handlers_block_by_func (widget, gs_overview_page_button_cb, shell);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_INSTALLED);
-	g_signal_handlers_unblock_by_func (widget, gs_overview_page_button_cb, shell);
+	g_signal_handlers_block_by_func (shell->button_installed, gs_overview_page_button_cb, shell);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell->button_installed), mode == GS_SHELL_MODE_INSTALLED);
+	g_signal_handlers_unblock_by_func (shell->button_installed, gs_overview_page_button_cb, shell);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_updates"));
-	g_signal_handlers_block_by_func (widget, gs_overview_page_button_cb, shell);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
-	g_signal_handlers_unblock_by_func (widget, gs_overview_page_button_cb, shell);
+	g_signal_handlers_block_by_func (shell->button_updates, gs_overview_page_button_cb, shell);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell->button_updates), mode == GS_SHELL_MODE_UPDATES);
+	g_signal_handlers_unblock_by_func (shell->button_updates, gs_overview_page_button_cb, shell);
 
-	gtk_widget_set_visible (widget, gs_plugin_loader_get_allow_updates (shell->plugin_loader) ||
-					mode == GS_SHELL_MODE_UPDATES);
+	gtk_widget_set_visible (shell->button_updates,
+				gs_plugin_loader_get_allow_updates (shell->plugin_loader) ||
+				mode == GS_SHELL_MODE_UPDATES);
 
 	/* do action for mode */
 	page = GS_PAGE (g_hash_table_lookup (shell->pages, page_name[mode]));
@@ -483,8 +496,7 @@ stack_notify_visible_child_cb (GObject    *object,
 		gs_shell_clean_back_entry_stack (shell);
 
 	/* show the back button if needed */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_back"));
-	gtk_widget_set_visible (widget,
+	gtk_widget_set_visible (shell->button_back,
 				mode != GS_SHELL_MODE_SEARCH &&
 				!g_queue_is_empty (shell->back_entry_stack));
 
@@ -500,10 +512,9 @@ stack_notify_visible_child_cb (GObject    *object,
 	widget = gs_page_get_header_end_widget (page);
 	gs_shell_set_header_end_widget (shell, widget);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "application_details_header"));
 	g_clear_object (&shell->application_details_header_binding);
 	shell->application_details_header_binding = g_object_bind_property (page, "title",
-									    widget, "label",
+									    shell->application_details_header, "label",
 									    G_BINDING_SYNC_CREATE);
 
 	/* refresh the updates bar when moving out of the loading mode, but only
@@ -540,7 +551,6 @@ gs_shell_change_mode (GsShell *shell,
 {
 	GsApp *app;
 	GsPage *page;
-	GtkWidget *widget;
 
 	/* switch page */
 	gtk_stack_set_visible_child_name (GTK_STACK (shell->stack_main), page_name[mode]);
@@ -549,10 +559,9 @@ gs_shell_change_mode (GsShell *shell,
 	page = GS_PAGE (g_hash_table_lookup (shell->pages, page_name[mode]));
 
 	if (mode == GS_SHELL_MODE_SEARCH) {
-		widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "entry_search"));
 		gs_search_page_set_text (GS_SEARCH_PAGE (page), data);
-		gtk_entry_set_text (GTK_ENTRY (widget), data);
-		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
+		gtk_entry_set_text (GTK_ENTRY (shell->entry_search), data);
+		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
 	} else if (mode == GS_SHELL_MODE_DETAILS) {
 		app = GS_APP (data);
 		if (gs_app_get_local_file (app) != NULL) {
@@ -591,7 +600,7 @@ save_back_entry (GsShell *shell)
 	entry = g_new0 (BackEntry, 1);
 	entry->mode = gs_shell_get_mode (shell);
 
-	entry->focus = gtk_window_get_focus (shell->main_window);
+	entry->focus = gtk_window_get_focus (GTK_WINDOW (shell));
 	if (entry->focus != NULL)
 		g_object_add_weak_pointer (G_OBJECT (entry->focus),
 					   (gpointer *) &entry->focus);
@@ -687,7 +696,6 @@ static void
 gs_shell_go_back (GsShell *shell)
 {
 	BackEntry *entry;
-	GtkWidget *widget;
 
 	/* nothing to do */
 	if (g_queue_is_empty (shell->back_entry_stack)) {
@@ -716,11 +724,10 @@ gs_shell_go_back (GsShell *shell)
 			 page_name[entry->mode], entry->search);
 
 		/* set the text in the entry and move cursor to the end */
-		widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "entry_search"));
-		block_changed_signal (GTK_SEARCH_ENTRY (widget));
-		gtk_entry_set_text (GTK_ENTRY (widget), entry->search);
-		gtk_editable_set_position (GTK_EDITABLE (widget), -1);
-		unblock_changed_signal (GTK_SEARCH_ENTRY (widget));
+		block_changed_signal (GTK_SEARCH_ENTRY (shell->entry_search));
+		gtk_entry_set_text (GTK_ENTRY (shell->entry_search), entry->search);
+		gtk_editable_set_position (GTK_EDITABLE (shell->entry_search), -1);
+		unblock_changed_signal (GTK_SEARCH_ENTRY (shell->entry_search));
 
 		/* set the mode directly */
 		gs_shell_change_mode (shell, entry->mode,
@@ -758,12 +765,9 @@ static gboolean
 change_mode_idle (gpointer user_data)
 {
 	GsShell *shell = user_data;
-	GsPage *page;
 
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "updates_page"));
-	gs_page_reload (page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "installed_page"));
-	gs_page_reload (page);
+	gs_page_reload (GS_PAGE (shell->updates_page));
+	gs_page_reload (GS_PAGE (shell->installed_page));
 
 	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 
@@ -799,12 +803,9 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 	/* if the "loaded" signal handler didn't change the mode, kick off async
 	 * overview page refresh, and switch to the page once done */
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_LOADING) {
-		GsPage *page;
-
-		page = GS_PAGE (gtk_builder_get_object (shell->builder, "overview_page"));
-		g_signal_connect (page, "refreshed",
+		g_signal_connect (shell->overview_page, "refreshed",
 		                  G_CALLBACK (overview_page_refresh_done), shell);
-		gs_page_reload (page);
+		gs_page_reload (GS_PAGE (shell->overview_page));
 		return;
 	}
 
@@ -816,29 +817,23 @@ initial_refresh_done (GsLoadingPage *loading_page, gpointer data)
 static gboolean
 window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
-	GtkWidget *w;
-
 	/* handle ctrl+f shortcut */
 	if (event->type == GDK_KEY_PRESS) {
 		GdkEventKey *e = (GdkEventKey *) event;
 		if ((e->state & GDK_CONTROL_MASK) > 0 &&
 		    e->keyval == GDK_KEY_f) {
-			w = GTK_WIDGET (gtk_builder_get_object (shell->builder, "search_bar"));
-			if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (w))) {
-				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), TRUE);
-				w = GTK_WIDGET (gtk_builder_get_object (shell->builder,
-								        "entry_search"));
-				gtk_widget_grab_focus (w);
+			if (!gtk_search_bar_get_search_mode (GTK_SEARCH_BAR (shell->search_bar))) {
+				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), TRUE);
+				gtk_widget_grab_focus (shell->entry_search);
 			} else {
-				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (w), FALSE);
+				gtk_search_bar_set_search_mode (GTK_SEARCH_BAR (shell->search_bar), FALSE);
 			}
 			return GDK_EVENT_STOP;
 		}
 	}
 
 	/* pass to search bar */
-	w = GTK_WIDGET (gtk_builder_get_object (shell->builder, "search_bar"));
-	return gtk_search_bar_handle_event (GTK_SEARCH_BAR (w), event);
+	return gtk_search_bar_handle_event (GTK_SEARCH_BAR (shell->search_bar), event);
 }
 
 static void
@@ -876,22 +871,20 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	GdkKeymap *keymap;
 	GdkModifierType state;
 	gboolean is_rtl;
-	GtkWidget *button;
 
-	button = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_back"));
-	if (!gtk_widget_is_visible (button) || !gtk_widget_is_sensitive (button))
+	if (!gtk_widget_is_visible (shell->button_back) || !gtk_widget_is_sensitive (shell->button_back))
 	    	return GDK_EVENT_PROPAGATE;
 
 	state = event->state;
 	keymap = gdk_keymap_get_for_display (gtk_widget_get_display (win));
 	gdk_keymap_add_virtual_modifiers (keymap, &state);
 	state = state & gtk_accelerator_get_default_mod_mask ();
-	is_rtl = gtk_widget_get_direction (button) == GTK_TEXT_DIR_RTL;
+	is_rtl = gtk_widget_get_direction (shell->button_back) == GTK_TEXT_DIR_RTL;
 
 	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
 	    event->keyval == GDK_KEY_Back) {
-		gtk_widget_activate (button);
+		gtk_widget_activate (shell->button_back);
 		return GDK_EVENT_STOP;
 	}
 
@@ -901,17 +894,14 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 static gboolean
 window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell)
 {
-	GtkWidget *button;
-
 	/* Mouse hardware back button is 8 */
 	if (event->button != 8)
 		return GDK_EVENT_PROPAGATE;
 
-	button = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_back"));
-	if (!gtk_widget_is_visible (button) || !gtk_widget_is_sensitive (button))
+	if (!gtk_widget_is_visible (shell->button_back) || !gtk_widget_is_sensitive (shell->button_back))
 		return GDK_EVENT_PROPAGATE;
 
-	gtk_widget_activate (button);
+	gtk_widget_activate (shell->button_back);
 	return GDK_EVENT_STOP;
 }
 
@@ -919,7 +909,6 @@ static gboolean
 main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 {
 	GsShell *shell = user_data;
-	GtkWidget *widget;
 
 	/* hide any notifications */
 	g_application_withdraw_notification (g_application_get_default (),
@@ -928,8 +917,7 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 					     "install-resources");
 
 	/* clear any in-app notification */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "notification_event"));
-	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), FALSE);
 
 	/* release our hold on the download scheduler */
 #ifdef HAVE_MOGWAI
@@ -980,29 +968,27 @@ gs_shell_main_window_realized_cb (GtkWidget *widget, GsShell *shell)
 	GdkDisplay *display;
 	GdkMonitor *monitor;
 
-	display = gtk_widget_get_display (GTK_WIDGET (shell->main_window));
+	display = gtk_widget_get_display (GTK_WIDGET (shell));
 	monitor = gdk_display_get_monitor_at_window (display,
-						     gtk_widget_get_window (GTK_WIDGET (shell->main_window)));
+						     gtk_widget_get_window (GTK_WIDGET (shell)));
 
 	/* adapt the window for low and medium resolution screens */
 	gdk_monitor_get_geometry (monitor, &geometry);
 	if (geometry.width < 800 || geometry.height < 600) {
-		    GtkWidget *buttonbox = GTK_WIDGET (gtk_builder_get_object (shell->builder, "buttonbox_main"));
-
-		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
-					     GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_explore")),
+		    gtk_container_child_set (GTK_CONTAINER (shell->buttonbox_main),
+					     shell->button_explore,
 					     "non-homogeneous", TRUE,
 					     NULL);
-		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
-					     GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_installed")),
+		    gtk_container_child_set (GTK_CONTAINER (shell->buttonbox_main),
+					     shell->button_installed,
 					     "non-homogeneous", TRUE,
 					     NULL);
-		    gtk_container_child_set (GTK_CONTAINER (buttonbox),
-					     GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_updates")),
+		    gtk_container_child_set (GTK_CONTAINER (shell->buttonbox_main),
+					     shell->button_updates,
 					     "non-homogeneous", TRUE,
 					     NULL);
 	} else if (geometry.width < 1366 || geometry.height < 768) {
-		gtk_window_set_default_size (shell->main_window, 1050, 600);
+		gtk_window_set_default_size (GTK_WINDOW (shell), 1050, 600);
 	}
 }
 
@@ -1011,10 +997,9 @@ gs_shell_allow_updates_notify_cb (GsPluginLoader *plugin_loader,
 				    GParamSpec *pspec,
 				    GsShell *shell)
 {
-	GtkWidget *widget;
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_updates"));
-	gtk_widget_set_visible (widget, gs_plugin_loader_get_allow_updates (plugin_loader) ||
-					gs_shell_get_mode (shell) == GS_SHELL_MODE_UPDATES);
+	gtk_widget_set_visible (shell->button_updates,
+				gs_plugin_loader_get_allow_updates (plugin_loader) ||
+				gs_shell_get_mode (shell) == GS_SHELL_MODE_UPDATES);
 }
 
 typedef enum {
@@ -1039,41 +1024,37 @@ gs_shell_show_event_app_notify (GsShell *shell,
 				const gchar *title,
 				GsShellEventButtons buttons)
 {
-	GtkWidget *widget;
-
 	/* set visible */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "notification_event"));
-	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), TRUE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), TRUE);
 
 	/* sources button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_sources"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_SOURCES) > 0);
+	gtk_widget_set_visible (shell->button_events_sources,
+				(buttons & GS_SHELL_EVENT_BUTTON_SOURCES) > 0);
 
 	/* no-space button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_no_space"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0 &&
-					gs_shell_has_disk_examination_app());
+	gtk_widget_set_visible (shell->button_events_no_space,
+				(buttons & GS_SHELL_EVENT_BUTTON_NO_SPACE) > 0 &&
+				gs_shell_has_disk_examination_app());
 
 	/* network settings button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_network_settings"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0);
+	gtk_widget_set_visible (shell->button_events_network_settings,
+				(buttons & GS_SHELL_EVENT_BUTTON_NETWORK_SETTINGS) > 0);
 
 	/* restart button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_restart_required"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) > 0);
+	gtk_widget_set_visible (shell->button_events_restart_required,
+				(buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) > 0);
 
 	/* more-info button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_more_info"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_MORE_INFO) > 0);
+	gtk_widget_set_visible (shell->button_events_more_info,
+				(buttons & GS_SHELL_EVENT_BUTTON_MORE_INFO) > 0);
 
 	/* dismiss button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_dismiss"));
-	gtk_widget_set_visible (widget, (buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) == 0);
+	gtk_widget_set_visible (shell->button_events_dismiss,
+				(buttons & GS_SHELL_EVENT_BUTTON_RESTART_REQUIRED) == 0);
 
 	/* set title */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "label_events"));
-	gtk_label_set_markup (GTK_LABEL (widget), title);
-	gtk_widget_set_visible (widget, title != NULL);
+	gtk_label_set_markup (GTK_LABEL (shell->label_events), title);
+	gtk_widget_set_visible (shell->label_events, title != NULL);
 }
 
 void
@@ -1991,7 +1972,6 @@ gs_shell_show_event (GsShell *shell, GsPluginEvent *event)
 static void
 gs_shell_rescan_events (GsShell *shell)
 {
-	GtkWidget *widget;
 	g_autoptr(GsPluginEvent) event = NULL;
 
 	/* find the first active event and show it */
@@ -2020,8 +2000,7 @@ gs_shell_rescan_events (GsShell *shell)
 	}
 
 	/* nothing to show */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "notification_event"));
-	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (shell->notification_event), FALSE);
 }
 
 static void
@@ -2071,14 +2050,11 @@ gs_shell_setup_pages (GsShell *shell)
 static void
 gs_shell_add_about_menu_item (GsShell *shell)
 {
-	GMenu *primary_menu;
 	g_autoptr(GMenuItem) menu_item = NULL;
-
-	primary_menu = G_MENU (gtk_builder_get_object (shell->builder, "primary_menu"));
 
 	/* TRANSLATORS: this is the menu item that opens the about window */
 	menu_item = g_menu_item_new (_("About Software"), "app.about");
-	g_menu_append_item (primary_menu, menu_item);
+	g_menu_append_item (G_MENU (shell->primary_menu), menu_item);
 }
 
 static gboolean
@@ -2118,7 +2094,6 @@ counter_notify_label_cb (GObject    *obj,
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
-	GtkWidget *widget;
 	g_autoptr(GtkAccelGroup) accel_group = NULL;
 	GClosure *closure;
 	GtkStyleContext *style_context;
@@ -2144,155 +2119,126 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	shell->settings = g_settings_new ("org.gnome.software");
 
 	/* get UI */
-	shell->builder = gtk_builder_new_from_resource ("/org/gnome/Software/gnome-software.ui");
-	shell->main_window = GTK_WINDOW (gtk_builder_get_object (shell->builder, "window_software"));
-	g_signal_connect (shell->main_window, "map",
+	g_signal_connect (shell, "map",
 			  G_CALLBACK (gs_shell_main_window_mapped_cb), shell);
-	g_signal_connect (shell->main_window, "realize",
+	g_signal_connect (shell, "realize",
 			  G_CALLBACK (gs_shell_main_window_realized_cb), shell);
 
-	g_signal_connect (shell->main_window, "delete-event",
+	g_signal_connect (shell, "delete-event",
 			  G_CALLBACK (main_window_closed_cb), shell);
 
 	accel_group = gtk_accel_group_new ();
-	gtk_window_add_accel_group (shell->main_window, accel_group);
+	gtk_window_add_accel_group (GTK_WINDOW (shell), accel_group);
 	closure = g_cclosure_new (G_CALLBACK (gs_shell_close_window_accel_cb), NULL, NULL);
 	gtk_accel_group_connect (accel_group, GDK_KEY_q, GDK_CONTROL_MASK, GTK_ACCEL_LOCKED, closure);
 
 	/* fix up the header bar */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "header"));
 	if (gs_utils_is_current_desktop ("Unity")) {
-		style_context = gtk_widget_get_style_context (widget);
+		style_context = gtk_widget_get_style_context (shell->header);
 		gtk_style_context_remove_class (style_context, GTK_STYLE_CLASS_TITLEBAR);
 		gtk_style_context_add_class (style_context, GTK_STYLE_CLASS_PRIMARY_TOOLBAR);
-		gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (widget), "");
+		gtk_header_bar_set_decoration_layout (GTK_HEADER_BAR (shell->header), "");
 	} else {
-		g_object_ref (widget);
-		gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
-		gtk_window_set_titlebar (GTK_WINDOW (shell->main_window), widget);
-		g_object_unref (widget);
+		g_object_ref (shell->header);
+		gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (shell->header)), shell->header);
+		gtk_window_set_titlebar (GTK_WINDOW (shell), shell->header);
+		g_object_unref (shell->header);
 	}
 
 	/* global keynav */
-	g_signal_connect_after (shell->main_window, "key_press_event",
+	g_signal_connect_after (shell, "key_press_event",
 				G_CALLBACK (window_key_press_event), shell);
 	/* mouse hardware back button */
-	g_signal_connect_after (shell->main_window, "button_press_event",
+	g_signal_connect_after (shell, "button_press_event",
 				G_CALLBACK (window_button_press_event), shell);
 
-	shell->stack_main = GTK_STACK (gtk_builder_get_object (shell->builder, "stack_main"));
 	g_signal_connect (shell->stack_main, "notify::visible-child", G_CALLBACK (stack_notify_visible_child_cb), shell);
 
 	/* show the search bar when clicking on the search button */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "search_button"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->search_button, "clicked",
 	                  G_CALLBACK (search_button_clicked_cb),
 	                  shell);
 
 	/* show the account popover when clicking on the account button */
-	/* widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "menu_button"));
-	g_signal_connect (widget, "clicked",
+	/*
+	g_signal_connect (shell->menu_button, "clicked",
 	                  G_CALLBACK (menu_button_clicked_cb),
 	                  shell); */
 
 	/* setup buttons */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_back"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_back, "clicked",
 			  G_CALLBACK (gs_shell_back_button_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_explore"));
-	g_object_set_data (G_OBJECT (widget),
+	g_object_set_data (G_OBJECT (shell->button_explore),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_OVERVIEW));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_explore, "clicked",
 			  G_CALLBACK (gs_overview_page_button_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_installed"));
-	g_object_set_data (G_OBJECT (widget),
+	g_object_set_data (G_OBJECT (shell->button_installed),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_INSTALLED));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_installed, "clicked",
 			  G_CALLBACK (gs_overview_page_button_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_updates"));
-	g_object_set_data (G_OBJECT (widget),
+	g_object_set_data (G_OBJECT (shell->button_updates),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_updates, "clicked",
 			  G_CALLBACK (gs_overview_page_button_cb), shell);
 
 	/* set up in-app notification controls */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_dismiss"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_events_dismiss, "clicked",
 			  G_CALLBACK (gs_shell_plugin_event_dismissed_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_sources"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_events_sources, "clicked",
 			  G_CALLBACK (gs_shell_plugin_events_sources_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_no_space"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_events_no_space, "clicked",
 			  G_CALLBACK (gs_shell_plugin_events_no_space_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_network_settings"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_events_network_settings, "clicked",
 			  G_CALLBACK (gs_shell_plugin_events_network_settings_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_more_info"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_events_more_info, "clicked",
 			  G_CALLBACK (gs_shell_plugin_events_more_info_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_events_restart_required"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (shell->button_events_restart_required, "clicked",
 			  G_CALLBACK (gs_shell_plugin_events_restart_required_cb), shell);
 
 	/* add pages to hash */
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "overview_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("overview"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "updates_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("updates"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "installed_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("installed"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "moderate_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("moderate"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "loading_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("loading"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "search_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("search"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "details_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("details"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "category_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("category"), page);
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "extras_page"));
-	g_hash_table_insert (shell->pages, g_strdup ("extras"), page);
+	g_hash_table_insert (shell->pages, g_strdup ("overview"), shell->overview_page);
+	g_hash_table_insert (shell->pages, g_strdup ("updates"), shell->updates_page);
+	g_hash_table_insert (shell->pages, g_strdup ("installed"), shell->installed_page);
+	g_hash_table_insert (shell->pages, g_strdup ("moderate"), shell->moderate_page);
+	g_hash_table_insert (shell->pages, g_strdup ("loading"), shell->loading_page);
+	g_hash_table_insert (shell->pages, g_strdup ("search"), shell->search_page);
+	g_hash_table_insert (shell->pages, g_strdup ("details"), shell->details_page);
+	g_hash_table_insert (shell->pages, g_strdup ("category"), shell->category_page);
+	g_hash_table_insert (shell->pages, g_strdup ("extras"), shell->extras_page);
 	gs_shell_setup_pages (shell);
 
 	/* set up the metered data info bar and mogwai */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "metered_updates_bar"));
-	g_signal_connect (widget, "response",
+	g_signal_connect (shell->metered_updates_bar, "response",
 			  (GCallback) gs_shell_metered_updates_bar_response_cb, shell);
 
 	g_signal_connect (shell->settings, "changed::download-updates",
 			  (GCallback) gs_shell_download_updates_changed_cb, shell);
 
 	/* set up search */
-	g_signal_connect (shell->main_window, "key-press-event",
+	g_signal_connect (shell, "key-press-event",
 			  G_CALLBACK (window_keypress_handler), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "entry_search"));
 	shell->search_changed_id =
-		g_signal_connect (widget, "search-changed",
+		g_signal_connect (shell->entry_search, "search-changed",
 				  G_CALLBACK (search_changed_handler), shell);
 
 	/* bind the counters */
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_installed_counter"));
 	page = g_hash_table_lookup (shell->pages, "installed");
 	shell->button_installed_counter_binding = g_object_bind_property (page, "counter",
-									  widget, "label",
+									  shell->button_installed_counter, "label",
 									  G_BINDING_SYNC_CREATE);
-	g_signal_connect (widget, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
+	g_signal_connect (shell->button_installed_counter, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (shell->builder, "button_updates_counter"));
 	page = g_hash_table_lookup (shell->pages, "updates");
 	shell->button_updates_counter_binding = g_object_bind_property (page, "counter",
-									widget, "label",
+									shell->button_updates_counter, "label",
 									G_BINDING_SYNC_CREATE);
-	g_signal_connect (widget, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
+	g_signal_connect (shell->button_updates_counter, "notify::label", G_CALLBACK (counter_notify_label_cb), shell);
 
 	/* load content */
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "loading_page"));
-	g_signal_connect (page, "refreshed",
+	g_signal_connect (shell->loading_page, "refreshed",
 			  G_CALLBACK (initial_refresh_done), shell);
 
 	/* coldplug */
@@ -2376,7 +2322,7 @@ gs_shell_show_sources (GsShell *shell)
 	if (g_spawn_command_line_async ("software-properties-gtk", NULL))
 		return;
 
-	dialog = gs_repos_dialog_new (shell->main_window, shell->plugin_loader);
+	dialog = gs_repos_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 
 	/* just destroy */
@@ -2389,7 +2335,7 @@ gs_shell_show_prefs (GsShell *shell)
 {
 	GtkWidget *dialog;
 
-	dialog = gs_prefs_dialog_new (shell->main_window, shell->plugin_loader);
+	dialog = gs_prefs_dialog_new (GTK_WINDOW (shell), shell->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 
 	/* just destroy */
@@ -2414,12 +2360,8 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 
 void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources, const gchar *desktop_id, const gchar *ident)
 {
-	GsPage *page;
-
-	page = GS_PAGE (gtk_builder_get_object (shell->builder, "extras_page"));
-
 	save_back_entry (shell);
-	gs_extras_page_search (GS_EXTRAS_PAGE (page), mode, resources, desktop_id, ident);
+	gs_extras_page_search (GS_EXTRAS_PAGE (shell->extras_page), mode, resources, desktop_id, ident);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, TRUE);
 	gs_shell_activate (shell);
 }
@@ -2460,7 +2402,7 @@ gs_shell_show_uri (GsShell *shell, const gchar *url)
 {
 	g_autoptr(GError) error = NULL;
 
-	if (!gtk_show_uri_on_window (shell->main_window,
+	if (!gtk_show_uri_on_window (GTK_WINDOW (shell),
 	                             url,
 	                             GDK_CURRENT_TIME,
 	                             &error)) {
@@ -2482,7 +2424,6 @@ gs_shell_dispose (GObject *object)
 		g_queue_free_full (shell->back_entry_stack, (GDestroyNotify) free_back_entry);
 		shell->back_entry_stack = NULL;
 	}
-	g_clear_object (&shell->builder);
 	g_clear_object (&shell->cancellable);
 	g_clear_object (&shell->plugin_loader);
 	g_clear_object (&shell->header_start_widget);
@@ -2516,6 +2457,8 @@ static void
 gs_shell_class_init (GsShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
 	object_class->dispose = gs_shell_dispose;
 
 	signals [SIGNAL_LOADED] =
@@ -2523,11 +2466,50 @@ gs_shell_class_init (GsShellClass *klass)
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      0, NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell.ui");
+
+	gtk_widget_class_bind_template_child (widget_class, GsShell, header);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, stack_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, metered_updates_bar);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, buttonbox_main);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, menu_button);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, header_selection_menu_button);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_button);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_explore);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_installed);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, entry_search);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_bar);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_back);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, notification_event);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_sources);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_no_space);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_network_settings);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_restart_required);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_more_info);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_events_dismiss);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, label_events);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, primary_menu);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_installed_counter);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, button_updates_counter);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, application_details_header);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, overview_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, updates_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, installed_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, moderate_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, loading_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, search_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, details_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, category_page);
+	gtk_widget_class_bind_template_child (widget_class, GsShell, extras_page);
 }
 
 static void
 gs_shell_init (GsShell *shell)
 {
+	gtk_widget_init_template (GTK_WIDGET (shell));
+
 	shell->pages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	shell->back_entry_stack = g_queue_new ();
 	shell->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);

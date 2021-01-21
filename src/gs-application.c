@@ -46,6 +46,7 @@ struct _GsApplication {
 	GtkCssProvider	*provider;
 	GsPluginLoader	*plugin_loader;
 	gint		 pending_apps;
+	GtkWindow	*main_window;
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
 #ifdef HAVE_PACKAGEKIT
@@ -296,7 +297,8 @@ gs_application_initialize_ui (GsApplication *app)
 							 app);
 
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
-	gtk_application_add_window (GTK_APPLICATION (app), gs_shell_get_window (app->shell));
+	app->main_window = GTK_WINDOW (app->shell);
+	gtk_application_add_window (GTK_APPLICATION (app), app->main_window);
 }
 
 static void
@@ -828,7 +830,7 @@ show_offline_updates_error (GSimpleAction *action,
 
 	gs_shell_reset_state (app->shell);
 	gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
-	gs_update_monitor_show_error (app->update_monitor, app->shell);
+	gs_update_monitor_show_error (app->update_monitor, app->main_window);
 }
 
 static void
