@@ -1444,7 +1444,5 @@ gs_updates_page_init (GsUpdatesPage *self)
 GsUpdatesPage *
 gs_updates_page_new (void)
 {
-	GsUpdatesPage *self;
-	self = g_object_new (GS_TYPE_UPDATES_PAGE, NULL);
-	return GS_UPDATES_PAGE (self);
+	return GS_UPDATES_PAGE (g_object_new (GS_TYPE_UPDATES_PAGE, NULL));
 }
